@@ -1,0 +1,36 @@
+[submodule "foss/janson"]
+	path = foss/janson
+	url = https://github.com/akheron/jansson.git
+[submodule "foss/libconfig"]
+	path = foss/libconfig
+	url = https://github.com/hyperrealm/libconfig.git
+[submodule "foss/nginx"]
+	path = foss/nginx
+	url = https://github.com/nginx/nginx.git
+[submodule "foss/c-algorithms"]
+	path = foss/c-algorithms
+	url = https://github.com/fragglet/c-algorithms.git
+[submodule "foss/libu"]
+	path = foss/libu
+	url = https://github.com/koanlogic/libu.git
+[submodule "foss/stb"]
+	path = foss/stb
+	url = https://github.com/nothings/stb.git
+[submodule "foss/http-parser"]
+	path = foss/http-parser
+	url = https://github.com/joyent/http-parser.git
+[submodule "foss/klib"]
+	path = foss/klib
+	url = https://github.com/attractivechaos/klib.git
+[submodule "foss/leveldb"]
+	path = foss/leveldb
+	url = https://github.com/google/leveldb.git
+[submodule "foss/grpc"]
+	path = foss/grpc
+	url = https://github.com/grpc/grpc.git
+[submodule "foss/socialauth"]
+	path = foss/socialauth
+	url = https://github.com/3pillarlabs/socialauth.git
+[submodule "webapp-static"]
+	path = webapp-static
+	url = https://github.com/vy-nguyen/webapp-static.git
