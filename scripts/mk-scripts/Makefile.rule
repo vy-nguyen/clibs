@@ -1,0 +1,252 @@
+# Written by Vy Nguyen https://github.com/vy-nguyen/c-libraries
+# BSD License
+#
+# Makefile.rule
+# -------------
+#
+
+# Final compilation flags.
+#
+cc_flg  := $(os_cc_flags) $(comm_cc_flags) $(gl_cc_flags)
+ar_flg  := $(os_ar_flags) $(comm_ar_flags) $(gl_ar_flags)
+cpp_flg := $(os_cpp_flags) $(comm_cpp_flags) $(gl_cpp_flags)
+asm_flg := $(os_asm_flags) $(comm_asm_flags) $(gl_asm_flags)
+lda_flg := $(os_ld_flags) $(comm_lda_flags) $(gl_ld_flags)
+lso_flg := $(os_ld_flags) $(comm_lso_flags) $(gl_ld_flags)
+exe_flg := $(os_ld_flags) $(comm_exe_flags) $(gl_exe_flags)
+
+# Final list of files to be compiled.
+#
+dep_files := $(patsubst %.c,%,$(proj_cc)) $(patsubst %.cpp,%,$(proj_cpp))
+
+mk_files  := $(wildcard Makefile*)
+src_files := $(proj_cc) $(proj_cpp) $(proj_asm)
+obj_files := $(comm_cc_objs) $(comm_asm_objs) $(comm_cpp_objs)
+
+# Common scripts for rules.
+#
+include $(mk_scripts)/Makefile.scpt
+
+# -----------------------------------------------------------------------------
+# Main make rule.
+#
+.PHONY: all
+all: $(proj_predep) base_predepend $(foss_pkg_target) $(proj_postdep)      \
+	 $(proj_pregen) base_gen $(proj_postgen)              \
+	 $(proj_predepend) base_depend $(proj_postdepend)     \
+	 $(proj_precompile) base_objs $(proj_postcompile)     \
+	 $(proj_prelink) base_link $(proj_postlink)           \
+	 $(proj_tool) $(proj_scripts) $(proj_docs)            \
+     $(proj_preinstall) base_install $(proj_postinstall)
+
+# -----------------------------------------------------------------------------
+# Tasks to do before the depend rule.
+#
+.PHONY: base_predepend
+base_predepend:
+ifdef gl_mkdir_obj
+	@$(scpt_setup_build_dir)
+endif
+
+# -----------------------------------------------------------------------------
+# The main rule to compile IDL gen.
+#
+.PHONY: base_gen
+base_gen: $(comm_json_tgt) $(comm_proto_tgt)
+
+ifdef proj_json
+$(foreach json,$(proj_json),$(eval $(call scpt_mk_json2h,$(json))))
+endif
+
+ifdef proj_proto
+$(foreach proto,$(proj_proto),$(eval $(call scpt_mk_proto2cpp,$(proto))))
+endif
+
+# -----------------------------------------------------------------------------
+# The main auto depend rule.
+#
+.PHONY: base_depend
+base_depend: $(comm_srcdeps)
+
+# -----------------------------------------------------------------------------
+# Generate auto dependencies.
+#
+ifdef gl_mkdir_obj
+$(comm_dir_obj)/%.dep: %.c
+	$(gl_v)echo "    [DEP]        $<"
+	$(gl_v)$(cc) $(cc_flg) $< -MM -MT $(patsubst %.dep,%.o,$@) > $@;
+
+$(comm_dir_obj)/%.dep: %.cpp
+	$(gl_v)echo "    [DEP]        $<"
+	$(gl_v)$(cpp) $(cpp_flg) $< -MM -MT $(patsubst %.dep,%.o,$@) > $@;
+endif
+
+# -----------------------------------------------------------------------------
+# The main rule to compile and link other targets.
+#
+.PHONY: base_objs
+base_objs: $(obj_files)
+
+# -----------------------------------------------------------------------------
+# Rule to compile .c file.
+#
+$(comm_dir_obj)/%.o : %.c
+	$(gl_v)echo "    [CC]         $<"
+	$(gl_v)$(cc) $(cc_flg) -c $< -o $@
+
+# -----------------------------------------------------------------------------
+# Rule to compile .cpp file.
+#
+$(comm_dir_obj)/%.o : %.cpp
+	$(gl_v)echo  "    [CPP]        $<"
+	$(gl_v)$(cpp) $(cpp_flg) -c $< -o $@
+
+$(comm_dir_obj)/%.o : %.cc
+	$(gl_v)echo  "    [CPP]        $<"
+	$(gl_v)$(cpp) $(cpp_flg) -c $< -o $@
+
+# -----------------------------------------------------------------------------
+# Rule to compile .asm file.
+#
+$(comm_dir_obj)/%.o : %.asm
+	$(gl_v)echo  "    [ASM]         $<"
+	$(gl_v)$(as) $(asm_flg) -c $< -o $@
+
+# -----------------------------------------------------------------------------
+# Rule to compile .s file.
+#
+$(comm_dir_obj)/%.o : %.s
+	$(gl_v)echo  "[ASM]         $<"
+	$(gl_v)$(as) $(asm_flg) -c $< -o $@
+
+# -----------------------------------------------------------------------------
+# Rule to compile .S file.
+#
+$(comm_dir_obj)/%.o : %.S
+	$(gl_v)echo  "[ASM]         $<"
+	$(gl_v)$(as) $(asm_flg) -c $< -o $@
+
+# -----------------------------------------------------------------------------
+# The main rule to compile and link other targets.
+#
+.PHONY: base_link
+base_link: $(comm_libs) $(comm_lib_sos) $(comm_exes) $(comm_tests)
+ifdef proj_dirs
+	@$(scpt_build_subdir)
+endif
+
+ifdef proj_libs
+$(foreach lib,$(proj_libs),$(eval $(call scpt_mk_static_lib,$(lib))))
+endif
+
+ifdef proj_so_libs
+$(foreach lib,$(proj_so_libs),$(eval $(call scpt_mk_dynamic_lib,$(lib))))
+endif
+
+ifdef proj_exes
+$(foreach exe,$(proj_exes),$(eval $(call scrpt_mk_exe,$(exe))))
+endif
+
+# -----------------------------------------------------------------------------
+# The rule to run unit tests
+#
+.PHONY: unit-test test
+
+ifdef proj_tests
+unit-test: $(comm_tests)
+
+test: $(comm_test_force)
+
+$(foreach test,$(proj_tests),$(eval $(call scpt_run_test,$(test))))
+$(foreach test,$(proj_tests),$(eval $(call scpt_force_run_test,$(test))))
+else
+unit-test:
+ifdef proj_dirs
+	@$(scpt_build_subdir)
+endif
+
+test:
+ifdef proj_dirs
+	@$(scpt_build_subdir)
+endif
+endif
+
+.PHONY: clean-test
+clean-test:
+	@rm -f $(gl_dir_tests)/.*-tested
+
+# -----------------------------------------------------------------------------
+# Install all targets to the final Build directory.
+#
+.PHONY: base_install
+base_install:
+
+# -----------------------------------------------------------------------------
+# Clean target
+#
+.PHONY: clean
+clean:
+	@$(scpt_make_clean)
+	@rm -rf $(proj_clean)
+ifdef proj_dirs
+	@$(scpt_build_subdir)
+endif
+
+.PHONY: clobber
+clobber: clean $(proj_clobber)
+ifdef comm_clobber
+	@rm $(comm_clobber)
+endif
+	@$(topdir)/scripts/mk-scripts/clean-ws.sh
+
+# -----------------------------------------------------------------------------
+# Install all external dependencies
+#
+$(foss_pkg_target): $(mk_scripts)/Makefile.foss
+	@sudo apt-get install -y $(foss_pkgs) && mkdir -p $(gl_dir_build)
+	@git submodule update --init --recursive
+	@touch $@
+	@echo Building 3nd party software...
+	@(cd $(topdir)/foss && make)
+
+# -----------------------------------------------------------------------------
+# Include the Dependencies file if it has been generated.
+#
+ifneq ($(wildcard $(comm_dir_obj)/*.dep),)
+   include $(wildcard $(comm_dir_obj)/*.dep)
+endif
+
+# -----------------------------------------------------------------------------
+# Make all runtime targets
+#
+.PHONY: rule_all_os
+rule_all_os:
+	@$(scpt_make_all_oses)
+
+# -----------------------------------------------------------------------------
+# Make cscope database
+#
+.PHONY: cscope
+cscope:
+	@$(scpt_make_cscope)
+
+# -----------------------------------------------------------------------------
+# Update ctags database
+#
+.PHONY: ctags
+ctags:
+	@$(scpt_make_ctags)
+
+# -----------------------------------------------------------------------------
+# Debug target for Makefile
+#
+.PHONY: mk_debug
+mk_debug:
+	@echo proj_env = $(proj_env), proj_target = $(proj_target)
+	@echo $(os_target) CC: $(os_cc_flags)
+	@echo comm_dir_lib: $(comm_dir_lib) comm_libs: $(comm_libs)
+	@echo proj_json = $(comm_json2h)
+	@echo gl_cpp_flags = $(gl_cpp_flags)
+	@echo comm_srcdeps = $(comm_srcdeps)
+
+.SUFFIXES: .asm .lob

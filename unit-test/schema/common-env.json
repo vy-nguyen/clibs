@@ -1,0 +1,133 @@
+{
+    "testResource": {
+        "idName": "common-env-rs",
+        "cpu": [ {
+            "idName"    : "cpu-normal-rs",
+            "cpuCore"   : 8,
+            "minThread" : 4,
+            "maxThread" : 8
+        }, {
+            "idName"    : "cpu-small-rs",
+            "cpuCore"   : 6,
+            "minThread" : 4,
+            "maxThread" : 6
+        }, {
+            "idName"    : "cpu-stress-rs",
+            "cpuCore"   : 8,
+            "minThread" : 16,
+            "maxThread" : 32
+        } ]
+    },
+    "contentSpec": [ {
+        "idName"   : "full-content-spec",
+        "srcFile"  : "",
+        "dstFile"  : "",
+        "dataType" : "string | binary",
+        "dataSize" : "range-spec | 2K | 256 | 1G",
+        "dataSeed" : "not-yet",
+        "genOps"   : [ "random", "sequential", "fixed", "dup" ],
+        "percentageOps": [ 25, 25, 25, 25 ]
+    }, {
+        "idName"   : "name-64-spec",
+        "srcFile"  : "",
+        "dstFile"  : "",
+        "dataType" : "string",
+        "dataSize" : "64",
+        "dataSeed" : "not-yet",
+        "genOps"   : [ "random", "sequential", "random" ],
+        "percentageOps": [ 40, 40, 20 ]
+    }, {
+        "idName"   : "string-512-gen-spec",
+        "srcFile"  : "",
+        "dstFile"  : "",
+        "dataType" : "string",
+        "dataSize" : "size-up-512-spec",
+        "dataSeed" : "not-yet",
+        "genOps"   : [ "random", "sequential" ],
+        "percentageOps": [ 50, 50 ]
+    }, {
+        "idName"   : "string-1k-gen-spec",
+        "srcFile"  : "",
+        "dstFile"  : "",
+        "dataType" : "string",
+        "dataSize" : "size-up-1k-spec",
+        "dataSeed" : "not-yet",
+        "genOps"   : [ "random", "sequential" ],
+        "percentageOps": [ 50, 50 ]
+    }, {
+        "idName"   : "string-2k-gen-spec",
+        "srcFile"  : "",
+        "dstFile"  : "",
+        "dataType" : "string",
+        "dataSize" : "size-up-2k-spec",
+        "dataSeed" : "not-yet",
+        "genOps"   : [ "random", "sequential" ],
+        "percentageOps": [ 50, 50 ]
+    }, {
+        "idName"   : "string-4k-gen-spec",
+        "srcFile"  : "",
+        "dstFile"  : "",
+        "dataType" : "string",
+        "dataSize" : "size-up-4k-spec",
+        "dataSeed" : "not-yet",
+        "genOps"   : [ "random", "sequential" ],
+        "percentageOps": [ 50, 50 ]
+    } ],
+    "rangeSpec": [ {
+        "idName"   : "full-range-spec",
+        "minValue" : 0,
+        "maxValue" : 4096,
+        "genCount" : 0,
+        "genOps"   : [ "random", "sequential", "butterfly", "useMin", "useMax" ],
+        "percentageOps": [ 20, 20, 20, 20, 20 ]
+    }, {
+        "idName"   : "size-up-4k-spec",
+        "minValue" : 0,
+        "maxValue" : 4096,
+        "genCount" : 0,
+        "genOps"   : [ "random" ],
+        "percentageOps": [ 100 ]
+    }, {
+        "idName"   : "size-up-512-spec",
+        "minValue" : 5,
+        "maxValue" : 512,
+        "genCount" : 0,
+        "genOps"   : [ "random", "sequential" ],
+        "percentageOps": [ 50, 50 ]
+    }, {
+        "idName"   : "size-up-1k-spec",
+        "minValue" : 5,
+        "maxValue" : 1024,
+        "genCount" : 0,
+        "genOps"   : [ "random", "sequential" ],
+        "percentageOps": [ 50, 50 ]
+    }, {
+        "idName"   : "size-up-2k-spec",
+        "minValue" : 5,
+        "maxValue" : 2048,
+        "genCount" : 0,
+        "genOps"   : [ "random", "sequential" ],
+        "percentageOps": [ 50, 50 ]
+    }, {
+        "idName"   : "size-up-32k-spec",
+        "minValue" : 5,
+        "maxValue" : 32000,
+        "genCount" : 0,
+        "genOps"   : [ "random", "sequential", "useMax" ],
+        "percentageOps": [ 50, 40, 10 ]
+    }, {
+        "idName"   : "count-lt-20-spec",
+        "minValue" : 1,
+        "maxValue" : 20,
+        "genCount" : 0,
+        "genOps"   : [ "random" ],
+        "percentageOps": [ 100 ]
+    }, {
+        "idName"   : "rand-int64-spec",
+        "minValue" : 0,
+        "maxValue" : 99999999999999,
+        "genCount" : 0,
+        "genOps"   : [ "random" ],
+        "percentageOps": [ 100 ]
+    } ]
+}

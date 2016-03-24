@@ -1,0 +1,150 @@
+# Written by Vy Nguyen https://github.com/vy-nguyen/c-libraries
+# BSD License
+#
+# Makefile.comm
+# --------------
+
+# Setup build target directories
+#
+comm_dir_obj  := $(gl_dir_obj)
+comm_dir_bin  := $(gl_dir_bin)
+comm_dir_lib  := $(gl_dir_lib)
+comm_foss_dir_lib := $(gl_dir_foss_lib)
+
+ifeq ($(proj_env), user)
+    comm_exe_flags +=
+    comm_lda_flags += -static -r
+    comm_lso_flags += -shared
+
+    # Build a user exe
+    #
+    ifeq ($(proj_target), exe)
+        comm_cc_flags  +=
+        comm_ar_flags  +=
+        comm_cpp_flags +=
+        comm_asm_flags +=
+    endif
+
+    # Build a user lib
+    #
+    ifeq ($(proj_target), lib)
+        comm_cc_flags  +=
+        comm_ar_flags  +=
+        comm_cpp_flags +=
+        comm_asm_flags +=
+    endif
+
+    # Build a user tool
+    #
+    ifeq ($(proj_target), tool)
+        comm_cc_flags  +=
+        comm_ar_flags  +=
+        comm_cpp_flags +=
+        comm_asm_flags +=
+		comm_dir_bin   := $(gl_dir_tools)
+    endif
+
+    # Build a user test
+    #
+    ifeq ($(proj_target), test)
+        comm_cc_flags  +=
+        comm_ar_flags  +=
+        comm_cpp_flags +=
+        comm_asm_flags +=
+		comm_dir_bin   := $(gl_dir_tests)
+    endif
+endif
+
+# Add user include paths and dependent libs.
+#
+gl_cc_flags     += $(patsubst %,-I%,$(proj_incl))
+gl_cc_flags     += $(patsubst %,-I$(topdir)/include/foss/%,$(foss_incl))
+
+gl_cpp_incl     := $(patsubst %,-I%,$(proj_incl))
+gl_cpp_incl     += $(patsubst %,-I$(topdir)/include/foss/%,$(foss_incl))
+gl_cpp_flags    += $(gl_cpp_incl) -pthread
+
+gl_exe_flags    += $(patsubst %,-l%,$(proj_dep_libs))
+gl_exe_flags    += $(patsubst %,-l%,$(proj_foss_libs))
+gl_exe_flags    += $(patsubst %,-l%,$(proj_sys_libs))
+
+ifdef proj_dep_so
+gl_exe_flags    += -Wl,-Bdynamic $(patsubst %,-l%,$(proj_so_libs))
+endif
+
+ifdef proj_foss_so
+gl_exe_flags    += -Wl,-Bdynamic$(patsubst %,-l%,$(proj_so_libs))
+endif
+
+comm_ld_flags   += -L$(comm_dir_lib) -L$(comm_foss_dir_lib)
+comm_exe_flags  += $(comm_ld_flags)
+comm_lda_flags  += $(comm_ld_flags)
+comm_lso_flags  += $(comm_ld_flags)
+
+comm_lst2obj     = $(patsubst %$(1),$(comm_dir_obj)/%.o,$(filter %$(1), $(2)))
+comm_src2obj     = $(call comm_lst2obj,.asm,$(1))
+comm_src2obj    += $(call comm_lst2obj,.c,$(1))
+comm_src2obj    += $(call comm_lst2obj,.cc,$(1))
+comm_src2obj    += $(call comm_lst2obj,.cpp,$(1))
+
+comm_asm_objs   := $(call comm_lst2obj,.asm,$(proj_asm))
+comm_cc_objs    := $(call comm_lst2obj,.c,$(proj_cc))
+comm_cpp_objs   := $(call comm_lst2obj,.cpp,$(proj_cpp))
+comm_cpp_objs   += $(call comm_lst2obj,.cc,$(proj_cpp))
+
+comm_lst2dep     = $(patsubst %$(1),$(comm_dir_obj)/%.dep,$(filter %$(1), $(2)))
+comm_src2dep     = $(call comm_lst2dep,.c,$(1))
+comm_src2dep    += $(call comm_lst2dep,.cpp,$(1))
+comm_src2dep    += $(call comm_lst2dep,.asm,$(1))
+comm_srcdeps    := $(call comm_lst2dep,.c,$(proj_cc))
+comm_srcdeps    += $(call comm_lst2dep,.cpp,$(proj_cpp))
+comm_srcdeps    += $(call comm_lst2dep,.asm,$(proj_asm))
+
+comm_cc_flints  := $(call comm_lst2obj,.lob,$(proj_cc))
+comm_cpp_flints := $(call comm_lst2obj,.lob,$(proj_cpp))
+
+comm_clobber    := $(wildcard cscope.* tags TAGS)
+
+comm_test_tgt     = $(patsubst %,$(comm_dir_bin)/.%-tested,$(1))
+comm_test_run     = $(patsubst %,$(comm_dir_bin)/.%-run,$(1))
+comm_exe_tgt      = $(patsubst %,$(comm_dir_bin)/%,$(1))
+comm_mod_tgt      = $(patsubst %,$(comm_dir_mod)/%,$(1))
+comm_lib_tgt      = $(patsubst %,$(comm_dir_lib)/lib%.a,$(1))
+comm_so_tgt       = $(patsubst %,$(comm_dir_lib)/lib%.$(gl_so_ver).so,$(1))
+comm_foss_lib_tgt = $(patsubst %,$(comm_foss_dir_lib)/lib%.a,$(1))
+comm_json_tgt     = $(patsubst %.json,../include/%.h,$(proj_json))
+comm_proto_tgt    = $(patsubst %.proto,%.pb.h,$(proj_proto))
+
+ifdef proj_dep_libs
+comm_lib_dep    := $(patsubst %,$(comm_dir_lib)/lib%.a,$(proj_dep_libs))
+endif
+
+ifdef proj_dep_foss
+comm_lib_dep    += $(patsubst %,$(comm_foss_dir_lib)/lib%.a,$(proj_dep_foss))
+endif
+
+ifdef proj_exes
+gl_mkdir_obj    := true
+comm_exes       := $(call comm_exe_tgt,$(proj_exes))
+endif
+
+ifdef proj_tests
+comm_tests      := $(call comm_test_tgt,$(proj_tests))
+comm_test_force := $(call comm_test_run,$(proj_tests))
+endif
+
+ifdef proj_libs
+gl_mkdir_obj    := true
+comm_libs       := $(call comm_lib_tgt,$(proj_libs))
+endif
+
+ifdef proj_so_libs
+gl_mkdir_obj    := true
+comm_lib_sos    := $(call comm_so_tgt,$(proj_so_libs))
+endif
+
+ifdef proj_rpc
+# Work around the unused variable warning from rpcgen.
+#
+proj_cc_flags   += -Wno-unused-variable
+endif

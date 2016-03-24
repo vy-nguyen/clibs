@@ -1,0 +1,14 @@
+mk_scripts := $(M)$(topdir)/scripts/mk-scripts
+
+ifdef proj_grpc
+proj_foss_libs += \
+	grpc++_unsecure \
+	grpc_unsecure \
+	grpc++ \
+	grpc \
+	protobuf-3 \
+	gpr \
+	dl
+endif
+
+include $(mk_scripts)/Makefile.main

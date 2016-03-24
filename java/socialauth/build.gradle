@@ -1,0 +1,32 @@
+apply from: rootProject.file('common.gradle')
+
+apply plugin: 'java'
+
+ext {
+    implTitle  = "SocialAuth Library"
+    version    = "4.10"
+    groupId    = "org.brickred"
+    artifactId = "socialauth"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "javax.servlet:servlet-api:2.5"
+    compile "org.json:json:20090211"
+    compile "commons-logging:commons-logging:1.1"
+    compile "org.openid4java:openid4java-consumer:0.9.5"
+    compile "javax.inject:javax.inject:1"
+    compile "org.springframework:spring-context:${spring_version}"
+    compile "org.springframework:spring-webmvc:${spring_version}"
+}
+
+sourceSets {
+    main {
+        java {
+           srcDir rootProject.file('../foss/socialauth/socialauth/src')
+        }
+    }
+}

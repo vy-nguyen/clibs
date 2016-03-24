@@ -1,0 +1,114 @@
+syntax = "proto3";
+
+package crypto;
+
+/**
+ * Public key associated with a user-id and key-order.
+ */
+message UserPubKey
+{
+    uint64                   uuid        = 1;
+    uint64                   key_version = 2;
+    string                   pub_key     = 3;
+}
+
+message UserPrivKey
+{
+    UserPubKey               user        = 1;
+    string                   priv_key    = 2;
+}
+
+/**
+ * Request to encrypt a message from collection of public keys.
+ */
+message EnvelopeReqt
+{
+    string                  message   = 1;
+    repeated UserPubKey     keys      = 2;
+}
+
+message EnvelopeKey
+{
+    uint64                   uuid     = 1;
+    bytes                    env_key  = 2;
+}
+
+/**
+ * The response with encrypted message and symetric envelope keys for each public
+ * key to decrypt the message.
+ */
+message EnvelopeResp
+{
+    bytes                    encrypt  = 1;
+    bytes                    env_iv   = 2;
+    repeated EnvelopeKey     env_keys = 3;
+}
+
+message SignedMessage
+{
+    bytes                    message     = 1;
+    string                   cipher      = 2;
+    uint64                   uuid        = 3;
+    uint64                   key_version = 4;
+    bytes                    mesg_hash   = 5;
+    bytes                    signature   = 6;
+}
+
+/**
+ * Key server services
+ */
+message KeyReqt
+{
+    uint64                   uuid        = 1;
+    uint64                   key_ver_lo  = 2;
+    uint64                   key_ver_hi  = 3;
+}
+
+message PubKeyResp
+{
+    repeated UserPubKey      pub_keys    = 1;
+}
+
+message PubKeyVer
+{
+    uint64                   key_ver     = 1;
+    string                   pub_key     = 2;
+}
+
+message UserKeyRecord
+{
+    uint64                   uuid        = 1;
+    repeated PubKeyVer       key_info    = 2;
+}
+
+message AllUserRecReqt
+{
+    uint64                   uuid_start  = 1;
+    uint32                   uuid_count  = 2;
+}
+
+message AllUserRecords
+{
+    uint64                   uuid_start  = 1;
+    uint64                   uuid_end    = 2;
+    uint64                   uuid_total  = 3;
+    repeated UserKeyRecord   account     = 4;
+}
+
+message DbCommand
+{
+    string                   command     = 1;
+}
+
+service KeyService
+{
+    rpc db_command(DbCommand) returns(DbCommand) {}
+    rpc generate_key(KeyReqt) returns(PubKeyResp) {}
+    rpc query_pub_key(KeyReqt) returns(PubKeyResp) {}
+    rpc sign_mesg(SignedMessage) returns(SignedMessage) {}
+    rpc save_key_pair(UserPrivKey) returns(UserKeyRecord) {}
+    rpc list_public_keys(KeyReqt) returns(UserKeyRecord) {}
+
+    /* Test hook. */
+    rpc list_all_acct(AllUserRecReqt) returns(AllUserRecords) {}
+}

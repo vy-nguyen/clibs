@@ -1,0 +1,27 @@
+{
+    "import": [
+        "test-obj.json"
+    ],
+    "DHashObj": {
+        "insert_key32": [
+            "TestObj" 
+        ],
+        "insert_key64:" [
+            "TestObj"
+        ],
+        "insert_keystr": [
+            "TestObj"
+        ],
+        "insert_chain": [
+            "TestObjChain",
+            "ODlink"
+        ],
+        "remove_obj": [
+            "TestObj"
+        ],
+        "remove_chain": [
+            "TestObjChain",
+            "ODlink"
+        ]
+    }
+}

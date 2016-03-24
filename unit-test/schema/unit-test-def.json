@@ -1,0 +1,83 @@
+{
+    "${jsCleanup}": "void js_cleanup() override;\n",
+    "${checkSym}": "    bool js_check_symbols(const JsManager::ptr, const JsDecode &) override;\n",
+    "import": {
+        "json": [
+            "string"
+        ],
+        "inlineCode": "${jsCleanup}\n${checkSym}    static bool js_import_iter(JsBase::ptr, uint32_t, uint32_t, const char *val);\n\n    JsManager::ptr js_mgr;\n    const JsDecode *js_imp_decode;"
+    },
+    "testResource": {
+        "cpu": {
+            "cpuCore"  : 4,
+            "minThread": 2,
+            "maxThread": 16,
+            "inlineCode": "ThreadPool::ptr js_exe_pool;\n\n    ${jsCleanup}    ThreadPool::ptr get_exe_pool() {\n        return js_exe_pool;\n    }"
+        },
+        "memory": {
+            "memMin": "4M",
+            "memMax": "100M"
+        },
+        "network": {
+            "failRate": "50%",
+            "delayMs": 20
+        }
+    },
+    "objSpec": {
+        "idBegSeq": 0,
+        "idEndSeq": 1000,
+        "objIdFmt": "string",
+        "objType" : "string",
+        "objParent": "parent-id",
+        "objData" : [
+            {
+                "field"  : "string",
+                "arrayElm"   : 10,
+                "contentSpec": "gen-spec-id",
+                "rangeSpec": "range-id",
+                "inlineCode": "JsBase::ptr js_content;\n    JsBase::ptr js_range;\n\n  public:\n    const char *js_field_name;"
+            }
+        ]
+    },
+    "contentSpec": {
+        "srcFile" : "string",
+        "dstFile" : "string",
+        "dataType": "string | u32",
+        "dataSize": "256",
+        "dataSeed": "string",
+        "dataGen" : [ "random", "sequential", "fixed", "dup" ],
+        "percentageOps": [ 100 ],
+        "inlineCode": "${jsCleanup}    const char **js_ops;\n    uint32_t *js_pct_ops;\n    int js_ops_cnt;\n    int js_cur_op;\n    JsManager::ptr js_mgr;"
+    },
+    "rangeSpec": {
+        "minValue": 10,                                                               
+        "maxValue": 1000,                                                             
+        "genCount": 3000,                                                             
+        "genOps"  : [ "random", "sequential", "butterfly", "useMin", "useMax" ],      
+        "percentageOps": [ 20, 20, 20, 20, 20 ],
+        "inlineCode": "const char **js_ops;\n    uint32_t *js_pct_ops;\n    uint64_t js_gen_num;\n    uint64_t js_range_val;\n    int js_ops_cnt;\n    int js_cur_op;\n    JsManager::ptr js_mgr;\n\n    uint64_t js_gen_random();\n    uint64_t js_gen_sequential();\n    uint64_t js_gen_butterfy();\n    uint64_t js_gen_min();\n    uint64_t js_gen_max();\n    ${jsCleanup}    void js_gen_number(JsOutput::ptr out, int order, const char *fname, int idx = -1);"
+    },
+    "runSpec": {
+        "cpu"      : "normal",
+        "objRunBeg": "obj-id",
+        "objRunEnd": "obj-end",
+        "objRun"   : "objFmt",
+        "idBegSeq" : 0,
+        "idEndSeq" : 1000,
+        "inlineCode": "${jsCleanup}\n    JsBase::ptr js_cpu;\n    JsBase::ptr js_obj_beg;\n    JsBase::ptr js_obj_end;"
+    },
+    "compare": {
+        "sourceJson": {
+            "verb": "abc"
+        }
+    },
+    "execRun": {
+        "sequential": [
+            "string"
+        ],
+        "concurrent": [
+            "string"
+        ],
+        "inlineCode": "${jsCleanup}    static bool js_sequential_iter(JsBase::ptr, uint32_t, uint32_t, const char *);\n    static bool js_concurrent_iter(JsBase::ptr, uint32_t, uint32_t, const char *);\n    JsManager::ptr js_mgr;\n"
+    }
+}

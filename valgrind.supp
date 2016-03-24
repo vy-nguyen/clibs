@@ -1,0 +1,5 @@
+{
+    Ignore_libcrypto_cond
+    Memcheck:Cond 
+    obj:*/crypto
+}

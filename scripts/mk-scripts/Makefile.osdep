@@ -1,0 +1,42 @@
+# Written by Vy Nguyen https://github.com/vy-nguyen/c-libraries
+# BSD License
+#
+# Makefile.osdep
+# --------------
+#
+
+# OS dependent variables
+#
+mk_os   := $(shell uname -s | /usr/bin/tr "[:upper:]" "[:lower:]")
+mk_arch := $(shell uname -m)
+
+# Setup OS dependent compilation flags
+#
+ifeq ($(mk_arch), i686)
+	# 32-bit platform.
+endif
+
+ifeq ($(mk_arch), x86_64)
+	# 64-bit platform
+    os_cc_flags     += -fPIC
+endif
+
+ifeq ($(mk_os), linux)
+    include $(mk_scripts)/Makefile.linux
+endif
+
+ifeq ($(proj_env), kernel)
+    os_cc_flags     += -D__KERNEL__ -nostdinc $(os_krn_cc_flags)
+    os_cpp_flags    += $(os_krn_cpp_flags)
+    os_asm_flags    += $(os_krn_asm_flags)
+    os_ld_flags     += $(os_krn_ld_flags)
+    os_ar_flags     += $(os_krn_ar_flags)
+endif
+
+ifeq ($(proj_env), user)
+    os_cc_flags     += $(os_usr_cc_flags)
+    os_cpp_flags    += $(os_usr_cpp_flags)
+    os_asm_flags    += $(os_usr_asm_flags)
+    os_ld_flags     += $(os_usr_ld_flags)
+    os_ar_flags     += $(os_usr_ar_flags)
+endif

@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package kdb;
+
+message Account
+{
+    uint64         uuid                = 1;
+    string         first_name          = 2;
+    string         last_name           = 3;
+    string         token               = 4;
+}

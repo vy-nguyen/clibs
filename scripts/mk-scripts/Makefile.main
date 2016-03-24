@@ -1,0 +1,55 @@
+# Written by Vy Nguyen https://github.com/vy-nguyen/c-libraries
+# BSD License
+#
+# Makefile.main
+# -------------
+#
+# Error checkings
+#
+ifeq ($(proj_env), kernel)
+ifneq ($(proj_target), module)
+ifneq ($(proj_target), lib)
+	$(error "Value proj_target must be module or lib when proj_env = kernel")
+endif
+endif
+endif
+
+ifeq ($(proj_env), user)
+ifeq ($(proj_target), module)
+$(error "Value proj_target = module requires proj_env = kernel")
+endif
+endif
+
+include $(mk_scripts)/Makefile.toolchain
+include $(mk_scripts)/Makefile.osdep
+
+# Location variables
+#
+gl_dir_build_base   := $(topdir)/Build
+gl_dir_build        := $(gl_dir_build_base).$(os_target)
+gl_dir_obj          := Build.$(os_target)
+gl_dir_lib          := $(gl_dir_build)/lib
+gl_dir_bin          := $(gl_dir_build)/bin
+gl_dir_kmod         := $(gl_dir_build)/modules
+gl_dir_tools        := $(gl_dir_build)/tools
+gl_dir_tests        := $(gl_dir_build)/tests
+gl_dir_package      := $(gl_dir_build)/package
+gl_dir_pkg_scripts  := $(gl_dir_build)/install-scripts
+
+gl_dir_foss_lib     := $(gl_dir_build)/foss-lib
+gl_dir_foss_bin     := $(gl_dir_build)/foss-bin
+gl_dir_foss_kmod    := $(gl_dir_build)/foss-modules
+
+# Common system libraries
+#
+proj_sys_libs      += pthread
+
+protoc := $(gl_dir_foss_bin)/protoc
+
+include $(mk_scripts)/Makefile.foss
+include $(mk_scripts)/Makefile.comm
+include $(mk_scripts)/Makefile.rule
+
+ifeq ($(proj_target), module)
+include $(mk_scripts)/Makefile.$(decl_os).kmod
+endif

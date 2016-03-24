@@ -1,0 +1,20 @@
+# Written by Vy Nguyen https://github.com/vy-nguyen/c-libraries
+# BSD License
+#
+# Makefile.linux
+# --------------
+#
+ifdef CLANG
+os_target        := clang
+ifdef RELEASE
+	os_target    := release
+endif
+else
+os_target        := linux
+endif
+
+os_usr_cc_flags  := -D__LINUX__
+os_usr_cpp_flags := $(os_usr_cc_flags)
+os_usr_ld_flags  :=
+os_usr_as_flags  :=
+os_usr_ar_flags  :=

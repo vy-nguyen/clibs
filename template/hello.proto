@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package chat;
+
+service Talker
+{
+    rpc say_hello(HelloRequest) returns(HelloResponse) {}
+    rpc say_bye(ByeRequest) returns(ByeResponse) {}
+    rpc chat(stream ChatMesg) returns(stream ChatMesg) {}
+}
+
+message HelloRequest
+{
+    string name = 1;
+    string text = 2;
+}
+
+message HelloResponse
+{
+    string ack = 1;
+    int32  acc_code = 2;
+}
+
+message ChatMesg
+{
+    int32 opcode = 1;
+    string content = 2;
+}
+
+message ByeRequest
+{
+    int32 exit_code = 1;
+    string message = 2;
+}
+
+message ByeResponse
+{
+    string ack = 1;
+}

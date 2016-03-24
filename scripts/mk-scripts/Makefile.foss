@@ -1,0 +1,31 @@
+# Written by Vy Nguyen https://github.com/vy-nguyen/c-libraries
+# BSD License
+#
+# Makefile.foss
+# -------------
+#
+# List of external packages that we need to install.
+#
+foss_pkgs   := \
+	texinfo \
+	doxygen \
+	autoconf \
+	libtool \
+	libev-dev \
+	libboost-all-dev \
+	libpcre3-dev \
+	bison \
+	flex \
+	ragel \
+	mutrace \
+	valgrind \
+	python-dev \
+	libdb++-dev \
+	libdb-dev \
+	libevent-dev \
+	libssl-dev
+
+foss_incl       := \
+	janson 
+
+foss_pkg_target := $(gl_dir_build)/.dep-packages

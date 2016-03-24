@@ -1,0 +1,157 @@
+[ {
+    "coverImg": [
+        "/rs/img/demo/s2.jpg",
+        "/rs/img/demo/s1.jpg",
+        "/rs/img/demo/s3.jpg"
+    ],
+    "userUuid" : "123450",
+    "aboutList": [ {
+        "topicIcon": "fa fa-book margin-r-5",
+        "topicText": "Education",
+        "topicList": [ {
+            "icon": "text-muted",
+            "tag" : "University",
+            "text": "U.C. Bac Lieu"
+        }, {
+            "icon": "text-muted",
+            "tag" : "High School",
+            "text": "Ngo Quyen"
+        } ]
+    }, {
+        "topicIcon": "fa fa-map-marker margin-r-5",
+        "topicText": "Location",
+        "topicList": [ {
+            "icon": "text-muted",
+            "tag" : "Hometown",
+            "text": "Saigon, Vietnam"
+        }, {
+            "icon": "text-muted",
+            "tag" : "Resident",
+            "text": "Moontown, Moon"
+        } ]
+    }, {
+        "topicIcon": "fa fa-pencil margin-r-5",
+        "topicText": "Favorite Articles",
+        "topicList": [ {
+            "icon": "label label-danger",
+            "tag" : "Education",
+            "text": "Quoc Van Giao Khoa Thu"
+        }, {
+            "icon": "label label-success",
+            "tag" : "History",
+            "text": "Viet Nam Su Luoc, Tran Trong Kim"
+        }, {
+            "icon": "label label-success",
+            "tag" : "Politics",
+            "text": "Hien Phap VNCH"
+        }, {
+            "icon": "label label-danger",
+            "tag" : "Economics",
+            "text": "Wealth of nations"
+        }, {
+            "icon": "label label-info",
+            "tag" : "Startup",
+            "text": "How to eat your own dog food"
+        }, {
+            "icon": "label label-primary",
+            "tag" : "Vietnam War",
+            "text": "Tu Binh va Hoa Binh"
+        } ]
+    } ]
+}, {
+    "coverImg": [
+        "/rs/img/demo/s3.jpg",
+        "/rs/img/demo/s2.jpg",
+        "/rs/img/demo/s1.jpg"
+    ],
+    "userUuid" : "123451",
+    "aboutList": [ {
+        "topicIcon": "fa fa-book margin-r-5",
+        "topicText": "Hobby",
+        "topicList": [ {
+            "icon": "text-muted",
+            "tag" : "Spend money",
+            "text": "Travel, shopping"
+        }, {
+            "icon": "text-muted",
+            "tag" : "Sports",
+            "text": "Football, Basketball"
+        } ]
+    }, {
+        "topicIcon": "fa fa-pencil margin-r-5",
+        "topicText": "Favorite Articles",
+        "topicList": [ {
+            "icon": "label label-danger",
+            "tag" : "Education",
+            "text": "How to sleep in College"
+        }, {
+            "icon": "label label-success",
+            "tag" : "History",
+            "text": "Trinh Nguyen phan tranh"
+        }, {
+            "icon": "label label-success",
+            "tag" : "Politics",
+            "text": "Fan of Dr Tran"
+        }, {
+            "icon": "label label-danger",
+            "tag" : "Stock Market",
+            "text": "How to lost money to Wall Street"
+        }, {
+            "icon": "label label-info",
+            "tag" : "Entertainment",
+            "text": "Karaoke"
+        }, {
+            "icon": "label label-primary",
+            "tag" : "Literature",
+            "text": "Luc Van Tien"
+        } ]
+    } ]
+}, {
+    "coverImg": [
+        "/rs/img/demo/s1.jpg",
+        "/rs/img/demo/s3.jpg",
+        "/rs/img/demo/s2.jpg"
+    ],
+    "userUuid" : "123452",
+    "aboutList": [ {
+        "topicIcon": "fa fa-book margin-r-5",
+        "topicText": "Work Experience",
+        "topicList": [ {
+            "icon": "text-muted",
+            "tag" : "Data Domain",
+            "text": "Principle Engineer"
+        }, {
+            "icon": "text-muted",
+            "tag" : "3PARData",
+            "text": "Senior Software Engineer"
+        } ]
+    }, {
+        "topicIcon": "fa fa-pencil margin-r-5",
+        "topicText": "Favorite Articles",
+        "topicList": [ {
+            "icon": "label label-danger",
+            "tag" : "Tom",
+            "text": "How to make money tradding stocks"
+        }, {
+            "icon": "label label-success",
+            "tag" : "Finance",
+            "text": "How to buy IPO shares"
+        }, {
+            "icon": "label label-success",
+            "tag" : "Politics",
+            "text": "Fan of Dr Tran"
+        }, {
+            "icon": "label label-danger",
+            "tag" : "History",
+            "text": "Vietnam War, Nguyen Cong Luan"
+        }, {
+            "icon": "label label-info",
+            "tag" : "Entertainment",
+            "text": "Karaoke"
+        }, {
+            "icon": "label label-primary",
+            "tag" : "Literature",
+            "text": "Luc Van Tien"
+        } ]
+    } ]
+} ]

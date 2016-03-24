@@ -1,0 +1,101 @@
+{
+    "#": "Variables have global scope, simple text substitution",
+    "${foo}": "foo bar",
+    "${bar}": "this is bar",
+    "${schema}": "${basedir}/../schema",
+    "import": {
+        "${a}": "abc def",
+        "${b}": 123,
+        "${c}": true,
+        "json": [
+            "${schema}/common-env.json"
+        ]
+    },
+    "testElm": [ {
+        "#": "The framework generate instances based on this specification.",
+        "idName" : "uuid-name-def",
+        "uuid"   : 0,
+        "version": 0,
+        "name"   : "string"
+    }, {
+        "idName" : "io-offset-def",
+        "block"  : 0,
+        "offset" : 0,
+        "size"   : 0,
+        "data"   : "string"
+    } ],
+    "testDriver": [ {
+        "#": "Test driver binds json test to user-defined TestCase",
+        "idName" : "uuid-name-test"
+    }, {
+        "idName" : "io-offset-test"
+    } ],
+    "objSpec": [ {
+        "#": "Specifies how to generate instances based on testElm",
+        "idName"   : "uuid-name-gen",
+        "idBegSeq" : 0,
+        "idEndSeq" : 1000,
+        "objIdFmt" : "uuid-name",
+        "objType"  : "uuid-name-def",
+        "objParent": "uuid-name-test",
+        "objData" : [ {
+            "field"     : "uuid",
+            "rangeSpec" : "rand-int64-spec"
+        }, {
+            "field"     : "version",
+            "rangeSpec" : "count-lt-20-spec"
+        }, {
+            "field"      : "name",
+            "contentSpec": "string-4k-gen-spec"
+        } ]
+    }, {
+        "idName"   : "io-offset-gen",
+        "idBegSeq" : 0,
+        "idEndSeq" : 1000,
+        "objIdFmt" : "io-offset",
+        "objType"  : "io-offset-def",
+        "objParent": "io-offset-test",
+        "objData" : [ {
+            "field"     : "block",
+            "rangeSpec" : "rand-int64-spec"
+        }, {
+            "field"     : "offset",
+            "rangeSpec" : "count-lt-20-spec"
+        }, {
+            "field"     : "size",
+            "rangeSpec" : "count-lt-20-spec"
+        }, {
+            "field"      : "data",
+            "contentSpec": "string-4k-gen-spec"
+        } ]
+    } ],
+    "runSpec": [ {
+        "idName"   : "uuid-name-run",
+        "cpu"      : "cpu-normal-rs",
+        "objRunBeg": "uuid-name-test",
+        "objRunEnd": "uuid-name-test",
+        "objRun"   : "uuid-name",
+        "idBegSeq" : 1,
+        "idEndSeq" : 1000
+    }, {
+        "idName"   : "io-offset-run",
+        "cpu"      : "cpu-normal-rs",
+        "objRunBeg": "io-offset-test",
+        "objRunEnd": "io-offset-test",
+        "objRun"   : "io-offset",
+        "idBegSeq" : 1,
+        "idEndSeq" : 1000
+    } ],
+    "execRun": [ {
+        "idName"    : "main",
+        "sequential": [
+            "uuid-name-gen",
+            "io-offset-gen",
+            "#uuid-name-run",
+            "#io-offset-run"
+        ],
+        "concurrent": [
+            "string"
+        ]
+    } ]
+}

@@ -1,0 +1,127 @@
+{
+    "${objCount}": 1000000,
+    "${cpuLoad}" : "cpu-small-rs",
+    "import": {
+        "json": [
+            "${basedir}/../schema/common-env.json"
+        ]
+    },
+    "testElm": [ {
+        "idName"  : "uuid-def",
+        "uuid"    : 1,
+        "name"    : "string"
+    }, {
+        "idName"  : "name-def",
+        "name"    : "string",
+        "pubkey"  : "string"
+    }, {
+        "idName"  : "name-rec-def",
+        "name"    : "string",
+        "message" : "string"
+    } ],
+    "testDriver": [ {
+        "idName": "db-put-test"
+    }, {
+        "idName": "db-get-test"
+    }, {
+        "idName": "db-erase-test"
+    }, {
+        "idName": "db-iter-test"
+    }, {
+        "idName": "db-batch-test"
+    } ],
+    "objSpec": [ {
+        "idName"   : "uuid-gen",
+        "idBegSeq" : 0,
+        "idEndSeq" : "${objCount}",
+        "objIdFmt" : "uuid",
+        "objType"  : "uuid-def",
+        "objParent": "db-put-test",
+        "objData" : [ {
+            "field"      : "name",
+            "contentSpec": "name-64-spec"
+        }, {
+            "field"      : "uuid",
+            "rangeSpec"  : "rand-int64-spec"
+        } ]
+    }, {
+        "idName"   : "name-gen",
+        "idBegSeq" : 0,
+        "idEndSeq" : "${objCount}",
+        "objIdFmt" : "name",
+        "objType"  : "name-def",
+        "objParent": "db-get-test",
+        "objData"  : [ {
+            "field"      : "pubkey",
+            "contentSpec": "string-512-gen-spec"
+        } ]
+    }, {
+        "idName"   : "name-rec-gen",
+        "idBegSeq" : 0,
+        "idEndSeq" : "${objCount}",
+        "objIdFmt" : "name-rec",
+        "objType"  : "name-rec-def",
+        "objParent": "db-erase-test",
+        "objData"  : [ {
+            "field"      : "message",
+            "contentSpec": "string-1k-gen-spec"
+        } ]
+    } ],
+    "runSpec": [ {
+        "idName"   : "db-put-run",
+        "cpu"      : "${cpuLoad}",
+        "objRunBeg": "db-put-test",
+        "objRunEnd": "db-put-test",
+        "objRun"   : "uuid",
+        "idBegSeq" : 0,
+        "idEndSeq" : "${objCount}"
+    }, {
+        "idName"   : "db-get-run",
+        "cpu"      : "${cpuLoad}",
+        "objRunBeg": "db-get-test",
+        "objRunEnd": "db-get-test",
+        "objRun"   : "name",
+        "idBegSeq" : 0,
+        "idEndSeq" : "${objCount}"
+    }, {
+        "idName"   : "db-erase-run",
+        "cpu"      : "${cpuLoad}",
+        "objRunBeg": "db-erase-test",
+        "objRunEnd": "db-erase-test",
+        "objRun"   : "name-rec",
+        "idBegSeq" : 0,
+        "idEndSeq" : "${objCount}"
+    }, {
+        "idName"   : "db-iter-run",
+        "cpu"      : "${cpuLoad}",
+        "objRunBeg": "db-iter-test",
+        "objRunEnd": "db-iter-test",
+        "objRun"   : "name-rec",
+        "idBegSeq" : 0,
+        "idEndSeq" : "${objCount}"
+    }, {
+        "idName"   : "db-batch-run",
+        "cpu"      : "${cpuLoad}",
+        "objRunBeg": "db-batch-test",
+        "objRunEnd": "db-batch-test",
+        "objRun"   : "name",
+        "idBegSeq" : 0,
+        "idEndSeq" : "${objCount}"
+    }, {
+        "idName"   : "db-uuid-erase",
+        "cpu"      : "${cpuLoad}",
+        "objRunBeg": "db-uuid-test",
+        "objRunEnd": "db-uuid-test",
+        "objRun"   : "uuid",
+        "idBegSeq" : 0,
+        "idEndSeq" : "${objCount}"
+    } ],
+    "execRun": [ {
+        "idName"    : "main",
+        "sequential": [
+            "uuid-gen",
+            "name-gen",
+            "name-rec-gen"
+        ]
+    } ]
+}

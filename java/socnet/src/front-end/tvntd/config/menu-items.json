@@ -1,0 +1,115 @@
+{
+    "items": [
+    {
+        "title": "Home",
+        "icon" : "fa fa-lg fa-fw fa-home",
+        "route": "/"
+    }, {
+        "title": "Login/Register",
+        "icon" : "fa fa-lg fa-fw fa-user",
+        "items": [
+        {
+            "icon" : "fa fa-home",
+            "route": "/login",
+            "title": "Login"
+        }, {
+            "icon" : "fa fa-group",
+            "route": "/register",
+            "title": "Register"
+        }, {
+            "icon" : "fa fa-money",
+            "route": "/recover",
+            "title": "Recover your account"
+        } ]
+    }, {
+        "title": "Pubic Articles",
+        "icon" : "fa fa-lg fa-fw fa-book",
+        "items": [
+        {
+            "icon" : "fa fa-gear",
+            "title": "About Us",
+            "route": "public/aboutus",
+            "badge": {
+                "label": "2",
+                "class": "badge pull-right"
+            }
+        }, {
+            "icon" : "fa fa-money",
+            "title": "Finance",
+            "route": "articles/finances",
+            "badge": {
+                "label": "4",
+                "class": "badge pull-right"
+            }
+        }, {
+            "icon" : "fa fa-gear",
+            "title": "Economics",
+            "route": "articles/economics",
+            "badge": {
+                "label": "12",
+                "class": "badge pull-right"
+            }
+        }, {
+            "icon" : "fa fa-gear",
+            "title": "Politics",
+            "route": "articles/politics",
+            "badge": {
+                "label": "10",
+                "class": "badge pull-right"
+            }
+        }, {
+            "icon" : "fa fa-gear",
+            "title": "Forum",
+            "route": "articles/forum"
+        } ]
+    }, {
+        "title": "Community Funding",
+        "icon" : "fa fa-lg fa-fw fa-money",
+        "items": [
+        ]
+    }, {
+        "title": "Account Balances",
+        "icon" : "fa fa-lg fa-fw fa-money",
+        "items": [
+        ]
+    }, {
+        "title": "Project Proposal",
+        "icon" : "fa fa-lg fa-fw fa-inbox",
+        "items": [
+        ]
+    }, {
+        "title": "Public Transactions",
+        "icon" : "fa fa-lg fa-fw fa-money",
+        "items": [
+        ]
+    }, {
+        "title": "E-Store",
+        "icon" : "fa fa-lg fa-fw fa-shopping-cart",
+        "items": [
+        {
+            "title": "Product View",
+            "icon" : "fa fa-tag",
+            "route": "/estore/product-view"
+        }, {
+            "title": "Product Detail",
+            "icon" : "fa fa-tag",
+            "route": "/estore/product-detail"
+        } ]
+    }, {
+        "title": "Blogs",
+        "icon" : "fa fa-lg fa-fw fa-book",
+        "route": "/blog"
+    }, {
+        "title": "Timeline",
+        "icon" : "fa fa-lg fa-fw fa-sort",
+        "route": "/timeline"
+    }, {
+        "title": "Social Wall",
+        "icon" : "fa fa-lg fa-fw fa-thumbs-o-up",
+        "route": "/social"
+    }, {
+        "title": "About Us",
+        "icon" : "fa fa-lg fa-fw fa-inbox",
+        "route": "public/aboutus"
+    } ]
+}

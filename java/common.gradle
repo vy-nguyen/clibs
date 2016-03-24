@@ -1,0 +1,100 @@
+apply plugin: 'maven'
+
+repositories {
+    mavenLocal()
+    jcenter()
+}
+  
+configurations {
+}
+
+afterEvaluate {
+
+    dependencies {
+    }
+
+    task sourcesJar(type: Jar, dependsOn: classes, description: 'Creates sources jar') {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    task javadocJar(type: Jar, description: 'Creates javadoc jar') {
+        dependsOn javadoc
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
+    artifacts {
+        archives sourcesJar
+    }
+
+    // lib projects should be always installed into "$HOME/.m2"
+    project.tasks.build.finalizedBy project.tasks.install
+
+    ext {
+        sharedManifest = manifest {
+            attributes 'Implementation-Title'  : implTitle,
+                       'Implementation-Version': version,
+                       'Specification-Title'   : implTitle,
+                       'Specification-Version' : version
+        }
+        if (project.hasProperty("mainClass")) {
+            mainManifest = manifest {
+                from project.sharedManifest
+                attributes 'Main-Class': mainClass
+            }
+        }
+    }
+
+    jar {
+        from sourceSets.main.output
+        archiveName = "${baseName}_${version}.${extension}"
+        manifest = project.manifest {
+            from project.sharedManifest
+        }
+    }
+
+    task apiJar(type: Jar) {
+        if (sourceSets.hasProperty('api')) {
+            from(sourceSets.api.output)
+            baseName += "-interfaces"
+            archiveName = "${baseName}_${version}.${extension}"
+            manifest = project.manifest {
+                from sharedManifest
+            }
+        }
+    }
+
+    task generatedJar(type: Jar) {
+        if (sourceSets.hasProperty('generated')) {
+            from(sourceSets.generated.output)
+            baseName += "-schema"
+            archiveName = "${baseName}_${version}.${extension}"
+            manifest = project.manifest {
+                from sharedManifest
+            }
+        }
+    }
+
+    task testsJar(type:Jar, dependsOn: testClasses) {
+        if (sourceSets.hasProperty('test')) {
+            from sourceSets.test.output
+            baseName += "-tests"
+            archiveName = "${baseName}_${version}.${extension}"
+        }
+    }
+
+    task oneJar(type: Jar, dependsOn: jar) {
+        if (project.hasProperty("mainManifest") == false) {
+            return
+        }
+        from sourceSets.main.output
+        from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+        baseName += "-all"
+        archiveName = "${baseName}_${project.specVersion}.${extension}"
+        manifest = project.manifest {
+            from project.mainManifest
+        }
+    }
+
+} // afterEvaluate

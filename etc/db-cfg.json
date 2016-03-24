@@ -1,0 +1,23 @@
+{
+    "log-config": {
+        "log-dir"      : "/tmp/logs",
+        "log-level"    : "debug"
+    },
+    "test-db": {
+        "db-dir"       : "/data/testdb",
+        "db-in-mem"    : false,
+        "db-wipe"      : true,
+        "db-create"    : true,
+        "db-cache-size": 1024000000
+    },
+    "key-db-config": {
+        "db-dir"       : "/data/keydb",
+        "db-in-mem"    : false,
+        "db-wipe"      : false,
+        "db-create"    : true,
+        "db-cache-size": 102400000
+    },
+    "key-server": {
+        "listen-port"  : 5151
+    }
+}

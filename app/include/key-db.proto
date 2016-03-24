@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package kdb;
+
+/**
+ * Enums for prefix.
+ */
+enum DbPrefix
+{
+    UNKNOWN              = 0;
+    USER_UUID            = 0x75756964;
+    USER_KEY             = 0x74746864;
+}
+
+message UuidKey
+{
+    uint32           prefix      = 1;
+    uint64           uuid        = 2;
+}
+
+message UuidKeyVers
+{
+    repeated uint64 key_vers     = 1;
+}
+
+/**
+ * Key uuid.
+ */
+message UserKey
+{
+    uint32           prefix      = 1;
+    uint64           uuid        = 2;
+    uint64           key_version = 3;
+}

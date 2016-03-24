@@ -1,0 +1,47 @@
+[ {
+    "userUuid": "123450",
+    "userName": "Vy Nguyen",
+    "userRole": "self",
+    "userUrl" : "/user/vy.nguyen",
+    "userImgUrl": "https://scontent.fsnc1-1.fna.fbcdn.net/hprofile-xpa1/v/t1.0-1/c22.0.111.111/p111x111/150761_10200962648215006_1275337373_n.jpg?oh=109db189ad9ba55610d3e0e5b0344c2b&oe=576E6116", 
+    "firstName" : "Vy",
+    "lastName"  : "Nguyen",
+    "creditEarned": "100",
+    "moneyEarned" : "200",
+    "creditIssued": "200",
+    "moneyIssued" : "200",
+    "followers"   : "240",
+    "connections" : "403",
+    "follows"     : "100"
+}, {
+    "userUuid": "123451",
+    "userName": "Nam Vo",
+    "userRole": "friend",
+    "userUrl" : "/user/nam.vo",
+    "userImgUrl": "/rs/img/avatars/nam.jpg",
+    "firstName" : "Nam",
+    "lastName"  : "Vo",
+    "creditEarned": "100",
+    "moneyEarned" : "200",
+    "creditIssued": "200",
+    "moneyIssued" : "200",
+    "followers"   : "2400",
+    "connections" : "4003",
+    "follows"     : "1040"
+}, {
+    "userUuid": "123452",
+    "userName": "TomNguyen",
+    "userRole": "author",
+    "userUrl" : "/user/tom.nguyen",
+    "userImgUrl": "/rs/img/avatars/1.png",
+    "firstName" : "Tom",
+    "lastName"  : "Nguyen",
+    "creditEarned": "100",
+    "moneyEarned" : "200",
+    "creditIssued": "5000",
+    "moneyIssued" : "5000",
+    "followers"   : "2440",
+    "connections" : "4503",
+    "follows"     : "1900"
+} ]
+

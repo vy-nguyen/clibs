@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package bit;
+
+message Blob
+{
+    int32  byte = 1;
+    string blob = 2;
+}

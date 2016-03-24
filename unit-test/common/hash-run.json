@@ -1,0 +1,123 @@
+{
+    "${elemCount}": 1000,
+    "import": {
+        "json": [
+            "${basedir}/../schema/common-env.json"
+        ]
+    },
+    "testElm": [ {
+        "idName": "hash-elm-def",
+        "name"  : "string",
+        "age"   : 12
+    }, {
+        "idName": "lru-elm-def",
+        "name"  : "string",
+        "uuid"  : 12
+    } ],
+    "testDriver": [ {
+        "idName": "hash-op-test",
+        "compare": [ {
+            "idName": "hash-add-cmp",
+            "verb"  : "add",
+            "sourceJson": {
+                "count": 1000
+            }
+        }, {
+            "idName": "hash-rm-cmp",
+            "verb"  : "rm",
+            "sourceJson": {
+                "count": 1000
+            }
+        } ]
+    }, {
+        "idName": "lru-insert-test"
+    }, {
+        "idName": "lru-lookup-test"
+    }, {
+        "idName": "hash-iter-test"
+    } ],
+    "objSpec": [ {
+        "idName"   : "hash-op-gen",
+        "idBegSeq" : 0,
+        "idEndSeq" : 1000,
+        "objIdFmt" : "hash-elm",
+        "objType"  : "hash-elm-def",
+        "objParent": "hash-op-test",
+        "objData"  : [ {
+            "field"      : "name",
+            "contentSpec": "name-64-spec"
+        }, {
+            "field"      : "age",
+            "rangeSpec"  : "rand-int64-spec"
+        } ]
+    }, {
+        "idName"   : "hash-iter-gen",
+        "idBegSeq" : 5000,
+        "idEndSeq" : 6000,
+        "objIdFmt" : "hash-elm",
+        "objType"  : "hash-elm-def",
+        "objParent": "hash-iter-test",
+        "objData"  : [ {
+            "field"      : "name",
+            "contentSpec": "name-64-spec"
+        }, {
+            "field"      : "age",
+            "rangeSpec"  : "count-lt-20-spec"
+        } ]
+    }, {
+        "idName"   : "lru-elm-gen",
+        "idBegSeq" : 0,
+        "idEndSeq" : "${elemCount}",
+        "objIdFmt" : "lru-elm",
+        "objType"  : "lru-elm-def",
+        "objParent": "lru-insert-test",
+        "objData"  : [ {
+            "field"      : "uuid",
+            "rangeSpec"  : "rand-int64-spec"
+        } ]
+    } ],
+    "runSpec": [ {
+        "idName"   : "1-run",
+        "cpu"      : "cpu-normal-rs",
+        "objRunBeg": "hash-op-test",
+        "objRunEnd": "hash-op-test",
+        "objRun"   : "hash-elm",
+        "idBegSeq" : 0,
+        "idEndSeq" : "${elemCount}"
+    }, {
+        "idName"   : "2-run",
+        "cpu"      : "cpu-normal-rs",
+        "objRunBeg": "hash-iter-test",
+        "objRunEnd": "hash-iter-test",
+        "objRun"   : "hash-elm",
+        "idBegSeq" : 0,
+        "idEndSeq" : "${elemCount}"
+    }, {
+        "idName"   : "lru-insert-run",
+        "cpu"      : "cpu-normal-rs",
+        "objRunBeg": "lru-insert-test",
+        "objRunEnd": "lru-insert-test",
+        "objRun"   : "lru-elm",
+        "idBegSeq" : 0,
+        "idEndSeq" : "${elemCount}"
+    }, {
+        "idName"   : "lru-lookup-run",
+        "cpu"      : "cpu-normal-rs",
+        "objRunBeg": "lru-lookup-test",
+        "objRunEnd": "lru-lookup-test",
+        "objRun"   : "lru-elm",
+        "idBegSeq" : 0,
+        "idEndSeq" : "${elemCount}"
+    } ],
+    "execRun": [ {
+        "idName"    : "main",
+        "sequential": [
+            "hash-op-gen",
+            "hash-iter-gen",
+            "lru-elm-gen",
+            "1-run:add",
+            "1-run:rm",
+            "2-run"
+        ]
+    } ]
+}

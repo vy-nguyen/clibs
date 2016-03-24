@@ -1,0 +1,58 @@
+*~
+*.pb.h
+*.pb.cc
+
+# Object files
+*.o
+*.ko
+*.lo
+*.la
+*.pc
+*.obj
+*.elf
+
+# Precompiled Headers
+*.gch
+*.pch
+*.pyc
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+*-def.h
+.gradle
+cscope.*
+tags
+Build.*
+build
+logs/
+java/socnet/foss
+java/socnet/bin
+java/socnet/node_modules
+java/socnet/bower_components
+java/socnet/src/main/webapp/client
+java/socnet/.classpath
+java/socnet/.settings/*
+java/socnet/tvntd-*.log
+foss/**
+include/foss/*
+*/include/*-def.cpp
+app/java/*/build
+app/java/.gradle

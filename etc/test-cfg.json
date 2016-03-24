@@ -1,0 +1,6 @@
+{
+    "log-config": {
+        "log-dir"      : "/tmp/logs",
+        "log-level"    : "debug"
+    }
+}

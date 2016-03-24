@@ -1,0 +1,63 @@
+{
+    "${elemCount}": 1000,
+    "import": {
+        "json": [
+            "${basedir}/../schema/common-env.json"
+        ]
+    },
+    "testElm": {
+        "idName" : "pg-type-def",
+        "size"   : 10,
+        "opCount": 10
+    },
+    "testDriver": [ {
+        "idName": "pg-type-test",
+        "compare": [ {
+            "idName": "pg-type-lock-cmp",
+            "verb"  : "lock",
+            "sourceJson": {
+                "count": "${elemCount}"
+            }
+        }, {
+            "idName": "pg-type-unlock-cmp",
+            "verb"  : "unlock",
+            "sourceJson": {
+                "count": "${elemCount}"
+            }
+        } ]
+    } ],
+    "objSpec": [ {
+        "idName"   : "pg-type-gen",
+        "idBegSeq" : 0,
+        "idEndSeq" : "${elemCount}",
+        "objIdFmt" : "pg-type",
+        "objType"  : "pg-type-def",
+        "objParent": "pg-type-test",
+        "objData"  : [ {
+            "field"      : "size",
+            "rangeSpec"  : "size-up-32k-spec"
+        }, {
+            "field"      : "opCount",
+            "rangeSpec"  : "size-up-2k-spec"
+        } ]
+    }
+    ],
+    "runSpec": [ {
+        "idName"   : "1-run",
+        "cpu"      : "cpu-normal-rs",
+        "objRunBeg": "pg-type-test",
+        "objRunEnd": "pg-type-test",
+        "objRun"   : "pg-type",
+        "idBegSeq" : 0,
+        "idEndSeq" : "${elemCount}"
+    } ],
+    "execRun": [ {
+        "idName"    : "main",
+        "sequential": [
+            "pg-type-gen",
+            "1-run",
+            "1-run:lock",
+            "1-run:unlock"
+        ]
+    } ]
+}

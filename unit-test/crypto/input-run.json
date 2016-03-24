@@ -1,0 +1,205 @@
+{
+    "${keyTestCnt}": 50,
+    "${cryptoTestCnt}": 1000,
+
+    "import": {
+        "json": [
+            "${basedir}/../schema/common-env.json"
+        ]
+    },
+    "testElm": [ {
+        "idName"  : "crypto-def",
+        "uuid"    : 1,
+        "keyVer"  : 1,
+        "data"    : "string"
+    }, {
+        "idName"  : "key-def",
+        "uuid"    : 1,
+        "keyVer64": 1,
+        "keyVerHi": 1,
+        "keyCount": 1,
+        "message" : "string"
+    }, {
+        "idName"  : "key-db-def",
+        "uuid64"  : "string",
+        "keyVer64": "string",
+        "pubKey"  : "string",
+        "message" : "string"
+    } ],
+    "testDriver": [ {
+        "idName": "crypto-signature-test"
+    }, {
+        "idName": "crypto-envelope-test"
+    }, {
+        "idName": "read-db-key-test"
+    }, {
+        "idName": "gen-key-test"
+    }, {
+        "idName": "query-key-test"
+    }, {
+        "idName": "sign-mesg-test"
+    } ],
+    "objSpec": [ {
+        "idName"   : "crypto-gen",
+        "idBegSeq" : 0,
+        "idEndSeq" : "${cryptoTestCnt}",
+        "objIdFmt" : "crypto",
+        "objType"  : "crypto-def",
+        "objParent": "crypto-signature-test",
+        "objData" : [ {
+            "field"      : "data",
+            "contentSpec": "string-2k-gen-spec"
+        }, {
+            "field"      : "uuid",
+            "rangeSpec"  : "rand-int64-spec"
+        }, {
+            "field"      : "keyVer",
+            "rangeSpec"  : "rand-int64-spec"
+        } ]
+    }, {
+        "idName"   : "crypto-envelope-gen",
+        "idBegSeq" : 2000,
+        "idEndSeq" : 3000,
+        "objIdFmt" : "crypto",
+        "objType"  : "crypto-def",
+        "objParent": "crypto-envelope-test",
+        "objData"  : [ {
+            "field"      : "data",
+            "contentSpec": "string-4k-gen-spec"
+        }, {
+            "field"      : "uuid",
+            "rangeSpec"  : "rand-int64-spec"
+        }, {
+            "field"      : "keyVer",
+            "rangeSpec"  : "rand-int64-spec"
+        } ]
+    }, {
+        "idName"   : "key-gen",
+        "idBegSeq" : 0,
+        "idEndSeq" : "${keyTestCnt}",
+        "objIdFmt" : "key",
+        "objType"  : "key-def",
+        "objParent": "gen-key-test",
+        "objData"  : [ {
+            "field"      : "uuid",
+            "rangeSpec"  : "rand-int64-spec"
+        }, {
+            "field"      : "keyVer64",
+            "rangeSpec"  : "rand-int64-spec"
+        }, {
+            "field"      : "keyVerHi",
+            "rangeSpec"  : "rand-int64-spec"
+        }, {
+            "field"      : "keyCount",
+            "rangeSpec"  : "count-lt-20-spec"
+        }, {
+            "field"      : "message",
+            "contentSpec": "string-2k-gen-spec"
+        } ]
+    }, {
+        "idName"   : "read-db-key-gen",
+        "idBegSeq" : 0,
+        "idEndSeq" : 0,
+        "objIdFmt" : "key-db",
+        "objType"  : "key-db-def",
+        "objParent": "read-db-key-test",
+        "objData"  : [ {
+            "field"      : "uuid64",
+            "contentSpec" : {
+                "idName"  : "db-read-range-spec",
+                "srcFile" : "",
+                "dstFile" : "",
+                "dataType": "string",
+                "dataSize": "20",
+                "dataSeed": "not-yet",
+                "genOps"  : [ "read-db-key-test" ],
+                "percentageOps": [ 100 ]
+            }
+        }, {
+            "field"      : "keyVer64",
+            "contentSpec": "db-read-range-spec"
+        }, {
+            "field"      : "pubKey",
+            "contentSpec": {
+                "idName"  : "db-read-pubkey-spec",
+                "srcFile" : "",
+                "dstFile" : "",
+                "dataType": "string",
+                "dataSize": "512",
+                "dataSeed": "not-yet",
+                "genOps"  : [ "read-db-key-test" ],
+                "percentageOps": [ 100 ]
+            }
+        }, {
+            "field"      : "message",
+            "contentSpec": "string-2k-gen-spec"
+        } ]
+    } ],
+    "runSpec": [ {
+        "idName"   : "basic-run",
+        "cpu"      : "cpu-normal-rs",
+        "objRunBeg": "crypto-signature-test",
+        "objRunEnd": "crypto-signature-test",
+        "objRun"   : "crypto",
+        "idBegSeq" : 0,
+        "idEndSeq" : 1
+    }, {
+        "idName"   : "envelope",
+        "cpu"      : "cpu-normal-rs",
+        "objRunBeg": "crypto-envelope-test",
+        "objRunEnd": "crypto-envelope-test",
+        "objRun"   : "crypto",
+        "idBegSeq" : 2000,
+        "idEndSeq" : 2001
+    }, {
+        "idName"   : "gen-key-run",
+        "cpu"      : "cpu-normal-rs",
+        "objRunBeg": "gen-key-test",
+        "objRunEnd": "gen-key-test",
+        "objRun"   : "key",
+        "idBegSeq" : 0,
+        "idEndSeq" : "${keyTestCnt}"
+    }, {
+        "idName"   : "query-key-run",
+        "cpu"      : "cpu-normal-rs",
+        "objRunBeg": "query-key-test",
+        "objRunEnd": "query-key-test",
+        "objRun"   : "key",
+        "idBegSeq" : 0,
+        "idEndSeq" : "${keyTestCnt}"
+    }, {
+        "idName"   : "sign-mesg-run",
+        "cpu"      : "cpu-normal-rs",
+        "objRunBeg": "sign-mesg-test",
+        "objRunEnd": "sign-mesg-test",
+        "objRun"   : "key",
+        "idBegSeq" : 0,
+        "idEndSeq" : "${keyTestCnt}"
+    }, {
+        "idName"   : "read-db-key-run",
+        "cpu"      : "cpu-normal-rs",
+        "objRunBeg": "read-db-key-test",
+        "objRunEnd": "read-db-key-test",
+        "objRun"   : "key-db",
+        "idBegSeq" : 0,
+        "idEndSeq" : 0
+    }, {
+        "idName"   : "sign-all-rec-run",
+        "cpu"      : "cpu-normal-rs",
+        "objRunBeg": "read-db-key-test",
+        "objRunEnd": "read-db-key-test",
+        "objRun"   : "key-db",
+        "idBegSeq" : 0,
+        "idEndSeq" : 0
+    } ],
+    "execRun": [ {
+        "idName"    : "main",
+        "sequential": [
+            "crypto-gen",
+            "read-db-key-gen",
+            "crypto-envelope-gen",
+            "key-gen",
+            "basic-run"
+        ]
+    } ]
+}

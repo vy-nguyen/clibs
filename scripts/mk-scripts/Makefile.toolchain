@@ -1,0 +1,65 @@
+# Written by Vy Nguyen https://github.com/vy-nguyen/c-libraries
+# BSD License
+#
+# Makefile.toolchain
+# ------------------
+#
+# Version variables
+#
+gl_maj_ver := 0
+gl_min_ver := 0
+gl_rel_ver := 0
+gl_fix_ver := 1
+gl_so_ver  := $(gl_maj_ver).$(gl_min_ver).$(gl_rel_ver)
+
+# Tools variables
+#
+cc_dir          := /usr/bin
+as              := $(cc_dir)/as
+ar              := $(cc_dir)/ar
+yacc            := $(cc_dir)/bison
+lex             := $(cc_dir)/flex
+lint            := $(cc_dir)/lint
+rpcgen          := $(cc_dir)/rpcgen
+
+ifdef CLANG
+cc              := $(cc_dir)/clang
+cpp             := $(cc_dir)/clang++
+ld              := $(cc_dir)/clang++
+else
+cc              := $(cc_dir)/gcc
+cpp             := $(cc_dir)/g++
+ld              := $(cc_dir)/ld
+endif
+
+# Global compilation flags
+#
+gl_cc_flags     := -I$(topdir)/include -I$(topdir)/include/foss $(proj_cc_flags)
+gl_cpp_flags    := $(gl_cc_flags) $(proj_cpp_flags)
+gl_asm_flags    := $(proj_asm_flags) -f elf
+gl_exe_flags    := $(proj_exe_flags)
+gl_lint_flags   := $(proj_lint_flags)
+gl_ld_flags     := $(proj_ld_flags)
+gl_ar_flags     := $(proj_ar_flags) -r
+
+gl_cpp_flags    += -std=c++11
+
+ifdef RELEASE
+# Release build flags
+#
+	gl_cc_flags    += -O3
+	gl_cpp_flags   += -O3
+else
+# Debug build flags
+#
+	gl_cc_flags    += -g -Wall -Werror -DDEBUG
+	gl_cpp_flags   += -g -Wall -Werror -DDEBUG
+endif
+
+# Use this option to compile foss sources using this Makefile system.
+#
+gl_foss_cc_flags   := $(gl_cc_flags)
+gl_foss_cpp_flags  := $(gl_cpp_flags)
+gl_foss_asm_flags  := $(gl_asm_flags)
+gl_foss_lint_flags := $(gl_lint_flags)
+

@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package txn;
+
+/**
+ * Transaction flow
+ * ----------------
+ * Pay to A
+ * Value A$ is sha2 of the output transaction.
+ * Value A$ -> A's pub key encrypt -> output signature (public record).
+ *
+ * A's private key decrypt -> value A$ : only the owner can get that.
+ * -> Insert to Unspent Output Tx.
+ *
+ * A pays to B (unlock 
+ * Value A$ -> A's private key encrypt -> input Tx to B { Priv(A$), Pub(A) }
+ * A's pub key decrypt -> value A$ -> A's pub key encrypt -> same as original output.
+ *
+ */
+enum TxnUnit
+{
+    INVALID        = 0;
+    USD            = 0x24555344;       /* $USD */
+    VNTD           = 0x564E5444;       /* VNTD */
+}
+
+message TxKey
+{
+    bytes          tx_hash             = 1;
+}
+
+message TxHdr
+{
+    int32          version             = 1;
+    int32          prev_txo_idx        = 2;
+    bytes          prev_txo_hash       = 3;
+    uint64         time                = 5;
+}
+
+message TxOutHash
+{
+    uint64         amount              = 1;
+    TxnUnit        currency            = 2;
+    string         message             = 3;
+    string         recv_pub_key        = 4;
+}
+
+message TransOutput
+{
+    TxOutHash      txout               = 1;
+    bytes          txout_encrypt       = 2;
+}
+
+message TransInput
+{
+
+}
+
+message TransSigned
+{
+    repeated TransInput  tx_in         = 2;
+    repeated TransOutput tx_out        = 3;
+}
+
+message Transaction
+{
+    TransHdr       tx_hdr              = 1;
+    bytes          merkle_root         = 2;
+    uint64         sign_uuid           = 3;
+    uint64         sign_key_ver        = 4;
+    TransSigned    sign_tx             = 5;
+}
+

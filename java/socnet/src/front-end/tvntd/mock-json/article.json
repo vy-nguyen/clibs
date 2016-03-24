@@ -1,0 +1,118 @@
+[ {
+    "authorUuid"  : "123451",
+    "articleUuid" : "abc123",
+    "articleUrl"  : "/articles/abc123",
+    "coverImgUrl" : "/rs/img/realestate/6.png",
+    "likeCount"   : "100",
+    "creditEarned": "200",
+    "moneyEarned" : "200",
+    "transactions": "abcdef",
+    "postDate"    : "3/15/2016",
+    "pictures"    : [
+        "/rs/images/photo1.png", "/rs/images/photo2.png", "/rs/images/photo3.jpg",
+        "/rs/images/photo4.jpg", "/rs/images/photo1.png"
+    ],
+    "content"     : "<p>If there is one resource the planet has too much of, it is carbon dioxide. One of the primary components to the greenhouse gases thought to be responsible for climate change, CO2 has long been the bane of our environment health. But now, GE thinks it may have found a way to repurpose this gas into a useful energy sourcer, harvesting CO2 to actually create new solar batteries. It is the ultimate 180 on carbon dioxide harmful effects, and while scientists have long captured and stored CO2 emissions, it has been unclear as to how best to utilize these massive reserves. That is, until now.</p><p>Effectively, GE hopes to use the CO2 as an enormous battery whose chief purpose would be to store solar energy. Although the sun is a great source of energy, it is rather undependable, after all, the sun has to be out in order for us to capture its rays. That is the grand challenge, Stephen Sanborn, senior engineer at GE Global Research said in a statement. We need to make renewable energy available to the grid when it is needed.</p><p>And that will happen with the help of the significant CO2 reserves scientists have been storing for ages. The process would work in two stages — first, solar energy would be captured and kept in a liquid of molten salt. Then, extra energy from the power grid would cool CO2 into dry ice. When power is needed, the salt would turn the dry ice CO2 into what is known as a supercritical fluid, which is matter that does not have specific liquid or gas phases. The supercritical fluid would in turn flow into a CO2 turbine called a sunrotor, whereupon energy would be disseminated as needed.</p>"
+}, {
+    "authorUuid"  : "123451",
+    "articleUuid" : "abc1231",
+    "articleUrl"  : "/articles/abc123",
+    "coverImgUrl" : "/rs/img/realestate/5.png",
+    "likeCount"   : "101",
+    "creditEarned": "206",
+    "moneyEarned" : "208",
+    "transactions": "abcdef",
+    "postDate"    : "3/14/2016",
+    "pictures"    : [
+        "/rs/images/photo1.png", "/rs/images/photo2.png", "/rs/images/photo3.jpg"
+    ],
+    "content"     : "this is article content 1"
+}, {
+    "authorUuid"  : "123452",
+    "articleUuid" : "abc1232",
+    "articleUrl"  : "/articles/abc123",
+    "coverImgUrl" : "/rs/img/realestate/4.png",
+    "likeCount"   : "102",
+    "creditEarned": "205",
+    "moneyEarned" : "202",
+    "transactions": "abcdef",
+    "postDate"    : "3/13/2016",
+    "pictures"    : [
+        "/rs/images/photo1.png", "/rs/images/photo3.png", "/rs/images/photo2.jpg",
+        "/rs/images/photo4.jpg", "/rs/images/photo1.png", "/rs/images/photo2.jpg"
+    ],
+    "content"     : "this is article content 2"
+}, {
+    "authorUuid"  : "123450",
+    "articleUuid" : "abc1233",
+    "articleUrl"  : "/articles/abc123",
+    "coverImgUrl" : "/rs/img/realestate/1.png",
+    "likeCount"   : "107",
+    "creditEarned": "209",
+    "moneyEarned" : "202",
+    "transactions": "abcdef",
+    "postDate"    : "3/12/2016",
+    "pictures"    : [
+        "/rs/images/photo1.png", "/rs/images/photo2.png", "/rs/images/photo3.jpg",
+        "/rs/images/photo4.jpg"
+    ],
+    "content"     : "this is article content 3"
+}, {
+    "authorUuid"  : "123450",
+    "articleUuid" : "abc1234",
+    "articleUrl"  : "/articles/abc123",
+    "coverImgUrl" : "/rs/img/realestate/2.png",
+    "likeCount"   : "106",
+    "creditEarned": "203",
+    "moneyEarned" : "202",
+    "transactions": "abcdef",
+    "postDate"    : "3/11/2016",
+    "pictures"    : [
+        "/rs/images/photo1.png", "/rs/images/photo2.png",
+        "/rs/images/photo4.jpg", "/rs/images/photo1.png"
+    ],
+    "content"     : "this is article content 4"
+}, {
+    "authorUuid"  : "123450",
+    "articleUuid" : "abc1235",
+    "articleUrl"  : "/articles/abc123",
+    "coverImgUrl" : "/rs/img/realestate/7.png",
+    "likeCount"   : "104",
+    "creditEarned": "205",
+    "moneyEarned" : "206",
+    "transactions": "abcdef",
+    "postDate"    : "3/10/2016",
+    "pictures"    : [
+        "/rs/images/photo1.png", "/rs/images/photo2.png", "/rs/images/photo3.jpg",
+        "/rs/images/photo4.jpg"
+    ],
+    "content"     : "this is article content 5"
+}, {
+    "authorUuid"  : "123452",
+    "articleUuid" : "abc1236",
+    "articleUrl"  : "/articles/abc123",
+    "coverImgUrl" : "/rs/img/realestate/6.png",
+    "likeCount"   : "101",
+    "creditEarned": "202",
+    "moneyEarned" : "203",
+    "transactions": "abcdef",
+    "postDate"    : "3/17/2016",
+    "pictures"    : [
+        "/rs/images/photo1.png"
+    ],
+    "content"     : "this is article content 6"
+}, {
+    "authorUuid"  : "123451",
+    "articleUuid" : "abc1237",
+    "articleUrl"  : "/articles/",
+    "coverImgUrl" : "/rs/img/realestate/4.png",
+    "likeCount"   : "200",
+    "creditEarned": "300",
+    "moneyEarned" : "400",
+    "transactions": "abcdef0",
+    "postDate"    : "3/09/2016",
+    "pictures"    : [
+        "/rs/images/photo1.png", "/rs/images/photo2.png"
+    ],
+    "content"     : "this is article content 7"
+} ]

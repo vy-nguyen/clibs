@@ -1,0 +1,39 @@
+apply from: rootProject.file('common.gradle')
+apply plugin: 'java'
+apply plugin: 'eclipse-wtp'
+
+ext {
+    implTitle  = "Common Java Library"
+    version    = "0.10"
+    groupId    = "com.tvntd.lib"
+    artifactId = "common"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.json:json:20090211"
+}
+
+sourceSets {
+    main {
+        java {
+           srcDirs = [ 'src/main/java' ]
+        }
+    }
+    test {
+        java {
+            srcDirs = [ 'src/test/java' ]
+        }
+    }
+}
+
+eclipse {
+    wtp {
+        component {
+            contextPath = '/'
+        }
+    }
+}
