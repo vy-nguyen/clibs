@@ -32,5 +32,8 @@
     "bootstrap-tagsinput": "~0.7.1",
     "ion.rangeSlider": "1.9.3",
     "fuelux": "~3.13.0"
+  },
+  "resolutions": {
+    "jquery": "~2.0.3"
   }
 }

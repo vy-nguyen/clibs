@@ -5,8 +5,8 @@
 pushd .
 cd java/socnet
 ln -s ../../foss foss
-cd src/main/webapp/images/
-ln -s ../../../../../../webapp-static poc
+# cd src/main/webapp/images/
+# ln -s ../../../../../../webapp-static poc
 popd
 
 # Create mysql database & account.
