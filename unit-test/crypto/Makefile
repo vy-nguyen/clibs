@@ -14,7 +14,7 @@ proj_tests     := crypto db
 crypto         := crypto-test.cpp
 db             := db-test.cpp
 
-proj_sys_libs  :=
+proj_sys_libs  := util
 proj_foss_libs := \
 	crypto \
 	leveldb \

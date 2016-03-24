@@ -28,7 +28,7 @@ proj_tests     := \
 	hash-json \
 	pagelock-json
 
-proj_sys_libs  :=
+proj_sys_libs  := util
 proj_foss_libs :=
 
 proj_dep_libs  := \

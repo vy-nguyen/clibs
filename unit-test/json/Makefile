@@ -21,7 +21,7 @@ unit-basic    := unit-test-basic.cpp
 #
 proj_tests     := unit-basic
 
-proj_sys_libs  :=
+proj_sys_libs  := util
 proj_foss_libs :=
 proj_dep_libs  :=
 
