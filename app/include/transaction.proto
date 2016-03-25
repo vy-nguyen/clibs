@@ -64,7 +64,7 @@ message TransSigned
 
 message Transaction
 {
-    TransHdr       tx_hdr              = 1;
+    // TransHdr       tx_hdr              = 1;
     bytes          merkle_root         = 2;
     uint64         sign_uuid           = 3;
     uint64         sign_key_ver        = 4;

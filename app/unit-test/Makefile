@@ -16,6 +16,7 @@ proj_tests     := \
 	transaction
 
 proj_sys_libs  := \
+	util \
 	boost_thread \
 	boost_system \
 	boost_filesystem

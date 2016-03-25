@@ -15,7 +15,8 @@ proj_exes     := \
 proj_tests     := \
 	bigint
 
-proj_sys_libs  :=
+proj_sys_libs  := \
+	util
 
 proj_foss_libs := \
 	protobuf-3

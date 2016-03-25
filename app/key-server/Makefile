@@ -12,7 +12,9 @@ proj_proto :=
 proj_exes  := key-server
 key-server := $(proj_cpp)
 
-proj_sys_libs  :=
+proj_sys_libs  := \
+	util
+
 proj_foss_libs := \
 	leveldb \
 	crypto \
