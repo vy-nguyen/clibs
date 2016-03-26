@@ -1,14 +1,21 @@
+/**
+ * Copyright by Vy Nguyen (2016)
+ * BSD License
+ */
 'use strict';
 
-import Reflux      from 'reflux';
+import Reflux           from 'reflux';
 
 const Actions = Reflux.createActions({
+
+    clickMenuItem:   {children: ['completed']},
+
     // User actions
     logout:          {},
     startup:         {children: ['completed', 'failed']},
     login:           {children: ['completed', 'failed', 'always']},
     register:        {children: ['completed', 'failed', 'always']},
-    verifyAccount:   {children: ['completed', 'failed' ]},
+    verifyAccount:   {children: ['completed', 'failed']},
     resetPassword:   {children: ['completed', 'failed', 'always']},
 
     // Preload json for testing.
@@ -49,6 +56,18 @@ function postRestCall(formData, url, json, complete, failure, always) {
     });
 };
 
+/**
+ * UI click actions.
+ */
+Actions.clickMenuItem.listen(function(item) {
+    console.log("Wire click to main action");
+    console.log(item);
+    this.completed(item);
+});
+
+/**
+ * User actions.
+ */
 Actions.startup.listen(function(url) {
     console.log("Request startup url " + url);
     $.getJSON(url).then(this.completed, this.failed);

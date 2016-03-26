@@ -1,5 +1,5 @@
 /**
- *
+ * Vy Nguyen (2016)
  */
 import Reflux from 'reflux'
 

@@ -4,9 +4,11 @@
  */
 'use strict';
 
-import Reflux         from 'reflux';
-import Actions        from 'vntd-root/actions/Actions.jsx';
-import ErrorDispatch  from 'vntd-shared/actions/ErrorDispatch.jsx';
+import Reflux            from 'reflux';
+import Actions           from 'vntd-root/actions/Actions.jsx';
+import NavigationActions from 'vntd-shared/actions/NavigationActions.jsx';
+import ErrorDispatch     from 'vntd-shared/actions/ErrorDispatch.jsx';
+import NavigationStore   from 'vntd-shared/stores/NavigationStore.jsx';
 
 class ErrorHandler extends ErrorDispatch
 {
@@ -20,15 +22,21 @@ let RenderStore = Reflux.createStore({
     data: {
         menuItems: []
     },
-    listenables: [Actions],
+    listenables: [Actions, NavigationActions],
 
     getMenuItems: function() {
-        return this.data.menuItems;
+        return this.data.items;
+    },
+
+    onActivateCompleted: function(item) {
+        Actions.clickMenuItem(item);
     },
 
     onStartupCompleted: function(json) {
-        console.log("Startup done");
-        console.log(json);
+        this.data.menuItems = json.items;
+
+        NavigationStore.replaceMenuItems(this.data.menuItems);
+        this.trigger(this.data);
     },
 
     onStartupFailed: function(xhdr, text, status) {

@@ -26,9 +26,53 @@
  */
 package com.tvntd.web;
 
+import java.util.List;
+import java.util.Locale;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.tvntd.models.User;
+import com.tvntd.service.api.IMenuItemService;
+import com.tvntd.service.api.IMenuItemService.MenuItemResp;
+import com.tvntd.service.api.IMenuItemService.MenuItemRespJson;
 
 @Controller
 public class PublicPath
 {
+    static private Logger s_log = LoggerFactory.getLogger(PublicPath.class);
+
+    @Autowired
+    IMenuItemService menuItemService;
+
+    /**
+     * Handle public pages.
+     */
+    @RequestMapping(value = "/public/start", method = RequestMethod.GET)
+    @ResponseBody
+    public MenuItemRespJson
+    getStartupMenu(Locale locale, HttpSession session, HttpServletResponse resp)
+    {
+        Long userId = menuItemService.getPublicId();
+        User user = (User) session.getAttribute("user");
+
+        s_log.debug("Request startup menu " + user);
+        if (user != null) {
+            s_log.debug("User loggined: " + user.getEmail());
+            userId = menuItemService.getPrivateId();
+        }
+        List<MenuItemResp> res = menuItemService.getMenuItemRespByUser(userId);
+        if (res != null) {
+            return new MenuItemRespJson(res);
+        }
+        return null;
+    }
 }

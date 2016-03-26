@@ -46,9 +46,34 @@ public interface IMenuItemService
     public List<MenuItemResp> createPrivateMenu();
     public List<MenuItemResp> createAdminMenu();
 
+    public List<MenuItemResp>
+    mergeMenuItemResp(List<MenuItemResp> a, List<MenuItemResp> b);
+
     public List<MenuItemResp> getMenuItemRespByUser(Long userId);
-    public void saveSubMenuItem(Long userId, MenuItemResp parent, MenuItemResp sub);
     public void saveMenuItem(Long userId, List<MenuItemResp> records);
+
+    public static class MenuItemRespJson
+    {
+        private List<MenuItemResp> items;
+
+        public MenuItemRespJson(List<MenuItemResp> items) {
+            this.items = items;
+        }
+
+        /**
+         * @return the items
+         */
+        public List<MenuItemResp> getItems() {
+            return items;
+        }
+
+        /**
+         * @param items the items to set
+         */
+        public void setItems(List<MenuItemResp> items) {
+            this.items = items;
+        }
+    }
 
     public static class MenuItemResp
     {
@@ -59,6 +84,10 @@ public interface IMenuItemService
         private String route;
         private MenuItemBadge badge;
         private List<MenuItemResp> items;
+
+        public MenuItemResp(Long userId) {
+            this.itemId = userId;
+        }
 
         public MenuItemResp(MenuItem item)
         {

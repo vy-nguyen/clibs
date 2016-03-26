@@ -40,6 +40,8 @@ import javax.persistence.ManyToMany;
 @Entity
 public class Role
 {
+    private static final Long userIdStart = 1000L;
+
     public static String User    = "User";
     public static String Dba     = "Dba";
     public static String Admin   = "Admin";

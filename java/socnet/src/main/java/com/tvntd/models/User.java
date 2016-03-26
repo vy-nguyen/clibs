@@ -44,6 +44,8 @@ import javax.persistence.ManyToMany;
 @Entity
 public class User
 {
+    static private final Long userIdStart = 10000L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -91,6 +93,10 @@ public class User
         super();
         this.enabled = false;
         this.tokenExpired = false;
+    }
+
+    static public Long getUserIdStart() {
+        return userIdStart;
     }
 
     public Long getId() {

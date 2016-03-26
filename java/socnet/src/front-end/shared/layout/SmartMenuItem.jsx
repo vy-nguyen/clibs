@@ -1,18 +1,24 @@
-import React             from 'react-mod'
-import ReactDOM          from 'react-dom'
-import Reflux            from 'reflux'
-import {Link}            from 'react-router'
-import classnames        from 'classnames'
-import {findDOMNode}     from 'react-dom'
+/**
+ * Modified by Vy Nguyen (2016)
+ */
+'use strict';
 
-import Msg               from '../i18n/Msg.jsx'
-import SmartMenuList     from './SmartMenuList.jsx'
-import NavigationActions from 'vntd-shared/actions/NavigationActions.jsx'
-import NavigationStore   from 'vntd-shared/stores/NavigationStore.jsx'
+import React             from 'react-mod';
+import ReactDOM          from 'react-dom';
+import Reflux            from 'reflux';
+import {Link}            from 'react-router';
+import classnames        from 'classnames';
+import {findDOMNode}     from 'react-dom';
+
+import Msg               from '../i18n/Msg.jsx';
+import SmartMenuList     from './SmartMenuList.jsx';
+import NavigationActions from 'vntd-shared/actions/NavigationActions.jsx';
+import NavigationStore   from 'vntd-shared/stores/NavigationStore.jsx';
 
 let config = window.GlobalConfigs;
 
 let SmartMenuItem = React.createClass({
+
     getDefaultProps: function() {
         return {
             menuSpeed: 200 // config.menu_speed || 200
@@ -36,6 +42,7 @@ let SmartMenuItem = React.createClass({
             this._close()
         }
     },
+
     _handleClick: function (e) {
         e.preventDefault();
         let item = this.props.item;
@@ -49,6 +56,7 @@ let SmartMenuItem = React.createClass({
             this.forceUpdate()
         }.bind(this), this.props.menuSpeed)
     },
+
     _close: function() {
         this.props.item.isOpen = false;
         this._getChildrenListNode().slideUp(this.props.menuSpeed);
@@ -56,11 +64,12 @@ let SmartMenuItem = React.createClass({
             this.forceUpdate()
         }.bind(this), this.props.menuSpeed)
     },
+
     _getChildrenListNode: function() {
         return $(findDOMNode(this)).find('>ul')
     },
 
-    render: function () {
+    render: function() {
         var item = this.props.item;
 
         var title = !item.parent ?

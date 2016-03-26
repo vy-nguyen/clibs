@@ -4,9 +4,9 @@
 'use strict';
 
 import Reflux from 'reflux';
-import _ from 'lodash';
+import _      from 'lodash';
 
-import NavigationActions from '../actions/NavigationActions.jsx'
+import NavigationActions from '../actions/NavigationActions.jsx';
 import History           from '../utils/History.jsx';
 import MenuItem          from './MenuItem.jsx';
 
@@ -16,10 +16,12 @@ let data = {
 };
 
 let NavigationStore = Reflux.createStore({
-    initRawItems: function(rawItems){
+
+    initRawItems: function(rawItems) {
         data.items = this.normalize(rawItems);
         this._setInitialItem(data.items)
     },
+
     _setInitialItem: function(items) {
         items.forEach(function(item) {
             if (item.isActive){
@@ -28,14 +30,22 @@ let NavigationStore = Reflux.createStore({
             if (item.items) {
                 this._setInitialItem(item.items)
             }
-        }.bind(this))
+        }.bind(this));
     },
     listenables: NavigationActions,
+
+    replaceMenuItems: function(json) {
+        data.items = null;
+        data.item  = undefined;
+        this.initRawItems(json);
+        this.trigger(data);
+    },
 
     onGetItemsCompleted: function (_data) {
         data.items = this.normalize(_data.items);
         this.trigger(data)
     },
+
     onActivate: function (item) {
         data.item = item;
         if (item.route) {
@@ -45,11 +55,13 @@ let NavigationStore = Reflux.createStore({
             item: item
         })
     },
+
     normalize: function (items) {
-        return _.map(items, function (item) {
+        return _.map(items, function(item) {
             return new MenuItem(item)
         })
     },
+
     getData: function () {
         return data
     }

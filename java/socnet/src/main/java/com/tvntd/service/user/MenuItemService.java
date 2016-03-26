@@ -51,6 +51,7 @@ public class MenuItemService implements IMenuItemService
     static private final int publicId  = 0;
     static private final int privateId = 1;
     static private final int adminId   = 2;
+    static private final int customizedId = 3;
 
     static private final int itemIdMul = 1000;
     static private final String menuItemJsonBeg = "{ \"items\": [";
@@ -139,8 +140,71 @@ public class MenuItemService implements IMenuItemService
         "\"itemId\"  : 900," +
         "\"parentId\": 0," +
         "\"title\"   : \"About Us\"," +
-        "\"icon\"    : \"fa fa-home\"," +
+        "\"icon\"    : \"fa fa-lg fa-fw fa-home\"," +
         "\"route\"   : \"/public/aboutus\"" +
+    "}, {" +
+        "\"userId\"  : 0," +
+        "\"itemId\"  : 901," +
+        "\"parentId\": 900," +
+        "\"title\"   : \"Prototypes\"," +
+        "\"icon\"    : \"fa fa-home\"," +
+        "\"route\"   : \"/public/proto\"" +
+    "}, {" +
+        "\"userId\"  : 0," +
+        "\"itemId\"  : 902," +
+        "\"parentId\": 901," +
+        "\"title\"   : \"Blog\"," +
+        "\"icon\"    : \"fa fa-book\"," +
+        "\"route\"   : \"/public/proto/blog\"" +
+    "}, {" +
+        "\"userId\"  : 0," +
+        "\"itemId\"  : 903," +
+        "\"parentId\": 901," +
+        "\"title\"   : \"E Store\"," +
+        "\"icon\"    : \"fa fa-money\"," +
+        "\"route\"   : \"/public/proto/estore\"" +
+    "}, {" +
+        "\"userId\"  : 0," +
+        "\"itemId\"  : 930," +
+        "\"parentId\": 903," +
+        "\"title\"   : \"Product View\"," +
+        "\"icon\"    : \"fa fa-tag\"," +
+        "\"route\"   : \"/public/proto/estore/product-view\"" +
+    "}, {" +
+        "\"userId\"  : 0," +
+        "\"itemId\"  : 931," +
+        "\"parentId\": 903," +
+        "\"title\"   : \"Product Detail\"," +
+        "\"icon\"    : \"fa fa-shopping\"," +
+        "\"route\"   : \"/public/proto/estore/product-detail\"" +
+    "}, {" +
+        "\"userId\"  : 0," +
+        "\"itemId\"  : 904," +
+        "\"parentId\": 901," +
+        "\"title\"   : \"Timeline\"," +
+        "\"icon\"    : \"fa fa-sort\"," +
+        "\"route\"   : \"/public/proto/timeline\"" +
+    "}, {" +
+        "\"userId\"  : 0," +
+        "\"itemId\"  : 905," +
+        "\"parentId\": 901," +
+        "\"title\"   : \"News Feed\"," +
+        "\"icon\"    : \"fa fa-gear\"," +
+        "\"route\"   : \"/public/proto/news\"" +
+    "}, {" +
+        "\"userId\"  : 0," +
+        "\"itemId\"  : 906," +
+        "\"parentId\": 901," +
+        "\"title\"   : \"Forum\"," +
+        "\"icon\"    : \"fa fa-sort\"," +
+        "\"route\"   : \"/public/proto/forum\"" +
+    "}, {" +
+        "\"userId\"  : 0," +
+        "\"itemId\"  : 907," +
+        "\"parentId\": 901," +
+        "\"title\"   : \"Social Wall\"," +
+        "\"icon\"    : \"fa fa-thumbs-o-up\"," +
+        "\"route\"   : \"/public/proto/wall\"" +
     "}";
     static private final String menuItemUser =
     "{" +
@@ -184,7 +248,7 @@ public class MenuItemService implements IMenuItemService
         "\"itemId\"  : 400," +
         "\"parentId\": 0," +
         "\"title\"   : \"Public Funding\"," +
-        "\"icon\"    : \"fa fa-home\"" +
+        "\"icon\"    : \"fa fa-lg fa-fw fa-home\"" +
     "}, {" +
         "\"userId\"  : 0," +
         "\"itemId\"  : 461," +
@@ -332,22 +396,29 @@ public class MenuItemService implements IMenuItemService
         return result;
     }
 
+    /**
+     * Merge two lists sorted by itemId.
+     * @return the merged list.
+     */
     @Override
-    public void saveSubMenuItem(Long userId, MenuItemResp parent, MenuItemResp sub)
+    public List<MenuItemResp>
+    mergeMenuItemResp(List<MenuItemResp> a, List<MenuItemResp> b)
     {
-        if (parent != null) {
-            MenuItem save = new MenuItem(parent.getItemId(), userId, sub);
-            menuItemRepo.save(save);
-        } else {
-            MenuItem save = new MenuItem(0L, userId, sub);
-            menuItemRepo.save(save);
-        }
+        return null;
     }
 
+    /**
+     * Recursive walk to save customized menu to database.
+     */
     @Override
     public void saveMenuItem(Long userId, List<MenuItemResp> items)
     {
+        Long itemId = userId * itemIdMul;
+
         for (MenuItemResp it : items) {
+            if ((userId >= customizedId) && (it.getItemId() >= customizedId)) {
+                it.setItemId(itemId++);
+            }
             MenuItem save = new MenuItem(it);
             menuItemRepo.save(save);
 
@@ -365,7 +436,7 @@ public class MenuItemService implements IMenuItemService
     {
         private List<MenuItem> items;
 
-        public void saveMenuItems(MenuItemRepository repo, Long userId)
+        void saveMenuItems(MenuItemRepository repo, Long userId)
         {
             if (items == null) {
                 s_log.info("Error in parsing json, items has nothing to save ");

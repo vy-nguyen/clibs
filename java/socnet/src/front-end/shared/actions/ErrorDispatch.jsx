@@ -1,5 +1,6 @@
 /**
- * Created by Vy Nguyen (2016)
+ * Copyright by Vy Nguyen (2016)
+ * BSD License
  */
 'use strict';
 
