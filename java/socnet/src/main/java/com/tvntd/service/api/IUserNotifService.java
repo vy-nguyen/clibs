@@ -24,36 +24,9 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.web;
+package com.tvntd.service.api;
 
-import java.util.Locale;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.tvntd.service.api.UserNotifResponse;
-
-@Controller
-public class ApiPath
+public interface IUserNotifService
 {
-    static private Logger s_log = LoggerFactory.getLogger(PublicPath.class);
-
-    /**
-     * Handle Api REST calls.
-     */
-    @RequestMapping(value = "/api/user-notification", method = RequestMethod.GET)
-    @ResponseBody
-    public UserNotifResponse
-    getUserNotification(Locale locale, HttpSession session, HttpServletResponse resp)
-    {
-        s_log.info("Request user notification");
-        return null;
-    }
+    public UserNotifResponse getUserNotif(Long userId);
 }

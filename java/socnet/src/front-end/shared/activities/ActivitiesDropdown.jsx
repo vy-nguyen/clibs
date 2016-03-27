@@ -28,6 +28,7 @@ let ActivitiesDropdown = React.createClass({
     },
 
     getInitialState: function () {
+        this.data.activities = require('json!vntd-root/mock-json/activities.json');
         return this.data;
     },
 
@@ -62,7 +63,7 @@ let ActivitiesDropdown = React.createClass({
                     <div className="ajax-notifications custom-scroll">
                         <ul className="notification-body">
                         {activity.items.map(function(item, idx){
-                            let component = Components[item.type]
+                            let component = this.components[item.type]
                             return  <li key={idx}>{React.createElement(component, {
                                     item: item,
                                     lastUpdated: this.state.lastUpdated
