@@ -16,8 +16,13 @@ export default class ErrorDispatch
         return false;
     }
 
+    handle400Error(xhdr, text) {
+    }
+
     handle404Error(xhdr, text) {
         console.log("In 404 base class");
+        console.log(xhdr);
+        console.log(text);
     }
 
     handle500Error(xhdr, text) {
@@ -33,6 +38,10 @@ export default class ErrorDispatch
         }
         switch (this.xhdr.status) {
         case 400:
+            this.handle400Error(this.xhdr, this.text);
+            break;
+
+        case 404:
             this.handle404Error(this.xhdr, this.text);
             break;
 

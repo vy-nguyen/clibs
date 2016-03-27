@@ -24,56 +24,50 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.web;
+package com.tvntd.service.api;
 
 import java.util.List;
-import java.util.Locale;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.tvntd.models.User;
-import com.tvntd.service.api.IMenuItemService;
 import com.tvntd.service.api.IMenuItemService.MenuItemResp;
-import com.tvntd.service.api.StartupResponse;
 
-@Controller
-public class PublicPath
+public class StartupResponse
 {
-    static private Logger s_log = LoggerFactory.getLogger(PublicPath.class);
+    private LoginResponse      userInfo;
+    private List<MenuItemResp> menuItems;
 
-    @Autowired
-    IMenuItemService menuItemService;
+    public StartupResponse(User user)
+    {
+        if (user != null) {
+            userInfo = new LoginResponse(user);
+        }
+    }
 
     /**
-     * Handle public pages.
+     * @return the userInfo
      */
-    @RequestMapping(value = "/public/start", method = RequestMethod.GET)
-    @ResponseBody
-    public StartupResponse
-    getStartupMenu(Locale locale, HttpSession session, HttpServletResponse resp)
-    {
-        Long userId = menuItemService.getPublicId();
-        User user = (User) session.getAttribute("user");
-        StartupResponse result = new StartupResponse(user);
+    public LoginResponse getUserInfo() {
+        return userInfo;
+    }
 
-        s_log.debug("Request startup menu " + user);
-        if (user != null) {
-            s_log.debug("User loggined: " + user.getEmail());
-            userId = menuItemService.getPrivateId();
-        }
-        List<MenuItemResp> items = menuItemService.getMenuItemRespByUser(userId);
-        if (items != null) {
-            result.setMenuItems(items);
-        }
-        return result;
+    /**
+     * @param userInfo the userInfo to set
+     */
+    public void setUserInfo(LoginResponse userInfo) {
+        this.userInfo = userInfo;
+    }
+
+    /**
+     * @return the menuItems
+     */
+    public List<MenuItemResp> getMenuItems() {
+        return menuItems;
+    }
+
+    /**
+     * @param menuItems the menuItems to set
+     */
+    public void setMenuItems(List<MenuItemResp> menuItems) {
+        this.menuItems = menuItems;
     }
 }

@@ -60,8 +60,6 @@ function postRestCall(formData, url, json, complete, failure, always) {
  * UI click actions.
  */
 Actions.clickMenuItem.listen(function(item) {
-    console.log("Wire click to main action");
-    console.log(item);
     this.completed(item);
 });
 

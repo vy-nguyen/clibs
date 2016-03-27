@@ -33,7 +33,7 @@ let RenderStore = Reflux.createStore({
     },
 
     onStartupCompleted: function(json) {
-        this.data.menuItems = json.items;
+        this.data.menuItems = json.menuItems;
 
         NavigationStore.replaceMenuItems(this.data.menuItems);
         this.trigger(this.data);

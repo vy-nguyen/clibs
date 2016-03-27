@@ -52,29 +52,6 @@ public interface IMenuItemService
     public List<MenuItemResp> getMenuItemRespByUser(Long userId);
     public void saveMenuItem(Long userId, List<MenuItemResp> records);
 
-    public static class MenuItemRespJson
-    {
-        private List<MenuItemResp> items;
-
-        public MenuItemRespJson(List<MenuItemResp> items) {
-            this.items = items;
-        }
-
-        /**
-         * @return the items
-         */
-        public List<MenuItemResp> getItems() {
-            return items;
-        }
-
-        /**
-         * @param items the items to set
-         */
-        public void setItems(List<MenuItemResp> items) {
-            this.items = items;
-        }
-    }
-
     public static class MenuItemResp
     {
         private Long   itemId;

@@ -13,6 +13,7 @@ import Actions       from 'vntd-root/actions/Actions.jsx';
 import UserStore     from 'vntd-shared/stores/UserStore.jsx';
 import UiValidate    from 'vntd-shared/forms/validation/UiValidate.jsx';
 import History       from 'vntd-shared/utils/History.jsx';
+import ErrorDispatch from 'vntd-shared/actions/ErrorDispatch.jsx';
 
 let LoginHeader = React.createClass({
     render: function() {
@@ -87,6 +88,10 @@ let LoginSocial = React.createClass({
     }
 });
 
+class ErrorHandler extends ErrorDispatch
+{
+}
+
 let LoginForm = React.createClass({
     mixins: [
         Reflux.connect(UserStore)
@@ -103,6 +108,11 @@ let LoginForm = React.createClass({
         if (data.authError == null) {
             History.pushState(null, "/public");
             return;
+        }
+        if (data.type == "failure") {
+            error = new ErrorHandler(data.error, data.message);
+            error.dispatch();
+            error = null;
         }
         $('#id-login-error-text').empty().html(data.authError);
         $('#id-login-error').show();

@@ -38,7 +38,7 @@ let LoginRegDropDown = React.createClass({
     render: function () {
         var current = this.state.current,
             menu_header = this._menuInfo.map(function(it, idx) {
-                var cls_name = classnames(['btn', 'btn-default'], { active: it.name == current.name });
+                var cls_name = classnames(['btn', 'btn-default', { active: it.name == current.name }]);
                 return (
                     <label className={cls_name} key={idx} onClick={this._setMenuPane.bind(this, it)}>
                         <input type='radio' name='activity'/>{it.title}

@@ -5,6 +5,7 @@
 'use strict';
 
 import React  from 'react-mod';
+import Reflux from 'reflux';
 import {Link} from 'react-router';
 /*
 import FullScreen from '../../components/layout/actions/FullScreen.jsx'
@@ -21,9 +22,18 @@ import ActivitiesDropdown from 'vntd-shared/activities/ActivitiesDropdown.jsx';
 import LoginRegDropDown   from './LoginRegDropDown.jsx';
 
 let Header = React.createClass({
+
+    mixins: [
+        Reflux.connect(UserStore)
+    ],
+
+    getInitialState: function() {
+        return UserStore.getSelf();
+    },
+
     render: function () {
         let login_menu, logout_menu, logo_block;
-        
+
         if (UserStore.isLogin()) {
             login_menu = <ActivitiesDropdown url={'api/user-notification'}/>;
             logout_menu = (
@@ -37,9 +47,9 @@ let Header = React.createClass({
             );
         } else {
             login_menu = (
-                    <span id="activity" className="activity-dropdown">
-                        <Link to="/login"><i className="fa fa-user"/><b className="badge">Login</b></Link>
-                    </span>
+                <span id="activity" className="activity-dropdown">
+                    <Link to="/login"><i className="fa fa-user"/><b className="badge">Login</b></Link>
+                </span>
             );
         }
         logo_block = (

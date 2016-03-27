@@ -1,3 +1,7 @@
+/**
+ * Copyright by Vy Nguyen (2016)
+ * BSD License
+ */
 'use strict';
 
 import Reflux   from 'reflux';
@@ -41,6 +45,9 @@ let UserStore = Reflux.createStore({
     },
     listenables: [Actions],
 
+    /*
+     * Public Api to get UserStore data.
+     */
     getUserList: function() {
         return this.data.userList;
     },
@@ -58,18 +65,25 @@ let UserStore = Reflux.createStore({
     },
 
     isLogin: function() {
-        return this.data.authToken !== null;
+        return this.data.authToken != null;
     },
 
     isUserMe: function(uuid) {
-        return this.data.userSelf.userUuid === uuid;
+        return this.data.userSelf.userUuid == uuid;
+    },
+
+    getSelf: function() {
+        console.log(this.data);
+        return this.data.userSelf;
+    },
+
+    /* Startup actions. */
+    onStartupCompleted: function(json) {
+        this._changedData(json.userInfo);
     },
 
     /* Login actions. */
     onLoginCompleted: function(response, status) {
-        console.log("Login completed");
-        console.log(response);
-
         this._changedData(response.responseJSON);
     },
 
@@ -97,7 +111,7 @@ let UserStore = Reflux.createStore({
     /* Logout actions. */
     onLogoutCompleted: function() {
         console.log("Logout completed");
-        _init();
+        _reset();
         localStorage.removeItem("authToken");
     },
 
@@ -121,7 +135,7 @@ let UserStore = Reflux.createStore({
         this._changedData(null);
     },
 
-    _init: function() {
+    _reset: function() {
         this.data.userSelf = {};
         this.data.userList = [];
         this.data.authError = null;
@@ -133,8 +147,8 @@ let UserStore = Reflux.createStore({
         console.log(xhdr);
         this._changedData({
             type: "failure",
-            error: xhdr.statusText,
-            message: xhdr.responseJSON !== undefined ? xhdr.responseJSON.message : xhdr.responseText,
+            error: xhdr,
+            message: text,
             authToken: null,
             authVerifToken: null
         });
@@ -148,8 +162,9 @@ let UserStore = Reflux.createStore({
             this.data.authToken = resp.authToken;
             this.data.authVerifToken = resp.authVerifToken;
 
-            if (resp.userSelf !== undefined) {
-                this.data.userSelf  = resp.userSelf;
+            if ((resp.userSelf != undefined) && (resp.userSelf != null)) {
+                this.data.userSelf = resp.userSelf;
+                localStorage.setItem("authToken", resp.authToken);
             }
             if (resp.message == "") {
                 this.data.authMesg = resp.error;

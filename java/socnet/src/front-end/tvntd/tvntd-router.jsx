@@ -24,30 +24,33 @@ const Routes = (
     <Route>
         <Route path="/" component={Layout} url={"/public/start"}>
             <IndexRoute component={Public}/>
-            <Redirect from="/" to ="/public"/>
-            <Route path="public" component={Public} subHeader={true}>
-                <Route path="aboutus" component={Public}/>
+            <Redirect from="/" to ="public"/>
+            <Route path="public">
+                <Route path="aboutus" component={Public} subHeader={true}/>
+                <Route path="vietnam" component={NewsFeed} subHeader={true}/>
+                <Route path="economic" component={NewsFeed} subHeader={true}/>
+                <Route path="education" component={NewsFeed} subHeader={true}/>
+                <Route path="tech" component={Blog} subHeader={true}/>
             </Route>
 
-            <Redirect from="articles" to="articles/politics"/>
-            <Route path="articles">
-                <Route path="politics" component={NewsFeed} subHeader={true} url={"/api/articles/politics"}/>
-                <Route path="economics" component={NewsFeed} subHeader={true} url={"/api/articles/economics"}/>
-                <Route path="finances" component={NewsFeed} subHeader={true} url={"/api/articles/finances"}/>
-                <Route path="forum" component={NewsFeed} subHeader={true} url={"/api/articles/forum"}/>
+            <Redirect from="public" to="public/proto"/>
+            <Route path="public/proto">
+                <Route path="blog" component={Blog} subHeader={true}/>
+                <Route path="timeline" component={Timeline} subHeader={true}/>
+                <Route path="wall" component={SocialWall} subHeader={true}/>
+                <Route path="news" component={NewsFeed} subHeader={true}/>
+            </Route>
+
+            <Redirect from="public/proto" to="public/proto/estore"/>
+            <Route path="public/proto/estore">
+                <Route path="product-view" component={ProductView} subHeader={true}/>
+                <Route path="product-detail" component={ProductDetail} subHeader={true}/>
             </Route>
 
             <Route path="login" component={Login}/>
-            <Route path="register" component={Register}/>
-            <Route path="recover" component={RecoverAcct}/>
-            <Route path="blog" component={Blog}/>
-            <Route path="timeline" component={Timeline} subHeader={true}/>
-            <Route path="social" component={SocialWall} subHeader={true}/>
-
-            <Redirect from="estore" to="estore/product-view"/>
-            <Route path="estore">
-                <Route path="product-view" component={ProductView}/>
-                <Route path="product-detail" component={ProductDetail}/>
+            <Redirect from="/" to="register"/>
+            <Route path="register" component={Register}>
+                <Route path="recover" component={RecoverAcct}/>
             </Route>
 
             <Route handler={LoginRequired}>

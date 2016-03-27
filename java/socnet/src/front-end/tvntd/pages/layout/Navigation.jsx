@@ -14,9 +14,6 @@ import RenderStore from 'vntd-root/stores/RenderStore.jsx';
 
 // import AsideChat from '../../components/chat/components/AsideChat.jsx'
 
-let rawItems = require('json!../../config/menu-items.json').items;
-
-// <AsideChat />
 let Navigation = React.createClass({
 
     mixins: [
@@ -35,8 +32,6 @@ let Navigation = React.createClass({
         this.setState({
             menuItems: json
         });
-        console.log("In nav");
-        console.log(json);
         this.forceUpdate();
     },
 
@@ -45,9 +40,6 @@ let Navigation = React.createClass({
 <aside id="left-panel">
     <LoginInfo />
         <nav>
-            {
-            console.log(this.state.menuItems)
-            }
             <SmartMenu rawItems={this.state.menuItems} />
         </nav>
     <MinifyMenu />
