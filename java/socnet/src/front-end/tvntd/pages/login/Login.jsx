@@ -90,12 +90,21 @@ let LoginSocial = React.createClass({
 
 class ErrorHandler extends ErrorDispatch
 {
+    handle401Error(xhdr, text, cbArg) {
+        cbArg.authError = xhdr.responseJSON.message;
+    }
 }
 
 let LoginForm = React.createClass({
     mixins: [
         Reflux.connect(UserStore)
     ],
+
+    componentWillMount: function() {
+        if (UserStore.isLogin()) {
+            History.pushState(null, "/public/vietnam");
+        }
+    },
 
     componentDidMount: function() {
         this.listenTo(UserStore, this._onAuthChange);
@@ -106,14 +115,13 @@ let LoginForm = React.createClass({
         form.find('input').prop('disabled', false);
 
         if (data.authError == null) {
-            History.pushState(null, "/public");
+            History.pushState(null, "/public/vietnam");
             return;
         }
-        if (data.type == "failure") {
-            error = new ErrorHandler(data.error, data.message);
-            error.dispatch();
-            error = null;
-        }
+        let error = new ErrorHandler(data.authError, data.authMesg);
+        error.dispatch(data);
+        error = null;
+
         $('#id-login-error-text').empty().html(data.authError);
         $('#id-login-error').show();
     },

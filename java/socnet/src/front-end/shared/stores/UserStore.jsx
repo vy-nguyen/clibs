@@ -73,7 +73,6 @@ let UserStore = Reflux.createStore({
     },
 
     getSelf: function() {
-        console.log(this.data);
         return this.data.userSelf;
     },
 
@@ -143,7 +142,7 @@ let UserStore = Reflux.createStore({
     },
 
     _changedDataFailure: function(xhdr, text, error) {
-        console.log("Post action failed");
+        console.log("Post action UserStore failed");
         console.log(xhdr);
         this._changedData({
             type: "failure",

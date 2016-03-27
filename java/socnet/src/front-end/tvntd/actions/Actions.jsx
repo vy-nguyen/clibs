@@ -67,7 +67,6 @@ Actions.clickMenuItem.listen(function(item) {
  * User actions.
  */
 Actions.startup.listen(function(url) {
-    console.log("Request startup url " + url);
     $.getJSON(url).then(this.completed, this.failed);
 });
 

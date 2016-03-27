@@ -38,6 +38,12 @@ let RegisterForm = React.createClass({
         Reflux.connect(UserStore)
     ],
 
+    componentWillMount: function() {
+        if (UserStore.isLogin()) {
+            History.pushState(null, "/public/vietnam");
+        }
+    },
+
     componentDidMount: function() {
         this.listenTo(UserStore, this._registerResult);
         if (UserStore.getAuthCode() == "register-done") {

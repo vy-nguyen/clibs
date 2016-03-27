@@ -7,6 +7,7 @@
 import React      from 'react';
 import Reflux     from 'reflux';
 import Actions    from 'vntd-root/actions/Actions.jsx';
+import History    from 'vntd-shared/utils/History.jsx';
 import UserStore  from 'vntd-shared/stores/UserStore.jsx';
 import { LoginAbout, LoginHeader, LoginSocial } from './Login.jsx';
 
@@ -15,6 +16,12 @@ let Forgot = React.createClass({
     mixins: [
         Reflux.connect(UserStore)
     ],
+
+    componentWillMount: function() {
+        if (UserStore.isLogin()) {
+            History.pushState(null, "public/vietnam");
+        }
+    },
 
     componentDidMount: function() {
         this.listenTo(UserStore, this._submitResult);
