@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014-2015 Vy Nguyen
- * Github https://github.com/vy-nguyen/c-libraries
+ * Github https://github.com/vy-nguyen/tvntd
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -757,7 +757,7 @@ CppMgr::emit_header()
         fprintf(out[i],
     "/*\n"
     " * Copyright (C) 2014-2015 Vy Nguyen\n"
-    " * Github https://github.com/vy-nguyen/c-libraries\n"
+    " * Github https://github.com/vy-nguyen/tvntd\n"
     " *\n"
     " * Redistribution and use in source and binary forms, with or without\n"
     " * modification, are permitted provided that the following conditions\n"
