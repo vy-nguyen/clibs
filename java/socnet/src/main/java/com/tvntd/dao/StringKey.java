@@ -24,11 +24,55 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.service.api;
+package com.tvntd.dao;
 
-public interface IUserNotifService
+import java.io.Serializable;
+import java.util.UUID;
+
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+
+@MappedSuperclass
+public class StringKey implements Serializable
 {
-    public UserNotifResponse getUserNotif(Long userId);
-    public void saveUserNotif(UserNotifResponse mem, Long userId);
-    public void saveUserNotif(Long userId, String jsonFile);
+    private static final long serialVersionUID = 201603L;
+
+    @Id
+    private String id;
+
+    public StringKey() {
+        this.id = UUID.randomUUID().toString();
+    }
+
+    public StringKey(String key) {
+        this.id = key;
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof StringKey)) {
+            return false;
+        }
+        StringKey other = (StringKey) obj;
+        return getId().equals(other.getId());
+    }
+
+    /**
+     * @return the id
+     */
+    public String getId() {
+        return id;
+    }
 }

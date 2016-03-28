@@ -24,11 +24,19 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.service.api;
+package com.tvntd.dao;
 
-public interface IUserNotifService
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.tvntd.models.UserNotify;
+import com.tvntd.models.UserNotifyId;
+
+public interface UserNotifyRepository extends JpaRepository<UserNotify, UserNotifyId>
 {
-    public UserNotifResponse getUserNotif(Long userId);
-    public void saveUserNotif(UserNotifResponse mem, Long userId);
-    public void saveUserNotif(Long userId, String jsonFile);
+    List<UserNotify> findAllByUserId(Long id);
+
+    @Override
+    void delete(UserNotify item);
 }

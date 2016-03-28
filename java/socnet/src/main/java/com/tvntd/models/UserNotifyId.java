@@ -24,11 +24,57 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.service.api;
+package com.tvntd.models;
 
-public interface IUserNotifService
+import java.io.Serializable;
+
+import com.tvntd.models.UserNotify.NotifyType;
+
+public class UserNotifyId implements Serializable
 {
-    public UserNotifResponse getUserNotif(Long userId);
-    public void saveUserNotif(UserNotifResponse mem, Long userId);
-    public void saveUserNotif(Long userId, String jsonFile);
+    private static final long serialVersionUID = 201603L;
+
+    private Long userId;
+    private NotifyType type;
+
+    @Override
+    public boolean equals(Object other)
+    {
+        if (this == other) {
+            return true;
+        }
+        if ((other == null) || !(other instanceof UserNotifyId)) {
+            return false;
+        }
+        UserNotifyId cast = (UserNotifyId) other;
+        return userId.equals(cast.userId) && type.equals(cast.type);
+    }
+
+    /**
+     * @return the userId
+     */
+    public Long getUserId() {
+        return userId;
+    }
+
+    /**
+     * @param userId the userId to set
+     */
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    /**
+     * @return the type
+     */
+    public NotifyType getType() {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(NotifyType type) {
+        this.type = type;
+    }
 }

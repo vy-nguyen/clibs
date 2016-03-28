@@ -49,6 +49,8 @@ import com.tvntd.config.TestTvntdRootConfig;
 import com.tvntd.config.TestTvntdWebConfig;
 import com.tvntd.service.api.IMenuItemService;
 import com.tvntd.service.api.IMenuItemService.MenuItemResp;
+import com.tvntd.service.api.IUserNotifService;
+import com.tvntd.service.api.UserNotifResponse;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -71,6 +73,9 @@ public class MenuItemTest
     }
     @Autowired
     IMenuItemService menuItemService;
+
+    @Autowired
+    IUserNotifService userNotifService;
 
     @Before
     public void setUpStreams()
@@ -106,8 +111,12 @@ public class MenuItemTest
     }
 
     @Test
-    public void testHello()
+    public void testUserNotifyService()
     {
-        System.out.print("Run hello test");
+        userNotifService.saveUserNotif(0L,
+            "/data/tvntd/java/socnet/src/front-end/tvntd/mock-json/user-notify.json");
+
+        UserNotifResponse resp = userNotifService.getUserNotif(0L);
+        // assertNotNull(resp);
     }
 }

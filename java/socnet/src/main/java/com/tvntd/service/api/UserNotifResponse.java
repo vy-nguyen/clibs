@@ -26,13 +26,46 @@
  */
 package com.tvntd.service.api;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import com.tvntd.models.UserNotify;
+import com.tvntd.models.UserNotify.NotifyType;
+import com.tvntd.models.UserNotifyItem;
 
 public class UserNotifResponse
 {
     private Message message;
     private Notify notify;
     private Task task;
+
+    public static String milliToDate(Long milli)
+    {
+        if (milli != null) {
+            Date date = new Date(milli);
+            DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm");
+            return df.format(date);
+        }
+        return null;
+    }
+
+    public static Long dateToMill(String dateStr)
+    {
+        if (dateStr != null) {
+            DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm");
+            try {
+                Date date = df.parse(dateStr);
+                return date.getTime();
+
+            } catch(ParseException e) {
+            }
+        }
+        return null;
+    }
 
     /**
      * @return the message
@@ -80,8 +113,37 @@ public class UserNotifResponse
     {
         private String title;
         private String name;
-        private Long length;
+        private Integer length;
         List<MessageItem> items;
+
+        public Message(UserNotify rec)
+        {
+            this.title = rec.getTitle();
+            this.name = rec.getName();
+
+            List<UserNotifyItem> list = rec.getItems();
+            this.length = list.size();
+            this.items = new ArrayList<>(this.length);
+            for (UserNotifyItem it : list) {
+                this.items.add(new MessageItem(it));
+            }
+        }
+
+        public UserNotify toDbaseRecord()
+        {
+            UserNotify rec = new UserNotify();
+
+            rec.setType(NotifyType.message);
+            rec.setTitle(title);
+            rec.setName(name);
+            rec.setItems(new ArrayList<UserNotifyItem>(length));
+
+            List<UserNotifyItem> list = rec.getItems();
+            for (MessageItem m : items) {
+                list.add(m.toDbaseRecord());
+            }
+            return rec;
+        }
 
         /**
          * @return the title
@@ -114,14 +176,14 @@ public class UserNotifResponse
         /**
          * @return the length
          */
-        public Long getLength() {
+        public Integer getLength() {
             return length;
         }
 
         /**
          * @param length the length to set
          */
-        public void setLength(Long length) {
+        public void setLength(Integer length) {
             this.length = length;
         }
 
@@ -149,6 +211,29 @@ public class UserNotifResponse
         private String subject;
         private String message;
         private String status;
+
+        public MessageItem(UserNotifyItem it)
+        {
+            this.type = "Message";
+            this.title = it.getTitle();
+            this.image = it.getIcon();
+            this.subject = it.getSubject();
+            this.message = it.getMessage();
+            this.status = it.getStatus();
+            this.time = milliToDate(it.getMilliEpoc());
+        }
+
+        public UserNotifyItem toDbaseRecord()
+        {
+            UserNotifyItem item = new UserNotifyItem();
+            item.setTitle(title);
+            item.setImage(image);
+            item.setSubject(subject);
+            item.setMessage(message);
+            item.setStatus(status);
+            item.setMilliEpoc(dateToMill(time));
+            return item;
+        }
 
         /**
          * @return the type
@@ -253,8 +338,37 @@ public class UserNotifResponse
     {
         private String title;
         private String name;
-        private Long length;
+        private Integer length;
         private List<NotifyItem> items;
+
+        public Notify(UserNotify rec)
+        {
+            this.title = rec.getTitle();
+            this.name = rec.getName();
+
+            List<UserNotifyItem> list = rec.getItems();
+            this.length = list.size();
+            this.items = new ArrayList<>(this.length);
+            for (UserNotifyItem it : list) {
+                this.items.add(new NotifyItem(it));
+            }
+        }
+
+        public UserNotify toDbaseRecord()
+        {
+            UserNotify rec = new UserNotify();
+
+            rec.setType(NotifyType.notify);
+            rec.setTitle(title);
+            rec.setName(name);
+
+            List<UserNotifyItem> list = new ArrayList<>(length);
+            rec.setItems(list);
+            for (NotifyItem it : items) {
+                list.add(it.toDbaseRecord());
+            }
+            return rec;
+        }
 
         /**
          * @return the title
@@ -287,14 +401,14 @@ public class UserNotifResponse
         /**
          * @return the length
          */
-        public Long getLength() {
+        public Integer getLength() {
             return length;
         }
 
         /**
          * @param length the length to set
          */
-        public void setLength(Long length) {
+        public void setLength(Integer length) {
             this.length = length;
         }
 
@@ -319,6 +433,24 @@ public class UserNotifResponse
         private String icon;
         private String message;
         private String time;
+
+        public NotifyItem(UserNotifyItem it)
+        {
+            this.type = "Notification";
+            this.icon = it.getIcon();
+            this.message = it.getMessage();
+            this.time = milliToDate(it.getMilliEpoc());
+        }
+
+        public UserNotifyItem toDbaseRecord()
+        {
+            UserNotifyItem rec = new UserNotifyItem();
+
+            rec.setIcon(icon);
+            rec.setMessage(message);
+            rec.setMilliEpoc(dateToMill(time));
+            return rec;
+        }
 
         /**
          * @return the type
@@ -381,8 +513,38 @@ public class UserNotifResponse
     {
         private String title;
         private String name;
-        private Long length;
+        private Integer length;
         private List<TaskItem> items;
+
+        public Task(UserNotify rec)
+        {
+            this.title = rec.getTitle();
+            this.name = rec.getName();
+
+            List<UserNotifyItem> list = rec.getItems();
+            this.length = list.size();
+            this.items = new ArrayList<>(this.length);
+
+            for (UserNotifyItem it : list) {
+                this.items.add(new TaskItem(it));
+            }
+        }
+
+        public UserNotify toDbaseRecord()
+        {
+            UserNotify rec = new UserNotify();
+
+            rec.setType(NotifyType.task);
+            rec.setTitle(title);
+            rec.setName(name);
+
+            List<UserNotifyItem> list = new ArrayList<>(length);
+            rec.setItems(list);
+            for (TaskItem it : items) {
+                list.add(it.toDbaseRecord());
+            }
+            return rec;
+        }
 
         /**
          * @return the title
@@ -415,14 +577,14 @@ public class UserNotifResponse
         /**
          * @return the length
          */
-        public Long getLength() {
+        public Integer getLength() {
             return length;
         }
 
         /**
          * @param length the length to set
          */
-        public void setLength(Long length) {
+        public void setLength(Integer length) {
             this.length = length;
         }
 
@@ -448,6 +610,26 @@ public class UserNotifResponse
         private String progressClass;
         private String title;
         private String width;
+
+        public TaskItem(UserNotifyItem it)
+        {
+            this.type = "Task";
+            this.status = it.getStatus();
+            this.title = it.getTitle();
+            this.width = it.getTaskComplete();
+            this.progressClass = it.getIcon();
+        }
+
+        public UserNotifyItem toDbaseRecord()
+        {
+            UserNotifyItem rec = new UserNotifyItem();
+
+            rec.setStatus(status);
+            rec.setTitle(title);
+            rec.setTaskComplete(width);
+            rec.setIcon(progressClass);
+            return rec;
+        }
 
         /**
          * @return the type
