@@ -30,7 +30,7 @@ foss_pkgs   := \
 	sysstat \
 	gradle-2.9 \
 	CMake \
-	node \
+	nodejs-legacy \
 	npm \
 	oracle-java8-installer
 

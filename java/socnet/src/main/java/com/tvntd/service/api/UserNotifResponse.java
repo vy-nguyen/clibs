@@ -50,7 +50,7 @@ public class UserNotifResponse
             DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm");
             return df.format(date);
         }
-        return null;
+        return "now";
     }
 
     public static Long dateToMill(String dateStr)
@@ -216,7 +216,7 @@ public class UserNotifResponse
         {
             this.type = "Message";
             this.title = it.getTitle();
-            this.image = it.getIcon();
+            this.image = it.getImage();
             this.subject = it.getSubject();
             this.message = it.getMessage();
             this.status = it.getStatus();

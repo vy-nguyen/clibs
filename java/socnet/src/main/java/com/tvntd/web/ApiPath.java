@@ -33,17 +33,27 @@ import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.tvntd.models.User;
+import com.tvntd.service.api.IMenuItemService;
+import com.tvntd.service.api.IUserNotifService;
 import com.tvntd.service.api.UserNotifResponse;
 
 @Controller
 public class ApiPath
 {
     static private Logger s_log = LoggerFactory.getLogger(PublicPath.class);
+
+    @Autowired
+    IMenuItemService menuItemService;
+
+    @Autowired
+    IUserNotifService userNotifService;
 
     /**
      * Handle Api REST calls.
@@ -53,7 +63,14 @@ public class ApiPath
     public UserNotifResponse
     getUserNotification(Locale locale, HttpSession session, HttpServletResponse resp)
     {
+        Long userId = menuItemService.getPublicId();
+        User user = (User) session.getAttribute("user");
+
+        if (user != null) {
+            userId = 0L;
+        }
+        UserNotifResponse result = userNotifService.getUserNotif(userId);
         s_log.info("Request user notification");
-        return null;
+        return result;
     }
 }

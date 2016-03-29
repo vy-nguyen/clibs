@@ -28,7 +28,6 @@ let ActivitiesDropdown = React.createClass({
     },
 
     getInitialState: function () {
-        this.data.activities = require('json!vntd-root/mock-json/activities.json');
         return this.data;
     },
 
@@ -123,10 +122,11 @@ let ActivitiesDropdown = React.createClass({
     },
 
     _fetch: function () {
-        return $.getJSON(this.props.url).then(function(activities) {
+        return $.getJSON(this.props.url).then(function(result) {
+            console.log(result);
             this.setState({
-                activities: activities,
-                activity: activities[0],
+                activities: [result.message, result.notify, result.task],
+                activity: result.message,
                 lastUpdate: new Date()
             })
         }.bind(this))

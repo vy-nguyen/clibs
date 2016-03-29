@@ -43,6 +43,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.tvntd.config.TestPersistenceJPAConfig;
 import com.tvntd.config.TestSecurityConfig;
 import com.tvntd.config.TestTvntdRootConfig;
@@ -114,9 +116,13 @@ public class MenuItemTest
     public void testUserNotifyService()
     {
         String rsDir = System.getProperty("TestResource");
-        userNotifService.saveUserNotif(0L, rsDir + "/user-notify.json");
+        String jsonFile = rsDir + "/user-notify.json";
+        userNotifService.saveUserNotif(0L, jsonFile);
 
         UserNotifResponse resp = userNotifService.getUserNotif(0L);
         assertNotNull(resp);
+
+        Gson out = new GsonBuilder().setPrettyPrinting().create();
+        s_log.info(out.toJson(resp));
     }
 }
