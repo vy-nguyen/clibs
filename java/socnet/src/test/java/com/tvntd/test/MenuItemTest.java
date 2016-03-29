@@ -113,10 +113,10 @@ public class MenuItemTest
     @Test
     public void testUserNotifyService()
     {
-        userNotifService.saveUserNotif(0L,
-            "/data/tvntd/java/socnet/src/front-end/tvntd/mock-json/user-notify.json");
+        String rsDir = System.getProperty("TestResource");
+        userNotifService.saveUserNotif(0L, rsDir + "/user-notify.json");
 
         UserNotifResponse resp = userNotifService.getUserNotif(0L);
-        // assertNotNull(resp);
+        assertNotNull(resp);
     }
 }

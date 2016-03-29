@@ -97,4 +97,10 @@ afterEvaluate {
         }
     }
 
+    test {
+        systemProperties 'basedir'     : projectDir
+        systemProperties 'testdir'     : "${projectDir}/src/test"
+        systemProperties 'TestData'    : "${projectDir}/src/test/data"
+        systemProperties 'TestResource': "${projectDir}/src/test/resources"
+    }
 } // afterEvaluate
