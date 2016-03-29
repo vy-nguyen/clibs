@@ -23,7 +23,16 @@ foss_pkgs   := \
 	libdb++-dev \
 	libdb-dev \
 	libevent-dev \
-	libssl-dev
+	libssl-dev \
+	mysql-server \
+	g++ \
+	clang-3.4 \
+	sysstat \
+	gradle-2.9 \
+	CMake \
+	node \
+	npm \
+	oracle-java8-installer
 
 foss_incl       := \
 	janson 

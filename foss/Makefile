@@ -5,7 +5,6 @@ ifndef topdir
 		googlemock/make \
 		googlemock/gtest/make \
 		c-algorithms \
-		libconfig \
 		leveldb \
 		grpc
 endif
@@ -25,7 +24,6 @@ build_dir:
 foss_predep: \
 	janson/configure \
 	c-algorithms/Makefile \
-	libconfig/configure \
 	klib/Makefile \
 	grpc/third_party/protobuf/Makefile.am
 
@@ -34,7 +32,6 @@ foss_postlink: \
 	gmock \
 	gtest \
 	libcalg \
-	libconfig \
 	stblib \
 	http-parser \
 	klib \
