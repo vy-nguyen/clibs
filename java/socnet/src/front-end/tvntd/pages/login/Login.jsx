@@ -20,7 +20,7 @@ let LoginHeader = React.createClass({
         return (
 <header id="header" className="animated fadeInDown">
     <div id="logo-group">
-        <span id="logo"> <img src="/rs/img/logo.png" alt="SmartAdmin"/></span>
+        <span id="logo"> <img src="/rs/img/logo/flag.png" alt="Viet Nam"/></span>
     </div>
     <span id="extr-page-header-space">
         <span className="hidden-mobile hiddex-xs">Need an account?</span>{htmlCodes.spaceNoBreak}
@@ -48,7 +48,7 @@ let LoginAbout = React.createClass({
                 <a href="#/smartadmin/different-versions.html" className="btn btn-danger btn-sm">About us</a>
             </div>
         </div>
-        <img src="/rs/img/demo/iphoneview.png" className="pull-right display-image" alt="" style={{width:'210px'}}/>
+        <img src="/rs/img/logo/flag.png" className="pull-right display-image" alt="" style={{width:'210px'}}/>
     </div>
     <div className="row">
         <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6">
@@ -115,6 +115,7 @@ let LoginForm = React.createClass({
         form.find('input').prop('disabled', false);
 
         if (data.authError == null) {
+            Actions.startup("/api/user");
             History.pushState(null, "/public/vietnam");
             return;
         }

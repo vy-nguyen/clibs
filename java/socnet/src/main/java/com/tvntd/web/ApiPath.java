@@ -26,6 +26,7 @@
  */
 package com.tvntd.web;
 
+import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletResponse;
@@ -41,7 +42,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.tvntd.models.User;
 import com.tvntd.service.api.IMenuItemService;
+import com.tvntd.service.api.IMenuItemService.MenuItemResp;
 import com.tvntd.service.api.IUserNotifService;
+import com.tvntd.service.api.StartupResponse;
 import com.tvntd.service.api.UserNotifResponse;
 
 @Controller
@@ -71,6 +74,26 @@ public class ApiPath
         }
         UserNotifResponse result = userNotifService.getUserNotif(userId);
         s_log.info("Request user notification");
+        return result;
+    }
+
+    @RequestMapping(value = "/api/user", method = RequestMethod.GET)
+    @ResponseBody
+    public StartupResponse
+    getStartupMenu(Locale locale, HttpSession session, HttpServletResponse resp)
+    {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return null;
+        }
+        s_log.debug("Request startup menu for user " + user.getEmail());
+        Long userId = menuItemService.getPrivateId();
+        List<MenuItemResp> items = menuItemService.getMenuItemRespByUser(userId);
+        StartupResponse result = new StartupResponse(user);
+
+        if (items != null) {
+            result.setMenuItems(items);
+        }
         return result;
     }
 }

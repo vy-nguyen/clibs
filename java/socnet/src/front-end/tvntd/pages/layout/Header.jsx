@@ -39,7 +39,7 @@ let Header = React.createClass({
             logout_menu = (
                 <div id="logout" className="btn-header transparent pull-right">
                     <span>
-                        <a href="#/login" title="Sign Out" data-logout-msg="Close this browser window">
+                        <a href="/login/logout" title="Sign Out" data-logout-msg="Close this browser window">
                             <i className="fa fa-sign-out"/>
                         </a>
                     </span>
@@ -66,7 +66,7 @@ let Header = React.createClass({
 <header id="header">
     {logo_block}
     <div className="pull-right">
-        <ToggleMenu className="btn-header pull-right" />
+        <ToggleMenu className="btn-header pull-right"/>
         {logout_menu}
         <SearchMobile className="btn-header transparent pull-right"/>
 
