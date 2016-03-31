@@ -49,7 +49,8 @@ const Routes = (
 
             <Route path="login" component={Login}/>
             <Redirect from="/" to="register"/>
-            <Route path="register" component={Register}>
+            <Route path="register">
+                <Route path="form" component={Register}/>
                 <Route path="recover" component={RecoverAcct}/>
             </Route>
 

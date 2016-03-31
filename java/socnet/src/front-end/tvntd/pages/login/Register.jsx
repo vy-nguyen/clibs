@@ -22,7 +22,7 @@ let RegisterHeader = React.createClass({
         return (
 <header id="header" className="animated fadeInDown">
     <div id="logo-group">
-        <span id="logo"> <img src="/rs/img/logo.png" alt="SmartAdmin"/> </span>
+        <span id="logo"> <img src="/rs/img/logo/flag.png" alt="Viet Nam"/> </span>
     </div>
     <span id="extr-page-header-space">
         <span className="hidden-mobile hiddex-xs">Already registered?</span>{htmlCodes.spaceNoBreak}

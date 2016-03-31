@@ -24,7 +24,7 @@ let LoginHeader = React.createClass({
     </div>
     <span id="extr-page-header-space">
         <span className="hidden-mobile hiddex-xs">Need an account?</span>{htmlCodes.spaceNoBreak}
-        <Link to="/register" className="btn btn-danger">Create Account</Link>
+        <Link to="/register/form" className="btn btn-danger">Create Account</Link>
     </span>
 </header>
         );
@@ -188,7 +188,7 @@ let LoginForm = React.createClass({
                         </b>
                     </label>
                     <div className="note">
-                        <Link to="/recover">Forgot password?</Link>
+                        <Link to="/register/recover">Forgot password?</Link>
                     </div>
                 </section>
                 <section>

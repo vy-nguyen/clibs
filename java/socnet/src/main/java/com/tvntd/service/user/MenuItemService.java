@@ -85,7 +85,7 @@ public class MenuItemService implements IMenuItemService
         "\"parentId\": 20," +
         "\"title\"   : \"Register\"," +
         "\"icon\"    : \"fa fa-group\"," +
-        "\"route\"   : \"/register\"" +
+        "\"route\"   : \"/register/form\"" +
     "}, {" +
         "\"userId\"  : 0," +
         "\"itemId\"  : 23," +
