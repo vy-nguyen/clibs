@@ -3,38 +3,48 @@
  */
 'use strict';
 
-import React      from 'react-mod';
-import classnames from 'classnames';
-import Moment     from '../utils/Moment.jsx';
+import React        from 'react-mod';
+import Reflux       from 'reflux';
+import classnames   from 'classnames';
+import Moment       from '../utils/Moment.jsx';
 
 import Message      from './Message.jsx';
 import Notification from './Notification.jsx';
 import Task         from './Task.jsx';
+import Actions      from 'vntd-root/actions/Actions.jsx';
+import RenderStore  from 'vntd-root/stores/RenderStore.jsx';
 
 let ActivitiesDropdown = React.createClass({
 
+    mixins: [
+        Reflux.connect(RenderStore),
+        Reflux.listenTo(RenderStore, "_onRefreshNotify")
+    ],
+
     _active: false,
     components: {
-        Message: Message,
-        Notification: Notification,
-        Task: Task
-    },
-    data: {
-        activity: {
-            items: []
-        },
-        activities: [],
-        lastUpdate: new Date()
+        Task:         Task,
+        Message:      Message,
+        Notification: Notification
     },
 
-    getInitialState: function () {
-        return this.data;
+    componentWillMount: function() {
+    },
+
+    getInitialState: function() {
+        this.setState({
+            lastUpdated: new Date()
+        });
     },
 
     render: function () {
-        let activities = this.state.activities;
-        let activity = this.state.activity;
+        /* This state is the same as RenderStore data */
+        let activities = this.state.notifyItems;
+        let activity = this.state.activeNotify;
 
+        if (activity == undefined || activity.items == undefined) {
+            return null;
+        }
         let count = _.sumBy(activities, function(a) {
             return a.length
         });
@@ -44,7 +54,18 @@ let ActivitiesDropdown = React.createClass({
                 <label className={cls_name} key={idx} onClick={this._setActivity.bind(this, it)}>
                     <input type="radio" name="activity"/>{it.title} ({it.length})
                 </label>
-            )
+            );
+        }.bind(this));
+
+        let menu_body = activity.items.map(function(item, idx) {
+            let component = this.components[item.type];
+            let element = React.createElement(this.components[item.type], {
+                item: item,
+                lastUpdated: this.state.lastUpdated
+            });
+            return (
+                <li key={idx}>{element}</li>
+            );
         }.bind(this));
 
         return (
@@ -58,39 +79,29 @@ let ActivitiesDropdown = React.createClass({
                         {menu_header}
                     </div>
 
-                    {/* notification content */}
                     <div className="ajax-notifications custom-scroll">
                         <ul className="notification-body">
-                        {activity.items.map(function(item, idx){
-                            let component = this.components[item.type]
-                            return  <li key={idx}>{React.createElement(component, {
-                                    item: item,
-                                    lastUpdated: this.state.lastUpdated
-                                })}</li>
-                        }.bind(this))}
+                            {menu_body}
                         </ul>
                     </div>
-                    {/* end notification content */}
 
-                    {/* footer: refresh area */}
-                    <span> Last updated on: <Moment data={this.state.lastUpdate} format="h:mm:ss a"/>
-                  <button type="button" onClick={this._update}
-                          className="btn btn-xs btn-default pull-right">
-                      <i ref="loadingSpin" className="fa fa-refresh"/>
-                      <span ref="loadingText"/>
-                  </button>
-                  </span>
-                    {/* end footer */}
-
+                    <span> Last updated on: <Moment data={this.state.lastUpdated} format="h:mm:ss a"/>
+                        <button type="button" onClick={this._update} className="btn btn-xs btn-default pull-right">
+                            <i ref="loadingSpin" className="fa fa-refresh"/>
+                            <span ref="loadingText"/>
+                        </button>
+                    </span>
                 </div>
             </div>
         )
     },
 
-    _setActivity: function(_activity) {
+    _setActivity: function(active) {
         this.setState({
-            activity: _activity
+            activeNotify: active
         });
+        RenderStore.setActiveNotify(active);
+        this.forceUpdate();
     },
 
     _toggleDropdown: function(e) {
@@ -103,25 +114,32 @@ let ActivitiesDropdown = React.createClass({
         } else {
             $dropdown.fadeIn(150)
         }
-
         this._active = !this._active;
         $dropdownToggle.toggleClass('active', this._active)
     },
 
     componentWillMount: function() {
-        this._fetch()
+        this._update();
     },
 
-    _update: function(){
+    _update: function() {
         $(this.refs.loadingText).html('Loading...');
         $(this.refs.loadingSpin).addClass('fa-spin');
-        this._fetch().then(function() {
-            $(this.refs.loadingText).html('');
-            $(this.refs.loadingSpin).removeClass('fa-spin');
-        }.bind(this))
+        Actions.refreshNotify();
     },
 
-    _fetch: function () {
+    _onRefreshNotify: function(data) {
+        $(this.refs.loadingText).html("");
+        $(this.refs.loadingSpin).removeClass("fa-spin");
+        this.setState({
+            notifyItems : data.notifyItems,
+            activeNotify: data.activeNotify,
+            lastUpdated : data.lastUpdated
+        });
+        this.forceUpdate();
+    },
+    /*
+    _fetch: function() {
         return $.getJSON(this.props.url).then(function(result) {
             console.log(result);
             this.setState({
@@ -131,7 +149,7 @@ let ActivitiesDropdown = React.createClass({
             })
         }.bind(this))
     }
-
+    */
 });
 
 export default ActivitiesDropdown

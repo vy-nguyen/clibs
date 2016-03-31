@@ -13,6 +13,7 @@ const Actions = Reflux.createActions({
     // User actions
     logout:          {},
     startup:         {children: ['completed', 'failed']},
+    refreshNotify:   {children: ['completed', 'failed']},
     login:           {children: ['completed', 'failed', 'always']},
     register:        {children: ['completed', 'failed', 'always']},
     verifyAccount:   {children: ['completed', 'failed']},
@@ -64,12 +65,19 @@ Actions.clickMenuItem.listen(function(item) {
 });
 
 /**
- * User actions.
+ * User menu actions.
  */
 Actions.startup.listen(function(url) {
     $.getJSON(url).then(this.completed, this.failed);
 });
 
+Actions.refreshNotify.listen(function() {
+    $.getJSON("/api/user-notification").then(this.completed, this.failed);
+});
+
+/**
+ * User actions.
+ */
 Actions.login.listen(function(loginData, formData) {
     postRestCall(formData, "/login", false, this.completed, this.failed, this.always);
 });

@@ -20,12 +20,29 @@ class ErrorHandler extends ErrorDispatch
 
 let RenderStore = Reflux.createStore({
     data: {
-        menuItems: []
+        menuItems: [],
+        notifyItems: [],
+        activeNotify: {
+            items: []
+        },
+        lastUpdated: new Date()
     },
     listenables: [Actions, NavigationActions],
 
     getMenuItems: function() {
         return this.data.items;
+    },
+
+    getNotifyItems: function() {
+        return this.data.notifyItems;
+    },
+
+    getActiveNotify: function() {
+        return this.data.activeNotify;
+    },
+
+    setActiveNotify: function(item) {
+        this.data.activeNotify = item;
     },
 
     onActivateCompleted: function(item) {
@@ -37,6 +54,19 @@ let RenderStore = Reflux.createStore({
 
         NavigationStore.replaceMenuItems(this.data.menuItems);
         this.trigger(this.data);
+    },
+
+    onRefreshNotifyCompleted: function(json) {
+        this.data.notifyItems = [json.message, json.notify, json.task];
+        this.data.activeNotify = json.message;
+        this.data.lastUpdated = new Date();
+        this.trigger(this.data);
+    },
+
+    onRefreshNotifyFailed: function(xhdr, text, status) {
+        let error = new ErrorHandler(xhdr, text, status);
+        error.dispatch();
+        error = null;
     },
 
     onStartupFailed: function(xhdr, text, status) {

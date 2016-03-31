@@ -7,9 +7,9 @@ var scripts = require('./scripts');
 
 var config =  _.merge( baseConfig, {
     entry: _.merge({
-            "tvntd-bundle": path.resolve(__dirname, '../tvntd/main.jsx')
-        },
-        scripts.chunks),
+        "tvntd-bundle": path.resolve(__dirname, '../tvntd/main.jsx')
+    }, scripts.chunks),
+
     output: {
         path: path.resolve(__dirname, '../../main/webapp/client'),
         publicPath: 'client/',
@@ -24,18 +24,20 @@ var config =  _.merge( baseConfig, {
             compress: {
                 warnings: false
             },
-            minimize: true,
+            minimize: false,
             sourceMap: false,
             exclude: [
                 /node_modules/,
                 /bower_components/
             ]
         }),
+        /*
         new webpack.DefinePlugin({
             'process.env': {
                 'NODE_ENV': JSON.stringify('production')
             }
         })
+        */
     ].concat(baseConfig.plugins)
 });
 
