@@ -8,6 +8,7 @@ var scripts = {
         "react-dom": "/node_modules/react-dom/dist/react-dom.min.js",
         "react-bootstrap": "/node_modules/react-bootstrap/dist/react-bootstrap.min.js",
         "react-router"   : "/node_modules/react-router/umd/ReactRouter.min.js",
+        "react-dropzone" : "/node_modules/dropzone/dist/dropzone.js",
 
         "redux": "/node_modules/redux/dist/redux.min.js",
         "history/lib": "/node_modules/history/umd/History.min.js",

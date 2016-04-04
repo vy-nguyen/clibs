@@ -18,6 +18,10 @@ import NewsFeed      from './pages/news-feed/NewsFeed.jsx';
 import SocialWall    from './pages/wall/SocialWall.jsx';
 import ProductView   from './pages/e-store/ProductView.jsx';
 import ProductDetail from './pages/e-store/ProductDetail.jsx';
+import UserHome      from './pages/user/UserHome.jsx';
+import UserAccount   from './pages/user/UserAccount.jsx';
+import UserTrans     from './pages/user/UserTransaction.jsx';
+import UserProfile   from './pages/user/UserProfile.jsx';
 import LoginRequired from 'vntd-shared/utils/LoginRequired.jsx';
 
 const Routes = (
@@ -35,6 +39,7 @@ const Routes = (
 
             <Redirect from="public" to="public/proto"/>
             <Route path="public/proto">
+                <IndexRoute component={SocialWall}/>
                 <Route path="blog" component={Blog} subHeader={true}/>
                 <Route path="timeline" component={Timeline} subHeader={true}/>
                 <Route path="wall" component={SocialWall} subHeader={true}/>
@@ -43,6 +48,7 @@ const Routes = (
 
             <Redirect from="public/proto" to="public/proto/estore"/>
             <Route path="public/proto/estore">
+                <IndexRoute component={ProductView}/>
                 <Route path="product-view" component={ProductView} subHeader={true}/>
                 <Route path="product-detail" component={ProductDetail} subHeader={true}/>
             </Route>
@@ -50,11 +56,22 @@ const Routes = (
             <Route path="login" component={Login}/>
             <Redirect from="/" to="register"/>
             <Route path="register">
+                <IndexRoute component={Register}/>
                 <Route path="form" component={Register}/>
                 <Route path="recover" component={RecoverAcct}/>
             </Route>
 
             <Route handler={LoginRequired}>
+                <Redirect from="/" to="api"/>
+                <Route path="api">
+                </Route>
+                <Redirect from="/" to="user"/>
+                <Route path="user">
+                    <IndexRoute component={UserHome}/>
+                    <Route path="profile" component={UserProfile}/>
+                    <Route path="account" component={UserAccount}/>
+                    <Route path="transaction" component={UserTrans}/>
+                </Route>
             </Route>
         </Route>
     </Route>

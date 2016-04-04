@@ -5,7 +5,7 @@
 'use strict';
 
 window.jQuery = window.$ = require("jquery");
-window._                 =  require("lodash");
+window._                 = require("lodash");
 window.GlobalConfigs     = require('./config/config');
 
 require("jquery-ui");
@@ -22,7 +22,7 @@ import React    from 'react-mod';
 import {render} from 'react-dom';
 import {Router} from 'react-router';
 import History  from 'vntd-shared/utils/History.jsx';
-import Routes from './tvntd-router.jsx'
+import Routes   from './tvntd-router.jsx'
 
 require.ensure([], function(require) {
     var rootInstance = render((
