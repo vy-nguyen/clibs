@@ -32,7 +32,8 @@ foss_pkgs   := \
 	CMake \
 	nodejs-legacy \
 	npm \
-	oracle-java8-installer
+	oracle-java8-installer \
+	mongodb-server
 
 foss_incl       := \
 	janson 

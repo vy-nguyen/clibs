@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.mongodb.Mongo;
 import com.tvntd.models.User;
 import com.tvntd.service.api.IMenuItemService;
 import com.tvntd.service.api.IMenuItemService.MenuItemResp;
@@ -53,10 +54,13 @@ public class ApiPath
     static private Logger s_log = LoggerFactory.getLogger(PublicPath.class);
 
     @Autowired
-    IMenuItemService menuItemService;
+    private IMenuItemService menuItemService;
 
     @Autowired
-    IUserNotifService userNotifService;
+    private IUserNotifService userNotifService;
+
+    @Autowired
+    private Mongo mongo;
 
     /**
      * Handle Api REST calls.

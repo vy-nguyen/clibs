@@ -69,6 +69,8 @@ dependencies {
     compile "org.springframework:spring-tx:${spring_version}"
     compile "org.springframework:spring-expression:${spring_version}"
     compile "org.springframework.data:spring-data-jpa:${spring_data_jpa_version}"
+    compile "org.springframework.data:spring-data-mongodb:${spring_mongodb_version}"
+    compile "org.mongodb:mongo-java-driver:${mongodb_version}"
     compile "io.jsonwebtoken:jjwt:${json_webtoken_version}"
 
     compile "org.springframework.security:spring-security-web:${spring_security_ver}"

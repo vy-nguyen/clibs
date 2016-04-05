@@ -37,6 +37,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
+import org.springframework.data.mongodb.core.MongoFactoryBean;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
@@ -102,5 +104,13 @@ public class TvntdRootConfig
     @Bean
     public PasswordMatchesValidator passwordMatchesValidator() {
         return new PasswordMatchesValidator();
+    }
+
+    @Bean
+    public MongoFactoryBean mongo()
+    {
+        MongoFactoryBean mongo = new MongoFactoryBean();
+        mongo.setHost("localhost");
+        return mongo;
     }
 }

@@ -11,8 +11,9 @@ import DropzoneComponent  from 'react-dropzone-component';
 import UserStore          from 'vntd-shared/stores/UserStore.jsx';
 import ProfileCover       from 'vntd-root/components/ProfileCover.jsx';
 
-var callback = function() {
+var callback = function(files) {
     console.log("Callback is called");
+    console.log(files);
 };
 
 let UserProfile = React.createClass({
