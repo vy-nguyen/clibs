@@ -83,6 +83,7 @@ dependencies {
     compile "org.hibernate:hibernate-validator:${hibernate_validator_ver}"
     compile "org.passay:passay:${passay_version}"
     compile "commons-dbcp:commons-dbcp:${commons_dbcp_version}"
+    compile "commons-fileupload:commons-fileupload:1.3.1"
     compile "com.jayway.restassured:rest-assured:${rest_assured_version}"
 
     compile "javax.el:el-api:2.2"

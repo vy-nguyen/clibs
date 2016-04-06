@@ -38,10 +38,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import com.mongodb.Mongo;
 import com.tvntd.models.User;
+import com.tvntd.service.api.GenericResponse;
 import com.tvntd.service.api.IMenuItemService;
 import com.tvntd.service.api.IMenuItemService.MenuItemResp;
 import com.tvntd.service.api.IUserNotifService;
@@ -52,6 +56,7 @@ import com.tvntd.service.api.UserNotifResponse;
 public class ApiPath
 {
     static private Logger s_log = LoggerFactory.getLogger(PublicPath.class);
+    static private GenericResponse s_genOkResp = new GenericResponse("ok");
 
     @Autowired
     private IMenuItemService menuItemService;
@@ -60,7 +65,10 @@ public class ApiPath
     private IUserNotifService userNotifService;
 
     @Autowired
-    private Mongo mongo;
+    protected Mongo mongo;
+
+    @Autowired
+    protected CommonsMultipartResolver multipartResolver;
 
     /**
      * Handle Api REST calls.
@@ -99,5 +107,27 @@ public class ApiPath
             result.setMenuItems(items);
         }
         return result;
+    }
+
+    @RequestMapping(value = "/api/upload-img", method = RequestMethod.POST)
+    @ResponseBody
+    public GenericResponse
+    uploadImage(@RequestParam("name") String name,
+            @RequestParam("file") MultipartFile file)
+    {
+        s_log.info("Upload image " + name + " part " + file.toString());
+        return s_genOkResp;
+    }
+
+    @RequestMapping(value = "/api/upload-img-list", method = RequestMethod.POST)
+    @ResponseBody
+    public GenericResponse
+    uploadImageList(@RequestParam("name") String[] names,
+            @RequestParam("file") MultipartFile[] files)
+    {
+        if (files.length != names.length) {
+            return new GenericResponse("failure", "Miss-match input length");
+        }
+        return s_genOkResp;
     }
 }
