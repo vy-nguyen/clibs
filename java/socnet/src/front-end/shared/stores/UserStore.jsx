@@ -174,10 +174,8 @@ let UserStore = Reflux.createStore({
         this.data.csrfHeader = json.csrfHeader;
         this.data.csrfToken = json.csrfToken;
         if ((json.csrfHeader != null) && (json.csrfHeader != undefined)) {
-            console.log($("meta[name='_csrf']").attr("content"));
             $("meta[name='_csrf']").attr("content", json.csrfToken);
             $("meta[name='_csrf_header']").attr("content", json.csrfHeader);
-            console.log($("meta[name='_csrf']").attr("content"));
         }
     },
 
