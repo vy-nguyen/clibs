@@ -43,6 +43,8 @@ function postRestCall(formData, url, json, complete, failure, always) {
             let token  = $("meta[name='_csrf']").attr("content");
             let header = $("meta[name='_csrf_header']").attr("content");
             xhdr.setRequestHeader(header, token);
+            console.log("Sending hdr");
+            console.log(xhdr);
         }
     }).done(function(resp, text, error) {
         complete(resp, text);

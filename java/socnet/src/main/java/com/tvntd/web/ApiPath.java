@@ -29,12 +29,14 @@ package com.tvntd.web;
 import java.util.List;
 import java.util.Locale;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -76,7 +78,8 @@ public class ApiPath
     @RequestMapping(value = "/api/user-notification", method = RequestMethod.GET)
     @ResponseBody
     public UserNotifResponse
-    getUserNotification(Locale locale, HttpSession session, HttpServletResponse resp)
+    getUserNotification(Locale locale, HttpSession session,
+            HttpServletRequest reqt, HttpServletResponse resp)
     {
         Long userId = menuItemService.getPublicId();
         User user = (User) session.getAttribute("user");
@@ -85,28 +88,47 @@ public class ApiPath
             userId = 0L;
         }
         UserNotifResponse result = userNotifService.getUserNotif(userId);
-        s_log.info("Request user notification");
+        CsrfToken token = (CsrfToken) reqt.getAttribute("_csrf");
+
+        if (token != null) {
+            result.setCsrfHeader(token.getHeaderName());
+            result.setCsrfToken(token.getToken());
+            s_log.info("Request user notification token " + 
+                    result.getCsrfHeader() + ": " + result.getCsrfToken());
+        }
         return result;
     }
 
     @RequestMapping(value = "/api/user", method = RequestMethod.GET)
     @ResponseBody
     public StartupResponse
-    getStartupMenu(Locale locale, HttpSession session, HttpServletResponse resp)
+    getStartupMenu(Locale locale, HttpSession session,
+            HttpServletRequest reqt, HttpServletResponse resp)
     {
         User user = (User) session.getAttribute("user");
         if (user == null) {
             return null;
         }
-        s_log.debug("Request startup menu for user " + user.getEmail());
         Long userId = menuItemService.getPrivateId();
         List<MenuItemResp> items = menuItemService.getMenuItemRespByUser(userId);
         StartupResponse result = new StartupResponse(user);
 
+        fillStartupResponse(result, user, reqt);
         if (items != null) {
             result.setMenuItems(items);
         }
         return result;
+    }
+
+    public static void
+    fillStartupResponse(StartupResponse resp, User user, HttpServletRequest reqt)
+    {
+        CsrfToken token = (CsrfToken) reqt.getAttribute("_csrf");
+
+        if (token != null) {
+            resp.setCsrfHeader(token.getHeaderName());
+            resp.setCsrfToken(token.getToken());
+        }
     }
 
     @RequestMapping(value = "/api/upload-img", method = RequestMethod.POST)

@@ -27,8 +27,39 @@
 
 package com.tvntd.util;
 
-public class Debug
+import java.util.Enumeration;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextImpl;
+
+public final class Debug
 {
+    static private Logger s_log = LoggerFactory.getLogger(Debug.class);
+
+    static public void dumpSession(HttpSession session)
+    {
+        Enumeration<?> e = session.getAttributeNames();
+        while (e.hasMoreElements()) {
+            String name = (String) e.nextElement();
+            Object value = session.getAttribute(name);
+            s_log.info(name + ": " + value.toString());
+        }
+    }
+
+    static public void dumpRequest(HttpServletRequest reqt)
+    {
+        Enumeration<?> e = reqt.getAttributeNames();
+        while (e.hasMoreElements()) {
+            String name = (String) e.nextElement();
+            Object value = reqt.getAttribute(name);
+            s_log.info(name + ": " + value.toString());
+        }
+    }
+
     static public void dumpStack()
     {
         Thread.dumpStack();

@@ -56,9 +56,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.csrf.CsrfFilter;
 
 import com.tvntd.models.Role;
 import com.tvntd.security.ServiceUser;
+import com.tvntd.security.StatelessCSRFFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -133,9 +135,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
             .and()
                 .exceptionHandling().accessDeniedPage("/403")
             .and()
-                .csrf()
+                .rememberMe()
             .and()
-                .rememberMe();
+                .csrf();
         // @formatter:on
     }
 

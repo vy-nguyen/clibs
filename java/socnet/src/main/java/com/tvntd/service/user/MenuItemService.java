@@ -391,7 +391,6 @@ public class MenuItemService implements IMenuItemService
                         item.getParentId() + ", item " + item.getTitle());
             }
         }
-        s_log.info(">> Memory tree user: " + userId + "\n" + result);
         map.clear();
         return result;
     }

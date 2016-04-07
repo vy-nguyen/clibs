@@ -33,6 +33,8 @@ import com.tvntd.service.api.IMenuItemService.MenuItemResp;
 
 public class StartupResponse
 {
+    private String csrfToken;
+    private String csrfHeader;
     private LoginResponse      userInfo;
     private List<MenuItemResp> menuItems;
 
@@ -41,6 +43,34 @@ public class StartupResponse
         if (user != null) {
             userInfo = new LoginResponse(user);
         }
+    }
+
+    /**
+     * @return the csrfToken
+     */
+    public String getCsrfToken() {
+        return csrfToken;
+    }
+
+    /**
+     * @param csrfToken the csrfToken to set
+     */
+    public void setCsrfToken(String csrfToken) {
+        this.csrfToken = csrfToken;
+    }
+
+    /**
+     * @return the csrfHeader
+     */
+    public String getCsrfHeader() {
+        return csrfHeader;
+    }
+
+    /**
+     * @param csrfHeader the csrfHeader to set
+     */
+    public void setCsrfHeader(String csrfHeader) {
+        this.csrfHeader = csrfHeader;
     }
 
     /**

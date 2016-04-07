@@ -41,7 +41,9 @@ let UserStore = Reflux.createStore({
         authMesg: null,
         authError: null,
         authToken: null,
-        authVerifToken: null
+        authVerifToken: null,
+        csrfHeader: null,
+        csrfToken: null
     },
     listenables: [Actions],
 
@@ -54,6 +56,14 @@ let UserStore = Reflux.createStore({
 
     getUserByUuid: function(uuid) {
         return _.find(this.data.userList, { userUuid: uuid });
+    },
+
+    getCsrfHeader: function() {
+        return this.data.csrfHeader;
+    },
+
+    getCsrfToken: function() {
+        return this.data.csrfToken;
     },
 
     getAuthToken: function() {
@@ -78,7 +88,12 @@ let UserStore = Reflux.createStore({
 
     /* Startup actions. */
     onStartupCompleted: function(json) {
+        this._updateCommon(json);
         this._changedData(json.userInfo);
+    },
+
+    onrefreshNotifyCompleted: function(json) {
+        this._updateCommon(json);
     },
 
     /* Login actions. */
@@ -139,6 +154,8 @@ let UserStore = Reflux.createStore({
         this.data.userList = [];
         this.data.authError = null;
         this.data.authToken = null;
+        this.data.csrfHeader = null;
+        this.data.csrfToken = null;
     },
 
     _changedDataFailure: function(xhdr, text, error) {
@@ -151,6 +168,17 @@ let UserStore = Reflux.createStore({
             authToken: null,
             authVerifToken: null
         });
+    },
+
+    _updateCommon: function(json) {
+        this.data.csrfHeader = json.csrfHeader;
+        this.data.csrfToken = json.csrfToken;
+        if ((json.csrfHeader != null) && (json.csrfHeader != undefined)) {
+            console.log($("meta[name='_csrf']").attr("content"));
+            $("meta[name='_csrf']").attr("content", json.csrfToken);
+            $("meta[name='_csrf_header']").attr("content", json.csrfHeader);
+            console.log($("meta[name='_csrf']").attr("content"));
+        }
     },
 
     _changedData: function(resp) {

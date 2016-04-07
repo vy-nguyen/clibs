@@ -29,6 +29,7 @@ package com.tvntd.web;
 import java.util.List;
 import java.util.Locale;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -59,15 +60,16 @@ public class PublicPath
     @RequestMapping(value = "/public/start", method = RequestMethod.GET)
     @ResponseBody
     public StartupResponse
-    getStartupMenu(Locale locale, HttpSession session, HttpServletResponse resp)
+    getStartupMenu(Locale locale, HttpSession session,
+            HttpServletRequest reqt, HttpServletResponse resp)
     {
         Long userId = menuItemService.getPublicId();
         User user = (User) session.getAttribute("user");
         StartupResponse result = new StartupResponse(user);
 
-        s_log.debug("Request startup menu " + user);
         if (user != null) {
             s_log.debug("User loggined: " + user.getEmail());
+            ApiPath.fillStartupResponse(result, user, reqt);
             userId = menuItemService.getPrivateId();
         }
         List<MenuItemResp> items = menuItemService.getMenuItemRespByUser(userId);
