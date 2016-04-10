@@ -17,8 +17,9 @@
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/Admin/smartadmin-production-plugins.min.css">
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/Admin/smartadmin-production.min.css">
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/Admin/smartadmin-skins.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/site.css">
 
-    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/rs/img/favicon.ico" type="image/x-icon">
 
     <link rel="apple-touch-icon" href="/rs/images/splash/sptouch-icon-iphone.png">
     <link rel="apple-touch-icon" sizes="76x76" href="/rs/images/splash/touch-icon-ipad.png">

@@ -86,6 +86,10 @@ let UserStore = Reflux.createStore({
         return this.data.userSelf;
     },
 
+    getData: function() {
+        return this.data;
+    },
+
     /* Startup actions. */
     onStartupCompleted: function(json) {
         this._updateCommon(json);

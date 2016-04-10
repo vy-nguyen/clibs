@@ -26,9 +26,6 @@
  */
 package com.tvntd.config;
 
-import java.util.Properties;
-
-import org.brickred.socialauth.SocialAuthConfig;
 import org.brickred.socialauth.spring.bean.SocialAuthTemplate;
 import org.brickred.socialauth.spring.bean.SpringSocialAuthManager;
 import org.brickred.socialauth.spring.controller.SocialAuthWebController;
@@ -56,11 +53,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.csrf.CsrfFilter;
 
 import com.tvntd.models.Role;
 import com.tvntd.security.ServiceUser;
-import com.tvntd.security.StatelessCSRFFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -69,9 +64,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
 {
     @Autowired
     private UserDetailsService userDetailsService;
-
-    //@Autowired
-    //private TokenAuthenticationService tokenAuthService;
 
     @Autowired
     private AuthenticationSuccessHandler urlAuthenticationSuccessHandler;
@@ -180,6 +172,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
         return bean;
     }
 
+    /*
     @Bean
     public SocialAuthConfig socialAuthConfig(Properties socialAuthProperties)
     {
@@ -190,6 +183,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
         }
         return cfg;
     }
+    */
 
     @Bean
     public SocialAuthWebController socialAuthWebController() {

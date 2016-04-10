@@ -1,15 +1,3 @@
-.row.vertical-divider {
-    overflow: hidden;
-}
-.row.vertical-divider > div[class^="col-"] {
-    padding-bottom: 100px;
-    margin-bottom: -100px;
-    border-left: 1px solid black;
-    border-right: 1px solid black;
-}
-.row.vertical-divider div[class^="col-"]:first-child {
-    border-left: none;
-}
-.row.vertical-divider div[class^="col-"]:last-child {
-    border-right: none;
+.dropzone {
+    min-height: 10px
 }
