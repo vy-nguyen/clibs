@@ -5,6 +5,7 @@
 'use strict';
 
 import React            from 'react-mod';
+import classnames       from 'classnames';
 import TabStore         from 'vntd-shared/stores/TabPanelStore.jsx';
 
 let TabPanel = React.createClass({
@@ -26,8 +27,9 @@ let TabPanel = React.createClass({
         }.bind(this));
 
         let tab_content = tab.tabItems.map(function(item, idx) {
+            let clasname = classnames("tab-pane", {active: idx == 0 });
             return (
-                <div key={idx} id={item.tabDomId + '-' + idx} className={"tab-pane " + (idx == 0) ? "active" : ""}>
+                <div key={idx} id={item.tabDomId + '-' + idx} className={classnames("tab-pane", {active: idx == 0})}>
                     <div className="panel-body">
                         {item.panelContent}
                     </div>

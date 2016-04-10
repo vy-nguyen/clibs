@@ -85,11 +85,11 @@ let UserProfile = React.createClass({
         tabItems: [ {
             tabDomId: 'profile-tab',
             tabText : 'About Me',
-            panelContent: <UserInfo/>
+            panelContent: <div><UserInfo/><UserInfo/><UserInfo/></div>
         }, {
             tabDomId: 'connection-tab',
             tabText : 'Connections',
-            panelContent: <h1>Hello world</h1>
+            panelContent: <div><UserInfo/></div>
         } ]
     },
 
