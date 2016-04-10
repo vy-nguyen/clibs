@@ -18,14 +18,15 @@ let PanelStore = Reflux.createStore({
     listenables: [Actions],
 
     getPanel: function(id) {
+        if (this.data.panel[id] == undefined) {
+            return null;
+        }
         return this.data.panel[id];
     },
 
     setPanel: function(panelId, panel) {
-        if (this.data.panel[panelId] == undefined) {
-            return null;
-        }
         this.data.panel[panelId] = panel;
+        console.log(this.data.panel[panelId]);
     },
 
     clonePanel: function(orig, newId)

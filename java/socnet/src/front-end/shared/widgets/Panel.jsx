@@ -6,6 +6,8 @@
 
 import React            from 'react-mod';
 import PanelStore       from 'vntd-shared/stores/PanelStore.jsx';
+import DropdownMenu     from 'vntd-shared/layout/DropdownMenu.jsx';
+import JarvisWidget     from 'vntd-shared/widgets/JarvisWidget.jsx';
 
 let Panel = React.createClass({
     getInitialState: function() {
@@ -22,20 +24,18 @@ let Panel = React.createClass({
         }.bind(this));
 
         return (
-            <article className={"sortable-grid ui-sortable" + this.props.className ? this.props.className : ""}>
-                <JarvisWidget>
-                    <header>
-                        <span className="widget-icon"><i className={this.props.data.icon}/></span>
-                        <h3>{this.props.data.header}</h3>
-                        <div className="widget-toolbar">
-                            {dropdown_menu}
-                        </div>
-                    </header>
-                    <div className="widget-body">
-                        {this.props.children}
-                    </div>
-                </JarvisWidget>
-            </article>
+           <JarvisWidget color={"blue"} collapse={true}>
+               <header>
+                   <span className="widget-icon"><i className={this.props.data.icon}/></span>
+                   <h2>{this.props.data.header}</h2>
+                   <div className="widget-toolbar">
+                       {dropdown_menu}
+                   </div>
+               </header>
+               <div className="widget-body">
+                   {this.props.children}
+               </div>
+           </JarvisWidget>
         );
     }
 });

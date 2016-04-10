@@ -11,12 +11,6 @@ import Actions  from 'vntd-root/actions/Actions.jsx';
 /*
  * Explicit define known fields in User object.
  */
-class TabPannelItem {
-    constructor(data) {
-        this._id       = _.uniqueId('id-user-info-');
-        return this;
-    }
-}
 
 let TabPanelStore = Reflux.createStore({
     data: {
@@ -25,13 +19,13 @@ let TabPanelStore = Reflux.createStore({
     listenables: [Actions],
 
     getTabPanel: function(id) {
+        if (this.data.panel[id] == undefined) {
+            return null;
+        }
         return this.data.panel[id];
     },
 
     setTabPanel: function(id, tab) {
-        if (this.data.panel[id] == undefined) {
-            return null;
-        }
         this.data.panel[id] = tab;
     },
 

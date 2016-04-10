@@ -12,67 +12,75 @@ import {Dropdown, MenuItem} from 'react-bootstrap';
 import MenuStore          from 'vntd-shared/stores/DropdownMenuStore.jsx';
 import PanelStore         from 'vntd-shared/stores/PanelStore.jsx';
 import TabPanelStore      from 'vntd-shared/stores/TabPanelStore.jsx';
+import TabPanel           from 'vntd-shared/layout/TabPanel.jsx';
 import DropdownMenu       from 'vntd-shared/layout/DropdownMenu.jsx';
 import UserStore          from 'vntd-shared/stores/UserStore.jsx';
 import JarvisWidget       from 'vntd-shared/widgets/JarvisWidget.jsx';
 import Panel              from 'vntd-shared/widgets/Panel.jsx';
-import ProfileCover       from 'vntd-root/components/ProfileCover.jsx';
+import WidgetGrid         from 'vntd-shared/widgets/WidgetGrid.jsx';
+
+let profileMenu = {
+    menuId   : 'profile',
+    iconFmt  : 'btn-xs btn-success',
+    titleText: 'Miann',
+    itemFmt  : 'pull-right js-status-update',
+    menuItems: [ {
+        itemFmt : 'fa fa-circle txt-color-green',
+        itemText: 'Online',
+        itemHandler: function() {
+            console.log("Online is clicked");
+        }
+    }, {
+        itemFmt : 'fa fa-circle txt-color-yellow',
+        itemText: 'Go to sleep',
+        itemHandler: function() {
+            console.log("Offline is clicked");
+        }
+    }, {
+        itemFmt : 'fa fa-circle txt-color-red',
+        itemText: 'Offline',
+        itemHandler: function() {
+            console.log("Offline is clicked");
+        }
+    } ]
+};
 
 let UserInfo = React.createClass({
-    profileMenu: {
-        menuId   : 'profile',
-        iconFmt  : 'btn-xs btn-success',
-        titleText: 'Miann',
-        itemFmt  : 'pull-right js-status-update',
-        menuItems: [ {
-            itemFmt : 'fa fa-circle txt-color-green',
-            itemText: 'Online',
-            itemHandler: function() {
-                console.log("Online is clicked");
-            }
-        }, {
-            itemFmt : 'fa fa-circle txt-color-red',
-            itemText: 'Offline',
-            itemHandler: function() {
-                console.log("Offline is clicked");
-            }
-        } ]
-    },
     panelData: {
+        init   : false,
         panelId: 'basicInfo',
-        icon   : 'widget-icon',
-        header : 'My Basic Information'
+        icon   : 'fa fa-book',
+        header : 'My Basic Information',
+        headerMenus: [ profileMenu ]
     },
 
     getInitialState: function() {
-        PanelStore.setPanel('basicInfo', this.panelData);
-        MenuStore.setDropdownMenu('profile', this.profileMenu);
-
-        this.panelData['headerMenus'] = this.profileMenu;
-        return this.panelData;
-    },
-
-    getPanelData: function() {
+        if (this.panelData.init != true) {
+            this.panelData.init = true;
+            MenuStore.setDropdownMenu('profile', profileMenu);
+            PanelStore.setPanel('basicInfo', this.panelData);
+        }
         return this.panelData;
     },
 
     render: function() {
-        let data = {
-        };
         return (
-            <Panel data={data}>
+            <Panel data={this.panelData}>
                 <form className="form-horizontal">
                     <fieldset>
                         <legend>Default Form Elements</legend>
                         <h1>About me</h1>
                     </fieldset>
                 </form>
+                <h1>Miann is very curious about computer</h1>
+                <h1>Miann is always talking about awsome Turtles.......... and cowsays with computer</h1>
             </Panel>
         );
     }
 });
 
 let UserProfile = React.createClass({
+    initObj: false,
     profileTab: {
         tabItems: [ {
             tabDomId: 'profile-tab',
@@ -81,12 +89,15 @@ let UserProfile = React.createClass({
         }, {
             tabDomId: 'connection-tab',
             tabText : 'Connections',
-            panelContent: <UserInfo/>
+            panelContent: <h1>Hello world</h1>
         } ]
     },
 
     getInitialState: function() {
-        TabPanelStore.setTabPanel('profile-tab', this.profileTab);
+        if (this.initObj != true) {
+            this.initObj = true;
+            TabPanelStore.setTabPanel('profile-tab', this.profileTab);
+        }
         return UserStore.getData();
     },
 
@@ -223,6 +234,9 @@ let UserProfile = React.createClass({
                 </h1>
             </div>
         </div>
+    </div>
+    <div className="row">
+        <TabPanel tabId={"profile-tab"}/>
     </div>
     <div className="row">
         <div className="tab-container">
