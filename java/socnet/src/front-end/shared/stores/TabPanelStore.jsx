@@ -8,10 +8,6 @@ import Reflux   from 'reflux';
 import _        from 'lodash';
 import Actions  from 'vntd-root/actions/Actions.jsx';
 
-/*
- * Explicit define known fields in User object.
- */
-
 let TabPanelStore = Reflux.createStore({
     data: {
         panel: {}
@@ -41,8 +37,6 @@ let TabPanelStore = Reflux.createStore({
         }
         return null;
     },
-
-    /* Startup actions. */
 
     exports: {
     }

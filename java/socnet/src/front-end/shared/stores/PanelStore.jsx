@@ -8,9 +8,6 @@ import Reflux   from 'reflux';
 import _        from 'lodash';
 import Actions  from 'vntd-root/actions/Actions.jsx';
 
-/*
- * Explicit define known fields in User object.
- */
 let PanelStore = Reflux.createStore({
     data: {
         panel: {},
@@ -26,7 +23,6 @@ let PanelStore = Reflux.createStore({
 
     setPanel: function(panelId, panel) {
         this.data.panel[panelId] = panel;
-        console.log(this.data.panel[panelId]);
     },
 
     clonePanel: function(orig, newId)

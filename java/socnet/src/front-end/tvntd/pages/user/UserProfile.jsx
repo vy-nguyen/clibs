@@ -18,85 +18,85 @@ import UserStore          from 'vntd-shared/stores/UserStore.jsx';
 import JarvisWidget       from 'vntd-shared/widgets/JarvisWidget.jsx';
 import Panel              from 'vntd-shared/widgets/Panel.jsx';
 import WidgetGrid         from 'vntd-shared/widgets/WidgetGrid.jsx';
-
-let profileMenu = {
-    menuId   : 'profile',
-    iconFmt  : 'btn-xs btn-success',
-    titleText: 'Miann',
-    itemFmt  : 'pull-right js-status-update',
-    menuItems: [ {
-        itemFmt : 'fa fa-circle txt-color-green',
-        itemText: 'Online',
-        itemHandler: function() {
-            console.log("Online is clicked");
-        }
-    }, {
-        itemFmt : 'fa fa-circle txt-color-yellow',
-        itemText: 'Go to sleep',
-        itemHandler: function() {
-            console.log("Offline is clicked");
-        }
-    }, {
-        itemFmt : 'fa fa-circle txt-color-red',
-        itemText: 'Offline',
-        itemHandler: function() {
-            console.log("Offline is clicked");
-        }
-    } ]
-};
+import Friends            from './Friends.jsx';
 
 let UserInfo = React.createClass({
+    profileMenu: {
+        reactId  : 'profile',
+        iconFmt  : 'btn-xs btn-success',
+        titleText: 'Miann',
+        itemFmt  : 'pull-right js-status-update',
+        menuItems: [ {
+            itemFmt : 'fa fa-circle txt-color-green',
+            itemText: 'Online',
+            itemHandler: function() {
+                console.log("Online is clicked");
+            }
+        }, {
+            itemFmt : 'fa fa-circle txt-color-yellow',
+            itemText: 'Go to sleep',
+            itemHandler: function() {
+                console.log("Offline is clicked");
+            }
+        }, {
+            itemFmt : 'fa fa-circle txt-color-red',
+            itemText: 'Offline',
+            itemHandler: function() {
+                console.log("Offline is clicked");
+            }
+        } ]
+    },
     panelData: {
         init   : false,
-        panelId: 'basicInfo',
+        reactId: 'basic-info',
         icon   : 'fa fa-book',
         header : 'My Basic Information',
-        headerMenus: [ profileMenu ]
+        headerMenus: [ ]
     },
 
     getInitialState: function() {
         if (this.panelData.init != true) {
             this.panelData.init = true;
-            MenuStore.setDropdownMenu('profile', profileMenu);
-            PanelStore.setPanel('basicInfo', this.panelData);
+            this.panelData.headerMenus.push(this.profileMenu);
+            MenuStore.setDropdownMenu(this.profileMenu.reactId, this.profileMenu);
+            PanelStore.setPanel(this.panelData.reactId, this.panelData);
         }
         return this.panelData;
     },
 
     render: function() {
         return (
-            <Panel data={this.panelData}>
+            <Panel reactId={this.panelData.reactId}>
                 <form className="form-horizontal">
                     <fieldset>
                         <legend>Default Form Elements</legend>
                         <h1>About me</h1>
                     </fieldset>
                 </form>
-                <h1>Miann is very curious about computer</h1>
-                <h1>Miann is always talking about awsome Turtles.......... and cowsays with computer</h1>
             </Panel>
         );
     }
 });
 
 let UserProfile = React.createClass({
-    initObj: false,
     profileTab: {
+        init    : false,
+        reactId : 'user-profile',
         tabItems: [ {
-            tabDomId: 'profile-tab',
-            tabText : 'About Me',
-            panelContent: <div><UserInfo/><UserInfo/><UserInfo/></div>
+            domId  : 'profile-tab',
+            tabText: 'About Me',
+            panelContent: <UserInfo/>
         }, {
-            tabDomId: 'connection-tab',
-            tabText : 'Connections',
-            panelContent: <div><UserInfo/></div>
+            domId  : 'connection-tab',
+            tabText: 'Connections',
+            panelContent: <Friends/>
         } ]
     },
 
     getInitialState: function() {
-        if (this.initObj != true) {
-            this.initObj = true;
-            TabPanelStore.setTabPanel('profile-tab', this.profileTab);
+        if (this.profileTab.init != true) {
+            this.profileTab.init = true;
+            TabPanelStore.setTabPanel(this.profileTab.reactId, this.profileTab);
         }
         return UserStore.getData();
     },
@@ -236,47 +236,7 @@ let UserProfile = React.createClass({
         </div>
     </div>
     <div className="row">
-        <TabPanel tabId={"profile-tab"}/>
-    </div>
-    <div className="row">
-        <div className="tab-container">
-            <ul className="nav nav-tabs">
-                <li className="active"><a data-toggle="tab" href="#profile-tab-1">About Me</a></li>
-                <li className=""><a data-toggle="tab" href="#profile-tab-2">Something else</a></li>
-            </ul>
-            <div className="tab-content">
-                <div key="1" id="profile-tab-1" className="tab-pane active">
-                    <div className="panel-body">
-                        <article className="col-sm-12 col-md-12 col-lg-6 sortable-grid ui-sortable">
-                            <JarvisWidget editbuttons={true} sortable={true} collapsed={true} color="blueDark">
-                                <header>
-                                    <span className="widget-icon"><i className="fa fa-book"/></span>
-                                    <h2>My basic information</h2>
-                                    <div className="widget-toolbar">
-                                        <DropdownMenu menuId={'profile'}/>
-                                    </div>
-                                </header>
-                                <div role="panel panel-default">
-                                    <div className="widget-body">
-                                        <form className="form-horizontal">
-                                            <fieldset>
-                                                <legend>Default Form Elements</legend>
-                                                <h1> About me </h1>
-                                            </fieldset>
-                                        </form>
-                                    </div>
-                                </div>
-                            </JarvisWidget>
-                        </article>
-                    </div>
-                </div>
-                <div key="2" id="profile-tab-2" className="tab-pane">
-                    <div className="panel-body">
-                        <h1> Other things</h1>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <TabPanel tabId={this.profileTab.reactId}/>
     </div>
 </div>
         )

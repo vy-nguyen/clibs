@@ -8,13 +8,10 @@ import Reflux   from 'reflux';
 import _        from 'lodash';
 import Actions  from 'vntd-root/actions/Actions.jsx';
 
-/*
- * Explicit define known fields in User object.
- */
 class DropdownMenu {
     constructor(data) {
         this._id       = _.uniqueId('id-user-info-');
-        this.menuId    = data.menuId;
+        this.reactId   = data.reactId;
         this.menuItems = data.menuItems;
         return this;
     }
@@ -27,16 +24,15 @@ let DropdownMenuStore = Reflux.createStore({
     listenables: [Actions],
 
     /* Public Api to get dropdown menu data. */
-    getDropdownMenu: function(menuId) {
-        if (this.data.menu[menuId] == undefined) {
+    getDropdownMenu: function(reactId) {
+        if (this.data.menu[reactId] == undefined) {
             return null;
         }
-        return this.data.menu[menuId];
+        return this.data.menu[reactId];
     },
 
-    setDropdownMenu: function(menuId, menu) {
-        this.data.menu[menuId] = menu;
-        console.log(this.data.menu);
+    setDropdownMenu: function(reactId, menu) {
+        this.data.menu[reactId] = menu;
     },
 
     cloneDropdownMenu: function(orig, newId)
@@ -45,14 +41,12 @@ let DropdownMenuStore = Reflux.createStore({
         if (origObj != undefined) {
             let copyObj = _.cloneDeep(origObj);
 
-            copyObj.menuId = newId;
+            copyObj.reactId = newId;
             this.data.menu[newId] = copyObj;
             return copyObj;
         }
         return null;
     },
-
-    /* Startup actions. */
 
     exports: {
     }

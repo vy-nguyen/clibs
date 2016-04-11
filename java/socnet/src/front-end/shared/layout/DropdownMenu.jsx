@@ -10,11 +10,11 @@ import MenuStore            from 'vntd-shared/stores/DropdownMenuStore.jsx';
 
 let DropdownMenu = React.createClass({
     getInitialState: function() {
-        return MenuStore.getDropdownMenu(this.props.menuId);
+        return MenuStore.getDropdownMenu(this.props.reactId);
     },
 
     render: function() {
-        let menu = MenuStore.getDropdownMenu(this.props.menuId);
+        let menu = MenuStore.getDropdownMenu(this.props.reactId);
         if (menu == null || menu == undefined) {
             return null;
         }

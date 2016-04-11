@@ -11,23 +11,23 @@ import JarvisWidget     from 'vntd-shared/widgets/JarvisWidget.jsx';
 
 let Panel = React.createClass({
     getInitialState: function() {
-        return PanelStore.getPanel(this.props.data.panelId);
+        return PanelStore.getPanel(this.props.reactId);
     },
 
     render: function() {
-        let panel = PanelStore.getPanel(this.props.data.panelId);
+        let panel = PanelStore.getPanel(this.props.reactId);
         if (panel == null || panel == undefined) {
             return null;
         }
-        let dropdown_menu = this.props.data.headerMenus.map(function(item, idx) {
-            return <DropdownMenu menuId={item.menuId}/>;
+        let dropdown_menu = panel.headerMenus.map(function(item, idx) {
+            return <DropdownMenu reactId={item.reactId}/>;
         }.bind(this));
 
         return (
            <JarvisWidget color={"blue"} collapse={true}>
                <header>
-                   <span className="widget-icon"><i className={this.props.data.icon}/></span>
-                   <h2>{this.props.data.header}</h2>
+                   <span className="widget-icon"><i className={panel.icon}/></span>
+                   <h2>{this.state.header}</h2>
                    <div className="widget-toolbar">
                        {dropdown_menu}
                    </div>
