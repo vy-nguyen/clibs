@@ -13,6 +13,10 @@ import DropzoneComponent from 'react-dropzone-component';
 let UserAvatar = React.createClass({
     mixins: [Reflux.connect(UserStore)],
 
+    getInitialState: function() {
+        return UserStore.getData();
+    },
+
     onSending: function(files, xhr, form) {
         form.append('name', files.name);
     },

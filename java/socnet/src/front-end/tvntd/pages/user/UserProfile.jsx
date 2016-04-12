@@ -14,6 +14,7 @@ import TabPanelStore      from 'vntd-shared/stores/TabPanelStore.jsx';
 import TabPanel           from 'vntd-shared/layout/TabPanel.jsx';
 import UserStore          from 'vntd-shared/stores/UserStore.jsx';
 import Panel              from 'vntd-shared/widgets/Panel.jsx';
+import GenericForm        from 'vntd-shared/forms/commons/GenericForm.jsx';
 import Friends            from './Friends.jsx';
 import ProfileCover       from './ProfileCover.jsx';
 import UserAvatar         from './UserAvatar.jsx';
@@ -73,52 +74,88 @@ let UserInfo = React.createClass({
             console.log(this.state);
             return null;
         }
+        let profile_form = {
+            formFmt: "client-form",
+            hiddenHead: null,
+            hiddenTail: null,
+            formEntries: [ {
+                legend: "About me",
+                entries: [ {
+                    labelFmt: "col-sm-2 col-md-2 col-lg-2 control-label",
+                    labelTxt: "First Name",
+                    inputFmt: "col-sm-10 col-md-10 col-lg-8 control-label",
+                    inpName : "firstName",
+                    inpHolder: self.firstName
+                }, {
+                    labelFmt: "col-sm-2 col-md-2 col-lg-2 control-label",
+                    labelTxt: "Last Name",
+                    inputFmt: "col-sm-10 col-md-10 col-lg-8 control-label",
+                    inpName : "lastName",
+                    inpHolder: self.lastName
+                }, {
+                    labelFmt: "col-sm-2 col-md-2 col-lg-2 control-label",
+                    labelTxt: "Home Town",
+                    inputFmt: "col-sm-10 col-md-10 col-lg-8 control-label",
+                    inpName : "homeTown",
+                    inpHolder: "Home Town"
+                }, {
+                    labelFmt: "col-sm-2 col-md-2 col-lg-2 control-label",
+                    labelTxt: "Country",
+                    inputFmt: "col-sm-10 col-md-10 col-lg-8 control-label",
+                    inpName : "lastName",
+                    inpHolder: "Country"
+                } ]
+            }, {
+                legend: "My interests",
+                entries: [ {
+                    labelFmt: "col-sm-2 col-md-2 col-lg-2 control-label",
+                    labelTxt: "Favorite tags",
+                    inputFmt: "col-sm-10 col-md-10 col-lg-8 control-label",
+                    inpName : "favTags",
+                    inpHolder: "Your interest tags"
+                } ]
+            }, {
+                legend: "My security preferences",
+                entries: [ {
+                    labelFmt: "col-sm-2 col-md-2 col-lg-2 control-label",
+                    labelTxt: "Something here",
+                    inputFmt: "col-sm-10 col-md-10 col-lg-8 control-label",
+                    inpName : "favTags",
+                    inpHolder: "Something in here"
+                } ]
+            }, {
+                legend: "My work",
+                entries: [ {
+                    labelFmt: "col-sm-2 col-md-2 col-lg-2 control-label",
+                    labelTxt: "Something here",
+                    inputFmt: "col-sm-10 col-md-10 col-lg-8 control-label",
+                    inpName : "favTags",
+                    inpHolder: "Something in here"
+                } ]
+            } ],
+            buttons: [ {
+                btnFmt : "btn btn-default",
+                btnText: "Cancel",
+                onClick: function(e, w) {
+                    console.log("Cancel click: ");
+                    console.log(e);
+                    console.log(w);
+                    e.preventDefault();
+                }
+            }, {
+                btnFmt : "btn btn-primary",
+                btnText: "Save",
+                onClick: function(e, w) {
+                    console.log("Save click: ");
+                    console.log(e);
+                    console.log(w);
+                    e.preventDefault();
+                }
+            } ]
+        };
         return (
             <Panel reactId={this.panelData.reactId} className="well no-padding">
-                <form className="client-form" onSubmit={this._submitUpdate}>
-                    <fieldset>
-                        <section className="row">
-                            <div className="form-group alert alert-danger" id="id-profile-error" style={{display:"none"}}>
-                                <a className="close" data-dismiss="alert" aria-label="close">x</a>
-                                <div id="id-profile-error-text"></div>
-                            </div>
-                        </section>
-                    </fieldset>
-                    <legend>About me</legend>
-                    <fieldset>
-                        <div className="row form-group">
-                            <label className="col-sm-2 col-md-2 col-lg-2 control-label" for="textinput">First Name</label>
-                            <div className="col-sm-10 col-md-10 col-lg-6">
-                                <input type="text" className="form-control" name="firstname" ref="firstName" placeholder={self.firstName}/>
-                            </div>
-                        </div>
-                        <div className="row form-group">
-                            <label className="col-sm-2 col-md-2 col-lg-2 control-label" for="textinput">Last Name</label>
-                            <div className="col-sm-10 col-md-10 col-lg-6">
-                                <input type="text" className="form-control" name="lastname" ref="lastName" placeholder={self.lastName}/>
-                            </div>
-                        </div>
-                    </fieldset>
-                    
-                    <legend>My preferences</legend>
-                    <fieldset>
-                    </fieldset>
-
-                    <legend>My privacy settings</legend>
-                    <fieldset>
-                    </fieldset>
-
-                    <fieldset>
-                        <div className="row form-group">
-                            <div className="col-sm-offset-2 col-sm-10">
-                                <div className="pull-right">
-                                    <button type="submit" className="btn btn-default">Cancel</button>
-                                    <button type="submit" className="btn btn-primary">Save</button>
-                                </div>
-                            </div>
-                        </div>
-                    </fieldset>
-                </form>
+                <GenericForm form={profile_form}/>
             </Panel>
         );
     }
