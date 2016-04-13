@@ -85,7 +85,8 @@ public class IndexPath
     public String logoutPage(HttpServletRequest request, HttpServletResponse response)
     {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        
+       
+        s_log.info("Logout for " + request.getRemoteUser());
         if (auth != null){
             new SecurityContextLogoutHandler().logout(request, response, auth);
         }

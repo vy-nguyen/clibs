@@ -13,15 +13,15 @@ let ProfileCover = React.createClass({
         var cover_hdr = this.props.data.imageList.map(function(item, index) {
             var fmt;
             if (index == 0) {
-                fmt = <li data-target={'#' + imageId} data-slide-to={index.toString()} className='active'></li>;
+                fmt = <li key={index} data-target={'#' + imageId} data-slide-to={index.toString()} className='active'></li>;
             } else {
-                fmt = <li data-target={'#' + imageId} data-slide-to={index.toString()} class></li>;
+                fmt = <li key={index} data-target={'#' + imageId} data-slide-to={index.toString()} class></li>;
             }
             return fmt;
         });
         var cover_img = this.props.data.imageList.map(function(item, index) {
             return (
-                <div className={index == 0 ? "item active" : "item"}>
+                <div key={index} className={index == 0 ? "item active" : "item"}>
                     <img src={item} alt="Cover Image"/>
                 </div>
             );

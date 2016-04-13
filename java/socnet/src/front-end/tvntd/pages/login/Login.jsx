@@ -139,9 +139,9 @@ let LoginForm = React.createClass({
         event.preventDefault();
 
         Actions.login({
-            email: this.refs.email.getDOMNode().value,
-            password: this.refs.password.getDOMNode().value,
-            remember: this.refs.remember.getDOMNode().value
+            email: this.refs.email.value,
+            password: this.refs.password.value,
+            remember: this.refs.remember.value
         }, formData);
     },
 

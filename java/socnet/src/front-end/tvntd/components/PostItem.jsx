@@ -12,14 +12,14 @@ let PostItem = React.createClass({
 
         if (pic_lst.length >= 1) {
             pic_out.push(
-                <div className="col-sm-6">
+                <div key="1" className="col-sm-6">
                     <img className='img-responsive' src={pic_lst[0]}/>
                 </div>
             );
         }
         if (pic_lst.length >= 2) {
             pic_out.push(
-                <div className="col-sm-6">
+                <div key="2" className="col-sm-6">
                     <div className="row">
                         <div className="col-sm-6">
                             <img className='img-responsive' src={pic_lst[1]}/>
@@ -36,11 +36,11 @@ let PostItem = React.createClass({
             );
         }
         return (
-<div className="post">
-    <div className="row margin-bottom">
-        {pic_out}
-    </div>
-</div>
+            <div className="post">
+                <div className="row margin-bottom">
+                    {pic_out}
+                </div>
+            </div>
         )
     }
 });

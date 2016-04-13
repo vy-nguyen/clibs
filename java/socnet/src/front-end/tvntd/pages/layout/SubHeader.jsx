@@ -4,7 +4,7 @@
 'use strict';
 
 import React              from 'react-mod';
-import SparklineContainer from '../../../shared/graphs/SparklineContainer.jsx';
+import SparklineContainer from 'vntd-shared/graphs/SparklineContainer.jsx';
 
 let SubHeader = React.createClass({
     render: function () {

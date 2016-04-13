@@ -12,15 +12,15 @@ let Author = React.createClass({
     render: function() {
         var topic_fn = function(item) {
             var out = [];
-            out.push(<br/>);
+            out.push(<br key="0"/>);
             item.topicList.map(function(it, index) {
-                out.push(<span><span className={it.icon}>{it.tag}</span> {it.text}<br/></span>);
+                out.push(<span key={index + 1}><span className={it.icon}>{it.tag}</span> {it.text}<br/></span>);
             });
             return out;
         };
         var about_me = this.props.data.aboutList.map(function(item, index) {
             return (
-                <div>
+                <div key={index}>
                     <hr/>
                     <strong><i className={item.topicIcon}></i>{item.topicText}</strong>
                     {topic_fn(item)}

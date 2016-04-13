@@ -10,6 +10,7 @@ import {Route, Redirect, IndexRoute, DefaultRoute} from 'react-router';
 import Layout        from './pages/layout/Layout.jsx';
 import Public        from './pages/public/Public.jsx';
 import {Login}       from './pages/login/Login.jsx';
+import Logout        from './pages/login/Logout.jsx';
 import Register      from './pages/login/Register.jsx';
 import RecoverAcct   from './pages/login/Forgot.jsx';
 import Blog          from './pages/blog/Blog.jsx';
@@ -53,7 +54,12 @@ const Routes = (
                 <Route path="product-detail" component={ProductDetail} subHeader={true}/>
             </Route>
 
-            <Route path="login" component={Login}/>
+            <Redirect from="/" to="login"/>
+            <Route path="login">
+                <IndexRoute component={Login}/>
+                <Route path="logout" component={Logout}/>
+            </Route>
+            
             <Redirect from="/" to="register"/>
             <Route path="register">
                 <IndexRoute component={Register}/>

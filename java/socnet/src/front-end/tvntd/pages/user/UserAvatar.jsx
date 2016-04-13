@@ -6,9 +6,10 @@
 
 import React             from 'react-mod';
 import Reflux            from 'reflux';
-
-import UserStore          from 'vntd-shared/stores/UserStore.jsx';
 import DropzoneComponent from 'react-dropzone-component';
+
+import SubHeader         from '../layout/SubHeader.jsx';
+import UserStore         from 'vntd-shared/stores/UserStore.jsx';
 
 let UserAvatar = React.createClass({
     mixins: [Reflux.connect(UserStore)],
@@ -47,12 +48,12 @@ let UserAvatar = React.createClass({
         }
         return (
             <div className="row">
-                <DropzoneComponent className="col-sm-3 col-md-2 col-lg-1 profile-pic"
+                <DropzoneComponent className="col-sm-3 col-md-1 col-lg-1 profile-pic"
                     config={componentConfig} eventHandlers={eventHandlers} djsConfig={djsConfig}>
                     <img src="/rs/img/avatars/1.png"/>
                 </DropzoneComponent>
 
-                <div className="col-sm-9 col-md-10 col-lg-11">
+                <div className="col-sm-3 col-md-3 col-lg-3">
                     <div className="box-header">
                         <h1 className="profile-username">
                             {self.lastName} <span className="semi-bold">{self.firstName}</span>
@@ -60,6 +61,9 @@ let UserAvatar = React.createClass({
                         <br/>
                         <small>Member since 1/2</small>
                     </div>
+                </div>
+                <div className="col-sm-6 col-md-8 col-lg-8">
+                    <SubHeader/>
                 </div>
             </div>
         );

@@ -11,7 +11,7 @@ const Actions = Reflux.createActions({
     clickMenuItem:   {children: ['completed']},
 
     // User actions
-    logout:          {},
+    logout:          {children: ['completed', 'failed']},
     startup:         {children: ['completed', 'failed']},
     refreshNotify:   {children: ['completed', 'failed']},
     login:           {children: ['completed', 'failed', 'always']},
@@ -83,6 +83,7 @@ Actions.login.listen(function(loginData, formData) {
 });
 
 Actions.logout.listen(function() {
+    document.location.href = "/login/logout";
 });
 
 Actions.register.listen(function(regData) {

@@ -37,11 +37,11 @@ let CommentItem = React.createClass({
 
 let PostComment = React.createClass({
     render: function() {
-        let fav_cmnts = _.map(this.props.favorites, function(item) {
-            return (<CommentItem data={item}/>);
+        let fav_cmnts = _.map(this.props.favorites, function(item, idx) {
+            return (<CommentItem key={idx} data={item}/>);
         });
-        let nor_cmnts = _.map(this.props.comments, function(item) {
-            return (<CommentItem data={item}/>);
+        let nor_cmnts = _.map(this.props.comments, function(item, idx) {
+            return (<CommentItem key={idx} data={item}/>);
         });
 
         return (

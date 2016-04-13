@@ -129,7 +129,7 @@ let UserStore = Reflux.createStore({
     /* Logout actions. */
     onLogoutCompleted: function() {
         console.log("Logout completed");
-        _reset();
+        this._reset();
         localStorage.removeItem("authToken");
     },
 

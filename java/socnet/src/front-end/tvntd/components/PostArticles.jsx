@@ -12,8 +12,8 @@ import WidgetGrid   from 'vntd-shared/widgets/WidgetGrid.jsx';
 
 let PostArticles = React.createClass({
     render: function() {
-        let panes = _.map(this.props.data, function(article) {
-            return (<PostPane data={article}/>);
+        let panes = _.map(this.props.data, function(article, idx) {
+            return (<PostPane data={article} key={idx}/>);
         });
         return (
             <WidgetGrid>
