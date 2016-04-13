@@ -8,46 +8,46 @@ import MenuStore      from 'vntd-shared/stores/DropdownMenuStore.jsx';
 import PanelStore     from 'vntd-shared/stores/PanelStore.jsx';
 import Panel          from 'vntd-shared/widgets/Panel.jsx';
 
-let Friends = React.createClass({
+let Messages = React.createClass({
     filterMenu: {
-        reactId  : 'filter-friend',
+        reactId  : 'filter-mesg',
         iconFmt  : 'btn-xs btn-warning',
         titleText: 'Filter',
         itemFmt  : 'pull-right js-status-update',
         menuItems: [ {
             itemFmt : 'fa fa-circle txt-color-green',
-            itemText: 'Most active',
+            itemText: 'Most recent',
             itemHandler: function() {
             }
         }, {
             itemFmt : 'fa fa-circle txt-color-green',
-            itemText: 'Give me most credit',
+            itemText: 'With tasks',
             itemHandler: function() {
             }
         } ]
     },
     queryMenu: {
-        reactId  : 'query-friend',
+        reactId  : 'query-mesg',
         iconFmt  : 'btn-xs btn-success',
-        titleText: 'Query',
+        titleText: 'Search by',
         itemFmt  : 'pull-right js-status-update',
         menuItems: [ {
             itemFmt : 'fa fa-circle txt-color-green',
-            itemText: 'abc...',
+            itemText: 'User name',
             itemHandler: function() {
             }
         }, {
             itemFmt : 'fa fa-circle txt-color-green',
-            itemText: 'def...',
+            itemText: 'Keyword',
             itemHandler: function() {
             }
         } ]
     },
     panelDef: {
         init   : false,
-        reactId: 'friend-info',
+        reactId: 'mesg-info',
         icon   : 'fa fa-user',
-        header : 'My connections',
+        header : 'My Messages',
         headerMenus: []
     },
 
@@ -66,10 +66,10 @@ let Friends = React.createClass({
     render: function() {
         return (
             <Panel reactId={this.panelDef.reactId}>
-                <h1>You don't have any friends yet!</h1>
+                <h1>You don't have any messages yet!</h1>
             </Panel>
         )
     }
 });
 
-export default Friends;
+export default Messages;

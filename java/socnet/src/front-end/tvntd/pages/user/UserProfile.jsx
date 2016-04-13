@@ -7,7 +7,6 @@
 import React              from 'react-mod';
 import Reflux             from 'reflux';
 
-import UiValidate         from 'vntd-shared/forms/validation/UiValidate.jsx';
 import MenuStore          from 'vntd-shared/stores/DropdownMenuStore.jsx';
 import PanelStore         from 'vntd-shared/stores/PanelStore.jsx';
 import TabPanelStore      from 'vntd-shared/stores/TabPanelStore.jsx';
@@ -16,6 +15,8 @@ import UserStore          from 'vntd-shared/stores/UserStore.jsx';
 import Panel              from 'vntd-shared/widgets/Panel.jsx';
 import GenericForm        from 'vntd-shared/forms/commons/GenericForm.jsx';
 import Friends            from './Friends.jsx';
+import Messages           from './Messages.jsx';
+import TaskTimeline       from './TaskTimeline.jsx';
 import ProfileCover       from './ProfileCover.jsx';
 import UserAvatar         from './UserAvatar.jsx';
 
@@ -63,9 +64,6 @@ let UserInfo = React.createClass({
             PanelStore.setPanel(this.panelData.reactId, this.panelData);
         }
         return UserStore.getData();
-    },
-
-    _submitUpdate: function() {
     },
 
     render: function() {
@@ -175,6 +173,14 @@ let UserProfile = React.createClass({
             domId  : 'connection-tab',
             tabText: 'Connections',
             panelContent: <Friends/>
+        }, {
+            domId  : 'message',
+            tabText: 'Secure Messages',
+            panelContent: <Messages/>
+        }, {
+            domId  : 'pending-task',
+            tabText: 'Pending Tasks',
+            panelContent: <TaskTimeline/>
         } ]
     },
 
