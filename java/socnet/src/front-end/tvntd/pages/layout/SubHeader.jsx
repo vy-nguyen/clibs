@@ -4,6 +4,7 @@
 'use strict';
 
 import React              from 'react-mod';
+import { htmlCodes }      from 'vntd-root/config/constants';
 import SparklineContainer from 'vntd-shared/graphs/SparklineContainer.jsx';
 
 let SubHeader = React.createClass({
@@ -19,15 +20,9 @@ let SubHeader = React.createClass({
                         </div>
                     </li>
                     <li className="sparks-info">
-                        <h5> Site Traffic <span className="txt-color-purple"><i
-                            className="fa fa-arrow-circle-up"/>&nbsp;45%</span></h5>
-                        <div className="sparkline txt-color-purple hidden-mobile hidden-md hidden-sm">
-                            110,150,300,130,400,240,220,310,220,300, 270, 210
-                        </div>
-                    </li>
-                    <li className="sparks-info">
-                        <h5> Site Orders <span className="txt-color-greenDark"><i
-                            className="fa fa-shopping-cart"/>&nbsp;2447</span></h5>
+                        <h5> My Orders <span className="txt-color-greenDark">
+                            <i className="fa fa-shopping-cart"/>{htmlCodes.ocrCheck}</span>
+                        </h5>
                         <div className="sparkline txt-color-greenDark hidden-mobile hidden-md hidden-sm">
                             110,150,300,130,400,240,220,310,220,300, 270, 210
                         </div>

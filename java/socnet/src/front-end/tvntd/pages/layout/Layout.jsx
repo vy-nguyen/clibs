@@ -24,13 +24,13 @@ let Layout = React.createClass({
     render: function() {
         return (
             <div>
-                <Header />
-                <Navigation />
+                <Header/>
+                <Navigation/>
                 <div id="main" role="main">
                     {this.props.children}
                 </div>
-                <Shortcut />
-                <Footer />
+                <Shortcut/>
+                <Footer/>
             </div>
         )
     }

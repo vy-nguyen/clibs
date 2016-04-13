@@ -5,7 +5,8 @@
 'use strict';
 
 export const htmlCodes = {
-    spaceNoBreak: String.fromCharCode('\u00A0')
+    spaceNoBreak: String.fromCharCode('\u00A0'),
+    ocrCheck: String.fromCharCode('\u2447')
 };
 
 export const errMesg = {
