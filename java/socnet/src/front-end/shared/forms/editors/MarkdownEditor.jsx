@@ -4,7 +4,7 @@ import {findDOMNode} from 'react-dom'
 
 const MarkdownEditor = React.createClass({
     componentDidMount: function () {
-        ScriptLoader.loadScript('/vendor.ui.js').then(function(){
+        ScriptLoader.loadScript('/rs/client/vendor.ui.js').then(function(){
             $(findDOMNode(this)).markdown()
         }.bind(this))
     },

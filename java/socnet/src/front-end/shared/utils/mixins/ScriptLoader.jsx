@@ -28,8 +28,7 @@ let ScriptLoader = {
     },
     recursive: function(dfd, scripts) {
         let script = scripts.shift();
-        let buildUrl = GlobalConfigs.script_path;
-        ScriptLoader.loadFile(buildUrl + script).then(function() {
+        ScriptLoader.loadFile(script).then(function() {
             if (scripts.length == 0) {
                 this.scriptsLoaded = true;
                 dfd.resolve();

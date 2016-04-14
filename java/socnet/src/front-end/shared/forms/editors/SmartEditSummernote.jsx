@@ -6,7 +6,7 @@ import ElementHolder from '../../utils/mixins/ElementHolder.jsx'
 let SmartEditSummernote = React.createClass({
     mixins: [ScriptLoader, ElementHolder],
     _onClick: function () {
-        this.loadScript('/vendor.ui.js').then(function () {
+        this.loadScript('/rs/client/vendor.ui.js').then(function () {
             $(this.props.target).summernote({
                 focus: true
             })
