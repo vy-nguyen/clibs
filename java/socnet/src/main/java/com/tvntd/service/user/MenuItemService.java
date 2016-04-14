@@ -212,7 +212,8 @@ public class MenuItemService implements IMenuItemService
         "\"itemId\"  : 50," +
         "\"parentId\": 0," +
         "\"title\"   : \"Profile\"," +
-        "\"icon\"    : \"fa fa-lg fa-fw fa-book\"" +
+        "\"icon\"    : \"fa fa-lg fa-fw fa-book\"," +
+        "\"route\"   : \"/user\"" +
     "}, {" +
         "\"userId\"  : 0," +
         "\"itemId\"  : 51," +

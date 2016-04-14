@@ -66,6 +66,9 @@ public class User
 
     private boolean tokenExpired;
 
+    private Long   connections;
+    private Long   followers;
+    private Long   follows;
     private String transRoot;
     private String creditEarned;
     private String creditIssued;
@@ -91,6 +94,9 @@ public class User
     public User()
     {
         super();
+        this.connections = 0L;
+        this.followers = 0L;
+        this.follows = 0L;
         this.enabled = false;
         this.tokenExpired = false;
     }
@@ -172,6 +178,48 @@ public class User
 
     public void setPassword(final String password) {
         this.password = password;
+    }
+
+    /**
+     * @return the connections
+     */
+    public Long getConnections() {
+        return connections;
+    }
+
+    /**
+     * @param connections the connections to set
+     */
+    public void setConnections(Long connections) {
+        this.connections = connections;
+    }
+
+    /**
+     * @return the followers
+     */
+    public Long getFollowers() {
+        return followers;
+    }
+
+    /**
+     * @param followers the followers to set
+     */
+    public void setFollowers(Long followers) {
+        this.followers = followers;
+    }
+
+    /**
+     * @return the follows
+     */
+    public Long getFollows() {
+        return follows;
+    }
+
+    /**
+     * @param follows the follows to set
+     */
+    public void setFollows(Long follows) {
+        this.follows = follows;
     }
 
     /**

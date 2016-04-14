@@ -26,10 +26,15 @@
  */
 package com.tvntd.service.api;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.tvntd.models.User;
 
 public class LoginResponse extends GenericResponse
 {
+    static private Logger s_log = LoggerFactory.getLogger(LoginResponse.class);
+
     private String authVerifToken;
     private String authToken;
     private UserInfo userSelf;
@@ -78,6 +83,9 @@ public class LoginResponse extends GenericResponse
         private String userUuid;
         private String userImgUrl;
         private String transRoot;
+        private Long   connections;
+        private Long   followers;
+        private Long   follows;
         private Long   creditEarned;
         private Long   creditIssued;
         private Long   moneyEarned;
@@ -92,10 +100,19 @@ public class LoginResponse extends GenericResponse
             this.userUuid = user.getUserUuid();
             this.userImgUrl = user.getUserImgUrl();
             this.transRoot = user.getTransRoot();
+            this.connections = user.getConnections();
+            this.followers = user.getFollowers();
+            this.follows = user.getFollows();
             this.creditEarned = 100L;
             this.creditIssued = 200L;
             this.moneyEarned = 100L;
             this.moneyIssued = 300L;
+
+            if (connections == null) {
+                connections = 0L;
+                followers = 0L;
+                follows = 0L;
+            }
         }
 
         /**
@@ -145,6 +162,48 @@ public class LoginResponse extends GenericResponse
          */
         public String getTransRoot() {
             return transRoot;
+        }
+
+        /**
+         * @return the connections
+         */
+        public Long getConnections() {
+            return connections;
+        }
+
+        /**
+         * @param connections the connections to set
+         */
+        public void setConnections(Long connections) {
+            this.connections = connections;
+        }
+
+        /**
+         * @return the followers
+         */
+        public Long getFollowers() {
+            return followers;
+        }
+
+        /**
+         * @param followers the followers to set
+         */
+        public void setFollowers(Long followers) {
+            this.followers = followers;
+        }
+
+        /**
+         * @return the follows
+         */
+        public Long getFollows() {
+            return follows;
+        }
+
+        /**
+         * @param follows the follows to set
+         */
+        public void setFollows(Long follows) {
+            this.follows = follows;
         }
 
         /**

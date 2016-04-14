@@ -158,6 +158,5 @@ task wrapper(type: Wrapper) {
 
 // processResources.dependsOn(npmPackages)
 
-clean.delete << file('src/main/webapp/client')
 clean.delete << file('cscope.*')
 clean.delete << file('tags')

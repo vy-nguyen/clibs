@@ -201,7 +201,7 @@ let UserProfile = React.createClass({
         return (
             <div className="content">
                 <ProfileCover/>
-                <UserAvatar/>
+                <UserAvatar data={{doFileDrop: true}}/>
                 <div className="row">
                     <TabPanel tabId={this.profileTab.reactId}/>
                 </div>
