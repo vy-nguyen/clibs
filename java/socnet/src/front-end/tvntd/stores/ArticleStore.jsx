@@ -41,8 +41,8 @@ let ArticleStore = Reflux.createStore({
      * Public API for the store.
      */
     getArticlesByAuthor: function(uuid) {
-        let articles = articlesByAuthor[uuid];
-        if (articles != undefined) {
+        let articles = this.data.articlesByAuthor[uuid];
+        if (articles !== undefined) {
             return articles;
         }
         articles = this.data.articleList.filter(function(it) {
@@ -50,7 +50,7 @@ let ArticleStore = Reflux.createStore({
         }).map(function(it) {
             return it;
         });
-        articlesByAuthor[uuid] = articles;
+        this.data.articlesByAuthor[uuid] = articles;
         return articles;
     },
 

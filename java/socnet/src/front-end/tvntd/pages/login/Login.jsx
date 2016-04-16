@@ -150,7 +150,7 @@ let LoginForm = React.createClass({
 <div>
     <div className="well no-padding">
         <UiValidate>
-        <form id="login-form" onSubmit={this._submitLogin} className="smart-form client-form">
+        <form id="login-form" className="smart-form client-form">
             <header> Sign In </header>
             <fieldset>
                 <section>
@@ -199,7 +199,7 @@ let LoginForm = React.createClass({
                 </section>
             </fieldset>
             <footer>
-                <button type="submit" className="btn btn-primary">Sign in</button>
+                <button type="submit" className="btn btn-primary" onClick={this._submitLogin}>Sign in</button>
             </footer>
         </form></UiValidate>
     </div>
