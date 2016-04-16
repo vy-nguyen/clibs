@@ -97,7 +97,7 @@ public class LoginResponse extends GenericResponse
             this.firstName = user.getFirstName();
             this.lastName = user.getLastName();
             this.locale = user.getLocale();
-            this.userUuid = user.getUserUuid();
+            this.userUuid = user.getId().toString(); // user.getUserUuid();
             this.userImgUrl = user.getUserImgUrl();
             this.transRoot = user.getTransRoot();
             this.connections = user.getConnections();
@@ -148,6 +148,13 @@ public class LoginResponse extends GenericResponse
          */
         public String getUserUuid() {
             return userUuid;
+        }
+
+        /**
+         * @param userUuid the userUuid to set
+         */
+        public void setUserUuid(String userUuid) {
+            this.userUuid = userUuid;
         }
 
         /**

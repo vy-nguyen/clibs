@@ -31,16 +31,27 @@ class Article {
 
 let ArticleStore = Reflux.createStore({
     data: {
-        articleList: []
+        articleList: [],
+        articlesByAuthor: [],
+        authorUuids: []
     },
     listenables: Actions,
 
+    /**
+     * Public API for the store.
+     */
     getArticlesByAuthor: function(uuid) {
-        return this.data.articleList.filter(function(it) {
+        let articles = articlesByAuthor[uuid];
+        if (articles != undefined) {
+            return articles;
+        }
+        articles = this.data.articleList.filter(function(it) {
             return it.authorUuid == uuid;
         }).map(function(it) {
             return it;
         });
+        articlesByAuthor[uuid] = articles;
+        return articles;
     },
 
     init: function() {

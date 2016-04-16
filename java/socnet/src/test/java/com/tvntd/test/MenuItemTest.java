@@ -39,6 +39,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -49,6 +50,8 @@ import com.tvntd.config.TestPersistenceJPAConfig;
 import com.tvntd.config.TestSecurityConfig;
 import com.tvntd.config.TestTvntdRootConfig;
 import com.tvntd.config.TestTvntdWebConfig;
+import com.tvntd.service.api.IArticleService;
+import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IMenuItemService;
 import com.tvntd.service.api.IMenuItemService.MenuItemResp;
 import com.tvntd.service.api.IUserNotifService;
@@ -78,6 +81,9 @@ public class MenuItemTest
 
     @Autowired
     IUserNotifService userNotifService;
+
+    @Autowired
+    IArticleService articleService;
 
     @Before
     public void setUpStreams()
@@ -124,5 +130,21 @@ public class MenuItemTest
 
         Gson out = new GsonBuilder().setPrettyPrinting().create();
         s_log.info(out.toJson(resp));
+    }
+
+    @Test
+    public void testArticleService()
+    {
+        String rsDir = System.getProperty("TestResource");
+        String jsonFile = rsDir + "/article-sample.json";
+
+        articleService.saveArticles(jsonFile);
+        Page<ArticleDTO> articles =
+            articleService.getUserArticles("vynguyen77@yahoo.com");
+
+        assertNotNull(articles);
+        for (ArticleDTO at : articles) {
+            s_log.info(at.toString());
+        }
     }
 }

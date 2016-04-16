@@ -4,14 +4,14 @@ import {findDOMNode} from 'react-dom'
 
 const MarkdownEditor = React.createClass({
     componentDidMount: function () {
-        ScriptLoader.loadScript('/rs/client/vendor.ui.js').then(function(){
+        ScriptLoader.loadScript('/rs/client/vendor.ui.js').then(function() {
             $(findDOMNode(this)).markdown()
         }.bind(this))
     },
 
     render: function () {
         return (
-            <textarea defaultValue={this.props.value} className={this.props.className}/>
+            <textarea defaultValue={this.props.value} className={this.props.className} style={this.props.style}/>
         )
     }
 });

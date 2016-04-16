@@ -15,6 +15,11 @@ let PostArticles = React.createClass({
         let panes = _.map(this.props.data, function(article, idx) {
             return (<PostPane data={article} key={idx}/>);
         });
+        if (this.props.data == undefined || _.isEmpty(this.props.data)) {
+            panes = (
+                <div><h2>You have no articles</h2></div>
+            );
+        }
         return (
             <WidgetGrid>
                 {panes}

@@ -26,13 +26,257 @@
  */
 package com.tvntd.service.api;
 
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
+
+import org.springframework.data.domain.Page;
 
 import com.tvntd.models.Article;
 
 public interface IArticleService
 {
-    public Article getArticle(Long artId);
-    public List<Article> getArticlesByUser(Long userId);
-    public void saveArticle(Long artId, Article article);
+    public ArticleDTO getArticle(Long artId);
+    public ArticleDTO getArticle(String uuid);
+    public List<ArticleDTO> getArticlesByUser(Long userId);
+
+    public Page<ArticleDTO> getUserArticles(String email);
+    public Page<ArticleDTO> getUserArticles(Long userId);
+
+    public void saveArticle(ArticleDTO article);
+    public void saveArticles(String josnFile);
+
+    public static class ArticleDTO
+    {
+        private Long articleId;
+        private Long authorId;
+        private String authorUuid;
+        private String articleUuid;
+        private String articleUrl;
+        private Long   picturesId;
+        private String transRoot;
+        private String creditEarned;
+        private String moneyEarned;
+        private String contentOId;
+        private Date created;
+        private String content;
+
+        public ArticleDTO(Article art)
+        {
+            articleId = art.getArticleId();
+            authorId = art.getUserId();
+            authorUuid = art.getAuthorUuid();
+            articleUuid = art.getArticleUuid();
+            articleUrl = art.getArticleUrl();
+            picturesId = art.getPicturesId();
+            transRoot = art.getTransRoot();
+            creditEarned = art.getCreditEarned();
+            moneyEarned = art.getMoneyEarned();
+            contentOId = art.getContentOId();
+            created = art.getCreated();
+            content = art.getContent();
+        }
+
+        public Article toArticle()
+        {
+            Article art = new Article();
+            art.setUserId(authorId);
+            art.setAuthorUuid(authorUuid);
+            art.setArticleUuid(articleUuid);
+            art.setArticleUrl(articleUrl);
+            art.setPicturesId(picturesId);
+            art.setTransRoot(transRoot);
+            art.setCreditEarned(creditEarned);
+            art.setMoneyEarned(moneyEarned);
+            art.setContentOId(contentOId);
+            art.setCreated(created);
+            art.setContent(content);
+            return art;
+        }
+
+        public String toString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Author uuid: ").append(authorUuid).append('\n');
+            sb.append("Content: ").append(content).append('\n');
+            return sb.toString();
+        }
+
+        public static List<ArticleDTO> convert(List<Article> arts)
+        {
+            List<ArticleDTO> result = new LinkedList<>();
+            for (Article at : arts) {
+                result.add(new ArticleDTO(at));
+            }
+            return result;
+        }
+
+        /**
+         * @return the articleId
+         */
+        public Long getArticleId() {
+            return articleId;
+        }
+
+        /**
+         * @param articleId the articleId to set
+         */
+        public void setArticleId(Long articleId) {
+            this.articleId = articleId;
+        }
+
+        /**
+         * @return the authorId
+         */
+        public Long getAuthorId() {
+            return authorId;
+        }
+
+        /**
+         * @param authorId the authorId to set
+         */
+        public void setAuthorId(Long authorId) {
+            this.authorId = authorId;
+        }
+
+        /**
+         * @return the authorUuid
+         */
+        public String getAuthorUuid() {
+            return authorUuid;
+        }
+
+        /**
+         * @param authorUuid the authorUuid to set
+         */
+        public void setAuthorUuid(String authorUuid) {
+            this.authorUuid = authorUuid;
+        }
+
+        /**
+         * @return the articleUuid
+         */
+        public String getArticleUuid() {
+            return articleUuid;
+        }
+
+        /**
+         * @param articleUuid the articleUuid to set
+         */
+        public void setArticleUuid(String articleUuid) {
+            this.articleUuid = articleUuid;
+        }
+
+        /**
+         * @return the articleUrl
+         */
+        public String getArticleUrl() {
+            return articleUrl;
+        }
+
+        /**
+         * @param articleUrl the articleUrl to set
+         */
+        public void setArticleUrl(String articleUrl) {
+            this.articleUrl = articleUrl;
+        }
+
+        /**
+         * @return the picturesId
+         */
+        public Long getPicturesId() {
+            return picturesId;
+        }
+
+        /**
+         * @param picturesId the picturesId to set
+         */
+        public void setPicturesId(Long picturesId) {
+            this.picturesId = picturesId;
+        }
+
+        /**
+         * @return the transRoot
+         */
+        public String getTransRoot() {
+            return transRoot;
+        }
+
+        /**
+         * @param transRoot the transRoot to set
+         */
+        public void setTransRoot(String transRoot) {
+            this.transRoot = transRoot;
+        }
+
+        /**
+         * @return the creditEarned
+         */
+        public String getCreditEarned() {
+            return creditEarned;
+        }
+
+        /**
+         * @param creditEarned the creditEarned to set
+         */
+        public void setCreditEarned(String creditEarned) {
+            this.creditEarned = creditEarned;
+        }
+
+        /**
+         * @return the moneyEarned
+         */
+        public String getMoneyEarned() {
+            return moneyEarned;
+        }
+
+        /**
+         * @param moneyEarned the moneyEarned to set
+         */
+        public void setMoneyEarned(String moneyEarned) {
+            this.moneyEarned = moneyEarned;
+        }
+
+        /**
+         * @return the contentOId
+         */
+        public String getContentOId() {
+            return contentOId;
+        }
+
+        /**
+         * @param contentOId the contentOId to set
+         */
+        public void setContentOId(String contentOId) {
+            this.contentOId = contentOId;
+        }
+
+        /**
+         * @return the created
+         */
+        public Date getCreated() {
+            return created;
+        }
+
+        /**
+         * @param created the created to set
+         */
+        public void setCreated(Date created) {
+            this.created = created;
+        }
+
+        /**
+         * @return the content
+         */
+        public String getContent() {
+            return content;
+        }
+
+        /**
+         * @param content the content to set
+         */
+        public void setContent(String content) {
+            this.content = content;
+        }
+    }
 }

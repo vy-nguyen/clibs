@@ -30,6 +30,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Temporal;
@@ -39,6 +41,7 @@ import javax.persistence.TemporalType;
 public class Article
 {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long articleId;
 
     private Long userId;
@@ -49,6 +52,7 @@ public class Article
     private String transRoot;
     private String creditEarned;
     private String moneyEarned;
+    private String contentOId;
 
     @Column(name="DATE_CREATED")
     @Temporal(TemporalType.TIMESTAMP)
@@ -60,6 +64,20 @@ public class Article
 
     public Article() {
         super();
+    }
+
+    /**
+     * @return the articleId
+     */
+    public Long getArticleId() {
+        return articleId;
+    }
+
+    /**
+     * @param articleId the articleId to set
+     */
+    public void setArticleId(Long articleId) {
+        this.articleId = articleId;
     }
 
     /**
@@ -172,6 +190,20 @@ public class Article
      */
     public void setMoneyEarned(String moneyEarned) {
         this.moneyEarned = moneyEarned;
+    }
+
+    /**
+     * @return the contentOId
+     */
+    public String getContentOId() {
+        return contentOId;
+    }
+
+    /**
+     * @param contentOId the contentOId to set
+     */
+    public void setContentOId(String contentOId) {
+        this.contentOId = contentOId;
     }
 
     /**
