@@ -13,6 +13,7 @@ const Actions = Reflux.createActions({
     // User actions
     logout:          {children: ['completed', 'failed']},
     startup:         {children: ['completed', 'failed']},
+    refreshArticles: {children: ['completed', 'failed']},
     refreshNotify:   {children: ['completed', 'failed']},
     login:           {children: ['completed', 'failed', 'always']},
     register:        {children: ['completed', 'failed', 'always']},
@@ -76,6 +77,13 @@ Actions.refreshNotify.listen(function() {
 });
 
 /**
+ * Posts and comments.
+ */
+Actions.refreshArticles.listen(function() {
+    $.getJSON("/api/user-articles").then(this.completed, this.failed);
+});
+
+/**
  * User actions.
  */
 Actions.login.listen(function(loginData, formData) {
@@ -83,6 +91,7 @@ Actions.login.listen(function(loginData, formData) {
 });
 
 Actions.logout.listen(function() {
+    this.completed();
     document.location.href = "/login/logout";
 });
 

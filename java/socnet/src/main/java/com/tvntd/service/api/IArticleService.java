@@ -44,7 +44,30 @@ public interface IArticleService
     public Page<ArticleDTO> getUserArticles(Long userId);
 
     public void saveArticle(ArticleDTO article);
-    public void saveArticles(String josnFile);
+    public void saveArticles(String josnFile, String dir);
+
+    public static class ArticleDTOResponse
+    {
+        private List<ArticleDTO> articles;
+
+        public ArticleDTOResponse(List<ArticleDTO> arts) {
+            this.articles = arts;
+        }
+
+        /**
+         * @return the articles
+         */
+        public List<ArticleDTO> getArticles() {
+            return articles;
+        }
+
+        /**
+         * @param articles the articles to set
+         */
+        public void setArticles(List<ArticleDTO> articles) {
+            this.articles = articles;
+        }
+    }
 
     public static class ArticleDTO
     {

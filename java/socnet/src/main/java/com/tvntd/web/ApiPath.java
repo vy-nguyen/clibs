@@ -48,6 +48,9 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import com.mongodb.Mongo;
 import com.tvntd.models.User;
 import com.tvntd.service.api.GenericResponse;
+import com.tvntd.service.api.IArticleService;
+import com.tvntd.service.api.IArticleService.ArticleDTO;
+import com.tvntd.service.api.IArticleService.ArticleDTOResponse;
 import com.tvntd.service.api.IMenuItemService;
 import com.tvntd.service.api.IMenuItemService.MenuItemResp;
 import com.tvntd.service.api.IUserNotifService;
@@ -65,6 +68,9 @@ public class ApiPath
 
     @Autowired
     private IUserNotifService userNotifService;
+
+    @Autowired
+    private IArticleService articleService;
 
     @Autowired
     protected Mongo mongo;
@@ -97,6 +103,22 @@ public class ApiPath
                     result.getCsrfHeader() + ": " + result.getCsrfToken());
         }
         return result;
+    }
+
+    @RequestMapping(value = "/api/user-articles", method = RequestMethod.GET)
+    @ResponseBody
+    public ArticleDTOResponse
+    getUserArticles(Locale locale, HttpSession session,
+            HttpServletRequest reqt, HttpServletResponse resp)
+    {
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            List<ArticleDTO> articles = articleService.getArticlesByUser(user.getId());
+            s_log.info("Got articles " + articles.size());
+            return new ArticleDTOResponse(articles);
+        }
+        s_log.info("User is not login");
+        return null;
     }
 
     @RequestMapping(value = "/api/user", method = RequestMethod.GET)

@@ -3,6 +3,7 @@
     <timestamp key="byDay" datePattern="yyMMdd"/>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
+            <charset>UTF-8</charset>
 			<Pattern>
 				%d{MM/dd HH:mm:ss} [%thread] %-5level %logger{36}: %msg%n
             </Pattern>
@@ -12,6 +13,7 @@
         <file> tvntd-${byDay}.log </file>
         <append> true </append>
         <encoder>
+            <charset>UTF-8</charset>
             <Pattern>
                 %d{MM/dd HH:mm:ss} [%thread] %-5level %logger{35}: %msg%n
             </Pattern>

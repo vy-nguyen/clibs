@@ -18,15 +18,15 @@ import ErrorDispatch from 'vntd-shared/actions/ErrorDispatch.jsx';
 let LoginHeader = React.createClass({
     render: function() {
         return (
-<header id="header" className="animated fadeInDown">
-    <div id="logo-group">
-        <span id="logo"> <img src="/rs/img/logo/flag.png" alt="Viet Nam"/></span>
-    </div>
-    <span id="extr-page-header-space">
-        <span className="hidden-mobile hiddex-xs">Need an account?</span>{htmlCodes.spaceNoBreak}
-        <Link to="/register/form" className="btn btn-danger">Create Account</Link>
-    </span>
-</header>
+            <header id="header" className="animated fadeInDown">
+                <div id="logo-group">
+                    <span id="logo"> <img src="/rs/img/logo/flag.png" style={{height:'40px'}} alt="Viet Nam"/></span>
+                </div>
+                <span id="extr-page-header-space">
+                    <span className="hidden-mobile hiddex-xs">Need an account?</span>{htmlCodes.spaceNoBreak}
+                    <Link to="/register/form" className="btn btn-danger">Create Account</Link>
+                </span>
+            </header>
         );
     }
 });
@@ -36,16 +36,16 @@ let LoginAbout = React.createClass({
     render: function() {
         return (
 <div>
-    <h1 className="txt-color-red login-header-big">Tien Viet Nam Tu Do</h1>
+    <h1 className="txt-color-red login-header-big">Viet Nam Tu Do</h1>
     <div className="hero">
         <div className="pull-left login-desc-box-l">
             <h4 className="paragraph-header">
                 Something here...
             </h4>
             <div className="login-app-icons">
-                <a href="#/dashboard" className="btn btn-danger btn-sm">How does it work</a>
+                <a href="#" className="btn btn-danger btn-sm">How does it work</a>
                 <span> </span>
-                <a href="#/smartadmin/different-versions.html" className="btn btn-danger btn-sm">About us</a>
+                <a href="#" className="btn btn-danger btn-sm">About us</a>
             </div>
         </div>
         <img src="/rs/img/logo/flag.png" className="pull-right display-image" alt="" style={{width:'210px'}}/>
@@ -73,17 +73,17 @@ let LoginAbout = React.createClass({
 let LoginSocial = React.createClass({
     render: function() {
         return (
-<ul className="list-inline text-center">
-    <li>
-        <a href-void="" className="btn btn-primary btn-circle"><i className="fa fa-facebook"/></a>
-    </li>
-    <li>
-        <a href-void="" className="btn btn-info btn-circle"><i className="fa fa-twitter"/></a>
-    </li>
-    <li>
-        <a href-void="" className="btn btn-warning btn-circle"><i className="fa fa-linkedin"/></a>
-    </li>
-</ul>
+            <ul className="list-inline text-center">
+                <li>
+                    <a href-void="" className="btn btn-primary btn-circle"><i className="fa fa-facebook"/></a>
+                </li>
+                <li>
+                    <a href-void="" className="btn btn-info btn-circle"><i className="fa fa-twitter"/></a>
+                </li>
+                <li>
+                    <a href-void="" className="btn btn-warning btn-circle"><i className="fa fa-linkedin"/></a>
+                </li>
+            </ul>
         );
     }
 });
@@ -199,7 +199,7 @@ let LoginForm = React.createClass({
                 </section>
             </fieldset>
             <footer>
-                <button type="submit" className="btn btn-primary" onClick={this._submitLogin}>Sign in</button>
+                <button className="btn btn-primary" onClick={this._submitLogin}>Sign in</button>
             </footer>
         </form></UiValidate>
     </div>

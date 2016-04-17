@@ -27,8 +27,11 @@
 package com.tvntd.service.user;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -120,14 +123,14 @@ public class ArticleService implements IArticleService
     }
 
     @Override
-    public void saveArticles(String jsonFile)
+    public void saveArticles(String jsonFile, String rsDir)
     {
         s_log.info("Save from json " + jsonFile);
         Gson gson = new Gson();
         try {
             Long userId = 0L;
             BufferedReader brd = new BufferedReader(new FileReader(jsonFile));
-            ArticleList arts = gson.fromJson(brd, ArticleList.class);
+            ArticleDTOResponse arts = gson.fromJson(brd, ArticleDTOResponse.class);
             brd.close();
 
             // Fix up the userId based on uuid (func as email).
@@ -138,6 +141,25 @@ public class ArticleService implements IArticleService
                     at.setAuthorId(user.getId());
                 } else {
                     s_log.error("Invalid user " + at.getAuthorUuid());
+                }
+                String line;
+                String dataFile = rsDir + "/" + at.getContent();
+                try {
+                    StringBuilder sb = new StringBuilder();
+                    FileInputStream fis = new FileInputStream(dataFile);
+                    InputStreamReader isr =
+                        new InputStreamReader((InputStream)fis, "UTF-8");
+
+                    brd = new BufferedReader(isr);
+                    while ((line = brd.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    brd.close();
+                    fis.close();
+                    at.setContent(sb.toString());
+
+                } catch(IOException e) {
+                    s_log.error("IO error: " + e.toString());
                 }
             }
             for (ArticleDTO at : arts.getArticles()) {
@@ -151,25 +173,6 @@ public class ArticleService implements IArticleService
         } catch(IOException | JsonSyntaxException e) {
             System.out.println(e.toString());
             s_log.info(e.getMessage() + ": " + e.toString());
-        }
-    }
-
-    static class ArticleList
-    {
-        private List<ArticleDTO> articles;
-
-        /**
-         * @return the articles
-         */
-        public List<ArticleDTO> getArticles() {
-            return articles;
-        }
-
-        /**
-         * @param articles the articles to set
-         */
-        public void setArticles(List<ArticleDTO> articles) {
-            this.articles = articles;
         }
     }
 }

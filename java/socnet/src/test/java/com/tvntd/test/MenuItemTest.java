@@ -138,7 +138,7 @@ public class MenuItemTest
         String rsDir = System.getProperty("TestResource");
         String jsonFile = rsDir + "/article-sample.json";
 
-        articleService.saveArticles(jsonFile);
+        articleService.saveArticles(jsonFile, rsDir);
         Page<ArticleDTO> articles =
             articleService.getUserArticles("vynguyen77@yahoo.com");
 

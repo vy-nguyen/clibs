@@ -46,21 +46,41 @@ let ArticleStore = Reflux.createStore({
             return articles;
         }
         articles = this.data.articleList.filter(function(it) {
-            return it.authorUuid == uuid;
+            return it.authorUuid === uuid;
         }).map(function(it) {
             return it;
         });
+        if (articles.length === 0) {
+            return null;
+        }
         this.data.articlesByAuthor[uuid] = articles;
         return articles;
     },
 
     init: function() {
+        this._resetStore();
         this.listenTo(UserStore, this._userUpdate);
     },
 
     onPreloadCompleted: function(json) {
         this._addFromJson(json.articles);
         this.trigger(this.data);
+    },
+
+    onLogoutCompleted: function() {
+        this._resetStore();
+        this.trigger(this.data);
+    },
+
+    onRefreshArticlesCompleted: function(data) {
+        this.data.articleList = _.concat(this.data.articleList, data.articles);
+        this.trigger(this.data);
+    },
+
+    _resetStore: function() {
+        this.data.articleList = [];
+        this.data.articlesByAuthor = [];
+        this.data.authorUuids = [];
     },
 
     _userUpdate: function(userList) {

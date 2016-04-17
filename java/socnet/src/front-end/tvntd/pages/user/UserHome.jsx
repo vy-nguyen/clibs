@@ -12,12 +12,14 @@ import MarkdownEditor      from 'vntd-shared/forms/editors/MarkdownEditor.jsx';
 import UserStore           from 'vntd-shared/stores/UserStore.jsx';
 import TabPanelStore       from 'vntd-shared/stores/TabPanelStore.jsx';
 import TabPanel            from 'vntd-shared/layout/TabPanel.jsx';
+import ArticleStore        from 'vntd-root/stores/ArticleStore.jsx';
 import PostArticles        from 'vntd-root/components/PostArticles.jsx';
 import ProfileCover        from 'vntd-root/components/ProfileCover.jsx';
+import Actions             from 'vntd-root/actions/Actions.jsx';
 import UserAvatar          from './UserAvatar.jsx';
 
 let UserHome = React.createClass({
-    mixins: [Reflux.connect(UserStore)],
+    mixins: [Reflux.connect(UserStore), Reflux.connect(ArticleStore)],
 
     userTab: {
         init    : false,
@@ -35,6 +37,21 @@ let UserHome = React.createClass({
             tabText: 'My Block-Chains',
             panelContent: null
         } ]
+    },
+
+    componentWillMount: function() {
+        let articles = this._getMyArticles();
+        if (articles === null) {
+            Actions.refreshArticles(self);
+        } else {
+            this.setState({
+                myArticles: articles
+            });
+        }
+    },
+
+    componentDidMount: function() {
+        this.listenTo(ArticleStore, this._onArticleUpdate);
     },
 
     render: function() {
@@ -80,6 +97,23 @@ let UserHome = React.createClass({
                 </div>
             </div>
         )
+    },
+
+    _getMyArticles: function() {
+        let self = UserStore.getSelf();
+        if (self == null) {
+            return null;
+        }
+        return ArticleStore.getArticlesByAuthor(self.userUuid);
+    },
+
+    _onArticleUpdate: function() {
+        let articles = this._getMyArticles();
+        if (articles !== null) {
+            this.setState({
+                myArticles: articles
+            });
+        }
     }
 });
 
