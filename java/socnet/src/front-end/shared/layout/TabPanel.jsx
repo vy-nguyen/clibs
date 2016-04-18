@@ -26,12 +26,14 @@ let TabPanel = React.createClass({
             )
         }.bind(this));
 
-        let tab_content = tab.tabItems.map(function(item, idx) {
+        console.log(this.props.children);
+        let tab_content = this.props.children.map(function(item, idx) {
+            let tabRef = tab.tabItems[idx];
             let clasname = classnames("tab-pane", {active: idx == 0 });
             return (
-                <div key={idx} id={item.domId + '-' + idx} className={classnames("tab-pane", {active: idx == 0})}>
+                <div key={idx} id={tabRef.domId + '-' + idx} className={classnames("tab-pane", {active: idx == 0})}>
                     <div className="panel-body">
-                        {item.panelContent}
+                        {item}
                     </div>
                 </div>
             )

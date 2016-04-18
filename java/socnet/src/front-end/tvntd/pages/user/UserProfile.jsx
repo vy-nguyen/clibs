@@ -203,7 +203,12 @@ let UserProfile = React.createClass({
                 <ProfileCover/>
                 <UserAvatar data={{doFileDrop: true}}/>
                 <div className="row">
-                    <TabPanel tabId={this.profileTab.reactId}/>
+                    <TabPanel tabId={this.profileTab.reactId}>
+                        <UserInfo/>
+                        <Friends/>
+                        <Messages/>
+                        <TaskTimeline/>
+                    </TabPanel>
                 </div>
             </div>
         )

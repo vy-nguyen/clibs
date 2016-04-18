@@ -27,7 +27,6 @@ let UserHome = React.createClass({
         tabItems: [ {
             domId  : 'published-articles',
             tabText: 'Published Articles',
-            panelContent: null
         }, {
             domId  : 'saved-articles',
             tabText: 'Saved Articles',
@@ -35,7 +34,6 @@ let UserHome = React.createClass({
         }, {
             domId  : 'block-chain',
             tabText: 'My Block-Chains',
-            panelContent: null
         } ]
     },
 
@@ -66,8 +64,6 @@ let UserHome = React.createClass({
         ];
         if (this.userTab.init != true) {
             this.userTab.init = true;
-            this.userTab.tabItems[0].panelContent = <PostArticles uuid={[self.userUuid]}/>;
-            this.userTab.tabItems[1].panelContent = <PostArticles uuid={[self.userUuid]}/>;
             TabPanelStore.setTabPanel(this.userTab.reactId, this.userTab);
         }
         return (
@@ -92,7 +88,11 @@ let UserHome = React.createClass({
                 </div>
                 <div className="row">
                     <article className="col-sm-12 col-md-12 col-lg-10">
-                        <TabPanel tabId={this.userTab.reactId}/>
+                        <TabPanel tabId={this.userTab.reactId}>
+                            <PostArticles uuid={[self.userUuid]} data={this.state.myArticles}/>
+                            <PostArticles uuid={[self.userUuid]}/>
+                            <div><h1>Nothing yet</h1></div>
+                        </TabPanel>
                     </article>
                 </div>
             </div>
@@ -109,6 +109,7 @@ let UserHome = React.createClass({
 
     _onArticleUpdate: function() {
         let articles = this._getMyArticles();
+        console.log("update from actoin " + articles);
         if (articles !== null) {
             this.setState({
                 myArticles: articles

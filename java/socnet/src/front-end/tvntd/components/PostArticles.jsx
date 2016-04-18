@@ -7,15 +7,18 @@
 import React from 'react-mod';
 import _     from 'lodash';
 
+import ArticleStore from 'vntd-root/stores/ArticleStore.jsx';
 import PostPane     from 'vntd-root/components/PostPane.jsx';
 import WidgetGrid   from 'vntd-shared/widgets/WidgetGrid.jsx';
 
 let PostArticles = React.createClass({
+
     render: function() {
         let panes = _.map(this.props.data, function(article, idx) {
             return (<PostPane data={article} key={idx}/>);
         });
-        if (this.props.data == undefined || _.isEmpty(this.props.data)) {
+        if (this.props.data === undefined || _.isEmpty(this.props.data)) {
+            console.log(this.props.uuid);
             panes = (
                 <div><h2>You have no articles</h2></div>
             );

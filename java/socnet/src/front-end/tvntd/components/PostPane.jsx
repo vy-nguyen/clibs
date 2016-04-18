@@ -6,6 +6,7 @@
 
 import marked  from 'marked';
 import React   from 'react-mod';
+import _       from 'lodash';
 
 import PostItem     from 'vntd-root/components/PostItem.jsx';
 import PostComment  from 'vntd-root/components/PostComment.jsx';
@@ -65,37 +66,37 @@ let PostPane = React.createClass({
         };
         let pictures = this.props.data.pictures;
         return (
-<JarvisWidget togglebutton={true} color='blue'>
-    <header>
-        <span className="widget-icon"><i className="fa fa-book"/></span>
-        <h2><strong>{this.props.data.postDate}</strong></h2>
-        <div className="widget-toolbar">
-            <div className="label label-success">${this.props.data.moneyEarned}</div>
-        </div>
-        <div className="widget-toolbar">
-            <div className="label label-warning">{this.props.data.creditEarned}</div>
-        </div>
-    </header>
-    <div className="panel panel-default">
-        <div className="panel-body status">
-            {pictures.length != 0 ? <PostItem pictures={pictures}/> : <img src={this.props.data.coverImgUrl}/>}
+            <JarvisWidget togglebutton={true} color={'blue'}>
+                <header>
+                    <span className="widget-icon"><i className="fa fa-book"/></span>
+                    <h2><strong>{this.props.data.postDate}</strong></h2>
+                    <div className="widget-toolbar">
+                        <div className="label label-success">${this.props.data.moneyEarned}</div>
+                    </div>
+                    <div className="widget-toolbar">
+                        <div className="label label-warning">{this.props.data.creditEarned}</div>
+                    </div>
+                </header>
+                <div className="panel panel-default">
+                    <div className="panel-body status">
+                        {!_.isEmpty(pictures) ? <PostItem pictures={pictures}/> : <img src={this.props.data.coverImgUrl}/>}
 
-            <div style={div_style} dangerouslySetInnerHTML={this._rawMarkup()}/>
-            <ul className="links">
-                <li><a href="#"><i className="fa fa-thumbs-o-up"></i> Like ({this.props.data.likeCount})</a></li>
-                <li><a href="#"><i className="fa fa-comment-o"></i> Comment</a></li>
-                <li><a href="#"><i className="fa fa-share-square-o"></i> Share</a></li>
-            </ul>
-            <ul className="comments">
-                <li>
-                    <img src="/rs/img/avatars/sunny.png" alt="img"/>
-                    <textarea type="text" className="form-control" placeholder="Post your comment..."/>
-                </li>
-            </ul>
-            <PostComment comments={commentMock} favorites={commentFavMock}/>
-        </div>
-    </div>
-</JarvisWidget>
+                    <div style={div_style} dangerouslySetInnerHTML={this._rawMarkup()}/>
+                        <ul className="links">
+                            <li><a href="#"><i className="fa fa-thumbs-o-up"></i> Like ({this.props.data.likeCount})</a></li>
+                            <li><a href="#"><i className="fa fa-comment-o"></i> Comment</a></li>
+                            <li><a href="#"><i className="fa fa-share-square-o"></i> Share</a></li>
+                        </ul>
+                        <ul className="comments">
+                            <li>
+                                <img src="/rs/img/avatars/sunny.png" alt="img"/>
+                                <textarea type="text" className="form-control" placeholder="Post your comment..."/>
+                            </li>
+                        </ul>
+                        <PostComment comments={commentMock} favorites={commentFavMock}/>
+                    </div>
+                </div>
+            </JarvisWidget>
         )
     }
 });
