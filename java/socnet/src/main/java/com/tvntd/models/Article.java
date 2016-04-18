@@ -60,7 +60,7 @@ public class Article
 
     @Lob
     @Column
-    private String content;
+    private byte[] content;
 
     public Article() {
         super();
@@ -223,14 +223,14 @@ public class Article
     /**
      * @return the content
      */
-    public String getContent() {
+    public byte[] getContent() {
         return content;
     }
 
     /**
      * @param content the content to set
      */
-    public void setContent(String content) {
+    public void setContent(byte[] content) {
         this.content = content;
     }
 }

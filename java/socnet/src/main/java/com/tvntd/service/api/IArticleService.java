@@ -26,10 +26,13 @@
  */
 package com.tvntd.service.api;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 
 import com.tvntd.models.Article;
@@ -71,6 +74,7 @@ public interface IArticleService
 
     public static class ArticleDTO
     {
+        private static Logger s_log = LoggerFactory.getLogger(ArticleDTO.class);
         private Long articleId;
         private Long authorId;
         private String authorUuid;
@@ -97,10 +101,25 @@ public interface IArticleService
             moneyEarned = art.getMoneyEarned();
             contentOId = art.getContentOId();
             created = art.getCreated();
-            content = art.getContent();
+            try {
+                content = new String(art.getContent(), "UTF-8");
+            } catch(UnsupportedEncodingException e) {
+                s_log.error(e.toString());
+            }
         }
 
         public Article toArticle()
+        {
+            try {
+                return toArticle(content.getBytes("UTF-8"));
+
+            } catch(UnsupportedEncodingException e) {
+                s_log.error(e.toString());
+            }
+            return null;
+        }
+
+        public Article toArticle(byte[] content)
         {
             Article art = new Article();
             art.setUserId(authorId);

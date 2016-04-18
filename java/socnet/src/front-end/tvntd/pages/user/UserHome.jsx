@@ -30,7 +30,6 @@ let UserHome = React.createClass({
         }, {
             domId  : 'saved-articles',
             tabText: 'Saved Articles',
-            panelContent: null
         }, {
             domId  : 'block-chain',
             tabText: 'My Block-Chains',

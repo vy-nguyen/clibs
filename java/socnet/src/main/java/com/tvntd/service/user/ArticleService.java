@@ -27,11 +27,9 @@
 package com.tvntd.service.user;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -47,6 +45,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
@@ -122,6 +121,10 @@ public class ArticleService implements IArticleService
         articleRepo.save(art);
     }
 
+    public void saveArticle(Article article) {
+        articleRepo.save(article);
+    }
+
     @Override
     public void saveArticles(String jsonFile, String rsDir)
     {
@@ -142,28 +145,10 @@ public class ArticleService implements IArticleService
                 } else {
                     s_log.error("Invalid user " + at.getAuthorUuid());
                 }
-                String line;
-                String dataFile = rsDir + "/" + at.getContent();
-                try {
-                    StringBuilder sb = new StringBuilder();
-                    FileInputStream fis = new FileInputStream(dataFile);
-                    InputStreamReader isr =
-                        new InputStreamReader((InputStream)fis, "UTF-8");
-
-                    brd = new BufferedReader(isr);
-                    while ((line = brd.readLine()) != null) {
-                        sb.append(line);
-                    }
-                    brd.close();
-                    fis.close();
-                    at.setContent(sb.toString());
-
-                } catch(IOException e) {
-                    s_log.error("IO error: " + e.toString());
-                }
             }
             for (ArticleDTO at : arts.getArticles()) {
-                saveArticle(at);
+                File dataFile = new File(rsDir + "/" + at.getContent());
+                saveArticle(at.toArticle(Files.toByteArray(dataFile)));
             }
             if (!userId.equals(0L)) {
                 List<ArticleDTO> articles = getArticlesByUser(userId);
