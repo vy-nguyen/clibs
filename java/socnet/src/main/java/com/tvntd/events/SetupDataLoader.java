@@ -49,8 +49,6 @@ import com.tvntd.dao.UserRepository;
 import com.tvntd.models.Privilege;
 import com.tvntd.models.Role;
 import com.tvntd.models.User;
-import com.tvntd.service.api.ISideNavMenuService;
-import com.tvntd.service.api.ITopNavMenuService;
 
 @Component
 public class SetupDataLoader implements ApplicationListener<ContextRefreshedEvent>
@@ -58,12 +56,6 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     private static final Logger s_log = LoggerFactory.getLogger(SetupDataLoader.class);
     private boolean alreadySetup = false;
     
-    @Autowired
-    private ITopNavMenuService topNavSvc;
-
-    @Autowired
-    private ISideNavMenuService sideNavSvc;
-
     @Autowired
     private UserRepository userRepository;
 
@@ -113,9 +105,6 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             user.setEnabled(true);
             userRepository.save(user);
         }
-        topNavSvc.createPublicTopNav();
-        sideNavSvc.createPublicSideNavMenu();
-
         alreadySetup = true;
     }
 
