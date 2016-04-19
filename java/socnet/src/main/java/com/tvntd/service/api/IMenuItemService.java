@@ -42,15 +42,18 @@ public interface IMenuItemService
     public Long getPrivateId();
     public Long getAdminId();
 
+    /*
     public List<MenuItemResp> createPublicMenu();
     public List<MenuItemResp> createPrivateMenu();
     public List<MenuItemResp> createAdminMenu();
+    */
 
     public List<MenuItemResp>
     mergeMenuItemResp(List<MenuItemResp> a, List<MenuItemResp> b);
 
     public List<MenuItemResp> getMenuItemRespByUser(Long userId);
     public void saveMenuItem(Long userId, List<MenuItemResp> records);
+    public void saveMenuItem(String jsonFile);
 
     public static class MenuItemResp
     {

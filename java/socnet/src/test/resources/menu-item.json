@@ -1,0 +1,215 @@
+{
+    "home": [ {
+        "userId"  : 0,
+        "itemId"  : 1,
+        "parentId": 0,
+        "title"   : "Home",
+        "icon"    : "fa fa-lg fa-fw fa-home",
+        "route"   : "/"
+    } ],
+    "login": [ {
+        "userId"  : 0,
+        "itemId"  : 20,
+        "parentId": 0,
+        "title"   : "Login/Register",
+        "icon"    : "fa fa-lg fa-fw fa-user",
+        "route"   : "/login"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 21,
+        "parentId": 20,
+        "title"   : "Login",
+        "icon"    : "fa fa-home",
+        "route"   : "/login"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 22,
+        "parentId": 20,
+        "title"   : "Register",
+        "icon"    : "fa fa-user",
+        "route"   : "/register/form"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 23,
+        "parentId": 20,
+        "title"   : "Recover Login",
+        "icon"    : "fa fa-flag",
+        "route"   : "/register/recover"
+    } ],
+    "publicMenu": [ {
+        "userId"  : 0,
+        "itemId"  : 300,
+        "parentId": 0,
+        "title"   : "Categories",
+        "icon"    : "fa fa-lg fa-fw fa-book",
+        "route"   : "/public"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 310,
+        "parentId": 300,
+        "title"   : "Viet Nam",
+        "icon"    : "fa fa-home",
+        "route"   : "/public/vietnam",
+        "badgeClass": "badge pull-right"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 320,
+        "parentId": 300,
+        "title"   : "Kinh Te",
+        "icon"    : "fa fa-money",
+        "route"   : "/public/economic",
+        "badgeClass": "badge pull-right"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 330,
+        "parentId": 300,
+        "title"   : "Giao Duc",
+        "icon"    : "fa fa-book",
+        "route"   : "/public/education",
+        "badgeClass": "badge pull-right"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 340,
+        "parentId": 300,
+        "title"   : "Ky Thuat",
+        "icon"    : "fa fa-gear",
+        "route"   : "/public/tech",
+        "badgeClass": "badge pull-right"
+    } ],
+    "aboutUs": [ {
+        "userId"  : 0,
+        "itemId"  : 900,
+        "parentId": 0,
+        "title"   : "About Us",
+        "icon"    : "fa fa-lg fa-fw fa-globe",
+        "route"   : "/public/aboutus"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 901,
+        "parentId": 900,
+        "title"   : "Prototypes",
+        "icon"    : "fa fa-sitemap",
+        "route"   : "/public/proto"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 902,
+        "parentId": 901,
+        "title"   : "Blog",
+        "icon"    : "fa fa-book",
+        "route"   : "/public/proto/blog"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 903,
+        "parentId": 901,
+        "title"   : "E Store",
+        "icon"    : "fa fa-money",
+        "route"   : "/public/proto/estore"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 930,
+        "parentId": 903,
+        "title"   : "Product View",
+        "icon"    : "fa fa-tag",
+        "route"   : "/public/proto/estore/product-view"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 931,
+        "parentId": 903,
+        "title"   : "Product Detail",
+        "icon"    : "fa fa-shopping-cart",
+        "route"   : "/public/proto/estore/product-detail"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 904,
+        "parentId": 901,
+        "title"   : "Timeline",
+        "icon"    : "fa fa-sort",
+        "route"   : "/public/proto/timeline"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 905,
+        "parentId": 901,
+        "title"   : "News Feed",
+        "icon"    : "fa fa-gear",
+        "route"   : "/public/proto/news"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 906,
+        "parentId": 901,
+        "title"   : "Forum",
+        "icon"    : "fa fa-sort",
+        "route"   : "/public/proto/forum"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 907,
+        "parentId": 901,
+        "title"   : "Social Wall",
+        "icon"    : "fa fa-thumbs-o-up",
+        "route"   : "/public/proto/wall"
+    } ],
+    "userMenu": [ {
+        "userId"  : 0,
+        "itemId"  : 50,
+        "parentId": 0,
+        "title"   : "Profile",
+        "icon"    : "fa fa-lg fa-fw fa-user",
+        "route"   : "/user"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 51,
+        "parentId": 50,
+        "title"   : "Edit Profile",
+        "icon"    : "fa fa-user",
+        "route"   : "/user/profile"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 52,
+        "parentId": 50,
+        "title"   : "My Account",
+        "icon"    : "fa fa-money",
+        "route"   : "/user/account"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 53,
+        "parentId": 50,
+        "title"   : "Activity Logs",
+        "icon"    : "fa fa-flag",
+        "route"   : "/user/logs"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 54,
+        "parentId": 50,
+        "title"   : "Logout",
+        "icon"    : "fa fa-sign-out",
+        "route"   : "/login/logout"
+    } ],
+    "funding": [ {
+        "userId"  : 0,
+        "itemId"  : 400,
+        "parentId": 0,
+        "title"   : "Public Funding",
+        "icon"    : "fa fa-lg fa-fw fa-briefcase",
+        "route"   : "/public/project"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 461,
+        "parentId": 400,
+        "title"   : "Public Projects",
+        "icon"    : "fa fa-money",
+        "route"   : "/public/project"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 462,
+        "parentId": 400,
+        "title"   : "Private Projects",
+        "icon"    : "fa fa-money",
+        "route"   : "/user/project"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 463,
+        "parentId": 400,
+        "title"   : "Viet Nam",
+        "icon"    : "fa fa-home",
+        "route"   : "/public/viet-funding"
+    } ]
+}

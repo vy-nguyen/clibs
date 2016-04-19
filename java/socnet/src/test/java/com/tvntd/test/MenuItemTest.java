@@ -102,20 +102,21 @@ public class MenuItemTest
     @Test
     public void testMenuItemService()
     {
+        String rsDir = System.getProperty("TestResource");
+        String jsonFile = rsDir + "/menu-item.json";
+        menuItemService.saveMenuItem(jsonFile);
+
         Long userId = menuItemService.getPublicId();
-        List<MenuItemResp> menu = menuItemService.createPublicMenu();
-        List<MenuItemResp> verif = menuItemService.getMenuItemRespByUser(userId);
-        assertEquals(menu.toString(), verif.toString());
+        List<MenuItemResp> menu = menuItemService.getMenuItemRespByUser(userId);
+        assertNotNull(menu);
 
         userId = menuItemService.getPrivateId();
-        menu   = menuItemService.createPrivateMenu();
-        verif  = menuItemService.getMenuItemRespByUser(userId);
-        assertEquals(menu.toString(), verif.toString());
+        menu = menuItemService.getMenuItemRespByUser(userId);
+        assertNotNull(menu);
 
         userId = menuItemService.getAdminId();
-        menu   = menuItemService.createAdminMenu();
-        verif  = menuItemService.getMenuItemRespByUser(userId);
-        assertEquals(menu.toString(), verif.toString());
+        menu = menuItemService.getMenuItemRespByUser(userId);
+        assertNotNull(menu);
     }
 
     @Test
@@ -143,8 +144,5 @@ public class MenuItemTest
             articleService.getUserArticles("vynguyen77@yahoo.com");
 
         assertNotNull(articles);
-        for (ArticleDTO at : articles) {
-            s_log.info(at.toString());
-        }
     }
 }

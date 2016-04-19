@@ -26,6 +26,9 @@
  */
 package com.tvntd.service.user;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,6 +41,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.tvntd.dao.MenuItemRepository;
 import com.tvntd.models.MenuItem;
@@ -52,8 +56,8 @@ public class MenuItemService implements IMenuItemService
     static private final int privateId = 1;
     static private final int adminId   = 2;
     static private final int customizedId = 3;
-
     static private final int itemIdMul = 1000;
+    /*
     static private final String menuItemJsonBeg = "{ \"items\": [";
     static private final String menuItemJsonEnd = "] }";
     static private final String menuItemHome =
@@ -273,6 +277,7 @@ public class MenuItemService implements IMenuItemService
         "\"route\"   : \"/user/project\"" +
     "}";
 
+    */
     @Autowired
     protected MenuItemRepository menuItemRepo;
 
@@ -301,6 +306,7 @@ public class MenuItemService implements IMenuItemService
         return menuItemRepo.findAllByUserId(userId);
     }
 
+    /*
     @Override
     public List<MenuItemResp> createPublicMenu()
     {
@@ -358,6 +364,8 @@ public class MenuItemService implements IMenuItemService
         }
         return getMenuItemRespByUser(userId);
     }
+
+    */
 
     @Override
     public List<MenuItemResp> getMenuItemRespByUser(Long userId)
@@ -429,6 +437,152 @@ public class MenuItemService implements IMenuItemService
                 }
                 saveMenuItem(userId, subList);
             }
+        }
+    }
+
+    @Override
+    public void saveMenuItem(String jsonFile)
+    {
+        Gson gson = new Gson();
+        try {
+            BufferedReader brd = new BufferedReader(new FileReader(jsonFile));
+            MenuItemJsonFile items = gson.fromJson(brd, MenuItemJsonFile.class);
+            brd.close();
+
+            items.saveMenuItems(menuItemRepo, publicId);
+            items.saveMenuItems(menuItemRepo, privateId);
+            items.saveMenuItems(menuItemRepo, adminId);
+
+        } catch(IOException | JsonSyntaxException e) {
+            s_log.info("Fail to parse json file " + e.toString());
+            s_log.error(e.toString());
+        }
+    }
+
+    class MenuItemJsonFile
+    {
+        private List<MenuItem> home;
+        private List<MenuItem> login;
+        private List<MenuItem> publicMenu;
+        private List<MenuItem> aboutUs;
+        private List<MenuItem> userMenu;
+        private List<MenuItem> funding;
+
+        public void saveMenuItems(MenuItemRepository repo, long uid)
+        {
+            Long userId = Long.valueOf(uid);
+
+            saveMenuItems(home, repo, userId);
+            saveMenuItems(aboutUs, repo, userId);
+            saveMenuItems(funding, repo, userId);
+
+            if (uid == publicId) {
+                saveMenuItems(login, repo, userId);
+                saveMenuItems(publicMenu, repo, userId);
+            } else {
+                saveMenuItems(userMenu, repo, userId);
+            }
+        }
+
+        private void
+        saveMenuItems(List<MenuItem> items, MenuItemRepository repo, Long userId)
+        {
+            if (items == null) {
+                s_log.info("Error in parsing json, items has nothing to save ");
+                return;
+            }
+            for (MenuItem it : items) {
+                Long base = userId * itemIdMul;
+                it.setUserId(userId);
+                it.setItemId(it.getItemId() + base);
+                it.setParentId(it.getParentId() + base);
+
+                repo.save(it);
+            }
+        }
+
+        /**
+         * @return the home
+         */
+        public List<MenuItem> getHome() {
+            return home;
+        }
+
+        /**
+         * @param home the home to set
+         */
+        public void setHome(List<MenuItem> home) {
+            this.home = home;
+        }
+
+        /**
+         * @return the login
+         */
+        public List<MenuItem> getLogin() {
+            return login;
+        }
+
+        /**
+         * @param login the login to set
+         */
+        public void setLogin(List<MenuItem> login) {
+            this.login = login;
+        }
+
+        /**
+         * @return the publicMenu
+         */
+        public List<MenuItem> getPublicMenu() {
+            return publicMenu;
+        }
+
+        /**
+         * @param publicMenu the publicMenu to set
+         */
+        public void setPublicMenu(List<MenuItem> publicMenu) {
+            this.publicMenu = publicMenu;
+        }
+
+        /**
+         * @return the aboutUs
+         */
+        public List<MenuItem> getAboutUs() {
+            return aboutUs;
+        }
+
+        /**
+         * @param aboutUs the aboutUs to set
+         */
+        public void setAboutUs(List<MenuItem> aboutUs) {
+            this.aboutUs = aboutUs;
+        }
+
+        /**
+         * @return the userMenu
+         */
+        public List<MenuItem> getUserMenu() {
+            return userMenu;
+        }
+
+        /**
+         * @param userMenu the userMenu to set
+         */
+        public void setUserMenu(List<MenuItem> userMenu) {
+            this.userMenu = userMenu;
+        }
+
+        /**
+         * @return the funding
+         */
+        public List<MenuItem> getFunding() {
+            return funding;
+        }
+
+        /**
+         * @param funding the funding to set
+         */
+        public void setFunding(List<MenuItem> funding) {
+            this.funding = funding;
         }
     }
 
