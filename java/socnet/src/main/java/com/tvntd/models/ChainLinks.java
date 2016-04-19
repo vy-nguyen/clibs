@@ -24,20 +24,62 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.service.api;
+package com.tvntd.models;
 
-import com.tvntd.models.User;
+import javax.persistence.Embeddable;
 
-/**
- * Provide model for the template fmt-profile.jsp
- */
-public interface IUserProfileService
+import com.tvntd.lib.ObjectId;
+
+@Embeddable
+public class ChainLinks
 {
-    public Profile makeUserProfile(User user);
-    public Profile getUserProfile(Long userId);
-    public void saveUserProfile(Long userId, Profile profile);
+    private String   chainTag;
+    private String   chainFmt;
+    private ObjectId chainRoot;
 
-    public class Profile
-    {
+    public ChainLinks() {
+        super();
+    }
+
+    /**
+     * @return the chainTag
+     */
+    public String getChainTag() {
+        return chainTag;
+    }
+
+    /**
+     * @param chainTag the chainTag to set
+     */
+    public void setChainTag(String chainTag) {
+        this.chainTag = chainTag;
+    }
+
+    /**
+     * @return the chainFmt
+     */
+    public String getChainFmt() {
+        return chainFmt;
+    }
+
+    /**
+     * @param chainFmt the chainFmt to set
+     */
+    public void setChainFmt(String chainFmt) {
+        this.chainFmt = chainFmt;
+    }
+
+    /**
+     * @return the chainRoot
+     */
+    public ObjectId getChainRoot() {
+        return chainRoot;
+    }
+
+    /**
+     * @param chainRoot the chainRoot to set
+     */
+    public void setChainRoot(ObjectId chainRoot) {
+        this.chainRoot = chainRoot;
     }
 }

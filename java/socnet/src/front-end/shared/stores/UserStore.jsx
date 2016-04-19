@@ -98,6 +98,7 @@ let UserStore = Reflux.createStore({
 
     onrefreshNotifyCompleted: function(json) {
         this._updateCommon(json);
+        this.trigger(this.data);
     },
 
     /* Login actions. */
@@ -198,8 +199,8 @@ let UserStore = Reflux.createStore({
             if (resp.message == "") {
                 this.data.authMesg = resp.error;
             }
-            this.trigger(this.data);
         }
+        this.trigger(this.data);
     },
 
     _addFromJson: function(items) {

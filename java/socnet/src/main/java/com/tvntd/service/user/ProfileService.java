@@ -28,8 +28,10 @@ package com.tvntd.service.user;
 
 import javax.transaction.Transactional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.tvntd.dao.ProfileRepository;
 import com.tvntd.models.Profile;
 import com.tvntd.service.api.IProfileService;
 
@@ -37,6 +39,9 @@ import com.tvntd.service.api.IProfileService;
 @Transactional
 public class ProfileService implements IProfileService
 {
+    @Autowired
+    protected ProfileRepository profileRepo;
+
     @Override
     public Profile getProfile(Long userId)
     {

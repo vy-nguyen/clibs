@@ -26,6 +26,8 @@
  */
 package com.tvntd.dao;
 
+import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tvntd.models.Profile;
@@ -33,6 +35,7 @@ import com.tvntd.models.Profile;
 public interface ProfileRepository extends JpaRepository<Profile, Long>
 {
     Profile findByUserId(Long id);
+    Profile findByUserUuid(UUID uuid);
 
     @Override
     void delete(Profile profile);

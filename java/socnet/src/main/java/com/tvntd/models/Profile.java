@@ -27,6 +27,7 @@
 package com.tvntd.models;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -34,12 +35,14 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
-import javax.persistence.Transient;
+import javax.persistence.Table;
 
 import com.tvntd.lib.ObjectId;
 
 @Entity
+@Table(indexes = {@Index(columnList = "userUuid", name = "UuidIndex", unique = true)})
 public class Profile
 {
     @Id
@@ -50,8 +53,10 @@ public class Profile
     private String coverImg1;
     private String coverImg2;
     private String coverImg3;
-    private String userUuid;
     private ObjectId transRoot;
+    private ObjectId mainRoot;
+
+    private UUID userUuid;
 
     @Column(length = 512)
     private String userImgUrl;
@@ -63,6 +68,10 @@ public class Profile
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "FollowList", joinColumns = @JoinColumn(name="userId"))
     private List<Long> followList;
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "ChainLinks", joinColumns = @JoinColumn(name="userId"))
+    private List<Long> chainLinks;
 
     public Profile() {
         super();
@@ -155,14 +164,14 @@ public class Profile
     /**
      * @return the userUuid
      */
-    public String getUserUuid() {
+    public UUID getUserUuid() {
         return userUuid;
     }
 
     /**
      * @param userUuid the userUuid to set
      */
-    public void setUserUuid(String userUuid) {
+    public void setUserUuid(UUID userUuid) {
         this.userUuid = userUuid;
     }
 
@@ -178,6 +187,20 @@ public class Profile
      */
     public void setTransRoot(ObjectId transRoot) {
         this.transRoot = transRoot;
+    }
+
+    /**
+     * @return the mainRoot
+     */
+    public ObjectId getMainRoot() {
+        return mainRoot;
+    }
+
+    /**
+     * @param mainRoot the mainRoot to set
+     */
+    public void setMainRoot(ObjectId mainRoot) {
+        this.mainRoot = mainRoot;
     }
 
     /**
@@ -220,5 +243,19 @@ public class Profile
      */
     public void setFollowList(List<Long> followList) {
         this.followList = followList;
+    }
+
+    /**
+     * @return the chainLinks
+     */
+    public List<Long> getChainLinks() {
+        return chainLinks;
+    }
+
+    /**
+     * @param chainLinks the chainLinks to set
+     */
+    public void setChainLinks(List<Long> chainLinks) {
+        this.chainLinks = chainLinks;
     }
 }

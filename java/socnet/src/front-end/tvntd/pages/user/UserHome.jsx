@@ -108,7 +108,6 @@ let UserHome = React.createClass({
 
     _onArticleUpdate: function() {
         let articles = this._getMyArticles();
-        console.log("update from actoin " + articles);
         if (articles !== null) {
             this.setState({
                 myArticles: articles
