@@ -102,7 +102,7 @@ let UserStore = Reflux.createStore({
 
     /* Login actions. */
     onLoginCompleted: function(response, status) {
-        this._changedData(response.responseJSON);
+        this._changedData(response);
     },
 
     onLoginFailed: function(xhdr, text, error) {
@@ -184,7 +184,7 @@ let UserStore = Reflux.createStore({
     },
 
     _changedData: function(resp) {
-        if (resp != null) {
+        if (resp !== null && resp !== undefined) {
             this.data.authCode  = resp.type;
             this.data.authMesg  = resp.message;
             this.data.authError = resp.error;
@@ -198,8 +198,8 @@ let UserStore = Reflux.createStore({
             if (resp.message == "") {
                 this.data.authMesg = resp.error;
             }
+            this.trigger(this.data);
         }
-        this.trigger(this.data);
     },
 
     _addFromJson: function(items) {

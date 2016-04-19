@@ -28,24 +28,41 @@ package com.tvntd.models;
 
 import java.util.List;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Transient;
+
+import com.tvntd.lib.ObjectId;
 
 @Entity
 public class Profile
 {
     @Id
     private Long userId;
+    private Long profileItemId;
 
     private String coverImg0;
     private String coverImg1;
     private String coverImg2;
     private String coverImg3;
     private String userUuid;
+    private ObjectId transRoot;
 
-    @Transient
-    private List<ProfileItem> items;
+    @Column(length = 512)
+    private String userImgUrl;
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "FriendList", joinColumns = @JoinColumn(name="userId"))
+    private List<Long> friendList;
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "FollowList", joinColumns = @JoinColumn(name="userId"))
+    private List<Long> followList;
 
     public Profile() {
         super();
@@ -63,6 +80,20 @@ public class Profile
      */
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    /**
+     * @return the profileItemId
+     */
+    public Long getProfileItemId() {
+        return profileItemId;
+    }
+
+    /**
+     * @param profileItemId the profileItemId to set
+     */
+    public void setProfileItemId(Long profileItemId) {
+        this.profileItemId = profileItemId;
     }
 
     /**
@@ -136,9 +167,58 @@ public class Profile
     }
 
     /**
-     * @return the items
+     * @return the transRoot
      */
-    public List<ProfileItem> getItems() {
-        return items;
+    public ObjectId getTransRoot() {
+        return transRoot;
+    }
+
+    /**
+     * @param transRoot the transRoot to set
+     */
+    public void setTransRoot(ObjectId transRoot) {
+        this.transRoot = transRoot;
+    }
+
+    /**
+     * @return the userImgUrl
+     */
+    public String getUserImgUrl() {
+        return userImgUrl;
+    }
+
+    /**
+     * @param userImgUrl the userImgUrl to set
+     */
+    public void setUserImgUrl(String userImgUrl) {
+        this.userImgUrl = userImgUrl;
+    }
+
+    /**
+     * @return the friendList
+     */
+    public List<Long> getFriendList() {
+        return friendList;
+    }
+
+    /**
+     * @param friendList the friendList to set
+     */
+    public void setFriendList(List<Long> friendList) {
+        this.friendList = friendList;
+    }
+
+    /**
+     * @return the followList
+     */
+    public List<Long> getFollowList() {
+        return followList;
+    }
+
+    /**
+     * @param followList the followList to set
+     */
+    public void setFollowList(List<Long> followList) {
+        this.followList = followList;
     }
 }

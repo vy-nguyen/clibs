@@ -29,6 +29,7 @@ package com.tvntd.service.api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.tvntd.models.Profile;
 import com.tvntd.models.User;
 
 public class LoginResponse extends GenericResponse
@@ -37,7 +38,7 @@ public class LoginResponse extends GenericResponse
 
     private String authVerifToken;
     private String authToken;
-    private UserInfo userSelf;
+    private UserDTO userSelf;
 
     public LoginResponse(String type, String message, String error, String token)
     {
@@ -50,7 +51,7 @@ public class LoginResponse extends GenericResponse
     {
         super(GenericResponse.USER_HOME, null, null);
         this.authToken = "abc1234";
-        this.userSelf = new UserInfo(user);
+        this.userSelf = new UserDTO(user, null);
     }
 
     /**
@@ -70,11 +71,11 @@ public class LoginResponse extends GenericResponse
     /**
      * @return the userSelf
      */
-    public UserInfo getUserSelf() {
+    public UserDTO getUserSelf() {
         return userSelf;
     }
 
-    public static class UserInfo
+    public static class UserDTO
     {
         private String email;
         private String firstName;
@@ -91,15 +92,15 @@ public class LoginResponse extends GenericResponse
         private Long   moneyEarned;
         private Long   moneyIssued;
 
-        public UserInfo(User user)
+        public UserDTO(User user, Profile profile)
         {
             this.email = user.getEmail();
             this.firstName = user.getFirstName();
             this.lastName = user.getLastName();
             this.locale = user.getLocale();
             this.userUuid = user.getEmail(); // user.getUserUuid();
-            this.userImgUrl = user.getUserImgUrl();
-            this.transRoot = user.getTransRoot();
+            this.userImgUrl = ""; // user.getUserImgUrl();
+            this.transRoot = ""; // user.getTransRoot();
             this.connections = user.getConnections();
             this.followers = user.getFollowers();
             this.follows = user.getFollows();

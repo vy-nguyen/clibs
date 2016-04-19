@@ -26,11 +26,10 @@
  */
 package com.tvntd.models;
 
-import java.util.List;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Transient;
+
+import com.tvntd.lib.ObjectId;
 
 @Entity
 public class ProfileItem 
@@ -41,13 +40,11 @@ public class ProfileItem
     private Long   parentId;
     private Long   userId;
 
-    private String icon;
-    private String text;
-    private String tag;
-    private String url;
-
-    @Transient
-    private List<ProfileItem> items;
+    private String   icon;
+    private String   text;
+    private String   tag;
+    private String   url;
+    private ObjectId chainOId;
 
     public ProfileItem() {
         super();
@@ -149,5 +146,19 @@ public class ProfileItem
      */
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    /**
+     * @return the chainOId
+     */
+    public ObjectId getChainOId() {
+        return chainOId;
+    }
+
+    /**
+     * @param chainOId the chainOId to set
+     */
+    public void setChainOId(ObjectId chainOId) {
+        this.chainOId = chainOId;
     }
 }

@@ -27,11 +27,8 @@
 package com.tvntd.models;
 
 import java.util.Collection;
-import java.util.List;
 
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -54,34 +51,20 @@ public class User
     private String firstName;
     private String lastName;
     private String locale;
-    private String userUuid;
-
-    @Column(length = 512)
-    private String userImgUrl;
 
     @Column(length = 60)
     private String password;
 
     private boolean enabled;
-
     private boolean tokenExpired;
 
     private Long   connections;
     private Long   followers;
     private Long   follows;
-    private String transRoot;
     private String creditEarned;
     private String creditIssued;
     private String moneyEarned;
     private String moneyIssued;
-
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "FriendList", joinColumns = @JoinColumn(name="userId"))
-    private List<Long> friendList;
-
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "FollowList", joinColumns = @JoinColumn(name="userId"))
-    private List<Long> followList;
 
     //
     @ManyToMany(fetch = FetchType.EAGER)
@@ -151,27 +134,6 @@ public class User
         this.locale = locale;
     }
 
-    /**
-     * @return the userUuid
-     */
-    public String getUserUuid() {
-        return userUuid;
-    }
-
-    /**
-     * @param userUuid the userUuid to set
-     */
-    public void setUserUuid(String userUuid) {
-        this.userUuid = userUuid;
-    }
-
-    /**
-     * @return the userImgUrl
-     */
-    public String getUserImgUrl() {
-        return userImgUrl;
-    }
-
     public String getPassword() {
         return password;
     }
@@ -220,20 +182,6 @@ public class User
      */
     public void setFollows(Long follows) {
         this.follows = follows;
-    }
-
-    /**
-     * @return the transRoot
-     */
-    public String getTransRoot() {
-        return transRoot;
-    }
-
-    /**
-     * @param transRoot the transRoot to set
-     */
-    public void setTransRoot(String transRoot) {
-        this.transRoot = transRoot;
     }
 
     /**

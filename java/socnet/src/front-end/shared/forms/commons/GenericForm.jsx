@@ -44,7 +44,7 @@ let GenericForm = React.createClass({
         if (form.buttons != null) {
             let buttons = form.buttons.map(function(item, idx) {
                 return (
-                    <button id={idx} className={item.btnFormat} onClick={item.onClick}>{item.btnText}</button>
+                    <button key={idx} className={item.btnFormat} onClick={item.onClick}>{item.btnText}</button>
                 );
             });
             form_buttons = (
@@ -62,7 +62,7 @@ let GenericForm = React.createClass({
         let form_entries = form.formEntries.map(function(item, idx) {
             let entries = item.entries.map(function(entry, index) {
                 return (
-                    <div className="row form-group" id={index}>
+                    <div className="row form-group" key={index}>
                         <label className={entry.labelFmt} for="textinput">{entry.labelTxt}</label>
                         <div className={entry.inputFmt}>
                             <input type="text" className="form-control"
@@ -73,7 +73,7 @@ let GenericForm = React.createClass({
                 );
             });
             return (
-                <div id={idx}>
+                <div key={idx}>
                     <legend>{item.legend}</legend>
                     <fieldset>
                         {entries}

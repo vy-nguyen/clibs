@@ -20,7 +20,7 @@ let Panel = React.createClass({
             return null;
         }
         let dropdown_menu = panel.headerMenus.map(function(item, idx) {
-            return <DropdownMenu reactId={item.reactId}/>;
+            return <DropdownMenu key={idx} reactId={item.reactId}/>;
         }.bind(this));
 
         return (

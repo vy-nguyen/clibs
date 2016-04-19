@@ -76,14 +76,14 @@ public class StartupResponse
     /**
      * @return the userInfo
      */
-    public LoginResponse getUserInfo() {
+    public LoginResponse getUserDTO() {
         return userInfo;
     }
 
     /**
      * @param userInfo the userInfo to set
      */
-    public void setUserInfo(LoginResponse userInfo) {
+    public void setUserDTO(LoginResponse userInfo) {
         this.userInfo = userInfo;
     }
 
