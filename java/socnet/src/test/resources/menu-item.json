@@ -92,6 +92,13 @@
         "route"   : "/public/proto"
     }, {
         "userId"  : 0,
+        "itemId"  : 910,
+        "parentId": 900,
+        "title"   : "Users",
+        "icon"    : "fa fa-users",
+        "route"   : "/public/user-list"
+    }, {
+        "userId"  : 0,
         "itemId"  : 902,
         "parentId": 901,
         "title"   : "Blog",

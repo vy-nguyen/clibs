@@ -53,8 +53,13 @@ public class TvntdWebConfig extends WebMvcConfigurerAdapter
     {
 		registry.addResourceHandler("/rs/img/**").
             addResourceLocations("file:///var/www/static/img/");
+		registry.addResourceHandler("/rs/upload/**").
+            addResourceLocations("file:///var/www/static/upload/");
+		registry.addResourceHandler("/rs/obj/**").
+            addResourceLocations("file:///var/www/static/obj/");
 		registry.addResourceHandler("/rs/js/**").
             addResourceLocations("file:///var/www/static/js/");
+
 		registry.addResourceHandler("/rs/images/*").addResourceLocations("/images/");
         registry.addResourceHandler("/rs/css/**").addResourceLocations("/css/");
         registry.addResourceHandler("/rs/client/**").addResourceLocations("/client/");
@@ -66,14 +71,6 @@ public class TvntdWebConfig extends WebMvcConfigurerAdapter
     {
         super.addViewControllers(registry);
         /*
-        registry.addViewController("/login");
-        registry.addViewController("/logout");
-        registry.addViewController("/register");
-        registry.addViewController("/register/confirm");
-        registry.addViewController("/user");
-        registry.addViewController("/admin");
-        registry.addViewController("/dba");
-
         registry.addViewController("/error/bad-user")
             .setViewName("bad-user");
         registry.addViewController("/error/invalid-session")

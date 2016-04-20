@@ -44,6 +44,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.tvntd.models.User;
 import com.tvntd.service.api.IMenuItemService;
 import com.tvntd.service.api.IMenuItemService.MenuItemResp;
+import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.StartupResponse;
 
 @Controller
@@ -65,7 +66,8 @@ public class PublicPath
     {
         Long userId = menuItemService.getPublicId();
         User user = (User) session.getAttribute("user");
-        StartupResponse result = new StartupResponse(user);
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        StartupResponse result = new StartupResponse(user, profile);
 
         if (user != null) {
             s_log.debug("User loggined: " + user.getEmail());

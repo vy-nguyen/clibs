@@ -15,6 +15,7 @@ repositories {
 
 dependencies {
     compile "org.json:json:20090211"
+    compile "ch.qos.logback:logback-classic:${logback_version}"
 }
 
 sourceSets {

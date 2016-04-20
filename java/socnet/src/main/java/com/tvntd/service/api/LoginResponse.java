@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import com.tvntd.models.Profile;
 import com.tvntd.models.User;
+import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 public class LoginResponse extends GenericResponse
 {
@@ -47,11 +48,11 @@ public class LoginResponse extends GenericResponse
         this.authToken = null;
     }
 
-    public LoginResponse(User user)
+    public LoginResponse(User user, ProfileDTO profile)
     {
         super(GenericResponse.USER_HOME, null, null);
         this.authToken = "abc1234";
-        this.userSelf = new UserDTO(user, null);
+        this.userSelf = new UserDTO(user, profile);
     }
 
     /**
@@ -92,7 +93,7 @@ public class LoginResponse extends GenericResponse
         private Long   moneyEarned;
         private Long   moneyIssued;
 
-        public UserDTO(User user, Profile profile)
+        public UserDTO(User user, ProfileDTO profile)
         {
             this.email = user.getEmail();
             this.firstName = user.getFirstName();

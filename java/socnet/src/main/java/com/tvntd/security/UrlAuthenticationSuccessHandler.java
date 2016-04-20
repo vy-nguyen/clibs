@@ -47,6 +47,8 @@ import org.springframework.stereotype.Component;
 import com.tvntd.dao.UserRepository;
 import com.tvntd.models.Privilege;
 import com.tvntd.models.User;
+import com.tvntd.service.api.IProfileService;
+import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 @Component("urlAuthenticationSuccessHandler")
 public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHandler
@@ -56,6 +58,9 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    IProfileService profileRepo;
 
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
@@ -67,8 +72,17 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
         HttpSession session = request.getSession(false);
         if (session != null) {
             User user = userRepository.findByEmail(authentication.getName());
+            if (user == null) {
+                return;
+            }
             session.setAttribute("user", user);
             session.setMaxInactiveInterval(120 * 60);
+
+            ProfileDTO profile = profileRepo.getProfile(user.getId());
+            if (profile != null) {
+                session.setAttribute("profile", profile);
+                s_log.info("Profile: " + profile.toString());
+            }
         }
         handle(request, response, authentication);
         clearAuthenticationAttributes(request);

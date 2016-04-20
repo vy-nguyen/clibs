@@ -43,6 +43,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
+import com.tvntd.exports.LibModule;
 import com.tvntd.util.EmailValidator;
 import com.tvntd.util.PasswordMatchesValidator;
 
@@ -120,5 +121,12 @@ public class TvntdRootConfig
         MongoFactoryBean mongo = new MongoFactoryBean();
         mongo.setHost("localhost");
         return mongo;
+    }
+
+    @Bean
+    public LibModule commonLib()
+    {
+        LibModule.initialize();
+        return null;
     }
 }

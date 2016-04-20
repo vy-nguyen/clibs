@@ -24,18 +24,45 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.dao;
+package com.tvntd.models;
 
-import java.util.UUID;
+import javax.persistence.Embeddable;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import com.tvntd.models.Profile;
-
-public interface ProfileRepository extends JpaRepository<Profile, Long>
+@Embeddable
+public class FollowerList
 {
-    Profile findByUserId(Long id);
-    Profile findByUserUuid(UUID uuid);
+    private Long   followId;
+    private String followUuid;
 
-    void deleteByUserId(Long userId);
+    public FollowerList() {
+        super();
+    }
+
+    /**
+     * @return the followId
+     */
+    public Long getFollowId() {
+        return followId;
+    }
+
+    /**
+     * @param followId the followId to set
+     */
+    public void setFollowId(Long followId) {
+        this.followId = followId;
+    }
+
+    /**
+     * @return the followUuid
+     */
+    public String getFollowUuid() {
+        return followUuid;
+    }
+
+    /**
+     * @param followUuid the followUuid to set
+     */
+    public void setFollowUuid(String followUuid) {
+        this.followUuid = followUuid;
+    }
 }

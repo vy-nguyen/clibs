@@ -24,18 +24,35 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.dao;
+package com.tvntd.objstore;
 
-import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.tvntd.lib.Module;
+import com.tvntd.lib.Program;
 
-import com.tvntd.models.Profile;
-
-public interface ProfileRepository extends JpaRepository<Profile, Long>
+public class ObjStore extends Module
 {
-    Profile findByUserId(Long id);
-    Profile findByUserUuid(UUID uuid);
+    public static final String s_name = "ObjStore";
+    private static ObjStore m_singleton = null;
+    private static Logger s_log = LoggerFactory.getLogger(ObjStore.class);
 
-    void deleteByUserId(Long userId);
+    public ObjStore() {
+        super(s_name);
+    }
+
+    public static final ObjStore getInstance()
+    {
+        if (m_singleton != null) {
+            return m_singleton;
+        }
+        m_singleton = Program.getInstance().getModule(s_name);
+        return m_singleton;
+    }
+
+    @Override
+    public void moduleInit() {
+        s_log.info("Init obj store module");
+    }
 }

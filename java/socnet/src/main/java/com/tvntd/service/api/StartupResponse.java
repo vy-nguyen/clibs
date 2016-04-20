@@ -30,6 +30,7 @@ import java.util.List;
 
 import com.tvntd.models.User;
 import com.tvntd.service.api.IMenuItemService.MenuItemResp;
+import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 public class StartupResponse
 {
@@ -38,10 +39,10 @@ public class StartupResponse
     private LoginResponse      userInfo;
     private List<MenuItemResp> menuItems;
 
-    public StartupResponse(User user)
+    public StartupResponse(User user, ProfileDTO profile)
     {
         if (user != null) {
-            userInfo = new LoginResponse(user);
+            userInfo = new LoginResponse(user, profile);
         }
     }
 

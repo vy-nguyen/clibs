@@ -24,18 +24,36 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.dao;
+package com.tvntd.exports;
 
-import java.util.UUID;
+import com.tvntd.lib.Module;
+import com.tvntd.lib.Program;
+import com.tvntd.objstore.ObjStore;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import com.tvntd.models.Profile;
-
-public interface ProfileRepository extends JpaRepository<Profile, Long>
+public final class LibModule
 {
-    Profile findByUserId(Long id);
-    Profile findByUserUuid(UUID uuid);
+    static class LibEntry extends Program
+    {
+        LibEntry(String[] args, Module[] mods) {
+            super(args, mods);
+        }
+    }
+    static final Module s_mods[] = {
+        new ObjStore()
+    };
 
-    void deleteByUserId(Long userId);
+    static LibEntry m_entry;
+
+    public static void initialize()
+    {
+        if (m_entry != null) {
+            return;
+        }
+        m_entry = new LibEntry(null, s_mods);
+        m_entry.initialize();
+    }
+
+    public static void cleanup() {
+        m_entry.shutdown();
+    }
 }

@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.tvntd.models.User;
+import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.LoginResponse;
 
 @Controller
@@ -48,7 +49,9 @@ public class UserPath
     public LoginResponse user(HttpSession session)
     {
         User user = (User) session.getAttribute("user");
-        s_log.debug("Login to user " + user);
-        return new LoginResponse(user);
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+
+        s_log.debug("Login to user " + user + ", profile: " + profile);
+        return new LoginResponse(user, profile);
     }
 }

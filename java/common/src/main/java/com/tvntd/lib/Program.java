@@ -54,6 +54,14 @@ public class Program
         return m_singleton;
     }
 
+    /**
+     * Wrapper to cast the module's real type.
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends Module> T getModule(String name) {
+        return (T) m_module.getModule(name);
+    }
+
     public static ExecutorService getExecutorService() {
         return getInstance().m_thrPool;
     }

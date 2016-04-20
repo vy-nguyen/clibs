@@ -49,6 +49,7 @@ public class Profile
     private Long userId;
     private Long profileItemId;
 
+    private String userName;
     private String coverImg0;
     private String coverImg1;
     private String coverImg2;
@@ -66,6 +67,10 @@ public class Profile
     private List<Long> friendList;
 
     @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "FollowerList", joinColumns = @JoinColumn(name="userId"))
+    private List<Long> followerList;
+
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "FollowList", joinColumns = @JoinColumn(name="userId"))
     private List<Long> followList;
 
@@ -75,6 +80,30 @@ public class Profile
 
     public Profile() {
         super();
+    }
+
+    public static Profile createProfile(User user)
+    {
+        Profile prof = new Profile();
+      
+        prof.userId = user.getId();
+        prof.userName = user.getLastName() + " " + user.getFirstName();
+        prof.transRoot = ObjectId.zeroId();
+        prof.mainRoot = ObjectId.zeroId();
+        prof.userUuid = UUID.randomUUID();
+        return prof;
+    }
+
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Id: ").append(userId).append(", profileItem: ")
+            .append(profileItemId).append('\n')
+            .append("Name: ").append(userName).append(", transRoot: ")
+            .append(transRoot.name()).append('\n')
+            .append("Uuid: ").append(userUuid.toString()).append('\n');
+        return sb.toString();
     }
 
     /**
@@ -103,6 +132,20 @@ public class Profile
      */
     public void setProfileItemId(Long profileItemId) {
         this.profileItemId = profileItemId;
+    }
+
+    /**
+     * @return the userName
+     */
+    public String getUserName() {
+        return userName;
+    }
+
+    /**
+     * @param userName the userName to set
+     */
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     /**

@@ -45,6 +45,7 @@ import com.tvntd.models.PasswordResetToken;
 import com.tvntd.models.Role;
 import com.tvntd.models.User;
 import com.tvntd.models.VerificationToken;
+import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IUserService;
 
 @Service
@@ -66,6 +67,9 @@ public class UserService implements IUserService
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private IProfileService profileRepo;
+
     // API
 
     @Override
@@ -85,7 +89,9 @@ public class UserService implements IUserService
         user.setEmail(account.getEmail());
 
         user.setRoles(Arrays.asList(roleRepository.findByName(Role.AuthUser)));
-        return repository.save(user);
+        user = repository.save(user);
+        profileRepo.createProfile(user);        
+        return user;
     }
 
     @Override

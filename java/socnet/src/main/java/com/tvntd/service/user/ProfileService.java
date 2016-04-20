@@ -26,6 +26,10 @@
  */
 package com.tvntd.service.user;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
+
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +37,7 @@ import org.springframework.stereotype.Service;
 
 import com.tvntd.dao.ProfileRepository;
 import com.tvntd.models.Profile;
+import com.tvntd.models.User;
 import com.tvntd.service.api.IProfileService;
 
 @Service
@@ -43,12 +48,58 @@ public class ProfileService implements IProfileService
     protected ProfileRepository profileRepo;
 
     @Override
-    public Profile getProfile(Long userId)
+    public ProfileDTO getProfile(Long userId)
     {
+        Profile prof = profileRepo.findByUserId(userId);
+        if (prof != null) {
+            return new ProfileDTO(prof);
+        }
         return null;
     }
 
-    public void saveProfile(Long userId, Profile profile)
+    @Override
+    public ProfileDTO getProfile(UUID uuid)
     {
+        Profile prof = profileRepo.findByUserUuid(uuid);
+        if (prof != null) {
+            return new ProfileDTO(prof);
+        }
+        return null;
+    }
+
+    @Override
+    public List<ProfileBriefDTO> getProfileList(List<Long> userIds)
+    {
+        List<ProfileBriefDTO> ret = new LinkedList<>();
+        for (Long uid : userIds) {
+            Profile prof = profileRepo.findByUserId(uid);
+            if (prof != null) {
+                ret.add(new ProfileBriefDTO(prof));
+            }
+        }
+        return ret;
+    }
+
+    @Override
+    public void saveProfile(Long userId, ProfileDTO profile)
+    {
+        Profile prof = profileRepo.findByUserId(userId);
+        if (prof != null) {
+            profile.updateProfile(prof);
+            profileRepo.save(prof);
+        }
+    }
+
+    @Override
+    public void createProfile(User user)
+    {
+        if (profileRepo.findByUserId(user.getId()) == null) {
+            profileRepo.save(Profile.createProfile(user));
+        }
+    }
+
+    @Override
+    public void deleteProfile(Long userId) {
+        profileRepo.deleteByUserId(userId);
     }
 }

@@ -89,8 +89,6 @@ public class ObjectId extends AnyObjectId implements Serializable
 
     /**
      * Get the special all-null ObjectId.
-     *
-     * @return the all-null ObjectId, often used to stand-in for no object.
      */
     public static final ObjectId zeroId() {
         return ZEROID;

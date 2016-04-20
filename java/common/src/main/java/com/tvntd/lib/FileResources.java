@@ -26,9 +26,6 @@
  */
 package com.tvntd.lib;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.nio.ByteBuffer;
@@ -39,26 +36,9 @@ public final class FileResources
 {
     private static ThreadLocal<byte[]> s_buffer = new ThreadLocal<byte[]>() {
         @Override protected byte[] initialValue() {
-            return null;
+            return new byte[1 << 20];
         }
     };
-    private static ThreadLocal<ByteBuffer> s_nioBuf = new ThreadLocal<ByteBuffer>() {
-        @Override protected ByteBuffer initialValue() {
-            return null;
-        }
-    };
-    private static ThreadLocal<ByteArrayOutputStream> s_baos =
-        new ThreadLocal<ByteArrayOutputStream>() {
-            @Override protected ByteArrayOutputStream initialValue() {
-                return null;
-            }
-        };
-    private static ThreadLocal<ObjectOutputStream> s_oss =
-        new ThreadLocal<ObjectOutputStream>() {
-            @Override protected ObjectOutputStream initialValue() {
-                return null;
-            }
-        };
   
     /**
      *
@@ -83,49 +63,11 @@ public final class FileResources
     /**
      *
      */
-    public static ByteBuffer setByteBufferSize(int size)
+    public static ByteBuffer getByteBuffer(int size)
     {
-        ByteBuffer buf = s_nioBuf.get();
-        if ((buf == null) || (buf.capacity() < size)) {
-            s_nioBuf.set(ByteBuffer.allocateDirect(size));
-            return s_nioBuf.get();
-        }
+        ByteBuffer buf = ByteBuffer.wrap(setBufferSize(size));
+        buf.clear();
         return buf;
-    }
-
-    /**
-     *
-     */
-    public static ByteBuffer getByteBuffer(int size) {
-        return setByteBufferSize(size);
-    }
-
-    /**
-     *
-     */
-    public static ByteArrayOutputStream getByteArrOutHash()
-    {
-        ByteArrayOutputStream baos = s_baos.get();
-        if (baos != null) {
-            baos.reset();
-            return baos;
-        }
-        s_baos.set(new ByteArrayOutputStream(16 * 1024));
-        return s_baos.get();
-    }
-
-    /**
-     *
-     */
-    public static ObjectOutputStream getObjOutHash() throws IOException
-    {
-        ObjectOutputStream oss = s_oss.get();
-        if (oss != null) {
-            oss.reset();
-            return oss;
-        }
-        s_oss.set(new ObjectOutputStream(getByteArrOutHash()));
-        return s_oss.get();
     }
 
     /**
