@@ -33,21 +33,22 @@ public class Program
 {
     private static Program m_singleton;
 
-    protected final String[]  m_args;
-    protected Module          m_module;
+    protected String[]  m_args;
+    protected Module    m_module;
 
     protected int             m_numThreads;
     protected ExecutorService m_thrPool;
 
     protected Program(String[] args, Module[] mods)
     {
-        this.m_args = args;
-        this.m_module = new Module("main");
-        for (Module m : mods) {
-            this.m_module.registerSub(m);
+        if (Program.m_singleton == null) {
+            this.m_args = args;
+            this.m_module = new Module("main");
+            for (Module m : mods) {
+                this.m_module.registerSub(m);
+            }
+            Program.m_singleton = this;
         }
-        assert Program.m_singleton == null;
-        Program.m_singleton = this;
     }
 
     public static final Program getInstance() {

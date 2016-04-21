@@ -26,10 +26,23 @@
  */
 package com.tvntd.objstore;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.tvntd.lib.Constants;
+import com.tvntd.lib.FileResources;
 import com.tvntd.lib.Module;
+import com.tvntd.lib.ObjectId;
 import com.tvntd.lib.Program;
 
 public class ObjStore extends Module
@@ -38,8 +51,22 @@ public class ObjStore extends Module
     private static ObjStore m_singleton = null;
     private static Logger s_log = LoggerFactory.getLogger(ObjStore.class);
 
-    public ObjStore() {
+    protected Path m_base;
+    protected File m_temp;
+
+    public ObjStore()
+    {
         super(s_name);
+        m_temp = new File("/var/www/static/temp");
+        m_base = Paths.get("/var/www/static/upload");
+
+        try {
+            Files.createDirectories(m_base);
+            Files.createDirectories(m_temp.toPath());
+
+        } catch(IOException e) {
+            s_log.error("Failed to create dir: " + e.toString());
+        }
     }
 
     public static final ObjStore getInstance()
@@ -53,6 +80,60 @@ public class ObjStore extends Module
 
     @Override
     public void moduleInit() {
-        s_log.info("Init obj store module");
+        s_log.info("Init obj store module: " + m_temp);
+    }
+
+    /**
+     * PUT and image to the object store.
+     */
+    public ObjectId putImage(InputStream is, int limit)
+    {
+        try {
+            Path saved = null;
+            ObjectId oid = null;
+            byte[] buf = FileResources.getBuffer(Constants.FileIOBufferSize); 
+            MessageDigest md = MessageDigest.getInstance(Constants.HashFunction);
+
+            File temp = File.createTempFile("temp", null, m_temp);
+            FileOutputStream fos = new FileOutputStream(temp);
+
+            for (int len, offset = 0; true; offset += len, limit -= len) {
+                len = is.read(buf, offset, limit);
+                fos.write(buf, offset, len);
+                md.update(buf, offset, len);
+
+                if ((len == limit) || (len == -1)) {
+                    break;
+                }
+            }
+            oid = ObjectId.fromRaw(md.digest());
+            saved = oid.toPath(m_base,
+                    Constants.OIdDirLevels, Constants.OIdDirHexChars);
+            
+            fos.close();
+            if (!Files.exists(saved)) {
+                temp.renameTo(saved.toFile());
+                s_log.info("Save object " + saved);
+            } else {
+                temp.delete();
+                s_log.info("Record exists " + saved);
+            }
+            return oid;
+
+        } catch(IOException | NoSuchAlgorithmException e) {
+            s_log.error("Exception: " + e.toString());
+        }
+        return null;
+    }
+
+    public String imgObjUri(ObjectId oid)
+    {
+        if (oid != null) {
+            Path dest = oid.toPath(m_base,
+                    Constants.OIdDirLevels, Constants.OIdDirHexChars);
+
+            return dest.toString();
+        }
+        return null;
     }
 }

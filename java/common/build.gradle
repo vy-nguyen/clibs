@@ -16,6 +16,9 @@ repositories {
 dependencies {
     compile "org.json:json:20090211"
     compile "ch.qos.logback:logback-classic:${logback_version}"
+
+    testCompile "junit:junit:${junit_version}"
+    testCompile "org.mockito:mockito-core:1.+"
 }
 
 sourceSets {
@@ -29,6 +32,10 @@ sourceSets {
             srcDirs = [ 'src/test/java' ]
         }
     }
+}
+
+test {
+    systemProperties 'TESTDATA': "${projectDir}/src/test/data"
 }
 
 eclipse {

@@ -26,16 +26,8 @@
  */
 package com.tvntd.web;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Locale;
 
@@ -46,7 +38,6 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
@@ -59,15 +50,16 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import com.mongodb.Mongo;
-import com.tvntd.lib.FileResources;
 import com.tvntd.lib.ObjectId;
 import com.tvntd.models.User;
+import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.GenericResponse;
 import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleService.ArticleDTOResponse;
 import com.tvntd.service.api.IMenuItemService;
 import com.tvntd.service.api.IMenuItemService.MenuItemResp;
+import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.IUserNotifService;
 import com.tvntd.service.api.StartupResponse;
@@ -93,6 +85,9 @@ public class ApiPath
 
     @Autowired
     protected CommonsMultipartResolver multipartResolver;
+
+    @Autowired
+    protected IProfileService profileRepo;
 
     /**
      * Handle Api REST calls.
@@ -178,28 +173,24 @@ public class ApiPath
             @RequestParam("file") MultipartFile file,
             MultipartHttpServletRequest reqt, HttpSession session)
     {
-        if (!file.isEmpty()) {
+        if (file.isEmpty()) {
+        }
+        User user = (User) session.getAttribute("user");
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return null;
         }
         try {
-            byte[] buf = FileResources.setBufferSize(1 << 20);
-            MessageDigest md = MessageDigest.getInstance("SHA-1");
+            ObjStore store = ObjStore.getInstance();
             InputStream is = file.getInputStream();
+            ObjectId oid = store.putImage(is, (int) file.getSize());
 
-            is.read(buf, 0, (int) file.getSize());
-            md.update(buf);
-
-            ObjectId oid = ObjectId.fromRaw(md.digest());
-            Path dest = oid.toPath(Paths.get("/var/www/static/upload"), 2, 2);
-
-            s_log.info("Upload to dest " + dest + " oid " + oid.name());
-            Files.createDirectories(dest.getParent());
-
-            FileOutputStream fos = new FileOutputStream(dest.toString());
-            fos.write(buf);
-            fos.close();
-            is.close();
-
-        } catch(IOException | NoSuchAlgorithmException e) {
+            if (oid != null) {
+                String uri = store.imgObjUri(oid);
+                profile.setUserImgUrl(uri);
+                profileRepo.saveProfile(user.getId(), profile);
+            }
+        } catch(IOException e) {
             s_log.info("Exception: " + e.toString());
         }
         return s_genOkResp;

@@ -62,7 +62,7 @@ public class FileService
     /**
      *
      */
-    public List<Future<IterTask<Path>>>
+    static public List<Future<IterTask<Path>>>
     applyFiles(String baseDir, ExecutorService exec, int concurrency,
             IterTask<Path> item) throws Exception, InterruptedException
     {
@@ -73,12 +73,12 @@ public class FileService
     /**
      *
      */
-    public List<Path>
+    static public List<Path>
     listFiles(String root, List<Path> dir) throws IOException {
         return listFiles(Paths.get(root), dir);
     }
 
-    public List<Path>
+    static public List<Path>
     listFiles(Path root, List<Path> dir) throws IOException
     {
         List<Path> fileNames = new LinkedList<>();
@@ -107,7 +107,7 @@ public class FileService
     /**
      *
      */
-    public Future<List<Path>>
+    static public Future<List<Path>>
     listFiles(String root, List<Path> dir, ExecutorService exec)
     {
         class ListTask implements Callable<List<Path>>
@@ -130,7 +130,7 @@ public class FileService
     /**
      *
      */
-    public byte[]
+    static public byte[]
     getFileHash(File name, String algo, byte[] buffer) throws IOException
     {
         try {
@@ -153,7 +153,7 @@ public class FileService
     /**
      *
      */
-    public byte[]
+    static public byte[]
     getFileHash(Path name, String algo, ByteBuffer buffer) throws IOException
     {
         try {
@@ -182,7 +182,7 @@ public class FileService
     /**
      * Do async compute sha1 of the file.
      */
-    public Future<byte[]>
+    static public Future<byte[]>
     getFileHashAsync(Path name, String algo, ExecutorService exec)
     {
         class HashCompute implements Callable<byte[]>
@@ -208,7 +208,7 @@ public class FileService
     /**
      *
      */
-    public final FileChannel
+    static public final FileChannel
     createFile(Path path, Set<? extends OpenOption> opt,
             FileAttribute<Set<PosixFilePermission>> perm) throws IOException
     {
@@ -223,7 +223,7 @@ public class FileService
     /**
      *
      */
-    public final byte[]
+    static public final byte[]
     copyAndHashFile(Path src, Path dest, String algo) throws IOException
     {
         MessageDigest md = null;
@@ -274,7 +274,7 @@ public class FileService
     /**
      *
      */
-    public final <T, S extends IterTask<T>> List<Future<S>>
+    static public final <T, S extends IterTask<T>> List<Future<S>>
     applyTask(List<T> fileList, ExecutorService exec, int concurrency, IterTask<T> item)
         throws Exception, InterruptedException
     {
@@ -326,7 +326,7 @@ public class FileService
     /**
      *
      */
-    public final boolean
+    static public final boolean
     renameFile(String fileFrom, String fileTo)
     {
         File from = new File(fileFrom);
@@ -335,7 +335,7 @@ public class FileService
         return from.renameTo(to);
     }
 
-    public final boolean
+    static public final boolean
     renameFile(Path fileFrom, Path fileTo)
     {
         File from = fileFrom.toFile();
@@ -343,7 +343,7 @@ public class FileService
         return from.renameTo(to);
     }
 
-    public static abstract class IterTask<Item> implements Callable<IterTask<Item>>
+    static public abstract class IterTask<Item> implements Callable<IterTask<Item>>
     {
         protected Item currentItem;
         protected List<Item> workList;
