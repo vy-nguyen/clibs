@@ -112,8 +112,9 @@ public class ObjStore extends Module
             
             fos.close();
             if (!Files.exists(saved)) {
-                temp.renameTo(saved.toFile());
-                s_log.info("Save object " + saved);
+                Files.createDirectories(saved.getParent());
+                boolean ret = temp.renameTo(saved.toFile());
+                s_log.info("Save object " + saved + " ret " + ret);
             } else {
                 temp.delete();
                 s_log.info("Record exists " + saved);
@@ -133,6 +134,15 @@ public class ObjStore extends Module
                     Constants.OIdDirLevels, Constants.OIdDirHexChars);
 
             return dest.toString();
+        }
+        return null;
+    }
+
+    public String imgObjUri(ObjectId oid, String base)
+    {
+        if (oid != null) {
+            return oid.toPath(Paths.get(base),
+                    Constants.OIdDirLevels, Constants.OIdDirHexChars).toString();
         }
         return null;
     }

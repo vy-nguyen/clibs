@@ -99,9 +99,9 @@ public class LoginResponse extends GenericResponse
             this.firstName = user.getFirstName();
             this.lastName = user.getLastName();
             this.locale = user.getLocale();
-            this.userUuid = user.getEmail(); // user.getUserUuid();
-            this.userImgUrl = ""; // user.getUserImgUrl();
-            this.transRoot = ""; // user.getTransRoot();
+            this.userUuid = profile.getUserUuid().toString();
+            this.userImgUrl = profile.getUserImgUrl();
+            this.transRoot = profile.getTransRoot().name();
             this.connections = user.getConnections();
             this.followers = user.getFollowers();
             this.follows = user.getFollows();

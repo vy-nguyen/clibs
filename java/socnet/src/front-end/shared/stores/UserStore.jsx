@@ -75,11 +75,11 @@ let UserStore = Reflux.createStore({
     },
 
     isLogin: function() {
-        return this.data.authToken != null;
+        return this.data.authToken !== null;
     },
 
     isUserMe: function(uuid) {
-        return this.data.userSelf.userUuid == uuid;
+        return this.data.userSelf.userUuid === uuid;
     },
 
     getSelf: function() {
@@ -90,15 +90,21 @@ let UserStore = Reflux.createStore({
         return this.data;
     },
 
+    dumpData: function(header) {
+        console.log("UserStore content: " + header);
+        console.log(this.data);
+    },
+
     /* Startup actions. */
     onStartupCompleted: function(json) {
         this._updateCommon(json);
         this._changedData(json.userInfo);
     },
 
-    onrefreshNotifyCompleted: function(json) {
+    onRefreshNotifyCompleted: function(json) {
         this._updateCommon(json);
         this.trigger(this.data);
+        this.dumpData("Refresh");
     },
 
     /* Login actions. */
@@ -129,7 +135,6 @@ let UserStore = Reflux.createStore({
 
     /* Logout actions. */
     onLogoutCompleted: function() {
-        console.log("Logout completed");
         this._reset();
         localStorage.removeItem("authToken");
     },

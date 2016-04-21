@@ -56,7 +56,7 @@ let UserAvatar = React.createClass({
         } else {
             file_drop = (
                 <div className="col-sm-3 col-md-3 col-lg-2 profile-pic">
-                    <img src="/rs/img/avatars/1.png"/>
+                    <img src={self.userImgUrl}/>
                 </div>
             );
         }

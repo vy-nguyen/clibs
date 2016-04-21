@@ -175,7 +175,6 @@ public class ApiPath
     {
         if (file.isEmpty()) {
         }
-        User user = (User) session.getAttribute("user");
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
         if (profile == null) {
             return null;
@@ -186,9 +185,9 @@ public class ApiPath
             ObjectId oid = store.putImage(is, (int) file.getSize());
 
             if (oid != null) {
-                String uri = store.imgObjUri(oid);
+                String uri = store.imgObjUri(oid, "/rs/upload");
                 profile.setUserImgUrl(uri);
-                profileRepo.saveProfile(user.getId(), profile);
+                profileRepo.saveProfile(profile.getUserId(), profile);
             }
         } catch(IOException e) {
             s_log.info("Exception: " + e.toString());
