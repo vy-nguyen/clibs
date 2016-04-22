@@ -183,7 +183,7 @@ let Public = React.createClass({
                                             <div className="tab-pane fade in active" id="a1">
                                                 <div className="row">
                                                     <div className="col-xs-2 col-sm-1">
-                                                        <time datetime="2014-09-20" className="icon">
+                                                        <time dateTime="2014-09-20" className="icon">
                                                             <strong>Jan</strong>
                                                             <span>10</span>
                                                         </time>
@@ -201,7 +201,7 @@ let Public = React.createClass({
                                                         <hr/>
                                                     </div>
                                                     <div className="col-xs-2 col-sm-1">
-                                                        <time datetime="2014-09-20" className="icon">
+                                                        <time dateTime="2014-09-20" className="icon">
                                                             <strong>Jan</strong>
                                                             <span>10</span>
                                                         </time>

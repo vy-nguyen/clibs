@@ -20,15 +20,15 @@ import {LoginAbout, LoginSocial} from './Login.jsx';
 let RegisterHeader = React.createClass({
     render: function() {
         return (
-<header id="header" className="animated fadeInDown">
-    <div id="logo-group">
-        <span id="logo"> <img src="/rs/img/logo/flag.png" alt="Viet Nam"/> </span>
-    </div>
-    <span id="extr-page-header-space">
-        <span className="hidden-mobile hiddex-xs">Already registered?</span>{htmlCodes.spaceNoBreak}
-        <Link to="/login" className="btn btn-danger">Sign In</Link>
-    </span>
-</header>
+            <header id="header" className="animated fadeInDown">
+                <div id="logo-group">
+                    <span id="logo"> <img src="/rs/img/logo/flag.png" alt="Viet Nam"/> </span>
+                </div>
+                <span id="extr-page-header-space">
+                    <span className="hidden-mobile hiddex-xs">Already registered?</span>{htmlCodes.spaceNoBreak}
+                    <Link to="/login" className="btn btn-danger">Sign In</Link>
+                </span>
+            </header>
         );
     }
 });
@@ -192,13 +192,13 @@ let RegisterForm = React.createClass({
     _submitRegister: function(event) {
         event.preventDefault();
         let data = {
-            email    : this.refs.email.getDOMNode().value,
-            password0: this.refs.password0.getDOMNode().value,
-            password1: this.refs.password1.getDOMNode().value,
-            firstName: this.refs.firstName.getDOMNode().value,
-            lastName : this.refs.lastName.getDOMNode().value,
-            gender   : this.refs.gender.getDOMNode().value,
-            checkTerms: this.refs.terms.getDOMNode().value
+            email    : this.refs.email.value,
+            password0: this.refs.password0.value,
+            password1: this.refs.password1.value,
+            firstName: this.refs.firstName.value,
+            lastName : this.refs.lastName.value,
+            gender   : this.refs.gender.value,
+            checkTerms: this.refs.terms.value
         };
         let form = $('#smart-form-register');
         form.find('input').prop('disabled', true);
@@ -211,28 +211,28 @@ let RegisterForm = React.createClass({
 let RegisterTos = React.createClass({
     render: function() {
         return (
-<div className="modal fade"
-    id="id-reg-modal" tabIndex="-1" role="dialog" aria-labelledby="id-reg-modal-label" aria-hidden="true">
-    <div className="modal-dialog">
-        <div className="modal-content">
-            <div className="modal-header">
-                <button type="button" className="close" data-dismiss="modal" aria-hidden="true">
-                    &times;
-                </button>
-                <h4 className="modal-title" id="id-reg-modal-label">Terms & Conditions</h4>
+            <div className="modal fade"
+                id="id-reg-modal" tabIndex="-1" role="dialog" aria-labelledby="id-reg-modal-label" aria-hidden="true">
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <button type="button" className="close" data-dismiss="modal" aria-hidden="true">
+                                &times;
+                            </button>
+                            <h4 className="modal-title" id="id-reg-modal-label">Terms & Conditions</h4>
+                        </div>
+                        <div className="modal-body custom-scroll terms-body">
+                            <LoadHtml url="/public/terms-and-conditions" />
+                        </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-default" data-dismiss="modal">Cancel</button>
+                            <button type="button" className="btn btn-primary" id="i-agree">
+                                <i className="fa fa-check"/> I Agree
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div className="modal-body custom-scroll terms-body">
-                <LoadHtml url="/public/terms-and-conditions" />
-            </div>
-            <div className="modal-footer">
-                <button type="button" className="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" className="btn btn-primary" id="i-agree">
-                    <i className="fa fa-check"/> I Agree
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
         );
     }
 });
@@ -240,22 +240,22 @@ let RegisterTos = React.createClass({
 let Register = React.createClass({
     render: function() {
         return (
-<div id="extr-page" >
-    <RegisterHeader/>
-    <div id="main" role="main" className="animated fadeInDown">
-        <div id="content" className="container">
-            <div className="row">
-                <div className="col-xs-12 col-sm-12 col-md-7 col-lg-7 hidden-xs hidden-sm">
-                    <LoginAbout />
-                </div>
-                <div className="col-xs-12 col-sm-12 col-md-5 col-lg-5">
-                    <RegisterForm />
+            <div id="extr-page" >
+                <RegisterHeader/>
+                <div id="main" role="main" className="animated fadeInDown">
+                    <div id="content" className="container">
+                        <div className="row">
+                            <div className="col-xs-12 col-sm-12 col-md-7 col-lg-7 hidden-xs hidden-sm">
+                                <LoginAbout />
+                            </div>
+                            <div className="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+                                <RegisterForm />
+                            </div>
+                        </div>
+                    </div>
+                    <RegisterTos/>
                 </div>
             </div>
-        </div>
-        <RegisterTos/>
-    </div>
-</div>
         )
     }
 });

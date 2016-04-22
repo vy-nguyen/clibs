@@ -8,6 +8,9 @@ import Reflux   from 'reflux';
 import _        from 'lodash';
 import Actions  from 'vntd-root/actions/Actions.jsx';
 
+let OnlineEnum = ["online", "offline", "busy"];
+let ConnetEnum = ["self", "connected", "followed", "connecting", "follower", "stranger"];
+
 /*
  * Explicit define known fields in User object.
  */
@@ -29,14 +32,29 @@ class User {
         this.followers    = data.followers;
         this.connections  = data.connections;
         this.follows      = data.follows;
+        this.connectState = "stranger";
         return this;
+    }
+
+    isInConnection() {
+        return this.connectState === "connected";
+    }
+    isConnecting() {
+        return this.connectState === "connecting";
+    }
+    isInFollowed() {
+        return this.connectState === "followed";
+    }
+    isFollower() {
+        return this.connectState === "follower";
     }
 }
 
 let UserStore = Reflux.createStore({
     data: {
         userList: [],
-        userSelf: {},
+        uuidFetch: {},
+        userSelf: null,
         authCode: null,
         authMesg: null,
         authError: null,
@@ -79,11 +97,14 @@ let UserStore = Reflux.createStore({
     },
 
     isUserMe: function(uuid) {
+        if (this.data.userSelf === null) {
+            return false;
+        }
         return this.data.userSelf.userUuid === uuid;
     },
 
     getSelf: function() {
-        return this.data.userSelf;
+        return this.data.userSelf !== null ? this.data.userSelf : {};
     },
 
     getData: function() {
@@ -93,6 +114,10 @@ let UserStore = Reflux.createStore({
     dumpData: function(header) {
         console.log("UserStore content: " + header);
         console.log(this.data);
+    },
+
+    setFetchUser: function(uuid) {
+        this.uuidFetch[uuid] = true;
     },
 
     /* Startup actions. */
@@ -160,8 +185,8 @@ let UserStore = Reflux.createStore({
     },
 
     _reset: function() {
-        this.data.userSelf = {};
         this.data.userList = [];
+        this.data.userSelf = null;
         this.data.authError = null;
         this.data.authToken = null;
         this.data.csrfHeader = null;
@@ -197,8 +222,8 @@ let UserStore = Reflux.createStore({
             this.data.authToken = resp.authToken;
             this.data.authVerifToken = resp.authVerifToken;
 
-            if ((resp.userSelf != undefined) && (resp.userSelf != null)) {
-                this.data.userSelf = resp.userSelf;
+            if ((resp.userSelf !== undefined) && (resp.userSelf !== null)) {
+                this.data.userSelf = new User(resp.userSelf);
                 localStorage.setItem("authToken", resp.authToken);
             }
             if (resp.message == "") {
@@ -210,7 +235,7 @@ let UserStore = Reflux.createStore({
 
     _addFromJson: function(items) {
         _(items).forEach(function(it) {
-            if (it.userRole == "self" && _.isEmpty(this.data.userSelf)) {
+            if (it.userRole === "self" && (this.data.userSelf === null)) {
                 this.data.userSelf = new User(it);
             }
             if (!this.data.userList[it.userUuid]) {
@@ -222,5 +247,38 @@ let UserStore = Reflux.createStore({
     exports: {
     }
 });
+
+User.prototype.setConnectState = function() {
+    let self = UserStore.getSelf();
+    let filter = function(elm) {
+        if (elm === self.userUuid) {
+            return true;
+        }
+    };
+    let uuid = self.connections.find(filter);
+    if (uuid !== undefined) {
+        this.connectState = "connected";
+        return;
+    }
+    uuid = self.follows.find(filter);
+    if (uuid !== undefined) {
+        if (this.follows.find(self.userUuid) !== undefined) {
+            self.connections.push(this.userUuid);
+            this.connections.push(self.userUuid);
+            self.follows.splice(self.follows.indexOf(this.userUuid));
+            this.follows.splice(this.follows.indexOf(self.userUuid));
+            this.connectState = "connected";
+        } else {
+            this.connectStat = "follows";
+        }
+        return;
+    }
+    uuid = self.followers.find(filter);
+    if (uuid !== undefined) {
+        this.connectStat = "follower";
+        return;
+    }
+    this.connectState = "stranger";
+};
 
 export default UserStore
