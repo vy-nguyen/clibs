@@ -52,6 +52,6 @@ public class UserPath
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
 
         s_log.debug("Login to user " + user + ", profile: " + profile);
-        return new LoginResponse(user, profile);
+        return new LoginResponse(profile);
     }
 }

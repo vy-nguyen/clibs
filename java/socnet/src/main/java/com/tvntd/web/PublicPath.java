@@ -71,7 +71,7 @@ public class PublicPath
 
         if (user != null) {
             s_log.debug("User loggined: " + user.getEmail());
-            ApiPath.fillStartupResponse(result, user, reqt);
+            ApiPath.fillStartupResponse(result, profile, reqt, null);
             userId = menuItemService.getPrivateId();
         }
         List<MenuItemResp> items = menuItemService.getMenuItemRespByUser(userId);

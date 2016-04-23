@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.CollectionTable;
-import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -49,30 +48,30 @@ public class Profile
     private Long userId;
     private Long profileItemId;
 
+    private String locale;
     private String userName;
-    private String coverImg0;
-    private String coverImg1;
-    private String coverImg2;
-    private String coverImg3;
+    private String firstName;
+    private String lastName;
+    private ObjectId coverImg0;
+    private ObjectId coverImg1;
+    private ObjectId coverImg2;
+    private ObjectId userImgUrl;
     private ObjectId transRoot;
     private ObjectId mainRoot;
 
     private UUID userUuid;
 
-    @Column(length = 512)
-    private String userImgUrl;
-
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "FriendList", joinColumns = @JoinColumn(name="userId"))
-    private List<Long> friendList;
+    private List<UUID> connectList;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "FollowerList", joinColumns = @JoinColumn(name="userId"))
-    private List<Long> followerList;
+    private List<UUID> followerList;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "FollowList", joinColumns = @JoinColumn(name="userId"))
-    private List<Long> followList;
+    private List<UUID> followList;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "ChainLinks", joinColumns = @JoinColumn(name="userId"))
@@ -86,11 +85,19 @@ public class Profile
     {
         Profile prof = new Profile();
       
+        prof.locale = "VI";
         prof.userId = user.getId();
         prof.userName = user.getLastName() + " " + user.getFirstName();
+        prof.firstName = user.getFirstName();
+        prof.lastName = user.getLastName();
         prof.transRoot = ObjectId.zeroId();
         prof.mainRoot = ObjectId.zeroId();
         prof.userUuid = UUID.randomUUID();
+
+        prof.coverImg0 = null;
+        prof.coverImg1 = null;
+        prof.coverImg2 = null;
+        prof.userImgUrl = null;
         return prof;
     }
 
@@ -135,6 +142,20 @@ public class Profile
     }
 
     /**
+     * @return the locale
+     */
+    public String getLocale() {
+        return locale;
+    }
+
+    /**
+     * @param locale the locale to set
+     */
+    public void setLocale(String locale) {
+        this.locale = locale;
+    }
+
+    /**
      * @return the userName
      */
     public String getUserName() {
@@ -149,59 +170,73 @@ public class Profile
     }
 
     /**
+     * @return the firstName
+     */
+    public String getFirstName() {
+        return firstName;
+    }
+
+    /**
+     * @param firstName the firstName to set
+     */
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    /**
+     * @return the lastName
+     */
+    public String getLastName() {
+        return lastName;
+    }
+
+    /**
+     * @param lastName the lastName to set
+     */
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    /**
      * @return the coverImg0
      */
-    public String getCoverImg0() {
+    public ObjectId getCoverImg0() {
         return coverImg0;
     }
 
     /**
      * @param coverImg0 the coverImg0 to set
      */
-    public void setCoverImg0(String coverImg0) {
+    public void setCoverImg0(ObjectId coverImg0) {
         this.coverImg0 = coverImg0;
     }
 
     /**
      * @return the coverImg1
      */
-    public String getCoverImg1() {
+    public ObjectId getCoverImg1() {
         return coverImg1;
     }
 
     /**
      * @param coverImg1 the coverImg1 to set
      */
-    public void setCoverImg1(String coverImg1) {
+    public void setCoverImg1(ObjectId coverImg1) {
         this.coverImg1 = coverImg1;
     }
 
     /**
      * @return the coverImg2
      */
-    public String getCoverImg2() {
+    public ObjectId getCoverImg2() {
         return coverImg2;
     }
 
     /**
      * @param coverImg2 the coverImg2 to set
      */
-    public void setCoverImg2(String coverImg2) {
+    public void setCoverImg2(ObjectId coverImg2) {
         this.coverImg2 = coverImg2;
-    }
-
-    /**
-     * @return the coverImg3
-     */
-    public String getCoverImg3() {
-        return coverImg3;
-    }
-
-    /**
-     * @param coverImg3 the coverImg3 to set
-     */
-    public void setCoverImg3(String coverImg3) {
-        this.coverImg3 = coverImg3;
     }
 
     /**
@@ -249,42 +284,63 @@ public class Profile
     /**
      * @return the userImgUrl
      */
-    public String getUserImgUrl() {
+    public ObjectId getUserImgUrl() {
         return userImgUrl;
     }
 
     /**
      * @param userImgUrl the userImgUrl to set
      */
-    public void setUserImgUrl(String userImgUrl) {
+    public void setUserImgUrl(ObjectId userImgUrl) {
         this.userImgUrl = userImgUrl;
     }
 
     /**
-     * @return the friendList
+     * @return the connectList
      */
-    public List<Long> getFriendList() {
-        return friendList;
+    public List<UUID> getConnectList() {
+        return connectList;
     }
 
     /**
-     * @param friendList the friendList to set
+     * @param connectList the connectList to set
      */
-    public void setFriendList(List<Long> friendList) {
-        this.friendList = friendList;
+    public void setConnectList(List<UUID> connectList) {
+        this.connectList = connectList;
+    }
+
+    /**
+     * @param connectList the connectList to set
+     */
+    public void setFriendList(List<UUID> connectList) {
+        this.connectList = connectList;
+    }
+
+    /**
+     * @return the followerList
+     */
+    public List<UUID> getFollowerList() {
+        return followerList;
+    }
+
+    /**
+     * @param followerList the followerList to set
+     */
+    public void setFollowerList(List<UUID> followerList) {
+        this.followerList = followerList;
     }
 
     /**
      * @return the followList
      */
-    public List<Long> getFollowList() {
+    public List<UUID> getFollowList() {
         return followList;
     }
 
     /**
      * @param followList the followList to set
      */
-    public void setFollowList(List<Long> followList) {
+    public void setFollowList(List<UUID> followList) {
         this.followList = followList;
     }
 

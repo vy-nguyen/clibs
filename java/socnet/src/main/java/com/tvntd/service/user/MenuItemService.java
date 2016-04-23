@@ -182,6 +182,7 @@ public class MenuItemService implements IMenuItemService
         private List<MenuItem> home;
         private List<MenuItem> login;
         private List<MenuItem> publicMenu;
+        private List<MenuItem> adminMenu;
         private List<MenuItem> aboutUs;
         private List<MenuItem> userMenu;
         private List<MenuItem> funding;
@@ -197,6 +198,8 @@ public class MenuItemService implements IMenuItemService
             if (uid == publicId) {
                 saveMenuItems(login, repo, userId);
                 saveMenuItems(publicMenu, repo, userId);
+            } else if (uid == adminId) {
+                saveMenuItems(adminMenu, repo, userId);
             } else {
                 saveMenuItems(userMenu, repo, userId);
             }
@@ -259,6 +262,20 @@ public class MenuItemService implements IMenuItemService
          */
         public void setPublicMenu(List<MenuItem> publicMenu) {
             this.publicMenu = publicMenu;
+        }
+
+        /**
+         * @return the adminMenu
+         */
+        public List<MenuItem> getAdminMenu() {
+            return adminMenu;
+        }
+
+        /**
+         * @param adminMenu the adminMenu to set
+         */
+        public void setAdminMenu(List<MenuItem> adminMenu) {
+            this.adminMenu = adminMenu;
         }
 
         /**

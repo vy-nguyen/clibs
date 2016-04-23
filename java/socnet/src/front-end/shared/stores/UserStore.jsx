@@ -19,20 +19,36 @@ class User {
         this._id          = _.uniqueId('id-user-info-');
         this.userUuid     = data.userUuid;
         this.userName     = data.userName;
+        this.firstName    = data.firstName;
+
+        this.lastName     = data.lastName;
         this.userRole     = data.userRole;
         this.userUrl      = data.userUrl;
         this.userImgUrl   = data.userImgUrl;
         this.userStatus   = data.userStatus;
-        this.firstName    = data.firstName;
-        this.lastName     = data.lastName;
+
+        this.coverImg0    = data.coverImg0;
+        this.coverImg1    = data.coverImg1;
+        this.coverImg2    = data.coverImg2;
+
+        this.transRoot    = data.transRoot;
+        this.mainRoot     = data.mainRoot;
+
         this.creditEarned = data.creditEarned;
         this.moneyEarned  = data.moneyEarned;
         this.creditIssued = data.creditIssued;
         this.moneyIssued  = data.moneyIssued;
+
         this.followers    = data.followers;
-        this.connections  = data.connections;
         this.follows      = data.follows;
+        this.connections  = data.connections;
         this.connectState = "stranger";
+
+        this.connectList  = data.connectList;
+        this.followList   = data.followList;
+        this.followerList = data.followerList;
+        this.chainLinks   = data.chainLinks;
+
         return this;
     }
 
@@ -60,6 +76,7 @@ let UserStore = Reflux.createStore({
         authError: null,
         authToken: null,
         authVerifToken: null,
+        fetchUsers: true,
         csrfHeader: null,
         csrfToken: null
     },
@@ -123,7 +140,7 @@ let UserStore = Reflux.createStore({
     /* Startup actions. */
     onStartupCompleted: function(json) {
         this._updateCommon(json);
-        this._changedData(json.userInfo);
+        this._changedData(json.userDTO);
     },
 
     onRefreshNotifyCompleted: function(json) {

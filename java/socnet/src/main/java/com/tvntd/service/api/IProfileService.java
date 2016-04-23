@@ -32,46 +32,104 @@ import java.util.UUID;
 import com.tvntd.lib.ObjectId;
 import com.tvntd.models.Profile;
 import com.tvntd.models.User;
+import com.tvntd.objstore.ObjStore;
 
 public interface IProfileService
 {
     public ProfileDTO getProfile(Long userId);
     public ProfileDTO getProfile(UUID uuid);
-    public List<ProfileBriefDTO> getProfileList(List<Long> userIds);
+    public List<ProfileDTO> getProfileList(List<UUID> userIds);
+    public List<ProfileDTO> getProfileList(ProfileDTO user);
 
-    public void saveProfile(Long userId, ProfileDTO profile);
+    public void saveUserImgUrl(ProfileDTO profile, ObjectId oid);
     public void createProfile(User user);
     public void deleteProfile(Long userId);
 
-    public static class ProfileBriefDTO
+    public static class ProfileDTO
     {
         private Long userId;
-        private Long profileItemId;
+        private String locale;
         private String userName;
-        private String coverImg;
+        private String firstName;
+        private String lastName;
+
+        private String userRole;
+        private String userStatus;
+        private String userUrl;
+
+        private String coverImg0;
+        private String coverImg1;
+        private String coverImg2;
+        private String userImgUrl;
         private ObjectId transRoot;
         private ObjectId mainRoot;
-        private UUID userUuid;
-        private String userImgUrl;
 
-        public ProfileBriefDTO(Profile prof)
+        private UUID userUuid;
+        private List<UUID> connectList;
+        private List<UUID> followList;
+        private List<UUID> followerList;
+        private List<Long> chainLinks;
+
+        private Long connections;
+        private Long follows;
+        private Long followers;
+        private Long chainCount;
+        private Long creditEarned;
+        private Long creditIssued;
+        private Long moneyEarned;
+        private Long moneyIssued;
+
+        public ProfileDTO(Profile prof)
         {
+            String baseUri = "/rs/upload";
             userId = prof.getUserId();
+            locale = prof.getLocale();
             userName = prof.getUserName();
-            profileItemId = prof.getProfileItemId();
-            coverImg = prof.getCoverImg0();
+            firstName = prof.getFirstName();
+            lastName = prof.getLastName();
+            
+            ObjStore objStore = ObjStore.getInstance();
+            coverImg0 = objStore.imgObjUri(prof.getCoverImg0(), baseUri);
+            coverImg1 = objStore.imgObjUri(prof.getCoverImg1(), baseUri);
+            coverImg2 = objStore.imgObjUri(prof.getCoverImg2(), baseUri);
+            userImgUrl = objStore.imgObjUri(prof.getUserImgUrl(), baseUri);
+
+            userUuid = prof.getUserUuid();
+            userUrl = "/user/id/" + userUuid.toString();
+
             transRoot = prof.getTransRoot();
             mainRoot = prof.getMainRoot();
-            userUuid = prof.getUserUuid();
-            userImgUrl = prof.getUserImgUrl();
+            connectList = prof.getConnectList();
+            followList = prof.getFollowList();
+            followerList = prof.getFollowerList();
+            chainLinks = prof.getChainLinks();
+
+            creditEarned = 200L;
+            creditIssued = 300L;
+            moneyEarned = 500L;
+            moneyIssued = 400L;
+
+            connections = Long.valueOf(connectList.size());
+            follows = Long.valueOf(followList.size());
+            followers = Long.valueOf(followerList.size());
+            chainCount = Long.valueOf(chainLinks.size());
+
+            if (coverImg0 == null) {
+                coverImg0 = "/rs/img/demo/s1.jpg";
+                coverImg1 = "/rs/img/demo/s2.jpg";
+                coverImg2 = "/rs/img/demo/s3.jpg";
+            }
+            if (userImgUrl == null) {
+                userImgUrl = "/rs/img/avatars/male.png";
+            }
         }
 
         public String toString()
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.append("Id: ").append(userId).append(", profileItem: ")
-                .append(profileItemId).append('\n')
+            sb.append(locale).append(", firstName ")
+                .append(firstName).append('\n')
                 .append("Name: ").append(userName).append(", transRoot: ")
                 .append(transRoot.name()).append('\n')
                 .append("Uuid: ").append(userUuid.toString()).append('\n');
@@ -79,31 +137,24 @@ public interface IProfileService
         }
 
         /**
-         * @return the userId
+         * @return the userId.  Use this so that it won't show up in JSON.
          */
-        public Long getUserId() {
+        public Long obtainUserId() {
             return userId;
         }
 
         /**
-         * @param userId the userId to set
+         * @return the locale
          */
-        public void setUserId(Long userId) {
-            this.userId = userId;
+        public String getLocale() {
+            return locale;
         }
 
         /**
-         * @return the profileItemId
+         * @param locale the locale to set
          */
-        public Long getProfileItemId() {
-            return profileItemId;
-        }
-
-        /**
-         * @param profileItemId the profileItemId to set
-         */
-        public void setProfileItemId(Long profileItemId) {
-            this.profileItemId = profileItemId;
+        public void setLocale(String locale) {
+            this.locale = locale;
         }
 
         /**
@@ -121,161 +172,52 @@ public interface IProfileService
         }
 
         /**
-         * @return the coverImg
+         * @return the firstName
          */
-        public String getCoverImg() {
-            return coverImg;
+        public String getFirstName() {
+            return firstName;
         }
 
         /**
-         * @param coverImg the coverImg to set
+         * @param firstName the firstName to set
          */
-        public void setCoverImg(String coverImg) {
-            this.coverImg = coverImg;
+        public void setFirstName(String firstName) {
+            this.firstName = firstName;
         }
 
         /**
-         * @return the transRoot
+         * @return the lastName
          */
-        public ObjectId getTransRoot() {
-            return transRoot;
+        public String getLastName() {
+            return lastName;
         }
 
         /**
-         * @param transRoot the transRoot to set
+         * @param lastName the lastName to set
          */
-        public void setTransRoot(ObjectId transRoot) {
-            this.transRoot = transRoot;
+        public void setLastName(String lastName) {
+            this.lastName = lastName;
         }
 
         /**
-         * @return the mainRoot
+         * @return the userRole
          */
-        public ObjectId getMainRoot() {
-            return mainRoot;
+        public String getUserRole() {
+            return userRole;
         }
 
         /**
-         * @param mainRoot the mainRoot to set
+         * @return the userStatus
          */
-        public void setMainRoot(ObjectId mainRoot) {
-            this.mainRoot = mainRoot;
+        public String getUserStatus() {
+            return userStatus;
         }
 
         /**
-         * @return the userUuid
+         * @return the userUrl
          */
-        public UUID getUserUuid() {
-            return userUuid;
-        }
-
-        /**
-         * @param userUuid the userUuid to set
-         */
-        public void setUserUuid(UUID userUuid) {
-            this.userUuid = userUuid;
-        }
-
-        /**
-         * @return the userImgUrl
-         */
-        public String getUserImgUrl() {
-            return userImgUrl;
-        }
-
-        /**
-         * @param userImgUrl the userImgUrl to set
-         */
-        public void setUserImgUrl(String userImgUrl) {
-            this.userImgUrl = userImgUrl;
-        }
-    }
-
-    public static class ProfileDTO
-    {
-        private Long userId;
-        private Long profileItemId;
-
-        private String userName;
-        private String coverImg0;
-        private String coverImg1;
-        private String coverImg2;
-        private String coverImg3;
-        private ObjectId transRoot;
-        private ObjectId mainRoot;
-
-        private UUID userUuid;
-        private String userImgUrl;
-        private List<Long> friendList;
-        private List<Long> followList;
-        private List<Long> chainLinks;
-
-        public ProfileDTO(Profile prof)
-        {
-            userId = prof.getUserId();
-            profileItemId = prof.getProfileItemId();
-            coverImg0 = prof.getCoverImg0();
-            coverImg1 = prof.getCoverImg1();
-            coverImg2 = prof.getCoverImg2();
-            coverImg3 = prof.getCoverImg3();
-            transRoot = prof.getTransRoot();
-            mainRoot = prof.getMainRoot();
-            userUuid = prof.getUserUuid();
-            userImgUrl = prof.getUserImgUrl();
-            friendList = prof.getFriendList();
-            followList = prof.getFollowList();
-            chainLinks = prof.getChainLinks();
-        }
-
-        public void updateProfile(Profile ret)
-        {
-            ret.setCoverImg0(coverImg0);
-            ret.setCoverImg1(coverImg1);
-            ret.setCoverImg2(coverImg2);
-            ret.setCoverImg3(coverImg3);
-            ret.setTransRoot(transRoot);
-            ret.setMainRoot(mainRoot);
-            ret.setUserImgUrl(userImgUrl);
-        }
-
-        public String toString()
-        {
-            StringBuilder sb = new StringBuilder();
-
-            sb.append("Id: ").append(userId).append(", profileItem: ")
-                .append(profileItemId).append('\n')
-                .append("Name: ").append(userName).append(", transRoot: ")
-                .append(transRoot.name()).append('\n')
-                .append("Uuid: ").append(userUuid.toString()).append('\n');
-            return sb.toString();
-        }
-
-        /**
-         * @return the userId
-         */
-        public Long getUserId() {
-            return userId;
-        }
-
-        /**
-         * @param userId the userId to set
-         */
-        public void setUserId(Long userId) {
-            this.userId = userId;
-        }
-
-        /**
-         * @return the profileItemId
-         */
-        public Long getProfileItemId() {
-            return profileItemId;
-        }
-
-        /**
-         * @param profileItemId the profileItemId to set
-         */
-        public void setProfileItemId(Long profileItemId) {
-            this.profileItemId = profileItemId;
+        public String getUserUrl() {
+            return userUrl;
         }
 
         /**
@@ -321,31 +263,10 @@ public interface IProfileService
         }
 
         /**
-         * @return the coverImg3
-         */
-        public String getCoverImg3() {
-            return coverImg3;
-        }
-
-        /**
-         * @param coverImg3 the coverImg3 to set
-         */
-        public void setCoverImg3(String coverImg3) {
-            this.coverImg3 = coverImg3;
-        }
-
-        /**
          * @return the transRoot
          */
         public ObjectId getTransRoot() {
             return transRoot;
-        }
-
-        /**
-         * @param transRoot the transRoot to set
-         */
-        public void setTransRoot(ObjectId transRoot) {
-            this.transRoot = transRoot;
         }
 
         /**
@@ -356,24 +277,10 @@ public interface IProfileService
         }
 
         /**
-         * @param mainRoot the mainRoot to set
-         */
-        public void setMainRoot(ObjectId mainRoot) {
-            this.mainRoot = mainRoot;
-        }
-
-        /**
          * @return the userUuid
          */
         public UUID getUserUuid() {
             return userUuid;
-        }
-
-        /**
-         * @param userUuid the userUuid to set
-         */
-        public void setUserUuid(UUID userUuid) {
-            this.userUuid = userUuid;
         }
 
         /**
@@ -391,31 +298,24 @@ public interface IProfileService
         }
 
         /**
-         * @return the friendList
+         * @return the connectList
          */
-        public List<Long> getFriendList() {
-            return friendList;
-        }
-
-        /**
-         * @param friendList the friendList to set
-         */
-        public void setFriendList(List<Long> friendList) {
-            this.friendList = friendList;
+        public List<UUID> getConnectList() {
+            return connectList;
         }
 
         /**
          * @return the followList
          */
-        public List<Long> getFollowList() {
+        public List<UUID> getFollowList() {
             return followList;
         }
 
         /**
-         * @param followList the followList to set
+         * @return the followerList
          */
-        public void setFollowList(List<Long> followList) {
-            this.followList = followList;
+        public List<UUID> getFollowerList() {
+            return followerList;
         }
 
         /**
@@ -426,10 +326,59 @@ public interface IProfileService
         }
 
         /**
-         * @param chainLinks the chainLinks to set
+         * @return the connections
          */
-        public void setChainLinks(List<Long> chainLinks) {
-            this.chainLinks = chainLinks;
+        public Long getConnections() {
+            return connections;
+        }
+
+        /**
+         * @return the follows
+         */
+        public Long getFollows() {
+            return follows;
+        }
+
+        /**
+         * @return the followers
+         */
+        public Long getFollowers() {
+            return followers;
+        }
+
+        /**
+         * @return the chainCount
+         */
+        public Long getChainCount() {
+            return chainCount;
+        }
+
+        /**
+         * @return the creditEarned
+         */
+        public Long getCreditEarned() {
+            return creditEarned;
+        }
+
+        /**
+         * @return the creditIssued
+         */
+        public Long getCreditIssued() {
+            return creditIssued;
+        }
+
+        /**
+         * @return the moneyEarned
+         */
+        public Long getMoneyEarned() {
+            return moneyEarned;
+        }
+
+        /**
+         * @return the moneyIssued
+         */
+        public Long getMoneyIssued() {
+            return moneyIssued;
         }
     }
 }

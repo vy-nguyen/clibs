@@ -36,13 +36,14 @@ public class StartupResponse
 {
     private String csrfToken;
     private String csrfHeader;
-    private LoginResponse      userInfo;
+    private LoginResponse      userDTO;
+    private List<ProfileDTO>   linkedUsers;
     private List<MenuItemResp> menuItems;
 
     public StartupResponse(User user, ProfileDTO profile)
     {
         if (user != null) {
-            userInfo = new LoginResponse(user, profile);
+            userDTO = new LoginResponse(profile);
         }
     }
 
@@ -75,17 +76,31 @@ public class StartupResponse
     }
 
     /**
-     * @return the userInfo
+     * @return the userDTO
      */
     public LoginResponse getUserDTO() {
-        return userInfo;
+        return userDTO;
     }
 
     /**
-     * @param userInfo the userInfo to set
+     * @param userDTO the userDTO to set
      */
-    public void setUserDTO(LoginResponse userInfo) {
-        this.userInfo = userInfo;
+    public void setUserDTO(LoginResponse userDTO) {
+        this.userDTO = userDTO;
+    }
+
+    /**
+     * @return the linkedUsers
+     */
+    public List<ProfileDTO> getLinkedUsers() {
+        return linkedUsers;
+    }
+
+    /**
+     * @param linkedUsers the linkedUsers to set
+     */
+    public void setLinkedUsers(List<ProfileDTO> linkedUsers) {
+        this.linkedUsers = linkedUsers;
     }
 
     /**

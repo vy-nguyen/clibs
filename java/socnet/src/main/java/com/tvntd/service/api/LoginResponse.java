@@ -26,20 +26,13 @@
  */
 package com.tvntd.service.api;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.tvntd.models.Profile;
-import com.tvntd.models.User;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 public class LoginResponse extends GenericResponse
 {
-    static private Logger s_log = LoggerFactory.getLogger(LoginResponse.class);
-
     private String authVerifToken;
     private String authToken;
-    private UserDTO userSelf;
+    private ProfileDTO userSelf;
 
     public LoginResponse(String type, String message, String error, String token)
     {
@@ -48,11 +41,11 @@ public class LoginResponse extends GenericResponse
         this.authToken = null;
     }
 
-    public LoginResponse(User user, ProfileDTO profile)
+    public LoginResponse(ProfileDTO profile)
     {
         super(GenericResponse.USER_HOME, null, null);
         this.authToken = "abc1234";
-        this.userSelf = new UserDTO(user, profile);
+        this.userSelf = profile;
     }
 
     /**
@@ -72,181 +65,7 @@ public class LoginResponse extends GenericResponse
     /**
      * @return the userSelf
      */
-    public UserDTO getUserSelf() {
+    public ProfileDTO getUserSelf() {
         return userSelf;
-    }
-
-    public static class UserDTO
-    {
-        private String email;
-        private String firstName;
-        private String lastName;
-        private String locale;
-        private String userUuid;
-        private String userImgUrl;
-        private String transRoot;
-        private Long   connections;
-        private Long   followers;
-        private Long   follows;
-        private Long   creditEarned;
-        private Long   creditIssued;
-        private Long   moneyEarned;
-        private Long   moneyIssued;
-
-        public UserDTO(User user, ProfileDTO profile)
-        {
-            this.email = user.getEmail();
-            this.firstName = user.getFirstName();
-            this.lastName = user.getLastName();
-            this.locale = user.getLocale();
-            this.connections = user.getConnections();
-            this.followers = user.getFollowers();
-            this.follows = user.getFollows();
-            this.creditEarned = 100L;
-            this.creditIssued = 200L;
-            this.moneyEarned = 100L;
-            this.moneyIssued = 300L;
-
-            if (profile != null) {
-                this.userUuid   = profile.getUserUuid().toString();
-                this.transRoot  = profile.getTransRoot().name();
-                this.userImgUrl = profile.getUserImgUrl();
-            } else {
-                this.userUuid   = "0";
-                this.transRoot  = "0";
-                this.userImgUrl = "/rs/img/avatars/male.png";
-            }
-            if (connections == null) {
-                connections = 0L;
-                followers = 0L;
-                follows = 0L;
-            }
-        }
-
-        /**
-         * @return the email
-         */
-        public String getEmail() {
-            return email;
-        }
-
-        /**
-         * @return the firstName
-         */
-        public String getFirstName() {
-            return firstName;
-        }
-
-        /**
-         * @return the lastName
-         */
-        public String getLastName() {
-            return lastName;
-        }
-
-        /**
-         * @return the locale
-         */
-        public String getLocale() {
-            return locale;
-        }
-
-        /**
-         * @return the userUuid
-         */
-        public String getUserUuid() {
-            return userUuid;
-        }
-
-        /**
-         * @param userUuid the userUuid to set
-         */
-        public void setUserUuid(String userUuid) {
-            this.userUuid = userUuid;
-        }
-
-        /**
-         * @return the userImgUrl
-         */
-        public String getUserImgUrl() {
-            return userImgUrl;
-        }
-
-        /**
-         * @return the transRoot
-         */
-        public String getTransRoot() {
-            return transRoot;
-        }
-
-        /**
-         * @return the connections
-         */
-        public Long getConnections() {
-            return connections;
-        }
-
-        /**
-         * @param connections the connections to set
-         */
-        public void setConnections(Long connections) {
-            this.connections = connections;
-        }
-
-        /**
-         * @return the followers
-         */
-        public Long getFollowers() {
-            return followers;
-        }
-
-        /**
-         * @param followers the followers to set
-         */
-        public void setFollowers(Long followers) {
-            this.followers = followers;
-        }
-
-        /**
-         * @return the follows
-         */
-        public Long getFollows() {
-            return follows;
-        }
-
-        /**
-         * @param follows the follows to set
-         */
-        public void setFollows(Long follows) {
-            this.follows = follows;
-        }
-
-        /**
-         * @return the creditEarned
-         */
-        public Long getCreditEarned() {
-            return creditEarned;
-        }
-
-        /**
-         * @return the creditIssued
-         */
-        public Long getCreditIssued() {
-            return creditIssued;
-        }
-
-        /**
-         * @return the moneyEarned
-         */
-        public Long getMoneyEarned() {
-            return moneyEarned;
-        }
-
-        /**
-         * @return the moneyIssued
-         */
-        public Long getMoneyIssued() {
-            return moneyIssued;
-        }
     }
 }

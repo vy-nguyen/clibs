@@ -23,6 +23,7 @@ import UserHome      from './pages/user/UserHome.jsx';
 import UserAccount   from './pages/user/UserAccount.jsx';
 import UserTrans     from './pages/user/UserTransaction.jsx';
 import UserProfile   from './pages/user/UserProfile.jsx';
+import UserList      from './pages/admin/UserList.jsx';
 import LoginRequired from 'vntd-shared/utils/LoginRequired.jsx';
 
 const Routes = (
@@ -71,12 +72,20 @@ const Routes = (
                 <Redirect from="/" to="api"/>
                 <Route path="api">
                 </Route>
+
+                <Redirect from="/" to="admin"/>
+                <Route path="admin">
+                    <IndexRoute component={UserList}/>
+                    <Route path="users" component={UserList}/>
+                </Route>
+
                 <Redirect from="/" to="user"/>
                 <Route path="user">
                     <IndexRoute component={UserHome}/>
                     <Route path="profile" component={UserProfile}/>
                     <Route path="account" component={UserAccount}/>
                     <Route path="transaction" component={UserTrans}/>
+                    <Route path="all" component={UserList}/>
                 </Route>
             </Route>
         </Route>

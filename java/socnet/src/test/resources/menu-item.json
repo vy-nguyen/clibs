@@ -186,6 +186,56 @@
         "userId"  : 0,
         "itemId"  : 54,
         "parentId": 50,
+        "title"   : "All Users",
+        "icon"    : "fa fa-users",
+        "route"   : "/user/all"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 55,
+        "parentId": 50,
+        "title"   : "Logout",
+        "icon"    : "fa fa-sign-out",
+        "route"   : "/login/logout"
+    } ],
+    "adminMenu": [ {
+        "userId"  : 0,
+        "itemId"  : 60,
+        "parentId": 0,
+        "title"   : "Admin",
+        "icon"    : "fa fa-lg fa-fw fa-user",
+        "route"   : "/admin"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 61,
+        "parentId": 60,
+        "title"   : "Edit Profile",
+        "icon"    : "fa fa-user",
+        "route"   : "/admin/profile"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 62,
+        "parentId": 60,
+        "title"   : "Users",
+        "icon"    : "fa fa-money",
+        "route"   : "/admin/users"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 63,
+        "parentId": 60,
+        "title"   : "Access Logs",
+        "icon"    : "fa fa-flag",
+        "route"   : "/admin/logs"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 64,
+        "parentId": 60,
+        "title"   : "All Users",
+        "icon"    : "fa fa-users",
+        "route"   : "/user/all"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 65,
+        "parentId": 60,
         "title"   : "Logout",
         "icon"    : "fa fa-sign-out",
         "route"   : "/login/logout"

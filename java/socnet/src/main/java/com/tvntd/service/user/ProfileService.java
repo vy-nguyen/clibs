@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tvntd.dao.ProfileRepository;
+import com.tvntd.lib.ObjectId;
 import com.tvntd.models.Profile;
 import com.tvntd.models.User;
 import com.tvntd.service.api.IProfileService;
@@ -68,24 +69,31 @@ public class ProfileService implements IProfileService
     }
 
     @Override
-    public List<ProfileBriefDTO> getProfileList(List<Long> userIds)
+    public List<ProfileDTO> getProfileList(List<UUID> userIds)
     {
-        List<ProfileBriefDTO> ret = new LinkedList<>();
-        for (Long uid : userIds) {
-            Profile prof = profileRepo.findByUserId(uid);
+        List<ProfileDTO> ret = new LinkedList<>();
+
+        for (UUID uuid : userIds) {
+            Profile prof = profileRepo.findByUserUuid(uuid);
             if (prof != null) {
-                ret.add(new ProfileBriefDTO(prof));
+                ret.add(new ProfileDTO(prof));
             }
         }
         return ret;
     }
 
     @Override
-    public void saveProfile(Long userId, ProfileDTO profile)
+    public List<ProfileDTO> getProfileList(ProfileDTO user)
     {
-        Profile prof = profileRepo.findByUserId(userId);
+        return null;
+    }
+
+    @Override
+    public void saveUserImgUrl(ProfileDTO profile, ObjectId oid)
+    {
+        Profile prof = profileRepo.findByUserId(profile.obtainUserId());
         if (prof != null) {
-            profile.updateProfile(prof);
+            prof.setUserImgUrl(oid);
             profileRepo.save(prof);
         }
     }

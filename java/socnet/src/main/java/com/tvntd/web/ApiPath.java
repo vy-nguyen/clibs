@@ -147,7 +147,7 @@ public class ApiPath
         List<MenuItemResp> items = menuItemService.getMenuItemRespByUser(userId);
         StartupResponse result = new StartupResponse(user, profile);
 
-        fillStartupResponse(result, user, reqt);
+        fillStartupResponse(result, profile, reqt, profileRepo);
         if (items != null) {
             result.setMenuItems(items);
         }
@@ -155,13 +155,17 @@ public class ApiPath
     }
 
     public static void
-    fillStartupResponse(StartupResponse resp, User user, HttpServletRequest reqt)
+    fillStartupResponse(StartupResponse resp,
+            ProfileDTO profile, HttpServletRequest reqt, IProfileService repo)
     {
         CsrfToken token = (CsrfToken) reqt.getAttribute("_csrf");
 
         if (token != null) {
             resp.setCsrfHeader(token.getHeaderName());
             resp.setCsrfToken(token.getToken());
+        }
+        if (repo != null) {
+            resp.setLinkedUsers(repo.getProfileList(profile));
         }
     }
 
@@ -185,9 +189,7 @@ public class ApiPath
             ObjectId oid = store.putImage(is, (int) file.getSize());
 
             if (oid != null) {
-                String uri = store.imgObjUri(oid, "/rs/upload");
-                profile.setUserImgUrl(uri);
-                profileRepo.saveProfile(profile.getUserId(), profile);
+                profileRepo.saveUserImgUrl(profile, oid);
             }
         } catch(IOException e) {
             s_log.info("Exception: " + e.toString());
