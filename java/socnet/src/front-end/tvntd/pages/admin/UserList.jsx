@@ -4,14 +4,29 @@
 'use strict';
 
 import React          from 'react-mod';
+import _              from 'lodash';
 import WidgetGrid     from 'vntd-shared/widgets/WidgetGrid.jsx';
 import JarvisWidget   from 'vntd-shared/widgets/JarvisWidget.jsx';
 import Datatable      from 'vntd-shared/tables/Datatable.jsx';
 import BigBreadcrumbs from 'vntd-shared/layout/BigBreadcrumbs.jsx';
+import UserStore      from 'vntd-shared/stores/UserStore.jsx';
 import SubHeader      from '../layout/SubHeader.jsx';
 
 let UserList = React.createClass({
     render: function() {
+        let tabdata = [];
+        let users = UserStore.getUserList();
+        _.forOwn(users, function(item, key) {
+            tabdata.push({
+                image: "item.userImgUrl",
+                firstName: item.firstName,
+                lastName: item.lastName,
+                eMail: item.userName,
+                uuid: item.userUuid,
+                lastLogin: "1/1/1"
+            });
+        });
+        console.log(tabdata);
         return (
             <div id="content">
                 <div className="row">
@@ -28,7 +43,7 @@ let UserList = React.createClass({
                                 <div>
                                     <div className="widget-body no-padding">
                                         <Datatable options={{
-                                            ajax: 'api/list-users',
+                                            data: tabdata,
                                             columns: [
                                                 {data: "image"},
                                                 {data: "firstName"},

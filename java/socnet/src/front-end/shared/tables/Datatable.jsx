@@ -9,7 +9,7 @@ let Datatable = React.createClass({
     mixins: [ScriptLoader, ElementHolder],
 
     componentDidMount: function () {
-        this.loadScript('/rs/client/vendor.datatables.js').then(function () {
+        this.loadScript('/rs/client/vendor.datatables.js').then(function() {
             this._datatable()
         }.bind(this))
     },
@@ -65,20 +65,20 @@ let Datatable = React.createClass({
         if (!toolbar) {
             element.parent()
             .find(".dt-toolbar")
-            .append('<div class="text-right"><img src="styles/img/logo.png" alt="SmartAdmin" style="width: 111px; margin-top: 3px; margin-right: 10px;"></div>');
+            .append('<div class="text-right">' + '<img src="styles/img/logo.png" alt="SmartAdmin" style="width: 111px; margin-top: 3px; margin-right: 10px;"></div>');
         }
 
         if (this.props.detailsFormat) {
-            let format = this.props.detailsFormat
+            let format = this.props.detailsFormat;
             element.on('click', 'td.details-control', function() {
                 var tr = $(this).closest('tr');
-                var row = _dataTable.row( tr );
-                if ( row.child.isShown() ) {
+                var row = _dataTable.row(tr);
+
+                if (row.child.isShown()) {
                     row.child.hide();
                     tr.removeClass('shown');
-                }
-                else {
-                    row.child( format(row.data()) ).show();
+                } else {
+                    row.child(format(row.data())).show();
                     tr.addClass('shown');
                 }
             })

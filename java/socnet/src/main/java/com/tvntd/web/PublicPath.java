@@ -44,6 +44,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.tvntd.models.User;
 import com.tvntd.service.api.IMenuItemService;
 import com.tvntd.service.api.IMenuItemService.MenuItemResp;
+import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.StartupResponse;
 
@@ -51,6 +52,9 @@ import com.tvntd.service.api.StartupResponse;
 public class PublicPath
 {
     static private Logger s_log = LoggerFactory.getLogger(PublicPath.class);
+
+    @Autowired
+    private IProfileService profileRepo;
 
     @Autowired
     IMenuItemService menuItemService;
@@ -71,7 +75,7 @@ public class PublicPath
 
         if (user != null) {
             s_log.debug("User loggined: " + user.getEmail());
-            ApiPath.fillStartupResponse(result, profile, reqt, null);
+            ApiPath.fillStartupResponse(result, profile, reqt, profileRepo);
             userId = menuItemService.getPrivateId();
         }
         List<MenuItemResp> items = menuItemService.getMenuItemRespByUser(userId);

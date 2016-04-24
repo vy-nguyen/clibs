@@ -65,7 +65,6 @@ let UserHome = React.createClass({
             this.userTab.init = true;
             TabPanelStore.setTabPanel(this.userTab.reactId, this.userTab);
         }
-        UserStore.dumpData("User Home");
         return (
             <div id="user-home">
                 <ProfileCover data={{imageId: self._id, imageList: imgList}}/>

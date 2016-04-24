@@ -61,19 +61,19 @@ public class Profile
 
     private UUID userUuid;
 
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "FriendList", joinColumns = @JoinColumn(name="userId"))
     private List<UUID> connectList;
 
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "FollowerList", joinColumns = @JoinColumn(name="userId"))
     private List<UUID> followerList;
 
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "FollowList", joinColumns = @JoinColumn(name="userId"))
     private List<UUID> followList;
 
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "ChainLinks", joinColumns = @JoinColumn(name="userId"))
     private List<Long> chainLinks;
 

@@ -33,6 +33,11 @@ import java.util.UUID;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.tvntd.dao.ProfileRepository;
@@ -85,7 +90,18 @@ public class ProfileService implements IProfileService
     @Override
     public List<ProfileDTO> getProfileList(ProfileDTO user)
     {
-        return null;
+        return ProfileDTO.convert(profileRepo.findAll());
+    }
+
+    @Override
+    public Page<ProfileDTO> getProfileList()
+    {
+        Pageable req = new PageRequest(0, 10, new Sort(Sort.Direction.DESC, "userName"));
+        Page<Profile> pages = profileRepo.findAll(req);
+        List<Profile> profiles = pages.getContent();
+
+        return new PageImpl<ProfileDTO>(
+                ProfileDTO.convert(profiles), req, pages.getTotalPages());
     }
 
     @Override

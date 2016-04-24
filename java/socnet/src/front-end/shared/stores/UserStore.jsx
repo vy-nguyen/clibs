@@ -68,7 +68,7 @@ class User {
 
 let UserStore = Reflux.createStore({
     data: {
-        userList: [],
+        userMap: {},
         uuidFetch: {},
         userSelf: null,
         authCode: null,
@@ -86,11 +86,11 @@ let UserStore = Reflux.createStore({
      * Public Api to get UserStore data.
      */
     getUserList: function() {
-        return this.data.userList;
+        return _.forOwn(this.data.userMap);
     },
 
     getUserByUuid: function(uuid) {
-        return _.find(this.data.userList, { userUuid: uuid });
+        return _.find(this.data.userMap, { userUuid: uuid });
     },
 
     getCsrfHeader: function() {
@@ -141,12 +141,12 @@ let UserStore = Reflux.createStore({
     onStartupCompleted: function(json) {
         this._updateCommon(json);
         this._changedData(json.userDTO);
+        this._addFromJson(json.linkedUsers);
     },
 
     onRefreshNotifyCompleted: function(json) {
         this._updateCommon(json);
         this.trigger(this.data);
-        this.dumpData("Refresh");
     },
 
     /* Login actions. */
@@ -202,7 +202,7 @@ let UserStore = Reflux.createStore({
     },
 
     _reset: function() {
-        this.data.userList = [];
+        this.data.userMap = {};
         this.data.userSelf = null;
         this.data.authError = null;
         this.data.authToken = null;
@@ -251,14 +251,14 @@ let UserStore = Reflux.createStore({
     },
 
     _addFromJson: function(items) {
-        _(items).forEach(function(it) {
+        _(items).forOwn(function(it) {
             if (it.userRole === "self" && (this.data.userSelf === null)) {
                 this.data.userSelf = new User(it);
             }
-            if (!this.data.userList[it.userUuid]) {
-                this.data.userList[it.userUuid] = new User(it);
+            if (_.isEmpty(this.data.userMap[it.userUuid])) {
+                this.data.userMap[it.userUuid] = new User(it);
             }
-        }.bind(this))
+        }.bind(this));
     },
 
     exports: {

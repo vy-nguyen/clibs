@@ -26,8 +26,13 @@
  */
 package com.tvntd.service.api;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 
 import com.tvntd.lib.ObjectId;
 import com.tvntd.models.Profile;
@@ -38,8 +43,10 @@ public interface IProfileService
 {
     public ProfileDTO getProfile(Long userId);
     public ProfileDTO getProfile(UUID uuid);
+
     public List<ProfileDTO> getProfileList(List<UUID> userIds);
     public List<ProfileDTO> getProfileList(ProfileDTO user);
+    public Page<ProfileDTO> getProfileList();
 
     public void saveUserImgUrl(ProfileDTO profile, ObjectId oid);
     public void createProfile(User user);
@@ -47,6 +54,7 @@ public interface IProfileService
 
     public static class ProfileDTO
     {
+        // static private Logger s_log = LoggerFactory.getLogger(ProfileDTO.class);
         private Long userId;
         private String locale;
         private String userName;
@@ -141,6 +149,18 @@ public interface IProfileService
          */
         public Long obtainUserId() {
             return userId;
+        }
+
+        public static List<ProfileDTO> convert(List<Profile> list)
+        {
+            List<ProfileDTO> result = new LinkedList<>();
+
+            if (list != null) {
+                for (Profile prof : list) {
+                    result.add(new ProfileDTO(prof));
+                }
+            }
+            return result;
         }
 
         /**

@@ -166,6 +166,7 @@ public class ApiPath
         }
         if (repo != null) {
             resp.setLinkedUsers(repo.getProfileList(profile));
+            s_log.info("Linked users: " + resp.getLinkedUsers());
         }
     }
 
