@@ -18,11 +18,11 @@ let UserList = React.createClass({
         let users = UserStore.getUserList();
         _.forOwn(users, function(item, key) {
             tabdata.push({
-                image: "item.userImgUrl",
+                image    : "<img width='40' height='40' src='" + item.userImgUrl + "'/>",
                 firstName: item.firstName,
-                lastName: item.lastName,
-                eMail: item.userName,
-                uuid: item.userUuid,
+                lastName : item.lastName,
+                eMail    : item.userName,
+                uuid     : item.userUuid,
                 lastLogin: "1/1/1"
             });
         });
