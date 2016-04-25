@@ -26,12 +26,18 @@
  */
 package com.tvntd.service.api;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.security.web.csrf.CsrfToken;
+
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 public class LoginResponse extends GenericResponse
 {
     private String authVerifToken;
     private String authToken;
+    private String csrfToken;
+    private String csrfHeader;
     private ProfileDTO userSelf;
 
     public LoginResponse(String type, String message, String error, String token)
@@ -39,13 +45,21 @@ public class LoginResponse extends GenericResponse
         super(type, message, error);
         this.authVerifToken = token;
         this.authToken = null;
+        this.csrfToken = null;
+        this.csrfHeader = null;
     }
 
-    public LoginResponse(ProfileDTO profile)
+    public LoginResponse(ProfileDTO profile, HttpServletRequest reqt)
     {
         super(GenericResponse.USER_HOME, null, null);
         this.authToken = "abc1234";
         this.userSelf = profile;
+
+        CsrfToken token = (CsrfToken) reqt.getAttribute("_csrf");
+        if (token != null) {
+            csrfToken = token.getToken();
+            csrfHeader = token.getHeaderName();
+        }
     }
 
     /**
@@ -60,6 +74,34 @@ public class LoginResponse extends GenericResponse
      */
     public String getAuthToken() {
         return authToken;
+    }
+
+    /**
+     * @return the csrfToken
+     */
+    public String getCsrfToken() {
+        return csrfToken;
+    }
+
+    /**
+     * @param csrfToken the csrfToken to set
+     */
+    public void setCsrfToken(String csrfToken) {
+        this.csrfToken = csrfToken;
+    }
+
+    /**
+     * @return the csrfHeader
+     */
+    public String getCsrfHeader() {
+        return csrfHeader;
+    }
+
+    /**
+     * @param csrfHeader the csrfHeader to set
+     */
+    public void setCsrfHeader(String csrfHeader) {
+        this.csrfHeader = csrfHeader;
     }
 
     /**

@@ -28,51 +28,22 @@ package com.tvntd.service.api;
 
 import java.util.List;
 
-import com.tvntd.models.User;
+import javax.servlet.http.HttpServletRequest;
+
 import com.tvntd.service.api.IMenuItemService.MenuItemResp;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 public class StartupResponse
 {
-    private String csrfToken;
-    private String csrfHeader;
     private LoginResponse      userDTO;
     private List<ProfileDTO>   linkedUsers;
     private List<MenuItemResp> menuItems;
 
-    public StartupResponse(User user, ProfileDTO profile)
+    public StartupResponse(ProfileDTO profile, HttpServletRequest reqt)
     {
-        if (user != null) {
-            userDTO = new LoginResponse(profile);
+        if (profile != null) {
+            userDTO = new LoginResponse(profile, reqt);
         }
-    }
-
-    /**
-     * @return the csrfToken
-     */
-    public String getCsrfToken() {
-        return csrfToken;
-    }
-
-    /**
-     * @param csrfToken the csrfToken to set
-     */
-    public void setCsrfToken(String csrfToken) {
-        this.csrfToken = csrfToken;
-    }
-
-    /**
-     * @return the csrfHeader
-     */
-    public String getCsrfHeader() {
-        return csrfHeader;
-    }
-
-    /**
-     * @param csrfHeader the csrfHeader to set
-     */
-    public void setCsrfHeader(String csrfHeader) {
-        this.csrfHeader = csrfHeader;
     }
 
     /**

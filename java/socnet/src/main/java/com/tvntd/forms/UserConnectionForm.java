@@ -24,33 +24,68 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.web;
+package com.tvntd.forms;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.tvntd.service.api.IProfileService.ProfileDTO;
-import com.tvntd.service.api.LoginResponse;
-
-@Controller
-public class UserPath
+public class UserConnectionForm
 {
-    static private Logger s_log = LoggerFactory.getLogger(UserPath.class);
+    private String[] block;
+    private String[] remove;
+    private String[] connect;
+    private String[] follow;
 
-    @RequestMapping(value = "/user", method = RequestMethod.GET)
-    @ResponseBody
-    public LoginResponse user(HttpSession session, HttpServletRequest reqt)
-    {
-        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+    /**
+     * @return the block
+     */
+    public String[] getBlock() {
+        return block;
+    }
 
-        s_log.debug("Login to user profile: " + profile);
-        return new LoginResponse(profile, reqt);
+    /**
+     * @param block the block to set
+     */
+    public void setBlock(String[] block) {
+        this.block = block;
+    }
+
+    /**
+     * @return the remove
+     */
+    public String[] getRemove() {
+        return remove;
+    }
+
+    /**
+     * @param remove the remove to set
+     */
+    public void setRemove(String[] remove) {
+        this.remove = remove;
+    }
+
+    /**
+     * @return the connect
+     */
+    public String[] getConnect() {
+        return connect;
+    }
+
+    /**
+     * @param connect the connect to set
+     */
+    public void setConnect(String[] connect) {
+        this.connect = connect;
+    }
+
+    /**
+     * @return the follow
+     */
+    public String[] getFollow() {
+        return follow;
+    }
+
+    /**
+     * @param follow the follow to set
+     */
+    public void setFollow(String[] follow) {
+        this.follow = follow;
     }
 }

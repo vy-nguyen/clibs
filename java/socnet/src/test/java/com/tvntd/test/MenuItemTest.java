@@ -140,9 +140,5 @@ public class MenuItemTest
         String jsonFile = rsDir + "/article-sample.json";
 
         articleService.saveArticles(jsonFile, rsDir);
-        Page<ArticleDTO> articles =
-            articleService.getUserArticles("vynguyen77@yahoo.com");
-
-        assertNotNull(articles);
     }
 }

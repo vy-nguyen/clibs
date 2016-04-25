@@ -71,11 +71,11 @@ public class PublicPath
         Long userId = menuItemService.getPublicId();
         User user = (User) session.getAttribute("user");
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
-        StartupResponse result = new StartupResponse(user, profile);
+        StartupResponse result = new StartupResponse(profile, reqt);
 
         if (user != null) {
-            s_log.debug("User loggined: " + user.getEmail());
-            ApiPath.fillStartupResponse(result, profile, reqt, profileRepo);
+            s_log.debug("User loggined: " + profile);
+            ApiPath.fillStartupResponse(result, profile, profileRepo);
             userId = menuItemService.getPrivateId();
         }
         List<MenuItemResp> items = menuItemService.getMenuItemRespByUser(userId);

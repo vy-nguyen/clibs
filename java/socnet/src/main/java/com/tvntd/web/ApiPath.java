@@ -41,6 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -49,7 +50,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.mongodb.Mongo;
+import com.tvntd.forms.UserConnectionForm;
 import com.tvntd.lib.ObjectId;
 import com.tvntd.models.User;
 import com.tvntd.objstore.ObjStore;
@@ -63,6 +66,7 @@ import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.IUserNotifService;
 import com.tvntd.service.api.StartupResponse;
+import com.tvntd.service.api.UserConnectionChange;
 import com.tvntd.service.api.UserNotifResponse;
 
 @Controller
@@ -104,16 +108,7 @@ public class ApiPath
         if (user != null) {
             userId = 0L;
         }
-        UserNotifResponse result = userNotifService.getUserNotif(userId);
-        CsrfToken token = (CsrfToken) reqt.getAttribute("_csrf");
-
-        if (token != null) {
-            result.setCsrfHeader(token.getHeaderName());
-            result.setCsrfToken(token.getToken());
-            s_log.info("Request user notification token " + 
-                    result.getCsrfHeader() + ": " + result.getCsrfToken());
-        }
-        return result;
+        return userNotifService.getUserNotif(userId);
     }
 
     @RequestMapping(value = "/api/user-articles", method = RequestMethod.GET)
@@ -145,9 +140,9 @@ public class ApiPath
         }
         Long userId = menuItemService.getPrivateId();
         List<MenuItemResp> items = menuItemService.getMenuItemRespByUser(userId);
-        StartupResponse result = new StartupResponse(user, profile);
+        StartupResponse result = new StartupResponse(profile, reqt);
 
-        fillStartupResponse(result, profile, reqt, profileRepo);
+        fillStartupResponse(result, profile, profileRepo);
         if (items != null) {
             result.setMenuItems(items);
         }
@@ -155,15 +150,8 @@ public class ApiPath
     }
 
     public static void
-    fillStartupResponse(StartupResponse resp,
-            ProfileDTO profile, HttpServletRequest reqt, IProfileService repo)
+    fillStartupResponse(StartupResponse resp, ProfileDTO profile, IProfileService repo)
     {
-        CsrfToken token = (CsrfToken) reqt.getAttribute("_csrf");
-
-        if (token != null) {
-            resp.setCsrfHeader(token.getHeaderName());
-            resp.setCsrfToken(token.getToken());
-        }
         if (repo != null) {
             resp.setLinkedUsers(repo.getProfileList(profile));
             s_log.info("Linked users: " + resp.getLinkedUsers());
@@ -208,5 +196,34 @@ public class ApiPath
             return new GenericResponse("failure", "Miss-match input length");
         }
         return s_genOkResp;
+    }
+
+    /**
+     * Request connect, follow other users.
+     */
+    @RequestMapping(value = "/api/user-connections",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    changeUserConnections(@RequestBody UserConnectionForm form,
+            HttpServletRequest request, HttpSession session)
+    {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+
+        if (profile == null) {
+            return new GenericResponse("failure", "Invalid session");
+        }
+        String[] uuids = form.getRemove();
+        if (uuids != null) {
+            for (String uuid : uuids) {
+                s_log.info("Remove uuid " + uuid);
+            }
+        }
+        uuids = form.getBlock();
+        for (String uuid : uuids) {
+            s_log.info("Block uuid: " + uuid);
+        }
+        return new UserConnectionChange(form);
     }
 }

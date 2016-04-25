@@ -24,33 +24,31 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.web;
+package com.tvntd.service.api;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import com.tvntd.forms.UserConnectionForm;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.tvntd.service.api.IProfileService.ProfileDTO;
-import com.tvntd.service.api.LoginResponse;
-
-@Controller
-public class UserPath
+public class UserConnectionChange extends GenericResponse
 {
-    static private Logger s_log = LoggerFactory.getLogger(UserPath.class);
+    private UserConnectionForm result;
 
-    @RequestMapping(value = "/user", method = RequestMethod.GET)
-    @ResponseBody
-    public LoginResponse user(HttpSession session, HttpServletRequest reqt)
+    public UserConnectionChange(UserConnectionForm result)
     {
-        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        super(USER_HOME, "ok", null);
+        this.result = result;
+    }
 
-        s_log.debug("Login to user profile: " + profile);
-        return new LoginResponse(profile, reqt);
+    /**
+     * @return the result
+     */
+    public UserConnectionForm getResult() {
+        return result;
+    }
+
+    /**
+     * @param result the result to set
+     */
+    public void setResult(UserConnectionForm result) {
+        this.result = result;
     }
 }

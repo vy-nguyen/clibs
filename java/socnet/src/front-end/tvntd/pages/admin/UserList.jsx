@@ -10,23 +10,49 @@ import JarvisWidget   from 'vntd-shared/widgets/JarvisWidget.jsx';
 import Datatable      from 'vntd-shared/tables/Datatable.jsx';
 import BigBreadcrumbs from 'vntd-shared/layout/BigBreadcrumbs.jsx';
 import UserStore      from 'vntd-shared/stores/UserStore.jsx';
+import Actions        from 'vntd-root/actions/Actions.jsx';
 import SubHeader      from '../layout/SubHeader.jsx';
 
 let UserList = React.createClass({
+    listenables: [Actions],
+
+    _submitChanges: function(event) {
+        event.preventDefault();
+        let data = {
+            block: [],
+            remove: []
+        };
+        let users = UserStore.getUserList();
+
+        _.forOwn(users, function(item, key) {
+            if ($('#block-' + key).prop('checked') == true) {
+                data.block.push(key);
+            }
+            if ($('#remove-' + key).prop('checked') == true) {
+                data.remove.push(key);
+            }
+        });
+        UserStore.dumpData("User list change");
+        Actions.changeUsers(data);
+        console.log(data);
+    },
+
     render: function() {
         let tabdata = [];
         let users = UserStore.getUserList();
         _.forOwn(users, function(item, key) {
+            let block  = "block-" + key;
+            let remove = "remove-" + key;
             tabdata.push({
                 image    : "<img width='40' height='40' src='" + item.userImgUrl + "'/>",
                 firstName: item.firstName,
                 lastName : item.lastName,
                 eMail    : item.userName,
                 uuid     : item.userUuid,
-                lastLogin: "1/1/1"
+                remove   : "<input type='checkbox' id='" + remove + "' name='" + remove + "'/>",
+                block    : "<input type='checkbox' id='" + block + "' name='" + block + "'/>"
             });
         });
-        console.log(tabdata);
         return (
             <div id="content">
                 <div className="row">
@@ -50,7 +76,8 @@ let UserList = React.createClass({
                                                 {data: "lastName"},
                                                 {data: "eMail"},
                                                 {data: "uuid"},
-                                                {data: "lastLogin"}
+                                                {data: "remove"},
+                                                {data: "block"}
                                             ]
                                         }}
                                         paginationLength={true}
@@ -66,12 +93,16 @@ let UserList = React.createClass({
                                                     <i className="fa fa-fw fa-phone text-muted"/>E-mail
                                                 </th>
                                                 <th><i className="text-color-blue"/>Uuid</th>
-                                                <th><i className="text-color-blue fa fa-fw fa-calendar"/>Last Login</th>
+                                                <th><i className="text-color-blue fa fa-fw fa-trash"/>Remove</th>
+                                                <th><i className="text-color-blue fa fa-fw fa-bug"/>Block</th>
                                             </tr>
                                         </thead>
                                         </Datatable>
                                     </div>
                                 </div>
+                                <footer>
+                                    <button className="btn btn-primary pull-right" onClick={this._submitChanges}>Save Changes</button>
+                                </footer>
                             </JarvisWidget>
                         </article>
                     </div>

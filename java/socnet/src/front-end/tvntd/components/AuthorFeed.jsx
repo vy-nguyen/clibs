@@ -14,7 +14,7 @@ import Author         from 'vntd-root/components/Author.jsx';
 import ProfileCover   from 'vntd-root/components/ProfileCover.jsx';
 import AuthorStore    from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleStore   from 'vntd-root/stores/ArticleStore.jsx';
-
+import ProductView    from '../pages/e-store/ProductView.jsx';
 import Timeline       from '../pages/blog/Timeline.jsx';
 
 let paneData = {
@@ -35,6 +35,7 @@ let AuthorFeed = React.createClass({
         let art_id = 'article-' + author.userUuid;
         let fav_id = 'favorite-' + author.userUuid;
         let tln_id = 'timeline-' + author.userUuid;
+        let est_id = 'estore-' + author.userUuid;
 
         return (
 <div className="row">
@@ -50,6 +51,7 @@ let AuthorFeed = React.createClass({
                         <li className="active"><a href={'#' + art_id} data-toggle="tab">Articles</a></li>
                         <li><a href={'#' + fav_id} data-toggle="tab">Favorites</a></li>
                         <li><a href={'#' + tln_id} data-toggle="tab">Timeline</a></li>
+                        <li><a href={'#' + est_id} data-toggle="tab">E-Store</a></li>
                     </ul>
                     <div className="tab-content padding-top-10">
                         <div className="tab-pane fade in active" id={art_id}>
@@ -60,6 +62,9 @@ let AuthorFeed = React.createClass({
                         </div>
                         <div className="tab-pane fade" id={tln_id}>
                             <Timeline/>
+                        </div>
+                        <div className="tab-pane fade" id={est_id}>
+                            <ProductView/>
                         </div>
                     </div>
                 </div>

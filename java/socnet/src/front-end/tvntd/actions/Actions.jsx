@@ -20,6 +20,8 @@ const Actions = Reflux.createActions({
     verifyAccount:   {children: ['completed', 'failed']},
     resetPassword:   {children: ['completed', 'failed', 'always']},
 
+    changeUsers:     {children: ['completed', 'failed']},
+
     // Preload json for testing.
     preload:         {children: ['completed', 'failed']}
 });
@@ -114,6 +116,13 @@ Actions.preload.listen(function() {
         users   : require('json!../mock-json/user.json')
     };
     this.completed(data);
+});
+
+/**
+ * User activities.
+ */
+Actions.changeUsers.listen(function(data) {
+    postRestCall(data, "/api/user-connections", true, this.completed, this.failed);
 });
 
 export default Actions;

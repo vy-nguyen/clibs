@@ -39,8 +39,6 @@ import com.tvntd.models.UserNotifyItem;
 
 public class UserNotifResponse
 {
-    private String csrfToken;
-    private String csrfHeader;
     private Message message;
     private Notify notify;
     private Task task;
@@ -67,34 +65,6 @@ public class UserNotifResponse
             }
         }
         return null;
-    }
-
-    /**
-     * @return the csrfToken
-     */
-    public String getCsrfToken() {
-        return csrfToken;
-    }
-
-    /**
-     * @param csrfToken the csrfToken to set
-     */
-    public void setCsrfToken(String csrfToken) {
-        this.csrfToken = csrfToken;
-    }
-
-    /**
-     * @return the csrfHeader
-     */
-    public String getCsrfHeader() {
-        return csrfHeader;
-    }
-
-    /**
-     * @param csrfHeader the csrfHeader to set
-     */
-    public void setCsrfHeader(String csrfHeader) {
-        this.csrfHeader = csrfHeader;
     }
 
     /**

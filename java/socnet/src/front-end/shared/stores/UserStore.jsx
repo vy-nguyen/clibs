@@ -139,13 +139,12 @@ let UserStore = Reflux.createStore({
 
     /* Startup actions. */
     onStartupCompleted: function(json) {
-        this._updateCommon(json);
+        this._updateLogin(json.userDTO);
         this._changedData(json.userDTO);
         this._addFromJson(json.linkedUsers);
     },
 
     onRefreshNotifyCompleted: function(json) {
-        this._updateCommon(json);
         this.trigger(this.data);
     },
 
@@ -201,6 +200,12 @@ let UserStore = Reflux.createStore({
         this._changedData(null);
     },
 
+    /* Change user connection status. */
+    onChangeUsersCompleted: function(raw) {
+        console.log("change user completed");
+        console.log(raw);
+    },
+
     _reset: function() {
         this.data.userMap = {};
         this.data.userSelf = null;
@@ -222,12 +227,15 @@ let UserStore = Reflux.createStore({
         });
     },
 
-    _updateCommon: function(json) {
-        this.data.csrfHeader = json.csrfHeader;
-        this.data.csrfToken = json.csrfToken;
-        if ((json.csrfHeader != null) && (json.csrfHeader != undefined)) {
-            $("meta[name='_csrf']").attr("content", json.csrfToken);
-            $("meta[name='_csrf_header']").attr("content", json.csrfHeader);
+    _updateLogin: function(user) {
+        if (user !== null && user !== undefined) {
+            this.data.csrfHeader = user.csrfHeader;
+            this.data.csrfToken = user.csrfToken;
+
+            if ((user.csrfHeader !== null) && (user.csrfHeader !== undefined)) {
+                $("meta[name='_csrf']").attr("content", user.csrfToken);
+                $("meta[name='_csrf_header']").attr("content", user.csrfHeader);
+            }
         }
     },
 
