@@ -204,6 +204,7 @@ let UserStore = Reflux.createStore({
     onChangeUsersCompleted: function(raw) {
         this._setFriendStatus(raw.result.follow, "followed");
         this._setFriendStatus(raw.result.connect, "connected");
+        this._setFriendStatus(raw.result.connecting, "connecting");
         this.trigger(this.data);
     },
 
@@ -268,15 +269,21 @@ let UserStore = Reflux.createStore({
                 this.data.userMap[it.userUuid] = new User(it);
             }
         }.bind(this));
+
+        _(this.data.userMap).forOwn(function(it) {
+            it.setConnectState();
+        });
     },
 
     _setFriendStatus: function(uuids, status) {
-        uuids.map(function(uuid) {
-            let user = this.data.userMap[uuid];
-            if (!_.isEmpty(user)) {
-                user.connectState = status;
-            }
-        }.bind(this));
+        if (uuids !== null && uuids !== undefined) {
+            uuids.map(function(uuid) {
+                let user = this.data.userMap[uuid];
+                if (!_.isEmpty(user)) {
+                    user.connectState = status;
+                }
+            }.bind(this));
+        }
     },
 
     exports: {
@@ -290,28 +297,34 @@ User.prototype.setConnectState = function() {
             return true;
         }
     };
-    let uuid = self.connections.find(filter);
-    if (uuid !== undefined) {
-        this.connectState = "connected";
-        return;
-    }
-    uuid = self.follows.find(filter);
-    if (uuid !== undefined) {
-        if (this.follows.find(self.userUuid) !== undefined) {
-            self.connections.push(this.userUuid);
-            this.connections.push(self.userUuid);
-            self.follows.splice(self.follows.indexOf(this.userUuid));
-            this.follows.splice(this.follows.indexOf(self.userUuid));
+    if (!_.isEmpty(self.connections)) {
+        let uuid = self.connections.find(filter);
+        if (uuid !== undefined) {
             this.connectState = "connected";
-        } else {
-            this.connectStat = "follows";
+            return;
         }
-        return;
     }
-    uuid = self.followers.find(filter);
-    if (uuid !== undefined) {
-        this.connectStat = "follower";
-        return;
+    if (!_.isEmpty(self.follows)) {
+        let uuid = self.follows.find(filter);
+        if (uuid !== undefined) {
+            if (this.follows.find(self.userUuid) !== undefined) {
+                self.connections.push(this.userUuid);
+                this.connections.push(self.userUuid);
+                self.follows.splice(self.follows.indexOf(this.userUuid));
+                this.follows.splice(this.follows.indexOf(self.userUuid));
+                this.connectState = "connected";
+            } else {
+                this.connectStat = "follows";
+            }
+            return;
+        }
+    }
+    if (!_.isEmpty(self.followers)) {
+        uuid = self.followers.find(filter);
+        if (uuid !== undefined) {
+            this.connectStat = "follower";
+            return;
+        }
     }
     this.connectState = "stranger";
 };

@@ -6,6 +6,7 @@ import ElementHolder from 'vntd-shared/utils/mixins/ElementHolder.jsx'
 import AjaxActions   from 'vntd-shared/actions/AjaxActions.jsx'
 
 let Datatable = React.createClass({
+    dataTable: null,
     mixins: [ScriptLoader, ElementHolder],
 
     componentDidMount: function () {
@@ -51,6 +52,7 @@ let Datatable = React.createClass({
         });
 
         var _dataTable = element.DataTable(options);
+        this.dataTable = _dataTable;
 
         if (this.props.filter) {
             // Apply the filter
@@ -65,7 +67,7 @@ let Datatable = React.createClass({
         if (!toolbar) {
             element.parent()
             .find(".dt-toolbar")
-            .append('<div class="text-right">' + '<img src="styles/img/logo.png" alt="SmartAdmin" style="width: 111px; margin-top: 3px; margin-right: 10px;"></div>');
+            .append('<div class="text-right">' + '<img src="styles/img/logo.png" alt="tvntd" style="width: 111px; margin-top: 3px; margin-right: 10px;"></div>');
         }
 
         if (this.props.detailsFormat) {
@@ -85,7 +87,12 @@ let Datatable = React.createClass({
         }
     },
 
-    render: function () {
+    render: function() {
+        if (this.dataTable != null) {
+            this.dataTable.clear().draw();
+            this.dataTable.rows.add(this.props.tableData);
+            this.dataTable.columns.adjust().draw();
+        }
         let {children, ...props} = this.props;
         return (
             <table {...props}>

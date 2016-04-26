@@ -40,8 +40,9 @@ let UserList = React.createClass({
     _getTableData: function() {
         let tabdata = [];
         let users = UserStore.getUserList();
+        let followFmt = "<button>Followed</button>";
         let connectFmt = "<button>Connected</button>";
-        let followFmt  = "<span><i className='fa fa-check-circle'/> Followed</span>";
+        let connectingFmt = "<button>Connecting</button>";
 
         _.forOwn(users, function(item, key) {
             let connect = "connect-" + key;
@@ -57,6 +58,9 @@ let UserList = React.createClass({
             } else if (item.isFollower()) {
                 connFmt = "<input type='checkbox' id='" + connect + "' name='" + connect + "'/>";
                 follFmt = "";
+            } else if (item.isConnecting()) {
+                connFmt = connectingFmt;
+                follFmt = followFmt;
             } else {
                 connFmt = "<input type='checkbox' id='" + connect + "' name='" + connect + "'/>";
                 follFmt = "<input type='checkbox' id='" + follow + "' name='" + follow + "'/>";
@@ -83,7 +87,38 @@ let UserList = React.createClass({
     },
 
     render: function() {
-        console.log(this.state.tabData);
+        let table = (
+            <Datatable tableData={this.state.tabData} options={{
+                data: this.state.tabData,
+                columns: [
+                    {data: "image"},
+                    {data: "firstName"},
+                    {data: "lastName"},
+                    {data: "eMail"},
+                    {data: "uuid"},
+                    {data: "follow"},
+                    {data: "connect"}
+                ]
+            }}
+            paginationLength={true}
+            className="table table-striped table-bordered table-hover" width="100%">
+                <thead>
+                    <tr>
+                        <th data-hide="uuid">Image</th>
+                        <th>
+                            <i className="fa fa-fw fa-user text-muted hidden-md hidden-sm hidden-xs"/>First Name
+                        </th>
+                        <th><i className="text-muted"/>Last Name</th>
+                        <th data-class="expand">
+                            <i className="fa fa-fw fa-phone text-muted"/>E-mail
+                        </th>
+                        <th><i className="text-color-blue"/>Uuid</th>
+                        <th><i className="text-color-blue fa fa-fw fa-trash"/>Follow</th>
+                        <th><i className="text-color-blue fa fa-fw fa-bug"/>Connect</th>
+                    </tr>
+                </thead>
+            </Datatable>
+        );
         return (
             <div id="content">
                 <div className="row">
@@ -98,38 +133,7 @@ let UserList = React.createClass({
                                     <h2>User List</h2>
                                 </header>
                                 <div>
-                                    <div className="widget-body no-padding">
-                                        <Datatable options={{
-                                            data: this.state.tabData,
-                                            columns: [
-                                                {data: "image"},
-                                                {data: "firstName"},
-                                                {data: "lastName"},
-                                                {data: "eMail"},
-                                                {data: "uuid"},
-                                                {data: "follow"},
-                                                {data: "connect"}
-                                            ]
-                                        }}
-                                        paginationLength={true}
-                                        className="table table-striped table-bordered table-hover" width="100%">
-                                        <thead>
-                                            <tr>
-                                                <th data-hide="uuid">Image</th>
-                                                <th>
-                                                    <i className="fa fa-fw fa-user text-muted hidden-md hidden-sm hidden-xs"/>First Name
-                                                </th>
-                                                <th><i className="text-muted"/>Last Name</th>
-                                                <th data-class="expand">
-                                                    <i className="fa fa-fw fa-phone text-muted"/>E-mail
-                                                </th>
-                                                <th><i className="text-color-blue"/>Uuid</th>
-                                                <th><i className="text-color-blue fa fa-fw fa-trash"/>Follow</th>
-                                                <th><i className="text-color-blue fa fa-fw fa-bug"/>Connect</th>
-                                            </tr>
-                                        </thead>
-                                        </Datatable>
-                                    </div>
+                                    <div className="widget-body no-padding">{table}</div>
                                 </div>
                                 <footer>
                                     <button className="btn btn-primary pull-right" onClick={this._submitChanges}>Save Changes</button>
