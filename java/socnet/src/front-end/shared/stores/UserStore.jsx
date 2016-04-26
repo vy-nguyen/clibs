@@ -53,7 +53,7 @@ class User {
     }
 
     isInConnection() {
-        return this.connectState === "connected";
+        return this.connectState === "connected"
     }
     isConnecting() {
         return this.connectState === "connecting";
@@ -202,8 +202,9 @@ let UserStore = Reflux.createStore({
 
     /* Change user connection status. */
     onChangeUsersCompleted: function(raw) {
-        console.log("change user completed");
-        console.log(raw);
+        this._setFriendStatus(raw.result.follow, "followed");
+        this._setFriendStatus(raw.result.connect, "connected");
+        this.trigger(this.data);
     },
 
     _reset: function() {
@@ -265,6 +266,15 @@ let UserStore = Reflux.createStore({
             }
             if (_.isEmpty(this.data.userMap[it.userUuid])) {
                 this.data.userMap[it.userUuid] = new User(it);
+            }
+        }.bind(this));
+    },
+
+    _setFriendStatus: function(uuids, status) {
+        uuids.map(function(uuid) {
+            let user = this.data.userMap[uuid];
+            if (!_.isEmpty(user)) {
+                user.connectState = status;
             }
         }.bind(this));
     },

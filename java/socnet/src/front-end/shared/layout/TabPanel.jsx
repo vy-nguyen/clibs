@@ -26,7 +26,6 @@ let TabPanel = React.createClass({
             )
         }.bind(this));
 
-        console.log(this.props.children);
         let tab_content = this.props.children.map(function(item, idx) {
             let tabRef = tab.tabItems[idx];
             let clasname = classnames("tab-pane", {active: idx == 0 });

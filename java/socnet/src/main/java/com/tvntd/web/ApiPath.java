@@ -39,7 +39,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -214,15 +213,17 @@ public class ApiPath
         if (profile == null) {
             return new GenericResponse("failure", "Invalid session");
         }
-        String[] uuids = form.getRemove();
+        String[] uuids = form.getFollow();
         if (uuids != null) {
             for (String uuid : uuids) {
                 s_log.info("Remove uuid " + uuid);
             }
         }
-        uuids = form.getBlock();
-        for (String uuid : uuids) {
-            s_log.info("Block uuid: " + uuid);
+        uuids = form.getConnect();
+        if (uuids != null) {
+            for (String uuid : uuids) {
+                s_log.info("Block uuid: " + uuid);
+            }
         }
         return new UserConnectionChange(form);
     }

@@ -4,7 +4,9 @@
 'use strict';
 
 import React          from 'react-mod';
+import Reflux         from 'reflux';
 import _              from 'lodash';
+
 import WidgetGrid     from 'vntd-shared/widgets/WidgetGrid.jsx';
 import JarvisWidget   from 'vntd-shared/widgets/JarvisWidget.jsx';
 import Datatable      from 'vntd-shared/tables/Datatable.jsx';
@@ -14,45 +16,74 @@ import Actions        from 'vntd-root/actions/Actions.jsx';
 import SubHeader      from '../layout/SubHeader.jsx';
 
 let UserList = React.createClass({
-    listenables: [Actions],
+    mixins: [Reflux.listenTo(UserStore, "onConnectionChange")],
 
     _submitChanges: function(event) {
         event.preventDefault();
         let data = {
-            block: [],
-            remove: []
+            connect: [],
+            follow: []
         };
         let users = UserStore.getUserList();
 
         _.forOwn(users, function(item, key) {
-            if ($('#block-' + key).prop('checked') == true) {
-                data.block.push(key);
+            if ($('#connect-' + key).prop('checked') == true) {
+                data.connect.push(key);
             }
-            if ($('#remove-' + key).prop('checked') == true) {
-                data.remove.push(key);
+            if ($('#follow-' + key).prop('checked') == true) {
+                data.follow.push(key);
             }
         });
-        UserStore.dumpData("User list change");
         Actions.changeUsers(data);
-        console.log(data);
     },
 
-    render: function() {
+    _getTableData: function() {
         let tabdata = [];
         let users = UserStore.getUserList();
+        let connectFmt = "<button>Connected</button>";
+        let followFmt  = "<span><i className='fa fa-check-circle'/> Followed</span>";
+
         _.forOwn(users, function(item, key) {
-            let block  = "block-" + key;
-            let remove = "remove-" + key;
+            let connect = "connect-" + key;
+            let follow  = "follow-" + key;
+            let connFmt, follFmt;
+
+            if (item.isInConnection()) {
+                connFmt = connectFmt;
+                follFmt = followFmt;
+            } else if (item.isInFollowed()) {
+                connFmt = "<input type='checkbox' id='" + connect + "' name='" + connect + "'/>";
+                follFmt = followFmt;
+            } else if (item.isFollower()) {
+                connFmt = "<input type='checkbox' id='" + connect + "' name='" + connect + "'/>";
+                follFmt = "";
+            } else {
+                connFmt = "<input type='checkbox' id='" + connect + "' name='" + connect + "'/>";
+                follFmt = "<input type='checkbox' id='" + follow + "' name='" + follow + "'/>";
+            }
             tabdata.push({
                 image    : "<img width='40' height='40' src='" + item.userImgUrl + "'/>",
                 firstName: item.firstName,
                 lastName : item.lastName,
                 eMail    : item.userName,
                 uuid     : item.userUuid,
-                remove   : "<input type='checkbox' id='" + remove + "' name='" + remove + "'/>",
-                block    : "<input type='checkbox' id='" + block + "' name='" + block + "'/>"
+                follow   : follFmt,
+                connect  : connFmt
             });
         });
+        return { tabData: tabdata };
+    },
+
+    onConnectionChange: function() {
+        this.setState(this._getTableData());
+    },
+
+    getInitialState: function() {
+        return this._getTableData();
+    },
+
+    render: function() {
+        console.log(this.state.tabData);
         return (
             <div id="content">
                 <div className="row">
@@ -69,15 +100,15 @@ let UserList = React.createClass({
                                 <div>
                                     <div className="widget-body no-padding">
                                         <Datatable options={{
-                                            data: tabdata,
+                                            data: this.state.tabData,
                                             columns: [
                                                 {data: "image"},
                                                 {data: "firstName"},
                                                 {data: "lastName"},
                                                 {data: "eMail"},
                                                 {data: "uuid"},
-                                                {data: "remove"},
-                                                {data: "block"}
+                                                {data: "follow"},
+                                                {data: "connect"}
                                             ]
                                         }}
                                         paginationLength={true}
@@ -93,8 +124,8 @@ let UserList = React.createClass({
                                                     <i className="fa fa-fw fa-phone text-muted"/>E-mail
                                                 </th>
                                                 <th><i className="text-color-blue"/>Uuid</th>
-                                                <th><i className="text-color-blue fa fa-fw fa-trash"/>Remove</th>
-                                                <th><i className="text-color-blue fa fa-fw fa-bug"/>Block</th>
+                                                <th><i className="text-color-blue fa fa-fw fa-trash"/>Follow</th>
+                                                <th><i className="text-color-blue fa fa-fw fa-bug"/>Connect</th>
                                             </tr>
                                         </thead>
                                         </Datatable>
