@@ -152,7 +152,7 @@ public class ApiPath
     fillStartupResponse(StartupResponse resp, ProfileDTO profile, IProfileService repo)
     {
         if (repo != null) {
-            resp.setLinkedUsers(repo.getProfileList(profile));
+            resp.setLinkedUsers(repo.getProfileList(profile, null));
             s_log.info("Linked users: " + resp.getLinkedUsers());
         }
     }

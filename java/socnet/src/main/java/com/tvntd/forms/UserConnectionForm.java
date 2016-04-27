@@ -31,6 +31,7 @@ public class UserConnectionForm
     private String[] block;
     private String[] remove;
     private String[] connect;
+    private String[] connecting;
     private String[] follow;
 
     /**
@@ -73,6 +74,20 @@ public class UserConnectionForm
      */
     public void setConnect(String[] connect) {
         this.connect = connect;
+    }
+
+    /**
+     * @return the connecting
+     */
+    public String[] getConnecting() {
+        return connecting;
+    }
+
+    /**
+     * @param connecting the connecting to set
+     */
+    public void setConnecting(String[] connecting) {
+        this.connecting = connecting;
     }
 
     /**

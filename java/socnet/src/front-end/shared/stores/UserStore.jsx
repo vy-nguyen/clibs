@@ -139,8 +139,10 @@ let UserStore = Reflux.createStore({
 
     /* Startup actions. */
     onStartupCompleted: function(json) {
-        this._updateLogin(json.userDTO);
-        this._changedData(json.userDTO);
+        if (json.userDTO !== null && json.userDTO !== undefined) {
+            this._updateLogin(json.userDTO);
+            this._changedData(json.userDTO);
+        }
         this._addFromJson(json.linkedUsers);
     },
 
@@ -297,21 +299,21 @@ User.prototype.setConnectState = function() {
             return true;
         }
     };
-    if (!_.isEmpty(self.connections)) {
-        let uuid = self.connections.find(filter);
+    if (!_.isEmpty(self.connectList)) {
+        let uuid = self.connectList.find(filter);
         if (uuid !== undefined) {
             this.connectState = "connected";
             return;
         }
     }
-    if (!_.isEmpty(self.follows)) {
-        let uuid = self.follows.find(filter);
+    if (!_.isEmpty(self.followList)) {
+        let uuid = self.followList.find(filter);
         if (uuid !== undefined) {
-            if (this.follows.find(self.userUuid) !== undefined) {
-                self.connections.push(this.userUuid);
-                this.connections.push(self.userUuid);
-                self.follows.splice(self.follows.indexOf(this.userUuid));
-                this.follows.splice(this.follows.indexOf(self.userUuid));
+            if (this.followList.find(self.userUuid) !== undefined) {
+                self.connectList.push(this.userUuid);
+                this.connectList.push(self.userUuid);
+                self.followList.splice(self.followList.indexOf(this.userUuid));
+                this.followList.splice(this.followList.indexOf(self.userUuid));
                 this.connectState = "connected";
             } else {
                 this.connectStat = "follows";
@@ -319,8 +321,8 @@ User.prototype.setConnectState = function() {
             return;
         }
     }
-    if (!_.isEmpty(self.followers)) {
-        uuid = self.followers.find(filter);
+    if (!_.isEmpty(self.followerList)) {
+        uuid = self.followerList.find(filter);
         if (uuid !== undefined) {
             this.connectStat = "follower";
             return;
