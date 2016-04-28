@@ -27,11 +27,14 @@
 package com.tvntd.service.api;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 
 import com.tvntd.lib.ObjectId;
@@ -48,11 +51,13 @@ public interface IProfileService
     public List<ProfileDTO> getProfileList(ProfileDTO user, List<Profile> raw);
     public Page<ProfileDTO> getProfileList();
 
-    public List<ProfileDTO> followProfiles(ProfileDTO me, String[] uuids);
-    public List<ProfileDTO> connectProfiles(ProfileDTO me, String[] uuids);
+    public void followProfiles(ProfileDTO me,
+            String[] uuids, HashMap<UUID, ProfileDTO> changes);
+    public void connectProfiles(ProfileDTO me,
+            String[] uuids, HashMap<UUID, ProfileDTO> changes);
 
-    public void updateWholeProfile(ProfileDTO profile);
-    public void updateProfiles(List<ProfileDTO> profiles);
+    public void saveProfile(ProfileDTO profile);
+    public void saveProfiles(List<ProfileDTO> profiles);
     public void saveUserImgUrl(ProfileDTO profile, ObjectId oid);
     public void createProfile(User user);
     public void deleteProfile(Long userId);
@@ -66,6 +71,7 @@ public interface IProfileService
 
     public static class ProfileDTO
     {
+        private static Logger s_log = LoggerFactory.getLogger(ProfileDTO.class);
         private Profile profile;
 
         private String coverImg0;
@@ -128,10 +134,13 @@ public interface IProfileService
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.append(profile.getLocale()).append(", firstName ")
-                .append(profile.getFirstName()).append('\n')
-                .append("Name: ").append(profile.getUserName())
-                .append("Uuid: ").append(profile.getUserUuid().toString()).append('\n');
+            sb.append(profile.getLocale())
+                .append("- firstName ").append(profile.getFirstName())
+                .append(", username: ").append(profile.getUserName())
+                .append("\nUuid: ").append(profile.getUserUuid().toString())
+                .append("\nConnect: ").append(profile.getConnectList().toString())
+                .append("\nFollow: ").append(profile.getFollowList().toString())
+                .append("\n");
             return sb.toString();
         }
 
@@ -224,6 +233,7 @@ public interface IProfileService
             if (findUuid(peer.getFollowerList(), getUserUuid()) == null) {
                 peer.addUuidList(peer.getFollowerList(), getUserUuid());
             }
+            s_log.info("Follow me: " + this, " peer " + peer);
         }
 
         public void unfollowProfile(ProfileDTO peer)

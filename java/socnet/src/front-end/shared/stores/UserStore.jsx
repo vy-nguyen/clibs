@@ -17,6 +17,7 @@ let ConnetEnum = ["self", "connected", "followed", "connecting", "follower", "st
 class User {
     constructor(data) {
         this._id          = _.uniqueId('id-user-info-');
+        this.email        = data.email;
         this.userUuid     = data.userUuid;
         this.userName     = data.userName;
         this.firstName    = data.firstName;
@@ -252,7 +253,9 @@ let UserStore = Reflux.createStore({
             this.data.authVerifToken = resp.authVerifToken;
 
             if ((resp.userSelf !== undefined) && (resp.userSelf !== null)) {
-                this.data.userSelf = new User(resp.userSelf);
+                let self = new User(resp.userSelf);
+                this.data.userSelf = self;
+                this.data.userMap[self.userUuid] = self;
                 localStorage.setItem("authToken", resp.authToken);
             }
             if (resp.message == "") {
@@ -264,17 +267,21 @@ let UserStore = Reflux.createStore({
 
     _addFromJson: function(items) {
         _(items).forOwn(function(it) {
-            if (it.userRole === "self" && (this.data.userSelf === null)) {
+            if (it.connectState === "self" && this.data.userSelf === null) {
                 this.data.userSelf = new User(it);
+                this.data.userMap[it.userUuid] = this.data.userSelf;
+                return;
             }
             if (_.isEmpty(this.data.userMap[it.userUuid])) {
                 this.data.userMap[it.userUuid] = new User(it);
             }
         }.bind(this));
 
-        _(this.data.userMap).forOwn(function(it) {
-            it.setConnectState();
-        });
+        if (this.data.userSelf != null) {
+            this.data.userSelf.setConnectState();
+            this.data.userSelf.connectState = "connected";
+            console.log(this.data.userSelf);
+        }
     },
 
     _setFriendStatus: function(uuids, status) {
@@ -293,42 +300,20 @@ let UserStore = Reflux.createStore({
 });
 
 User.prototype.setConnectState = function() {
-    let self = UserStore.getSelf();
+    let status = "connected";
     let filter = function(elm) {
-        if (elm === self.userUuid) {
-            return true;
+        let user = UserStore.getUserByUuid(elm);
+        if (user !== undefined && user.userUuid !== this.userUuid) {
+            user.connectState = status;
         }
-    };
-    if (!_.isEmpty(self.connectList)) {
-        let uuid = self.connectList.find(filter);
-        if (uuid !== undefined) {
-            this.connectState = "connected";
-            return;
-        }
-    }
-    if (!_.isEmpty(self.followList)) {
-        let uuid = self.followList.find(filter);
-        if (uuid !== undefined) {
-            if (this.followList.find(self.userUuid) !== undefined) {
-                self.connectList.push(this.userUuid);
-                this.connectList.push(self.userUuid);
-                self.followList.splice(self.followList.indexOf(this.userUuid));
-                this.followList.splice(this.followList.indexOf(self.userUuid));
-                this.connectState = "connected";
-            } else {
-                this.connectStat = "follows";
-            }
-            return;
-        }
-    }
-    if (!_.isEmpty(self.followerList)) {
-        uuid = self.followerList.find(filter);
-        if (uuid !== undefined) {
-            this.connectStat = "follower";
-            return;
-        }
-    }
-    this.connectState = "stranger";
+    }.bind(this);
+    _.forOwn(this.connectList, filter);
+
+    status = "followed";
+    _.forOwn(this.followList, filter);
+
+    status = "follower";
+    _.forOwn(this.followerList, filter);
 };
 
 export default UserStore

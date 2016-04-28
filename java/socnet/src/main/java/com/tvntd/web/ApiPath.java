@@ -28,8 +28,11 @@ package com.tvntd.web;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -214,17 +217,41 @@ public class ApiPath
             return new GenericResponse("failure", "Invalid session");
         }
         String[] uuids = form.getFollow();
+        HashMap<UUID, ProfileDTO> pending = new HashMap<>();
+
         if (uuids != null) {
-            for (String uuid : uuids) {
-                s_log.info("Remove uuid " + uuid);
-            }
+            profileRepo.followProfiles(profile, uuids, pending);
         }
         uuids = form.getConnect();
         if (uuids != null) {
-            for (String uuid : uuids) {
-                s_log.info("Block uuid: " + uuid);
-            }
+            profileRepo.connectProfiles(profile, uuids, pending);
         }
         return new UserConnectionChange(form);
+/*
+        if (!pending.isEmpty()) {
+            pending.put(profile.getUserUuid(), profile);
+            for (Map.Entry<UUID, ProfileDTO> entry : pending.entrySet()) {
+                profileRepo.saveProfile(entry.getValue());
+            }
+            int i = 0;
+            List<UUID> connect = profile.getConnectList();
+            String[] connUuid = new String[connect.size()];
+            for (UUID uuid : connect) {
+                connUuid[i++] = uuid.toString();
+            }
+            i = 0;
+            List<UUID> follow = profile.getFollowList();
+            String[] followUuid = new String[follow.size()];
+            for (UUID uuid : follow) {
+                followUuid[i++] = uuid.toString();
+            }
+            form.setFollow(followUuid);
+            form.setConnect(connUuid);
+        } else {
+            form.setFollow(null);
+            form.setConnect(null);
+        }
+        return new UserConnectionChange(form);
+*/
     }
 }

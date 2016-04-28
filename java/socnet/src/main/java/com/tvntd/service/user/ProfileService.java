@@ -34,6 +34,8 @@ import java.util.UUID;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -52,6 +54,8 @@ import com.tvntd.service.api.IProfileService;
 @Transactional
 public class ProfileService implements IProfileService
 {
+    private static Logger s_log = LoggerFactory.getLogger(ProfileService.class);
+
     @Autowired
     protected ProfileRepository profileRepo;
 
@@ -183,32 +187,71 @@ public class ProfileService implements IProfileService
         return new PageImpl<ProfileDTO>(convert , req, pages.getTotalPages());
     }
 
+    /**
+     * Connect me to follow list of uuids.
+     */
     @Override
-    public List<ProfileDTO> followProfiles(ProfileDTO me, String[] uuids)
+    public void
+    followProfiles(ProfileDTO me, String[] uuids, HashMap<UUID, ProfileDTO> changes)
     {
-        return null;
+        for (String uuid : uuids) {
+            try {
+                s_log.info("Follow uuid " + uuid);
+                UUID key = UUID.fromString(uuid);
+                ProfileDTO peer = getProfile(key);
+                s_log.info("Peer " + peer);
+                if (peer != null) {
+                    me.followProfile(peer);
+                    if (changes.get(key) == null) {
+                        changes.put(key, peer);
+                    }
+                }
+            } catch(Exception e) {
+                s_log.info("Exception: " + e.getMessage());
+            }
+        }
     }
 
     @Override
-    public List<ProfileDTO> connectProfiles(ProfileDTO me, String[] uuids)
+    public void
+    connectProfiles(ProfileDTO me, String[] uuids, HashMap<UUID, ProfileDTO> changes)
     {
-        return null;
+        for (String uuid : uuids) {
+            try {
+                s_log.info("Connect uuid " + uuid);
+                UUID key = UUID.fromString(uuid);
+                ProfileDTO peer = getProfile(key);
+                s_log.info("Peer " + peer);
+
+                if (peer != null) {
+                    me.connectProfile(peer);
+                    if (changes.get(key) == null) {
+                        changes.put(key, peer);
+                    }
+                }
+            } catch(Exception e) {
+                s_log.info("Exception: " + e.getMessage());
+            }
+        }
     }
 
     @Override
-    public void updateProfiles(List<ProfileDTO> profiles)
+    public void saveProfiles(List<ProfileDTO> profiles)
     {
+        for (ProfileDTO prof : profiles) {
+            profileRepo.save(prof.toProfile());
+        }
     }
 
     @Override
-    public void updateWholeProfile(ProfileDTO profile)
-    {
+    public void saveProfile(ProfileDTO profile) {
+        profileRepo.save(profile.toProfile());
     }
 
     @Override
     public void saveUserImgUrl(ProfileDTO profile, ObjectId oid)
     {
-        Profile prof = profileRepo.findByUserId(profile.obtainUserId());
+        Profile prof = profile.toProfile();
         if (prof != null) {
             prof.setUserImgUrl(oid);
             profileRepo.save(prof);
