@@ -72,6 +72,7 @@ public interface IProfileService
     public static class ProfileDTO
     {
         private static Logger s_log = LoggerFactory.getLogger(ProfileDTO.class);
+        private static String s_baseUri = "/rs/upload";
         private Profile profile;
 
         private String coverImg0;
@@ -95,12 +96,11 @@ public interface IProfileService
         {
             profile = prof;
 
-            String baseUri = "/rs/upload";
             ObjStore objStore = ObjStore.getInstance();
-            coverImg0 = objStore.imgObjUri(prof.getCoverImg0(), baseUri);
-            coverImg1 = objStore.imgObjUri(prof.getCoverImg1(), baseUri);
-            coverImg2 = objStore.imgObjUri(prof.getCoverImg2(), baseUri);
-            userImgUrl = objStore.imgObjUri(prof.getUserImgUrl(), baseUri);
+            coverImg0 = objStore.imgObjUri(prof.getCoverImg0(), s_baseUri);
+            coverImg1 = objStore.imgObjUri(prof.getCoverImg1(), s_baseUri);
+            coverImg2 = objStore.imgObjUri(prof.getCoverImg2(), s_baseUri);
+            userImgUrl = objStore.imgObjUri(prof.getUserImgUrl(), s_baseUri);
 
             transRoot = prof.getTransRoot().name();
             mainRoot = prof.getTransRoot().name();
@@ -130,6 +130,15 @@ public interface IProfileService
             return profile;
         }
 
+        /**
+         * Update image URL with new obj id.
+         */
+        public void updateImgUrl(ObjectId id)
+        {
+            ObjStore objStore = ObjStore.getInstance();
+            userImgUrl = objStore.imgObjUri(id, s_baseUri);
+        }
+
         public String toString()
         {
             StringBuilder sb = new StringBuilder();
@@ -154,11 +163,11 @@ public interface IProfileService
         /**
          * Common code for UUID list.
          */
-        protected UUID findUuid(List<UUID> src, UUID item)
+        public UUID findUuid(List<UUID> src, UUID item)
         {
             synchronized(this) {
                 for (UUID uuid : src) {
-                    if (uuid.equals(item)) {
+                    if (uuid.compareTo(item) == 0) {
                         return uuid;
                     }
                 }
@@ -166,23 +175,31 @@ public interface IProfileService
             return null;
         }
 
-        protected void removeUuid(List<UUID> src, UUID giving)
+        protected UUID removeUuid(List<UUID> src, UUID giving)
         {
             synchronized(this) {
                 Iterator<UUID> iter = src.iterator();
                 while (iter.hasNext()) {
                     UUID item = iter.next();
-                    if (item.equals(giving)) {
+                    if (item.compareTo(giving) == 0) {
                         iter.remove();
-                        break;
+                        return item;
                     }
                 }
             }
+            return null;
         }
 
         protected void addUuidList(List<UUID> src, UUID add)
         {
             synchronized(this) {
+                Iterator<UUID> iter = src.iterator();
+                while (iter.hasNext()) {
+                    UUID item = iter.next();
+                    if (item.compareTo(add) == 0) {
+                        return;
+                    }
+                }
                 src.add(add);
             }
         }
@@ -195,28 +212,36 @@ public interface IProfileService
             boolean connected = false;
             UUID myUuid = getUserUuid();
             UUID peerUuid = peer.getUserUuid();
-            UUID mine = findUuid(profile.getConnectList(), peerUuid);
-            UUID his = peer.findUuid(peer.getConnectList(), myUuid);
 
-            if (mine != null) {
-                if (his == null) {
-                    peer.addUuidList(peer.getConnectList(), myUuid);
-                }
-                connected = true;
-            } else {
-                if (his != null) {
-                    addUuidList(getConnectList(), peerUuid);
-                }
-                connected = true;
-            }
-            if (connected == true) {
-                peer.removeUuid(peer.getFollowList(), myUuid);
-                peer.removeUuid(peer.getFollowerList(), myUuid);
-                removeUuid(getFollowList(), peerUuid);
-                removeUuid(getFollowerList(), peerUuid);
+            if (myUuid.compareTo(peerUuid) == 0) {
                 return;
             }
-            followProfile(peer);
+            if ((peer.findUuid(peer.getFollowList(), myUuid) != null)) {
+                connected = true;
+                addUuidList(getConnectList(), peerUuid);
+                peer.addUuidList(peer.getConnectList(), myUuid);
+
+            } else if (peer.findUuid(peer.getConnectList(), myUuid) != null) {
+                connected = true;
+                addUuidList(getConnectList(), peerUuid);
+            }
+            if (connected == true) {
+                cleanupAfterConnect(peer);
+            } else {
+                followProfile(peer);
+            }
+        }
+
+        private void cleanupAfterConnect(ProfileDTO peer)
+        {
+            UUID myUuid = getUserUuid();
+            UUID peerUuid = peer.getUserUuid();
+
+            peer.removeUuid(peer.getFollowList(), myUuid);
+            peer.removeUuid(peer.getFollowerList(), myUuid);
+            removeUuid(getFollowList(), peerUuid);
+            removeUuid(getFollowerList(), peerUuid);
+            s_log.info(myUuid.toString() + " connects " + peerUuid.toString());
         }
 
         public void unConnectProfile(ProfileDTO peer)
@@ -225,15 +250,29 @@ public interface IProfileService
             removeUuid(getConnectList(), peer.getUserUuid());
         }
 
+        /**
+         * Setup my profile to follow the peer.
+         */
         public void followProfile(ProfileDTO peer)
         {
-            if (findUuid(getFollowList(), peer.getUserUuid()) == null) {
+            UUID myUuid = getUserUuid();
+            UUID peerUuid = peer.getUserUuid();
+
+            if (myUuid.compareTo(peerUuid) == 0) {
+                return;
+            }
+            if (peer.findUuid(peer.getFollowList(), myUuid) != null) {
+                // Both follow each other; make the connection.
+                addUuidList(getConnectList(), peerUuid);
+                peer.addUuidList(peer.getConnectList(), myUuid);
+                cleanupAfterConnect(peer);
+
+            } else if (findUuid(getConnectList(), peerUuid) == null &&
+                       peer.findUuid(peer.getConnectList(), myUuid) == null) {
                 addUuidList(getFollowList(), peer.getUserUuid());
-            }
-            if (findUuid(peer.getFollowerList(), getUserUuid()) == null) {
                 peer.addUuidList(peer.getFollowerList(), getUserUuid());
+                s_log.info(myUuid.toString() + " follows " + peerUuid.toString());
             }
-            s_log.info("Follow me: " + this, " peer " + peer);
         }
 
         public void unfollowProfile(ProfileDTO peer)
@@ -269,6 +308,10 @@ public interface IProfileService
          */
         public void setLocale(String locale) {
             profile.setLocale(locale);
+        }
+
+        public String getEmail() {
+            return profile.getEmail();
         }
 
         /**

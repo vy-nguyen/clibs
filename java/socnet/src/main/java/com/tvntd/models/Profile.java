@@ -50,6 +50,7 @@ public class Profile
 
     private String locale;
     private String userName;
+    private String email;
     private String firstName;
     private String lastName;
     private ObjectId coverImg0;
@@ -62,7 +63,7 @@ public class Profile
     private UUID userUuid;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "FriendList", joinColumns = @JoinColumn(name="userId"))
+    @CollectionTable(name = "ConnectList", joinColumns = @JoinColumn(name="userId"))
     private List<UUID> connectList;
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -88,6 +89,7 @@ public class Profile
         prof.locale = "VI";
         prof.userId = user.getId();
         prof.userName = user.getLastName() + " " + user.getFirstName();
+        prof.email = user.getEmail();
         prof.firstName = user.getFirstName();
         prof.lastName = user.getLastName();
         prof.transRoot = ObjectId.zeroId();
@@ -167,6 +169,20 @@ public class Profile
      */
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    /**
+     * @return the email
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * @param email the email to set
+     */
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     /**

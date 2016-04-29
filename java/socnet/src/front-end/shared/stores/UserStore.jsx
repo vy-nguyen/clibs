@@ -9,7 +9,7 @@ import _        from 'lodash';
 import Actions  from 'vntd-root/actions/Actions.jsx';
 
 let OnlineEnum = ["online", "offline", "busy"];
-let ConnetEnum = ["self", "connected", "followed", "connecting", "follower", "stranger"];
+let ConnetEnum = ["self", "connected", "followed", "follower", "stranger"];
 
 /*
  * Explicit define known fields in User object.
@@ -55,9 +55,6 @@ class User {
 
     isInConnection() {
         return this.connectState === "connected"
-    }
-    isConnecting() {
-        return this.connectState === "connecting";
     }
     isInFollowed() {
         return this.connectState === "followed";
@@ -280,7 +277,6 @@ let UserStore = Reflux.createStore({
         if (this.data.userSelf != null) {
             this.data.userSelf.setConnectState();
             this.data.userSelf.connectState = "connected";
-            console.log(this.data.userSelf);
         }
     },
 

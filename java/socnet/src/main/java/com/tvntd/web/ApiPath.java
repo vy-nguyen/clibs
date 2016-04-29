@@ -226,8 +226,6 @@ public class ApiPath
         if (uuids != null) {
             profileRepo.connectProfiles(profile, uuids, pending);
         }
-        return new UserConnectionChange(form);
-/*
         if (!pending.isEmpty()) {
             pending.put(profile.getUserUuid(), profile);
             for (Map.Entry<UUID, ProfileDTO> entry : pending.entrySet()) {
@@ -252,6 +250,5 @@ public class ApiPath
             form.setConnect(null);
         }
         return new UserConnectionChange(form);
-*/
     }
 }

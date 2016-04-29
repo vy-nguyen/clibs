@@ -42,7 +42,6 @@ let UserList = React.createClass({
         let users = UserStore.getUserList();
         let followFmt = "<button>Followed</button>";
         let connectFmt = "<button>Connected</button>";
-        let connectingFmt = "<button>Connecting</button>";
 
         _.forOwn(users, function(item, key) {
             let connect = "connect-" + key;
@@ -58,9 +57,6 @@ let UserList = React.createClass({
             } else if (item.isFollower()) {
                 connFmt = "<input type='checkbox' id='" + connect + "' name='" + connect + "'/>";
                 follFmt = "";
-            } else if (item.isConnecting()) {
-                connFmt = connectingFmt;
-                follFmt = followFmt;
             } else {
                 connFmt = "<input type='checkbox' id='" + connect + "' name='" + connect + "'/>";
                 follFmt = "<input type='checkbox' id='" + follow + "' name='" + follow + "'/>";
@@ -71,7 +67,7 @@ let UserList = React.createClass({
                 image    : "<img width='40' height='40' src='" + item.userImgUrl + "'/>",
                 firstName: item.firstName,
                 lastName : item.lastName,
-                eMail    : item.userName,
+                eMail    : item.email,
                 uuid     : item.userUuid,
                 follow   : follFmt,
                 connect  : connFmt
