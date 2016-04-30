@@ -89,7 +89,11 @@ let UserStore = Reflux.createStore({
     },
 
     getUserByUuid: function(uuid) {
-        return _.find(this.data.userMap, { userUuid: uuid });
+        if (uuid === null || uuid === undefined) {
+            return this.getSelf();
+        }
+        let user = this.data.userMap[uuid];
+        return user !== undefined ? user : null;
     },
 
     getCsrfHeader: function() {
@@ -120,11 +124,11 @@ let UserStore = Reflux.createStore({
     },
 
     getSelf: function() {
-        return this.data.userSelf !== null ? this.data.userSelf : {};
+        return this.data.userSelf;
     },
 
     getActiveUser: function() {
-        return this.data.userActive !== null ? this.data.userActive : {};
+        return this.data.userActive;
     },
 
     setActiveUser: function(user) {
@@ -142,6 +146,25 @@ let UserStore = Reflux.createStore({
 
     setFetchUser: function(uuid) {
         this.uuidFetch[uuid] = true;
+    },
+
+    /**
+     * Iterate through each user with uuid in the list.  If the list is null, iterate through all users.
+     */
+    iterUser: function(uuidList, func) {
+        let users = this.getUserList();
+        if (uuidList === null || uuidList === undefined) {
+            _.forOwn(users, function(usr, key) {
+                func(usr, key);
+            });
+        } else {
+            _.forOwn(uuidList, function(uuid, key) {
+                let usr = users[uuid];
+                if (usr !== undefined && usr !== null) {
+                    func(usr, key);
+                }
+            });
+        }
     },
 
     /* Startup actions. */

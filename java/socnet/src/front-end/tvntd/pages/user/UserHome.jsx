@@ -58,13 +58,9 @@ let UserHome = React.createClass({
 
     render: function() {
         let editor = true;
-        let self = UserStore.getSelf();
         let { userUuid } = this.props.params;
+        let self = UserStore.getUserByUuid(userUuid);
 
-        if (userUuid !== null && userUuid !== undefined) {
-            editor = false;
-            self = UserStore.getUserByUuid(userUuid);
-        }
         if (self === null) {
             return (
                 <div className="row">
@@ -73,11 +69,9 @@ let UserHome = React.createClass({
                 </div>
             );
         }
-        let imgList = [
-            self.coverImg0,
-            self.coverImg1,
-            self.coverImg2
-        ];
+        if (userUuid !== null && userUuid !== undefined) {
+            editor = false;
+        }
         if (this.userTab.init != true) {
             this.userTab.init = true;
             TabPanelStore.setTabPanel(this.userTab.reactId, this.userTab);
@@ -105,8 +99,8 @@ let UserHome = React.createClass({
         }
         return (
             <div id="user-home">
-                <ProfileCover data={{imageId: self._id, imageList: imgList}}/>
-                <UserAvatar data={{doFileDrop: false}}/>
+                <ProfileCover userUuid={self.userUuid}/>
+                <UserAvatar data={{doFileDrop: false}} userUuid={self.userUuid}/>
                 {editorFmt}
                 <div className="row">
                     {/*<Link to={{ pathname: "/user/u/" + "123450", query: { editor: false } }}>User profile</Link>*/}

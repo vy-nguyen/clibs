@@ -71,14 +71,8 @@ let Friends = React.createClass({
     },
 
     render: function() {
-        let self = UserStore.getSelf();
-        if ((this.props.userUuid !== null) && (this.props.userUuid !== undefined)) {
-            self = UserStore.getUserByUuid(this.props.userUuid);
-        }
-        console.log("Profile for ");
-        console.log(self);
-
-        if (self === null || self === undefined) {
+        let self = UserStore.getUserByUuid(this.props.userUuid);
+        if (self === null) {
             return (
                 <Panel reactId={this.panelDef.reactId}>
                     <h1>You don't have any friends yet!</h1>

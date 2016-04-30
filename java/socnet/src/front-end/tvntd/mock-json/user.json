@@ -9,9 +9,9 @@
     "lastName"  : "Nguyen",
 
     "userStatus": "online",
-    "coverImg0" : "/rs/img/demo1.png",
-    "coverImg1" : "/rs/img/demo1.png",
-    "coverImg2" : "/rs/img/demo1.png",
+    "coverImg0" : "/rs/img/demo/m1.jpg",
+    "coverImg1" : "/rs/img/demo/m2.jpg",
+    "coverImg2" : "/rs/img/demo/m3.jpg",
 
     "transRoot" : "",
     "mainRoot"  : "",
@@ -38,9 +38,9 @@
     "lastName"  : "Vo",
 
     "userStatus": "online",
-    "coverImg0" : "/rs/img/demo1.png",
-    "coverImg1" : "/rs/img/demo1.png",
-    "coverImg2" : "/rs/img/demo1.png",
+    "coverImg0" : "/rs/img/demo/m1.jpg",
+    "coverImg1" : "/rs/img/demo/m3.jpg",
+    "coverImg2" : "/rs/img/demo/m2.jpg",
 
     "transRoot" : "",
     "mainRoot"  : "",
@@ -58,7 +58,7 @@
     "follows"     : "1040"
 }, {
     "userUuid": "123452",
-    "userName": "TomNguyen",
+    "userName": "Tom Nguyen",
     "email"   : "tom@abc.com",
     "userRole": "author",
     "userUrl" : "/user/tom.nguyen",
@@ -67,9 +67,9 @@
     "lastName"  : "Nguyen",
 
     "userStatus": "online",
-    "coverImg0" : "/rs/img/demo1.png",
-    "coverImg1" : "/rs/img/demo1.png",
-    "coverImg2" : "/rs/img/demo1.png",
+    "coverImg0" : "/rs/img/demo/s1.jpg",
+    "coverImg1" : "/rs/img/demo/s2.jpg",
+    "coverImg2" : "/rs/img/demo/s3.jpg",
 
     "transRoot" : "",
     "mainRoot"  : "",

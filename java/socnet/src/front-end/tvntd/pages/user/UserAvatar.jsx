@@ -12,11 +12,6 @@ import SubHeader         from '../layout/SubHeader.jsx';
 import UserStore         from 'vntd-shared/stores/UserStore.jsx';
 
 let UserAvatar = React.createClass({
-    mixins: [Reflux.connect(UserStore)],
-
-    getInitialState: function() {
-        return UserStore.getData();
-    },
 
     onSending: function(files, xhr, form) {
         form.append('name', files.name);
@@ -41,8 +36,8 @@ let UserAvatar = React.createClass({
         let eventHandlers = {
             sending: this.onSending,
         };
-        let self = this.state.userSelf;
-        if (self == undefined || self == null) {
+        let self = UserStore.getUserByUuid(this.props.userUuid);
+        if (self == null) {
             return null;
         }
         let file_drop = "";
@@ -50,7 +45,7 @@ let UserAvatar = React.createClass({
             file_drop = (
                 <DropzoneComponent className="col-sm-3 col-md-3 col-lg-2 profile-pic"
                     config={componentConfig} eventHandlers={eventHandlers} djsConfig={djsConfig}>
-                    <img src="/rs/img/avatars/1.png"/>
+                    <img src={self.userImgUrl}/>
                 </DropzoneComponent>
             );
         } else {
