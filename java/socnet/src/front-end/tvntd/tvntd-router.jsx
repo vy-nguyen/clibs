@@ -23,7 +23,7 @@ import UserHome      from './pages/user/UserHome.jsx';
 import UserAccount   from './pages/user/UserAccount.jsx';
 import UserTrans     from './pages/user/UserTransaction.jsx';
 import UserProfile   from './pages/user/UserProfile.jsx';
-import UserList      from './pages/admin/UserList.jsx';
+import UserList      from 'vntd-root/components/UserList.jsx';
 import LoginRequired from 'vntd-shared/utils/LoginRequired.jsx';
 
 const Routes = (
@@ -75,18 +75,18 @@ const Routes = (
 
                 <Redirect from="/" to="admin"/>
                 <Route path="admin">
-                    <IndexRoute component={UserList}/>
-                    <Route path="users" component={UserList}/>
+                    <IndexRoute component={UserList} userList={null}/>
+                    <Route path="users" component={UserList} userList={null}/>
                 </Route>
 
                 <Redirect from="/" to="user"/>
                 <Route path="user">
                     <IndexRoute  component={UserHome}/>
-                    <Route path="u/:userUuid" component={UserHome}/>
                     <Route path="profile" component={UserProfile}/>
                     <Route path="account" component={UserAccount}/>
                     <Route path="transaction" component={UserTrans}/>
-                    <Route path="all" component={UserList}/>
+                    <Route path="all" component={UserList} userList={null}/>
+                    <Route path=":userUuid" component={UserHome}/>
                 </Route>
             </Route>
         </Route>

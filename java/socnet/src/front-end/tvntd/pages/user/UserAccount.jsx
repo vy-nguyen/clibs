@@ -14,9 +14,14 @@ let UserAccount = React.createClass({
     mixins: [Reflux.connect(UserStore)],
 
     render: function() {
-        let self = UserStore.getSelf();
+        let { userUuid } = this.props.params;
+        let self = UserStore.getUserByUuid(userUuid);
+
+        if (self === null) {
+            return null;
+        }
         return (
-            <ProfileCover data={{imageId: self._id, imageList: []}}/>
+            <ProfileCover userUuid={self.userUuid}/>
         )
     }
 });

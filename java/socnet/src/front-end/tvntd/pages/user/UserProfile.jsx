@@ -168,19 +168,19 @@ let UserProfile = React.createClass({
         tabItems: [ {
             domId  : 'profile-tab',
             tabText: 'About Me',
-            panelContent: <UserInfo/>
+            tabIdx : 0
         }, {
             domId  : 'connection-tab',
             tabText: 'Connections',
-            panelContent: <Friends/>
+            tabIdx : 1
         }, {
             domId  : 'message',
             tabText: 'Secure Messages',
-            panelContent: <Messages/>
+            tabIdx : 2
         }, {
             domId  : 'pending-task',
             tabText: 'Pending Tasks',
-            panelContent: <TaskTimeline/>
+            tabIdx : 3
         } ]
     },
 
@@ -194,10 +194,9 @@ let UserProfile = React.createClass({
 
     render: function() {
         let self = this.state.userSelf;
-        if (self == undefined || self == null) {
-            return null;
+        if (self === undefined || self === null) {
+            return <h1>Something's wrong, try logout and login again</h1>;
         }
-
         return (
             <div className="content">
                 <ProfileCover/>

@@ -6,12 +6,14 @@
 import React          from 'react-mod';
 import Reflux         from 'reflux';
 import _              from 'lodash';
+import {renderToString} from 'react-dom-server' ;
 
 import WidgetGrid     from 'vntd-shared/widgets/WidgetGrid.jsx';
 import JarvisWidget   from 'vntd-shared/widgets/JarvisWidget.jsx';
 import Datatable      from 'vntd-shared/tables/Datatable.jsx';
 import UserStore      from 'vntd-shared/stores/UserStore.jsx';
 import Actions        from 'vntd-root/actions/Actions.jsx';
+import UserIcon       from 'vntd-root/components/UserIcon.jsx';
 
 let UserList = React.createClass({
     mixins: [Reflux.connect(UserStore)],
@@ -67,8 +69,9 @@ let UserList = React.createClass({
                 connFmt = "<input type='checkbox' id='" + connect + "' name='" + connect + "'/>";
                 follFmt = "<input type='checkbox' id='" + follow + "' name='" + follow + "'/>";
             }
+            let imgLink = renderToString(<UserIcon userUuid={item.userUuid}/>);
             tabdata.push({
-                image    : "<img width='40' height='40' src='" + item.userImgUrl + "'/>",
+                image    : imgLink,
                 firstName: item.firstName,
                 lastName : item.lastName,
                 eMail    : item.email,

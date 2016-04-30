@@ -15,28 +15,29 @@ let TabPanel = React.createClass({
 
     render: function() {
         let tab = TabStore.getTabPanel(this.props.tabId);
-        if (tab == null || tab == undefined) {
+        if (tab === null || tab === undefined) {
             return null;
         }
         let tab_header = tab.tabItems.map(function(item, idx) {
             return (
                 <li key={idx} className={idx == 0 ? "active" : ""}>
-                    <a data-toggle="tab" href={'#' + item.domId + '-' + idx}>{item.tabText}</a>
+                    <a data-toggle="tab" href={'#' + item.domId + '-' + item.tabIdx}>{item.tabText}</a>
                 </li>
             )
-        }.bind(this));
+        });
 
-        let tab_content = this.props.children.map(function(item, idx) {
-            let tabRef = tab.tabItems[idx];
+        let tab_list = this.props.children;
+        let tab_content = tab.tabItems.map(function(item, idx) {
+            let tabRef = tab_list[item.tabIdx];
             let clasname = classnames("tab-pane", {active: idx == 0 });
             return (
-                <div key={idx} id={tabRef.domId + '-' + idx} className={classnames("tab-pane", {active: idx == 0})}>
+                <div key={idx} id={item.domId + '-' + item.tabIdx} className={classnames("tab-pane", {active: idx == 0})}>
                     <div className="panel-body">
-                        {item}
+                        {tabRef}
                     </div>
                 </div>
             )
-        }.bind(this));
+        });
 
         return (
             <div className="tab-container">

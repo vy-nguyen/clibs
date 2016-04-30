@@ -7,6 +7,7 @@ var scripts = {
         "react-mod": "/node_modules/react/react.js",
         "react-lib": "/node_modules/react/lib",
         "react-dom": "/node_modules/react-dom/dist/react-dom.min.js",
+        "react-dom-server": "/node_modules/react-dom/server.js",
         "react-bootstrap": "/node_modules/react-bootstrap/dist/react-bootstrap.min.js",
         "react-router"   : "/node_modules/react-router/umd/ReactRouter.min.js",
         "react-dropzone-component": "/node_modules/react-dropzone-component/lib/react-dropzone.js",

@@ -29,15 +29,35 @@ let UserHome = React.createClass({
         tabItems: [ {
             domId  : 'published-articles',
             tabText: 'Published Articles',
-        }, {
-            domId  : 'saved-articles',
-            tabText: 'Saved Articles',
+            tabIdx : 0
         }, {
             domId  : 'connections',
             tabText: 'Connections',
+            tabIdx : 2
         }, {
             domId  : 'block-chain',
             tabText: 'Block Chains',
+            tabIdx : 3
+        } ]
+    },
+    myUserTab: {
+        reactId : 'my-home',
+        tabItems: [ {
+            domId  : 'published-articles',
+            tabText: 'Published Articles',
+            tabIdx : 0
+        }, {
+            domId  : 'saved-articles',
+            tabText: 'Saved Articles',
+            tabIdx : 1
+        }, {
+            domId  : 'connections',
+            tabText: 'Connections',
+            tabIdx : 2
+        }, {
+            domId  : 'block-chain',
+            tabText: 'Block Chains',
+            tabIdx : 3
         } ]
     },
 
@@ -57,27 +77,31 @@ let UserHome = React.createClass({
     },
 
     render: function() {
-        let editor = true;
+        let me = true;
         let { userUuid } = this.props.params;
         let self = UserStore.getUserByUuid(userUuid);
 
+        if (this.userTab.init !== true) {
+            this.userTab.init = true;
+            TabPanelStore.setTabPanel(this.userTab.reactId, this.userTab);
+            TabPanelStore.setTabPanel(this.myUserTab.reactId, this.myUserTab);
+        }
         if (self === null) {
             return (
                 <div className="row">
                     <h1>'Invalid user page, no such uuid: ' + self.userUuid</h1>
-                    <Link to="/">Go back to home</Link>
+                    <Link to="/"><button>Go back to home</button></Link>
                 </div>
             );
         }
+        let tabId = this.userTab.reactId;
         if (userUuid !== null && userUuid !== undefined) {
-            editor = false;
-        }
-        if (this.userTab.init != true) {
-            this.userTab.init = true;
-            TabPanelStore.setTabPanel(this.userTab.reactId, this.userTab);
+            me = false;
+        } else {
+            tabId = this.myUserTab.reactId;
         }
         let editorFmt = "";
-        if (editor == true) {
+        if (me === true) {
             editorFmt = (
                 <div className="row">
                     <article className="col-sm-12 col-md-12 col-lg-10">
@@ -102,13 +126,10 @@ let UserHome = React.createClass({
                 <ProfileCover userUuid={self.userUuid}/>
                 <UserAvatar data={{doFileDrop: false}} userUuid={self.userUuid}/>
                 {editorFmt}
-                <div className="row">
-                    {/*<Link to={{ pathname: "/user/u/" + "123450", query: { editor: false } }}>User profile</Link>*/}
-                    <Link to={{ pathname: "/user/u/" + "123451" }}>User profile</Link>
-                </div>
+                {/*<Link to={{ pathname: "/user/" + "123450", query: { editor: false } }}>User profile</Link>*/}
                 <div className="row">
                     <article className="col-sm-12 col-md-12 col-lg-10">
-                        <TabPanel tabId={this.userTab.reactId}>
+                        <TabPanel tabId={tabId}>
                             <PostArticles uuid={[self.userUuid]} data={this.state.myArticles}/>
                             <PostArticles uuid={[self.userUuid]}/>
                             <Friends userUuid={self.userUuid}/>
