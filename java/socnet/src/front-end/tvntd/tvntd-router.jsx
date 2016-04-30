@@ -81,7 +81,8 @@ const Routes = (
 
                 <Redirect from="/" to="user"/>
                 <Route path="user">
-                    <IndexRoute component={UserHome}/>
+                    <IndexRoute  component={UserHome}/>
+                    <Route path="u/:userUuid" component={UserHome}/>
                     <Route path="profile" component={UserProfile}/>
                     <Route path="account" component={UserAccount}/>
                     <Route path="transaction" component={UserTrans}/>

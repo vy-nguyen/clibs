@@ -4,11 +4,18 @@
 'use strict';
 
 import React          from 'react-mod';
+import Reflux         from 'reflux';
+import _              from 'lodash';
+
 import MenuStore      from 'vntd-shared/stores/DropdownMenuStore.jsx';
 import PanelStore     from 'vntd-shared/stores/PanelStore.jsx';
 import Panel          from 'vntd-shared/widgets/Panel.jsx';
+import UserStore      from 'vntd-shared/stores/UserStore.jsx';
+import UserList       from 'vntd-root/components/UserList.jsx';
 
 let Friends = React.createClass({
+    mixins: [Reflux.connect(UserStore)],
+
     filterMenu: {
         reactId  : 'filter-friend',
         iconFmt  : 'btn-xs btn-warning',
@@ -47,7 +54,7 @@ let Friends = React.createClass({
         init   : false,
         reactId: 'friend-info',
         icon   : 'fa fa-user',
-        header : 'My connections',
+        header : 'My Connections',
         headerMenus: []
     },
 
@@ -64,10 +71,29 @@ let Friends = React.createClass({
     },
 
     render: function() {
+        let self = UserStore.getSelf();
+        if ((this.props.userUuid !== null) && (this.props.userUuid !== undefined)) {
+            self = UserStore.getUserByUuid(this.props.userUuid);
+        }
+        console.log("Profile for ");
+        console.log(self);
+
+        if (self === null || self === undefined) {
+            return (
+                <Panel reactId={this.panelDef.reactId}>
+                    <h1>You don't have any friends yet!</h1>
+                </Panel>
+            )
+        }
+        let connectList = _.isEmpty(self.connectList) ? ["0"] : self.connectList;
+        let followList  = _.isEmpty(self.followList) ? ["0"] : self.connectList;
+        let followerList = _.isEmpty(self.followerList) ? ["0"] : self.connectList;
         return (
-            <Panel reactId={this.panelDef.reactId}>
-                <h1>You don't have any friends yet!</h1>
-            </Panel>
+            <div id={this.panelDef.reactId}>
+                <UserList userList={connectList} noSaveBtn="true" tableTitle="Connections"/>
+                <UserList userList={followList}  noSaveBtn="true" tableTitle="Follows"/>
+                <UserList userList={followerList}  noSaveBtn="true" tableTitle="People Follow Me"/>
+            </div>
         )
     }
 });

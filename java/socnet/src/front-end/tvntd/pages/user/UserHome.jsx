@@ -6,6 +6,7 @@
 
 import React               from 'react-mod';
 import Reflux              from 'reflux';
+import {Link}              from 'react-router';
 
 import JarvisWidget        from 'vntd-shared/widgets/JarvisWidget.jsx';
 import MarkdownEditor      from 'vntd-shared/forms/editors/MarkdownEditor.jsx';
@@ -17,6 +18,7 @@ import PostArticles        from 'vntd-root/components/PostArticles.jsx';
 import ProfileCover        from 'vntd-root/components/ProfileCover.jsx';
 import Actions             from 'vntd-root/actions/Actions.jsx';
 import UserAvatar          from './UserAvatar.jsx';
+import Friends             from './Friends.jsx';
 
 let UserHome = React.createClass({
     mixins: [Reflux.connect(UserStore), Reflux.connect(ArticleStore)],
@@ -31,8 +33,11 @@ let UserHome = React.createClass({
             domId  : 'saved-articles',
             tabText: 'Saved Articles',
         }, {
+            domId  : 'connections',
+            tabText: 'Connections',
+        }, {
             domId  : 'block-chain',
-            tabText: 'My Block-Chains',
+            tabText: 'Block Chains',
         } ]
     },
 
@@ -52,23 +57,34 @@ let UserHome = React.createClass({
     },
 
     render: function() {
+        let editor = true;
         let self = UserStore.getSelf();
-        if (self == null) {
-            return null;
+        let { userUuid } = this.props.params;
+
+        if (userUuid !== null && userUuid !== undefined) {
+            editor = false;
+            self = UserStore.getUserByUuid(userUuid);
+        }
+        if (self === null) {
+            return (
+                <div className="row">
+                    <h1>'Invalid user page, no such uuid: ' + self.userUuid</h1>
+                    <Link to="/">Go back to home</Link>
+                </div>
+            );
         }
         let imgList = [
-            "/rs/img/demo/s1.jpg",
-            "/rs/img/demo/s2.jpg",
-            "/rs/img/demo/s3.jpg"
+            self.coverImg0,
+            self.coverImg1,
+            self.coverImg2
         ];
         if (this.userTab.init != true) {
             this.userTab.init = true;
             TabPanelStore.setTabPanel(this.userTab.reactId, this.userTab);
         }
-        return (
-            <div id="user-home">
-                <ProfileCover data={{imageId: self._id, imageList: imgList}}/>
-                <UserAvatar data={{doFileDrop: false}}/>
+        let editorFmt = "";
+        if (editor == true) {
+            editorFmt = (
                 <div className="row">
                     <article className="col-sm-12 col-md-12 col-lg-10">
                         <JarvisWidget id="my-post" color="purple">
@@ -85,11 +101,23 @@ let UserHome = React.createClass({
                         </JarvisWidget>
                     </article>
                 </div>
+            );
+        }
+        return (
+            <div id="user-home">
+                <ProfileCover data={{imageId: self._id, imageList: imgList}}/>
+                <UserAvatar data={{doFileDrop: false}}/>
+                {editorFmt}
+                <div className="row">
+                    {/*<Link to={{ pathname: "/user/u/" + "123450", query: { editor: false } }}>User profile</Link>*/}
+                    <Link to={{ pathname: "/user/u/" + "123451" }}>User profile</Link>
+                </div>
                 <div className="row">
                     <article className="col-sm-12 col-md-12 col-lg-10">
                         <TabPanel tabId={this.userTab.reactId}>
                             <PostArticles uuid={[self.userUuid]} data={this.state.myArticles}/>
                             <PostArticles uuid={[self.userUuid]}/>
+                            <Friends userUuid={self.userUuid}/>
                             <div><h1>Nothing yet</h1></div>
                         </TabPanel>
                     </article>

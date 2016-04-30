@@ -69,6 +69,7 @@ let UserStore = Reflux.createStore({
         userMap: {},
         uuidFetch: {},
         userSelf: null,
+        userActive: null,
         authCode: null,
         authMesg: null,
         authError: null,
@@ -120,6 +121,14 @@ let UserStore = Reflux.createStore({
 
     getSelf: function() {
         return this.data.userSelf !== null ? this.data.userSelf : {};
+    },
+
+    getActiveUser: function() {
+        return this.data.userActive !== null ? this.data.userActive : {};
+    },
+
+    setActiveUser: function(user) {
+        this.data.userActive = user;
     },
 
     getData: function() {
@@ -211,6 +220,7 @@ let UserStore = Reflux.createStore({
     _reset: function() {
         this.data.userMap = {};
         this.data.userSelf = null;
+        this.data.userActive = null;
         this.data.authError = null;
         this.data.authToken = null;
         this.data.csrfHeader = null;
@@ -252,6 +262,7 @@ let UserStore = Reflux.createStore({
             if ((resp.userSelf !== undefined) && (resp.userSelf !== null)) {
                 let self = new User(resp.userSelf);
                 this.data.userSelf = self;
+                this.data.userActive = self;
                 this.data.userMap[self.userUuid] = self;
                 localStorage.setItem("authToken", resp.authToken);
             }
@@ -266,6 +277,7 @@ let UserStore = Reflux.createStore({
         _(items).forOwn(function(it) {
             if (it.connectState === "self" && this.data.userSelf === null) {
                 this.data.userSelf = new User(it);
+                this.data.userActive = this.data.userSelf;
                 this.data.userMap[it.userUuid] = this.data.userSelf;
                 return;
             }

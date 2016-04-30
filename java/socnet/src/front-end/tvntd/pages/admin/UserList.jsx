@@ -61,8 +61,6 @@ let UserList = React.createClass({
                 connFmt = "<input type='checkbox' id='" + connect + "' name='" + connect + "'/>";
                 follFmt = "<input type='checkbox' id='" + follow + "' name='" + follow + "'/>";
             }
-            console.log(item);
-            console.log(connFmt);
             tabdata.push({
                 image    : "<img width='40' height='40' src='" + item.userImgUrl + "'/>",
                 firstName: item.firstName,
