@@ -44,11 +44,11 @@ let AuthorFeed = React.createClass({
     <SparklineContainer>
         <div className="well well-light well-sm">
             <div className="row">
-                <div className="col-sm-12 col-md-12 col-lg-2">
+                <div className="col-sm-2 col-md-2 col-lg-3">
                     <ProfileCover data={{imageId: author._id, imageList: author.coverImg}}/>
                     <Author data={author} user={author.authorUser}/>
                 </div>
-                <div className="col-sm-12 col-md-12 col-lg-10">
+                <div className="col-sm-10 col-md-10 col-lg-9">
                     <ul className="nav nav-tabs tabs-pull-left">
                         <li className="active"><a href={'#' + art_id} data-toggle="tab">Articles</a></li>
                         <li><a href={'#' + fav_id} data-toggle="tab">Favorites</a></li>

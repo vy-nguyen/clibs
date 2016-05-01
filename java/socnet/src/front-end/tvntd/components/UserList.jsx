@@ -135,8 +135,8 @@ let UserList = React.createClass({
                             <i className="fa fa-fw fa-phone text-muted"/>E-mail
                         </th>
                         <th><i className="text-color-blue"/>Uuid</th>
-                        <th><i className="text-color-blue fa fa-fw fa-trash"/>Follow</th>
-                        <th><i className="text-color-blue fa fa-fw fa-bug"/>Connect</th>
+                        <th><i className="text-color-blue fa fa-fw fa-check"/> Follow</th>
+                        <th><i className="text-color-blue fa fa-fw fa-link"/> Connect</th>
                     </tr>
                 </thead>
             </Datatable>
