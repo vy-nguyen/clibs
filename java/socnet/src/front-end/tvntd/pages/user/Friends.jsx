@@ -79,9 +79,9 @@ let Friends = React.createClass({
                 </Panel>
             )
         }
-        let connectList = _.isEmpty(self.connectList) ? ["0"] : self.connectList;
-        let followList  = _.isEmpty(self.followList) ? ["0"] : self.connectList;
-        let followerList = _.isEmpty(self.followerList) ? ["0"] : self.connectList;
+        let connectList = _.isEmpty(self.connectList) ? [] : self.connectList;
+        let followList  = _.isEmpty(self.followList) ? [] : self.followList;
+        let followerList = _.isEmpty(self.followerList) ? [] : self.followerList;
         return (
             <div id={this.panelDef.reactId}>
                 <UserList userList={connectList} noSaveBtn="true" tableTitle="Connections"/>

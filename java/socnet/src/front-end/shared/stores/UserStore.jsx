@@ -40,9 +40,6 @@ class User {
         this.creditIssued = data.creditIssued;
         this.moneyIssued  = data.moneyIssued;
 
-        this.followers    = data.followers;
-        this.follows      = data.follows;
-        this.connections  = data.connections;
         this.connectState = "stranger";
 
         this.connectList  = data.connectList;
@@ -50,6 +47,9 @@ class User {
         this.followerList = data.followerList;
         this.chainLinks   = data.chainLinks;
 
+        this.followers    = this.followerList.length;
+        this.follows      = this.followList.length;
+        this.connections  = this.connectList.length;
         return this;
     }
 
@@ -174,6 +174,7 @@ let UserStore = Reflux.createStore({
             this._changedData(json.userDTO);
         }
         this._addFromJson(json.linkedUsers);
+        this.dumpData();
     },
 
     onRefreshNotifyCompleted: function(json) {
