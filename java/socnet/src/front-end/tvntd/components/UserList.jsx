@@ -44,30 +44,50 @@ let UserList = React.createClass({
     },
 
     _getUserTable: function() {
+        const itIsMeFmt = "<button>Myself</button>";
+        const followFmt = "<button>Followed</button>";
+        const followerFmt = "<button>Follower</button>";
+        const noSelection = "<button>N/A</button>";
+        const connectFmt  = "<button>Connected</button>";
+        const connectSentFmt = "<button>Pending</button>";
         let tabdata = [];
         let connFmt, follFmt;
-        let followFmt = "<button>Followed</button>";
-        let followerFmt = "<button>Follower</button>";
-        let connectFmt = "<button>Connected</button>";
+        let userList = this.props.userList;
 
-        UserStore.iterUser(this.props.userList, function(item, key) {
+        UserStore.iterUser(userList, function(item, key) {
             let connect = 'connect-' + key;
             let follow = 'follow-' + key;
             let unConnect = 'unConnect-' + key;
             let unFollow = 'unFollow-' + key;
 
             if (item.isInConnection()) {
-                connFmt = connectFmt;
-                follFmt = followFmt;
+                if (item.isUserMe()) {
+                    connFmt = itIsMeFmt;
+                    follFmt = itIsMeFmt;
+                } else {
+                    connFmt = connectFmt;
+                    follFmt = followFmt;
+                }
             } else if (item.isInFollowed()) {
-                connFmt = "<input type='checkbox' id='" + connect + "' name='" + connect + "'/>";
                 follFmt = followFmt;
+                if (item.isUserMe()) {
+                    connFmt = "<input type='checkbox' id='" + connect + "' name='" + connect + "'/>";
+                } else {
+                    connFmt = connectSentFmt;
+                }
             } else if (item.isFollower()) {
-                connFmt = "<input type='checkbox' id='" + connect + "' name='" + connect + "'/>";
                 follFmt = followerFmt;
-            } else {
+                if (item.isUserMe()) {
+                    connFmt = "<input type='checkbox' id='" + connect + "' name='" + connect + "'/>";
+                } else {
+                    connFmt = connectSentFmt;
+                }
+            } else if ((userList === null) || (userList === undefined) || item.isUserMe()) {
                 connFmt = "<input type='checkbox' id='" + connect + "' name='" + connect + "'/>";
                 follFmt = "<input type='checkbox' id='" + follow + "' name='" + follow + "'/>";
+            } else {
+                connFmt = noSelection;
+                follFmt = noSelection;
             }
             let imgLink = renderToString(<UserIcon userUuid={item.userUuid}/>);
             tabdata.push({

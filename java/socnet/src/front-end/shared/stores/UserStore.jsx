@@ -348,4 +348,8 @@ User.prototype.setConnectState = function() {
     _.forOwn(this.followerList, filter);
 };
 
+User.prototype.isUserMe = function() {
+    return UserStore.isUserMe(this.userUuid);
+}
+
 export default UserStore
