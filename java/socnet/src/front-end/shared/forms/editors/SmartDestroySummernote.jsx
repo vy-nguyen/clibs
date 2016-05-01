@@ -1,10 +1,13 @@
-import React from 'react-mod'
+'use strict';
+
+import React from 'react-mod';
 
 let SmartDestroySummernote = React.createClass({
-    _onClick: function(){
+    _onClick: function() {
         $(this.props.target).summernote('destroy');
     },
-    render: function () {
+
+    render: function() {
         let {children, ...props} = this.props;
         return (
             <button {...props} onClick={this._onClick}>

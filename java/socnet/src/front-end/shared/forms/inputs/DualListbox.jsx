@@ -1,12 +1,15 @@
-import React from 'react-mod'
-import ScriptLoader from '../../utils/mixins/ScriptLoader.jsx'
-import {findDOMNode} from 'react-dom'
-import _ from 'lodash'
+'use strict';
+
+import React         from 'react-mod';
+import {findDOMNode} from 'react-dom';
+import _             from 'lodash';
+import ScriptLoader  from 'vntd-shared/utils/mixins/ScriptLoader.jsx';
 
 let DualListbox = React.createClass({
     mixins: [ScriptLoader],
-    componentDidMount: function () {
-        this.loadScript('/vendor.ui.js').then(function() {
+
+    componentDidMount: function() {
+        this.loadScript('/rs/client/vendor.ui.js').then(function() {
             let element = $(findDOMNode(this));
             let props = this.props;
             let aOptions = _.pick(props, ['nonSelectedFilter']);

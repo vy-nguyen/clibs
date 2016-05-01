@@ -14,10 +14,15 @@ class Author {
     constructor(data) {
         this._id        = _.uniqueId('id-author-');
         this.authorUser = undefined;
+        this.userUuid   = data.userUuid;
         this.coverImg   = data.coverImg;
         this.userUuid   = data.userUuid;
         this.aboutList  = data.aboutList;
         return this;
+    }
+
+    getUser() {
+        return UserStore.getUserByUuid(this.userUuid);
     }
 }
 

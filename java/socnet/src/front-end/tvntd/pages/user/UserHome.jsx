@@ -13,6 +13,7 @@ import MarkdownEditor      from 'vntd-shared/forms/editors/MarkdownEditor.jsx';
 import UserStore           from 'vntd-shared/stores/UserStore.jsx';
 import TabPanelStore       from 'vntd-shared/stores/TabPanelStore.jsx';
 import TabPanel            from 'vntd-shared/layout/TabPanel.jsx';
+import EditorPost          from 'vntd-shared/forms/commons/EditorPost.jsx';
 import ArticleStore        from 'vntd-root/stores/ArticleStore.jsx';
 import PostArticles        from 'vntd-root/components/PostArticles.jsx';
 import ProfileCover        from 'vntd-root/components/ProfileCover.jsx';
@@ -125,8 +126,9 @@ let UserHome = React.createClass({
             <div id="user-home">
                 <ProfileCover userUuid={self.userUuid}/>
                 <UserAvatar data={{doFileDrop: false}} userUuid={self.userUuid}/>
-                {editorFmt}
+                {/*editorFmt*/}
                 {/*<Link to={{ pathname: "/user/" + "123450", query: { editor: false } }}>User profile</Link>*/}
+                <EditorPost/>
                 <div className="row">
                     <article className="col-sm-12 col-md-12 col-lg-10">
                         <TabPanel tabId={tabId}>

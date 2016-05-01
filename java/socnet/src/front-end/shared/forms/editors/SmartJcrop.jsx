@@ -1,6 +1,6 @@
 import React from 'react-mod'
+import _     from 'lodash'
 import {findDOMNode} from 'react-dom'
-import _ from 'lodash'
 
 require('jcrop');
 
@@ -9,20 +9,24 @@ let SmartJcrop = React.createClass({
         this._init();
         this._bindPreview();
     },
+
     getInitialState: function() {
         return {
             imageWidth: 0,
             imageHeight: 0
         }
     },
+
     jcropApi: null,
     onSelectHandlers: [],
     onChangeHandlers: [],
-    onSelect: function (c) {
+
+    onSelect: function(c) {
         this.onSelectHandlers.forEach(function (handler) {
             handler.call(self.jcropApi, c)
         })
     },
+
     onChange: function (c) {
         this.onChangeHandlers.forEach(function (handler) {
             handler.call(self.jcropApi, c)
@@ -35,9 +39,9 @@ let SmartJcrop = React.createClass({
         let options = this.props.options || {};
         let selection = this.props.selection || {};
         let coords = this.props.coords || {};
-        $(findDOMNode(this)).Jcrop(options, function () {
-            self.jcropApi = this;
 
+        $(findDOMNode(this)).Jcrop(options, function() {
+            self.jcropApi = this;
 
             if (selection && _.isArray(selection)) {
                 if (options && options.animate) {
@@ -46,7 +50,6 @@ let SmartJcrop = React.createClass({
                     self.jcropApi.setSelect(selection);
                 }
             }
-
             var bounds = self.jcropApi.getBounds();
             self.setState({
                 imageWidth: bounds[0],
@@ -61,7 +64,7 @@ let SmartJcrop = React.createClass({
             $previewImg = $previewPane.find('img');
 
         if ($previewPane.length && $previewImg.length) {
-            var previewUpdate = function (coords) {
+            var previewUpdate = function(coords) {
                 if (parseInt(coords.w) > 0) {
                     var rx = $previewContainer.width() / coords.w;
                     var ry = $previewContainer.height() / coords.h;
@@ -79,9 +82,9 @@ let SmartJcrop = React.createClass({
         }
     },
 
-    render: function () {
+    render: function() {
         return (
-            <img src={this.props.imgSrc} className={this.props.className} />
+            <img src={this.props.imgSrc} className={this.props.className}/>
         )
     }
 });

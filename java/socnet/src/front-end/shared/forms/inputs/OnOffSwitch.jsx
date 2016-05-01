@@ -1,8 +1,10 @@
-import React from 'react-mod'
-import _ from 'lodash'
+'use strict';
+
+import React from 'react-mod';
+import _     from 'lodash';
 
 let OnOffSwitch = React.createClass({
-    render: function () {
+    render: function() {
         let props = this.props;
         let id = props.id || _.uniqueId('on-off-switch');
         let title = props.title ? <span className="onoffswitch-title">{props.title}</span> : null;

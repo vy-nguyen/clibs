@@ -174,7 +174,6 @@ let UserStore = Reflux.createStore({
             this._changedData(json.userDTO);
         }
         this._addFromJson(json.linkedUsers);
-        this.dumpData();
     },
 
     onRefreshNotifyCompleted: function(json) {

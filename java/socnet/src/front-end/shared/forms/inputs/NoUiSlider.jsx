@@ -1,11 +1,14 @@
-import React from 'react-mod'
-import ScriptLoader from '../../utils/mixins/ScriptLoader.jsx'
+'use strict';
+
+import React         from 'react-mod'
 import {findDOMNode} from 'react-dom'
+import ScriptLoader  from 'vntd-shared/utils/mixins/ScriptLoader.jsx'
 
 let NoUiSlider = React.createClass({
     mixins: [ScriptLoader],
+
     componentDidMount: function () {
-        this.loadScript('/vendor.ui.js').then(function() {
+        this.loadScript('/rs/client/vendor.ui.js').then(function() {
             let element = $(findDOMNode(this));
             let props = this.props;
             element.addClass('noUiSlider');
@@ -19,7 +22,7 @@ let NoUiSlider = React.createClass({
             };
 
             if (props.step) {
-                options.step =  parseInt(props.step);
+                options.step = parseInt(props.step);
             }
             if (props.connect) {
                 options.connect = props.connect == 'true' ? true : props.connect;
@@ -32,7 +35,7 @@ let NoUiSlider = React.createClass({
 
         }.bind(this))
     },
-    render: function () {
+    render: function() {
         return (
             <div {...this.props}/>
         )

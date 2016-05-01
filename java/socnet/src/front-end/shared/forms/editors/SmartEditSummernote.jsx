@@ -1,21 +1,27 @@
-import React from 'react-mod'
-import ReactDOM from 'react-dom'
-import ScriptLoader from '../../utils/mixins/ScriptLoader.jsx'
-import ElementHolder from '../../utils/mixins/ElementHolder.jsx'
+'use strict';
+
+import React    from 'react-mod';
+import ReactDOM from 'react-dom';
+
+import ScriptLoader  from 'vntd-shared/utils/mixins/ScriptLoader.jsx';
+import ElementHolder from 'vntd-shared/utils/mixins/ElementHolder.jsx';
 
 let SmartEditSummernote = React.createClass({
     mixins: [ScriptLoader, ElementHolder],
+
     _onClick: function () {
-        this.loadScript('/rs/client/vendor.ui.js').then(function () {
+        this.loadScript('/rs/client/vendor.ui.js').then(function() {
             $(this.props.target).summernote({
                 focus: true
             })
         }.bind(this))
     },
-    componentWillUnmount: function () {
+
+    componentWillUnmount: function() {
         $(this.props.target).summernote('destroy');
     },
-    render: function () {
+
+    render: function() {
         let {children, ...props} = this.props;
         return (
             <button onClick={this._onClick} {...props}>

@@ -1,10 +1,11 @@
-import React from 'react-mod'
+import React    from 'react-mod'
 import ReactDOM from 'react-dom'
 
 let UiSpinner = React.createClass({
-    componentDidMount: function () {
+    componentDidMount: function() {
         let options = {};
         let props = this.props;
+
         if (props.spinnerType == 'decimal') {
             options = {
                 step: 0.01,
@@ -22,7 +23,8 @@ let UiSpinner = React.createClass({
         $(ReactDOM.findDOMNode(this)).spinner(options);
 
     },
-    render: function () {
+
+    render: function() {
         return <input type="text" {...this.props} />
     }
 });

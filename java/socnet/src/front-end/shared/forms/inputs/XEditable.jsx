@@ -1,19 +1,25 @@
-import React from 'react-mod'
-import ScriptLoader from '../../utils/mixins/ScriptLoader.jsx'
-import {findDOMNode} from 'react-dom'
-import _ from 'lodash'
+'use strict';
+
+import React from 'react-mod';
+import _     from 'lodash';
+
+import {findDOMNode} from 'react-dom';
+import ScriptLoader  from 'vntd-shared/utils/mixins/ScriptLoader.jsx';
 
 let Timepicker = React.createClass({
     mixins: [ScriptLoader],
-    componentDidMount: function () {
-        this.loadScript('/vendor.ui.js').then(function() {
+
+    componentDidMount: function() {
+        this.loadScript('/rs/client/vendor.ui.js').then(function() {
             this.xEditable()
         }.bind(this))
     },
-    componentDidUpdate: function(){
+
+    componentDidUpdate: function() {
         this.xEditable()
     },
-    xEditable: function(){
+
+    xEditable: function() {
         let element = $(findDOMNode(this));
         let props = this.props;
 
@@ -24,20 +30,22 @@ let Timepicker = React.createClass({
         element.editable(options);
 
         element.on('save', function(e, params) {
-            if(_.isFunction(this.props.onChange)){
+            if(_.isFunction(this.props.onChange)) {
                 this.props.onChange(params.newValue)
             }
         }.bind(this));
     },
-    render: function () {
+    render: function() {
         let {children, ...props} = this.props;
         let id = props.id || _.uniqueId('x-editable');
+
         return (
             <a href="#" onClick={this._onClick} {...props} id={id}>
                 {children}
             </a>
         )
     },
+
     _onClick: function(e){
         e.preventDefault();
         if (_.isFunction(this.props.onClick)) {

@@ -1,19 +1,24 @@
-import React from 'react-mod'
-import ReactDOM from 'react-dom'
-import ScriptLoader from '../../utils/mixins/ScriptLoader.jsx'
-import ElementHolder from '../../utils/mixins/ElementHolder.jsx'
+'use strict';
+
+import React         from 'react-mod';
+import ReactDOM      from 'react-dom'
+import ScriptLoader  from 'vntd-shared/utils/mixins/ScriptLoader.jsx'
+import ElementHolder from 'vntd-shared/utils/mixins/ElementHolder.jsx'
 
 let Select2 = React.createClass({
     mixins: [ScriptLoader, ElementHolder],
-    componentDidMount: function () {
-        this.loadScript('/vendor.ui.js').then(function() {
+
+    componentDidMount: function() {
+        this.loadScript('/rs/client/vendor.ui.js').then(function() {
             $(this.getHold()).select2()
         }.bind(this))
     },
-    componentWillUnmount: function () {
+
+    componentWillUnmount: function() {
         $(this.getHold()).select2('destroy');
     },
-    render: function () {
+
+    render: function() {
         let {children, ...props} = this.props;
         return (
             <select {...props}>

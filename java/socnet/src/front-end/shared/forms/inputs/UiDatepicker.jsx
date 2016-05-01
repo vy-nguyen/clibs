@@ -1,5 +1,7 @@
-import React from 'react-mod'
-import {findDOMNode} from 'react-dom'
+'use strict';
+
+import React         from 'react-mod';
+import {findDOMNode} from 'react-dom';
 
 let UiDatepicker = React.createClass({
     componentDidMount: function() {
@@ -8,18 +10,18 @@ let UiDatepicker = React.createClass({
         let element = $(findDOMNode(this));
 
         if (props.minRestrict) {
-            onSelectCallbacks.push(function (selectedDate) {
+            onSelectCallbacks.push(function(selectedDate) {
                 $(props.minRestrict).datepicker('option', 'minDate', selectedDate);
             });
         }
         if (props.maxRestrict) {
-            onSelectCallbacks.push(function (selectedDate) {
+            onSelectCallbacks.push(function(selectedDate) {
                 $(props.maxRestrict).datepicker('option', 'maxDate', selectedDate);
             });
         }
 
-        //Let others know about changes to the data field
-        onSelectCallbacks.push(function (selectedDate) {
+        // Let others know about changes to the data field
+        onSelectCallbacks.push(function(selectedDate) {
             element.triggerHandler("change");
 
             let form = element.closest('form');
@@ -36,8 +38,8 @@ let UiDatepicker = React.createClass({
         let options = {
             prevText: '<i class="fa fa-chevron-left"></i>',
             nextText: '<i class="fa fa-chevron-right"></i>',
-            onSelect: function (selectedDate) {
-                _.forEach(onSelectCallbacks, function (callback) {
+            onSelect: function(selectedDate) {
+                _.forEach(onSelectCallbacks, function(callback) {
                     callback.call(callback, selectedDate)
                 })
             }
@@ -57,7 +59,7 @@ let UiDatepicker = React.createClass({
         }
         element.datepicker(options);
     },
-    render: function () {
+    render: function() {
         return (
             <input type="text" {...this.props} />
         )

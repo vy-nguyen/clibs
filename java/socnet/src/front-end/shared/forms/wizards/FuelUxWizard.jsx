@@ -1,12 +1,15 @@
-import React from 'react-mod'
-import ScriptLoader from '../../utils/mixins/ScriptLoader.jsx'
-import _ from 'lodash'
-import {findDOMNode} from 'react-dom'
+'use strict';
+
+import React from 'react-mod';
+import _     from 'lodash';
+import {findDOMNode} from 'react-dom';
+import ScriptLoader  from 'vntd-shared/utils/mixins/ScriptLoader.jsx';
 
 let FuelUxWizard = React.createClass({
     mixins: [ScriptLoader],
-    componentDidMount: function () {
-        this.loadScript('/vendor.ui.js').then(function() {
+
+    componentDidMount: function() {
+        this.loadScript('/rs/client/vendor.ui.js').then(function() {
             let self = this;
             let element = $(findDOMNode(self));
             let wizard = element.wizard();
@@ -21,8 +24,9 @@ let FuelUxWizard = React.createClass({
                 }
             });
 
-            wizard.on('finished.fu.wizard', function (e, data) {
+            wizard.on('finished.fu.wizard', function(e, data) {
                 var formData = {};
+
                 _.each($form.serializeArray(), function(field) {
                     formData[field.name] = field.value
                 });
@@ -32,7 +36,8 @@ let FuelUxWizard = React.createClass({
             });
         }.bind(this))
     },
-    render: function () {
+
+    render: function() {
         let {children, ...props} = this.props;
         return (
             <div {...props}>

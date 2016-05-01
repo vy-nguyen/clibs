@@ -1,17 +1,19 @@
-import React from 'react-mod'
-import ScriptLoader from '../../utils/mixins/ScriptLoader.jsx'
+import React         from 'react-mod'
+import ScriptLoader  from 'vntd-shared/utils/mixins/ScriptLoader.jsx'
 import {findDOMNode} from 'react-dom'
 
 let Dropzone = React.createClass({
     mixins: [ScriptLoader],
+
     componentDidMount: function () {
-        this.loadScript('/vendor.ui.js').then(function() {
+        this.loadScript('/rs/client/vendor.ui.js').then(function() {
             let element = $(findDOMNode(this));
             let options = this.props.options || {};
             element.dropzone(options)
         }.bind(this))
     },
-    render: function () {
+
+    render: function() {
         return (
            this.props.children
         )

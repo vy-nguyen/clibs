@@ -1,5 +1,7 @@
-import React from 'react-mod'
-import {findDOMNode} from 'react-dom'
+'use strict';
+
+import React from 'react-mod';
+import {findDOMNode} from 'react-dom';
 
 let Wizard = React.createClass({
     componentDidMount: function() {
@@ -21,12 +23,12 @@ let Wizard = React.createClass({
             $prev.toggleClass('disabled', step == 1)
         }
 
-        element.on('click', '[data-smart-wizard-tab]', function (e) {
+        element.on('click', '[data-smart-wizard-tab]', function(e) {
             setStep(parseInt($(this).data('smartWizardTab')));
             e.preventDefault();
         });
 
-        $next.on('click', function (e) {
+        $next.on('click', function(e) {
             if ($form.data('validator')) {
                 if (!$form.valid()) {
                     validSteps = _.without(validSteps, currentStep);
@@ -55,10 +57,10 @@ let Wizard = React.createClass({
                     })
                 } else {
                     var data = {};
-                    _.each($form.serializeArray(), function(field){
+                    _.each($form.serializeArray(), function(field) {
                         data[field.name] = field.value
                     });
-                    if( _.isFunction(self.props.onComplete)){
+                    if ( _.isFunction(self.props.onComplete)) {
                         self.props.onComplete(data)
                     }
                 }
@@ -66,7 +68,7 @@ let Wizard = React.createClass({
             e.preventDefault();
         });
 
-        $prev.on('click', function (e) {
+        $prev.on('click', function(e) {
             if (!$prev.hasClass('disabled') && currentStep > 0) {
                 setStep(currentStep - 1);
             }
@@ -75,7 +77,8 @@ let Wizard = React.createClass({
 
         setStep(currentStep);
     },
-    render: function () {
+
+    render: function() {
         let {children, ...props} = this.props;
         return (
             <div {...props}>
