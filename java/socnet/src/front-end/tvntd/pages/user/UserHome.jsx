@@ -8,7 +8,6 @@ import React               from 'react-mod';
 import Reflux              from 'reflux';
 import {Link}              from 'react-router';
 
-import JarvisWidget        from 'vntd-shared/widgets/JarvisWidget.jsx';
 import MarkdownEditor      from 'vntd-shared/forms/editors/MarkdownEditor.jsx';
 import UserStore           from 'vntd-shared/stores/UserStore.jsx';
 import TabPanelStore       from 'vntd-shared/stores/TabPanelStore.jsx';
@@ -103,32 +102,14 @@ let UserHome = React.createClass({
         }
         let editorFmt = "";
         if (me === true) {
-            editorFmt = (
-                <div className="row">
-                    <article className="col-sm-12 col-md-12 col-lg-10">
-                        <JarvisWidget id="my-post" color="purple">
-                            <header><span className="widget-icon"> <i className="fa fa-pencil"/>  </span>
-                                <h2>Publish Post</h2>
-                            </header>
-                            <div>
-                                <div className="widget-body">
-                                    <MarkdownEditor className="custom-scroll" style={{height:280}}/>
-                                    <button className="btn btn-primary margin-top-10 pull-right">Post</button>
-                                    <button className="btn btn-primary margin-top-10 pull-right">Save</button>
-                                </div>
-                            </div>
-                        </JarvisWidget>
-                    </article>
-                </div>
-            );
+            editorFmt = <EditorPost/>
         }
         return (
             <div id="user-home">
                 <ProfileCover userUuid={self.userUuid}/>
                 <UserAvatar data={{doFileDrop: false}} userUuid={self.userUuid}/>
-                {/*editorFmt*/}
+                {editorFmt}
                 {/*<Link to={{ pathname: "/user/" + "123450", query: { editor: false } }}>User profile</Link>*/}
-                <EditorPost/>
                 <div className="row">
                     <article className="col-sm-12 col-md-12 col-lg-10">
                         <TabPanel tabId={tabId}>

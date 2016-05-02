@@ -7,6 +7,8 @@ import ElementHolder from 'vntd-shared/utils/mixins/ElementHolder.jsx';
 let Summernote = React.createClass({
     componentDidMount: function() {
         ScriptLoader.loadScript('/rs/client/vendor.ui.js').then(function() {
+            console.log("Loaded script");
+            console.log($(findDOMNode(this)));
             $(findDOMNode(this)).summernote({
                 height: this.props.height || 270
             })
