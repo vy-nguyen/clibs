@@ -5,6 +5,7 @@
 'use strict';
 
 import Reflux           from 'reflux';
+import ErrorDispatch    from 'vntd-shared/actions/ErrorDispatch.jsx';
 
 const Actions = Reflux.createActions({
 
@@ -21,6 +22,8 @@ const Actions = Reflux.createActions({
     resetPassword:   {children: ['completed', 'failed', 'always']},
 
     changeUsers:     {children: ['completed', 'failed']},
+    saveUserPost:    {children: ['completed', 'failed']},
+    publishUserPost: {children: ['completed', 'failed']},
 
     // Preload json for testing.
     preload:         {children: ['completed', 'failed']}
@@ -51,10 +54,10 @@ function postRestCall(formData, url, json, complete, failure, always) {
         complete(resp, text);
 
     }).fail(function(resp, text, error) {
-        failure(resp, text, error);
+        failure(new ErrorDispatch(resp, text, error));
 
     }).always(function(resp, text, error) {
-        if (always != null && always != undefined) {
+        if (always !== null && always !== undefined) {
             always(resp, text, error);
         }
     });
@@ -123,6 +126,14 @@ Actions.preload.listen(function() {
  */
 Actions.changeUsers.listen(function(data) {
     postRestCall(data, "/api/user-connections", true, this.completed, this.failed);
+});
+
+Actions.saveUserPost.listen(function(data) {
+    postRestCall(data, "/api/user-save", true, this.completed, this.failed);
+});
+
+Actions.publishUserPost.listen(function(data) {
+    postRestCall(data, "/api/user-post", true, this.completed, this.failed);
 });
 
 export default Actions;

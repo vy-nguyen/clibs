@@ -37,13 +37,13 @@ let Navigation = React.createClass({
 
     render: function() {
         return (
-<aside id="left-panel">
-    <LoginInfo />
-        <nav>
-            <SmartMenu rawItems={this.state.menuItems} />
-        </nav>
-    <MinifyMenu />
-</aside>
+            <aside id="left-panel">
+                <LoginInfo />
+                <nav>
+                    <SmartMenu rawItems={this.state.menuItems} />
+                </nav>
+                <MinifyMenu />
+            </aside>
         )
     }
 });

@@ -7,16 +7,7 @@
 import Reflux            from 'reflux';
 import Actions           from 'vntd-root/actions/Actions.jsx';
 import NavigationActions from 'vntd-shared/actions/NavigationActions.jsx';
-import ErrorDispatch     from 'vntd-shared/actions/ErrorDispatch.jsx';
 import NavigationStore   from 'vntd-shared/stores/NavigationStore.jsx';
-
-class ErrorHandler extends ErrorDispatch
-{
-    handleServerError(xhdr, text) {
-        console.log("Override error handler");
-        return true;
-    }
-}
 
 let RenderStore = Reflux.createStore({
     data: {
@@ -63,10 +54,8 @@ let RenderStore = Reflux.createStore({
         this.trigger(this.data);
     },
 
-    onRefreshNotifyFailed: function(xhdr, text, status) {
-        let error = new ErrorHandler(xhdr, text, status);
+    onRefreshNotifyFailed: function(error) {
         error.dispatch();
-        error = null;
     },
 
     onStartupFailed: function(xhdr, text, status) {

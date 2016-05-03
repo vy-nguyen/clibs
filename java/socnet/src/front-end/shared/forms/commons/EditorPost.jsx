@@ -5,33 +5,55 @@
 'use strict';
 
 import React  from 'react-mod';
+import Reflux from 'reflux';
 import {OverlayTrigger, Tooltip} from 'react-bootstrap';
 
-import Select2       from 'vntd-shared/forms/inputs/Select2.jsx';
-import Editor        from 'vntd-shared/forms/editors/Editor.jsx';
-import JarvisWidget  from 'vntd-shared/widgets/JarvisWidget.jsx';
+import ArticleStore    from 'vntd-root/stores/ArticleStore.jsx';
+import Actions         from 'vntd-root/actions/Actions.jsx';
+import Select2         from 'vntd-shared/forms/inputs/Select2.jsx';
+import Editor          from 'vntd-shared/forms/editors/Editor.jsx';
+import JarvisWidget    from 'vntd-shared/widgets/JarvisWidget.jsx';
+import {safeStringify} from 'vntd-shared/utils/Enum.jsx';
 
 let EditorPost = React.createClass({
 
+    mixins: [Reflux.connect(ArticleStore)],
+
+    _getData: function() {
+        return {
+            topic: safeStringify(this.refs.topic.value),
+            tags: safeStringify(this.refs.tags.value),
+            content: safeStringify(this.state.content),
+            fileUpload: safeStringify(this.refs.fileUpload.value)
+        }
+    },
+
     _savePost: function(e) {
         e.preventDefault();
-        console.log("Save Post");
         this.setState({
-            status: 'saved'
+            status: 'saving...'
         });
         console.log(this.state);
+        Actions.saveUserPost(this._getData());
     },
 
     _publishPost: function(e) {
         e.preventDefault();
-        console.log("Publish Post");
-        console.log(this.state.content);
+        this.setState({
+            status: 'publishing...'
+        });
+        Actions.publishUserPost(this._getData());
+        this.setState({
+            status: 'published'
+        });
     },
 
-    getInitialState: function() {
-        return {
-            content: '',
-            status: 'empty'
+    _onPublishResult: function() {
+        if (this.state.errorResp !== null) {
+            let status = (this.state.status == "saving...") ? 'save failed' : 'publish failed';
+            this.setState({
+                status: status
+            });
         }
     },
 
@@ -42,6 +64,19 @@ let EditorPost = React.createClass({
         });
     },
 
+    getInitialState: function() {
+        return {
+            content: '',
+            status: 'empty',
+            errorText: "",
+            errorResp: null
+        }
+    },
+
+    componentDidMount: function() {
+        this.listenTo(ArticleStore, this._onPublishResult);
+    },
+
     render: function() {
         let editorStyle = {
             overflow: 'auto',
@@ -49,7 +84,7 @@ let EditorPost = React.createClass({
             minHeight: 200
         };
         let form = (
-            <form encType="multipart/form-data" className="form-horizontal">
+            <form encType="multipart/form-data" acceptCharset="utf-8" className="form-horizontal">
                 <div className="inbox-info-bar no-padding">
                     <div className="row">
                         <div className="form-group">
@@ -64,21 +99,30 @@ let EditorPost = React.createClass({
                 <div className="inbox-info-bar no-padding">
                     <div className="row">
                         <div className="form-group">
+                            <label className="control-label col-md-1"><strong>Link Chain</strong></label>
+                            <div className="col-md-10">
+                                <input ref="tags" className="form-control" placeholder="My Posts" type="text"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="inbox-info-bar no-padding">
+                    <div className="row">
+                        <div className="form-group">
                             <label className="control-label col-md-1">
                                 <OverlayTrigger
                                     placement="bottom"
                                     overlay={
-                                        <Tooltip id="attach-pic-tooltip">Attach</Tooltip>
+                                        <Tooltip id="attach-pic-tooltip">Attach pictures</Tooltip>
                                     }>
-                                    <em>
-                                        <a href-void className="show-next" onClick={this._addAttachments}>
-                                            <i className="fa fa-paperclip fa-lg"/>
-                                        </a>
-                                    </em>
+                                    <a href-void className="show-next" onClick={this._addAttachments}>
+                                        <i className="fa fa-paperclip fa-lg"/>
+                                    </a>
                                 </OverlayTrigger>
                             </label>
                             <div className="col-md-10">
-                                <input className="form-control fileinput" type="file" multiple="multiple"/>
+                                <input ref="fileUpload" className="form-control fileinput" type="file" multiple="multiple"/>
                             </div>
                         </div>
                     </div>

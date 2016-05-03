@@ -4,6 +4,7 @@
 'use strict';
 
 import React        from 'react-mod';
+import _            from 'lodash';
 import Reflux       from 'reflux';
 import classnames   from 'classnames';
 import Moment       from '../utils/Moment.jsx';
@@ -51,7 +52,7 @@ let ActivitiesDropdown = React.createClass({
         let menu_header = activities.map(function(it, idx) {
             let cls_name = classnames(["btn", "btn-default", { active: it.name == activity.name }]);
             return (
-                <label className={cls_name} key={idx} onClick={this._setActivity.bind(this, it)}>
+                <label className={cls_name} key={_.uniqueId('menu-hdr-')} onClick={this._setActivity.bind(this, it)}>
                     <input type="radio" name="activity"/>{it.title} ({it.length})
                 </label>
             );
@@ -64,7 +65,7 @@ let ActivitiesDropdown = React.createClass({
                 lastUpdated: this.state.lastUpdated
             });
             return (
-                <li key={idx}>{element}</li>
+                <li key={_.uniqueId('menu-body-')}>{element}</li>
             );
         }.bind(this));
 

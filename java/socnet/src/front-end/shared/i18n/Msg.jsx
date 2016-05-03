@@ -3,7 +3,6 @@ import Reflux from 'reflux'
 
 import LanguageStore from './LanguageStore'
 
-
 let Msg = React.createClass({
     mixins: [Reflux.listenTo(LanguageStore, '_onChangeLanguage')],
     languageKey: LanguageStore.getData().language.key,

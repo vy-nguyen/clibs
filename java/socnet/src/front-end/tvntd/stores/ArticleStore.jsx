@@ -18,22 +18,29 @@ class Article {
         this.articleUuid = data.articleUuid;
         this.articleUrl  = data.articleUrl;
         this.coverImgUrl = data.coverImgUrl;
-        this.likeCount   = data.likeCount;
+        this.likeCount    = data.likeCount;
         this.creditEarned = data.creditEarned;
         this.moneyEarned  = data.moneyEarned;
         this.transactions = data.transactions;
         this.postDate     = data.postDate;
         this.content      = data.content;
         this.pictures     = data.pictures;
+        this.topic        = data.toppic;
         return this;
     }
 }
 
 let ArticleStore = Reflux.createStore({
     data: {
-        articleList: [],
-        articlesByAuthor: [],
-        authorUuids: []
+        articlesByUuid: {},
+        articlesByAuthor: {},
+        mySavedArticles: {},
+
+        artUuidByDate: [],
+        artUuidByScore: [],
+
+        errorText: "",
+        errorResp: null
     },
     listenables: Actions,
 
@@ -45,21 +52,28 @@ let ArticleStore = Reflux.createStore({
         if (articles !== undefined) {
             return articles;
         }
-        articles = this.data.articleList.filter(function(it) {
-            return it.authorUuid === uuid;
-        }).map(function(it) {
-            return it;
-        });
-        if (articles.length === 0) {
-            return null;
-        }
-        this.data.articlesByAuthor[uuid] = articles;
-        return articles;
+        return null;
     },
 
+    getArticleByUuid: function(artUuid) {
+        let article = this.data.articlesByUuid[artUuid];
+        if (article !== undefined) {
+            return article;
+        }
+        return null;
+    },
+
+    sortArticlesByDate: function(articles) {
+    },
+
+    sortArticlesByScore: function(articles) {
+    },
+
+    /**
+     * Event handlers.
+     */
     init: function() {
         this._resetStore();
-        this.listenTo(UserStore, this._userUpdate);
     },
 
     onPreloadCompleted: function(json) {
@@ -73,32 +87,100 @@ let ArticleStore = Reflux.createStore({
     },
 
     onRefreshArticlesCompleted: function(data) {
-        this.data.articleList = _.concat(this.data.articleList, data.articles);
+        this._addFromJson(data.articles);
         this.trigger(this.data);
     },
 
-    _resetStore: function() {
-        this.data.articleList = [];
-        this.data.articlesByAuthor = [];
-        this.data.authorUuids = [];
+    /**
+     * Save/publish user post.
+     */
+    onSaveUserPostFailed: function(err) {
+        err.dispatch(this._errorHandler, this._errorHandler, null);
+        this.trigger(this.data);
     },
 
-    _userUpdate: function(userList) {
-        _(this.data.articleList).forEach(function(it) {
-            if (it.author == undefined) {
-                it.author = UserStore.getUserByUuid(it.authorUuid);
+    onSaveUserPostCompleted: function(post) {
+        console.log(post);
+        console.log("Save user post ok");
+        this.trigger(this.data);
+    },
+
+    onPublishUserPostFailed: function(err) {
+        err.dispatch(this._errorHandler, this._errorHandler, null);
+        this.trigger(this.data);
+    },
+
+    onPublishUserPostCompleted: function(post) {
+        this.trigger(this.data);
+    },
+
+    /**
+     * Internal methods.
+     */
+    _errorHandler: function(error) {
+        this.data.errorText = error.getText();
+        this.data.errorResp = error.getXHDR();
+    },
+
+    _resetStore: function() {
+        this.data.articlesByUuid = {};
+        this.data.articlesByAuthor = {};
+        this.mySavedArticles = {};
+
+        this.artUuidByDate = [];
+        this.artUuidByScore = [];
+
+        this.data.errorText = "";
+        this.data.errorResp = null;
+    },
+
+    _addArticle: function(post) {
+        let article = new Article(post);
+        article.author = UserStore.getUserByUuid(article.authorUuid);
+
+        let owned = this.data.articlesByAuthor[article.authorUuid];
+        if (owned === undefined) {
+            owned = new Object();
+        }
+        owned[article.articleUuid] = article;
+        this.data.articlesByUuid[article.articleUuid] = article;
+    },
+
+    _removeArticle: function(artUuid) {
+    },
+
+    _indexAuthors: function(artList) {
+        _.forOwn(artList, function(jsonArt, key) {
+            let article = this.data.articlesByUuid[jsonArt.articleUuid];
+            if (article === undefined) {
+                return;
             }
-        });
+            if (article.author === undefined) {
+                article.author = UserStore.getUserByUuid(article.authorUuid);
+            }
+            let owned = this.data.articlesByAuthor[article.authorUuid];
+            if (owned === undefined) {
+                owned = new Object();
+                owned[article.articleUuid] = article;
+                this.data.articlesByAuthor[article.authorUuid] = owned;
+
+            } else if (owned[article.articleUuid] === undefined) {
+                owned[article.articleUuid] = article;
+            }
+        }.bind(this));
     },
 
     _addFromJson: function(items) {
-        _(items).forEach(function(it) {
-            var article = new Article(it);
-            article.author = UserStore.getUserByUuid(article.authorUuid);
+        _.forOwn(items, function(it, key) {
+            if (this.data.articlesByUuid[it.articleUuid] === undefined) {
+                let article = new Article(it);
 
-            this.data.articleList.push(article);
+                article.author = UserStore.getUserByUuid(article.authorUuid);
+                this.data.articlesByUuid[it.articleUuid] = article;
+            }
         }.bind(this));
-        this._userUpdate();
+
+        this._indexAuthors(items);
     },
 
     exports: {

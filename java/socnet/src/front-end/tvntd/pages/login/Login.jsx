@@ -88,12 +88,14 @@ let LoginSocial = React.createClass({
     }
 });
 
+/*
 class ErrorHandler extends ErrorDispatch
 {
     handle401Error(xhdr, text, cbArg) {
         cbArg.authError = xhdr.responseJSON.message;
     }
 }
+ */
 
 let LoginForm = React.createClass({
     mixins: [
@@ -119,9 +121,8 @@ let LoginForm = React.createClass({
             History.pushState(null, "/public/vietnam");
             return;
         }
-        let error = new ErrorHandler(data.authError, data.authMesg);
-        error.dispatch(data);
-        error = null;
+        // let error = new ErrorHandler(data.authError, data.authMesg);
+        // error.dispatch(data);
 
         $('#id-login-error-text').empty().html(data.authError);
         $('#id-login-error').show();
@@ -129,6 +130,10 @@ let LoginForm = React.createClass({
 
     _onFocus: function() {
         $('#id-login-error').hide();
+    },
+
+    _loginFailed: function(error) {
+        this.authError = error.getXHDR().responseJSON.message;
     },
 
     _submitLogin: function(event) {

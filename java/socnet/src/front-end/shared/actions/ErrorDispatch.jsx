@@ -12,49 +12,34 @@ export default class ErrorDispatch
         this.text  = text;
     }
 
-    handleServerError(xhdr, text, cbArg) {
-        return false;
+    getXHDR() {
+        return this.xhdr;
     }
 
-    handle400Error(xhdr, text, cbArg) {} 
-    handle401Error(xhdr, text, cbArg) {}
-
-    handle404Error(xhdr, text, cbArg) {
-        console.log("In 404 base class");
-        console.log(xhdr);
-        console.log(text);
+    getError() {
+        return this.error;
     }
 
-    handle500Error(xhdr, text, cbArg) {
-        console.log("In 500 base class");
+    getText() {
+        return this.text;
     }
 
-    dispatch(cbArg) {
-        if (this.xhdr.status == 200) {
+    dispatch(serverFail, clientFail, cbArg) {
+        let status = this.xhdr.status;
+
+        if (200 <= status && status < 300) {
             return;
         }
-        if (this.handleServerError(this.xhdr, this.text, cbArg) == true) {
-            return;
-        }
-        switch (this.xhdr.status) {
-        case 400:
-            this.handle400Error(this.xhdr, this.text, cbArg);
-            break;
+        if (300 <= status && status < 400) {
 
-        case 401:
-            this.handle401Error(this.xhdr, this.text, cbArg);
-            break;
-
-        case 404:
-            this.handle404Error(this.xhdr, this.text, cbArg);
-            break;
-
-        case 500:
-            this.handle500Error(this.xhdr, this.text, cbArg);
-            break;
-
-        default:
-            break;
+        } else if (400 <= this.xhdr.status && this.xhdr.status < 500) {
+            if (clientFail) {
+                clientFail(this, cbArg);
+            }
+        } else {
+            if (serverFail) {
+                serverFail(this, cbArg);
+            }
         }
     }
 }
