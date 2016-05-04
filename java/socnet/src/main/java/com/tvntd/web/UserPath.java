@@ -31,11 +31,17 @@ import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.tvntd.forms.PostForm;
+import com.tvntd.service.api.GenericResponse;
+import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.LoginResponse;
 
@@ -43,6 +49,10 @@ import com.tvntd.service.api.LoginResponse;
 public class UserPath
 {
     static private Logger s_log = LoggerFactory.getLogger(UserPath.class);
+    static private GenericResponse s_genOkResp = new GenericResponse("ok");
+
+    @Autowired
+    private IArticleService articleRepo;
 
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     @ResponseBody
@@ -52,5 +62,19 @@ public class UserPath
 
         s_log.debug("Login to user profile: " + profile);
         return new LoginResponse(profile, reqt);
+    }
+
+    /**
+     * User post articles.
+     */
+    @RequestMapping(value = "/user/save-post",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    saveUserPost(@RequestBody PostForm form,
+            HttpServletRequest request, HttpSession session)
+    {
+        return s_genOkResp;
     }
 }

@@ -7,9 +7,11 @@
 import React  from 'react-mod';
 import Reflux from 'reflux';
 import {OverlayTrigger, Tooltip} from 'react-bootstrap';
+import DropzoneComponent from 'react-dropzone-component';
 
 import ArticleStore    from 'vntd-root/stores/ArticleStore.jsx';
 import Actions         from 'vntd-root/actions/Actions.jsx';
+// import Dropzone        from 'vntd-shared/forms/inputs/Dropzone.jsx';
 import Select2         from 'vntd-shared/forms/inputs/Select2.jsx';
 import Editor          from 'vntd-shared/forms/editors/Editor.jsx';
 import JarvisWidget    from 'vntd-shared/widgets/JarvisWidget.jsx';
@@ -24,14 +26,14 @@ let EditorPost = React.createClass({
             topic: safeStringify(this.refs.topic.value),
             tags: safeStringify(this.refs.tags.value),
             content: safeStringify(this.state.content),
-            fileUpload: safeStringify(this.refs.fileUpload.value)
+            // fileUpload: safeStringify(this.refs.fileUpload.value)
         }
     },
 
     _savePost: function(e) {
         e.preventDefault();
         this.setState({
-            status: 'saving...'
+            status: 'Saving...'
         });
         console.log(this.state);
         Actions.saveUserPost(this._getData());
@@ -40,17 +42,17 @@ let EditorPost = React.createClass({
     _publishPost: function(e) {
         e.preventDefault();
         this.setState({
-            status: 'publishing...'
+            status: 'Publishing...'
         });
         Actions.publishUserPost(this._getData());
         this.setState({
-            status: 'published'
+            status: 'Published'
         });
     },
 
     _onPublishResult: function() {
         if (this.state.errorResp !== null) {
-            let status = (this.state.status == "saving...") ? 'save failed' : 'publish failed';
+            let status = (this.state.status == "Saving...") ? 'Save Failed' : 'Publish Failed';
             this.setState({
                 status: status
             });
@@ -60,14 +62,23 @@ let EditorPost = React.createClass({
     _handleContentChange: function(e) {
         this.setState({
             content: e.target.value,
-            status: 'draft'
+            status: 'Draft'
         });
+    },
+
+    _onSend: function(files, xhr, form) {
+        form.append('name', files.name);
+    },
+
+    _onComplete: function(file, a) {
+        console.log("Upload complete");
+        console.log(file.xhr);
     },
 
     getInitialState: function() {
         return {
             content: '',
-            status: 'empty',
+            status: 'Clean',
             errorText: "",
             errorResp: null
         }
@@ -83,6 +94,26 @@ let EditorPost = React.createClass({
             display: 'inline-block',
             minHeight: 200
         };
+        let djsConfig = {
+            addRemoveLinks: true,
+            acceptedFiles: "image/jpeg, image/png, image/gif",
+            params: {},
+            headers: {}
+        };
+        let token  = $("meta[name='_csrf']").attr("content");
+        let header = $("meta[name='_csrf_header']").attr("content");
+        djsConfig.headers[header] = token;
+
+        const componentConfig = {
+            iconFiletypes: ['.jpg', '.png', '.gif'],
+            showFiletypeIcon: true,
+            postUrl: '/api/upload-img'
+        };
+        const eventHandlers = {
+            sending: this._onSend,
+            complete: this._onComplete
+        };
+
         let form = (
             <form encType="multipart/form-data" acceptCharset="utf-8" className="form-horizontal">
                 <div className="inbox-info-bar no-padding">
@@ -124,6 +155,16 @@ let EditorPost = React.createClass({
                             <div className="col-md-10">
                                 <input ref="fileUpload" className="form-control fileinput" type="file" multiple="multiple"/>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="inbox-info-bar no-padding">
+                    <div className="row">
+                        <div className="form-group">
+                            <DropzoneComponent className="col-sm-12 col-md-12col-lg-12"
+                                config={componentConfig} eventHandlers={eventHandlers} djsConfig={djsConfig}>
+                            </DropzoneComponent>
                         </div>
                     </div>
                 </div>

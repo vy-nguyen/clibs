@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.transaction.Transactional;
 
@@ -44,6 +45,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.MapMaker;
 import com.tvntd.dao.ProfileRepository;
 import com.tvntd.lib.ObjectId;
 import com.tvntd.models.Profile;
@@ -64,38 +66,30 @@ public class ProfileService implements IProfileService
     public static class ProfileCache
     {
         boolean m_fullCache;
-        protected HashMap<Long, ProfileDTO> m_idCache;
-        protected HashMap<UUID, ProfileDTO> m_uuidCache;
+        final ConcurrentMap<Long, ProfileDTO> m_idCache;
+        final ConcurrentMap<UUID, ProfileDTO> m_uuidCache;
 
         public ProfileCache()
         {
             m_fullCache = false;
-            m_idCache = new HashMap<>();
-            m_uuidCache = new HashMap<>();
+            m_idCache = new MapMaker().concurrencyLevel(32).makeMap();
+            m_uuidCache = new MapMaker().concurrencyLevel(32).makeMap();
         }
 
         void cacheProfile(ProfileDTO profile)
         {
             if (profile != null) {
-                synchronized(this) {
-                    m_idCache.put(profile.obtainUserId(), profile);
-                    m_uuidCache.put(profile.getUserUuid(), profile);
-                }
+                m_idCache.put(profile.obtainUserId(), profile);
+                m_uuidCache.put(profile.getUserUuid(), profile);
             }
         }
 
-        ProfileDTO cacheLookup(Long userId)
-        {
-            synchronized(this) {
-                return m_idCache.get(userId);
-            }
+        ProfileDTO cacheLookup(Long userId) {
+            return m_idCache.get(userId);
         }
 
-        ProfileDTO cacheLookup(UUID uuid)
-        {
-            synchronized(this) {
-                return m_uuidCache.get(uuid);
-            }
+        ProfileDTO cacheLookup(UUID uuid) {
+            return m_uuidCache.get(uuid);
         }
 
         void invalFullCache() {
@@ -108,10 +102,8 @@ public class ProfileService implements IProfileService
             List<ProfileDTO> result = new LinkedList<>();
 
             if (m_fullCache == true) {
-                synchronized(this) {
-                    for (Map.Entry<UUID, ProfileDTO> entry : m_uuidCache.entrySet()) {
-                        result.add(entry.getValue());
-                    }
+                for (Map.Entry<UUID, ProfileDTO> entry : m_uuidCache.entrySet()) {
+                    result.add(entry.getValue());
                 }
             } else {
                 List<Profile> profiles = raw;

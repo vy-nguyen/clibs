@@ -35,6 +35,7 @@ let ArticleStore = Reflux.createStore({
         articlesByUuid: {},
         articlesByAuthor: {},
         mySavedArticles: {},
+        myPendingPost: {},
 
         artUuidByDate: [],
         artUuidByScore: [],
@@ -94,6 +95,13 @@ let ArticleStore = Reflux.createStore({
     /**
      * Save/publish user post.
      */
+    onPendingPostCompleted: function(post) {
+        console.log("Save pending post");
+        console.log(post);
+        this.myPendingPost = post;
+        this.trigger(post);
+    },
+
     onSaveUserPostFailed: function(err) {
         err.dispatch(this._errorHandler, this._errorHandler, null);
         this.trigger(this.data);
@@ -102,6 +110,7 @@ let ArticleStore = Reflux.createStore({
     onSaveUserPostCompleted: function(post) {
         console.log(post);
         console.log("Save user post ok");
+        this.myPendingPost = {};
         this.trigger(this.data);
     },
 
@@ -111,6 +120,7 @@ let ArticleStore = Reflux.createStore({
     },
 
     onPublishUserPostCompleted: function(post) {
+        this.myPendingPost = {};
         this.trigger(this.data);
     },
 

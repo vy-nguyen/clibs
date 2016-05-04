@@ -30,21 +30,29 @@ import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 
+import com.tvntd.forms.PostForm;
+import com.tvntd.lib.ObjectId;
 import com.tvntd.models.Article;
+import com.tvntd.objstore.ObjStore;
+import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 public interface IArticleService
 {
     public ArticleDTO getArticle(Long artId);
-    public ArticleDTO getArticle(String uuid);
-    public List<ArticleDTO> getArticlesByUser(Long userId);
+    public ArticleDTO getArticle(UUID uuid);
 
-    public Page<ArticleDTO> getUserArticles(String email);
+    public List<ArticleDTO> getArticles(List<UUID> uuids);
+    public List<ArticleDTO> getArticlesByUser(Long userId);
+    public List<ArticleDTO> getArticlesByUser(UUID userUuidId);
+
     public Page<ArticleDTO> getUserArticles(Long userId);
+    public Page<ArticleDTO> getUserArticles(UUID userUuid);
 
     public void saveArticle(ArticleDTO article);
     public void saveArticles(String josnFile, String dir);
@@ -71,75 +79,65 @@ public interface IArticleService
             this.articles = articles;
         }
     }
-
+    /**
+     * Transfer article to client.
+     */
     public static class ArticleDTO
     {
         private static Logger s_log = LoggerFactory.getLogger(ArticleDTO.class);
-        private Long articleId;
-        private Long authorId;
-        private String authorUuid;
-        private String articleUuid;
-        private String articleUrl;
-        private Long   picturesId;
-        private String transRoot;
-        private String creditEarned;
-        private String moneyEarned;
-        private String contentOId;
-        private Date created;
-        private String content;
+        private static String s_baseUri = "/rs/upload/user";
+
+        private Article article;
+        private String  topic;
+        private String  content;
+        private String  articleUrl;
 
         public ArticleDTO(Article art)
         {
-            articleId = art.getArticleId();
-            authorId = art.getUserId();
-            authorUuid = art.getAuthorUuid();
-            articleUuid = art.getArticleUuid();
-            articleUrl = art.getArticleUrl();
-            picturesId = art.getPicturesId();
-            transRoot = art.getTransRoot();
-            creditEarned = art.getCreditEarned();
-            moneyEarned = art.getMoneyEarned();
-            contentOId = art.getContentOId();
-            created = art.getCreated();
-            try {
-                content = new String(art.getContent(), "UTF-8");
-            } catch(UnsupportedEncodingException e) {
-                s_log.error(e.toString());
-            }
+            this.article = art;
+            convertUTF();
         }
 
-        public Article toArticle()
+        public ArticleDTO(PostForm form, ProfileDTO profile)
+        {
+            this.article = toArticle(form, profile);
+            convertUTF();
+        }
+
+        private void convertUTF()
         {
             try {
-                return toArticle(content.getBytes("UTF-8"));
+                topic = new String(article.getTopic(), "UTF-8");
+                content = new String(article.getContent(), "UTF-8");
 
             } catch(UnsupportedEncodingException e) {
                 s_log.error(e.toString());
             }
-            return null;
         }
 
-        public Article toArticle(byte[] content)
+        public static Article toArticle(PostForm form, ProfileDTO profile)
         {
             Article art = new Article();
-            art.setUserId(authorId);
-            art.setAuthorUuid(authorUuid);
-            art.setArticleUuid(articleUuid);
-            art.setArticleUrl(articleUrl);
-            art.setPicturesId(picturesId);
-            art.setTransRoot(transRoot);
-            art.setCreditEarned(creditEarned);
-            art.setMoneyEarned(moneyEarned);
-            art.setContentOId(contentOId);
-            art.setCreated(created);
-            art.setContent(content);
+
+            art.setAuthorId(profile.obtainUserId());
+            art.setAuthorUuid(profile.getUserUuid());
+            art.setArticleUuid(UUID.randomUUID());
+            art.setCreditEarned(0L);
+            art.setMoneyEarned(0L);
+            art.setTransRoot(ObjectId.zeroId());
+            art.setContentOId(ObjectId.zeroId());
+            art.setContentOId(ObjectId.zeroId());
+
+            art.setCreatedDate(new Date());
+            art.setTopic(form.getTopic());
+            art.setContent(form.getContent());
             return art;
         }
 
         public String toString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.append("Author uuid: ").append(authorUuid).append('\n');
+            sb.append("Author uuid: ").append(getAuthorUuid()).append("\n");
             sb.append("Content: ").append(content).append('\n');
             return sb.toString();
         }
@@ -153,60 +151,22 @@ public interface IArticleService
             return result;
         }
 
-        /**
-         * @return the articleId
-         */
-        public Long getArticleId() {
-            return articleId;
-        }
-
-        /**
-         * @param articleId the articleId to set
-         */
-        public void setArticleId(Long articleId) {
-            this.articleId = articleId;
-        }
-
-        /**
-         * @return the authorId
-         */
-        public Long getAuthorId() {
-            return authorId;
-        }
-
-        /**
-         * @param authorId the authorId to set
-         */
-        public void setAuthorId(Long authorId) {
-            this.authorId = authorId;
+        public void assignAuthorId(Long id) {
+            article.setAuthorId(id);
         }
 
         /**
          * @return the authorUuid
          */
         public String getAuthorUuid() {
-            return authorUuid;
-        }
-
-        /**
-         * @param authorUuid the authorUuid to set
-         */
-        public void setAuthorUuid(String authorUuid) {
-            this.authorUuid = authorUuid;
+            return article.getAuthorUuid().toString();
         }
 
         /**
          * @return the articleUuid
          */
         public String getArticleUuid() {
-            return articleUuid;
-        }
-
-        /**
-         * @param articleUuid the articleUuid to set
-         */
-        public void setArticleUuid(String articleUuid) {
-            this.articleUuid = articleUuid;
+            return article.getArticleUuid().toString();
         }
 
         /**
@@ -216,109 +176,55 @@ public interface IArticleService
             return articleUrl;
         }
 
-        /**
-         * @param articleUrl the articleUrl to set
-         */
-        public void setArticleUrl(String articleUrl) {
-            this.articleUrl = articleUrl;
+        public Long getCreditEarned() {
+            return article.getCreditEarned();
         }
 
-        /**
-         * @return the picturesId
-         */
-        public Long getPicturesId() {
-            return picturesId;
+        public Long getMoneyEarned() {
+            return article.getMoneyEarned();
         }
 
-        /**
-         * @param picturesId the picturesId to set
-         */
-        public void setPicturesId(Long picturesId) {
-            this.picturesId = picturesId;
-        }
-
-        /**
-         * @return the transRoot
-         */
         public String getTransRoot() {
-            return transRoot;
+            return article.getTransRoot().name();
+        }
+
+        public String getContentOid() {
+            return article.getContentOId().name();
+        }
+
+        public Date getCreateDate() {
+            return article.getCreatedDate();
         }
 
         /**
-         * @param transRoot the transRoot to set
+         * @return the article
          */
-        public void setTransRoot(String transRoot) {
-            this.transRoot = transRoot;
+        public Article getArticle() {
+            return article;
         }
 
-        /**
-         * @return the creditEarned
-         */
-        public String getCreditEarned() {
-            return creditEarned;
+        public String getTopic() {
+            return this.topic;
         }
 
-        /**
-         * @param creditEarned the creditEarned to set
-         */
-        public void setCreditEarned(String creditEarned) {
-            this.creditEarned = creditEarned;
-        }
-
-        /**
-         * @return the moneyEarned
-         */
-        public String getMoneyEarned() {
-            return moneyEarned;
-        }
-
-        /**
-         * @param moneyEarned the moneyEarned to set
-         */
-        public void setMoneyEarned(String moneyEarned) {
-            this.moneyEarned = moneyEarned;
-        }
-
-        /**
-         * @return the contentOId
-         */
-        public String getContentOId() {
-            return contentOId;
-        }
-
-        /**
-         * @param contentOId the contentOId to set
-         */
-        public void setContentOId(String contentOId) {
-            this.contentOId = contentOId;
-        }
-
-        /**
-         * @return the created
-         */
-        public Date getCreated() {
-            return created;
-        }
-
-        /**
-         * @param created the created to set
-         */
-        public void setCreated(Date created) {
-            this.created = created;
-        }
-
-        /**
-         * @return the content
-         */
         public String getContent() {
-            return content;
+            return this.content;
         }
 
-        /**
-         * @param content the content to set
-         */
-        public void setContent(String content) {
-            this.content = content;
+        public List<String> getPictureUrl()
+        {
+            ObjStore objStore = ObjStore.getInstance();
+            List<String> ret = new LinkedList<>();
+            List<ObjectId> pictures = article.getPictures();
+
+            for (ObjectId oid : pictures) {
+                ret.add(objStore.imgObjUri(oid, s_baseUri));
+            }
+            return ret;
+        }
+
+        public List<Long> getComments() {
+            return article.getComments();
         }
     }
 }

@@ -27,40 +27,64 @@
 package com.tvntd.models;
 
 import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.tvntd.lib.ObjectId;
+
 @Entity
+@Table(indexes = {
+    @Index(columnList = "articleUuid", name = "articleUuid", unique = true),
+    @Index(columnList = "authorUuid", name = "authorUuid", unique = false)
+})
 public class Article
 {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long articleId;
 
-    private Long userId;
-    private String authorUuid;
-    private String articleUuid;
-    private String articleUrl;
-    private Long   picturesId;
-    private String transRoot;
-    private String creditEarned;
-    private String moneyEarned;
-    private String contentOId;
+    private Long     authorId;
+    private UUID     authorUuid;
+    private UUID     articleUuid;
+    private Long     creditEarned;
+    private Long     moneyEarned;
+
+    private ObjectId transRoot;
+    private ObjectId contentOId;
 
     @Column(name="DATE_CREATED")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date created;
+    private Date createdDate;
+
+    @Column
+    private byte[] topic;
 
     @Lob
     @Column
     private byte[] content;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "ArtPics", joinColumns = @JoinColumn(name="articleId"))
+    private List<ObjectId> pictures;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "ArtComnts", joinColumns = @JoinColumn(name="articleId"))
+    private List<Long> comments;
 
     public Article() {
         super();
@@ -81,143 +105,129 @@ public class Article
     }
 
     /**
-     * @return the userId
+     * @return the authorId
      */
-    public Long getUserId() {
-        return userId;
+    public Long getAuthorUserId() {
+        return authorId;
     }
 
     /**
-     * @param userId the userId to set
+     * @param authorId the authorId to set
      */
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setAuthorId(Long userId) {
+        this.authorId = userId;
     }
 
     /**
      * @return the authorUuid
      */
-    public String getAuthorUuid() {
+    public UUID getAuthorUuid() {
         return authorUuid;
     }
 
     /**
      * @param authorUuid the authorUuid to set
      */
-    public void setAuthorUuid(String authorUuid) {
+    public void setAuthorUuid(UUID authorUuid) {
         this.authorUuid = authorUuid;
     }
 
     /**
      * @return the articleUuid
      */
-    public String getArticleUuid() {
+    public UUID getArticleUuid() {
         return articleUuid;
     }
 
     /**
      * @param articleUuid the articleUuid to set
      */
-    public void setArticleUuid(String articleUuid) {
+    public void setArticleUuid(UUID articleUuid) {
         this.articleUuid = articleUuid;
-    }
-
-    /**
-     * @return the articleUrl
-     */
-    public String getArticleUrl() {
-        return articleUrl;
-    }
-
-    /**
-     * @param articleUrl the articleUrl to set
-     */
-    public void setArticleUrl(String articleUrl) {
-        this.articleUrl = articleUrl;
-    }
-
-    /**
-     * @return the picturesId
-     */
-    public Long getPicturesId() {
-        return picturesId;
-    }
-
-    /**
-     * @param picturesId the picturesId to set
-     */
-    public void setPicturesId(Long picturesId) {
-        this.picturesId = picturesId;
-    }
-
-    /**
-     * @return the transRoot
-     */
-    public String getTransRoot() {
-        return transRoot;
-    }
-
-    /**
-     * @param transRoot the transRoot to set
-     */
-    public void setTransRoot(String transRoot) {
-        this.transRoot = transRoot;
     }
 
     /**
      * @return the creditEarned
      */
-    public String getCreditEarned() {
+    public Long getCreditEarned() {
         return creditEarned;
     }
 
     /**
      * @param creditEarned the creditEarned to set
      */
-    public void setCreditEarned(String creditEarned) {
+    public void setCreditEarned(Long creditEarned) {
         this.creditEarned = creditEarned;
     }
 
     /**
      * @return the moneyEarned
      */
-    public String getMoneyEarned() {
+    public Long getMoneyEarned() {
         return moneyEarned;
     }
 
     /**
      * @param moneyEarned the moneyEarned to set
      */
-    public void setMoneyEarned(String moneyEarned) {
+    public void setMoneyEarned(Long moneyEarned) {
         this.moneyEarned = moneyEarned;
+    }
+
+    /**
+     * @return the transRoot
+     */
+    public ObjectId getTransRoot() {
+        return transRoot;
+    }
+
+    /**
+     * @param transRoot the transRoot to set
+     */
+    public void setTransRoot(ObjectId transRoot) {
+        this.transRoot = transRoot;
     }
 
     /**
      * @return the contentOId
      */
-    public String getContentOId() {
+    public ObjectId getContentOId() {
         return contentOId;
     }
 
     /**
      * @param contentOId the contentOId to set
      */
-    public void setContentOId(String contentOId) {
+    public void setContentOId(ObjectId contentOId) {
         this.contentOId = contentOId;
     }
 
     /**
-     * @return the created
+     * @return the createdDate
      */
-    public Date getCreated() {
-        return created;
+    public Date getCreatedDate() {
+        return createdDate;
     }
 
     /**
-     * @param created the created to set
+     * @param createdDate the createdDate to set
      */
-    public void setCreated(Date created) {
-        this.created = created;
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    /**
+     * @return the topic
+     */
+    public byte[] getTopic() {
+        return topic;
+    }
+
+    /**
+     * @param topic the topic to set
+     */
+    public void setTopic(byte[] topic) {
+        this.topic = topic;
     }
 
     /**
@@ -232,5 +242,33 @@ public class Article
      */
     public void setContent(byte[] content) {
         this.content = content;
+    }
+
+    /**
+     * @return the pictures
+     */
+    public List<ObjectId> getPictures() {
+        return pictures;
+    }
+
+    /**
+     * @param pictures the pictures to set
+     */
+    public void setPictures(List<ObjectId> pictures) {
+        this.pictures = pictures;
+    }
+
+    /**
+     * @return the comments
+     */
+    public List<Long> getComments() {
+        return comments;
+    }
+
+    /**
+     * @param comments the comments to set
+     */
+    public void setComments(List<Long> comments) {
+        this.comments = comments;
     }
 }

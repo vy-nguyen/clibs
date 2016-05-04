@@ -26,12 +26,10 @@
  */
 package com.tvntd.service.user;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.transaction.Transactional;
 
@@ -45,14 +43,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.google.common.io.Files;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSyntaxException;
+import com.google.common.collect.MapMaker;
 import com.tvntd.dao.ArticleRepository;
-import com.tvntd.dao.UserRepository;
 import com.tvntd.models.Article;
-import com.tvntd.models.User;
 import com.tvntd.service.api.IArticleService;
 
 @Service
@@ -60,12 +53,33 @@ import com.tvntd.service.api.IArticleService;
 public class ArticleService implements IArticleService
 {
     static private Logger s_log = LoggerFactory.getLogger(ArticleService.class);
+    static private ArticleCache s_cache = new ArticleCache();
 
     @Autowired
     protected ArticleRepository articleRepo;
 
-    @Autowired
-    protected UserRepository userRepo;
+    public static class ArticleCache
+    {
+        boolean m_fullCache;
+        final ConcurrentMap<UUID, ArticleDTO> m_cache;
+
+        public ArticleCache()
+        {
+            m_fullCache = false;
+            m_cache = new MapMaker().concurrencyLevel(32).makeMap();
+        }
+
+        public ArticleDTO get(UUID uuid) {
+            return m_cache.get(uuid);
+        }
+
+        public void put(UUID uuid, ArticleDTO article)
+        {
+            if (article != null && uuid != null) {
+                m_cache.put(uuid, article);
+            }
+        }
+    }
 
     @Override
     public ArticleDTO getArticle(Long artId)
@@ -75,89 +89,78 @@ public class ArticleService implements IArticleService
     }
 
     @Override
-    public ArticleDTO getArticle(String artUuid)
+    public ArticleDTO getArticle(UUID artUuid)
     {
-        Article art = articleRepo.findByArticleUuid(artUuid);
-        return new ArticleDTO(art);
+        ArticleDTO ret = s_cache.get(artUuid);
+        if (ret == null) {
+            Article art = articleRepo.findByArticleUuid(artUuid);
+            ret = new ArticleDTO(art);
+            s_cache.put(artUuid, ret);
+        }
+        return ret;
+    }
+
+    @Override
+    public List<ArticleDTO> getArticles(List<UUID> uuids)
+    {
+        List<ArticleDTO> ret = new LinkedList<>();
+
+        for (UUID uuid : uuids) {
+            ret.add(getArticle(uuid));
+        }
+        return ret;
     }
 
     @Override
     public List<ArticleDTO> getArticlesByUser(Long userId)
     {
-        List<Article> articles = articleRepo.findAllByUserId(userId);
-        List<ArticleDTO> result = new LinkedList<>();
+        List<Article> articles = articleRepo.findAllByAuthorId(userId);
+        return ArticleDTO.convert(articles);
+    }
 
-        for (Article art : articles) {
-            result.add(new ArticleDTO(art));
-        }
-        return result;
+    @Override
+    public List<ArticleDTO> getArticlesByUser(UUID userUuid)
+    {
+        List<Article> articles = articleRepo.findAllByAuthorId(userUuid);
+        return ArticleDTO.convert(articles);
     }
 
     @Override
     public Page<ArticleDTO> getUserArticles(Long userId)
     {
         Pageable req = new PageRequest(0, 10, new Sort(Sort.Direction.DESC, "created"));
-        Page<Article> page = articleRepo.findByUserId(userId, req);
-
+        Page<Article> page = articleRepo.findByAuthorId(userId, req);
         List<Article> articles = page.getContent();
+
         return new PageImpl<ArticleDTO>(
                 ArticleDTO.convert(articles), req, page.getTotalElements());
     }
 
     @Override
-    public Page<ArticleDTO> getUserArticles(String email)
+    public Page<ArticleDTO> getUserArticles(UUID userUuid)
     {
-        User user = userRepo.findByEmail(email);
-        if (user != null) {
-            return getUserArticles(user.getId());
-        }
-        return null;
+        Pageable req = new PageRequest(0, 10, new Sort(Sort.Direction.DESC, "created"));
+        Page<Article> page = articleRepo.findByAuthorUuid(userUuid, req);
+        List<Article> articles = page.getContent();
+
+        return new PageImpl<ArticleDTO>(
+                ArticleDTO.convert(articles), req, page.getTotalElements());
     }
 
     @Override
     public void saveArticle(ArticleDTO article)
     {
-        Article art = article.toArticle();
+        Article art = article.getArticle();
         articleRepo.save(art);
     }
 
     public void saveArticle(Article article) {
         articleRepo.save(article);
+        s_log.info("Save article " + article.toString());
     }
 
     @Override
     public void saveArticles(String jsonFile, String rsDir)
     {
-        s_log.info("Save from json " + jsonFile);
-        Gson gson = new Gson();
-        try {
-            Long userId = 0L;
-            BufferedReader brd = new BufferedReader(new FileReader(jsonFile));
-            ArticleDTOResponse arts = gson.fromJson(brd, ArticleDTOResponse.class);
-            brd.close();
-
-            // Fix up the userId based on uuid (func as email).
-            for (ArticleDTO at : arts.getArticles()) {
-                User user = userRepo.findByEmail(at.getAuthorUuid());
-                if (user != null) {
-                    userId = user.getId();
-                    at.setAuthorId(user.getId());
-                } else {
-                    s_log.error("Invalid user " + at.getAuthorUuid());
-                }
-            }
-            for (ArticleDTO at : arts.getArticles()) {
-                File dataFile = new File(rsDir + "/" + at.getContent());
-                saveArticle(at.toArticle(Files.toByteArray(dataFile)));
-            }
-            if (!userId.equals(0L)) {
-                List<ArticleDTO> articles = getArticlesByUser(userId);
-                Gson out = new GsonBuilder().setPrettyPrinting().create();
-                s_log.info(out.toJson(articles));
-            }
-        } catch(IOException | JsonSyntaxException e) {
-            System.out.println(e.toString());
-            s_log.info(e.getMessage() + ": " + e.toString());
-        }
     }
 }

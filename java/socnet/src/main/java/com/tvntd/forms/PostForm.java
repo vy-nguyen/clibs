@@ -32,53 +32,53 @@ import javax.validation.constraints.Size;
 public class PostForm
 {
     @Size(max = 140)
-    private String header;
+    private byte[] topic;
 
     @NotNull
     @Size(max = 32000)
-    private String content;
+    private byte[] content;
 
-    private String action;
+    private String tags;
 
     /**
-     * @return the header
+     * @return the topic
      */
-    public String getHeader() {
-        return header;
+    public byte[] getTopic() {
+        return topic;
     }
 
     /**
-     * @param header the header to set
+     * @param topic the topic to set
      */
-    public void setHeader(String header) {
-        this.header = header;
+    public void setTopic(byte[] topic) {
+        this.topic = topic;
     }
 
     /**
      * @return the content
      */
-    public String getContent() {
+    public byte[] getContent() {
         return content;
     }
 
     /**
      * @param content the content to set
      */
-    public void setContent(String content) {
+    public void setContent(byte[] content) {
         this.content = content;
     }
 
     /**
-     * @return the action
+     * @return the tags
      */
-    public String getAction() {
-        return action;
+    public String getTags() {
+        return tags;
     }
 
     /**
-     * @param action the action to set
+     * @param tags the tags to set
      */
-    public void setAction(String action) {
-        this.action = action;
+    public void setTags(String tags) {
+        this.tags = tags;
     }
 }

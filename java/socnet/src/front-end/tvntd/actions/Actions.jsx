@@ -24,6 +24,7 @@ const Actions = Reflux.createActions({
     changeUsers:     {children: ['completed', 'failed']},
     saveUserPost:    {children: ['completed', 'failed']},
     publishUserPost: {children: ['completed', 'failed']},
+    pendingPost:     {children: ['completed']},
 
     // Preload json for testing.
     preload:         {children: ['completed', 'failed']}
@@ -129,11 +130,17 @@ Actions.changeUsers.listen(function(data) {
 });
 
 Actions.saveUserPost.listen(function(data) {
-    postRestCall(data, "/api/user-save", true, this.completed, this.failed);
+    postRestCall(data, "/user/save-post", true, this.completed, this.failed);
+    Actions.pendingPost(data);
 });
 
 Actions.publishUserPost.listen(function(data) {
-    postRestCall(data, "/api/user-post", true, this.completed, this.failed);
+    postRestCall(data, "/user/publish-post", true, this.completed, this.failed);
+    Actions.pendingPost(data);
+});
+
+Actions.pendingPost.listen(function(data) {
+    this.completed(data);
 });
 
 export default Actions;

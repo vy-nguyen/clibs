@@ -27,6 +27,7 @@
 package com.tvntd.dao;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,10 +38,13 @@ import com.tvntd.models.Article;
 public interface ArticleRepository extends JpaRepository<Article, Long>
 {
     Article findByArticleId(Long id);
-    Article findByArticleUuid(String uuid);
+    Article findByArticleUuid(UUID uuid);
+    Article findByAuthorUuid(UUID uuid);
 
-    List<Article> findAllByUserId(Long id);
-    Page<Article> findByUserId(Long id, Pageable pageable);
+    List<Article> findAllByAuthorId(Long authorId);
+    List<Article> findAllByAuthorId(UUID authorUuidid);
+    Page<Article> findByAuthorId(Long author, Pageable pageable);
+    Page<Article> findByAuthorUuid(UUID authorUuid, Pageable pageable);
 
     @Override
     void delete(Article article);
