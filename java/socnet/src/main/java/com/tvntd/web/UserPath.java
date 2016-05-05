@@ -32,15 +32,20 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tvntd.forms.PostForm;
 import com.tvntd.service.api.GenericResponse;
+import com.tvntd.service.api.IArtSavedService;
 import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.LoginResponse;
@@ -50,9 +55,14 @@ public class UserPath
 {
     static private Logger s_log = LoggerFactory.getLogger(UserPath.class);
     static private GenericResponse s_genOkResp = new GenericResponse("ok");
+    static public  GenericResponse s_noProfile =
+        new GenericResponse("Invalid session", "User Error");
 
     @Autowired
     private IArticleService articleRepo;
+
+    @Autowired
+    private IArtSavedService artSavedRepo;
 
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     @ResponseBody
@@ -75,6 +85,24 @@ public class UserPath
     saveUserPost(@RequestBody PostForm form,
             HttpServletRequest request, HttpSession session)
     {
+        s_log.info("Content " + form.getContent());
+        return s_genOkResp;
+    }
+
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @RequestMapping(value = "/user/upload-img", method = RequestMethod.POST)
+    @ResponseBody
+    public GenericResponse
+    uploadImage(@RequestParam("name") String name,
+            @RequestParam("articleUuid") String artUuid,
+            @RequestParam("file") MultipartFile file,
+            MultipartHttpServletRequest reqt, HttpSession session)
+    {
+        s_log.info("Name: " + name + "\nArtUuid: " + artUuid);
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
         return s_genOkResp;
     }
 }

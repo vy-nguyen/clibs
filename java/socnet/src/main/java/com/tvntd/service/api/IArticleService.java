@@ -27,6 +27,7 @@
 package com.tvntd.service.api;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -129,8 +130,8 @@ public interface IArticleService
             art.setContentOId(ObjectId.zeroId());
 
             art.setCreatedDate(new Date());
-            art.setTopic(form.getTopic());
-            art.setContent(form.getContent());
+            art.setTopic(form.getTopic().getBytes(Charset.forName("UTF-8")));
+            art.setContent(form.getContent().getBytes(Charset.forName("UTF-8")));
             return art;
         }
 
@@ -149,6 +150,10 @@ public interface IArticleService
                 result.add(new ArticleDTO(at));
             }
             return result;
+        }
+
+        public Long obtainArticleId() {
+            return article.getArticleId();
         }
 
         public void assignAuthorId(Long id) {

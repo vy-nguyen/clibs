@@ -41,6 +41,7 @@ import com.tvntd.lib.ObjectId;
 import com.tvntd.models.Profile;
 import com.tvntd.models.User;
 import com.tvntd.objstore.ObjStore;
+import com.tvntd.service.api.IArticleService.ArticleDTO;
 
 public interface IProfileService
 {
@@ -92,6 +93,8 @@ public interface IProfileService
         private Long moneyEarned;
         private Long moneyIssued;
 
+        private ArticleDTO pendPost;
+
         public ProfileDTO(Profile prof)
         {
             profile = prof;
@@ -128,6 +131,17 @@ public interface IProfileService
 
         public Profile toProfile() {
             return profile;
+        }
+
+        /**
+         * Get/set but not visible to JSON.
+         */
+        public ArticleDTO obtainPendPost() {
+            return this.pendPost;
+        }
+
+        public void assignPendPost(ArticleDTO art) {
+            this.pendPost = art;
         }
 
         /**

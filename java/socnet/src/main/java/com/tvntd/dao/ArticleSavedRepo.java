@@ -24,61 +24,30 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.forms;
+package com.tvntd.dao;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import java.util.List;
+import java.util.UUID;
 
-public class PostForm
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.tvntd.models.Article;
+
+public interface ArticleSavedRepo extends JpaRepository<Article, Long>
 {
-    @Size(max = 140)
-    private String topic;
+    Article findByArticleId(Long id);
+    Article findByArticleUuid(UUID uuid);
+    Article findByAuthorUuid(UUID uuid);
 
-    @NotNull
-    @Size(max = 32000)
-    private String content;
+    List<Article> findAllByAuthorId(Long authorId);
+    List<Article> findAllByAuthorId(UUID authorUuidid);
+    Page<Article> findByAuthorId(Long author, Pageable pageable);
+    Page<Article> findByAuthorUuid(UUID authorUuid, Pageable pageable);
 
-    private String tags;
+    void deleteByArticleId(Long id);
 
-    /**
-     * @return the topic
-     */
-    public String getTopic() {
-        return topic;
-    }
-
-    /**
-     * @param topic the topic to set
-     */
-    public void setTopic(String topic) {
-        this.topic = topic;
-    }
-
-    /**
-     * @return the content
-     */
-    public String getContent() {
-        return content;
-    }
-
-    /**
-     * @param content the content to set
-     */
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    /**
-     * @return the tags
-     */
-    public String getTags() {
-        return tags;
-    }
-
-    /**
-     * @param tags the tags to set
-     */
-    public void setTags(String tags) {
-        this.tags = tags;
-    }
+    @Override
+    void delete(Article article);
 }

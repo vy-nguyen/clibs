@@ -11,11 +11,9 @@ import DropzoneComponent from 'react-dropzone-component';
 
 import ArticleStore    from 'vntd-root/stores/ArticleStore.jsx';
 import Actions         from 'vntd-root/actions/Actions.jsx';
-// import Dropzone        from 'vntd-shared/forms/inputs/Dropzone.jsx';
 import Select2         from 'vntd-shared/forms/inputs/Select2.jsx';
 import Editor          from 'vntd-shared/forms/editors/Editor.jsx';
 import JarvisWidget    from 'vntd-shared/widgets/JarvisWidget.jsx';
-import {safeStringify} from 'vntd-shared/utils/Enum.jsx';
 
 let EditorPost = React.createClass({
 
@@ -23,10 +21,10 @@ let EditorPost = React.createClass({
 
     _getData: function() {
         return {
-            topic: safeStringify(this.refs.topic.value),
-            tags: safeStringify(this.refs.tags.value),
-            content: safeStringify(this.state.content),
-            // fileUpload: safeStringify(this.refs.fileUpload.value)
+            topic: this.refs.topic.value,
+            tags: this.refs.tags.value,
+            content: this.state.content,
+            articleUuid: this.state.articleUuid
         }
     },
 
@@ -68,10 +66,24 @@ let EditorPost = React.createClass({
 
     _onSend: function(files, xhr, form) {
         form.append('name', files.name);
+        form.append('articleUuid', this.state.articleUuid);
     },
 
     _onComplete: function(file, a) {
         console.log("Upload complete");
+        console.log(file.xhr);
+    },
+
+    _onSuccess: function(files, a, b, c) {
+        console.log("scuesss");
+        console.log(files);
+        console.log(a);
+        console.log(b);
+        console.log(c);
+    },
+
+    _onError: function(file) {
+        console.log("Error ");
         console.log(file.xhr);
     },
 
@@ -80,7 +92,9 @@ let EditorPost = React.createClass({
             content: '',
             status: 'Clean',
             errorText: "",
-            errorResp: null
+            errorResp: null,
+            articleUuid: "",
+            imgUuidList: []
         }
     },
 
@@ -107,11 +121,13 @@ let EditorPost = React.createClass({
         const componentConfig = {
             iconFiletypes: ['.jpg', '.png', '.gif'],
             showFiletypeIcon: true,
-            postUrl: '/api/upload-img'
+            postUrl: '/user/upload-img'
         };
         const eventHandlers = {
-            sending: this._onSend,
-            complete: this._onComplete
+            sending:  this._onSend,
+            complete: this._onComplete,
+            success:  this._onSuccess,
+            error:    this._error
         };
 
         let form = (
@@ -142,29 +158,14 @@ let EditorPost = React.createClass({
                     <div className="row">
                         <div className="form-group">
                             <label className="control-label col-md-1">
-                                <OverlayTrigger
-                                    placement="bottom"
-                                    overlay={
-                                        <Tooltip id="attach-pic-tooltip">Attach pictures</Tooltip>
-                                    }>
-                                    <a href-void className="show-next" onClick={this._addAttachments}>
-                                        <i className="fa fa-paperclip fa-lg"/>
-                                    </a>
-                                </OverlayTrigger>
+                                <strong>Images </strong><i className="fa fa-paperclip fa-lg"/>
                             </label>
                             <div className="col-md-10">
-                                <input ref="fileUpload" className="form-control fileinput" type="file" multiple="multiple"/>
+                                <DropzoneComponent className="col-sm-12 col-md-12col-lg-12"
+                                    dictDefaultMessage="Drop your image files here"
+                                    config={componentConfig} eventHandlers={eventHandlers} djsConfig={djsConfig}>
+                                </DropzoneComponent>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="inbox-info-bar no-padding">
-                    <div className="row">
-                        <div className="form-group">
-                            <DropzoneComponent className="col-sm-12 col-md-12col-lg-12"
-                                config={componentConfig} eventHandlers={eventHandlers} djsConfig={djsConfig}>
-                            </DropzoneComponent>
                         </div>
                     </div>
                 </div>

@@ -24,61 +24,81 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.forms;
+package com.tvntd.service.api;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import java.util.UUID;
 
-public class PostForm
+import com.tvntd.lib.ObjectId;
+
+public class ImageUploadResp extends GenericResponse
 {
-    @Size(max = 140)
-    private String topic;
+    private String articleUuid;
+    private String authorUuid;
+    private String imgObjId;
+    private String imgObjUrl;
 
-    @NotNull
-    @Size(max = 32000)
-    private String content;
+    public ImageUploadResp(String type, String message, String error) {
+        super(GenericResponse.USER_HOME, message, error);
+    }
 
-    private String tags;
-
-    /**
-     * @return the topic
-     */
-    public String getTopic() {
-        return topic;
+    public ImageUploadResp(UUID artUuid, UUID authorUuid, ObjectId imgOid)
+    {
+        super(GenericResponse.USER_HOME, null, null);
     }
 
     /**
-     * @param topic the topic to set
+     * @return the articleUuid
      */
-    public void setTopic(String topic) {
-        this.topic = topic;
+    public String getArticleUuid() {
+        return articleUuid;
     }
 
     /**
-     * @return the content
+     * @param articleUuid the articleUuid to set
      */
-    public String getContent() {
-        return content;
+    public void setArticleUuid(String articleUuid) {
+        this.articleUuid = articleUuid;
     }
 
     /**
-     * @param content the content to set
+     * @return the authorUuid
      */
-    public void setContent(String content) {
-        this.content = content;
+    public String getAuthorUuid() {
+        return authorUuid;
     }
 
     /**
-     * @return the tags
+     * @param authorUuid the authorUuid to set
      */
-    public String getTags() {
-        return tags;
+    public void setAuthorUuid(String authorUuid) {
+        this.authorUuid = authorUuid;
     }
 
     /**
-     * @param tags the tags to set
+     * @return the imgObjId
      */
-    public void setTags(String tags) {
-        this.tags = tags;
+    public String getImgObjId() {
+        return imgObjId;
+    }
+
+    /**
+     * @param imgObjId the imgObjId to set
+     */
+    public void setImgObjId(String imgObjId) {
+        this.imgObjId = imgObjId;
+    }
+
+    /**
+     * @return the imgObjUrl
+     */
+    public String getImgObjUrl() {
+        return imgObjUrl;
+    }
+
+    /**
+     * @param imgObjUrl the imgObjUrl to set
+     */
+    public void setImgObjUrl(String imgObjUrl) {
+        this.imgObjUrl = imgObjUrl;
     }
 }

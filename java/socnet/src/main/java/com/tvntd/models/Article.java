@@ -86,8 +86,12 @@ public class Article
     @CollectionTable(name = "ArtComnts", joinColumns = @JoinColumn(name="articleId"))
     private List<Long> comments;
 
-    public Article() {
+    public Article()
+    {
         super();
+        articleUuid = UUID.randomUUID();
+        transRoot = ObjectId.zeroId();
+        contentOId = ObjectId.zeroId();
     }
 
     /**

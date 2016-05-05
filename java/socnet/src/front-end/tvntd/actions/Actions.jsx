@@ -64,6 +64,38 @@ function postRestCall(formData, url, json, complete, failure, always) {
     });
 };
 
+function uploadFiles(url, progId, formData, complete, failure) {
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: formData,
+        cache: false,
+        xhr: function() {
+            var req = $.ajaxSettings.xhr();
+            if (req.upload) {
+                req.upload.addEventListener('progress',progress, false);
+            }
+            return req;
+        },
+        beforeSend: function(xhdr) {
+            let token  = $("meta[name='_csrf']").attr("content");
+            let header = $("meta[name='_csrf_header']").attr("content");
+            xhdr.setRequestHeader(header, token);
+        }
+    }).done(function(resp, text, error) {
+        complete(resp, text);
+
+    }).fail(function(resp, text, error) {
+        failure(new ErrorDispatch(resp, text, error));
+    });
+
+    function progress(e) {
+        if (e.lengthComputable) {
+            $('#' + progId).attr({value: e.loaded, max: e.total});
+        }
+    }
+};
+
 /**
  * UI click actions.
  */

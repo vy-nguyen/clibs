@@ -24,61 +24,21 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.forms;
+package com.tvntd.service.api;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import java.util.List;
+import java.util.UUID;
 
-public class PostForm
+import com.tvntd.service.api.IArticleService.ArticleDTO;
+
+public interface IArtSavedService
 {
-    @Size(max = 140)
-    private String topic;
+    public ArticleDTO getArticle(Long artId);
+    public ArticleDTO getArticle(UUID uuid);
 
-    @NotNull
-    @Size(max = 32000)
-    private String content;
+    public List<ArticleDTO> getArticlesByUser(Long userId);
+    public List<ArticleDTO> getArticlesByUser(UUID userUuidId);
 
-    private String tags;
-
-    /**
-     * @return the topic
-     */
-    public String getTopic() {
-        return topic;
-    }
-
-    /**
-     * @param topic the topic to set
-     */
-    public void setTopic(String topic) {
-        this.topic = topic;
-    }
-
-    /**
-     * @return the content
-     */
-    public String getContent() {
-        return content;
-    }
-
-    /**
-     * @param content the content to set
-     */
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    /**
-     * @return the tags
-     */
-    public String getTags() {
-        return tags;
-    }
-
-    /**
-     * @param tags the tags to set
-     */
-    public void setTags(String tags) {
-        this.tags = tags;
-    }
+    public void saveArticle(ArticleDTO article);
+    public void deleteArticle(ArticleDTO article);
 }
