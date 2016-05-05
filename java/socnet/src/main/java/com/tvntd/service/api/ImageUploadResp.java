@@ -41,9 +41,12 @@ public class ImageUploadResp extends GenericResponse
         super(GenericResponse.USER_HOME, message, error);
     }
 
-    public ImageUploadResp(UUID artUuid, UUID authorUuid, ObjectId imgOid)
+    public ImageUploadResp(String artUuid, String authorUuid, ObjectId imgOid)
     {
         super(GenericResponse.USER_HOME, null, null);
+        this.articleUuid = artUuid;
+        this.authorUuid = authorUuid;
+        this.imgObjId = imgOid.name();
     }
 
     /**

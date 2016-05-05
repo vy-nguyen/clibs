@@ -84,7 +84,7 @@ public class ApiPath
     private IUserNotifService userNotifService;
 
     @Autowired
-    private IArticleService articleService;
+    private IArticleService articleRepo;
 
     @Autowired
     protected Mongo mongo;
@@ -121,9 +121,11 @@ public class ApiPath
     {
         User user = (User) session.getAttribute("user");
         if (user != null) {
-            List<ArticleDTO> articles = articleService.getArticlesByUser(user.getId());
-            s_log.info("Got articles " + articles.size());
-            return new ArticleDTOResponse(articles);
+            List<ArticleDTO> articles = articleRepo.getArticlesByUser(user.getId());
+            for (ArticleDTO at : articles) {
+                s_log.info("Article: " + at);
+            }
+            return new ArticleDTOResponse(articles, null);
         }
         s_log.info("User is not login");
         return null;

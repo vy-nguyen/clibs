@@ -61,9 +61,11 @@ public interface IArticleService
     public static class ArticleDTOResponse
     {
         private List<ArticleDTO> articles;
+        private List<ArticleDTO> pendPosts;
 
-        public ArticleDTOResponse(List<ArticleDTO> arts) {
+        public ArticleDTOResponse(List<ArticleDTO> arts, List<ArticleDTO> pend) {
             this.articles = arts;
+            this.pendPosts = pend;
         }
 
         /**
@@ -74,10 +76,10 @@ public interface IArticleService
         }
 
         /**
-         * @param articles the articles to set
+         * @return the pendPosts
          */
-        public void setArticles(List<ArticleDTO> articles) {
-            this.articles = articles;
+        public List<ArticleDTO> getPendPosts() {
+            return pendPosts;
         }
     }
     /**
@@ -95,44 +97,65 @@ public interface IArticleService
 
         public ArticleDTO(Article art)
         {
-            this.article = art;
+            article = art;
+            convertUTF();
+        }
+
+        public ArticleDTO(UUID author, Long id)
+        {
+            article = new Article();
+            article.setAuthorId(id);
+            article.setAuthorUuid(author);
             convertUTF();
         }
 
         public ArticleDTO(PostForm form, ProfileDTO profile)
         {
-            this.article = toArticle(form, profile);
+            this.article = toArticle(form, profile, false);
             convertUTF();
         }
 
         private void convertUTF()
         {
             try {
-                topic = new String(article.getTopic(), "UTF-8");
-                content = new String(article.getContent(), "UTF-8");
+                byte[] str = article.getTopic();
+                if (str != null) {
+                    topic = new String(str, "UTF-8");
+                }
+                str = article.getContent();
+                if (str != null) {
+                    content = new String(str, "UTF-8");
+                }
 
             } catch(UnsupportedEncodingException e) {
                 s_log.error(e.toString());
             }
         }
 
-        public static Article toArticle(PostForm form, ProfileDTO profile)
+        public static Article toArticle(PostForm form, ProfileDTO profile, boolean publish)
         {
             Article art = new Article();
 
             art.setAuthorId(profile.obtainUserId());
             art.setAuthorUuid(profile.getUserUuid());
-            art.setArticleUuid(UUID.randomUUID());
-            art.setCreditEarned(0L);
-            art.setMoneyEarned(0L);
-            art.setTransRoot(ObjectId.zeroId());
-            art.setContentOId(ObjectId.zeroId());
-            art.setContentOId(ObjectId.zeroId());
+            applyForm(form, art, false);
+            return art;
+        }
 
+        private static void applyForm(PostForm form, Article art, boolean publish)
+        {
+            if (publish == true) {
+                art.markActive();
+            } else {
+                art.markPending();
+            }
             art.setCreatedDate(new Date());
             art.setTopic(form.getTopic().getBytes(Charset.forName("UTF-8")));
             art.setContent(form.getContent().getBytes(Charset.forName("UTF-8")));
-            return art;
+        }
+
+        public void applyForm(PostForm form, boolean publish) {
+            applyForm(form, article, publish);
         }
 
         public String toString()
@@ -140,6 +163,14 @@ public interface IArticleService
             StringBuilder sb = new StringBuilder();
             sb.append("Author uuid: ").append(getAuthorUuid()).append("\n");
             sb.append("Content: ").append(content).append('\n');
+
+            if (article.getPictures() != null) {
+                sb.append("Pic [");
+                for (ObjectId oid : article.getPictures()) {
+                    sb.append(oid.name());
+                }
+                sb.append("]\n");
+            }
             return sb.toString();
         }
 
@@ -152,12 +183,31 @@ public interface IArticleService
             return result;
         }
 
+        /**
+         * Methods to construct fields in the article.
+         */
         public Long obtainArticleId() {
             return article.getArticleId();
         }
 
         public void assignAuthorId(Long id) {
             article.setAuthorId(id);
+        }
+
+        public void addPicture(ObjectId img) {
+            article.addPicture(img);
+        }
+
+        public void removePicture(ObjectId img) {
+            article.removePicture(img);
+        }
+
+        public void addComment(Long id) {
+            article.addComment(id);
+        }
+
+        public void removeComment(Long id) {
+            article.removeComment(id);
         }
 
         /**
@@ -179,6 +229,13 @@ public interface IArticleService
          */
         public String getArticleUrl() {
             return articleUrl;
+        }
+
+        /**
+         * @return the published
+         */
+        public boolean isPublished() {
+            return !article.isPending();
         }
 
         public Long getCreditEarned() {

@@ -26,6 +26,9 @@
  */
 package com.tvntd.web;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -44,19 +47,26 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tvntd.forms.PostForm;
+import com.tvntd.lib.ObjectId;
+import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.GenericResponse;
 import com.tvntd.service.api.IArtSavedService;
 import com.tvntd.service.api.IArticleService;
+import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
+import com.tvntd.service.api.ImageUploadResp;
 import com.tvntd.service.api.LoginResponse;
 
 @Controller
 public class UserPath
 {
     static private Logger s_log = LoggerFactory.getLogger(UserPath.class);
-    static private GenericResponse s_genOkResp = new GenericResponse("ok");
+    static public  GenericResponse s_genOkResp = new GenericResponse("ok");
     static public  GenericResponse s_noProfile =
         new GenericResponse("Invalid session", "User Error");
+
+    static public  GenericResponse s_saveObjFailed =
+        new GenericResponse("Failed to save object", "System Error");
 
     @Autowired
     private IArticleService articleRepo;
@@ -77,18 +87,52 @@ public class UserPath
     /**
      * User post articles.
      */
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @RequestMapping(value = "/user/save-post",
             consumes = "application/json", method = RequestMethod.POST)
     @JsonIgnoreProperties(ignoreUnknown = true)
     @ResponseBody
     public GenericResponse
-    saveUserPost(@RequestBody PostForm form,
-            HttpServletRequest request, HttpSession session)
+    saveUserPost(@RequestBody PostForm form, HttpSession session)
     {
-        s_log.info("Content " + form.getContent());
-        return s_genOkResp;
+        return savePost(form, session, false);
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @RequestMapping(value = "/user/publish-post",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    publishUserPost(@RequestBody PostForm form, HttpSession session)
+    {
+        return savePost(form, session, true);
+    }
+
+    protected GenericResponse
+    savePost(PostForm form, HttpSession session, boolean publish)
+    {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
+        ArticleDTO art = profile.obtainPendPost(true);
+        art.applyForm(form, publish);
+
+        if (publish == true) {
+            art.getArticle().markActive();
+            articleRepo.saveArticle(art);
+        } else {
+            artSavedRepo.saveArticle(art);
+        }
+        s_log.info("Content " + form.getContent() + " article " + art);
+        return new ImageUploadResp(art.getArticleUuid(),
+                profile.getUserUuid().toString(), ObjectId.zeroId());
+    }
+
+    /**
+     * Upload images for the pending article.
+     */
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @RequestMapping(value = "/user/upload-img", method = RequestMethod.POST)
     @ResponseBody
@@ -98,11 +142,30 @@ public class UserPath
             @RequestParam("file") MultipartFile file,
             MultipartHttpServletRequest reqt, HttpSession session)
     {
-        s_log.info("Name: " + name + "\nArtUuid: " + artUuid);
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
         if (profile == null) {
             return s_noProfile;
         }
-        return s_genOkResp;
+        ArticleDTO art = profile.obtainPendPost(true);
+        s_log.info("article " + art);
+        try {
+            ObjStore store = ObjStore.getInstance();
+            InputStream is = file.getInputStream();
+            ObjectId oid = store.putUserImage(is,
+                    (int)file.getSize(), profile.getUserUuid().toString());
+
+            if (oid != null) {
+                art.addPicture(oid);
+            }
+            ImageUploadResp resp = new ImageUploadResp(art.getArticleUuid(),
+                    profile.getUserUuid().toString(), oid);
+
+            resp.setImgObjUrl(store.imgUserObjUri(oid,
+                        profile.getUserUuid().toString()));
+            return resp;
+
+        } catch(IOException e) {
+        }
+        return s_saveObjFailed;
     }
 }

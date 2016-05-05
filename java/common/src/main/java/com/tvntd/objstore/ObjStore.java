@@ -52,6 +52,8 @@ public class ObjStore extends Module
     private static Logger s_log = LoggerFactory.getLogger(ObjStore.class);
 
     protected Path m_base;
+    protected Path m_user;
+    protected Path m_userUrl;
     protected File m_temp;
 
     public ObjStore()
@@ -59,9 +61,12 @@ public class ObjStore extends Module
         super(s_name);
         m_temp = new File("/var/www/static/temp");
         m_base = Paths.get("/var/www/static/upload");
+        m_user = Paths.get("/var/www/static/user");
+        m_userUrl = Paths.get("/rs/user");
 
         try {
             Files.createDirectories(m_base);
+            Files.createDirectories(m_user);
             Files.createDirectories(m_temp.toPath());
 
         } catch(IOException e) {
@@ -86,7 +91,15 @@ public class ObjStore extends Module
     /**
      * PUT and image to the object store.
      */
-    public ObjectId putImage(InputStream is, int limit)
+    public ObjectId putImage(InputStream is, int limit) {
+        return putFile(m_base, is, limit);
+    }
+
+    public ObjectId putUserImage(InputStream is, int limit, String user) {
+        return putFile(m_user.resolve(user), is, limit);
+    }
+
+    private ObjectId putFile(Path base, InputStream is, int limit)
     {
         try {
             Path saved = null;
@@ -107,14 +120,17 @@ public class ObjStore extends Module
                 }
             }
             oid = ObjectId.fromRaw(md.digest());
-            saved = oid.toPath(m_base,
+            saved = oid.toPath(base,
                     Constants.OIdDirLevels, Constants.OIdDirHexChars);
             
             fos.close();
             if (!Files.exists(saved)) {
                 Files.createDirectories(saved.getParent());
-                boolean ret = temp.renameTo(saved.toFile());
-                s_log.info("Save object " + saved + " ret " + ret);
+                if (temp.renameTo(saved.toFile()) != true) {
+                    s_log.info("Saved obj " + saved + " failed");
+                    temp.delete();
+                    return null;
+                }
             } else {
                 temp.delete();
                 s_log.info("Record exists " + saved);
@@ -131,6 +147,28 @@ public class ObjStore extends Module
     {
         if (oid != null) {
             Path dest = oid.toPath(m_base,
+                    Constants.OIdDirLevels, Constants.OIdDirHexChars);
+
+            return dest.toString();
+        }
+        return null;
+    }
+
+    public String imgUserObjUri(ObjectId oid, String user)
+    {
+        if (oid != null) {
+            Path dest = oid.toPath(m_userUrl.resolve(user),
+                    Constants.OIdDirLevels, Constants.OIdDirHexChars);
+
+            return dest.toString();
+        }
+        return null;
+    }
+
+    public String imgUserObjUri(ObjectId oid, String base, String user)
+    {
+        if (oid != null) {
+            Path dest = oid.toPath(Paths.get(base).resolve(user),
                     Constants.OIdDirLevels, Constants.OIdDirHexChars);
 
             return dest.toString();

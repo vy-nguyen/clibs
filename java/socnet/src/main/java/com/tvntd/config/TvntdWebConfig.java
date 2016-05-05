@@ -55,6 +55,8 @@ public class TvntdWebConfig extends WebMvcConfigurerAdapter
             addResourceLocations("file:///var/www/static/img/");
 		registry.addResourceHandler("/rs/upload/**").
             addResourceLocations("file:///var/www/static/upload/");
+		registry.addResourceHandler("/rs/user/**").
+            addResourceLocations("file:///var/www/static/user/");
 		registry.addResourceHandler("/rs/obj/**").
             addResourceLocations("file:///var/www/static/obj/");
 		registry.addResourceHandler("/rs/js/**").

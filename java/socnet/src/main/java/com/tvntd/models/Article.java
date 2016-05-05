@@ -26,6 +26,7 @@
  */
 package com.tvntd.models;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -92,6 +93,52 @@ public class Article
         articleUuid = UUID.randomUUID();
         transRoot = ObjectId.zeroId();
         contentOId = ObjectId.zeroId();
+        createdDate = new Date();
+    }
+
+    public void markPending()
+    {
+        creditEarned = -1L;
+        moneyEarned = -1L;
+    }
+
+    public void markActive() {
+        creditEarned = 0L;
+        moneyEarned = 0L;
+    }
+
+    public boolean isPending() {
+        return (creditEarned == -1L) && (moneyEarned == -1L);
+    }
+
+    public void addPicture(ObjectId img)
+    {
+        if (pictures == null) {
+            pictures = new ArrayList<>();
+        }
+        pictures.add(img);
+    }
+
+    public void removePicture(ObjectId img)
+    {
+        if (pictures != null) {
+            pictures.remove(img);
+        }
+    }
+
+    public void addComment(Long id)
+    {
+        if (comments == null) {
+            comments = new ArrayList<>();
+        }
+        comments.add(id);
+    }
+
+    public void removeComment(Long id)
+    {
+        if (comments != null) {
+            comments.remove(id);
+        }
     }
 
     /**
@@ -111,7 +158,7 @@ public class Article
     /**
      * @return the authorId
      */
-    public Long getAuthorUserId() {
+    public Long getAuthorId() {
         return authorId;
     }
 
