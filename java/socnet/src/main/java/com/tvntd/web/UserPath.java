@@ -116,8 +116,15 @@ public class UserPath
         if (profile == null) {
             return s_noProfile;
         }
+        if (form.getTopic() == null) {
+            form.setTopic("");
+        }
+        if (form.getContent() == null) {
+            form.setContent("");
+        }
         ArticleDTO art = profile.obtainPendPost(true);
         art.applyForm(form, publish);
+        s_log.info("Article publish: " + art);
 
         if (publish == true) {
             art.getArticle().markActive();

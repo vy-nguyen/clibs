@@ -6,6 +6,8 @@
 
 import React  from 'react-mod';
 import Reflux from 'reflux';
+import _      from 'lodash';
+import classnames from 'classnames';
 import {OverlayTrigger, Tooltip} from 'react-bootstrap';
 import DropzoneComponent from 'react-dropzone-component';
 
@@ -30,38 +32,106 @@ let EditorPost = React.createClass({
 
     _savePost: function(e) {
         e.preventDefault();
-        this.setState({
-            status: 'Saving...'
-        });
-        console.log(this.state);
+        this.setState(this._nextStatus("Saving"));
         Actions.saveUserPost(this._getData());
+        console.log(this._getData());
     },
 
     _publishPost: function(e) {
         e.preventDefault();
-        this.setState({
-            status: 'Publishing...'
-        });
+        this.setState(this._nextStatus("Publishing"));
         Actions.publishUserPost(this._getData());
-        this.setState({
-            status: 'Published'
-        });
+        console.log("Publish post");
+        console.log(this._getData());
+    },
+
+    _nextStatus: function(event) {
+        if (event === "Draft") {
+            return {
+                saveDis: false,
+                saveTxt: 'Save',
+                saveBtn: 'btn btn-danger',
+                publishDis: false,
+                publishTxt: 'Publish',
+                publishBtn: 'btn btn-primary'
+            }
+        }
+        if (event === "Saving") {
+            return {
+                saveDis: true,
+                saveTxt: 'Saving...',
+                saveBtn: 'btn btn-info disabled',
+                publishDis: true,
+                publishTxt: 'Publish',
+                publishBtn: 'btn btn-primary disabled'
+            }
+        }
+        if (event === "Saved") {
+            return {
+                saveDis: true,
+                saveTxt: 'Saved',
+                saveBtn: 'btn btn-info disabled',
+                publishDis: false,
+                publishTxt: 'Publish',
+                publishBtn: 'btn btn-primary'
+            }
+        }
+        if (event === "Failed") {
+            return {
+                saveDis: true,
+                saveTxt: 'Save Failed',
+                saveBtn: 'btn btn-danger disabled',
+                publishDis: true,
+                publishTxt: 'Publish Failed',
+                publishBtn: 'btn btn-danger disabled'
+            }
+        }
+        if (event === "Publishing") {
+            return {
+                saveDis: true,
+                saveTxt: 'Save',
+                saveBtn: 'btn btn-primary disabled',
+                publishDis: true,
+                publishTxt: 'Publishing...',
+                publishBtn: 'btn btn-danger disabled'
+            }
+        }
+        if (event === "Published") {
+            return {
+                saveDis: true,
+                saveTxt: 'Save',
+                saveBtn: 'btn btn-primary disabled',
+                publishDis: true,
+                publishTxt: 'Published',
+                publishBtn: 'btn btn-primary disabled'
+            }
+        }
+        return {
+            saveDis: false,
+            saveTxt: 'Save',
+            saveBtn: 'btn btn-primary',
+            publishDis: false,
+            publishTxt: 'Publish',
+            publishBtn: 'btn btn-primary'
+        }
     },
 
     _onPublishResult: function() {
         if (this.state.errorResp !== null) {
-            let status = (this.state.status == "Saving...") ? 'Save Failed' : 'Publish Failed';
-            this.setState({
-                status: status
-            });
+            this.setState(this._nextStatus("Failed"));
+
+        } else if (this.state.saveTxt === "Saving...") {
+            this.setState(this._nextStatus("Saved"));
+
+        } else if (this.state.publishTxt === "Publishing...") {
+            this.setState(this._nextStatus("Published"));
         }
     },
 
     _handleContentChange: function(e) {
-        this.setState({
-            content: e.target.value,
-            status: 'Draft'
-        });
+        let state = this._nextStatus("Draft");
+        state.content = e.target.value;
+        this.setState(state);
     },
 
     _onSend: function(files, xhr, form) {
@@ -74,12 +144,9 @@ let EditorPost = React.createClass({
         console.log(file.xhr);
     },
 
-    _onSuccess: function(files, a, b, c) {
+    _onSuccess: function(files) {
         console.log("scuesss");
         console.log(files);
-        console.log(a);
-        console.log(b);
-        console.log(c);
     },
 
     _onError: function(file) {
@@ -90,11 +157,17 @@ let EditorPost = React.createClass({
     getInitialState: function() {
         return {
             content: '',
-            status: 'Clean',
-            errorText: "",
+            errorText: '',
             errorResp: null,
-            articleUuid: "",
-            imgUuidList: []
+            articleUuid: '',
+            imgUuidList: [],
+
+            saveDis: true,
+            saveTxt: 'Save',
+            saveBtn: 'btn btn-info disabled',
+            publishDis: true,
+            publishTxt: 'Publish',
+            publishBtn: 'btn btn-info disabled'
         }
     },
 
@@ -179,11 +252,13 @@ let EditorPost = React.createClass({
                 </div>
         
                 <div className="inbox-compose-footer">
-                    <button onClick={this._savePost}
-                        className="btn btn-danger margin=top-10 pull-right" type="button">Save</button>
+                    <button onClick={this._savePost} disabled={this.state.saveDis}
+                        className={this.state.saveBtn + " margin=top-10 pull-right"}
+                        type="button">{this.state.saveTxt}</button>
 
-                    <button onClick={this._publishPost}
-                        className="btn btn-info  margin=top-10 pull-right" type="button">Publish</button>
+                    <button onClick={this._publishPost} disabled={this.state.publishDis}
+                        className={this.state.publishBtn + " margin=top-10 pull-right"}
+                        type="button">{this.state.publishTxt}</button>
                 </div>
             </form>
         );
@@ -193,7 +268,7 @@ let EditorPost = React.createClass({
                     <JarvisWidget id="my-post" color="purple">
                         <header>
                             <span className="widget-icon"> <i className="fa fa-pencil"/></span>
-                            <h2>Publish Post <span className="label txt-color-white">{this.state.status}</span></h2>
+                            <h2>Publish Post</h2>
                         </header>
                         <div className="widget-body">
                             {form}

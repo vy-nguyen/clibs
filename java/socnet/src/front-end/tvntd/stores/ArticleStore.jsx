@@ -96,8 +96,6 @@ let ArticleStore = Reflux.createStore({
      * Save/publish user post.
      */
     onPendingPostCompleted: function(post) {
-        console.log("Save pending post");
-        console.log(post);
         this.myPendingPost = post;
         this.trigger(post);
     },
