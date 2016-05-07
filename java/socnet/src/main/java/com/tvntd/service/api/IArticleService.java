@@ -28,6 +28,8 @@ package com.tvntd.service.api;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -85,7 +87,7 @@ public interface IArticleService
     /**
      * Transfer article to client.
      */
-    public static class ArticleDTO
+    public static class ArticleDTO extends GenericResponse
     {
         private static Logger s_log = LoggerFactory.getLogger(ArticleDTO.class);
         private static String s_baseUri = "/rs/upload/user";
@@ -97,12 +99,14 @@ public interface IArticleService
 
         public ArticleDTO(Article art)
         {
+            super(GenericResponse.USER_HOME, null, null);
             article = art;
             convertUTF();
         }
 
         public ArticleDTO(UUID author, Long id)
         {
+            super(GenericResponse.USER_HOME, null, null);
             article = new Article();
             article.setAuthorId(id);
             article.setAuthorUuid(author);
@@ -111,6 +115,7 @@ public interface IArticleService
 
         public ArticleDTO(PostForm form, ProfileDTO profile)
         {
+            super(GenericResponse.USER_HOME, null, null);
             this.article = toArticle(form, profile, false);
             convertUTF();
         }
@@ -132,7 +137,7 @@ public interface IArticleService
             }
         }
 
-        public static Article toArticle(PostForm form, ProfileDTO profile, boolean publish)
+        public static Article toArticle(PostForm form, ProfileDTO profile, boolean pub)
         {
             Article art = new Article();
 
@@ -211,6 +216,13 @@ public interface IArticleService
         }
 
         /**
+         * @return the article
+         */
+        public Article obtainArticle() {
+            return article;
+        }
+
+        /**
          * @return the authorUuid
          */
         public String getAuthorUuid() {
@@ -246,6 +258,14 @@ public interface IArticleService
             return article.getMoneyEarned();
         }
 
+        public Long getLikeCount() {
+            return 0L;
+        }
+
+        public Long getRankCount() {
+            return 0L;
+        }
+
         public String getTransRoot() {
             return article.getTransRoot().name();
         }
@@ -254,15 +274,9 @@ public interface IArticleService
             return article.getContentOId().name();
         }
 
-        public Date getCreateDate() {
-            return article.getCreatedDate();
-        }
-
-        /**
-         * @return the article
-         */
-        public Article getArticle() {
-            return article;
+        public String getCreatedDate() {
+            DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm");
+            return df.format(article.getCreatedDate());
         }
 
         public String getTopic() {
@@ -273,20 +287,22 @@ public interface IArticleService
             return this.content;
         }
 
+        public List<String> getCommentList() {
+            return new LinkedList<String>();
+        }
+
         public List<String> getPictureUrl()
         {
             ObjStore objStore = ObjStore.getInstance();
             List<String> ret = new LinkedList<>();
             List<ObjectId> pictures = article.getPictures();
 
-            for (ObjectId oid : pictures) {
-                ret.add(objStore.imgObjUri(oid, s_baseUri));
+            if (pictures != null) {
+                for (ObjectId oid : pictures) {
+                    ret.add(objStore.imgObjUri(oid, s_baseUri));
+                }
             }
             return ret;
-        }
-
-        public List<Long> getComments() {
-            return article.getComments();
         }
     }
 }

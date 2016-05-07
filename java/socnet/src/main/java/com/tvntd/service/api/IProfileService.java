@@ -136,12 +136,7 @@ public interface IProfileService
         /**
          * Get/set but not visible to JSON.
          */
-        public ArticleDTO obtainPendPost(boolean creat)
-        {
-            if (this.pendPost == null && creat == true) {
-                this.pendPost =
-                    new ArticleDTO(profile.getUserUuid(), profile.getUserId());
-            }
+        public ArticleDTO obtainPendPost() {
             return this.pendPost;
         }
 

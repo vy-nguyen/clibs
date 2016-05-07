@@ -28,6 +28,7 @@ package com.tvntd.web;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -56,6 +57,7 @@ import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.ImageUploadResp;
 import com.tvntd.service.api.LoginResponse;
+import com.tvntd.util.Util;
 
 @Controller
 public class UserPath
@@ -93,8 +95,7 @@ public class UserPath
     @JsonIgnoreProperties(ignoreUnknown = true)
     @ResponseBody
     public GenericResponse
-    saveUserPost(@RequestBody PostForm form, HttpSession session)
-    {
+    saveUserPost(@RequestBody PostForm form, HttpSession session) {
         return savePost(form, session, false);
     }
 
@@ -104,11 +105,13 @@ public class UserPath
     @JsonIgnoreProperties(ignoreUnknown = true)
     @ResponseBody
     public GenericResponse
-    publishUserPost(@RequestBody PostForm form, HttpSession session)
-    {
+    publishUserPost(@RequestBody PostForm form, HttpSession session) {
         return savePost(form, session, true);
     }
 
+    /**
+     * Shared code to save/publish an article.
+     */
     protected GenericResponse
     savePost(PostForm form, HttpSession session, boolean publish)
     {
@@ -122,19 +125,19 @@ public class UserPath
         if (form.getContent() == null) {
             form.setContent("");
         }
-        ArticleDTO art = profile.obtainPendPost(true);
+        ArticleDTO art = genPendPost(profile, true, form.getArticleUuid());
         art.applyForm(form, publish);
-        s_log.info("Article publish: " + art);
 
         if (publish == true) {
-            art.getArticle().markActive();
+            art.obtainArticle().markActive();
             articleRepo.saveArticle(art);
+
+            // We're done with the current post.
+            profile.assignPendPost(null);
         } else {
             artSavedRepo.saveArticle(art);
         }
-        s_log.info("Content " + form.getContent() + " article " + art);
-        return new ImageUploadResp(art.getArticleUuid(),
-                profile.getUserUuid().toString(), ObjectId.zeroId());
+        return art;
     }
 
     /**
@@ -145,6 +148,7 @@ public class UserPath
     @ResponseBody
     public GenericResponse
     uploadImage(@RequestParam("name") String name,
+            @RequestParam("authorUuid") String authorUuid,
             @RequestParam("articleUuid") String artUuid,
             @RequestParam("file") MultipartFile file,
             MultipartHttpServletRequest reqt, HttpSession session)
@@ -153,8 +157,7 @@ public class UserPath
         if (profile == null) {
             return s_noProfile;
         }
-        ArticleDTO art = profile.obtainPendPost(true);
-        s_log.info("article " + art);
+        ArticleDTO art = genPendPost(profile, true, artUuid);
         try {
             ObjStore store = ObjStore.getInstance();
             InputStream is = file.getInputStream();
@@ -174,5 +177,27 @@ public class UserPath
         } catch(IOException e) {
         }
         return s_saveObjFailed;
+    }
+
+    private ArticleDTO
+    genPendPost(ProfileDTO profile, boolean creat, String artUuid)
+    {
+        ArticleDTO pendPost = profile.obtainPendPost();
+
+        if (pendPost != null) {
+            return pendPost;
+        }
+        UUID articleUuid = Util.toUuid(artUuid);
+        if (articleUuid != null) {
+            pendPost = artSavedRepo.getArticle(articleUuid);
+        }
+        if (creat == true && pendPost == null) {
+            UUID authorUuid = profile.getUserUuid();
+            pendPost = new ArticleDTO(authorUuid, profile.toProfile().getUserId());
+        }
+        if (pendPost != null) {
+            profile.assignPendPost(pendPost);
+        }
+        return pendPost;
     }
 }

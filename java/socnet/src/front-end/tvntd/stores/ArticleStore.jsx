@@ -11,19 +11,20 @@ import UserStore from 'vntd-shared/stores/UserStore.jsx';
 
 class Article {
     constructor(data) {
-        this._id         = _.uniqueId('id-article-');
-        this.author      = undefined;
-        this.commentList = undefined;
-        this.authorUuid  = data.authorUuid;
-        this.articleUuid = data.articleUuid;
-        this.articleUrl  = data.articleUrl;
-        this.coverImgUrl = data.coverImgUrl;
+        this._id          = _.uniqueId('id-article-');
+        this.author       = undefined;
+        this.commentList  = data.commentList;
+        this.authorUuid   = data.authorUuid;
+        this.articleUuid  = data.articleUuid;
+        this.articleUrl   = data.articleUrl;
         this.likeCount    = data.likeCount;
+        this.rankCount    = data.rankCount;
         this.creditEarned = data.creditEarned;
         this.moneyEarned  = data.moneyEarned;
         this.transactions = data.transactions;
-        this.postDate     = data.postDate;
+        this.createdDate  = data.createdDate;
         this.content      = data.content;
+        this.contentOId   = data.contentOId;
         this.pictures     = data.pictures;
         this.topic        = data.toppic;
         return this;
@@ -35,7 +36,7 @@ let ArticleStore = Reflux.createStore({
         articlesByUuid: {},
         articlesByAuthor: {},
         mySavedArticles: {},
-        myPendingPost: {},
+        myPostResult: null,
 
         artUuidByDate: [],
         artUuidByScore: [],
@@ -96,8 +97,8 @@ let ArticleStore = Reflux.createStore({
      * Save/publish user post.
      */
     onPendingPostCompleted: function(post) {
-        this.myPendingPost = post;
-        this.trigger(post);
+        this.data.myPostResult = post;
+        this.trigger(this.data);
     },
 
     onSaveUserPostFailed: function(err) {
@@ -106,10 +107,6 @@ let ArticleStore = Reflux.createStore({
     },
 
     onSaveUserPostCompleted: function(post) {
-        console.log(post);
-        console.log("Save user post ok");
-        this.myPendingPost = {};
-        this.trigger(this.data);
     },
 
     onPublishUserPostFailed: function(err) {
@@ -118,8 +115,10 @@ let ArticleStore = Reflux.createStore({
     },
 
     onPublishUserPostCompleted: function(post) {
-        this.myPendingPost = {};
+        this._addArticle(post);
+        this.data.myPostResult = post;
         this.trigger(this.data);
+        console.log(this.data);
     },
 
     /**
@@ -133,7 +132,7 @@ let ArticleStore = Reflux.createStore({
     _resetStore: function() {
         this.data.articlesByUuid = {};
         this.data.articlesByAuthor = {};
-        this.mySavedArticles = {};
+        this.data.mySavedArticles = {};
 
         this.artUuidByDate = [];
         this.artUuidByScore = [];
@@ -146,12 +145,13 @@ let ArticleStore = Reflux.createStore({
         let article = new Article(post);
         article.author = UserStore.getUserByUuid(article.authorUuid);
 
-        let owned = this.data.articlesByAuthor[article.authorUuid];
-        if (owned === undefined) {
-            owned = new Object();
+        let myArticles = this.data.articlesByAuthor[article.authorUuid];
+        if (myArticles === undefined) {
+            myArticles = new Object();
         }
-        owned[article.articleUuid] = article;
+        myArticles[article.articleUuid] = article;
         this.data.articlesByUuid[article.articleUuid] = article;
+        this.data.articlesByAuthor[article.authorUuid] = myArticles;
     },
 
     _removeArticle: function(artUuid) {

@@ -114,14 +114,16 @@ public class ArticleService implements IArticleService
     @Override
     public List<ArticleDTO> getArticlesByUser(Long userId)
     {
-        List<Article> articles = articleRepo.findAllByAuthorId(userId);
+        List<Article> articles =
+            articleRepo.findAllByAuthorIdOrderByCreatedDateDesc(userId);
         return ArticleDTO.convert(articles);
     }
 
     @Override
     public List<ArticleDTO> getArticlesByUser(UUID userUuid)
     {
-        List<Article> articles = articleRepo.findAllByAuthorId(userUuid);
+        List<Article> articles =
+            articleRepo.findAllByAuthorUuidOrderByCreatedDateAsc(userUuid);
         return ArticleDTO.convert(articles);
     }
 
@@ -129,7 +131,8 @@ public class ArticleService implements IArticleService
     public Page<ArticleDTO> getUserArticles(Long userId)
     {
         Pageable req = new PageRequest(0, 10, new Sort(Sort.Direction.DESC, "created"));
-        Page<Article> page = articleRepo.findByAuthorId(userId, req);
+        Page<Article> page =
+            articleRepo.findByAuthorIdOrderByCreatedDateDesc(userId, req);
         List<Article> articles = page.getContent();
 
         return new PageImpl<ArticleDTO>(
@@ -140,7 +143,8 @@ public class ArticleService implements IArticleService
     public Page<ArticleDTO> getUserArticles(UUID userUuid)
     {
         Pageable req = new PageRequest(0, 10, new Sort(Sort.Direction.DESC, "created"));
-        Page<Article> page = articleRepo.findByAuthorUuid(userUuid, req);
+        Page<Article> page =
+            articleRepo.findByAuthorUuidOrderByCreatedDateDesc(userUuid, req);
         List<Article> articles = page.getContent();
 
         return new PageImpl<ArticleDTO>(
@@ -150,13 +154,12 @@ public class ArticleService implements IArticleService
     @Override
     public void saveArticle(ArticleDTO article)
     {
-        Article art = article.getArticle();
+        Article art = article.obtainArticle();
         articleRepo.save(art);
     }
 
     public void saveArticle(Article article) {
         articleRepo.save(article);
-        s_log.info("Save article " + article.toString());
     }
 
     @Override

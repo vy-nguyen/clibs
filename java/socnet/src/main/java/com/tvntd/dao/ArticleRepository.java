@@ -42,9 +42,15 @@ public interface ArticleRepository extends JpaRepository<Article, Long>
     Article findByAuthorUuid(UUID uuid);
 
     List<Article> findAllByAuthorId(Long authorId);
-    List<Article> findAllByAuthorId(UUID authorUuidid);
-    Page<Article> findByAuthorId(Long author, Pageable pageable);
-    Page<Article> findByAuthorUuid(UUID authorUuid, Pageable pageable);
+    List<Article> findAllByAuthorUuid(UUID authorUuidid);
+    List<Article> findAllByAuthorIdOrderByCreatedDateDesc(Long authorId);
+    List<Article> findAllByAuthorUuidOrderByCreatedDateAsc(UUID uuid);
+
+    Page<Article>
+    findByAuthorIdOrderByCreatedDateDesc(Long author, Pageable pageable);
+
+    Page<Article>
+    findByAuthorUuidOrderByCreatedDateDesc(UUID authorUuid, Pageable pageable);
 
     @Override
     void delete(Article article);

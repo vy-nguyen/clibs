@@ -39,6 +39,8 @@ public class PostForm
     private String content;
 
     private String tags;
+    private String authorUuid;
+    private String articleUuid;
 
     /**
      * @return the topic
@@ -80,5 +82,19 @@ public class PostForm
      */
     public void setTags(String tags) {
         this.tags = tags;
+    }
+
+    /**
+     * @return the authorUuid
+     */
+    public String getAuthorUuid() {
+        return authorUuid;
+    }
+
+    /**
+     * @return the articleUuid
+     */
+    public String getArticleUuid() {
+        return articleUuid;
     }
 }

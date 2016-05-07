@@ -7,12 +7,12 @@
 import React  from 'react-mod';
 import Reflux from 'reflux';
 import _      from 'lodash';
-import classnames from 'classnames';
 import {OverlayTrigger, Tooltip} from 'react-bootstrap';
 import DropzoneComponent from 'react-dropzone-component';
 
 import ArticleStore    from 'vntd-root/stores/ArticleStore.jsx';
 import Actions         from 'vntd-root/actions/Actions.jsx';
+import UserStore       from 'vntd-shared/stores/UserStore.jsx';
 import Select2         from 'vntd-shared/forms/inputs/Select2.jsx';
 import Editor          from 'vntd-shared/forms/editors/Editor.jsx';
 import JarvisWidget    from 'vntd-shared/widgets/JarvisWidget.jsx';
@@ -26,6 +26,7 @@ let EditorPost = React.createClass({
             topic: this.refs.topic.value,
             tags: this.refs.tags.value,
             content: this.state.content,
+            authorUuid: this.state.authorUuid,
             articleUuid: this.state.articleUuid
         }
     },
@@ -34,15 +35,12 @@ let EditorPost = React.createClass({
         e.preventDefault();
         this.setState(this._nextStatus("Saving"));
         Actions.saveUserPost(this._getData());
-        console.log(this._getData());
     },
 
     _publishPost: function(e) {
         e.preventDefault();
         this.setState(this._nextStatus("Publishing"));
         Actions.publishUserPost(this._getData());
-        console.log("Publish post");
-        console.log(this._getData());
     },
 
     _nextStatus: function(event) {
@@ -119,12 +117,19 @@ let EditorPost = React.createClass({
     _onPublishResult: function() {
         if (this.state.errorResp !== null) {
             this.setState(this._nextStatus("Failed"));
-
-        } else if (this.state.saveTxt === "Saving...") {
-            this.setState(this._nextStatus("Saved"));
-
-        } else if (this.state.publishTxt === "Publishing...") {
-            this.setState(this._nextStatus("Published"));
+        } else {
+            let state = null;
+            if (this.state.saveTxt === "Saving...") {
+                state = this._nextStatus("Saved");
+            } else {
+                state = this._nextStatus("Published");
+            }
+            if (this.state.myPostResult) {
+                state.articleUuid = this.state.myPostResult.articleUuid;
+            }
+            this.setState(state);
+            console.log(this.state);
+            console.log(state);
         }
     },
 
@@ -136,6 +141,7 @@ let EditorPost = React.createClass({
 
     _onSend: function(files, xhr, form) {
         form.append('name', files.name);
+        form.append('authorUuid', this.state.authorUuid);
         form.append('articleUuid', this.state.articleUuid);
     },
 
@@ -159,8 +165,9 @@ let EditorPost = React.createClass({
             content: '',
             errorText: '',
             errorResp: null,
-            articleUuid: '',
             imgUuidList: [],
+            articleUuid: '',
+            authorUuid: UserStore.getSelf().userUuid,
 
             saveDis: true,
             saveTxt: 'Save',

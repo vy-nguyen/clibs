@@ -74,7 +74,6 @@ public class PublicPath
         StartupResponse result = new StartupResponse(profile, reqt);
 
         if (user != null) {
-            s_log.debug("User loggined: " + profile);
             ApiPath.fillStartupResponse(result, profile, profileRepo);
             userId = menuItemService.getPrivateId();
         }
