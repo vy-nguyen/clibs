@@ -15,7 +15,7 @@ let PostArticles = React.createClass({
 
     render: function() {
         let panes = _.map(this.props.data, function(article, idx) {
-            return (<PostPane data={article} key={idx}/>);
+            return (<PostPane data={article} key={_.uniqueId('post-pane-')}/>);
         });
         if (this.props.data === undefined || _.isEmpty(this.props.data)) {
             panes = (

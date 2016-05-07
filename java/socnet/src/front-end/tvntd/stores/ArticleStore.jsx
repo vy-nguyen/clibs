@@ -9,6 +9,8 @@ import _         from 'lodash';
 import Actions   from 'vntd-root/actions/Actions.jsx';
 import UserStore from 'vntd-shared/stores/UserStore.jsx';
 
+import {insertSorted, preend} from 'vntd-shared/utils/Enum.jsx';
+
 class Article {
     constructor(data) {
         this._id          = _.uniqueId('id-article-');
@@ -22,7 +24,7 @@ class Article {
         this.creditEarned = data.creditEarned;
         this.moneyEarned  = data.moneyEarned;
         this.transactions = data.transactions;
-        this.createdDate  = data.createdDate;
+        this.createdDate  = Date.parse(data.createdDate);
         this.content      = data.content;
         this.contentOId   = data.contentOId;
         this.pictures     = data.pictures;
@@ -69,6 +71,11 @@ let ArticleStore = Reflux.createStore({
     },
 
     sortArticlesByScore: function(articles) {
+    },
+
+    debugDump: function(header) {
+        console.log(header);
+        console.log(this.data);
     },
 
     /**
@@ -139,17 +146,37 @@ let ArticleStore = Reflux.createStore({
         this.data.errorResp = null;
     },
 
+    _createArtAnchor: function(article) {
+        let anchor = new Object;
+
+        anchor.sortedArticles = [];
+        anchor.sortedArticles.push(article);
+        anchor[article.articleUuid] = article;
+        this.data.articlesByAuthor[article.authorUuid] = anchor;
+        return anchor;
+    },
+
+    _addSortedArticle: function(anchor, article) {
+        anchor.sortedArticles.push(article);
+        // insertSorted(article, anchor.sortedArticles, this._compareArticles);
+    },
+
+    _compareArticles: function(a1, a2) {
+        return a2.createdDate - a1.createdDate;
+    },
+
     _addArticle: function(post) {
         let article = new Article(post);
         article.author = UserStore.getUserByUuid(article.authorUuid);
 
-        let myArticles = this.data.articlesByAuthor[article.authorUuid];
-        if (myArticles === undefined) {
-            myArticles = new Object();
+        let anchor = this.data.articlesByAuthor[article.authorUuid];
+        if (anchor === undefined) {
+            anchor = this._createArtAnchor(article);
         }
-        myArticles[article.articleUuid] = article;
+        anchor[article.articleUuid] = article;
+        anchor.sortedArticles = preend(article, anchor.sortedArticles);
+        // this._addSortedArticle(anchor, article);
         this.data.articlesByUuid[article.articleUuid] = article;
-        this.data.articlesByAuthor[article.authorUuid] = myArticles;
     },
 
     _removeArticle: function(artUuid) {
@@ -164,14 +191,13 @@ let ArticleStore = Reflux.createStore({
             if (article.author === undefined) {
                 article.author = UserStore.getUserByUuid(article.authorUuid);
             }
-            let owned = this.data.articlesByAuthor[article.authorUuid];
-            if (owned === undefined) {
-                owned = new Object();
-                owned[article.articleUuid] = article;
-                this.data.articlesByAuthor[article.authorUuid] = owned;
+            let anchor = this.data.articlesByAuthor[article.authorUuid];
+            if (anchor === undefined) {
+                anchor = this._createArtAnchor(article);
 
-            } else if (owned[article.articleUuid] === undefined) {
-                owned[article.articleUuid] = article;
+            } else if (anchor[article.articleUuid] === undefined) {
+                anchor[article.articleUuid] = article;
+                this._addSortedArticle(anchor, article);
             }
         }.bind(this));
     },

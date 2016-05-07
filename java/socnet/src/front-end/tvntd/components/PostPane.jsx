@@ -12,6 +12,7 @@ import PostItem     from 'vntd-root/components/PostItem.jsx';
 import PostComment  from 'vntd-root/components/PostComment.jsx';
 import WidgetGrid   from 'vntd-shared/widgets/WidgetGrid.jsx';
 import JarvisWidget from 'vntd-shared/widgets/JarvisWidget.jsx';
+import { toDateString } from 'vntd-shared/utils/Enum.jsx';
 
 let commentMock = [ {
     moment: "2 days",
@@ -65,11 +66,12 @@ let PostPane = React.createClass({
             fontSize: "130%"
         };
         let pictures = this.props.data.pictures;
+        let postedDate = toDateString(this.props.data.createdDate);
         return (
-            <JarvisWidget togglebutton={true} color={'blue'}>
+            <JarvisWidget color={'purple'}>
                 <header>
                     <span className="widget-icon"><i className="fa fa-book"/></span>
-                    <h2><strong>{this.props.data.postDate}</strong></h2>
+                    <h2><strong>{postedDate}</strong></h2>
                     <div className="widget-toolbar">
                         <div className="label label-success">${this.props.data.moneyEarned}</div>
                     </div>

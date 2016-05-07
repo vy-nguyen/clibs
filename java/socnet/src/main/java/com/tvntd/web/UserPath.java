@@ -130,6 +130,7 @@ public class UserPath
 
         if (publish == true) {
             art.obtainArticle().markActive();
+            art.convertUTF();
             articleRepo.saveArticle(art);
 
             // We're done with the current post.

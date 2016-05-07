@@ -120,7 +120,7 @@ public interface IArticleService
             convertUTF();
         }
 
-        private void convertUTF()
+        public void convertUTF()
         {
             try {
                 byte[] str = article.getTopic();

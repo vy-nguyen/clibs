@@ -126,15 +126,21 @@ let UserHome = React.createClass({
 
     _getMyArticles: function() {
         let self = UserStore.getSelf();
-        if (self == null) {
+        if (self === null) {
             return null;
         }
-        return ArticleStore.getArticlesByAuthor(self.userUuid);
+        let anchor = ArticleStore.getArticlesByAuthor(self.userUuid);
+        if (anchor) {
+            return anchor.sortedArticles;
+        }
+        return null;
     },
 
     _onArticleUpdate: function() {
         let articles = this._getMyArticles();
         if (articles !== null) {
+            ArticleStore.debugDump("This is store");
+
             this.setState({
                 myArticles: articles
             });
