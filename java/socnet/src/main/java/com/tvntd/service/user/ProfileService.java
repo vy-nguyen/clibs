@@ -201,10 +201,8 @@ public class ProfileService implements IProfileService
     {
         for (String uuid : uuids) {
             try {
-                s_log.info("Follow uuid " + uuid);
                 UUID key = UUID.fromString(uuid);
                 ProfileDTO peer = getProfile(key);
-                s_log.info("Peer " + peer);
                 if (peer != null) {
                     me.followProfile(peer);
                     if (changes.get(key) == null) {
@@ -223,10 +221,8 @@ public class ProfileService implements IProfileService
     {
         for (String uuid : uuids) {
             try {
-                s_log.info("Connect uuid " + uuid);
                 UUID key = UUID.fromString(uuid);
                 ProfileDTO peer = getProfile(key);
-                s_log.info("Peer " + peer);
 
                 if (peer != null) {
                     me.connectProfile(peer);

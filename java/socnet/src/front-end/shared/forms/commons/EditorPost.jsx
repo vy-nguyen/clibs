@@ -21,12 +21,39 @@ let EditorPost = React.createClass({
 
     mixins: [Reflux.connect(ArticleStore)],
 
+    initValues: {
+        topic: 'Topic',
+        tags : 'My Post',
+        state: {
+            content    : '',
+            errorText  : '',
+            errorResp  : null,
+            imgUuidList: [],
+            articleUuid: '',
+
+            saveDis: true,
+            saveTxt: 'Save',
+            saveBtn: 'btn btn-info disabled',
+            publishDis: true,
+            publishTxt: 'Publish',
+            publishBtn: 'btn btn-info disabled'
+        },
+        dropzone: null
+    },
+
+    _resetData: function() {
+        this.refs.topic.value = this.initValues.topic;
+        this.refs.tags.value  = this.initValues.tags;
+        this.setState(this.initValues.state);
+        this.initValues.dropzone.removeAllFiles();
+    },
+
     _getData: function() {
         return {
-            topic: this.refs.topic.value,
-            tags: this.refs.tags.value,
+            topic  : this.refs.topic.value,
+            tags   : this.refs.tags.value,
             content: this.state.content,
-            authorUuid: this.state.authorUuid,
+            authorUuid: UserStore.getSelf().userUuid,
             articleUuid: this.state.articleUuid
         }
     },
@@ -76,9 +103,9 @@ let EditorPost = React.createClass({
         }
         if (event === "Failed") {
             return {
-                saveDis: true,
-                saveTxt: 'Save Failed',
-                saveBtn: 'btn btn-danger disabled',
+                saveDis: false,
+                saveTxt: 'Retry Saving',
+                saveBtn: 'btn btn-danger',
                 publishDis: true,
                 publishTxt: 'Publish Failed',
                 publishBtn: 'btn btn-danger disabled'
@@ -118,7 +145,7 @@ let EditorPost = React.createClass({
         if (this.state.errorResp !== null) {
             this.setState(this._nextStatus("Failed"));
         } else {
-            let state = null;
+            let state = {};
             if (this.state.saveTxt === "Saving...") {
                 state = this._nextStatus("Saved");
             } else {
@@ -128,20 +155,24 @@ let EditorPost = React.createClass({
                 state.articleUuid = this.state.myPostResult.articleUuid;
             }
             this.setState(state);
-            console.log(this.state);
-            console.log(state);
+
+            if (this.state.content !== '') {
+                setTimeout(function() {
+                    this._resetData();
+                }.bind(this), 1000);
+            }
         }
     },
 
     _handleContentChange: function(e) {
         let state = this._nextStatus("Draft");
-        state.content = e.target.value;
+        state.content = e.value;
         this.setState(state);
     },
 
     _onSend: function(files, xhr, form) {
         form.append('name', files.name);
-        form.append('authorUuid', this.state.authorUuid);
+        form.append('authorUuid', UserStore.getSelf().userUuid);
         form.append('articleUuid', this.state.articleUuid);
     },
 
@@ -161,21 +192,7 @@ let EditorPost = React.createClass({
     },
 
     getInitialState: function() {
-        return {
-            content: '',
-            errorText: '',
-            errorResp: null,
-            imgUuidList: [],
-            articleUuid: '',
-            authorUuid: UserStore.getSelf().userUuid,
-
-            saveDis: true,
-            saveTxt: 'Save',
-            saveBtn: 'btn btn-info disabled',
-            publishDis: true,
-            publishTxt: 'Publish',
-            publishBtn: 'btn btn-info disabled'
-        }
+        return this.initValues.state;
     },
 
     componentDidMount: function() {
@@ -204,10 +221,11 @@ let EditorPost = React.createClass({
             postUrl: '/user/upload-img'
         };
         const eventHandlers = {
-            sending:  this._onSend,
+            sending : this._onSend,
             complete: this._onComplete,
-            success:  this._onSuccess,
-            error:    this._error
+            success : this._onSuccess,
+            error   : this._error,
+            init    : function(dz) { this.initValues.dropzone = dz }.bind(this)
         };
 
         let form = (
@@ -217,7 +235,7 @@ let EditorPost = React.createClass({
                         <div className="form-group">
                             <label className="control-label col-md-1"><strong>Topic</strong></label>
                             <div className="col-md-10">
-                                <input ref="topic" className="form-control" placeholder="Topic" type="text"/>
+                                <input ref="topic" className="form-control" placeholder={this.initValues.topic} type="text"/>
                             </div>
                         </div>
                     </div>
@@ -228,7 +246,7 @@ let EditorPost = React.createClass({
                         <div className="form-group">
                             <label className="control-label col-md-1"><strong>Link Chain</strong></label>
                             <div className="col-md-10">
-                                <input ref="tags" className="form-control" placeholder="My Posts" type="text"/>
+                                <input ref="tags" className="form-control" placeholder={this.initValues.tags} type="text"/>
                             </div>
                         </div>
                     </div>
@@ -241,7 +259,7 @@ let EditorPost = React.createClass({
                                 <strong>Images </strong><i className="fa fa-paperclip fa-lg"/>
                             </label>
                             <div className="col-md-10">
-                                <DropzoneComponent className="col-sm-12 col-md-12col-lg-12"
+                                <DropzoneComponent className="col-sm-12 col-md-12col-lg-12" id="post-dropzone"
                                     dictDefaultMessage="Drop your image files here"
                                     config={componentConfig} eventHandlers={eventHandlers} djsConfig={djsConfig}>
                                 </DropzoneComponent>

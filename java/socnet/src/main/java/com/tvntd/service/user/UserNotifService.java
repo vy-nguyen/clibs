@@ -110,7 +110,6 @@ public class UserNotifService implements IUserNotifService
 
             Gson out = new GsonBuilder().setPrettyPrinting().create();
             String debug = out.toJson(json);
-            s_log.info("Parsed " + debug);
 
             saveUserNotif(json, userId);
 

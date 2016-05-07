@@ -122,9 +122,6 @@ public class ApiPath
         User user = (User) session.getAttribute("user");
         if (user != null) {
             List<ArticleDTO> articles = articleRepo.getArticlesByUser(user.getId());
-            for (ArticleDTO at : articles) {
-                s_log.info("Article: " + at);
-            }
             return new ArticleDTOResponse(articles, null);
         }
         s_log.info("User is not login");
@@ -158,7 +155,6 @@ public class ApiPath
     {
         if (repo != null) {
             resp.setLinkedUsers(repo.getProfileList(profile, null));
-            s_log.info("Linked users: " + resp.getLinkedUsers());
         }
     }
 

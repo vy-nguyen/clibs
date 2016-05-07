@@ -22,9 +22,7 @@ let Editor = React.createClass({
 
         this.setState({html: newHtml}, function() {
             this.props.onChange({
-                target: {
-                    value: newHtml
-                }
+                value: newHtml
             });
         }.bind(this));
     },
@@ -36,7 +34,7 @@ let Editor = React.createClass({
     },
 
     shouldComponentUpdate: function(nextProps) {
-        return nextProps.content !== this.state.html;
+        return nextProps.content !== this.state.html || this.state.html === '';
     },
 
     execCommand: function(command, arg) {

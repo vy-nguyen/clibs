@@ -98,7 +98,6 @@ let ArticleStore = Reflux.createStore({
      */
     onPendingPostCompleted: function(post) {
         this.data.myPostResult = post;
-        this.trigger(this.data);
     },
 
     onSaveUserPostFailed: function(err) {
@@ -118,7 +117,6 @@ let ArticleStore = Reflux.createStore({
         this._addArticle(post);
         this.data.myPostResult = post;
         this.trigger(this.data);
-        console.log(this.data);
     },
 
     /**

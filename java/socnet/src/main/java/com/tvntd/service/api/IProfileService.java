@@ -255,7 +255,6 @@ public interface IProfileService
             peer.removeUuid(peer.getFollowerList(), myUuid);
             removeUuid(getFollowList(), peerUuid);
             removeUuid(getFollowerList(), peerUuid);
-            s_log.info(myUuid.toString() + " connects " + peerUuid.toString());
         }
 
         public void unConnectProfile(ProfileDTO peer)
@@ -285,7 +284,7 @@ public interface IProfileService
                        peer.findUuid(peer.getConnectList(), myUuid) == null) {
                 addUuidList(getFollowList(), peer.getUserUuid());
                 peer.addUuidList(peer.getFollowerList(), getUserUuid());
-                s_log.info(myUuid.toString() + " follows " + peerUuid.toString());
+                s_log.debug(myUuid.toString() + " follows " + peerUuid.toString());
             }
         }
 
