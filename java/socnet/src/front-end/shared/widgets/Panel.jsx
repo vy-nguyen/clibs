@@ -5,29 +5,26 @@
 'use strict';
 
 import React            from 'react-mod';
-import PanelStore       from 'vntd-shared/stores/PanelStore.jsx';
+import _                from 'lodash';
 import DropdownMenu     from 'vntd-shared/layout/DropdownMenu.jsx';
 import JarvisWidget     from 'vntd-shared/widgets/JarvisWidget.jsx';
 
 let Panel = React.createClass({
-    getInitialState: function() {
-        return PanelStore.getPanel(this.props.reactId);
-    },
 
     render: function() {
-        let panel = PanelStore.getPanel(this.props.reactId);
-        if (panel == null || panel == undefined) {
+        let panel = this.props.context;
+        if (panel === null || panel === undefined) {
             return null;
         }
         let dropdown_menu = panel.headerMenus.map(function(item, idx) {
-            return <DropdownMenu key={idx} reactId={item.reactId}/>;
+            return <DropdownMenu key={_.uniqueId('panel-menu-')} context={item}/>;
         }.bind(this));
 
         return (
-           <JarvisWidget color={"blue"} collapse={true}>
+           <JarvisWidget color={"purple"}>
                <header>
                    <span className="widget-icon"><i className={panel.icon}/></span>
-                   <h2>{this.state.header}</h2>
+                   <h2>{this.props.context.header}</h2>
                    <div className="widget-toolbar">
                        {dropdown_menu}
                    </div>

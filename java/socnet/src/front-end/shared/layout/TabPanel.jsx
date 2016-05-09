@@ -5,22 +5,19 @@
 'use strict';
 
 import React            from 'react-mod';
+import _                from 'lodash';
 import classnames       from 'classnames';
-import TabStore         from 'vntd-shared/stores/TabPanelStore.jsx';
 
 let TabPanel = React.createClass({
-    getInitialState: function() {
-        return TabStore.getTabPanel(this.props.tabId);
-    },
 
     render: function() {
-        let tab = TabStore.getTabPanel(this.props.tabId);
+        let tab = this.props.context;
         if (tab === null || tab === undefined) {
             return null;
         }
         let tab_header = tab.tabItems.map(function(item, idx) {
             return (
-                <li key={idx} className={idx == 0 ? "active" : ""}>
+                <li key={_.uniqueId('tab-panel-')} className={idx == 0 ? "active" : ""}>
                     <a data-toggle="tab" href={'#' + item.domId + '-' + item.tabIdx}>{item.tabText}</a>
                 </li>
             )
@@ -31,7 +28,8 @@ let TabPanel = React.createClass({
             let tabRef = tab_list[item.tabIdx];
             let clasname = classnames("tab-pane", {active: idx == 0 });
             return (
-                <div key={idx} id={item.domId + '-' + item.tabIdx} className={classnames("tab-pane", {active: idx == 0})}>
+                <div key={_.uniqueId('tab-panel-')}
+                    id={item.domId + '-' + item.tabIdx} className={classnames("tab-pane", {active: idx == 0})}>
                     <div className="panel-body">
                         {tabRef}
                     </div>

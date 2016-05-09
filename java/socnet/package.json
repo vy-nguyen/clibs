@@ -54,6 +54,7 @@
     "reflux": "^0.3.0",
     "redux": "^3.x.x",
     "marked": "0.3.5",
+    "jsclass": "4.0.5",
     "jquery-ui": "1.10.5",
     "jquery": "2.2.1",
     "jquery-sparkline": "2.3.0",

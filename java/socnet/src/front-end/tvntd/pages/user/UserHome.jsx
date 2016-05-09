@@ -8,9 +8,7 @@ import React               from 'react-mod';
 import Reflux              from 'reflux';
 import {Link}              from 'react-router';
 
-import MarkdownEditor      from 'vntd-shared/forms/editors/MarkdownEditor.jsx';
 import UserStore           from 'vntd-shared/stores/UserStore.jsx';
-import TabPanelStore       from 'vntd-shared/stores/TabPanelStore.jsx';
 import TabPanel            from 'vntd-shared/layout/TabPanel.jsx';
 import EditorPost          from 'vntd-shared/forms/commons/EditorPost.jsx';
 import ArticleStore        from 'vntd-root/stores/ArticleStore.jsx';
@@ -24,8 +22,6 @@ let UserHome = React.createClass({
     mixins: [Reflux.connect(UserStore), Reflux.connect(ArticleStore)],
 
     userTab: {
-        init    : false,
-        reactId : 'user-home',
         tabItems: [ {
             domId  : 'published-articles',
             tabText: 'Published Articles',
@@ -41,7 +37,6 @@ let UserHome = React.createClass({
         } ]
     },
     myUserTab: {
-        reactId : 'my-home',
         tabItems: [ {
             domId  : 'published-articles',
             tabText: 'Published Articles',
@@ -81,11 +76,6 @@ let UserHome = React.createClass({
         let { userUuid } = this.props.params;
         let self = UserStore.getUserByUuid(userUuid);
 
-        if (this.userTab.init !== true) {
-            this.userTab.init = true;
-            TabPanelStore.setTabPanel(this.userTab.reactId, this.userTab);
-            TabPanelStore.setTabPanel(this.myUserTab.reactId, this.myUserTab);
-        }
         if (self === null) {
             return (
                 <div className="row">
@@ -94,11 +84,11 @@ let UserHome = React.createClass({
                 </div>
             );
         }
-        let tabId = this.userTab.reactId;
+        let tabCtx = this.userTab;
         if (userUuid !== null && userUuid !== undefined) {
             me = false;
         } else {
-            tabId = this.myUserTab.reactId;
+            tabCtx = this.myUserTab;
         }
         let editorFmt = "";
         if (me === true) {
@@ -112,7 +102,7 @@ let UserHome = React.createClass({
                 {/*<Link to={{ pathname: "/user/" + "123450", query: { editor: false } }}>User profile</Link>*/}
                 <div className="row">
                     <article className="col-sm-12 col-md-12 col-lg-10">
-                        <TabPanel tabId={tabId}>
+                        <TabPanel context={tabCtx}>
                             <PostArticles uuid={[self.userUuid]} data={this.state.myArticles}/>
                             <PostArticles uuid={[self.userUuid]}/>
                             <Friends userUuid={self.userUuid}/>

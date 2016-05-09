@@ -15,7 +15,7 @@ let TabPanelStore = Reflux.createStore({
     listenables: [Actions],
 
     getTabPanel: function(id) {
-        if (this.data.panel[id] == undefined) {
+        if (this.data.panel[id] === undefined) {
             return null;
         }
         return this.data.panel[id];
@@ -28,7 +28,7 @@ let TabPanelStore = Reflux.createStore({
     cloneTabPanel: function(orig, newId)
     {
         let origObj = this.data.panel[orig];
-        if (origObj != undefined) {
+        if (origObj !== undefined) {
             let copyObj = _.cloneDeep(origObj);
 
             copyObj.paneId = newId;

@@ -275,7 +275,7 @@ public interface IArticleService
         }
 
         public String getCreatedDate() {
-            DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm");
+            DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm");
             return df.format(article.getCreatedDate());
         }
 

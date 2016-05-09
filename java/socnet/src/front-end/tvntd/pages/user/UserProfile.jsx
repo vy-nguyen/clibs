@@ -7,9 +7,6 @@
 import React              from 'react-mod';
 import Reflux             from 'reflux';
 
-import MenuStore          from 'vntd-shared/stores/DropdownMenuStore.jsx';
-import PanelStore         from 'vntd-shared/stores/PanelStore.jsx';
-import TabPanelStore      from 'vntd-shared/stores/TabPanelStore.jsx';
 import TabPanel           from 'vntd-shared/layout/TabPanel.jsx';
 import UserStore          from 'vntd-shared/stores/UserStore.jsx';
 import Panel              from 'vntd-shared/widgets/Panel.jsx';
@@ -23,55 +20,42 @@ import UserAvatar         from './UserAvatar.jsx';
 let UserInfo = React.createClass({
     mixins: [Reflux.connect(UserStore)],
 
-    profileMenu: {
-        reactId  : 'profile',
-        iconFmt  : 'btn-xs btn-success',
-        titleText: 'Miann',
-        itemFmt  : 'pull-right js-status-update',
-        menuItems: [ {
-            itemFmt : 'fa fa-circle txt-color-green',
-            itemText: 'Online',
-            itemHandler: function() {
-                console.log("Online is clicked");
-            }
-        }, {
-            itemFmt : 'fa fa-circle txt-color-yellow',
-            itemText: 'Go to sleep',
-            itemHandler: function() {
-                console.log("Offline is clicked");
-            }
-        }, {
-            itemFmt : 'fa fa-circle txt-color-red',
-            itemText: 'Offline',
-            itemHandler: function() {
-                console.log("Offline is clicked");
-            }
-        } ]
-    },
-    panelData: {
-        init   : false,
-        reactId: 'basic-info',
-        icon   : 'fa fa-book',
-        header : 'My Basic Information',
-        headerMenus: [ ]
-    },
-
-    getInitialState: function() {
-        if (this.panelData.init != true) {
-            this.panelData.init = true;
-            this.panelData.headerMenus.push(this.profileMenu);
-            MenuStore.setDropdownMenu(this.profileMenu.reactId, this.profileMenu);
-            PanelStore.setPanel(this.panelData.reactId, this.panelData);
-        }
-        return UserStore.getData();
-    },
-
     render: function() {
-        let self = this.state.userSelf;
-        if (self == undefined || self == null) {
+        let self = UserStore.getSelf();
+        if (self === undefined || self === null) {
             console.log(this.state);
             return null;
         }
+        let profileMenu = {
+            iconFmt  : 'btn-xs btn-success',
+            titleText: 'Miann',
+            itemFmt  : 'pull-right js-status-update',
+            menuItems: [ {
+                itemFmt : 'fa fa-circle txt-color-green',
+                itemText: 'Online',
+                itemHandler: function() {
+                    console.log("Online is clicked");
+                }.bind(this)
+            }, {
+                itemFmt : 'fa fa-circle txt-color-yellow',
+                itemText: 'Go to sleep',
+                itemHandler: function() {
+                    console.log("Offline is clicked");
+                }.bind(this)
+            }, {
+                itemFmt : 'fa fa-circle txt-color-red',
+                itemText: 'Offline',
+                itemHandler: function() {
+                    console.log("Offline is clicked");
+                }.bind(this)
+            } ]
+        };
+        let panelData = {
+            icon   : 'fa fa-book',
+            header : 'My Basic Information',
+            headerMenus: [profileMenu]
+        };
+
         let profile_form = {
             formFmt: "client-form",
             hiddenHead: null,
@@ -139,7 +123,7 @@ let UserInfo = React.createClass({
                     console.log(e);
                     console.log(w);
                     e.preventDefault();
-                }
+                }.bind(this)
             }, {
                 btnFmt : "btn btn-primary",
                 btnText: "Save",
@@ -148,11 +132,11 @@ let UserInfo = React.createClass({
                     console.log(e);
                     console.log(w);
                     e.preventDefault();
-                }
+                }.bind(this)
             } ]
         };
         return (
-            <Panel reactId={this.panelData.reactId} className="well no-padding">
+            <Panel context={panelData} className="well no-padding">
                 <GenericForm form={profile_form}/>
             </Panel>
         );
@@ -160,10 +144,8 @@ let UserInfo = React.createClass({
 });
 
 let UserProfile = React.createClass({
-    mixins: [Reflux.connect(UserStore)],
 
     profileTab: {
-        init    : false,
         reactId : 'user-profile',
         tabItems: [ {
             domId  : 'profile-tab',
@@ -184,16 +166,8 @@ let UserProfile = React.createClass({
         } ]
     },
 
-    getInitialState: function() {
-        if (this.profileTab.init != true) {
-            this.profileTab.init = true;
-            TabPanelStore.setTabPanel(this.profileTab.reactId, this.profileTab);
-        }
-        return UserStore.getData();
-    },
-
     render: function() {
-        let self = this.state.userSelf;
+        let self = UserStore.getSelf();
         if (self === undefined || self === null) {
             return <h1>Something's wrong, try logout and login again</h1>;
         }
@@ -202,7 +176,7 @@ let UserProfile = React.createClass({
                 <ProfileCover/>
                 <UserAvatar data={{doFileDrop: true}}/>
                 <div className="row">
-                    <TabPanel tabId={this.profileTab.reactId}>
+                    <TabPanel context={this.profileTab}>
                         <UserInfo/>
                         <Friends/>
                         <Messages/>

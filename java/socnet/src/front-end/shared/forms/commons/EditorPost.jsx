@@ -7,6 +7,7 @@
 import React  from 'react-mod';
 import Reflux from 'reflux';
 import _      from 'lodash';
+
 import {OverlayTrigger, Tooltip} from 'react-bootstrap';
 import DropzoneComponent from 'react-dropzone-component';
 
@@ -16,6 +17,7 @@ import UserStore       from 'vntd-shared/stores/UserStore.jsx';
 import Select2         from 'vntd-shared/forms/inputs/Select2.jsx';
 import Editor          from 'vntd-shared/forms/editors/Editor.jsx';
 import JarvisWidget    from 'vntd-shared/widgets/JarvisWidget.jsx';
+import {safeStringify} from 'vntd-shared/utils/Enum.jsx';
 
 let EditorPost = React.createClass({
 
@@ -49,10 +51,11 @@ let EditorPost = React.createClass({
     },
 
     _getData: function() {
+        console.log(marked);
         return {
-            topic  : this.refs.topic.value,
-            tags   : this.refs.tags.value,
-            content: this.state.content,
+            topic  : safeStringify(this.refs.topic.value),
+            tags   : safeStringify(this.refs.tags.value),
+            content: safeStringify(this.state.content),
             authorUuid: UserStore.getSelf().userUuid,
             articleUuid: this.state.articleUuid
         }

@@ -4,7 +4,6 @@
  */
 'use strict';
 
-import marked  from 'marked';
 import React   from 'react-mod';
 import _       from 'lodash';
 
@@ -12,6 +11,8 @@ import PostItem     from 'vntd-root/components/PostItem.jsx';
 import PostComment  from 'vntd-root/components/PostComment.jsx';
 import WidgetGrid   from 'vntd-shared/widgets/WidgetGrid.jsx';
 import JarvisWidget from 'vntd-shared/widgets/JarvisWidget.jsx';
+
+import Panel            from 'vntd-shared/widgets/Panel.jsx'; 
 import { toDateString } from 'vntd-shared/utils/Enum.jsx';
 
 let commentMock = [ {
@@ -56,17 +57,55 @@ let commentFavMock = [ {
 
 
 let PostPane = React.createClass({
+
     _rawMarkup: function() {
         return { __html: this.props.data.content };
     },
 
     render: function() {
+        let ownerPostMenu = {
+            iconFmt  : 'btn-xs btn-success',
+            titleText: 'Options',
+            itemFmt  : 'pull-right js-status-update',
+            menuItems: [ {
+                itemFmt : 'fa fa-circle txt-color-green',
+                itemText: 'Mark Favorite',
+                itemHandler: function() {
+                }
+            }, {
+                itemFmt : 'fa fa-circle txt-color-red',
+                itemText: 'Delete Post',
+                itemHandler: function(e, pane) {
+                    e.preventDefault();
+                    console.log(this);
+                    console.log("Delete uuid " + this.props.data.articleUuid);
+                    console.log("----------");
+                }.bind(this)
+            }, {
+                itemFmt : 'fa fa-circle txt-color-blue',
+                itemText: 'Tag Post',
+                itemHandler: function() {
+                }
+            } ]
+        };
+        let panelData = {
+            icon   : 'fa fa-book',
+            header : toDateString(this.props.data.createdDate),
+            headerMenus: [ownerPostMenu]
+        };
         let div_style = {
             margin: "10px 10px 10px 10px",
             fontSize: "130%"
         };
+
         let pictures = this.props.data.pictures;
-        let postedDate = toDateString(this.props.data.createdDate);
+        return (
+            <Panel className="well no-padding" context={panelData}>
+                <h2>UUID: {this.props.data.articleUuid}</h2>
+                <div style={div_style} dangerouslySetInnerHTML={this._rawMarkup()}/>
+            </Panel>
+        )
+            /*
         return (
             <JarvisWidget color={'purple'}>
                 <header>
@@ -100,6 +139,7 @@ let PostPane = React.createClass({
                 </div>
             </JarvisWidget>
         )
+             */
     }
 });
 

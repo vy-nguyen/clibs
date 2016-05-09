@@ -48,6 +48,11 @@ let DropdownMenuStore = Reflux.createStore({
         return null;
     },
 
+    debugDump: function() {
+        console.log("Menu dropdown");
+        console.log(this.data);
+    },
+
     exports: {
     }
 });
