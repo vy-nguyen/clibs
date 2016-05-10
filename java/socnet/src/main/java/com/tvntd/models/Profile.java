@@ -37,6 +37,7 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import com.tvntd.lib.ObjectId;
 
@@ -63,19 +64,27 @@ public class Profile
     private UUID userUuid;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "ConnectList", joinColumns = @JoinColumn(name="userId"))
+    @CollectionTable(name = "ConnectList",
+            uniqueConstraints= @UniqueConstraint(columnNames = {"connectList"}),
+            joinColumns = @JoinColumn(name="userId"))
     private List<UUID> connectList;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "FollowerList", joinColumns = @JoinColumn(name="userId"))
+    @CollectionTable(name = "FollowerList",
+            uniqueConstraints= @UniqueConstraint(columnNames = {"followerList"}),
+            joinColumns = @JoinColumn(name="userId"))
     private List<UUID> followerList;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "FollowList", joinColumns = @JoinColumn(name="userId"))
+    @CollectionTable(name = "FollowList",
+            uniqueConstraints= @UniqueConstraint(columnNames = {"followList"}),
+            joinColumns = @JoinColumn(name="userId"))
     private List<UUID> followList;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "ChainLinks", joinColumns = @JoinColumn(name="userId"))
+    @CollectionTable(name = "ChainLinks",
+            uniqueConstraints= @UniqueConstraint(columnNames = {"chainLinks"}),
+            joinColumns = @JoinColumn(name="userId"))
     private List<Long> chainLinks;
 
     public Profile() {

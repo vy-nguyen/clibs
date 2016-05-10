@@ -45,6 +45,7 @@ import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
 
 import com.tvntd.lib.ObjectId;
 
@@ -80,11 +81,15 @@ public class Article
     private byte[] content;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "ArtPics", joinColumns = @JoinColumn(name="articleId"))
+    @CollectionTable(name = "ArtPics",
+            uniqueConstraints= @UniqueConstraint(columnNames = {"pictures"}),
+            joinColumns = @JoinColumn(name="articleId"))
     private List<ObjectId> pictures;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "ArtComnts", joinColumns = @JoinColumn(name="articleId"))
+    @CollectionTable(name = "ArtComnts",
+            uniqueConstraints= @UniqueConstraint(columnNames = {"comments"}),
+            joinColumns = @JoinColumn(name="articleId"))
     private List<Long> comments;
 
     public Article()
