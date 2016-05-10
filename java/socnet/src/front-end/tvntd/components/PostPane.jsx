@@ -7,6 +7,7 @@
 import React   from 'react-mod';
 import _       from 'lodash';
 
+import Actions      from 'vntd-root/actions/Actions.jsx';
 import PostItem     from 'vntd-root/components/PostItem.jsx';
 import PostComment  from 'vntd-root/components/PostComment.jsx';
 import WidgetGrid   from 'vntd-shared/widgets/WidgetGrid.jsx';
@@ -77,6 +78,7 @@ let PostPane = React.createClass({
                 itemText: 'Delete Post',
                 itemHandler: function(e, pane) {
                     e.preventDefault();
+                    Actions.deleteUserPost(this.props.data.articleUuid);
                     console.log(this);
                     console.log("Delete uuid " + this.props.data.articleUuid);
                     console.log("----------");
@@ -91,18 +93,25 @@ let PostPane = React.createClass({
         let panelData = {
             icon   : 'fa fa-book',
             header : toDateString(this.props.data.createdDate),
-            headerMenus: [ownerPostMenu]
+            headerMenus: [ownerPostMenu],
+            panelLabel: [ {
+                labelIcon: 'label label-success',
+                labelText: this.props.data.moneyEarned
+            }, {
+                labelIcon: 'label label-warning',
+                labelText: this.props.data.creditEarned
+            } ]
         };
-        let div_style = {
+        let divStyle = {
             margin: "10px 10px 10px 10px",
             fontSize: "130%"
         };
 
-        let pictures = this.props.data.pictures;
         return (
             <Panel className="well no-padding" context={panelData}>
                 <h2>UUID: {this.props.data.articleUuid}</h2>
-                <div style={div_style} dangerouslySetInnerHTML={this._rawMarkup()}/>
+                <PostItem data={this.props.data.pictures}/>
+                <div style={divStyle} dangerouslySetInnerHTML={this._rawMarkup()}/>
             </Panel>
         )
             /*

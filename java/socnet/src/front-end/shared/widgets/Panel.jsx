@@ -16,20 +16,32 @@ let Panel = React.createClass({
         if (panel === null || panel === undefined) {
             return null;
         }
-        let dropdown_menu = panel.headerMenus.map(function(item, idx) {
+        let dropdownMenu = panel.headerMenus.map(function(item, idx) {
             return <DropdownMenu key={_.uniqueId('panel-menu-')} context={item}/>;
-        }.bind(this));
+        });
+
+        let panelLabel = "";
+        if (panel.panelLabel) {
+            panelLabel = panel.panelLabel.map(function(item, idx) {
+                return (
+                    <div className="widget-toolbar" key={_.uniqueId('panel-label-')}>
+                        <div className={item.labelIcon}>{item.labelText}</div>
+                    </div>
+                )
+            });
+        }
 
         return (
-           <JarvisWidget color={"purple"}>
+           <JarvisWidget editbutton={false} color="purple">
                <header>
                    <span className="widget-icon"><i className={panel.icon}/></span>
                    <h2>{this.props.context.header}</h2>
                    <div className="widget-toolbar">
-                       {dropdown_menu}
+                       {dropdownMenu}
                    </div>
+                   {panelLabel}
                </header>
-               <div className="widget-body">
+               <div className="panel panel-default">
                    {this.props.children}
                </div>
            </JarvisWidget>

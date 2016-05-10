@@ -14,13 +14,14 @@ import WidgetGrid   from 'vntd-shared/widgets/WidgetGrid.jsx';
 let PostArticles = React.createClass({
 
     render: function() {
-        let panes = _.map(this.props.data, function(article, idx) {
-            return (<PostPane data={article} key={_.uniqueId('post-pane-')}/>);
-        });
-        if (this.props.data === undefined || _.isEmpty(this.props.data)) {
-            panes = (
-                <div><h2>You have no articles</h2></div>
-            );
+        let panes = null;
+        
+        if (this.props.data) {
+            panes = _.map(this.props.data, function(article, idx) {
+                return (<PostPane data={article} key={_.uniqueId('post-pane-')}/>);
+            });
+        } else {
+            panes = <div><h2>You have no articles</h2></div>
         }
         return (
             <WidgetGrid>

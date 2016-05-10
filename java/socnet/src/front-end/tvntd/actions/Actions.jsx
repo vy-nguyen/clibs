@@ -23,6 +23,7 @@ const Actions = Reflux.createActions({
 
     changeUsers:     {children: ['completed', 'failed']},
     saveUserPost:    {children: ['completed', 'failed']},
+    deleteUserPost:  {children: ['completed', 'failed']},
     publishUserPost: {children: ['completed', 'failed']},
     pendingPost:     {children: ['completed']},
 
@@ -164,6 +165,10 @@ Actions.changeUsers.listen(function(data) {
 Actions.saveUserPost.listen(function(data) {
     postRestCall(data, "/user/save-post", true, this.completed, this.failed);
     Actions.pendingPost(data);
+});
+
+Actions.deleteUserPost.listen(function(data) {
+    postRestCall(data, "/user/delete-post", true, this.completed, this.failed);
 });
 
 Actions.publishUserPost.listen(function(data) {

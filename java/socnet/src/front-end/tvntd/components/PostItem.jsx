@@ -2,24 +2,29 @@
  * Copyright by Vy Nguyen (2016)
  * BSD License
  */
-import React from 'react-mod'
+'use strict';
+
+import React from 'react-mod';
+import _     from 'lodash';
 
 let PostItem = React.createClass({
 
     render: function() {
+        let pic_lst = this.props.data;
+        if (!pic_lst) {
+            return null;
+        }
         let pic_out = [];
-        let pic_lst = this.props.pictures;
-
         if (pic_lst.length >= 1) {
             pic_out.push(
-                <div key="1" className="col-sm-6">
+                <div key={_.uniqueId("post-item-")} className="col-sm-6">
                     <img className='img-responsive' src={pic_lst[0]}/>
                 </div>
             );
         }
         if (pic_lst.length >= 2) {
             pic_out.push(
-                <div key="2" className="col-sm-6">
+                <div key={_.uniqueId("post-item-")} className="col-sm-6">
                     <div className="row">
                         <div className="col-sm-6">
                             <img className='img-responsive' src={pic_lst[1]}/>
