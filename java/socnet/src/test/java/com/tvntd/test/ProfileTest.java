@@ -30,7 +30,10 @@ import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.junit.After;
@@ -52,6 +55,7 @@ import com.tvntd.models.Profile;
 import com.tvntd.models.User;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
+import com.tvntd.service.user.ProfileService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -73,8 +77,16 @@ public class ProfileTest
         errContent = new ByteArrayOutputStream();
     }
 
+    static protected Long testId = 10L;
+
     @Autowired
     IProfileService profileRepo;
+
+    static public Long getTestId() 
+    {
+        Long rt = testId++;
+        return rt;
+    }
 
     @Before
     public void setupStreams()
@@ -93,9 +105,9 @@ public class ProfileTest
     @Test
     public void testProfile()
     {
-        MockUser a = new MockUser("Vy", "Nguyen", "vy@abc.com");
-        MockUser b = new MockUser("Tom", "Tran", "tom@abc.com");
-        MockUser c = new MockUser("Tep", "Le", "tep@abc.com");
+        MockUser a = new MockUser("AA", "AaAaAa", "aa@abc.com");
+        MockUser b = new MockUser("BB", "BbBbBb", "bbm@abc.com");
+        MockUser c = new MockUser("CC", "CcCcCc", "ccp@abc.com");
         ProfileDTO ap = new ProfileDTO(MockUser.createProfile(a));
         ProfileDTO bp = new ProfileDTO(MockUser.createProfile(b));
         ProfileDTO cp = new ProfileDTO(MockUser.createProfile(c));
@@ -103,8 +115,30 @@ public class ProfileTest
         bp.connectProfile(ap);
         verifyFollow(bp, ap);
 
+        ProfileService.disableCache();
+        profileRepo.saveProfile(ap);
+        profileRepo.saveProfile(bp);
+
+        ProfileDTO av = profileRepo.getProfile(ap.getUserUuid());
+        ProfileDTO bv = profileRepo.getProfile(bp.getUserUuid());
+
+        verifyProfile(ap, av);
+        verifyProfile(bp, bv);
+
         ap.followProfile(bp);
         verifyConnected(ap, bp);
+
+        profileRepo.saveProfile(ap);
+        profileRepo.saveProfile(bp);
+
+        av = profileRepo.getProfile(ap.getUserUuid());
+        bv = profileRepo.getProfile(bp.getUserUuid());
+        verifyProfile(ap, av);
+        verifyProfile(bp, bv);
+
+        profileRepo.saveProfile(ap);
+        av = profileRepo.getProfile(ap.getUserUuid());
+        verifyProfile(ap, av);
 
         bp.followProfile(ap);
         verifyConnected(ap, bp);
@@ -112,14 +146,71 @@ public class ProfileTest
         ap.connectProfile(cp);
         verifyFollow(ap, cp);
 
+        profileRepo.saveProfile(cp);
+        ProfileDTO cv = profileRepo.getProfile(cp.getUserUuid());
+        verifyProfile(cp, cv);
+
         bp.followProfile(cp);
         verifyFollow(bp, cp);
+
+        profileRepo.saveProfile(bp);
+        bv = profileRepo.getProfile(bp.getUserUuid());
+        verifyProfile(bp, bv);
 
         cp.followProfile(ap);
         verifyConnected(ap, cp);
 
         cp.connectProfile(ap);
         verifyConnected(ap, cp);
+
+        profileRepo.saveProfile(cp);
+        cv = profileRepo.getProfile(cp.getUserUuid());
+        verifyProfile(cp, cv);
+
+        profileRepo.saveProfile(ap);
+        av = profileRepo.getProfile(ap.getUserUuid());
+        verifyProfile(ap, av);
+    }
+
+    /**
+     * Verify that two profiles are equals.
+     */
+    void verifyProfile(ProfileDTO a, ProfileDTO b)
+    {
+        assertEquals(a.getUserUuid(), b.getUserUuid());
+        assertEquals(a.obtainUserId(), b.obtainUserId());
+        assertEquals(a.getEmail(), b.getEmail());
+        assertEquals(a.getFirstName(), b.getFirstName());
+        assertEquals(a.getLastName(), b.getLastName());
+
+        verifyList(a, a.getConnectList(), b, b.getConnectList());
+        verifyList(a, a.getFollowList(), b, b.getFollowList());
+        verifyList(a, a.getFollowerList(), b, b.getFollowerList());
+    }
+
+    /**
+     * Verify that two lists are equals.
+     */
+    void verifyList(ProfileDTO ap, List<UUID> a, ProfileDTO bp, List<UUID> b)
+    {
+        Map<UUID, Long> map = new HashMap<>();
+
+        for (UUID uuid : a) {
+            map.put(uuid, 1L);
+        }
+        for (UUID uuid : b) {
+            if (map.get(uuid) == null) {
+                s_log.info("Orig: " + ap);
+                s_log.info("Verf: " + bp);
+            }
+            assertNotNull(map.get(uuid));
+            map.remove(uuid);
+        }
+        if (!map.isEmpty()) {
+            s_log.info("Orig: " + ap);
+            s_log.info("Verf: " + bp);
+        }
+        assertTrue(map.isEmpty());
     }
 
     /**
@@ -158,6 +249,7 @@ public class ProfileTest
         public MockUser(String lastName, String firstName, String email)
         {
             super();
+            setId(ProfileTest.getTestId());
             setLastName(lastName);
             setFirstName(firstName);
             setEmail(email);

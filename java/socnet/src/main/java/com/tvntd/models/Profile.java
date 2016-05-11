@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.CollectionTable;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -37,15 +38,17 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 import com.tvntd.lib.ObjectId;
 
 @Entity
-@Table(indexes = {@Index(columnList = "userUuid", name = "UuidIndex", unique = true)})
+@Table(indexes = {@Index(columnList = "userUuid", unique = true)})
 public class Profile
 {
     @Id
+    @Column(updatable = false)
     private Long userId;
     private Long profileItemId;
 
@@ -61,29 +64,41 @@ public class Profile
     private ObjectId transRoot;
     private ObjectId mainRoot;
 
-    private UUID userUuid;
+    @Column(name = "userUuid") //, updatable = false)
+    private String userUuid;
+
+    @Transient
+    private UUID m_userUuid;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "ConnectList",
-            uniqueConstraints= @UniqueConstraint(columnNames = {"connectList"}),
+            uniqueConstraints = @UniqueConstraint(columnNames = {
+                "userId", "connectList"
+            }),
             joinColumns = @JoinColumn(name="userId"))
     private List<UUID> connectList;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "FollowerList",
-            uniqueConstraints= @UniqueConstraint(columnNames = {"followerList"}),
+            uniqueConstraints = @UniqueConstraint(columnNames = {
+                "userId", "followerList"
+            }),
             joinColumns = @JoinColumn(name="userId"))
     private List<UUID> followerList;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "FollowList",
-            uniqueConstraints= @UniqueConstraint(columnNames = {"followList"}),
+            uniqueConstraints = @UniqueConstraint(columnNames = {
+                "userId", "followList"
+            }),
             joinColumns = @JoinColumn(name="userId"))
     private List<UUID> followList;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "ChainLinks",
-            uniqueConstraints= @UniqueConstraint(columnNames = {"chainLinks"}),
+            uniqueConstraints = @UniqueConstraint(columnNames = {
+                "userId", "chainLinks"
+            }),
             joinColumns = @JoinColumn(name="userId"))
     private List<Long> chainLinks;
 
@@ -103,13 +118,25 @@ public class Profile
         prof.lastName = user.getLastName();
         prof.transRoot = ObjectId.zeroId();
         prof.mainRoot = ObjectId.zeroId();
-        prof.userUuid = UUID.randomUUID();
+        prof.m_userUuid = UUID.randomUUID();
+        prof.userUuid = prof.m_userUuid.toString();
 
         prof.coverImg0 = null;
         prof.coverImg1 = null;
         prof.coverImg2 = null;
         prof.userImgUrl = null;
         return prof;
+    }
+
+    /**
+     * Return the transparent field in UUID type.
+     */
+    public UUID fetchUserUuid()
+    {
+        if (m_userUuid == null) {
+            m_userUuid = UUID.fromString(userUuid);
+        }
+        return m_userUuid;
     }
 
     public String toString()
@@ -120,7 +147,10 @@ public class Profile
             .append(profileItemId).append('\n')
             .append("Name: ").append(userName).append(", transRoot: ")
             .append(transRoot.name()).append('\n')
-            .append("Uuid: ").append(userUuid.toString()).append('\n');
+            .append("Uuid: ").append(userUuid).append('\n')
+            .append("Connect : ").append(connectList).append('\n')
+            .append("Follow  : ").append(followList).append('\n')
+            .append("Follower: ").append(followerList).append('\n');
         return sb.toString();
     }
 
@@ -265,20 +295,6 @@ public class Profile
     }
 
     /**
-     * @return the userUuid
-     */
-    public UUID getUserUuid() {
-        return userUuid;
-    }
-
-    /**
-     * @param userUuid the userUuid to set
-     */
-    public void setUserUuid(UUID userUuid) {
-        this.userUuid = userUuid;
-    }
-
-    /**
      * @return the transRoot
      */
     public ObjectId getTransRoot() {
@@ -321,6 +337,21 @@ public class Profile
     }
 
     /**
+     * @return the userUuid
+     */
+    public String getUserUuid() {
+        return userUuid;
+    }
+
+    /**
+     * @param userUuid the userUuid to set
+     */
+    public void setUserUuid(String userUuid) {
+        this.userUuid = userUuid;
+        this.m_userUuid = UUID.fromString(userUuid);
+    }
+
+    /**
      * @return the connectList
      */
     public List<UUID> getConnectList() {
@@ -331,13 +362,6 @@ public class Profile
      * @param connectList the connectList to set
      */
     public void setConnectList(List<UUID> connectList) {
-        this.connectList = connectList;
-    }
-
-    /**
-     * @param connectList the connectList to set
-     */
-    public void setFriendList(List<UUID> connectList) {
         this.connectList = connectList;
     }
 

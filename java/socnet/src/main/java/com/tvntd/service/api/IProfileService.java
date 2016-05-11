@@ -161,8 +161,9 @@ public interface IProfileService
                 .append("- firstName ").append(profile.getFirstName())
                 .append(", username: ").append(profile.getUserName())
                 .append("\nUuid: ").append(profile.getUserUuid().toString())
-                .append("\nConnect: ").append(profile.getConnectList().toString())
-                .append("\nFollow: ").append(profile.getFollowList().toString())
+                .append("\nConnect : ").append(profile.getConnectList().toString())
+                .append("\nFollow  : ").append(profile.getFollowList().toString())
+                .append("\nFollower: ").append(profile.getFollowerList().toString())
                 .append("\n");
             return sb.toString();
         }
@@ -450,7 +451,7 @@ public interface IProfileService
          * @return the userUuid
          */
         public UUID getUserUuid() {
-            return profile.getUserUuid();
+            return profile.fetchUserUuid();
         }
 
         /**

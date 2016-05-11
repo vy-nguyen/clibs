@@ -57,6 +57,7 @@ import com.tvntd.service.api.IProfileService;
 public class ProfileService implements IProfileService
 {
     private static Logger s_log = LoggerFactory.getLogger(ProfileService.class);
+    private static boolean s_noCache = false;
     private static ProfileCache s_cache = new ProfileCache();
 
     @Autowired
@@ -84,12 +85,20 @@ public class ProfileService implements IProfileService
             }
         }
 
-        ProfileDTO cacheLookup(Long userId) {
-            return m_idCache.get(userId);
+        ProfileDTO cacheLookup(Long userId)
+        {
+            if (s_noCache == false) {
+                return m_idCache.get(userId);
+            }
+            return null;
         }
 
-        ProfileDTO cacheLookup(UUID uuid) {
-            return m_uuidCache.get(uuid);
+        ProfileDTO cacheLookup(UUID uuid)
+        {
+            if (s_noCache == false) {
+                return m_uuidCache.get(uuid);
+            }
+            return null;
         }
 
         void invalFullCache() {
@@ -111,7 +120,7 @@ public class ProfileService implements IProfileService
                     profiles = repo.findAll();
                 }
                 for (Profile prof : profiles) {
-                    ProfileDTO dto = cacheLookup(prof.getUserUuid());
+                    ProfileDTO dto = cacheLookup(prof.fetchUserUuid());
                     if (dto == null) {
                         dto = new ProfileDTO(prof);
                         cacheProfile(dto);
@@ -122,6 +131,10 @@ public class ProfileService implements IProfileService
             }
             return result;
         }
+    }
+
+    public static void disableCache() {
+        s_noCache = true;
     }
 
     @Override
@@ -147,7 +160,7 @@ public class ProfileService implements IProfileService
         if (result != null) {
             return result;
         }
-        Profile prof = profileRepo.findByUserUuid(uuid);
+        Profile prof = profileRepo.findByUserUuid(uuid.toString());
         if (prof != null) {
             result = new ProfileDTO(prof);
             s_cache.cacheProfile(result);
@@ -164,7 +177,7 @@ public class ProfileService implements IProfileService
         for (UUID uuid : userIds) {
             ProfileDTO result = s_cache.cacheLookup(uuid);
             if (result == null) {
-                Profile prof = profileRepo.findByUserUuid(uuid);
+                Profile prof = profileRepo.findByUserUuid(uuid.toString());
                 if (prof == null) {
                     continue;
                 }
@@ -240,13 +253,22 @@ public class ProfileService implements IProfileService
     public void saveProfiles(List<ProfileDTO> profiles)
     {
         for (ProfileDTO prof : profiles) {
-            profileRepo.save(prof.toProfile());
+            saveProfile(prof);
         }
     }
 
     @Override
-    public void saveProfile(ProfileDTO profile) {
-        profileRepo.save(profile.toProfile());
+    public void saveProfile(ProfileDTO profile)
+    {
+        try {
+            s_log.info("Save profile " + profile);
+            profileRepo.save(profile.toProfile());
+            s_cache.cacheProfile(profile);
+
+        } catch(Exception e) {
+            s_log.info("Exception: " + e.getMessage() + ", detai " + e.toString());
+            throw e;
+        }
     }
 
     @Override
@@ -256,7 +278,7 @@ public class ProfileService implements IProfileService
         if (prof != null) {
             prof.setUserImgUrl(oid);
             profile.updateImgUrl(oid);
-            profileRepo.save(prof);
+            saveProfile(profile);
         }
     }
 
