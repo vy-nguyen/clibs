@@ -30,6 +30,7 @@ import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -51,6 +52,7 @@ import com.tvntd.config.TestPersistenceJPAConfig;
 import com.tvntd.config.TestSecurityConfig;
 import com.tvntd.config.TestTvntdRootConfig;
 import com.tvntd.config.TestTvntdWebConfig;
+import com.tvntd.lib.RandUtil;
 import com.tvntd.models.Profile;
 import com.tvntd.models.User;
 import com.tvntd.service.api.IProfileService;
@@ -103,7 +105,7 @@ public class ProfileTest
     }
 
     @Test
-    public void testProfile()
+    public void testProfileBasic()
     {
         MockUser a = new MockUser("AA", "AaAaAa", "aa@abc.com");
         MockUser b = new MockUser("BB", "BbBbBb", "bbm@abc.com");
@@ -115,7 +117,7 @@ public class ProfileTest
         bp.connectProfile(ap);
         verifyFollow(bp, ap);
 
-        ProfileService.disableCache();
+        ProfileService.setNoCache(true);
         profileRepo.saveProfile(ap);
         profileRepo.saveProfile(bp);
 
@@ -170,6 +172,63 @@ public class ProfileTest
         profileRepo.saveProfile(ap);
         av = profileRepo.getProfile(ap.getUserUuid());
         verifyProfile(ap, av);
+    }
+
+    @Test
+    public void testProfiles()
+    {
+        List<UUID> uuids = genProfiles(1000);
+        testConnectAll(uuids, 10);
+        deleteProfiles(uuids);
+    }
+
+    void testConnectAll(List<UUID> uuids, int max)
+    {
+        ProfileService.setNoCache(false);
+        for (int i = 0; i < max; i++) {
+            int index = RandUtil.genRandInt(0, uuids.size());
+            ProfileDTO me = profileRepo.getProfile(uuids.get(index));
+
+            assertNotNull(me);
+            for (UUID uid : uuids) {
+                ProfileDTO peer = profileRepo.getProfile(uid);
+                assertNotNull(peer);
+
+                me.connectProfile(peer);
+                if (!me.obtainUserId().equals(peer.obtainUserId())) {
+                    verifyFollow(me, peer);
+                    verifyFollower(peer, me);
+                }
+                profileRepo.saveProfile(peer);
+            }
+            profileRepo.saveProfile(me);
+        }
+    }
+
+    /**
+     * Generate number of profiles and save it to the database.
+     */
+    List<UUID> genProfiles(int max)
+    {
+        List<UUID> uuids = new ArrayList<>(max);
+
+        for (int i = 0; i < max; i++) {
+            String first = RandUtil.genRandString(3, 5);
+            String last = RandUtil.genRandString(3, 5);
+            MockUser u = new MockUser(first, last, first + "." + last + "@abc.com");
+            ProfileDTO p = new ProfileDTO(MockUser.createProfile(u));
+
+            uuids.add(p.getUserUuid());
+            profileRepo.saveProfile(p);
+         }
+        return uuids;
+    }
+
+    void deleteProfiles(List<UUID> uuids)
+    {
+        for (UUID uid : uuids) {
+            // profileRepo.deleteProfile(uid);
+        }
     }
 
     /**
@@ -238,10 +297,23 @@ public class ProfileTest
         UUID auid = ap.getUserUuid();
         UUID buid = bp.getUserUuid();
 
+        if (ap.findUuid(ap.getFollowList(), buid) == null) {
+            verifyConnected(ap, bp);
+            return;
+        }
         assertNotNull(ap.findUuid(ap.getFollowList(), buid));
         assertNotNull(bp.findUuid(bp.getFollowerList(), auid));
         assertNull(ap.findUuid(ap.getConnectList(), buid));
         assertNull(bp.findUuid(bp.getFollowList(), auid));
+    }
+
+    void verifyFollower(ProfileDTO me, ProfileDTO follower)
+    {
+        UUID peer = follower.getUserUuid();
+
+        if (me.findUuid(me.getFollowerList(), peer) == null) {
+            verifyConnected(me, follower);
+        }
     }
 
     public static class MockUser extends User

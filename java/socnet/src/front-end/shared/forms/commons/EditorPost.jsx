@@ -51,7 +51,6 @@ let EditorPost = React.createClass({
     },
 
     _getData: function() {
-        console.log(marked);
         return {
             topic  : safeStringify(this.refs.topic.value),
             tags   : safeStringify(this.refs.tags.value),

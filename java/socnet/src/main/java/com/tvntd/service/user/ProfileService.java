@@ -85,6 +85,24 @@ public class ProfileService implements IProfileService
             }
         }
 
+        void removeCache(UUID uuid)
+        {
+            ProfileDTO profile = m_uuidCache.get(uuid);
+            if (profile != null) {
+                m_idCache.remove(profile.obtainUserId());
+                m_uuidCache.remove(uuid);
+            }
+        }
+
+        void removeCache(Long id)
+        {
+            ProfileDTO profile = m_idCache.get(id);
+            if (profile != null) {
+                m_idCache.remove(id);
+                m_uuidCache.remove(profile.getUserUuid());
+            }
+        }
+
         ProfileDTO cacheLookup(Long userId)
         {
             if (s_noCache == false) {
@@ -106,7 +124,7 @@ public class ProfileService implements IProfileService
         }
 
         List<ProfileDTO>
-        getProfileList(ProfileDTO user, List<Profile> raw, ProfileRepository repo)
+        getProfileList(List<Profile> raw, ProfileRepository repo)
         {
             List<ProfileDTO> result = new LinkedList<>();
 
@@ -133,8 +151,8 @@ public class ProfileService implements IProfileService
         }
     }
 
-    public static void disableCache() {
-        s_noCache = true;
+    public static void setNoCache(boolean cache) {
+        s_noCache = cache;
     }
 
     @Override
@@ -190,17 +208,18 @@ public class ProfileService implements IProfileService
     }
 
     @Override
-    public List<ProfileDTO> getProfileList(ProfileDTO user, List<Profile> raw) {
-        return s_cache.getProfileList(user, raw, profileRepo);
+    public List<ProfileDTO> getProfileFromRaw(List<Profile> raw) {
+        return s_cache.getProfileList(raw, profileRepo);
     }
 
     @Override
     public Page<ProfileDTO> getProfileList()
     {
-        Pageable req = new PageRequest(0, 10, new Sort(Sort.Direction.DESC, "userName"));
+        Pageable req = new PageRequest(0, 10,
+                new Sort(Sort.Direction.DESC, "userName"));
         Page<Profile> pages = profileRepo.findAll(req);
         List<Profile> profiles = pages.getContent();
-        List<ProfileDTO> convert = getProfileList(null, profiles);
+        List<ProfileDTO> convert = getProfileFromRaw(profiles);
 
         return new PageImpl<ProfileDTO>(convert , req, pages.getTotalPages());
     }
@@ -258,20 +277,6 @@ public class ProfileService implements IProfileService
     }
 
     @Override
-    public void saveProfile(ProfileDTO profile)
-    {
-        try {
-            s_log.info("Save profile " + profile);
-            profileRepo.save(profile.toProfile());
-            s_cache.cacheProfile(profile);
-
-        } catch(Exception e) {
-            s_log.info("Exception: " + e.getMessage() + ", detai " + e.toString());
-            throw e;
-        }
-    }
-
-    @Override
     public void saveUserImgUrl(ProfileDTO profile, ObjectId oid)
     {
         Profile prof = profile.toProfile();
@@ -279,6 +284,19 @@ public class ProfileService implements IProfileService
             prof.setUserImgUrl(oid);
             profile.updateImgUrl(oid);
             saveProfile(profile);
+        }
+    }
+
+    @Override
+    public void saveProfile(ProfileDTO profile)
+    {
+        try {
+            profileRepo.save(profile.toProfile());
+            s_cache.cacheProfile(profile);
+
+        } catch(Exception e) {
+            s_log.info("Exception: " + e.getMessage() + ", detai " + e.toString());
+            throw e;
         }
     }
 
@@ -294,7 +312,14 @@ public class ProfileService implements IProfileService
     @Override
     public void deleteProfile(Long userId)
     {
-        s_cache.invalFullCache();
+        s_cache.removeCache(userId);
         profileRepo.deleteByUserId(userId);
+    }
+
+    @Override
+    public void deleteProfile(UUID uuid)
+    {
+        s_cache.removeCache(uuid);
+        profileRepo.deleteByUserUuid(uuid.toString());
     }
 }

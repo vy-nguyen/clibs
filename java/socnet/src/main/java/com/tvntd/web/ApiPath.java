@@ -154,7 +154,7 @@ public class ApiPath
     fillStartupResponse(StartupResponse resp, ProfileDTO profile, IProfileService repo)
     {
         if (repo != null) {
-            resp.setLinkedUsers(repo.getProfileList(profile, null));
+            resp.setLinkedUsers(repo.getProfileFromRaw(null));
         }
     }
 

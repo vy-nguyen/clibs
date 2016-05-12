@@ -49,7 +49,7 @@ public interface IProfileService
     public ProfileDTO getProfile(UUID uuid);
 
     public List<ProfileDTO> getProfileList(List<UUID> userIds);
-    public List<ProfileDTO> getProfileList(ProfileDTO user, List<Profile> raw);
+    public List<ProfileDTO> getProfileFromRaw(List<Profile> raw);
     public Page<ProfileDTO> getProfileList();
 
     public void followProfiles(ProfileDTO me,
@@ -62,6 +62,7 @@ public interface IProfileService
     public void saveUserImgUrl(ProfileDTO profile, ObjectId oid);
     public void createProfile(User user);
     public void deleteProfile(Long userId);
+    public void deleteProfile(UUID userUuid);
 
     public static Comparator<UUID> s_uuidCompare = new Comparator<UUID>() {
         @Override

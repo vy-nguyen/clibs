@@ -39,4 +39,5 @@ public interface ProfileRepository extends JpaRepository<Profile, Long>
     Page<Profile> findAll(Pageable pageble);
 
     void deleteByUserId(Long userId);
+    void deleteByUserUuid(String uuid);
 }
