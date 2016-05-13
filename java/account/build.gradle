@@ -1,0 +1,91 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.akhikhl.gretty:gretty:+'    
+    }
+}
+
+apply from: rootProject.file('common.gradle')
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'eclipse-wtp'
+
+ext {
+    implTitle  = "Crypto Account"
+    version    = "0.10"
+    groupId    = "com.tvntd.account"
+    artifactId = "crypto-account"
+}
+
+repositories {
+    mavenCentral()
+}
+
+sourceCompatibility = "${javaSource}"
+targetCompatibility = "${javaTarget}"
+
+dependencies {
+    compile "com.google.code.gson:gson:2.4"
+    compile "com.google.guava:guava:${guava_version}"
+    compile "com.fasterxml.jackson.core:jackson-databind:${jackson_version}"
+    compile "ch.qos.logback:logback-classic:${logback_version}"
+
+    compile "org.springframework:spring-core:${spring_version}"
+    compile "org.springframework:spring-web:${spring_version}"
+    compile "org.springframework:spring-webmvc:${spring_version}"
+    compile "org.springframework.data:spring-data-jpa:${spring_data_jpa_version}"
+    compile "org.hibernate:hibernate-core:${hibernate_version}"
+    compile "org.hibernate:hibernate-entitymanager:${hibernate_version}"
+    compile "org.hibernate:hibernate-validator:${hibernate_validator_ver}"
+    compile "mysql:mysql-connector-java:${mysql_connector_java_ver}"
+
+    compile "org.springframework.data:spring-data-mongodb:${spring_mongodb_version}"
+    compile "org.mongodb:mongo-java-driver:${mongodb_version}"
+
+    compile "javax.servlet:servlet-api:2.5"
+    compile project(":common")
+
+    testCompile "junit:junit:${junit_version}"
+    testCompile "org.mockito:mockito-core:1.+"
+
+    testRuntime "org.mortbay.jetty:jetty-runner:8.1.15.v20140411"
+}
+
+sourceSets {
+    main {
+        java {
+           srcDirs = [ 'src/main/java' ]
+        }
+    }
+    test {
+        java {
+            srcDirs = [ 'src/test/java' ]
+        }
+    }
+}
+
+test {
+    systemProperties 'TESTDATA': "${projectDir}/src/test/data"
+}
+
+eclipse {
+    wtp {
+        component {
+            contextPath = '/'
+        }
+    }
+}
+
+task getDeps(type: Copy) {
+    from configurations.testRuntime
+    into "${rootProject.projectDir}/account/build/libs"
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.10'
+}
+
+clean.delete << file('cscope.*')
+clean.delete << file('tags')

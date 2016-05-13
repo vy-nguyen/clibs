@@ -1,1 +1,1 @@
-include 'socnet', 'socialauth', 'common'
+include 'socnet', 'socialauth', 'common', 'account', 'skel'
