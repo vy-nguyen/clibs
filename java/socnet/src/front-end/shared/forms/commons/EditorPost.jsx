@@ -208,7 +208,7 @@ let EditorPost = React.createClass({
         };
         let djsConfig = {
             addRemoveLinks: true,
-            acceptedFiles: "image/jpeg, image/png, image/gif",
+            acceptedFiles: "image/*",
             params: {},
             headers: {}
         };

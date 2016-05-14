@@ -25,7 +25,9 @@ const Actions = Reflux.createActions({
     saveUserPost:    {children: ['completed', 'failed']},
     deleteUserPost:  {children: ['completed', 'failed']},
     publishUserPost: {children: ['completed', 'failed']},
+
     pendingPost:     {children: ['completed']},
+    uploadAvataDone: {children: ['completed']},
 
     // Preload json for testing.
     preload:         {children: ['completed', 'failed']}
@@ -120,6 +122,12 @@ Actions.refreshNotify.listen(function() {
  */
 Actions.refreshArticles.listen(function(authorUuid) {
     $.getJSON("/user/get-posts/" + authorUuid).then(this.completed, this.failed);
+});
+
+Actions.uploadAvataDone.listen(function(data) {
+    console.log("Done upload avatar");
+    console.log(data);
+    this.completed(data);
 });
 
 /**

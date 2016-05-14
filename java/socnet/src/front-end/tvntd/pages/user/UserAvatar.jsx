@@ -9,18 +9,39 @@ import Reflux            from 'reflux';
 import DropzoneComponent from 'react-dropzone-component';
 
 import SubHeader         from '../layout/SubHeader.jsx';
+import Actions           from 'vntd-root/actions/Actions.jsx';
 import UserStore         from 'vntd-shared/stores/UserStore.jsx';
 
 let UserAvatar = React.createClass({
+    mixins: [
+        Reflux.connect(UserStore)
+    ],
 
-    onSending: function(files, xhr, form) {
+    initValues: {
+        dropzone: null
+    },
+
+    _onSending: function(files, xhr, form) {
         form.append('name', files.name);
+    },
+
+    _onSuccess: function(files) {
+        console.log("Success dropzone");
+        console.log(files);
+        Actions.uploadAvataDone(JSON.stringify(files.xhr.response));
+    },
+
+    _onError: function(file) {
+    },
+
+    getInitialState: function() {
+        return UserStore.getUserByUuid(this.props.userUuid);
     },
 
     render: function() {
         let djsConfig = {
-            addRemoveLinks: true,
-            acceptedFiles: "image/jpeg,image/png,image/gif",
+            addRemoveLinks: false,
+            acceptedFiles: "image/*",
             params: {},
             headers: {}
         };
@@ -31,16 +52,19 @@ let UserAvatar = React.createClass({
         let componentConfig = {
             iconFiletypes: ['.jpg', '.png', '.gif'],
             showFiletypeIcon: true,
-            postUrl: '/api/upload-img'
+            postUrl: '/user/upload-avatar'
         };
-        let eventHandlers = {
-            sending: this.onSending,
+        const eventHandlers = {
+            sending: this._onSending,
+            success: this._onSuccess,
+            error  : this._onError,
+            init   : function(dz) { this.initValues.dropzone = dz }.bind(this)
         };
         let self = UserStore.getUserByUuid(this.props.userUuid);
-        if (self == null) {
+        if (self === null) {
             return null;
         }
-        let file_drop = "";
+        let file_drop;
         if (this.props.data.doFileDrop == true) {
             file_drop = (
                 <DropzoneComponent className="col-sm-3 col-md-3 col-lg-2 profile-pic"

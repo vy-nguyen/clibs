@@ -82,10 +82,16 @@ let ArticleStore = Reflux.createStore({
      * Return author's articles sorted to display.
      */
     getSortedArticlesByAuthor: function(uuid) {
-        if (this.data.articlesByAuthor[uuid] !== undefined) {
-            return this.data.articlesByAuthor[uuid].sortedArticles;
+        let anchor = this.data.articlesByAuthor[uuid];
+        if (anchor === undefined) {
+            anchor = this._createArtAnchor(uuid, null);
+            this.data.articlesByAuthor[uuid] = anchor;
         }
-        return null;
+        if (anchor.requestCount == 0) {
+            Actions.refreshArticles(uuid);
+        }
+        anchor.requestCount++;
+        return this.data.articlesByAuthor[uuid].sortedArticles;
     },
 
     iterAuthorArticles: function(uuid, func, arg) {
@@ -185,16 +191,18 @@ let ArticleStore = Reflux.createStore({
         this.data.errorResp = error.getXHDR();
     },
 
-    _createArtAnchor: function(article) {
+    _createArtAnchor: function(authorUuid, article) {
         let anchor = new Object;
 
-        anchor.sortedArticles = [];
-        anchor.sortedArticles.push(article);
-        anchor[article.articleUuid] = article;
-        this.data.articlesByAuthor[article.authorUuid] = anchor;
-
-        if (UserStore.isUserMe(article.authorUuid)) {
+        this.data.articlesByAuthor[authorUuid] = anchor;
+        if (UserStore.isUserMe(authorUuid)) {
             this.data.myArticles = anchor;
+        }
+        anchor.requestCount = 0;
+        anchor.sortedArticles = [];
+        if (article !== null) {
+            anchor.sortedArticles.push(article);
+            anchor[article.articleUuid] = article;
         }
         return anchor;
     },
@@ -217,7 +225,7 @@ let ArticleStore = Reflux.createStore({
         }
         let anchor = this.data.articlesByAuthor[article.authorUuid];
         if (anchor === undefined) {
-            anchor = this._createArtAnchor(article);
+            anchor = this._createArtAnchor(article.authorUuid, article);
         }
         if (this.data.articlesByUuid[article.articleUuid] === undefined) {
             anchor[article.articleUuid] = article;
@@ -241,7 +249,7 @@ let ArticleStore = Reflux.createStore({
             }
             let anchor = this.data.articlesByAuthor[article.authorUuid];
             if (anchor === undefined) {
-                anchor = this._createArtAnchor(article);
+                anchor = this._createArtAnchor(article.authorUuid, article);
 
             } else if (anchor[article.articleUuid] === undefined) {
                 anchor[article.articleUuid] = article;

@@ -63,13 +63,18 @@ let UserHome = React.createClass({
         return ArticleStore.getArticleStore()
     },
 
+    componentWillMount: function() {
+        this._updateArticle();
+    },
+
     componentWillUpdate: function() {
+        this._updateArticle();
+    },
+
+    _updateArticle: function() {
         let owner = this._getOwner();
         if (owner !== null) {
-            ArticleStore.debugDump("Article store");
-            if (ArticleStore.getSortedArticlesByAuthor(owner.userUuid) === null) {
-                Actions.refreshArticles(owner.userUuid);
-            }
+            ArticleStore.getSortedArticlesByAuthor(owner.userUuid);
         }
     },
 

@@ -266,4 +266,40 @@ public class UserPath
         }
         return pendPost;
     }
+
+    /**
+     * Upload user avatar.
+     */
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @RequestMapping(value = "/user/upload-avatar", method = RequestMethod.POST)
+    @ResponseBody
+    public GenericResponse
+    uploadImage(@RequestParam("name") String name,
+            @RequestParam("file") MultipartFile file,
+            MultipartHttpServletRequest reqt, HttpSession session)
+    {
+        if (file.isEmpty()) {
+        }
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
+        try {
+            ObjStore store = ObjStore.getInstance();
+            InputStream is = file.getInputStream();
+            ObjectId oid = store.putImage(is, (int) file.getSize());
+
+            if (oid != null) {
+                profileRepo.saveUserImgUrl(profile, oid);
+                ImageUploadResp resp =
+                    new ImageUploadResp(null, profile.getUserUuid().toString(), oid);
+
+                resp.setImgObjUrl(store.imgObjUri(oid));
+                return resp;
+            }
+        } catch(IOException e) {
+            s_log.info("Exception: " + e.toString());
+        }
+        return s_noProfile;
+    }
 }
