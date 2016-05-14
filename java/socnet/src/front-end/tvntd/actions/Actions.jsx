@@ -125,8 +125,6 @@ Actions.refreshArticles.listen(function(authorUuid) {
 });
 
 Actions.uploadAvataDone.listen(function(data) {
-    console.log("Done upload avatar");
-    console.log(data);
     this.completed(data);
 });
 

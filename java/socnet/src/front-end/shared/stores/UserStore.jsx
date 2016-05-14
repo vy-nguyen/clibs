@@ -240,6 +240,11 @@ let UserStore = Reflux.createStore({
         this.trigger(this.data);
     },
 
+    onUploadAvataDoneCompleted: function(data) {
+        let self = this.getSelf();
+        self.userImgUrl = data.imgObjUrl;
+    },
+
     _reset: function() {
         this.data.userMap = {};
         this.data.userSelf = null;

@@ -172,6 +172,10 @@ public interface IProfileService
             return sb.toString();
         }
 
+        static public String getImgBaseUrl() {
+            return s_baseUri;
+        }
+
         /**
          * @return the userId.  Use this so that it won't show up in JSON.
          */

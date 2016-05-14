@@ -91,7 +91,6 @@ public class UserPath
     {
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
 
-        s_log.debug("Login to user profile: " + profile);
         return new LoginResponse(profile, reqt);
     }
 
@@ -294,7 +293,7 @@ public class UserPath
                 ImageUploadResp resp =
                     new ImageUploadResp(null, profile.getUserUuid().toString(), oid);
 
-                resp.setImgObjUrl(store.imgObjUri(oid));
+                resp.setImgObjUrl(store.imgObjUri(oid, ProfileDTO.getImgBaseUrl()));
                 return resp;
             }
         } catch(IOException e) {

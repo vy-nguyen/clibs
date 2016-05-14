@@ -26,9 +26,7 @@ let UserAvatar = React.createClass({
     },
 
     _onSuccess: function(files) {
-        console.log("Success dropzone");
-        console.log(files);
-        Actions.uploadAvataDone(JSON.stringify(files.xhr.response));
+        Actions.uploadAvataDone(JSON.parse(files.xhr.response));
     },
 
     _onError: function(file) {
