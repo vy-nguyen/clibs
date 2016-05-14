@@ -154,7 +154,7 @@ public class ArticleService implements IArticleService
     @Override
     public void saveArticle(ArticleDTO article)
     {
-        Article art = article.obtainArticle();
+        Article art = article.fetchArticle();
         articleRepo.save(art);
     }
 

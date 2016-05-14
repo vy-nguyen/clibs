@@ -14,7 +14,7 @@ import {insertSorted, preend} from 'vntd-shared/utils/Enum.jsx';
 class Article {
     constructor(data) {
         this._id          = _.uniqueId('id-article-');
-        this.author       = undefined;
+        this.author       = UserStore.getUserByUuid(data.authorUuid);
         this.commentList  = data.commentList;
         this.authorUuid   = data.authorUuid;
         this.articleUuid  = data.articleUuid;
@@ -27,8 +27,8 @@ class Article {
         this.createdDate  = Date.parse(data.createdDate);
         this.content      = data.content;
         this.contentOId   = data.contentOId;
-        this.pictures     = data.pictures;
-        this.topic        = data.toppic;
+        this.pictureUrl   = data.pictureUrl;
+        this.topic        = data.topic;
         return this;
     }
 }
@@ -38,6 +38,7 @@ let ArticleStore = Reflux.createStore({
         articlesByUuid: {},
         articlesByAuthor: {},
         mySavedArticles: {},
+        myArticles: null,
         myPostResult: null,
 
         artUuidByDate: [],
@@ -48,13 +49,60 @@ let ArticleStore = Reflux.createStore({
     },
     listenables: Actions,
 
+    _resetStore: function() {
+        this.data.articlesByUuid = {};
+        this.data.articlesByAuthor = {};
+        this.data.mySavedArticles = {};
+        this.data.myArticles = null;
+        this.data.myPostResult = null;
+
+        this.data.artUuidByDate = [];
+        this.data.artUuidByScore = [];
+
+        this.data.errorText = "";
+        this.data.errorResp = null;
+    },
+
     /**
      * Public API for the store.
      */
+    getArticleStore: function() {
+        return this.data;
+    },
+
     getArticlesByAuthor: function(uuid) {
+        let articles = [];
+        this.iterAuthorArticles(uuid, function(item) {
+            articles.push(item);
+        });
+        return articles;
+    },
+
+    /*
+     * Return author's articles sorted to display.
+     */
+    getSortedArticlesByAuthor: function(uuid) {
+        if (this.data.articlesByAuthor[uuid] !== undefined) {
+            return this.data.articlesByAuthor[uuid].sortedArticles;
+        }
+        return null;
+    },
+
+    iterAuthorArticles: function(uuid, func, arg) {
         let articles = this.data.articlesByAuthor[uuid];
-        if (articles !== undefined) {
-            return articles;
+        if (articles) {
+            _.forOwn(articles, function(item, key) {
+                if (key !== "sortedArticles") {
+                    func(item, arg);
+                }
+            });
+        }
+        return null;
+    },
+
+    getMyArticles: function() {
+        if (this.data.myArticles !== null) {
+            return this.data.myArticles.sortedArticles;
         }
         return null;
     },
@@ -97,6 +145,7 @@ let ArticleStore = Reflux.createStore({
 
     onRefreshArticlesCompleted: function(data) {
         this._addFromJson(data.articles);
+        this._addSavedJson(data.pendPosts);
         this.trigger(this.data);
     },
 
@@ -113,6 +162,8 @@ let ArticleStore = Reflux.createStore({
     },
 
     onSaveUserPostCompleted: function(post) {
+        this._addArticle(post, true);
+        this.trigger(this.data);
     },
 
     onPublishUserPostFailed: function(err) {
@@ -121,7 +172,7 @@ let ArticleStore = Reflux.createStore({
     },
 
     onPublishUserPostCompleted: function(post) {
-        this._addArticle(post);
+        this._addArticle(post, false);
         this.data.myPostResult = post;
         this.trigger(this.data);
     },
@@ -134,18 +185,6 @@ let ArticleStore = Reflux.createStore({
         this.data.errorResp = error.getXHDR();
     },
 
-    _resetStore: function() {
-        this.data.articlesByUuid = {};
-        this.data.articlesByAuthor = {};
-        this.data.mySavedArticles = {};
-
-        this.artUuidByDate = [];
-        this.artUuidByScore = [];
-
-        this.data.errorText = "";
-        this.data.errorResp = null;
-    },
-
     _createArtAnchor: function(article) {
         let anchor = new Object;
 
@@ -153,6 +192,10 @@ let ArticleStore = Reflux.createStore({
         anchor.sortedArticles.push(article);
         anchor[article.articleUuid] = article;
         this.data.articlesByAuthor[article.authorUuid] = anchor;
+
+        if (UserStore.isUserMe(article.authorUuid)) {
+            this.data.myArticles = anchor;
+        }
         return anchor;
     },
 
@@ -165,25 +208,30 @@ let ArticleStore = Reflux.createStore({
         return a2.createdDate - a1.createdDate;
     },
 
-    _addArticle: function(post) {
+    _addArticle: function(post, saved) {
         let article = new Article(post);
-        article.author = UserStore.getUserByUuid(article.authorUuid);
 
+        if (saved === true) {
+            this.data.mySavedArticles = preend(article, this.data.mySavedArticles);
+            return;
+        }
         let anchor = this.data.articlesByAuthor[article.authorUuid];
         if (anchor === undefined) {
             anchor = this._createArtAnchor(article);
         }
-        anchor[article.articleUuid] = article;
-        anchor.sortedArticles = preend(article, anchor.sortedArticles);
-        // this._addSortedArticle(anchor, article);
-        this.data.articlesByUuid[article.articleUuid] = article;
+        if (this.data.articlesByUuid[article.articleUuid] === undefined) {
+            anchor[article.articleUuid] = article;
+            anchor.sortedArticles = preend(article, anchor.sortedArticles);
+
+            this.data.articlesByUuid[article.articleUuid] = article;
+        }
     },
 
     _removeArticle: function(artUuid) {
     },
 
     _indexAuthors: function(artList) {
-        _.forOwn(artList, function(jsonArt, key) {
+        artList && _.forOwn(artList, function(jsonArt, key) {
             let article = this.data.articlesByUuid[jsonArt.articleUuid];
             if (article === undefined) {
                 return;
@@ -203,16 +251,22 @@ let ArticleStore = Reflux.createStore({
     },
 
     _addFromJson: function(items) {
-        _.forOwn(items, function(it, key) {
+        items && _.forOwn(items, function(it, key) {
             if (this.data.articlesByUuid[it.articleUuid] === undefined) {
                 let article = new Article(it);
-
-                article.author = UserStore.getUserByUuid(article.authorUuid);
                 this.data.articlesByUuid[it.articleUuid] = article;
             }
         }.bind(this));
 
         this._indexAuthors(items);
+    },
+
+    _addSavedJson: function(items) {
+        items && _.forOwn(items, function(it, key) {
+            if (this.data.mySavedArticles[it.articleUuid] === undefined) {
+                this.data.mySavedArticles[it.articleUuid] = new Article(it);
+            }
+        }.bind(this));
     },
 
     exports: {

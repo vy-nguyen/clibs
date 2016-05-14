@@ -74,7 +74,7 @@ import com.tvntd.service.api.UserNotifResponse;
 @Controller
 public class ApiPath
 {
-    static private Logger s_log = LoggerFactory.getLogger(PublicPath.class);
+    static private Logger s_log = LoggerFactory.getLogger(ApiPath.class);
     static private GenericResponse s_genOkResp = new GenericResponse("ok");
 
     @Autowired
@@ -113,6 +113,9 @@ public class ApiPath
         return userNotifService.getUserNotif(userId);
     }
 
+    /**
+     * Get public user articles.
+     */
     @RequestMapping(value = "/api/user-articles", method = RequestMethod.GET)
     @ResponseBody
     public ArticleDTOResponse
@@ -128,6 +131,9 @@ public class ApiPath
         return null;
     }
 
+    /**
+     * Get user profile.
+     */
     @RequestMapping(value = "/api/user", method = RequestMethod.GET)
     @ResponseBody
     public StartupResponse

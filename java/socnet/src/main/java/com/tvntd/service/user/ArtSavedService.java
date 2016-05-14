@@ -81,13 +81,13 @@ public class ArtSavedService implements IArtSavedService
     @Override
     public void saveArticle(ArticleDTO article)
     {
-        Article art = article.obtainArticle();
+        Article art = article.fetchArticle();
         articleRepo.save(art);
     }
 
     @Override
     public void deleteArticle(ArticleDTO article)
     {
-        articleRepo.deleteByArticleId(article.obtainArticleId());
+        articleRepo.deleteByArticleId(article.fetchArticleId());
     }
 }

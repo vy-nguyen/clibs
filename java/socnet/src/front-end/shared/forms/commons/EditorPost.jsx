@@ -21,7 +21,10 @@ import {safeStringify} from 'vntd-shared/utils/Enum.jsx';
 
 let EditorPost = React.createClass({
 
-    mixins: [Reflux.connect(ArticleStore)],
+    mixins: [
+        Reflux.connect(ArticleStore),
+        Reflux.listenTo(ArticleStore, "_onPublishResult")
+    ],
 
     initValues: {
         topic: 'Topic',
@@ -195,10 +198,6 @@ let EditorPost = React.createClass({
 
     getInitialState: function() {
         return this.initValues.state;
-    },
-
-    componentDidMount: function() {
-        this.listenTo(ArticleStore, this._onPublishResult);
     },
 
     render: function() {

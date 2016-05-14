@@ -95,6 +95,8 @@ public interface IProfileService
         private Long moneyIssued;
 
         private ArticleDTO pendPost;
+        private LinkedList<ArticleDTO> publishedArts;
+        private LinkedList<ArticleDTO> savedArts;
 
         public ProfileDTO(Profile prof)
         {
@@ -137,7 +139,7 @@ public interface IProfileService
         /**
          * Get/set but not visible to JSON.
          */
-        public ArticleDTO obtainPendPost() {
+        public ArticleDTO fetchPendPost() {
             return this.pendPost;
         }
 
@@ -165,6 +167,7 @@ public interface IProfileService
                 .append("\nConnect : ").append(profile.getConnectList().toString())
                 .append("\nFollow  : ").append(profile.getFollowList().toString())
                 .append("\nFollower: ").append(profile.getFollowerList().toString())
+                .append("\nPublish : ").append(publishedArts)
                 .append("\n");
             return sb.toString();
         }
@@ -172,7 +175,7 @@ public interface IProfileService
         /**
          * @return the userId.  Use this so that it won't show up in JSON.
          */
-        public Long obtainUserId() {
+        public Long fetchUserId() {
             return profile.getUserId();
         }
 
@@ -312,7 +315,51 @@ public interface IProfileService
         }
 
         /**
-         * @return the locale
+         * @return the publishedArts
+         */
+        public LinkedList<ArticleDTO> fetchPublishedArts() {
+            return publishedArts;
+        }
+
+        /**
+         * @param publishedArts the publishedArts to set
+         */
+        public void assignPublishedArts(LinkedList<ArticleDTO> publishedArts) {
+            this.publishedArts = publishedArts;
+        }
+
+        public void pushPublishArticle(ArticleDTO article)
+        {
+            if (publishedArts == null) {
+                publishedArts = new LinkedList<>();
+            }
+            publishedArts.addFirst(article);
+        }
+
+        /**
+         * @return the savedArts
+         */
+        public LinkedList<ArticleDTO> fetchSavedArts() {
+            return savedArts;
+        }
+
+        /**
+         * @param savedArts the savedArts to set
+         */
+        public void assignSavedArts(LinkedList<ArticleDTO> savedArts) {
+            this.savedArts = savedArts;
+        }
+
+        public void pushSavedArticle(ArticleDTO article)
+        {
+            if (savedArts == null) {
+                savedArts = new LinkedList<>();
+            }
+            savedArts.addFirst(article);
+        }
+
+        /**
+         * Getters and Setters.
          */
         public String getLocale() {
             return profile.getLocale();
@@ -552,5 +599,6 @@ public interface IProfileService
         public Long getMoneyIssued() {
             return moneyIssued;
         }
+
     }
 }

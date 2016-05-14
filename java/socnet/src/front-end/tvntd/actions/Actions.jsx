@@ -118,8 +118,8 @@ Actions.refreshNotify.listen(function() {
 /**
  * Posts and comments.
  */
-Actions.refreshArticles.listen(function() {
-    $.getJSON("/api/user-articles").then(this.completed, this.failed);
+Actions.refreshArticles.listen(function(authorUuid) {
+    $.getJSON("/user/get-posts/" + authorUuid).then(this.completed, this.failed);
 });
 
 /**

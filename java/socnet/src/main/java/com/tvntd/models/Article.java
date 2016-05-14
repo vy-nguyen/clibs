@@ -45,6 +45,7 @@ import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 import com.tvntd.lib.ObjectId;
@@ -61,8 +62,8 @@ public class Article
     private Long articleId;
 
     private Long     authorId;
-    private UUID     authorUuid;
-    private UUID     articleUuid;
+    private String   authorUuid;
+    private String   articleUuid;
     private Long     creditEarned;
     private Long     moneyEarned;
 
@@ -86,16 +87,17 @@ public class Article
             joinColumns = @JoinColumn(name="articleId"))
     private List<ObjectId> pictures;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "ArtComnts",
-            uniqueConstraints= @UniqueConstraint(columnNames = {"comments"}),
-            joinColumns = @JoinColumn(name="articleId"))
-    private List<Long> comments;
+    @Transient
+    private UUID m_authorUuid;
+    
+    @Transient
+    private UUID m_articleUuid;
 
     public Article()
     {
         super();
-        articleUuid = UUID.randomUUID();
+        m_articleUuid = UUID.randomUUID();
+        articleUuid = m_articleUuid.toString();
         transRoot = ObjectId.zeroId();
         contentOId = ObjectId.zeroId();
         createdDate = new Date();
@@ -133,17 +135,10 @@ public class Article
 
     public void addComment(Long id)
     {
-        if (comments == null) {
-            comments = new ArrayList<>();
-        }
-        comments.add(id);
     }
 
     public void removeComment(Long id)
     {
-        if (comments != null) {
-            comments.remove(id);
-        }
     }
 
     /**
@@ -177,28 +172,46 @@ public class Article
     /**
      * @return the authorUuid
      */
-    public UUID getAuthorUuid() {
+    public String getAuthorUuid()
+    {
+        if (authorUuid == null) {
+            authorUuid = m_authorUuid.toString();
+        }
         return authorUuid;
     }
 
     /**
      * @param authorUuid the authorUuid to set
      */
-    public void setAuthorUuid(UUID authorUuid) {
+    public void setAuthorUuid(String authorUuid)
+    {
+        this.m_authorUuid = UUID.fromString(authorUuid);
         this.authorUuid = authorUuid;
+    }
+
+    public void setAuthorUuid(UUID authorUuid)
+    {
+        this.m_authorUuid = authorUuid;
+        this.authorUuid = authorUuid.toString();
     }
 
     /**
      * @return the articleUuid
      */
-    public UUID getArticleUuid() {
+    public String getArticleUuid()
+    {
+        if (articleUuid == null) {
+            articleUuid = m_articleUuid.toString();
+        }
         return articleUuid;
     }
 
     /**
      * @param articleUuid the articleUuid to set
      */
-    public void setArticleUuid(UUID articleUuid) {
+    public void setArticleUuid(String articleUuid)
+    {
+        this.m_articleUuid = UUID.fromString(articleUuid);
         this.articleUuid = articleUuid;
     }
 
@@ -312,19 +325,5 @@ public class Article
      */
     public void setPictures(List<ObjectId> pictures) {
         this.pictures = pictures;
-    }
-
-    /**
-     * @return the comments
-     */
-    public List<Long> getComments() {
-        return comments;
-    }
-
-    /**
-     * @param comments the comments to set
-     */
-    public void setComments(List<Long> comments) {
-        this.comments = comments;
     }
 }

@@ -28,6 +28,8 @@ package com.tvntd.service.api;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -60,12 +62,14 @@ public interface IArticleService
     public void saveArticle(ArticleDTO article);
     public void saveArticles(String josnFile, String dir);
 
-    public static class ArticleDTOResponse
+    public static class ArticleDTOResponse extends GenericResponse
     {
         private List<ArticleDTO> articles;
         private List<ArticleDTO> pendPosts;
 
-        public ArticleDTOResponse(List<ArticleDTO> arts, List<ArticleDTO> pend) {
+        public ArticleDTOResponse(List<ArticleDTO> arts, List<ArticleDTO> pend)
+        {
+            super(GenericResponse.USER_HOME, null, null);
             this.articles = arts;
             this.pendPosts = pend;
         }
@@ -84,13 +88,14 @@ public interface IArticleService
             return pendPosts;
         }
     }
+
     /**
      * Transfer article to client.
      */
     public static class ArticleDTO extends GenericResponse
     {
         private static Logger s_log = LoggerFactory.getLogger(ArticleDTO.class);
-        private static String s_baseUri = "/rs/upload/user";
+        private static String s_baseUri = "/rs/user/";
 
         private Article article;
         private String  topic;
@@ -141,7 +146,7 @@ public interface IArticleService
         {
             Article art = new Article();
 
-            art.setAuthorId(profile.obtainUserId());
+            art.setAuthorId(profile.fetchUserId());
             art.setAuthorUuid(profile.getUserUuid());
             applyForm(form, art, false);
             return art;
@@ -191,7 +196,7 @@ public interface IArticleService
         /**
          * Methods to construct fields in the article.
          */
-        public Long obtainArticleId() {
+        public Long fetchArticleId() {
             return article.getArticleId();
         }
 
@@ -218,7 +223,7 @@ public interface IArticleService
         /**
          * @return the article
          */
-        public Article obtainArticle() {
+        public Article fetchArticle() {
             return article;
         }
 
@@ -226,14 +231,14 @@ public interface IArticleService
          * @return the authorUuid
          */
         public String getAuthorUuid() {
-            return article.getAuthorUuid().toString();
+            return article.getAuthorUuid();
         }
 
         /**
          * @return the articleUuid
          */
         public String getArticleUuid() {
-            return article.getArticleUuid().toString();
+            return article.getArticleUuid();
         }
 
         /**
@@ -296,10 +301,11 @@ public interface IArticleService
             ObjStore objStore = ObjStore.getInstance();
             List<String> ret = new LinkedList<>();
             List<ObjectId> pictures = article.getPictures();
+            String store = s_baseUri + article.getAuthorId().toString();
 
             if (pictures != null) {
                 for (ObjectId oid : pictures) {
-                    ret.add(objStore.imgObjUri(oid, s_baseUri));
+                    ret.add(objStore.imgObjUri(oid, store));
                 }
             }
             return ret;

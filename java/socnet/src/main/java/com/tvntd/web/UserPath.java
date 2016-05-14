@@ -28,6 +28,9 @@ package com.tvntd.web;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -54,6 +58,8 @@ import com.tvntd.service.api.GenericResponse;
 import com.tvntd.service.api.IArtSavedService;
 import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
+import com.tvntd.service.api.IArticleService.ArticleDTOResponse;
+import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.ImageUploadResp;
 import com.tvntd.service.api.LoginResponse;
@@ -76,6 +82,9 @@ public class UserPath
     @Autowired
     private IArtSavedService artSavedRepo;
 
+    @Autowired
+    private IProfileService profileRepo;
+
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     @ResponseBody
     public LoginResponse user(HttpSession session, HttpServletRequest reqt)
@@ -84,6 +93,60 @@ public class UserPath
 
         s_log.debug("Login to user profile: " + profile);
         return new LoginResponse(profile, reqt);
+    }
+
+    /**
+     * Get user articles.
+     */
+    @RequestMapping(value = "/user/get-posts/{userUuid}", method = RequestMethod.GET)
+    @ResponseBody
+    public GenericResponse
+    getSavedPosts(Locale locale, HttpSession session,
+            @PathVariable(value = "userUuid") String uuid)
+    {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
+        UUID userUuid = null;
+        LinkedList<ArticleDTO> saved = null;
+          
+        try {
+            userUuid = UUID.fromString(uuid);
+        } catch(Exception e) {
+            s_log.info("Invalid uuid " + uuid);
+            return s_noProfile;
+        }
+        if (!userUuid.equals(profile.getUserUuid())) {
+            profile = profileRepo.getProfile(userUuid);
+            if (profile == null) {
+                s_log.info("Invalid uuid " + uuid);
+                return s_noProfile;
+            }
+        } else {
+            saved = profile.fetchSavedArts();
+        }
+        LinkedList<ArticleDTO> published = profile.fetchPublishedArts();
+
+        if (published != null) {
+            return new ArticleDTOResponse(published, saved);
+        }
+        saved = new LinkedList<>();
+        published = new LinkedList<>();
+        List<ArticleDTO> all = articleRepo.getArticlesByUser(profile.fetchUserId());
+
+        for (ArticleDTO art : all) {
+            if (art.isPublished()) {
+                published.add(art);
+            } else {
+                saved.add(art);
+            }
+        }
+        profile.assignPublishedArts(published);
+        if (saved != null) {
+            profile.assignSavedArts(saved);
+        }
+        return new ArticleDTOResponse(published, saved);
     }
 
     /**
@@ -129,14 +192,16 @@ public class UserPath
         art.applyForm(form, publish);
 
         if (publish == true) {
-            art.obtainArticle().markActive();
+            art.fetchArticle().markActive();
             art.convertUTF();
             articleRepo.saveArticle(art);
 
             // We're done with the current post.
             profile.assignPendPost(null);
+            profile.pushPublishArticle(art);
         } else {
             artSavedRepo.saveArticle(art);
+            profile.pushSavedArticle(art);
         }
         return art;
     }
@@ -163,7 +228,7 @@ public class UserPath
             ObjStore store = ObjStore.getInstance();
             InputStream is = file.getInputStream();
             ObjectId oid = store.putUserImage(is,
-                    (int)file.getSize(), profile.getUserUuid().toString());
+                    (int)file.getSize(), profile.fetchUserId() .toString());
 
             if (oid != null) {
                 art.addPicture(oid);
@@ -172,7 +237,7 @@ public class UserPath
                     profile.getUserUuid().toString(), oid);
 
             resp.setImgObjUrl(store.imgUserObjUri(oid,
-                        profile.getUserUuid().toString()));
+                        profile.fetchUserId().toString()));
             return resp;
 
         } catch(IOException e) {
@@ -183,7 +248,7 @@ public class UserPath
     private ArticleDTO
     genPendPost(ProfileDTO profile, boolean creat, String artUuid)
     {
-        ArticleDTO pendPost = profile.obtainPendPost();
+        ArticleDTO pendPost = profile.fetchPendPost();
 
         if (pendPost != null) {
             return pendPost;

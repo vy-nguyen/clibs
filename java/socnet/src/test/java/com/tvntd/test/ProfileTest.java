@@ -195,7 +195,7 @@ public class ProfileTest
                 assertNotNull(peer);
 
                 me.connectProfile(peer);
-                if (!me.obtainUserId().equals(peer.obtainUserId())) {
+                if (!me.fetchUserId().equals(peer.fetchUserId())) {
                     verifyFollow(me, peer);
                     verifyFollower(peer, me);
                 }
@@ -227,7 +227,7 @@ public class ProfileTest
     void deleteProfiles(List<UUID> uuids)
     {
         for (UUID uid : uuids) {
-            // profileRepo.deleteProfile(uid);
+            profileRepo.deleteProfile(uid);
         }
     }
 
@@ -237,7 +237,7 @@ public class ProfileTest
     void verifyProfile(ProfileDTO a, ProfileDTO b)
     {
         assertEquals(a.getUserUuid(), b.getUserUuid());
-        assertEquals(a.obtainUserId(), b.obtainUserId());
+        assertEquals(a.fetchUserId(), b.fetchUserId());
         assertEquals(a.getEmail(), b.getEmail());
         assertEquals(a.getFirstName(), b.getFirstName());
         assertEquals(a.getLastName(), b.getLastName());

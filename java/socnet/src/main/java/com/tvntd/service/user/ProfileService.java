@@ -80,7 +80,7 @@ public class ProfileService implements IProfileService
         void cacheProfile(ProfileDTO profile)
         {
             if (profile != null) {
-                m_idCache.put(profile.obtainUserId(), profile);
+                m_idCache.put(profile.fetchUserId(), profile);
                 m_uuidCache.put(profile.getUserUuid(), profile);
             }
         }
@@ -89,7 +89,7 @@ public class ProfileService implements IProfileService
         {
             ProfileDTO profile = m_uuidCache.get(uuid);
             if (profile != null) {
-                m_idCache.remove(profile.obtainUserId());
+                m_idCache.remove(profile.fetchUserId());
                 m_uuidCache.remove(uuid);
             }
         }
