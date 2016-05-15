@@ -42,6 +42,7 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -64,10 +65,8 @@ public class Article
     private Long     authorId;
     private String   authorUuid;
     private String   articleUuid;
-    private Long     creditEarned;
-    private Long     moneyEarned;
 
-    private ObjectId transRoot;
+    private boolean  pending;
     private ObjectId contentOId;
 
     @Column(name="DATE_CREATED")
@@ -80,6 +79,10 @@ public class Article
     @Lob
     @Column
     private byte[] content;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "articleId")
+    private ArticleRank articleRank;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "ArtPics",
@@ -98,24 +101,20 @@ public class Article
         super();
         m_articleUuid = UUID.randomUUID();
         articleUuid = m_articleUuid.toString();
-        transRoot = ObjectId.zeroId();
         contentOId = ObjectId.zeroId();
         createdDate = new Date();
     }
 
-    public void markPending()
-    {
-        creditEarned = -1L;
-        moneyEarned = -1L;
+    public void markPending() {
+        pending = true;
     }
 
     public void markActive() {
-        creditEarned = 0L;
-        moneyEarned = 0L;
+        pending = false;
     }
 
     public boolean isPending() {
-        return (creditEarned == -1L) && (moneyEarned == -1L);
+        return pending;
     }
 
     public void addPicture(ObjectId img)
@@ -218,43 +217,43 @@ public class Article
     /**
      * @return the creditEarned
      */
-    public Long getCreditEarned() {
-        return creditEarned;
+    public long getCreditEarned() {
+        return articleRank.getCreditEarned();
     }
 
     /**
      * @param creditEarned the creditEarned to set
      */
-    public void setCreditEarned(Long creditEarned) {
-        this.creditEarned = creditEarned;
+    public void setCreditEarned(long creditEarned) {
+        articleRank.setCreditEarned(creditEarned);
     }
 
     /**
      * @return the moneyEarned
      */
-    public Long getMoneyEarned() {
-        return moneyEarned;
+    public long getMoneyEarned() {
+        return articleRank.getMoneyEarned();
     }
 
     /**
      * @param moneyEarned the moneyEarned to set
      */
-    public void setMoneyEarned(Long moneyEarned) {
-        this.moneyEarned = moneyEarned;
+    public void setMoneyEarned(long moneyEarned) {
+        articleRank.setMoneyEarned(moneyEarned);
     }
 
     /**
      * @return the transRoot
      */
     public ObjectId getTransRoot() {
-        return transRoot;
+        return articleRank.getTransRoot();
     }
 
     /**
      * @param transRoot the transRoot to set
      */
     public void setTransRoot(ObjectId transRoot) {
-        this.transRoot = transRoot;
+        articleRank.setTransRoot(transRoot);
     }
 
     /**
