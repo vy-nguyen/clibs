@@ -26,19 +26,13 @@
  */
 package com.tvntd.models;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.Embeddable;
 
 import com.tvntd.lib.ObjectId;
 
-@Entity
+@Embeddable
 public class ArticleRank
 {
-    @Id
-    private Long articleId;
-
     private Long creditEarned;
     private Long moneyEarned;
     private Long likes;
@@ -47,21 +41,14 @@ public class ArticleRank
 
     private ObjectId transRoot;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "articleRank")
-    private Article article;
-
-    /**
-     * @return the articleId
-     */
-    public Long getArticleId() {
-        return articleId;
-    }
-
-    /**
-     * @param articleId the articleId to set
-     */
-    public void setArticleId(Long articleId) {
-        this.articleId = articleId;
+    public ArticleRank()
+    {
+        this.creditEarned = 0L;
+        this.moneyEarned = 0L;
+        this.likes = 0L;
+        this.shared = 0L;
+        this.score = 0L;
+        this.transRoot = ObjectId.zeroId();
     }
 
     /**
@@ -146,12 +133,5 @@ public class ArticleRank
      */
     public void setTransRoot(ObjectId transRoot) {
         this.transRoot = transRoot;
-    }
-
-    /**
-     * @return the article
-     */
-    public Article getArticle() {
-        return article;
     }
 }

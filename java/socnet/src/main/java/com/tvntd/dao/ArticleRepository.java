@@ -38,13 +38,13 @@ import com.tvntd.models.Article;
 public interface ArticleRepository extends JpaRepository<Article, Long>
 {
     Article findByArticleId(Long id);
-    Article findByArticleUuid(UUID uuid);
-    Article findByAuthorUuid(UUID uuid);
+    Article findByArticleUuid(String uuid);
+    Article findByAuthorUuid(String uuid);
 
     List<Article> findAllByAuthorId(Long authorId);
-    List<Article> findAllByAuthorUuid(UUID authorUuidid);
+    List<Article> findAllByAuthorUuid(String authorUuidid);
     List<Article> findAllByAuthorIdOrderByCreatedDateDesc(Long authorId);
-    List<Article> findAllByAuthorUuidOrderByCreatedDateAsc(UUID uuid);
+    List<Article> findAllByAuthorUuidOrderByCreatedDateAsc(String uuid);
 
     Page<Article>
     findByAuthorIdOrderByCreatedDateDesc(Long author, Pageable pageable);

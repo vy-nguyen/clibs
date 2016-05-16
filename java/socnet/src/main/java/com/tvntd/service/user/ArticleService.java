@@ -44,7 +44,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.MapMaker;
-import com.tvntd.dao.ArticleRankRepo;
 import com.tvntd.dao.ArticleRepository;
 import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
@@ -60,13 +59,10 @@ public class ArticleService implements IArticleService
     @Autowired
     protected ArticleRepository articleRepo;
 
-    @Autowired
-    protected ArticleRankRepo artRankRepo;
-
     public static class ArticleCache
     {
         boolean m_fullCache;
-        final ConcurrentMap<UUID, ArticleDTO> m_cache;
+        final ConcurrentMap<String, ArticleDTO> m_cache;
 
         public ArticleCache()
         {
@@ -74,11 +70,11 @@ public class ArticleService implements IArticleService
             m_cache = new MapMaker().concurrencyLevel(32).makeMap();
         }
 
-        public ArticleDTO get(UUID uuid) {
+        public ArticleDTO get(String uuid) {
             return m_cache.get(uuid);
         }
 
-        public void put(UUID uuid, ArticleDTO article)
+        public void put(String uuid, ArticleDTO article)
         {
             if (article != null && uuid != null) {
                 m_cache.put(uuid, article);
@@ -89,11 +85,7 @@ public class ArticleService implements IArticleService
     public void checkArticleRank(Article art)
     {
         if (art.getArticleRank() == null) {
-            ArticleRank rank = new ArticleRank();
-            rank.setArticleId(art.getArticleId());
-
-            art.setArticleRank(rank);
-            artRankRepo.save(rank);
+            art.setArticleRank(new ArticleRank());
         }
     }
 
@@ -108,13 +100,14 @@ public class ArticleService implements IArticleService
     @Override
     public ArticleDTO getArticle(UUID artUuid)
     {
-        ArticleDTO ret = s_cache.get(artUuid);
+        String uuid = artUuid.toString();
+        ArticleDTO ret = s_cache.get(uuid);
         if (ret == null) {
-            Article art = articleRepo.findByArticleUuid(artUuid);
+            Article art = articleRepo.findByArticleUuid(uuid);
             checkArticleRank(art);
 
             ret = new ArticleDTO(art);
-            s_cache.put(artUuid, ret);
+            s_cache.put(uuid, ret);
         }
         return ret;
     }
@@ -142,7 +135,7 @@ public class ArticleService implements IArticleService
     public List<ArticleDTO> getArticlesByUser(UUID userUuid)
     {
         List<Article> articles =
-            articleRepo.findAllByAuthorUuidOrderByCreatedDateAsc(userUuid);
+            articleRepo.findAllByAuthorUuidOrderByCreatedDateAsc(userUuid.toString());
         return ArticleDTO.convert(articles);
     }
 
@@ -176,12 +169,22 @@ public class ArticleService implements IArticleService
     }
 
     @Override
-    public void saveArticle(Article article)
-    {
+    public void saveArticle(Article article) {
         articleRepo.save(article);
-        ArticleRank rank = article.getArticleRank();
-        rank.setArticleId(article.getArticleId());
-        artRankRepo.save(article.getArticleRank());
+    }
+
+    @Override
+    public void deleteArticle(Article art) {
+        articleRepo.delete(art.getArticleId());
+    }
+
+    @Override
+    public void deleteArticle(UUID uuid)
+    {
+        ArticleDTO art = getArticle(uuid);
+        if (art != null) {
+            articleRepo.delete(art.fetchArticle());
+        }
     }
 
     @Override

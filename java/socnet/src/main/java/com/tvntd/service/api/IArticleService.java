@@ -61,6 +61,9 @@ public interface IArticleService
     public void saveArticle(ArticleDTO article);
     public void saveArticles(String josnFile, String dir);
 
+    public void deleteArticle(Article article);
+    public void deleteArticle(UUID uuid);
+
     public static class ArticleDTOResponse extends GenericResponse
     {
         private List<ArticleDTO> articles;

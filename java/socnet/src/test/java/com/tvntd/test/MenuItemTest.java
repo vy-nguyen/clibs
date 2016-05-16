@@ -31,6 +31,7 @@ import static org.junit.Assert.*;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.After;
 import org.junit.Before;
@@ -150,5 +151,7 @@ public class MenuItemTest
         art.setTopic("Example Topic".getBytes());
         art.setContent("Example Content".getBytes());
         articleService.saveArticle(art);
+
+        articleService.deleteArticle(UUID.fromString(art.getArticleUuid()));
     }
 }

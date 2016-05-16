@@ -79,7 +79,7 @@ public class ProfileTest
         errContent = new ByteArrayOutputStream();
     }
 
-    static protected Long testId = 10L;
+    static protected Long testId = 10000L;
 
     @Autowired
     IProfileService profileRepo;

@@ -34,6 +34,7 @@ import java.util.UUID;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -42,7 +43,6 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -84,14 +84,13 @@ public class Article
     @Column
     private byte[] content;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "articleId")
+    @Embedded
     private ArticleRank articleRank;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "ArtPics",
-            uniqueConstraints= @UniqueConstraint(columnNames = {"pictures"}),
-            joinColumns = @JoinColumn(name="articleId"))
+            uniqueConstraints = @UniqueConstraint(columnNames = {"pictures"}),
+            joinColumns = @JoinColumn(name = "articleId"))
     private List<ObjectId> pictures;
 
     @Transient
