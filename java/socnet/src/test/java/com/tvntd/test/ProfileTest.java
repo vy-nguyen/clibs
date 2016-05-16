@@ -84,9 +84,9 @@ public class ProfileTest
     @Autowired
     IProfileService profileRepo;
 
-    static public Long getTestId() 
+    static public long getTestId() 
     {
-        Long rt = testId++;
+        long rt = testId++;
         return rt;
     }
 

@@ -28,8 +28,6 @@ package com.tvntd.service.api;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -59,6 +57,7 @@ public interface IArticleService
     public Page<ArticleDTO> getUserArticles(Long userId);
     public Page<ArticleDTO> getUserArticles(UUID userUuid);
 
+    public void saveArticle(Article article);
     public void saveArticle(ArticleDTO article);
     public void saveArticles(String josnFile, String dir);
 
@@ -212,14 +211,6 @@ public interface IArticleService
             article.removePicture(img);
         }
 
-        public void addComment(Long id) {
-            article.addComment(id);
-        }
-
-        public void removeComment(Long id) {
-            article.removeComment(id);
-        }
-
         /**
          * @return the article
          */
@@ -301,7 +292,7 @@ public interface IArticleService
             ObjStore objStore = ObjStore.getInstance();
             List<String> ret = new LinkedList<>();
             List<ObjectId> pictures = article.getPictures();
-            String store = s_baseUri + article.getAuthorId().toString();
+            String store = s_baseUri + Long.toString(article.getAuthorId());
 
             if (pictures != null) {
                 for (ObjectId oid : pictures) {

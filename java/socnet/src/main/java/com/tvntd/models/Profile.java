@@ -53,7 +53,6 @@ public class Profile
     private Long profileItemId;
 
     private String locale;
-    private String userName;
     private String email;
     private String firstName;
     private String lastName;
@@ -112,7 +111,6 @@ public class Profile
       
         prof.locale = "VI";
         prof.userId = user.getId();
-        prof.userName = user.getLastName() + " " + user.getFirstName();
         prof.email = user.getEmail();
         prof.firstName = user.getFirstName();
         prof.lastName = user.getLastName();
@@ -145,7 +143,7 @@ public class Profile
 
         sb.append("Id: ").append(userId).append(", profileItem: ")
             .append(profileItemId).append('\n')
-            .append("Name: ").append(userName).append(", transRoot: ")
+            .append("Name: ").append(firstName).append(", transRoot: ")
             .append(transRoot.name()).append('\n')
             .append("Uuid: ").append(userUuid).append('\n')
             .append("Connect : ").append(connectList).append('\n')
@@ -194,20 +192,6 @@ public class Profile
      */
     public void setLocale(String locale) {
         this.locale = locale;
-    }
-
-    /**
-     * @return the userName
-     */
-    public String getUserName() {
-        return userName;
-    }
-
-    /**
-     * @param userName the userName to set
-     */
-    public void setUserName(String userName) {
-        this.userName = userName;
     }
 
     /**

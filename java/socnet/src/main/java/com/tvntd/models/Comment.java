@@ -47,15 +47,15 @@ public class Comment
 {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
     private byte[] content;
 
-    @Column(name = "articleUuid")
+    @Column(length = 64, name = "articleUuid")
     private String articleUuid;
 
     @Column(name = "userId")
-    private long userId;
+    private Long userId;
 
     @Column
     @Temporal(TemporalType.TIMESTAMP)
@@ -92,14 +92,14 @@ public class Comment
     /**
      * @return the userId
      */
-    public long getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
     /**
      * @param userId the userId to set
      */
-    public void setUserId(long userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 

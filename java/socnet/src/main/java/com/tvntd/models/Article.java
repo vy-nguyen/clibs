@@ -63,7 +63,11 @@ public class Article
     private Long articleId;
 
     private Long     authorId;
+
+    @Column(length = 64)
     private String   authorUuid;
+
+    @Column(length = 64)
     private String   articleUuid;
 
     private boolean  pending;
@@ -103,6 +107,7 @@ public class Article
         articleUuid = m_articleUuid.toString();
         contentOId = ObjectId.zeroId();
         createdDate = new Date();
+        articleRank = new ArticleRank();
     }
 
     public void markPending() {
@@ -132,26 +137,11 @@ public class Article
         }
     }
 
-    public void addComment(Long id)
-    {
-    }
-
-    public void removeComment(Long id)
-    {
-    }
-
     /**
      * @return the articleId
      */
     public Long getArticleId() {
         return articleId;
-    }
-
-    /**
-     * @param articleId the articleId to set
-     */
-    public void setArticleId(Long articleId) {
-        this.articleId = articleId;
     }
 
     /**
@@ -217,28 +207,28 @@ public class Article
     /**
      * @return the creditEarned
      */
-    public long getCreditEarned() {
+    public Long getCreditEarned() {
         return articleRank.getCreditEarned();
     }
 
     /**
      * @param creditEarned the creditEarned to set
      */
-    public void setCreditEarned(long creditEarned) {
+    public void setCreditEarned(Long creditEarned) {
         articleRank.setCreditEarned(creditEarned);
     }
 
     /**
      * @return the moneyEarned
      */
-    public long getMoneyEarned() {
+    public Long getMoneyEarned() {
         return articleRank.getMoneyEarned();
     }
 
     /**
      * @param moneyEarned the moneyEarned to set
      */
-    public void setMoneyEarned(long moneyEarned) {
+    public void setMoneyEarned(Long moneyEarned) {
         articleRank.setMoneyEarned(moneyEarned);
     }
 
@@ -310,6 +300,20 @@ public class Article
      */
     public void setContent(byte[] content) {
         this.content = content;
+    }
+
+    /**
+     * @return the articleRank
+     */
+    public ArticleRank getArticleRank() {
+        return articleRank;
+    }
+
+    /**
+     * @param articleRank the articleRank to set
+     */
+    public void setArticleRank(ArticleRank articleRank) {
+        this.articleRank = articleRank;
     }
 
     /**

@@ -28,6 +28,7 @@ package com.tvntd.models;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -35,10 +36,15 @@ import javax.persistence.Id;
 public class Timeline
 {
     @Id
+    @Column(length = 64)
     private String userUuid;
 
     private Date timeStamp;
+
+    @Column(length = 64)
     private String articleUuid;
+
+    @Column(length = 64)
     private String eventUuid;
 
     byte[] summarized;

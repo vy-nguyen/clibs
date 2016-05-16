@@ -62,6 +62,7 @@ import com.tvntd.service.api.GenericResponse;
 import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleService.ArticleDTOResponse;
+import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IMenuItemService;
 import com.tvntd.service.api.IMenuItemService.MenuItemResp;
 import com.tvntd.service.api.IProfileService;
@@ -85,6 +86,9 @@ public class ApiPath
 
     @Autowired
     private IArticleService articleRepo;
+
+    @Autowired
+    protected IAuthorService authorService;
 
     @Autowired
     protected Mongo mongo;

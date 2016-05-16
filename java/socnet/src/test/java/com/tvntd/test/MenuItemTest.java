@@ -50,6 +50,7 @@ import com.tvntd.config.TestPersistenceJPAConfig;
 import com.tvntd.config.TestSecurityConfig;
 import com.tvntd.config.TestTvntdRootConfig;
 import com.tvntd.config.TestTvntdWebConfig;
+import com.tvntd.models.Article;
 import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IMenuItemService;
@@ -140,5 +141,14 @@ public class MenuItemTest
         String jsonFile = rsDir + "/article-sample.json";
 
         articleService.saveArticles(jsonFile, rsDir);
+    }
+
+    @Test
+    public void testSaveArticle()
+    {
+        Article art = new Article();
+        art.setTopic("Example Topic".getBytes());
+        art.setContent("Example Content".getBytes());
+        articleService.saveArticle(art);
     }
 }

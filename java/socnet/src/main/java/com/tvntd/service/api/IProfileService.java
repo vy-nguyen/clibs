@@ -162,7 +162,7 @@ public interface IProfileService
 
             sb.append(profile.getLocale())
                 .append("- firstName ").append(profile.getFirstName())
-                .append(", username: ").append(profile.getUserName())
+                .append(", username: ").append(profile.getLastName())
                 .append("\nUuid: ").append(profile.getUserUuid().toString())
                 .append("\nConnect : ").append(profile.getConnectList().toString())
                 .append("\nFollow  : ").append(profile.getFollowList().toString())
@@ -378,20 +378,6 @@ public interface IProfileService
 
         public String getEmail() {
             return profile.getEmail();
-        }
-
-        /**
-         * @return the userName
-         */
-        public String getUserName() {
-            return profile.getUserName();
-        }
-
-        /**
-         * @param userName the userName to set
-         */
-        public void setUserName(String userName) {
-            profile.setUserName(userName);
         }
 
         /**

@@ -31,63 +31,39 @@ import java.util.UUID;
 
 import javax.transaction.Transactional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.tvntd.dao.ArticleSavedRepo;
-import com.tvntd.models.Article;
-import com.tvntd.service.api.IArtSavedService;
-import com.tvntd.service.api.IArticleService.ArticleDTO;
+import com.tvntd.dao.AuthorRepo;
+import com.tvntd.models.Author;
+import com.tvntd.service.api.IAuthorService;
 
 @Service
 @Transactional
-public class ArtSavedService implements IArtSavedService
+public class AuthorService implements IAuthorService
 {
-    static private Logger s_log = LoggerFactory.getLogger(ArticleService.class);
-
     @Autowired
-    protected ArticleSavedRepo articleRepo;
+    protected AuthorRepo authorRepo;
 
     @Override
-    public ArticleDTO getArticle(Long artId)
+    public Author getAuthor(UUID uuid)
     {
-        Article art = articleRepo.findByArticleId(artId);
-        return new ArticleDTO(art);
+        return authorRepo.findByAuthorUuid(uuid.toString());
     }
 
     @Override
-    public ArticleDTO getArticle(UUID artUuid)
+    public Author getAuthor(String uuid)
     {
-        Article art = articleRepo.findByArticleUuid(artUuid);
-        return new ArticleDTO(art);
+        return authorRepo.findByAuthorUuid(uuid);
     }
 
-    @Override
-    public List<ArticleDTO> getArticlesByUser(Long userId)
+    public List<Author> getAuthors(List<UUID> uuids)
     {
-        List<Article> articles = articleRepo.findAllByAuthorId(userId);
-        return ArticleDTO.convert(articles);
+        return null;
     }
 
-    @Override
-    public List<ArticleDTO> getArticlesByUser(UUID userUuid)
+    public void saveAuthor(Author author)
     {
-        List<Article> articles = articleRepo.findAllByAuthorId(userUuid);
-        return ArticleDTO.convert(articles);
-    }
-
-    @Override
-    public void saveArticle(ArticleDTO article)
-    {
-        Article art = article.fetchArticle();
-        articleRepo.save(art);
-    }
-
-    @Override
-    public void deleteArticle(ArticleDTO article)
-    {
-        articleRepo.deleteByArticleId(article.fetchArticleId());
+        authorRepo.save(author);
     }
 }

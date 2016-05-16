@@ -34,11 +34,11 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class MesgMenuItem
 {
-    public String mesgUrl;
-    public String mesgImgUrl;
-    public String mesgHeader;
-    public String mesgTime;
-    public String mesgContent;
+    private String mesgUrl;
+    private String mesgImgUrl;
+    private String mesgHeader;
+    private String mesgTime;
+    private String mesgContent;
 
     public MesgMenuItem() {}
     public MesgMenuItem(String url, String imgUrl, String hdr,

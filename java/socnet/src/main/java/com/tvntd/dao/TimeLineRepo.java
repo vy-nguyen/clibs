@@ -24,21 +24,19 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.service.api;
+package com.tvntd.dao;
 
-import java.util.List;
-import java.util.UUID;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.tvntd.service.api.IArticleService.ArticleDTO;
+import com.tvntd.models.Timeline;
 
-public interface IArtSavedService
+public interface TimeLineRepo extends JpaRepository<Timeline, String>
 {
-    public ArticleDTO getArticle(Long artId);
-    public ArticleDTO getArticle(UUID uuid);
+    Timeline findByUserUuid(String userUuid);
+    
+    @Override
+    void delete(Timeline rec);
 
-    public List<ArticleDTO> getArticlesByUser(Long userId);
-    public List<ArticleDTO> getArticlesByUser(UUID userUuidId);
-
-    public void saveArticle(ArticleDTO article);
-    public void deleteArticle(ArticleDTO article);
+    @Override
+    void delete(String uuid);
 }

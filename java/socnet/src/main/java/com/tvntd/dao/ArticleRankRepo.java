@@ -24,62 +24,19 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.models;
+package com.tvntd.dao;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Entity
-public class CommentRank
+import com.tvntd.models.ArticleRank;
+
+public interface ArticleRankRepo extends JpaRepository<ArticleRank, Long>
 {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long commentId;
+    ArticleRank findByArticleId(Long id);
+    
+    @Override
+    void delete(ArticleRank rank);
 
-    private Long likes;
-    private Long saved;
-
-    /**
-     * @return the commentId
-     */
-    public Long getCommentId() {
-        return commentId;
-    }
-
-    /**
-     * @param commentId the commentId to set
-     */
-    public void setCommentId(Long commentId) {
-        this.commentId = commentId;
-    }
-
-    /**
-     * @return the likes
-     */
-    public Long getLikes() {
-        return likes;
-    }
-
-    /**
-     * @param likes the likes to set
-     */
-    public void setLikes(Long likes) {
-        this.likes = likes;
-    }
-
-    /**
-     * @return the saved
-     */
-    public Long getSaved() {
-        return saved;
-    }
-
-    /**
-     * @param saved the saved to set
-     */
-    public void setSaved(Long saved) {
-        this.saved = saved;
-    }
+    @Override
+    void delete(Long id);
 }

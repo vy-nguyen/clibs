@@ -44,8 +44,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.MapMaker;
+import com.tvntd.dao.ArticleRankRepo;
 import com.tvntd.dao.ArticleRepository;
 import com.tvntd.models.Article;
+import com.tvntd.models.ArticleRank;
 import com.tvntd.service.api.IArticleService;
 
 @Service
@@ -57,6 +59,9 @@ public class ArticleService implements IArticleService
 
     @Autowired
     protected ArticleRepository articleRepo;
+
+    @Autowired
+    protected ArticleRankRepo artRankRepo;
 
     public static class ArticleCache
     {
@@ -81,10 +86,22 @@ public class ArticleService implements IArticleService
         }
     }
 
+    public void checkArticleRank(Article art)
+    {
+        if (art.getArticleRank() == null) {
+            ArticleRank rank = new ArticleRank();
+            rank.setArticleId(art.getArticleId());
+
+            art.setArticleRank(rank);
+            artRankRepo.save(rank);
+        }
+    }
+
     @Override
     public ArticleDTO getArticle(Long artId)
     {
         Article art = articleRepo.findByArticleId(artId);
+        checkArticleRank(art);
         return new ArticleDTO(art);
     }
 
@@ -94,6 +111,8 @@ public class ArticleService implements IArticleService
         ArticleDTO ret = s_cache.get(artUuid);
         if (ret == null) {
             Article art = articleRepo.findByArticleUuid(artUuid);
+            checkArticleRank(art);
+
             ret = new ArticleDTO(art);
             s_cache.put(artUuid, ret);
         }
@@ -152,14 +171,17 @@ public class ArticleService implements IArticleService
     }
 
     @Override
-    public void saveArticle(ArticleDTO article)
-    {
-        Article art = article.fetchArticle();
-        articleRepo.save(art);
+    public void saveArticle(ArticleDTO article) {
+        saveArticle(article.fetchArticle());
     }
 
-    public void saveArticle(Article article) {
+    @Override
+    public void saveArticle(Article article)
+    {
         articleRepo.save(article);
+        ArticleRank rank = article.getArticleRank();
+        rank.setArticleId(article.getArticleId());
+        artRankRepo.save(article.getArticleRank());
     }
 
     @Override

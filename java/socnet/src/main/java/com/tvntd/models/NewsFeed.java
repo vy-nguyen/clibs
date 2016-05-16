@@ -28,6 +28,7 @@ package com.tvntd.models;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -42,7 +43,7 @@ import javax.persistence.UniqueConstraint;
 public class NewsFeed
 {
     @Id
-    @Column
+    @Column(length = 64)
     private String userUuid;
 
     private Date lastUpdate;
@@ -54,7 +55,7 @@ public class NewsFeed
                 "userUuid", "authorUuid"
             }),
             joinColumns = @JoinColumn(name = "userUuid"))
-    private List<String> authorUuid;
+    private List<UUID> authorUuid;
 
     /**
      * @return the userUuid
@@ -101,14 +102,14 @@ public class NewsFeed
     /**
      * @return the authorUuid
      */
-    public List<String> getAuthorUuid() {
+    public List<UUID> getAuthorUuid() {
         return authorUuid;
     }
 
     /**
      * @param authorUuid the authorUuid to set
      */
-    public void setAuthorUuid(List<String> authorUuid) {
+    public void setAuthorUuid(List<UUID> authorUuid) {
         this.authorUuid = authorUuid;
     }
 }

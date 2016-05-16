@@ -26,7 +26,6 @@
  */
 package com.tvntd.models;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -38,14 +37,13 @@ import com.tvntd.lib.ObjectId;
 public class ArticleRank
 {
     @Id
-    @Column
-    private long articleId;
+    private Long articleId;
 
-    private long creditEarned;
-    private long moneyEarned;
-    private long likes;
-    private long shared;
-    private long score;
+    private Long creditEarned;
+    private Long moneyEarned;
+    private Long likes;
+    private Long shared;
+    private Long score;
 
     private ObjectId transRoot;
 
@@ -55,84 +53,84 @@ public class ArticleRank
     /**
      * @return the articleId
      */
-    public long getArticleId() {
+    public Long getArticleId() {
         return articleId;
     }
 
     /**
      * @param articleId the articleId to set
      */
-    public void setArticleId(long articleId) {
+    public void setArticleId(Long articleId) {
         this.articleId = articleId;
     }
 
     /**
      * @return the creditEarned
      */
-    public long getCreditEarned() {
+    public Long getCreditEarned() {
         return creditEarned;
     }
 
     /**
      * @param creditEarned the creditEarned to set
      */
-    public void setCreditEarned(long creditEarned) {
+    public void setCreditEarned(Long creditEarned) {
         this.creditEarned = creditEarned;
     }
 
     /**
      * @return the moneyEarned
      */
-    public long getMoneyEarned() {
+    public Long getMoneyEarned() {
         return moneyEarned;
     }
 
     /**
      * @param moneyEarned the moneyEarned to set
      */
-    public void setMoneyEarned(long moneyEarned) {
+    public void setMoneyEarned(Long moneyEarned) {
         this.moneyEarned = moneyEarned;
     }
 
     /**
      * @return the likes
      */
-    public long getLikes() {
+    public Long getLikes() {
         return likes;
     }
 
     /**
      * @param likes the likes to set
      */
-    public void setLikes(long likes) {
+    public void setLikes(Long likes) {
         this.likes = likes;
     }
 
     /**
      * @return the shared
      */
-    public long getShared() {
+    public Long getShared() {
         return shared;
     }
 
     /**
      * @param shared the shared to set
      */
-    public void setShared(long shared) {
+    public void setShared(Long shared) {
         this.shared = shared;
     }
 
     /**
      * @return the score
      */
-    public long getScore() {
+    public Long getScore() {
         return score;
     }
 
     /**
      * @param score the score to set
      */
-    public void setScore(long score) {
+    public void setScore(Long score) {
         this.score = score;
     }
 

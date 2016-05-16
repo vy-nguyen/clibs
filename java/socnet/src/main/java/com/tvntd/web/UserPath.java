@@ -55,7 +55,6 @@ import com.tvntd.forms.PostForm;
 import com.tvntd.lib.ObjectId;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.GenericResponse;
-import com.tvntd.service.api.IArtSavedService;
 import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleService.ArticleDTOResponse;
@@ -78,9 +77,6 @@ public class UserPath
 
     @Autowired
     private IArticleService articleRepo;
-
-    @Autowired
-    private IArtSavedService artSavedRepo;
 
     @Autowired
     private IProfileService profileRepo;
@@ -199,7 +195,7 @@ public class UserPath
             profile.assignPendPost(null);
             profile.pushPublishArticle(art);
         } else {
-            artSavedRepo.saveArticle(art);
+            articleRepo.saveArticle(art);
             profile.pushSavedArticle(art);
         }
         return art;
@@ -254,7 +250,7 @@ public class UserPath
         }
         UUID articleUuid = Util.toUuid(artUuid);
         if (articleUuid != null) {
-            pendPost = artSavedRepo.getArticle(articleUuid);
+            pendPost = articleRepo.getArticle(articleUuid);
         }
         if (creat == true && pendPost == null) {
             UUID authorUuid = profile.getUserUuid();

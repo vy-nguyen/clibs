@@ -44,14 +44,14 @@ public class AuthorRank
     @Column
     private Long authorId;
 
-    private long publicScore;
-    private long groupScore;
-    private long topicScore;
-    private long promoteScore;
+    private Long publicScore;
+    private Long groupScore;
+    private Long topicScore;
+    private Long promoteScore;
 
     private ObjectId chainRoot;
 
-    @Column(name = "authorUuid")
+    @Column(length = 64)
     private String authorUuid;
 
     /**
@@ -64,56 +64,56 @@ public class AuthorRank
     /**
      * @return the publicScore
      */
-    public long getPublicScore() {
+    public Long getPublicScore() {
         return publicScore;
     }
 
     /**
      * @param publicScore the publicScore to set
      */
-    public void setPublicScore(long publicScore) {
+    public void setPublicScore(Long publicScore) {
         this.publicScore = publicScore;
     }
 
     /**
      * @return the groupScore
      */
-    public long getGroupScore() {
+    public Long getGroupScore() {
         return groupScore;
     }
 
     /**
      * @param groupScore the groupScore to set
      */
-    public void setGroupScore(long groupScore) {
+    public void setGroupScore(Long groupScore) {
         this.groupScore = groupScore;
     }
 
     /**
      * @return the topicScore
      */
-    public long getTopicScore() {
+    public Long getTopicScore() {
         return topicScore;
     }
 
     /**
      * @param topicScore the topicScore to set
      */
-    public void setTopicScore(long topicScore) {
+    public void setTopicScore(Long topicScore) {
         this.topicScore = topicScore;
     }
 
     /**
      * @return the promoteScore
      */
-    public long getPromoteScore() {
+    public Long getPromoteScore() {
         return promoteScore;
     }
 
     /**
      * @param promoteScore the promoteScore to set
      */
-    public void setPromoteScore(long promoteScore) {
+    public void setPromoteScore(Long promoteScore) {
         this.promoteScore = promoteScore;
     }
 

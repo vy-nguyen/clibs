@@ -19,7 +19,6 @@ class User {
         this._id          = _.uniqueId('id-user-info-');
         this.email        = data.email;
         this.userUuid     = data.userUuid;
-        this.userName     = data.userName;
         this.firstName    = data.firstName;
 
         this.lastName     = data.lastName;

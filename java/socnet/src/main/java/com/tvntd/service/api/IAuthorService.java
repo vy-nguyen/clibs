@@ -24,62 +24,19 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.models;
+package com.tvntd.service.api;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import java.util.List;
+import java.util.UUID;
 
-@Entity
-public class CommentRank
+import com.tvntd.models.Author;
+
+public interface IAuthorService
 {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long commentId;
+    public Author getAuthor(UUID uuid);
+    public Author getAuthor(String uuid);
 
-    private Long likes;
-    private Long saved;
+    public List<Author> getAuthors(List<UUID> uuids);
 
-    /**
-     * @return the commentId
-     */
-    public Long getCommentId() {
-        return commentId;
-    }
-
-    /**
-     * @param commentId the commentId to set
-     */
-    public void setCommentId(Long commentId) {
-        this.commentId = commentId;
-    }
-
-    /**
-     * @return the likes
-     */
-    public Long getLikes() {
-        return likes;
-    }
-
-    /**
-     * @param likes the likes to set
-     */
-    public void setLikes(Long likes) {
-        this.likes = likes;
-    }
-
-    /**
-     * @return the saved
-     */
-    public Long getSaved() {
-        return saved;
-    }
-
-    /**
-     * @param saved the saved to set
-     */
-    public void setSaved(Long saved) {
-        this.saved = saved;
-    }
+    public void saveAuthor(Author author);
 }

@@ -44,15 +44,19 @@ public class User
     static private final Long userIdStart = 10000L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 64)
     private String email;
-    private String firstName;
-    private String lastName;
-    private String locale;
 
-    @Column(length = 60)
+    @Column(length = 16)
+    private String firstName;
+
+    @Column(length = 16)
+    private String lastName;
+
+    @Column(length = 64)
     private String password;
 
     private boolean enabled;
@@ -81,7 +85,7 @@ public class User
         return id;
     }
 
-    public void setId(final Long id) {
+    protected void setId(Long id) {
         this.id = id;
     }
 
@@ -107,20 +111,6 @@ public class User
 
     public void setEmail(final String username) {
         this.email = username;
-    }
-
-    /**
-     * @return the locale
-     */
-    public String getLocale() {
-        return locale;
-    }
-
-    /**
-     * @param locale the locale to set
-     */
-    public void setLocale(String locale) {
-        this.locale = locale;
     }
 
     public String getPassword() {

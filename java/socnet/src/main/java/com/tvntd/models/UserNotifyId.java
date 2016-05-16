@@ -47,7 +47,7 @@ public class UserNotifyId implements Serializable
             return false;
         }
         UserNotifyId cast = (UserNotifyId) other;
-        return userId.equals(cast.userId) && type.equals(cast.type);
+        return (userId == cast.userId) && type.equals(cast.type);
     }
 
     /**
