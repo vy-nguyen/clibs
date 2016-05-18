@@ -26,17 +26,17 @@
  */
 package com.tvntd.dao;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.tvntd.models.Timeline;
+import com.tvntd.models.TimeLine;
 
-public interface TimeLineRepo extends JpaRepository<Timeline, String>
+public interface TimeLineRepo extends JpaRepository<TimeLine, String>
 {
-    Timeline findByUserUuid(String userUuid);
-    
-    @Override
-    void delete(Timeline rec);
+    TimeLine findByUserUuidAndArticleUuid(String user, String article);
+    List<TimeLine> findByUserUuid(String userUuid);
 
     @Override
-    void delete(String uuid);
+    void delete(TimeLine rec);
 }

@@ -27,6 +27,7 @@
 package com.tvntd.models;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,6 +39,8 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.UniqueConstraint;
+
+import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 @Entity
 public class NewsFeed
@@ -56,6 +59,29 @@ public class NewsFeed
             }),
             joinColumns = @JoinColumn(name = "userUuid"))
     private List<UUID> authorUuid;
+
+    public static NewsFeed fromProfile(ProfileDTO profile)
+    {
+        NewsFeed news = new NewsFeed();
+        news.setUserUuid(profile.getUserUuid().toString());
+        return news;
+    }
+
+    public void addAuthor(UUID author)
+    {
+        if (authorUuid == null) {
+            authorUuid = new LinkedList<>();
+        }
+        ProfileDTO.addUnique(authorUuid, author);
+    }
+
+    public UUID removeAuthor(UUID author)
+    {
+        if (authorUuid != null) {
+            return ProfileDTO.removeFrom(authorUuid, author);
+        }
+        return null;
+    }
 
     /**
      * @return the userUuid

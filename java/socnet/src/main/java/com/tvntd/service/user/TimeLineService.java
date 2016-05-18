@@ -26,83 +26,99 @@
  */
 package com.tvntd.service.user;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.tvntd.dao.AuthorRepo;
-import com.tvntd.models.Author;
-import com.tvntd.service.api.IAuthorService;
+import com.tvntd.dao.TimeLineRepo;
+import com.tvntd.models.TimeLine;
+import com.tvntd.service.api.ITimeLineService;
 
 @Service
 @Transactional
-public class AuthorService implements IAuthorService
+public class TimeLineService implements ITimeLineService
 {
+    private static Logger s_log = LoggerFactory.getLogger(TimeLineService.class);
+
     @Autowired
-    protected AuthorRepo authorRepo;
+    TimeLineRepo timeLineRepo;
 
     @Override
-    public Author getAuthor(UUID uuid)
+    public TimeLineDTO createTimeLine(UUID user, UUID article)
     {
-        return authorRepo.findByAuthorUuid(uuid.toString());
+        return new TimeLineDTO(user, article);
     }
 
     @Override
-    public Author getAuthor(String uuid)
+    public TimeLineDTO getTimeLine(UUID user, UUID article)
     {
-        return authorRepo.findByAuthorUuid(uuid);
+        return new TimeLineDTO(timeLineRepo
+                .findByUserUuidAndArticleUuid(user.toString(), article.toString()));
     }
 
     @Override
-    public void addFavoriteArticle(Author author, UUID articleUuid)
+    public List<TimeLineDTO> getTimeLine(UUID user)
     {
-        author.addFavoriteArticle(articleUuid);
+        return convert(timeLineRepo.findByUserUuid(user.toString()));
     }
 
     @Override
-    public void removeFavoriteArticle(Author author, UUID articleUuid)
+    public List<TimeLineDTO> convert(List<TimeLine> src)
     {
-    }
+        List<TimeLineDTO> result = new LinkedList<>();
 
-    @Override
-    public void addTimeLineArticle(Author author, UUID articleUuid)
-    {
-        author.addTimeLineArticle(articleUuid);
-    }
-
-    @Override
-    public void removeTimeLineArticle(Author author, UUID articleUuid)
-    {
-    }
-
-    @Override
-    public List<Author> getAuthors(List<UUID> uuids)
-    {
-        List<Author> result = new LinkedList<>();
-
-        for (UUID uid : uuids) {
-            Author author = authorRepo.findByAuthorUuid(uid.toString());
-            if (author != null) {
-                result.add(author);
-            }
+        for (TimeLine tl : src) {
+            result.add(new TimeLineDTO(tl));
         }
         return result;
     }
 
     @Override
-    public void saveAuthor(Author author)
+    public void saveTimeLine(TimeLineDTO tline)
     {
-        authorRepo.save(author);
+        timeLineRepo.save(tline.getTimeLine());
     }
 
     @Override
-    public void deleteAuthor(String uuid)
+    public void saveTimeLine(List<TimeLineDTO> list)
     {
-        authorRepo.delete(uuid);
+        try {
+            for (TimeLineDTO tline : list) {
+                timeLineRepo.save(tline.getTimeLine());
+                s_log.info("Save timeline: " + tline);
+            }
+        } catch(Exception e) {
+            s_log.info("Timeline exception: " + e.toString());
+        }
+    }
+
+    @Override
+    public void saveTimeLine(UUID user, UUID article, UUID event, byte[] text)
+    {
+        TimeLineDTO tline = new TimeLineDTO(user, article);
+
+        tline.setEventUuid(event.toString());
+        tline.setSummarized(text);
+        saveTimeLine(tline);
+    }
+
+    @Override
+    public void deleteTimeLine(UUID user, UUID article)
+    {
+        TimeLine tline = new TimeLine(user.toString(), article.toString());
+        timeLineRepo.delete(tline);
+    }
+
+    @Override
+    public void deleteTimeLineOlder(UUID user, Date older)
+    {
     }
 }

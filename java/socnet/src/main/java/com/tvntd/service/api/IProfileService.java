@@ -186,44 +186,59 @@ public interface IProfileService
         /**
          * Common code for UUID list.
          */
-        public UUID findUuid(List<UUID> src, UUID item)
+        public static UUID isInList(List<UUID> src, UUID item)
         {
-            synchronized(this) {
-                for (UUID uuid : src) {
-                    if (uuid.compareTo(item) == 0) {
-                        return uuid;
-                    }
+            for (UUID uuid : src) {
+                if (uuid.compareTo(item) == 0) {
+                    return uuid;
                 }
             }
             return null;
+        }
+
+        public static UUID removeFrom(List<UUID> src, UUID giving)
+        {
+            Iterator<UUID> iter = src.iterator();
+            while (iter.hasNext()) {
+                UUID item = iter.next();
+                if (item.compareTo(giving) == 0) {
+                    iter.remove();
+                    return item;
+                }
+            }
+            return null;
+        }
+
+        public static void addUnique(List<UUID> src, UUID add)
+        {
+            Iterator<UUID> iter = src.iterator();
+            while (iter.hasNext()) {
+                UUID item = iter.next();
+                if (item.compareTo(add) == 0) {
+                    return;
+                }
+            }
+            src.add(add);
+        }
+
+        public UUID findUuid(List<UUID> src, UUID item)
+        {
+            synchronized(this) {
+                return isInList(src, item);
+            }
         }
 
         protected UUID removeUuid(List<UUID> src, UUID giving)
         {
             synchronized(this) {
-                Iterator<UUID> iter = src.iterator();
-                while (iter.hasNext()) {
-                    UUID item = iter.next();
-                    if (item.compareTo(giving) == 0) {
-                        iter.remove();
-                        return item;
-                    }
-                }
+                return removeFrom(src, giving);
             }
-            return null;
         }
 
         protected void addUuidList(List<UUID> src, UUID add)
         {
             synchronized(this) {
-                Iterator<UUID> iter = src.iterator();
-                while (iter.hasNext()) {
-                    UUID item = iter.next();
-                    if (item.compareTo(add) == 0) {
-                        return;
-                    }
-                }
-                src.add(add);
+                addUnique(src, add);
             }
         }
 

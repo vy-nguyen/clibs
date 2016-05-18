@@ -26,6 +26,7 @@
  */
 package com.tvntd.models;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,6 +38,8 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.UniqueConstraint;
+
+import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 @Entity
 public class Author
@@ -66,6 +69,46 @@ public class Author
 
     @Column(length = 64)
     private String appUuid;
+
+    public static Author fromProfile(ProfileDTO profile, String articleUuid)
+    {
+        Author author = new Author();
+        author.setAuthorUuid(profile.getUserUuid().toString());
+        author.setFrontArtUuid(articleUuid);
+        return author;
+    }
+
+    public void addFavoriteArticle(UUID articleUuid)
+    {
+        if (favArticles == null) {
+            favArticles = new LinkedList<>();
+        }
+        ProfileDTO.addUnique(favArticles, articleUuid);
+    }
+
+    public UUID removeFavoriteArticle(UUID articleUuid)
+    {
+        if (favArticles != null) {
+            return ProfileDTO.removeFrom(favArticles, articleUuid);
+        }
+        return null;
+    }
+
+    public void addTimeLineArticle(UUID articleUuid)
+    {
+        if (timeLineArticles == null) {
+            timeLineArticles = new LinkedList<>();
+        }
+        ProfileDTO.addUnique(timeLineArticles, articleUuid);
+    }
+
+    public UUID removeTimeLineArticle(UUID articleUuid)
+    {
+        if (timeLineArticles != null) {
+            return ProfileDTO.removeFrom(timeLineArticles, articleUuid);
+        }
+        return null;
+    }
 
     /**
      * @return the authorUuid

@@ -30,16 +30,22 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Table;
 
 @Entity
-public class Timeline
+@Table(indexes = {@Index(columnList = "userUuid", unique = false)})
+public class TimeLine
 {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
     @Column(length = 64)
     private String userUuid;
-
-    private Date timeStamp;
 
     @Column(length = 64)
     private String articleUuid;
@@ -47,7 +53,26 @@ public class Timeline
     @Column(length = 64)
     private String eventUuid;
 
+    private Date timeStamp;
     byte[] summarized;
+
+    public TimeLine() {}
+    public TimeLine(String user, String article)
+    {
+        userUuid = user;
+        articleUuid = article;
+    }
+
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(userUuid.toString()).append(" : ")
+            .append(articleUuid.toString()).append("\n")
+            .append(summarized).append("\n");
+
+        return sb.toString();
+    }
 
     /**
      * @return the userUuid

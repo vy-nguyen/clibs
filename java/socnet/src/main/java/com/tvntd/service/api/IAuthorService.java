@@ -26,6 +26,7 @@
  */
 package com.tvntd.service.api;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,7 +37,65 @@ public interface IAuthorService
     public Author getAuthor(UUID uuid);
     public Author getAuthor(String uuid);
 
+    public void addFavoriteArticle(Author author, UUID articleUuid);
+    public void removeFavoriteArticle(Author author, UUID articleUuid);
+
+    public void addTimeLineArticle(Author author, UUID articleUuid);
+    public void removeTimeLineArticle(Author author, UUID articleUuid);
+
     public List<Author> getAuthors(List<UUID> uuids);
 
     public void saveAuthor(Author author);
+    public void deleteAuthor(String uuid);
+
+    /**
+     *
+     */
+    public static class AuthorDTO
+    {
+        private Author author;
+
+        public AuthorDTO(Author author) {
+            this.author = author;
+        }
+
+        public String getAuthorUuid() {
+            return author.getAuthorUuid();
+        }
+
+        public String getFrontArticleUuid() {
+            return author.getFrontArtUuid();
+        }
+
+        public List<String> getFavoriteArticles() {
+            return convertUuid(author.getFavArticles());
+        }
+
+        public List<String> getTimeLineArticles() {
+            return convertUuid(author.getTimeLineArticles());
+        }
+
+        public String getAppUuid() {
+            return author.getAppUuid();
+        }
+
+        public static List<String> convertUuid(List<UUID> src)
+        {
+            List<String> ret = new LinkedList<>();
+            for (UUID art : src) {
+                ret.add(art.toString());
+            }
+            return ret;
+        }
+
+        public static List<AuthorDTO> convertDTO(List<Author> list)
+        {
+            List<AuthorDTO> ret = new LinkedList<>();
+
+            for (Author author : list) {
+                ret.add(new AuthorDTO(author));
+            }
+            return ret;
+        }
+    }
 }
