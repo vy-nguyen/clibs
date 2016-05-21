@@ -174,14 +174,9 @@ let RegisterForm = React.createClass({
                 type: data.authCode,
                 authVerifToken: data.authVerifToken
             });
-        } else if ((data.authCode == "failure") ||
-                   (data.authCode == "register-user-exists")) {
-            $('#id-register-error-text').empty().html(data.authMesg);
-            $('#id-register-error').show();
+        } else if ((data.authCode == "failure") || (data.authError)) {
+            data.authError.dispatchDefault("#id-register-error-text", "#id-register-error");
         } else {
-            /* XXX: report error here. */
-            console.log("unknown error: " + data.authCode);
-            console.log(data);
         }
     },
 

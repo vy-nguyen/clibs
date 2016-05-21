@@ -36,6 +36,7 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -51,6 +52,7 @@ import com.tvntd.service.api.IArticleService;
 
 @Service
 @Transactional
+@EnableCaching
 public class ArticleService implements IArticleService
 {
     static private Logger s_log = LoggerFactory.getLogger(ArticleService.class);

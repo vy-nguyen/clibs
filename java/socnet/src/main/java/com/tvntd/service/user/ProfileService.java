@@ -48,8 +48,10 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.MapMaker;
 import com.tvntd.dao.ProfileRepository;
 import com.tvntd.lib.ObjectId;
+import com.tvntd.models.Author;
 import com.tvntd.models.Profile;
 import com.tvntd.models.User;
+import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IProfileService;
 
 @Service
@@ -62,6 +64,9 @@ public class ProfileService implements IProfileService
 
     @Autowired
     protected ProfileRepository profileRepo;
+
+    @Autowired
+    protected IAuthorService authorSvc;
 
     /* Temp. cache for now. */
     public static class ProfileCache
@@ -291,11 +296,13 @@ public class ProfileService implements IProfileService
     public void saveProfile(ProfileDTO profile)
     {
         try {
+            s_log.info("Save profile " + profile);
             profileRepo.save(profile.toProfile());
             s_cache.cacheProfile(profile);
 
         } catch(Exception e) {
             s_log.info("Exception: " + e.getMessage() + ", detai " + e.toString());
+            s_log.info("Profile: " + profile);
             throw e;
         }
     }
@@ -305,7 +312,10 @@ public class ProfileService implements IProfileService
     {
         if (profileRepo.findByUserId(user.getId()) == null) {
             s_cache.invalFullCache();
-            profileRepo.save(Profile.createProfile(user));
+            Profile profile = Profile.createProfile(user);
+
+            profileRepo.save(profile);
+            authorSvc.saveAuthor(Author.fromUserUuid(profile.getUserUuid()));
         }
     }
 

@@ -26,6 +26,8 @@
  */
 package com.tvntd.exports;
 
+import java.util.concurrent.ExecutorService;
+
 import com.tvntd.lib.Module;
 import com.tvntd.lib.Program;
 import com.tvntd.objstore.ObjStore;
@@ -38,11 +40,11 @@ public final class LibModule
             super(args, mods);
         }
     }
-    static final Module s_mods[] = {
+    private static final Module s_mods[] = {
         new ObjStore()
     };
 
-    static LibEntry m_entry;
+    private static LibEntry m_entry;
 
     public static void initialize()
     {
@@ -55,5 +57,9 @@ public final class LibModule
 
     public static void cleanup() {
         m_entry.shutdown();
+    }
+
+    public static ExecutorService getExecutorService() {
+        return Program.getExecutorService();
     }
 }

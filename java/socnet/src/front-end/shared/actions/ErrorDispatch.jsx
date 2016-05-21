@@ -4,7 +4,7 @@
  */
 'use strict';
 
-export default class ErrorDispatch
+class ErrorDispatch
 {
     constructor(xhdr, text, error) {
         this.xhdr = xhdr;
@@ -42,4 +42,20 @@ export default class ErrorDispatch
             }
         }
     }
+
+    dispatchDefault(mesgText, mesgDiv) {
+        let status = this.xhdr.status;
+
+        if (200 <= status && status < 300) {
+            return;
+        }
+        let mesg = this.error;
+        if (this.xhdr.responseJSON) {
+            mesg = this.xhdr.responseJSON.message;
+        }
+        $(mesgText).empty().html(mesg + " (code " + status + ")");
+        $(mesgDiv).show();
+    }
 }
+
+export default ErrorDispatch

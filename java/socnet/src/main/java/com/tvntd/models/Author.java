@@ -59,7 +59,7 @@ public class Author
             joinColumns = @JoinColumn(name = "authorUuid"))
     private List<UUID> favArticles;
 
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "TimeLineArticles",
             uniqueConstraints = @UniqueConstraint(columnNames = {
                 "authorUuid", "timeLineArticles"
@@ -70,12 +70,29 @@ public class Author
     @Column(length = 64)
     private String appUuid;
 
+    public static Author fromUserUuid(String userUuid)
+    {
+        Author author = new Author();
+        author.setAuthorUuid(userUuid);
+        return author;
+    }
+
     public static Author fromProfile(ProfileDTO profile, String articleUuid)
     {
         Author author = new Author();
         author.setAuthorUuid(profile.getUserUuid().toString());
         author.setFrontArtUuid(articleUuid);
         return author;
+    }
+
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("User ").append(authorUuid).append(", front: ").append(frontArtUuid)
+            .append("\n").append("Fav arts: ").append(favArticles)
+            .append("\n").append("Tline arts: ").append("\n");
+        return sb.toString();
     }
 
     public void addFavoriteArticle(UUID articleUuid)

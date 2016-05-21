@@ -76,7 +76,8 @@ let UserStore = Reflux.createStore({
         authVerifToken: null,
         fetchUsers: true,
         csrfHeader: null,
-        csrfToken: null
+        csrfToken: null,
+        newsFeed: null
     },
     listenables: [Actions],
 
@@ -182,6 +183,7 @@ let UserStore = Reflux.createStore({
     /* Login actions. */
     onLoginCompleted: function(response, status) {
         this._changedData(response);
+        this.dumpData("User Store");
     },
 
     onLoginFailed: function(xhdr, text, error) {
@@ -252,6 +254,7 @@ let UserStore = Reflux.createStore({
         this.data.authToken = null;
         this.data.csrfHeader = null;
         this.data.csrfToken = null;
+        this.data.newsFeed = null;
     },
 
     _changedDataFailure: function(xhdr, text, error) {
@@ -286,7 +289,10 @@ let UserStore = Reflux.createStore({
             this.data.authToken = resp.authToken;
             this.data.authVerifToken = resp.authVerifToken;
 
-            if ((resp.userSelf !== undefined) && (resp.userSelf !== null)) {
+            if (resp.authors) {
+                this.data.newsFeed = resp.authors;
+            }
+            if (resp.userSelf) {
                 let self = new User(resp.userSelf);
                 this.data.userSelf = self;
                 this.data.userActive = self;

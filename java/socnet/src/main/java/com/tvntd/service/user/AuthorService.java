@@ -32,17 +32,24 @@ import java.util.UUID;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 
 import com.tvntd.dao.AuthorRepo;
 import com.tvntd.models.Author;
 import com.tvntd.service.api.IAuthorService;
+import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 @Service
 @Transactional
+@EnableCaching
 public class AuthorService implements IAuthorService
 {
+    static private Logger s_log = LoggerFactory.getLogger(AuthorService.class);
+
     @Autowired
     protected AuthorRepo authorRepo;
 
@@ -89,6 +96,22 @@ public class AuthorService implements IAuthorService
             Author author = authorRepo.findByAuthorUuid(uid.toString());
             if (author != null) {
                 result.add(author);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public List<AuthorDTO> getAuthorList(ProfileDTO profile)
+    {
+        List<AuthorDTO> result = new LinkedList<>();
+        List<UUID> uuids = profile.fetchNewsFeed();
+
+        for (UUID uid : uuids) {
+            Author author = authorRepo.findByAuthorUuid(uid.toString());
+            if (author != null) {
+                result.add(new AuthorDTO(author));
+                s_log.info("Debug author: " + author.toString());
             }
         }
         return result;

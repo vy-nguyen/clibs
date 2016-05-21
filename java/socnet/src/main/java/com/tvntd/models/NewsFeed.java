@@ -52,7 +52,7 @@ public class NewsFeed
     private Date lastUpdate;
     private Date lastLogin;
 
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "AuthorFeed",
             uniqueConstraints = @UniqueConstraint(columnNames = {
                 "userUuid", "authorUuid"
@@ -63,8 +63,20 @@ public class NewsFeed
     public static NewsFeed fromProfile(ProfileDTO profile)
     {
         NewsFeed news = new NewsFeed();
+        news.lastUpdate = new Date();
+        news.lastLogin = new Date();
         news.setUserUuid(profile.getUserUuid().toString());
         return news;
+    }
+
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Uuid " + userUuid).append("\n")
+            .append("last update: ").append(lastUpdate.toString()).append(", ")
+            .append("last login: ").append(lastLogin.toString()).append("\n")
+            .append(authorUuid).append("\n");
+        return sb.toString();
     }
 
     public void addAuthor(UUID author)

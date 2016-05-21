@@ -29,6 +29,7 @@ package com.tvntd.dao;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -37,18 +38,32 @@ import com.tvntd.models.Article;
 
 public interface ArticleRepository extends JpaRepository<Article, Long>
 {
+    @Cacheable("Article")
     Article findByArticleId(Long id);
+
+    @Cacheable("Article")
     Article findByArticleUuid(String uuid);
+
+    @Cacheable("Article")
     Article findByAuthorUuid(String uuid);
 
+    @Cacheable("Article")
     List<Article> findAllByAuthorId(Long authorId);
+
+    @Cacheable("Article")
     List<Article> findAllByAuthorUuid(String authorUuidid);
+
+    @Cacheable("Article")
     List<Article> findAllByAuthorIdOrderByCreatedDateDesc(Long authorId);
+
+    @Cacheable("Article")
     List<Article> findAllByAuthorUuidOrderByCreatedDateAsc(String uuid);
 
+    @Cacheable("Article")
     Page<Article>
     findByAuthorIdOrderByCreatedDateDesc(Long author, Pageable pageable);
 
+    @Cacheable("Article")
     Page<Article>
     findByAuthorUuidOrderByCreatedDateDesc(UUID authorUuid, Pageable pageable);
 

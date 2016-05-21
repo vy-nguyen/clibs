@@ -88,15 +88,6 @@ let LoginSocial = React.createClass({
     }
 });
 
-/*
-class ErrorHandler extends ErrorDispatch
-{
-    handle401Error(xhdr, text, cbArg) {
-        cbArg.authError = xhdr.responseJSON.message;
-    }
-}
- */
-
 let LoginForm = React.createClass({
     mixins: [
         Reflux.connect(UserStore)
@@ -121,11 +112,9 @@ let LoginForm = React.createClass({
             History.pushState(null, "/public/vietnam");
             return;
         }
-        // let error = new ErrorHandler(data.authError, data.authMesg);
-        // error.dispatch(data);
-
-        $('#id-login-error-text').empty().html(data.authError);
-        $('#id-login-error').show();
+        if (data.authError) {
+            data.authError.dispatchDefault("#id-login-error-text", "#id-login-error");
+        }
     },
 
     _onFocus: function() {

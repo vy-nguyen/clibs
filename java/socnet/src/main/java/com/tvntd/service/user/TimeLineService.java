@@ -105,7 +105,9 @@ public class TimeLineService implements ITimeLineService
     {
         TimeLineDTO tline = new TimeLineDTO(user, article);
 
-        tline.setEventUuid(event.toString());
+        if (event != null) {
+            tline.setEventUuid(event.toString());
+        }
         tline.setSummarized(text);
         saveTimeLine(tline);
     }

@@ -40,7 +40,6 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -53,7 +52,6 @@ import com.tvntd.config.TestTvntdRootConfig;
 import com.tvntd.config.TestTvntdWebConfig;
 import com.tvntd.models.Article;
 import com.tvntd.service.api.IArticleService;
-import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IMenuItemService;
 import com.tvntd.service.api.IMenuItemService.MenuItemResp;
 import com.tvntd.service.api.IUserNotifService;
@@ -85,7 +83,7 @@ public class MenuItemTest
     IUserNotifService userNotifService;
 
     @Autowired
-    IArticleService articleService;
+    IArticleService articleSvc;
 
     @Before
     public void setUpStreams()
@@ -141,7 +139,7 @@ public class MenuItemTest
         String rsDir = System.getProperty("TestResource");
         String jsonFile = rsDir + "/article-sample.json";
 
-        articleService.saveArticles(jsonFile, rsDir);
+        articleSvc.saveArticles(jsonFile, rsDir);
     }
 
     @Test
@@ -150,8 +148,8 @@ public class MenuItemTest
         Article art = new Article();
         art.setTopic("Example Topic".getBytes());
         art.setContent("Example Content".getBytes());
-        articleService.saveArticle(art);
+        articleSvc.saveArticle(art);
 
-        articleService.deleteArticle(UUID.fromString(art.getArticleUuid()));
+        articleSvc.deleteArticle(UUID.fromString(art.getArticleUuid()));
     }
 }

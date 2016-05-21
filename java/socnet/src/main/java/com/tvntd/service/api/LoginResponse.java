@@ -26,19 +26,27 @@
  */
 package com.tvntd.service.api;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.web.csrf.CsrfToken;
 
+import com.tvntd.service.api.IAuthorService.AuthorDTO;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 public class LoginResponse extends GenericResponse
 {
+    static private Logger s_log = LoggerFactory.getLogger(LoginResponse.class);
+
     private String authVerifToken;
     private String authToken;
     private String csrfToken;
     private String csrfHeader;
     private ProfileDTO userSelf;
+    private List<AuthorDTO> authors;
 
     public LoginResponse(String type, String message, String error, String token)
     {
@@ -52,6 +60,7 @@ public class LoginResponse extends GenericResponse
     public LoginResponse(ProfileDTO profile, HttpServletRequest reqt)
     {
         super(GenericResponse.USER_HOME, null, null);
+
         this.authToken = "abc1234";
         this.userSelf = profile;
 
@@ -109,5 +118,19 @@ public class LoginResponse extends GenericResponse
      */
     public ProfileDTO getUserSelf() {
         return userSelf;
+    }
+
+    /**
+     * @return the authors
+     */
+    public List<AuthorDTO> getAuthors() {
+        return authors;
+    }
+
+    /**
+     * @param authors the authors to set
+     */
+    public void setAuthors(List<AuthorDTO> authors) {
+        this.authors = authors;
     }
 }

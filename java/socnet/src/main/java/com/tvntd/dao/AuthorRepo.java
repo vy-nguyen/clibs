@@ -26,12 +26,14 @@
  */
 package com.tvntd.dao;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tvntd.models.Author;
 
 public interface AuthorRepo extends JpaRepository<Author, String>
 {
+    @Cacheable("Author")
     Author findByAuthorUuid(String authorUuid);
     
     @Override

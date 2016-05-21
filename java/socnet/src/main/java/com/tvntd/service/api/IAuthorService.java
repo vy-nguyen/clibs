@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.tvntd.models.Author;
+import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 public interface IAuthorService
 {
@@ -44,6 +45,7 @@ public interface IAuthorService
     public void removeTimeLineArticle(Author author, UUID articleUuid);
 
     public List<Author> getAuthors(List<UUID> uuids);
+    public List<AuthorDTO> getAuthorList(ProfileDTO profile);
 
     public void saveAuthor(Author author);
     public void deleteAuthor(String uuid);
@@ -54,6 +56,10 @@ public interface IAuthorService
     public static class AuthorDTO
     {
         private Author author;
+
+        public String toString() {
+            return author.toString();
+        }
 
         public AuthorDTO(Author author) {
             this.author = author;

@@ -24,34 +24,16 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.service.user;
+package com.tvntd.service.api;
 
 import java.util.List;
+import java.util.UUID;
 
-import javax.transaction.Transactional;
+import com.tvntd.service.api.IProfileService.ProfileDTO;
 
-import org.springframework.stereotype.Service;
-
-import com.tvntd.models.User;
-import com.tvntd.service.api.IPostService;
-
-@Service
-@Transactional
-public class PostService implements IPostService
+public interface INewsFeedService
 {
-    @Override
-    public PostContent getUserPost(Long userId, User user)
-    {
-        return null;
-    }
-
-    @Override
-    public void saveUserPost(Long userId, PostContent content)
-    {
-    }
-
-    @Override
-    public void saveUserPost(Long userId, List<PostContent> content)
-    {
-    }
+    public void generateNewsFeed(ProfileDTO profile, UUID user);
+    public List<UUID> getPrivateFeed(ProfileDTO profile, UUID user);
+    public List<UUID> getPublicFeed(ProfileDTO profile, UUID user);
 }

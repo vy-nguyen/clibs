@@ -28,6 +28,7 @@ package com.tvntd.web;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -36,6 +37,7 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,8 +60,10 @@ import com.tvntd.service.api.GenericResponse;
 import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleService.ArticleDTOResponse;
+import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
+import com.tvntd.service.api.ITimeLineService;
 import com.tvntd.service.api.ImageUploadResp;
 import com.tvntd.service.api.LoginResponse;
 import com.tvntd.util.Util;
@@ -76,18 +80,25 @@ public class UserPath
         new GenericResponse("Failed to save object", "System Error");
 
     @Autowired
-    private IArticleService articleRepo;
+    private IArticleService articleSvc;
+
+    @Autowired
+    private IAuthorService authorSvc;
 
     @Autowired
     private IProfileService profileRepo;
+
+    @Autowired
+    private ITimeLineService timeLineSvc;
 
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     @ResponseBody
     public LoginResponse user(HttpSession session, HttpServletRequest reqt)
     {
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
-
-        return new LoginResponse(profile, reqt);
+        LoginResponse resp = new LoginResponse(profile, reqt);
+        resp.setAuthors(authorSvc.getAuthorList(profile));
+        return resp;
     }
 
     /**
@@ -128,7 +139,7 @@ public class UserPath
         }
         saved = new LinkedList<>();
         published = new LinkedList<>();
-        List<ArticleDTO> all = articleRepo.getArticlesByUser(profile.fetchUserId());
+        List<ArticleDTO> all = articleSvc.getArticlesByUser(profile.fetchUserId());
 
         for (ArticleDTO art : all) {
             if (art.isPublished()) {
@@ -189,13 +200,18 @@ public class UserPath
         if (publish == true) {
             art.fetchArticle().markActive();
             art.convertUTF();
-            articleRepo.saveArticle(art);
+            articleSvc.saveArticle(art);
 
             // We're done with the current post.
             profile.assignPendPost(null);
             profile.pushPublishArticle(art);
+
+            byte[] brief = Jsoup.parse(art.getContent()).text().getBytes();
+            timeLineSvc.saveTimeLine(profile.getUserUuid(),
+                    UUID.fromString(art.getArticleUuid()), null,
+                    Arrays.copyOfRange(brief, 0, 200));
         } else {
-            articleRepo.saveArticle(art);
+            articleSvc.saveArticle(art);
             profile.pushSavedArticle(art);
         }
         return art;
@@ -250,7 +266,7 @@ public class UserPath
         }
         UUID articleUuid = Util.toUuid(artUuid);
         if (articleUuid != null) {
-            pendPost = articleRepo.getArticle(articleUuid);
+            pendPost = articleSvc.getArticle(articleUuid);
         }
         if (creat == true && pendPost == null) {
             UUID authorUuid = profile.getUserUuid();

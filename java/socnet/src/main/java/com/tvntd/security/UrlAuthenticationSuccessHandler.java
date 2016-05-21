@@ -47,6 +47,7 @@ import org.springframework.stereotype.Component;
 import com.tvntd.dao.UserRepository;
 import com.tvntd.models.Privilege;
 import com.tvntd.models.User;
+import com.tvntd.service.api.INewsFeedService;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 
@@ -54,13 +55,16 @@ import com.tvntd.service.api.IProfileService.ProfileDTO;
 public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHandler
 {
     static private final Logger s_log =
-        LoggerFactory.getLogger(UrlAuthenticationSuccessHandler.class.getName());
+        LoggerFactory.getLogger(UrlAuthenticationSuccessHandler.class);
 
     @Autowired
     UserRepository userRepository;
 
     @Autowired
     IProfileService profileRepo;
+
+    @Autowired
+    INewsFeedService newsFeedSvc;
 
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
@@ -81,7 +85,7 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
             ProfileDTO profile = profileRepo.getProfile(user.getId());
             if (profile != null) {
                 session.setAttribute("profile", profile);
-                s_log.info("Profile: " + profile.toString());
+                newsFeedSvc.generateNewsFeed(profile, profile.getUserUuid());
             }
         }
         handle(request, response, authentication);
@@ -94,7 +98,6 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
     {
         String targetUrl = determineTargetUrl(authentication);
 
-        System.out.println("Login redirect " + targetUrl);
         if (response.isCommitted()) {
             s_log.debug("Response has been done. Unable to redirect to " + targetUrl);
             return;

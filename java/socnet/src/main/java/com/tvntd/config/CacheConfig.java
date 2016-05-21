@@ -24,22 +24,47 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.service.api;
+package com.tvntd.config;
 
-import java.util.List;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CachingConfigurerSupport;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import org.springframework.cache.interceptor.KeyGenerator;
+import org.springframework.cache.interceptor.SimpleKeyGenerator;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import com.tvntd.models.User;
+import com.tvntd.service.api.IArticleService;
+import com.tvntd.service.api.IAuthorService;
+import com.tvntd.service.user.ArticleService;
+import com.tvntd.service.user.AuthorService;
 
-/**
- * Provide model for template fmt-user-post.jsp.
- */
-public interface IPostService
+@Configuration
+@EnableCaching
+public class CacheConfig extends CachingConfigurerSupport
 {
-    public PostContent getUserPost(Long userId, User user);
-    public void saveUserPost(Long userId, PostContent content);
-    public void saveUserPost(Long userId, List<PostContent> content);
+    @Bean
+    public IArticleService articleSvc() {
+        return new ArticleService();
+    }
 
-    public static class PostContent
+    @Bean
+    public IAuthorService authorSvc() {
+        return new AuthorService();
+    }
+
+    @Bean
+    @Override
+    public CacheManager cacheManager()
     {
+        ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager();
+        return cacheManager;
+    }
+
+    @Bean
+    @Override
+    public KeyGenerator keyGenerator() {
+        return new SimpleKeyGenerator();
     }
 }

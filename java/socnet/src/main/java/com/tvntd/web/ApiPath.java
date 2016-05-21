@@ -85,7 +85,7 @@ public class ApiPath
     private IUserNotifService userNotifService;
 
     @Autowired
-    private IArticleService articleRepo;
+    private IArticleService articleSvc;
 
     @Autowired
     protected IAuthorService authorService;
@@ -128,7 +128,7 @@ public class ApiPath
     {
         User user = (User) session.getAttribute("user");
         if (user != null) {
-            List<ArticleDTO> articles = articleRepo.getArticlesByUser(user.getId());
+            List<ArticleDTO> articles = articleSvc.getArticlesByUser(user.getId());
             return new ArticleDTOResponse(articles, null);
         }
         s_log.info("User is not login");

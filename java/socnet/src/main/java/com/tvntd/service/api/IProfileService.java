@@ -32,6 +32,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,6 +100,11 @@ public interface IProfileService
         private LinkedList<ArticleDTO> publishedArts;
         private LinkedList<ArticleDTO> savedArts;
 
+        // NewsFeed for this profile.
+        //
+        private Future<List<UUID>> task;
+        private List<UUID> authors;
+
         public ProfileDTO(Profile prof)
         {
             profile = prof;
@@ -145,6 +152,31 @@ public interface IProfileService
 
         public void assignPendPost(ArticleDTO art) {
             this.pendPost = art;
+        }
+
+        public void assignPendTask(Future<List<UUID>> task)
+        {
+            this.task = task;
+            this.authors = null;
+        }
+
+        public List<UUID> fetchNewsFeed()
+        {
+            if (authors == null && task != null) {
+                try {
+                    authors = task.get();
+                    task = null;
+
+                } catch(InterruptedException | ExecutionException e) {
+                    s_log.info("Async error: " + e.toString());
+                    return null;
+                }
+            }
+            return authors;
+        }
+
+        public void assignNewsFeed(List<UUID> authors) {
+            this.authors = authors;
         }
 
         /**
