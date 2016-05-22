@@ -77,7 +77,7 @@ let UserList = React.createClass({
                 }
             } else if (item.isFollower()) {
                 follFmt = followerFmt;
-                if (item.isUserMe()) {
+                if (!item.isUserMe()) {
                     connFmt = "<input type='checkbox' id='" + connect + "' name='" + connect + "'/>";
                 } else {
                     connFmt = connectSentFmt;

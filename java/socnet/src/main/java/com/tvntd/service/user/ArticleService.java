@@ -29,7 +29,6 @@ package com.tvntd.service.user;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentMap;
 
 import javax.transaction.Transactional;
 
@@ -44,7 +43,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.MapMaker;
 import com.tvntd.dao.ArticleRepository;
 import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
@@ -52,37 +50,12 @@ import com.tvntd.service.api.IArticleService;
 
 @Service
 @Transactional
-@EnableCaching
 public class ArticleService implements IArticleService
 {
     static private Logger s_log = LoggerFactory.getLogger(ArticleService.class);
-    static private ArticleCache s_cache = new ArticleCache();
 
     @Autowired
     protected ArticleRepository articleRepo;
-
-    public static class ArticleCache
-    {
-        boolean m_fullCache;
-        final ConcurrentMap<String, ArticleDTO> m_cache;
-
-        public ArticleCache()
-        {
-            m_fullCache = false;
-            m_cache = new MapMaker().concurrencyLevel(32).makeMap();
-        }
-
-        public ArticleDTO get(String uuid) {
-            return m_cache.get(uuid);
-        }
-
-        public void put(String uuid, ArticleDTO article)
-        {
-            if (article != null && uuid != null) {
-                m_cache.put(uuid, article);
-            }
-        }
-    }
 
     public void checkArticleRank(Article art)
     {
@@ -103,15 +76,10 @@ public class ArticleService implements IArticleService
     public ArticleDTO getArticle(UUID artUuid)
     {
         String uuid = artUuid.toString();
-        ArticleDTO ret = s_cache.get(uuid);
-        if (ret == null) {
-            Article art = articleRepo.findByArticleUuid(uuid);
-            checkArticleRank(art);
+        Article art = articleRepo.findByArticleUuid(uuid);
+        checkArticleRank(art);
 
-            ret = new ArticleDTO(art);
-            s_cache.put(uuid, ret);
-        }
-        return ret;
+        return new ArticleDTO(art);
     }
 
     @Override
@@ -192,5 +160,6 @@ public class ArticleService implements IArticleService
     @Override
     public void saveArticles(String jsonFile, String rsDir)
     {
+        s_log.info("Save articles");
     }
 }

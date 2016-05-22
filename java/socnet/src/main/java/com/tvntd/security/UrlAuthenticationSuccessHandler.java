@@ -61,7 +61,7 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
     UserRepository userRepository;
 
     @Autowired
-    IProfileService profileRepo;
+    IProfileService profileSvc;
 
     @Autowired
     INewsFeedService newsFeedSvc;
@@ -82,7 +82,7 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
             session.setAttribute("user", user);
             session.setMaxInactiveInterval(120 * 60);
 
-            ProfileDTO profile = profileRepo.getProfile(user.getId());
+            ProfileDTO profile = profileSvc.getProfile(user.getId());
             if (profile != null) {
                 session.setAttribute("profile", profile);
                 newsFeedSvc.generateNewsFeed(profile, profile.getUserUuid());

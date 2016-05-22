@@ -48,6 +48,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import com.tvntd.config.TestCacheConfig;
 import com.tvntd.config.TestPersistenceJPAConfig;
 import com.tvntd.config.TestSecurityConfig;
 import com.tvntd.config.TestTvntdRootConfig;
@@ -57,7 +58,6 @@ import com.tvntd.models.Profile;
 import com.tvntd.models.User;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
-import com.tvntd.service.user.ProfileService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -66,7 +66,8 @@ import com.tvntd.service.user.ProfileService;
         TestSecurityConfig.class,
         TestTvntdWebConfig.class,
         TestPersistenceJPAConfig.class,
-        TestTvntdRootConfig.class
+        TestTvntdRootConfig.class,
+        TestCacheConfig.class
     }
 )
 public class ProfileTest
@@ -82,7 +83,7 @@ public class ProfileTest
     static protected Long testId = 10000L;
 
     @Autowired
-    IProfileService profileRepo;
+    IProfileService profileSvc;
 
     static public Long getTestId() 
     {
@@ -117,12 +118,11 @@ public class ProfileTest
         bp.connectProfile(ap);
         verifyFollow(bp, ap);
 
-        ProfileService.setNoCache(true);
-        profileRepo.saveProfile(ap);
-        profileRepo.saveProfile(bp);
+        profileSvc.saveProfile(ap);
+        profileSvc.saveProfile(bp);
 
-        ProfileDTO av = profileRepo.getProfile(ap.getUserUuid());
-        ProfileDTO bv = profileRepo.getProfile(bp.getUserUuid());
+        ProfileDTO av = profileSvc.getProfile(ap.getUserUuid());
+        ProfileDTO bv = profileSvc.getProfile(bp.getUserUuid());
 
         verifyProfile(ap, av);
         verifyProfile(bp, bv);
@@ -130,16 +130,16 @@ public class ProfileTest
         ap.followProfile(bp);
         verifyConnected(ap, bp);
 
-        profileRepo.saveProfile(ap);
-        profileRepo.saveProfile(bp);
+        profileSvc.saveProfile(ap);
+        profileSvc.saveProfile(bp);
 
-        av = profileRepo.getProfile(ap.getUserUuid());
-        bv = profileRepo.getProfile(bp.getUserUuid());
+        av = profileSvc.getProfile(ap.getUserUuid());
+        bv = profileSvc.getProfile(bp.getUserUuid());
         verifyProfile(ap, av);
         verifyProfile(bp, bv);
 
-        profileRepo.saveProfile(ap);
-        av = profileRepo.getProfile(ap.getUserUuid());
+        profileSvc.saveProfile(ap);
+        av = profileSvc.getProfile(ap.getUserUuid());
         verifyProfile(ap, av);
 
         bp.followProfile(ap);
@@ -148,15 +148,15 @@ public class ProfileTest
         ap.connectProfile(cp);
         verifyFollow(ap, cp);
 
-        profileRepo.saveProfile(cp);
-        ProfileDTO cv = profileRepo.getProfile(cp.getUserUuid());
+        profileSvc.saveProfile(cp);
+        ProfileDTO cv = profileSvc.getProfile(cp.getUserUuid());
         verifyProfile(cp, cv);
 
         bp.followProfile(cp);
         verifyFollow(bp, cp);
 
-        profileRepo.saveProfile(bp);
-        bv = profileRepo.getProfile(bp.getUserUuid());
+        profileSvc.saveProfile(bp);
+        bv = profileSvc.getProfile(bp.getUserUuid());
         verifyProfile(bp, bv);
 
         cp.followProfile(ap);
@@ -165,12 +165,12 @@ public class ProfileTest
         cp.connectProfile(ap);
         verifyConnected(ap, cp);
 
-        profileRepo.saveProfile(cp);
-        cv = profileRepo.getProfile(cp.getUserUuid());
+        profileSvc.saveProfile(cp);
+        cv = profileSvc.getProfile(cp.getUserUuid());
         verifyProfile(cp, cv);
 
-        profileRepo.saveProfile(ap);
-        av = profileRepo.getProfile(ap.getUserUuid());
+        profileSvc.saveProfile(ap);
+        av = profileSvc.getProfile(ap.getUserUuid());
         verifyProfile(ap, av);
     }
 
@@ -184,14 +184,13 @@ public class ProfileTest
 
     void testConnectAll(List<UUID> uuids, int max)
     {
-        ProfileService.setNoCache(false);
         for (int i = 0; i < max; i++) {
             int index = RandUtil.genRandInt(0, uuids.size());
-            ProfileDTO me = profileRepo.getProfile(uuids.get(index));
+            ProfileDTO me = profileSvc.getProfile(uuids.get(index));
 
             assertNotNull(me);
             for (UUID uid : uuids) {
-                ProfileDTO peer = profileRepo.getProfile(uid);
+                ProfileDTO peer = profileSvc.getProfile(uid);
                 assertNotNull(peer);
 
                 me.connectProfile(peer);
@@ -199,9 +198,9 @@ public class ProfileTest
                     verifyFollow(me, peer);
                     verifyFollower(peer, me);
                 }
-                profileRepo.saveProfile(peer);
+                profileSvc.saveProfile(peer);
             }
-            profileRepo.saveProfile(me);
+            profileSvc.saveProfile(me);
         }
     }
 
@@ -219,7 +218,7 @@ public class ProfileTest
             ProfileDTO p = new ProfileDTO(MockUser.createProfile(u));
 
             uuids.add(p.getUserUuid());
-            profileRepo.saveProfile(p);
+            profileSvc.saveProfile(p);
          }
         return uuids;
     }
@@ -227,7 +226,7 @@ public class ProfileTest
     void deleteProfiles(List<UUID> uuids)
     {
         for (UUID uid : uuids) {
-            profileRepo.deleteProfile(uid);
+            profileSvc.deleteProfile(uid);
         }
     }
 

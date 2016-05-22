@@ -86,7 +86,7 @@ public class UserPath
     private IAuthorService authorSvc;
 
     @Autowired
-    private IProfileService profileRepo;
+    private IProfileService profileSvc;
 
     @Autowired
     private ITimeLineService timeLineSvc;
@@ -124,7 +124,7 @@ public class UserPath
             return s_noProfile;
         }
         if (!userUuid.equals(profile.getUserUuid())) {
-            profile = profileRepo.getProfile(userUuid);
+            profile = profileSvc.getProfile(userUuid);
             if (profile == null) {
                 s_log.info("Invalid uuid " + uuid);
                 return s_noProfile;
@@ -301,7 +301,7 @@ public class UserPath
             ObjectId oid = store.putImage(is, (int) file.getSize());
 
             if (oid != null) {
-                profileRepo.saveUserImgUrl(profile, oid);
+                profileSvc.saveUserImgUrl(profile, oid);
                 ImageUploadResp resp =
                     new ImageUploadResp(null, profile.getUserUuid().toString(), oid);
 

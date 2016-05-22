@@ -37,8 +37,10 @@ import org.springframework.context.annotation.Configuration;
 
 import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IAuthorService;
+import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.user.ArticleService;
 import com.tvntd.service.user.AuthorService;
+import com.tvntd.service.user.ProfileService;
 
 @Configuration
 @EnableCaching
@@ -52,6 +54,11 @@ public class CacheConfig extends CachingConfigurerSupport
     @Bean
     public IAuthorService authorSvc() {
         return new AuthorService();
+    }
+
+    @Bean
+    public IProfileService profileSvc() {
+        return new ProfileService();
     }
 
     @Bean

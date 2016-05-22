@@ -97,7 +97,7 @@ public class ApiPath
     protected CommonsMultipartResolver multipartResolver;
 
     @Autowired
-    protected IProfileService profileRepo;
+    protected IProfileService profileSvc;
 
     /**
      * Handle Api REST calls.
@@ -153,7 +153,7 @@ public class ApiPath
         List<MenuItemResp> items = menuItemService.getMenuItemRespByUser(userId);
         StartupResponse result = new StartupResponse(profile, reqt);
 
-        fillStartupResponse(result, profile, profileRepo);
+        fillStartupResponse(result, profile, profileSvc);
         if (items != null) {
             result.setMenuItems(items);
         }
@@ -188,7 +188,7 @@ public class ApiPath
             ObjectId oid = store.putImage(is, (int) file.getSize());
 
             if (oid != null) {
-                profileRepo.saveUserImgUrl(profile, oid);
+                profileSvc.saveUserImgUrl(profile, oid);
             }
         } catch(IOException e) {
             s_log.info("Exception: " + e.toString());
@@ -228,16 +228,16 @@ public class ApiPath
         HashMap<UUID, ProfileDTO> pending = new HashMap<>();
 
         if (uuids != null) {
-            profileRepo.followProfiles(profile, uuids, pending);
+            profileSvc.followProfiles(profile, uuids, pending);
         }
         uuids = form.getConnect();
         if (uuids != null) {
-            profileRepo.connectProfiles(profile, uuids, pending);
+            profileSvc.connectProfiles(profile, uuids, pending);
         }
         if (!pending.isEmpty()) {
             pending.put(profile.getUserUuid(), profile);
             for (Map.Entry<UUID, ProfileDTO> entry : pending.entrySet()) {
-                profileRepo.saveProfile(entry.getValue());
+                profileSvc.saveProfile(entry.getValue());
             }
             int i = 0;
             List<UUID> connect = profile.getConnectList();

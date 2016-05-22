@@ -35,7 +35,9 @@ import com.tvntd.models.Profile;
 public interface ProfileRepository extends JpaRepository<Profile, Long>
 {
     Profile findByUserId(Long id);
+
     Profile findByUserUuid(String uuid);
+
     Page<Profile> findAll(Pageable pageble);
 
     void deleteByUserId(Long userId);

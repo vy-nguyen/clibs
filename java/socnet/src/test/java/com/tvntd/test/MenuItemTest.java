@@ -46,6 +46,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.tvntd.config.TestCacheConfig;
 import com.tvntd.config.TestPersistenceJPAConfig;
 import com.tvntd.config.TestSecurityConfig;
 import com.tvntd.config.TestTvntdRootConfig;
@@ -64,7 +65,8 @@ import com.tvntd.service.api.UserNotifResponse;
         TestSecurityConfig.class,
         TestTvntdWebConfig.class,
         TestPersistenceJPAConfig.class,
-        TestTvntdRootConfig.class
+        TestTvntdRootConfig.class,
+        TestCacheConfig.class
     }
 )
 public class MenuItemTest

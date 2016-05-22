@@ -329,7 +329,7 @@ let UserStore = Reflux.createStore({
         if (uuids !== null && uuids !== undefined) {
             uuids.map(function(uuid) {
                 let user = this.data.userMap[uuid];
-                if (!_.isEmpty(user)) {
+                if (user) {
                     user.connectState = status;
                 }
             }.bind(this));
@@ -341,20 +341,18 @@ let UserStore = Reflux.createStore({
 });
 
 User.prototype.setConnectState = function() {
-    let status = "connected";
-    let filter = function(elm) {
-        let user = UserStore.getUserByUuid(elm);
-        if (user !== undefined && user.userUuid !== this.userUuid) {
-            user.connectState = status;
-        }
+    let filter = function(state) {
+        return function(elm) {
+            let user = UserStore.getUserByUuid(elm);
+            if (user && user.userUuid !== this.userUuid) {
+                user.connectState = state;
+            }
+        }.bind(this);
     }.bind(this);
-    _.forOwn(this.connectList, filter);
 
-    status = "followed";
-    _.forOwn(this.followList, filter);
-
-    status = "follower";
-    _.forOwn(this.followerList, filter);
+    _.forOwn(this.connectList, filter("connected"));
+    _.forOwn(this.followList, filter("followed"));
+    _.forOwn(this.followerList, filter("follower"));
 };
 
 User.prototype.isUserMe = function() {

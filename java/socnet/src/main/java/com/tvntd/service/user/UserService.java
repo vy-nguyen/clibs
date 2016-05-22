@@ -68,7 +68,7 @@ public class UserService implements IUserService
     private RoleRepository roleRepository;
 
     @Autowired
-    private IProfileService profileRepo;
+    private IProfileService profileSvc;
 
     // API
 
@@ -90,7 +90,7 @@ public class UserService implements IUserService
 
         user.setRoles(Arrays.asList(roleRepository.findByName(Role.AuthUser)));
         user = repository.save(user);
-        profileRepo.createProfile(user);        
+        profileSvc.createProfile(user);        
         return user;
     }
 

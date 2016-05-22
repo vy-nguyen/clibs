@@ -54,7 +54,7 @@ public class PublicPath
     static private Logger s_log = LoggerFactory.getLogger(PublicPath.class);
 
     @Autowired
-    private IProfileService profileRepo;
+    private IProfileService profileSvc;
 
     @Autowired
     IMenuItemService menuItemService;
@@ -74,7 +74,7 @@ public class PublicPath
         StartupResponse result = new StartupResponse(profile, reqt);
 
         if (user != null) {
-            ApiPath.fillStartupResponse(result, profile, profileRepo);
+            ApiPath.fillStartupResponse(result, profile, profileSvc);
             userId = menuItemService.getPrivateId();
         }
         List<MenuItemResp> items = menuItemService.getMenuItemRespByUser(userId);

@@ -45,6 +45,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import com.tvntd.config.TestCacheConfig;
 import com.tvntd.config.TestPersistenceJPAConfig;
 import com.tvntd.config.TestSecurityConfig;
 import com.tvntd.config.TestTvntdRootConfig;
@@ -70,7 +71,8 @@ import com.tvntd.service.api.ITimeLineService.TimeLineDTO;
         TestSecurityConfig.class,
         TestTvntdWebConfig.class,
         TestPersistenceJPAConfig.class,
-        TestTvntdRootConfig.class
+        TestTvntdRootConfig.class,
+        TestCacheConfig.class
     }
 )
 public class ArticleTest
