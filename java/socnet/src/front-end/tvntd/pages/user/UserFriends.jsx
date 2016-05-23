@@ -54,29 +54,46 @@ let UserFriends = React.createClass({
             tabdata   : [],
             followFmt : null,
             connectFmt: null,
+            unFollFmt : null,
+            unConnFmt : null
         };
         let dispatch = {
             connectFn : function(user, key, arg) {
                 if (user.isUserMe()) {
                     arg.followFmt  = arg.me;
                     arg.connectFmt = arg.me;
+                    arg.unFollFmt  = arg.noSelect;
+                    arg.unConnFmt  = arg.noSelect;
                 } else {
+                    arg.hasInput   = true;
                     arg.followFmt  = arg.follow;
                     arg.connectFmt = arg.connect;
+
+                    let unFoll     = 'unFollow-' + key;
+                    let unConn     = 'unConnect-' + key;
+                    arg.unFollFmt  = "<input type='checkbox' id='" + unFoll + "' name='" + unFoll + "'/>";
+                    arg.unConnFmt  = "<input type='checkbox' id='" + unConn + "' name='" + unConn + "'/>";
                 }
             },
             followComm: function(user, key, arg, follow) {
+                let unFoll = 'unFollow-' + key;
+                let unConn = 'unConnect-' + key;
+
+                arg.hasInput = true;
                 if (follow === true) {
-                    arg.followFmt = arg.follow;
+                    arg.followFmt  = arg.follow;
+                    arg.unFollFmt  = "<input type='checkbox' id='" + unFoll + "' name='" + unFoll + "'/>";
                 } else {
-                    arg.followFmt = arg.follower;
+                    arg.followFmt  = arg.follower;
+                    arg.unFollFmt  = arg.noSelect;
                 }
                 if (user.isUserMe) {
                     let connect = 'connect-' + key;
                     arg.connectFmt = "<input type='checkbox' id='" + connect + "' name='" + connect + "'/>";
-                    arg.hasInput = true;
+                    arg.unConnFmt  = arg.noSelect;
                 } else {
                     arg.connectFmt = arg.reqSent;
+                    arg.unConnFmt  = "<input type='checkbox' id='" + unConn + "' name='" + unConn + "'/>";
                 }
             },
             followFn: function(user, key, arg) {
@@ -87,11 +104,13 @@ let UserFriends = React.createClass({
             },
             meFn: function(user, key, arg) {
                 let connect = 'connect-' + key;
-                let follow = 'follow-' + key;
+                let follow  = 'follow-' + key;
 
-                arg.hasInput = true;
+                arg.hasInput   = true;
                 arg.connectFmt = "<input type='checkbox' id='" + connect + "' name='" + connect + "'/>";
-                arg.followFmt = "<input type='checkbox' id='" + follow + "' name='" + follow + "'/>";
+                arg.followFmt  = "<input type='checkbox' id='" + follow + "' name='" + follow + "'/>";
+                arg.unFollFmt  = arg.noSelect;
+                arg.unConnFmt  = arg.noSelect;
             },
             strangerFn: function(user, key, arg) {
                 arg.connectFmt = arg.noSelect;
@@ -104,7 +123,9 @@ let UserFriends = React.createClass({
                     firstName: user.firstName,
                     lastName : user.lastName,
                     follow   : arg.followFmt,
-                    connect  : arg.connectFmt
+                    connect  : arg.connectFmt,
+                    unFollow : arg.unFollFmt,
+                    unConnect: arg.unConnFmt
                 });
             }
         };
@@ -133,6 +154,14 @@ let UserFriends = React.createClass({
             key   : "connect",
             format: "text-color-blue",
             header: "Connect"
+        }, {
+            key   : "unFollow",
+            format: "text-color-blue",
+            header: "Unfollow"
+        }, {
+            key   : "unConnect",
+            format: "text-color-blue",
+            header: "Unconnect"
         } ];
         let footer = null;
         let data = this._getUserTable();
