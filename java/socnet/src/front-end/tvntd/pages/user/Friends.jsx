@@ -6,9 +6,9 @@
 import React          from 'react-mod';
 import _              from 'lodash';
 
+import UserFriends    from './UserFriends.jsx';
 import Panel          from 'vntd-shared/widgets/Panel.jsx';
 import UserStore      from 'vntd-shared/stores/UserStore.jsx';
-import UserList       from 'vntd-root/components/UserList.jsx';
 
 let Friends = React.createClass({
 
@@ -65,9 +65,9 @@ let Friends = React.createClass({
         let followerList = _.isEmpty(self.followerList) ? [] : self.followerList;
         return (
             <Panel context={panelDef}>
-                <UserList userList={connectList} noSaveBtn="true" tableTitle="Connections"/>
-                <UserList userList={followList}  noSaveBtn="true" tableTitle="Follows"/>
-                <UserList userList={followerList}  noSaveBtn="true" tableTitle="People Follow Me"/>
+                <UserFriends userList={connectList} tableTitle="Connections"/>
+                <UserFriends userList={followList}  tableTitle="Follows"/>
+                <UserFriends userList={followerList}  tableTitle="People Follow Me"/>
             </Panel>
         )
     }

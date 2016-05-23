@@ -153,7 +153,7 @@ let UserStore = Reflux.createStore({
      */
     iterUser: function(uuidList, func) {
         let users = this.getUserList();
-        if (uuidList === null || uuidList === undefined) {
+        if (uuidList == null) {
             _.forOwn(users, function(usr, key) {
                 func(usr, key);
             });
@@ -165,6 +165,27 @@ let UserStore = Reflux.createStore({
                 }
             });
         }
+    },
+
+    iterUserRelationship: function(uuidList, dispatch, arg) {
+        this.iterUser(uuidList, function(user, key) {
+            if (user.isInConnection()) {
+                dispatch.connectFn(user, key, arg);
+
+            } else if (user.isInFollowed()) {
+                dispatch.followFn(user, key, arg);
+
+            } else if (user.isFollower()) {
+                dispatch.followerFn(user, key, arg);
+
+            } else if (user.isUserMe()) {
+                displatch.meFn(user, key, arg);
+
+            } else {
+                dispatch.strangerFn(user, key, arg);
+            }
+            dispatch.iterFn(user, key, arg);
+        });
     },
 
     /* Startup actions. */
