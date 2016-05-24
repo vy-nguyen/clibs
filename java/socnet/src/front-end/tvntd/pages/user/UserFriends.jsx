@@ -12,6 +12,7 @@ import UserStore      from 'vntd-shared/stores/UserStore.jsx';
 import Actions        from 'vntd-root/actions/Actions.jsx';
 import UserIcon       from 'vntd-root/components/UserIcon.jsx';
 import UserTable      from 'vntd-root/components/UserTable.jsx';
+import UserSelect     from 'vntd-root/components/UserSelect.jsx';
 
 let UserFriends = React.createClass({
     mixins: [Reflux.connect(UserStore)],
@@ -43,98 +44,93 @@ let UserFriends = React.createClass({
 
     _getUserTable: function() {
         let data = {
-            me      : "<button>Self</button>",
-            follow  : "<button>Follow</button>",
-            follower: "<button>Follower</button>",
-            noSelect: "<button>N/A</button",
-            connect : "<button>Connected</button>",
-            reqSent : "<button>Pending</button",
-
+            tabHeader : this._getTabHeader(),
             hasInput  : false,
             tabdata   : [],
             followFmt : null,
             connectFmt: null,
+            blockFmt  : null,
             unFollFmt : null,
-            unConnFmt : null
+            unConnFmt : null,
+            unBlockFmt: null
         };
-        let dispatch = {
-            connectFn : function(user, key, arg) {
-                if (user.isUserMe()) {
-                    arg.followFmt  = arg.me;
-                    arg.connectFmt = arg.me;
-                    arg.unFollFmt  = arg.noSelect;
-                    arg.unConnFmt  = arg.noSelect;
-                } else {
-                    arg.hasInput   = true;
-                    arg.followFmt  = arg.follow;
-                    arg.connectFmt = arg.connect;
-
-                    let unFoll     = 'unFollow-' + key;
-                    let unConn     = 'unConnect-' + key;
-                    arg.unFollFmt  = "<input type='checkbox' id='" + unFoll + "' name='" + unFoll + "'/>";
-                    arg.unConnFmt  = "<input type='checkbox' id='" + unConn + "' name='" + unConn + "'/>";
-                }
-            },
-            followComm: function(user, key, arg, follow) {
-                let unFoll = 'unFollow-' + key;
-                let unConn = 'unConnect-' + key;
-
-                arg.hasInput = true;
-                if (follow === true) {
-                    arg.followFmt  = arg.follow;
-                    arg.unFollFmt  = "<input type='checkbox' id='" + unFoll + "' name='" + unFoll + "'/>";
-                } else {
-                    arg.followFmt  = arg.follower;
-                    arg.unFollFmt  = arg.noSelect;
-                }
-                if (user.isUserMe) {
-                    let connect = 'connect-' + key;
-                    arg.connectFmt = "<input type='checkbox' id='" + connect + "' name='" + connect + "'/>";
-                    arg.unConnFmt  = arg.noSelect;
-                } else {
-                    arg.connectFmt = arg.reqSent;
-                    arg.unConnFmt  = "<input type='checkbox' id='" + unConn + "' name='" + unConn + "'/>";
-                }
-            },
-            followFn: function(user, key, arg) {
-                dispatch.followComm(user, key, arg, true);
-            },
-            followerFn: function(user, key, arg) {
-                dispatch.followComm(user, key, arg, false);
-            },
-            meFn: function(user, key, arg) {
-                let connect = 'connect-' + key;
-                let follow  = 'follow-' + key;
-
-                arg.hasInput   = true;
-                arg.connectFmt = "<input type='checkbox' id='" + connect + "' name='" + connect + "'/>";
-                arg.followFmt  = "<input type='checkbox' id='" + follow + "' name='" + follow + "'/>";
-                arg.unFollFmt  = arg.noSelect;
-                arg.unConnFmt  = arg.noSelect;
-            },
-            strangerFn: function(user, key, arg) {
-                arg.connectFmt = arg.noSelect;
-                arg.followFmt  = arg.noSelect;
-            },
-            iterFn: function(user, key, arg) {
-                let imgLink = renderToString(<UserIcon userUuid={user.userUuid}/>);
-                arg.tabdata.push({
-                    image    : imgLink,
-                    firstName: user.firstName,
-                    lastName : user.lastName,
-                    follow   : arg.followFmt,
-                    connect  : arg.connectFmt,
-                    unFollow : arg.unFollFmt,
-                    unConnect: arg.unConnFmt
-                });
-            }
+        console.log(this._getTabHeader());
+        UserStore.iterUserRelationship(this.props.userList, UserSelect.dispatch, data);
+        return {
+            tabdata  : data.tabdata,
+            tabHeader: data.tabHeader,
+            hasInput : data.hasInput
         };
-        UserStore.iterUserRelationship(this.props.userList, dispatch, data);
-        return { tabdata: data.tabdata, hasInput: data.hasInput };
     },
 
-    render: function() {
-        const format = [ {
+    _getTabHeader: function() {
+        const connectTab = [ {
+            key   : "image",
+            format: "",
+            header: "Image"
+        }, {
+            key   : "firstName",
+            format: "fa fa-fw fa-user text-muted",
+            header: "First Name"
+        }, {
+            key   : "lastName",
+            format: "fa fa-fw fa-user text-muted",
+            header: "Last Name"
+        }, {
+            key   : "unFollow",
+            format: "text-color-blue",
+            header: "Unfollow"
+        }, {
+            key   : "unConnect",
+            format: "text-color-blue",
+            header: "Unconnect"
+        }, {
+            key   : "block",
+            format: "text-color-blue",
+            header: "Block"
+        } ];
+
+        const followTab = [ {
+            key   : "image",
+            format: "",
+            header: "Image"
+        }, {
+            key   : "firstName",
+            format: "fa fa-fw fa-user text-muted",
+            header: "First Name"
+        }, {
+            key   : "lastName",
+            format: "fa fa-fw fa-user text-muted",
+            header: "Last Name"
+        }, {
+            key   : "unFollow",
+            format: "text-color-blue",
+            header: "Unfollow"
+        } ];
+
+        const followerTab = [ {
+            key   : "image",
+            format: "",
+            header: "Image"
+        }, {
+            key   : "firstName",
+            format: "fa fa-fw fa-user text-muted",
+            header: "First Name"
+        }, {
+            key   : "lastName",
+            format: "fa fa-fw fa-user text-muted",
+            header: "Last Name"
+        }, {
+            key   : "connect",
+            format: "text-color-blue",
+            header: "Connect"
+        }, {
+            key   : "block",
+            format: "text-color-blue",
+            header: "Block"
+        } ];
+
+        const fullTab = [ {
             key   : "image",
             format: "",
             header: "Image"
@@ -163,6 +159,21 @@ let UserFriends = React.createClass({
             format: "text-color-blue",
             header: "Unconnect"
         } ];
+
+        if (this.props.tableType) {
+            switch (this.props.tableType) {
+            case 'connect':
+                return connectTab;
+            case 'follow':
+                return followTab;
+            case 'follower':
+                return followerTab;
+            }
+        }
+        return fullTab;
+    },
+
+    render: function() {
         let footer = null;
         let data = this._getUserTable();
 
@@ -174,9 +185,8 @@ let UserFriends = React.createClass({
             );
         }
         return (
-            <UserTable tableFormat={format}
-                tableData={data.tabdata}
-                tableTitle={this.props.tableTitle} tableFooter={footer}/>
+            <UserTable tableFormat={data.tabHeader}
+                tableData={data.tabdata} tableTitle={this.props.tableTitle} tableFooter={footer}/>
         );
     }
 });

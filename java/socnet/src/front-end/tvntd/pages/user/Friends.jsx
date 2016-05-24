@@ -65,9 +65,9 @@ let Friends = React.createClass({
         let followerList = _.isEmpty(self.followerList) ? [] : self.followerList;
         return (
             <Panel context={panelDef}>
-                <UserFriends userList={connectList} tableTitle="Connections"/>
-                <UserFriends userList={followList}  tableTitle="Follows"/>
-                <UserFriends userList={followerList}  tableTitle="People Follow Me"/>
+                <UserFriends userList={connectList} tableType="connect" tableTitle="Connections"/>
+                <UserFriends userList={followList}  tableType="follow" tableTitle="Follows"/>
+                <UserFriends userList={followerList} tableType="follower" tableTitle="People Follow Me"/>
             </Panel>
         )
     }
