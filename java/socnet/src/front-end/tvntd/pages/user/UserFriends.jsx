@@ -54,7 +54,6 @@ let UserFriends = React.createClass({
             unConnFmt : null,
             unBlockFmt: null
         };
-        console.log(this._getTabHeader());
         UserStore.iterUserRelationship(this.props.userList, UserSelect.dispatch, data);
         return {
             tabdata  : data.tabdata,
@@ -143,6 +142,14 @@ let UserFriends = React.createClass({
             format: "fa fa-fw fa-user text-muted",
             header: "Last Name"
         }, {
+            key   : "eMail",
+            format: "fa fa-fw fa-phone text-muted",
+            header: "E-mail"
+        }, {
+            key   : "uuid",
+            format: "text-color-blue",
+            header: "UUID"
+        }, {
             key   : "follow",
             format: "text-color-blue",
             header: "Follow"
@@ -150,14 +157,6 @@ let UserFriends = React.createClass({
             key   : "connect",
             format: "text-color-blue",
             header: "Connect"
-        }, {
-            key   : "unFollow",
-            format: "text-color-blue",
-            header: "Unfollow"
-        }, {
-            key   : "unConnect",
-            format: "text-color-blue",
-            header: "Unconnect"
         } ];
 
         if (this.props.tableType) {
