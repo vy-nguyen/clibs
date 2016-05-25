@@ -59,16 +59,22 @@ let Friends = React.createClass({
                 </Panel>
             )
         }
+        let owned = UserStore.isUserMe(self.userUuid);
+        let connect = _.isEmpty(self.connectList) ? null
+            : <UserFriends owned={owned} userList={self.connectList} tableType="connect" tableTitle="Connections"/>;
 
-        let connectList = _.isEmpty(self.connectList) ? [] : self.connectList;
-        let followList  = _.isEmpty(self.followList) ? [] : self.followList;
-        let followerList = _.isEmpty(self.followerList) ? [] : self.followerList;
+        let follow  = _.isEmpty(self.followList) ? null
+            : <UserFriends owned={owned} userList={self.followList} tableType="follow" tableTitle="Follows"/>;
+
+        let follower = _.isEmpty(self.followerList) ? null
+            : <UserFriends owned={owned} userList={self.followerList} tableType="follower" tableTitle="Followers"/>;
+
         return (
-            <Panel context={panelDef}>
-                <UserFriends userList={connectList} tableType="connect" tableTitle="Connections"/>
-                <UserFriends userList={followList}  tableType="follow" tableTitle="Follows"/>
-                <UserFriends userList={followerList} tableType="follower" tableTitle="People Follow Me"/>
-            </Panel>
+            <div>
+                {connect}
+                {follow}
+                {follower}
+            </div>
         )
     }
 });

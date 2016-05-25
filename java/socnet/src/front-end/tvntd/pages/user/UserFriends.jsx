@@ -19,31 +19,12 @@ let UserFriends = React.createClass({
 
     _submitChanges: function(event) {
         event.preventDefault();
-        let data = {
-            connect: [],
-            follow: [],
-            unConnect: [],
-            unFollow: []
-        };
-        UserStore.iterUser(this.props.userList, function(user, key) {
-            if ($('#connect-' + key).prop('checked') === true) {
-                data.connect.push(key);
-            }
-            if ($('#follow-' + key).prop('checked') === true) {
-                data.follow.push(key);
-            }
-            if ($('#unConnect-' + key).prop('checked') === true) {
-                data.unConnect.push(key);
-            }
-            if ($('#unFollow-' + key).prop('checked') === true) {
-                data.unFollow.push(key);
-            }
-        });
-        Actions.changeUsers(data);
+        UserSelect.submitChanges(this.props.userList);
     },
 
     _getUserTable: function() {
         let data = {
+            tabOwner  : this.props.owned,
             tabHeader : this._getTabHeader(),
             hasInput  : false,
             tabdata   : [],

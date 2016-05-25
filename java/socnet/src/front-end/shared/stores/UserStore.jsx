@@ -117,7 +117,7 @@ let UserStore = Reflux.createStore({
     },
 
     isUserMe: function(uuid) {
-        if (this.data.userSelf === null) {
+        if (this.data.userSelf == null) {
             return false;
         }
         return this.data.userSelf.userUuid === uuid;
@@ -168,7 +168,8 @@ let UserStore = Reflux.createStore({
     },
 
     iterUserRelationship: function(uuidList, dispatch, arg) {
-        this.iterUser(uuidList, function(user, key) {
+        this.iterUser(uuidList, function(user, idx) {
+            let key = user.userUuid;
             if (user.isInConnection()) {
                 dispatch.connectFn(user, key, arg);
 
