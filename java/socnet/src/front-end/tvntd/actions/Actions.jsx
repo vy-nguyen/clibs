@@ -13,7 +13,9 @@ const Actions = Reflux.createActions({
 
     // User actions
     logout:          {children: ['completed', 'failed']},
+    initialData:     {children: ['completed', 'failed']},
     startup:         {children: ['completed', 'failed']},
+    getAuthors:      {children: ['completed', 'failed']},
     refreshArticles: {children: ['completed', 'failed']},
     refreshNotify:   {children: ['completed', 'failed']},
     login:           {children: ['completed', 'failed', 'always']},
@@ -33,7 +35,7 @@ const Actions = Reflux.createActions({
     preload:         {children: ['completed', 'failed']}
 });
 
-function postRestCall(formData, url, json, complete, failure, always) {
+function postRestCall(formData, url, json, cbObj) {
     let type = undefined;
     let data = formData;
     let content = undefined;
@@ -55,14 +57,14 @@ function postRestCall(formData, url, json, complete, failure, always) {
             xhdr.setRequestHeader(header, token);
         }
     }).done(function(resp, text, error) {
-        complete(resp, text);
+        cbObj.completed(resp, text);
 
     }).fail(function(resp, text, error) {
-        failure(new ErrorDispatch(resp, text, error));
+        cbObj.failed(new ErrorDispatch(resp, text, error));
 
     }).always(function(resp, text, error) {
-        if (always !== null && always !== undefined) {
-            always(resp, text, error);
+        if (cbObj.always != null) {
+            cbObj.always(resp, text, error);
         }
     });
 };
@@ -76,7 +78,7 @@ function uploadFiles(url, progId, formData, complete, failure) {
         xhr: function() {
             var req = $.ajaxSettings.xhr();
             if (req.upload) {
-                req.upload.addEventListener('progress',progress, false);
+                req.upload.addEventListener('progress', progress, false);
             }
             return req;
         },
@@ -117,6 +119,14 @@ Actions.refreshNotify.listen(function() {
     $.getJSON("/api/user-notification").then(this.completed, this.failed);
 });
 
+Actions.getAuthors.listen(function(data, url) {
+    if (url) {
+        $.getJSON(url).then(this.completed, this.failed);
+    } else {
+        this.completed(data);
+    }
+});
+
 /**
  * Posts and comments.
  */
@@ -132,7 +142,7 @@ Actions.uploadAvataDone.listen(function(data) {
  * User actions.
  */
 Actions.login.listen(function(loginData, formData) {
-    postRestCall(formData, "/login", false, this.completed, this.failed, this.always);
+    postRestCall(formData, "/login", false, this);
 });
 
 Actions.logout.listen(function() {
@@ -141,15 +151,15 @@ Actions.logout.listen(function() {
 });
 
 Actions.register.listen(function(regData) {
-    postRestCall(regData, "/register", true, this.completed, this.failed, this.always);
+    postRestCall(regData, "/register", true, this);
 });
 
 Actions.verifyAccount.listen(function(regData) {
-    postRestCall(regData, "/register/verify", true, this.completed, this.failed, null);
+    postRestCall(regData, "/register/verify", true, this);
 });
 
 Actions.resetPassword.listen(function(resetData) {
-    postRestCall(resetData, "/", true, this.completed, this.failed, this.always);
+    postRestCall(resetData, "/", true, this);
 });
 
 Actions.preload.listen(function() {
@@ -165,20 +175,20 @@ Actions.preload.listen(function() {
  * User activities.
  */
 Actions.changeUsers.listen(function(data) {
-    postRestCall(data, "/api/user-connections", true, this.completed, this.failed);
+    postRestCall(data, "/api/user-connections", true, this);
 });
 
 Actions.saveUserPost.listen(function(data) {
-    postRestCall(data, "/user/save-post", true, this.completed, this.failed);
+    postRestCall(data, "/user/save-post", true, this);
     Actions.pendingPost(data);
 });
 
 Actions.deleteUserPost.listen(function(data) {
-    postRestCall(data, "/user/delete-post", true, this.completed, this.failed);
+    postRestCall(data, "/user/delete-post", true, this);
 });
 
 Actions.publishUserPost.listen(function(data) {
-    postRestCall(data, "/user/publish-post", true, this.completed, this.failed);
+    postRestCall(data, "/user/publish-post", true, this);
     Actions.pendingPost(data);
 });
 

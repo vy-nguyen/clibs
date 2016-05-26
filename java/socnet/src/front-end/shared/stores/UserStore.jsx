@@ -76,8 +76,7 @@ let UserStore = Reflux.createStore({
         authVerifToken: null,
         fetchUsers: true,
         csrfHeader: null,
-        csrfToken: null,
-        newsFeed: null
+        csrfToken: null
     },
     listenables: [Actions],
 
@@ -152,18 +151,15 @@ let UserStore = Reflux.createStore({
      * Iterate through each user with uuid in the list.  If the list is null, iterate through all users.
      */
     iterUser: function(uuidList, func) {
-        let users = this.getUserList();
         if (uuidList == null) {
-            _.forOwn(users, function(usr, key) {
-                func(usr, key);
-            });
+            _.forOwn(this.data.userMap, func);
         } else {
             _.forOwn(uuidList, function(uuid, key) {
-                let usr = users[uuid];
+                let usr = this.data.userMap[uuid];
                 if (usr !== undefined && usr !== null) {
                     func(usr, key);
                 }
-            });
+            }.bind(this));
         }
     },
 
@@ -191,7 +187,7 @@ let UserStore = Reflux.createStore({
 
     /* Startup actions. */
     onStartupCompleted: function(json) {
-        if (json.userDTO !== null && json.userDTO !== undefined) {
+        if (json.userDTO != null) {
             this._updateLogin(json.userDTO);
             this._changedData(json.userDTO);
         }
@@ -276,7 +272,6 @@ let UserStore = Reflux.createStore({
         this.data.authToken = null;
         this.data.csrfHeader = null;
         this.data.csrfToken = null;
-        this.data.newsFeed = null;
     },
 
     _changedDataFailure: function(xhdr, text, error) {
@@ -311,9 +306,6 @@ let UserStore = Reflux.createStore({
             this.data.authToken = resp.authToken;
             this.data.authVerifToken = resp.authVerifToken;
 
-            if (resp.authors) {
-                this.data.newsFeed = resp.authors;
-            }
             if (resp.userSelf) {
                 let self = new User(resp.userSelf);
                 this.data.userSelf = self;

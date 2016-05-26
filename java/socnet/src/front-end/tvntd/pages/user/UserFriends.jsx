@@ -10,7 +10,6 @@ import {renderToString} from 'react-dom-server' ;
 
 import UserStore      from 'vntd-shared/stores/UserStore.jsx';
 import Actions        from 'vntd-root/actions/Actions.jsx';
-import UserIcon       from 'vntd-root/components/UserIcon.jsx';
 import UserTable      from 'vntd-root/components/UserTable.jsx';
 import UserSelect     from 'vntd-root/components/UserSelect.jsx';
 

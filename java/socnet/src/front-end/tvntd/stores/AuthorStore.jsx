@@ -12,65 +12,89 @@ import UserStore    from 'vntd-shared/stores/UserStore.jsx';
 
 class Author {
     constructor(data) {
-        this._id        = _.uniqueId('id-author-');
-        this.authorUser = undefined;
-        this.userUuid   = data.userUuid;
-        this.coverImg   = data.coverImg;
-        this.userUuid   = data.userUuid;
-        this.aboutList  = data.aboutList;
+        this._id       = _.uniqueId('id-author-');
+        this.profile   = UserStore.getUserByUuid(data.userUuid);
+        this.userUuid  = data.authorUuid;
+        this.coverImg  = this.profile ? this.profile.coverImg0 : "/rs/img/demo/s1.jpg";
+        this.aboutList = data.aboutList;
+
+        this.frontArticleUuid = data.frontArticleUuid;
+        this.favoriteArticles = data.favoriteArticles;
+        this.timeLineArticles = data.timeLineArticles;
         return this;
     }
 
     getUser() {
-        return UserStore.getUserByUuid(this.userUuid);
+        if (this.profile == null) {
+            this.profile = UserStore.getUserByUuid(this.userUuid);
+        }
+        return this.profile;
     }
 }
 
 let AuthorStore = Reflux.createStore({
     data: {
-        authorList: []
+        authorMap: {}
     },
     listenables: Actions,
 
     getAuthorList: function() {
-        return this.data.authorList;
+        return _.forOwn(this.data.authorMap);
     },
 
     getAuthorByUuid: function(uuid) {
-        return _.find(this.data.authorList, { userUuid: uuid });
+        return this.data.authorMap[uuid];
+    },
+
+    addAuthorList: function(authorList) {
+        _.forEach(authorList, function(author, key) {
+            if (this.data.authorMap[author.authorUuid] == null) {
+                this.data.authorMap[author.authorUuid] = new Author(author);
+            }
+        }.bind(this));
+    },
+
+    iterAuthor: function(uuidList, func) {
+        let authors = this.getAuthorList();
+        if (uuidList == null) {
+            _.forOwn(this.data.authorMap, func);
+        } else {
+            _forOwn(uuidList, function(uuid, key) {
+                let author = this.data.authorMap[uuid];
+                if (author != null) {
+                    func(author, key);
+                }
+            });
+        }
+    },
+
+    dumpData: function(header) {
+        console.log(header);
+        console.log(this.data);
     },
 
     init: function() {
-        this.listenTo(UserStore, this._userUpdate);
     },
 
     onInitCompleted: function(json) {
-        _addFromJson(json);
-        this.trigger(this.data);
     },
 
     onPreloadCompleted: function(data) {
-        this._addFromJson(data.authors);
+        this.addAuthorList(data.authors);
         this.trigger(this.data);
     },
 
-    _userUpdate: function(userList) {
-        _(this.data.authorList).forEach(function(it) {
-            if (it.authorUser == undefined) {
-                it.authorUser = UserStore.getUserByUuid(it.userUuid);
-            }
-        });
+    onGetAuthorsCompleted: function(data) {
+        this.addAuthorList(data.authors);
+        this.trigger(this.data);
     },
 
-    _addFromJson: function(items) {
-        _(items).forEach(function(it) {
-            var author = new Author(it);
-            if (author.authorUser == undefined) {
-                author.authorUser = UserStore.getUserByUuid(it.userUuid);
-            }
-            this.data.authorList.push(author);
-        }.bind(this));
-        this._userUpdate();
+    onStartupCompleted: function(data) {
+        if (data.userDTO.authors) {
+            this.addAuthorList(data.userDTO.authors);
+            this.trigger(this.data);
+        }
+        this.dumpData("Author store");
     },
 
     exports: {

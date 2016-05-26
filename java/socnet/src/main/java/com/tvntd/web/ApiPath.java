@@ -68,6 +68,7 @@ import com.tvntd.service.api.IMenuItemService.MenuItemResp;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.IUserNotifService;
+import com.tvntd.service.api.LoginResponse;
 import com.tvntd.service.api.StartupResponse;
 import com.tvntd.service.api.UserConnectionChange;
 import com.tvntd.service.api.UserNotifResponse;
@@ -88,7 +89,7 @@ public class ApiPath
     private IArticleService articleSvc;
 
     @Autowired
-    protected IAuthorService authorService;
+    protected IAuthorService authorSvc;
 
     @Autowired
     protected Mongo mongo;
@@ -153,7 +154,7 @@ public class ApiPath
         List<MenuItemResp> items = menuItemService.getMenuItemRespByUser(userId);
         StartupResponse result = new StartupResponse(profile, reqt);
 
-        fillStartupResponse(result, profile, profileSvc);
+        fillStartupResponse(result, profile, profileSvc, authorSvc);
         if (items != null) {
             result.setMenuItems(items);
         }
@@ -161,11 +162,21 @@ public class ApiPath
     }
 
     public static void
-    fillStartupResponse(StartupResponse resp, ProfileDTO profile, IProfileService repo)
+    fillStartupResponse(StartupResponse resp, ProfileDTO profile,
+            IProfileService profileSvc, IAuthorService authorSvc)
     {
-        if (repo != null) {
-            resp.setLinkedUsers(repo.getProfileFromRaw(null));
+        if (profileSvc != null) {
+            resp.setLinkedUsers(profileSvc.getProfileFromRaw(null));
         }
+        if (authorSvc != null) {
+            fillLoginResponse(resp.getUserDTO(), profile, authorSvc);
+        }
+    }
+
+    public static void
+    fillLoginResponse(LoginResponse resp, ProfileDTO profile, IAuthorService authorSvc)
+    {
+        resp.setAuthors(authorSvc.getAuthorList(profile));
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})

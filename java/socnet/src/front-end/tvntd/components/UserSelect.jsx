@@ -118,7 +118,7 @@ var UserSelect = function() {
             arg.followFmt = format.follower;
             arg.unFollFmt = format.noSelect;
             if (arg.tabOwner === true) {
-                arg.blockFmt  = blockInput(key);
+                arg.blockFmt = blockInput(key);
             } else {
                 arg.blockFmt = format.notOwner;
             }

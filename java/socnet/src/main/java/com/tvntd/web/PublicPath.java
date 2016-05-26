@@ -42,6 +42,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.tvntd.models.User;
+import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IMenuItemService;
 import com.tvntd.service.api.IMenuItemService.MenuItemResp;
 import com.tvntd.service.api.IProfileService;
@@ -55,6 +56,9 @@ public class PublicPath
 
     @Autowired
     private IProfileService profileSvc;
+
+    @Autowired
+    private IAuthorService authorSvc;
 
     @Autowired
     IMenuItemService menuItemService;
@@ -74,7 +78,7 @@ public class PublicPath
         StartupResponse result = new StartupResponse(profile, reqt);
 
         if (user != null) {
-            ApiPath.fillStartupResponse(result, profile, profileSvc);
+            ApiPath.fillStartupResponse(result, profile, profileSvc, authorSvc);
             userId = menuItemService.getPrivateId();
         }
         List<MenuItemResp> items = menuItemService.getMenuItemRespByUser(userId);

@@ -6,7 +6,7 @@ import React from 'react-mod'
 
 let rawItems = require('json!../../mock-json/news-feed-author.json');
 
-let Author = React.createClass({
+let AuthorTimeLine = React.createClass({
     render: function() {
         return (
             <div>
@@ -15,4 +15,4 @@ let Author = React.createClass({
     }
 });
 
-export default Author;
+export default AuthorTimeLine;

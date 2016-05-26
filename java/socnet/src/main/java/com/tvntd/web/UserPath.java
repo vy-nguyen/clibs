@@ -97,7 +97,7 @@ public class UserPath
     {
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
         LoginResponse resp = new LoginResponse(profile, reqt);
-        resp.setAuthors(authorSvc.getAuthorList(profile));
+        ApiPath.fillLoginResponse(resp, profile, authorSvc);
         return resp;
     }
 

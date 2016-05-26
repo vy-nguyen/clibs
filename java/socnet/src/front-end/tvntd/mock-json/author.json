@@ -4,7 +4,7 @@
         "/rs/img/demo/s1.jpg",
         "/rs/img/demo/s3.jpg"
     ],
-    "userUuid" : "123450",
+    "authorUuid" : "123450",
     "aboutList": [ {
         "topicIcon": "fa fa-book margin-r-5",
         "topicText": "Education",
@@ -64,7 +64,7 @@
         "/rs/img/demo/s2.jpg",
         "/rs/img/demo/s1.jpg"
     ],
-    "userUuid" : "123451",
+    "authorUuid" : "123451",
     "aboutList": [ {
         "topicIcon": "fa fa-book margin-r-5",
         "topicText": "Hobby",
@@ -112,7 +112,7 @@
         "/rs/img/demo/s3.jpg",
         "/rs/img/demo/s2.jpg"
     ],
-    "userUuid" : "123452",
+    "authorUuid" : "123452",
     "aboutList": [ {
         "topicIcon": "fa fa-book margin-r-5",
         "topicText": "Work Experience",

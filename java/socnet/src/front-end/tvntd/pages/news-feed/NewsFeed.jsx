@@ -119,7 +119,7 @@ let NewsFeed = React.createClass({
 
     render: function() {
         let author = AuthorStore.getAuthorByUuid("123452");
-        if (author == undefined) {
+        if (author == null) {
             return null;
         }
         let articles = ArticleStore.getArticlesByAuthor("123452");
@@ -135,7 +135,7 @@ let NewsFeed = React.createClass({
         <div className="well well-light well-sm">
             <div className="col-sm-4 col-md-4 col-lg-4">
                 <ProfileCover data={{imageId: author._id, imageList: author.coverImg}}/>
-                <Author data={author} user={author.authorUser}/>
+                <Author user={author}/>
             </div>
             <div className="col-sm-8 col-md-8 col-lg-8">
                 <FeedContent/>
