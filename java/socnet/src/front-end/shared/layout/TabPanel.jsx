@@ -9,13 +9,12 @@ import _                from 'lodash';
 import classnames       from 'classnames';
 
 let TabPanel = React.createClass({
-
     render: function() {
         let tab = this.props.context;
         if (tab === null || tab === undefined) {
             return null;
         }
-        let tab_header = tab.tabItems.map(function(item, idx) {
+        let tabHeader = tab.tabItems.map(function(item, idx) {
             return (
                 <li key={_.uniqueId('tab-panel-')} className={idx == 0 ? "active" : ""}>
                     <a data-toggle="tab" href={'#' + item.domId + '-' + item.tabIdx}>{item.tabText}</a>
@@ -23,14 +22,15 @@ let TabPanel = React.createClass({
             )
         });
 
-        let tab_list = this.props.children;
-        let tab_content = tab.tabItems.map(function(item, idx) {
-            let tabRef = tab_list[item.tabIdx];
+        let tabList = this.props.children;
+        let tabClsn = this.props.className;
+        let tabContent = tab.tabItems.map(function(item, idx) {
+            let tabRef = tabList[item.tabIdx];
             let clasname = classnames("tab-pane", {active: idx == 0 });
             return (
                 <div key={_.uniqueId('tab-panel-')}
                     id={item.domId + '-' + item.tabIdx} className={classnames("tab-pane", {active: idx == 0})}>
-                    <div className="panel-body">
+                    <div className={classnames("panel-body", tabClsn)}>
                         {tabRef}
                     </div>
                 </div>
@@ -40,10 +40,10 @@ let TabPanel = React.createClass({
         return (
             <div className="tab-container">
                 <ul className="nav nav-tabs">
-                    {tab_header}
+                    {tabHeader}
                 </ul>
             <div className="tab-content">
-                {tab_content}
+                {tabContent}
             </div>
             </div>
         );

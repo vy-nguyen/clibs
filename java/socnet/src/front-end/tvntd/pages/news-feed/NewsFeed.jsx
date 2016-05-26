@@ -115,7 +115,14 @@ let FeedContent = React.createClass({
 });
 
 let NewsFeed = React.createClass({
-    mixins: [Reflux.connect(AuthorStore), Reflux.connect(ArticleStore)],
+
+    renderAuthors: function() {
+        let output = [];
+        AuthorStore.iterAuthor(this.props.authorList, function(author, key) {
+            output.push(<AuthorFeed key={_.uniqueId("author-feed-")} user={author}/>);
+        });
+        return output;
+    },
 
     render: function() {
         let author = AuthorStore.getAuthorByUuid("123452");
@@ -124,25 +131,24 @@ let NewsFeed = React.createClass({
         }
         let articles = ArticleStore.getArticlesByAuthor("123452");
         return (
-<div id="author-content">
-    <div className="row">
-        <BigBreadcrumbs className="col-xs-12 col-sm-7 col-md-7 col-lg-4"/>
-        <SubHeader/>
-    </div>
-    <AuthorFeed userUuid={"123451"} />
-    <AuthorFeed userUuid={"123450"} />
-    <div className="row"> 
-        <div className="well well-light well-sm">
-            <div className="col-sm-4 col-md-4 col-lg-4">
-                <ProfileCover data={{imageId: author._id, imageList: author.coverImg}}/>
-                <Author user={author}/>
+            <div id="author-content">
+                <div className="row">
+                    <BigBreadcrumbs className="col-xs-12 col-sm-7 col-md-7 col-lg-4"/>
+                    <SubHeader/>
+                </div>
+                {this.renderAuthors()}
+                <div className="row"> 
+                    <div className="well well-light well-sm">
+                        <div className="col-sm-4 col-md-4 col-lg-4">
+                            <ProfileCover data={{imageId: author._id, imageList: author.coverImg}}/>
+                            <Author user={author}/>
+                        </div>
+                        <div className="col-sm-8 col-md-8 col-lg-8">
+                            <FeedContent/>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div className="col-sm-8 col-md-8 col-lg-8">
-                <FeedContent/>
-            </div>
-        </div>
-    </div>
-</div>
         )
     }
 });

@@ -8,8 +8,7 @@ import React              from 'react-mod';
 import Reflux             from 'reflux';
 import SparklineContainer from 'vntd-shared/graphs/SparklineContainer.jsx';
 
-import PostArticles   from './PostArticles.jsx';
-import PostTimeline   from './PostTimeline.jsx';
+import TabPanel       from 'vntd-shared/layout/TabPanel.jsx';
 import Author         from 'vntd-root/components/Author.jsx';
 import ProfileCover   from 'vntd-root/components/ProfileCover.jsx';
 import AuthorStore    from 'vntd-root/stores/AuthorStore.jsx';
@@ -17,66 +16,71 @@ import ArticleStore   from 'vntd-root/stores/ArticleStore.jsx';
 import ProductView    from '../pages/e-store/ProductView.jsx';
 import ProductDetail  from '../pages/e-store/ProductDetail.jsx';
 import Timeline       from '../pages/blog/Timeline.jsx';
-
-let paneData = {
-    postPaneId: "abc",
-    postDate: "3/15/2016",
-    moneyEarned: "100",
-    creditEarned: "200"
-};
+import PostArticles   from './PostArticles.jsx';
+import PostTimeline   from './PostTimeline.jsx';
 
 let AuthorFeed = React.createClass({
+    mixins: [
+        Reflux.connect(ArticleStore),
+        Reflux.connect(AuthorStore)
+    ],
+
+    getAuthorTab: function(uuid) {
+        return {
+            tabItems: [ {
+                domId  : 'article-' + uuid,
+                tabText: 'Articles',
+                tabIdx : 0
+            }, {
+                domId  : 'favorite-' + uuid,
+                tabText: 'Favorites',
+                tabIdx : 1
+            }, {
+                domId  : 'timeline-' + uuid,
+                tabText: 'Timeline',
+                tabIdx : 2
+            }, {
+                domId  : 'estore-' + uuid,
+                tabText: 'E-Store',
+                tabIdx : 3
+            }, {
+                domId  : 'product-' + uuid,
+                tabText: 'Product',
+                tabIdx : 4
+            } ]
+        };
+    },
 
     render: function() {
-        let author = AuthorStore.getAuthorByUuid(this.props.userUuid);
-        let articles = ArticleStore.getArticlesByAuthor(this.props.userUuid);
-        if (author == undefined || articles == undefined) {
+        let author = this.props.user;
+        if (author == null) {
             return null;
         }
-        let art_id = 'article-' + author.userUuid;
-        let fav_id = 'favorite-' + author.userUuid;
-        let tln_id = 'timeline-' + author.userUuid;
-        let est_id = 'estore-' + author.userUuid;
-        let prd_id = 'product-' + author.userUuid;
-
+        let articles = ArticleStore.getArticlesByAuthor(author.userUuid);
+        if (articles == null) {
+            return null;
+        }
         return (
-<div className="row">
-    <SparklineContainer>
-        <div className="well well-light well-sm">
             <div className="row">
-                <div className="col-sm-3 col-md-3 col-lg-3">
-                    <Author user={author}/>
-                </div>
-                <div className="col-sm-9 col-md-9 col-lg-9">
-                    <ul className="nav nav-tabs tabs-pull-left">
-                        <li className="active"><a href={'#' + art_id} data-toggle="tab">Articles</a></li>
-                        <li><a href={'#' + fav_id} data-toggle="tab">Favorites</a></li>
-                        <li><a href={'#' + tln_id} data-toggle="tab">Timeline</a></li>
-                        <li><a href={'#' + est_id} data-toggle="tab">E-Store</a></li>
-                        <li><a href={'#' + prd_id} data-toggle="tab">Product</a></li>
-                    </ul>
-                    <div className="tab-content padding-top-10">
-                        <div className="tab-pane fade in active" id={art_id}>
-                            <PostArticles data={articles}/>
-                        </div>
-                        <div className="tab-pane fade" id={fav_id}>
-                            <PostArticles data={author.favorites}/>
-                        </div>
-                        <div className="tab-pane fade" id={tln_id}>
-                            <Timeline/>
-                        </div>
-                        <div className="tab-pane fade" id={est_id}>
-                            <ProductView/>
-                        </div>
-                        <div className="tab-pane fade" id={prd_id}>
-                            <ProductDetail/>
+                <SparklineContainer>
+                    <div className="well well-light well-sm">
+                        <div className="row">
+                            <div className="col-sm-3 col-md-3 col-lg-3">
+                                <Author user={author}/>
+                            </div>
+                            <div className="col-sm-9 col-md-9 col-lg-9">
+                                <TabPanel className="padding-top-10" context={this.getAuthorTab(author.userUuid)}>
+                                    <PostArticles data={articles}/>
+                                    <PostArticles data={author.favorites}/>
+                                    <Timeline/>
+                                    <ProductView/>
+                                    <ProductDetail/>
+                                </TabPanel>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </SparklineContainer>
             </div>
-        </div>
-    </SparklineContainer>
-</div>
         )
     }
 });
