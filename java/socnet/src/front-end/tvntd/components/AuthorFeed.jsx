@@ -51,15 +51,24 @@ let AuthorFeed = React.createClass({
         };
     },
 
+    getInitialState: function() {
+        return {
+            articles: ArticleStore.getSortedArticlesByAuthor(this.props.user.userUuid)
+        }
+    },
+
+    componentWillMount: function() {
+        this.setState({
+            articles: ArticleStore.getSortedArticlesByAuthor(this.props.user.userUuid)
+        });
+    },
+
     render: function() {
         let author = this.props.user;
         if (author == null) {
             return null;
         }
-        let articles = ArticleStore.getArticlesByAuthor(author.userUuid);
-        if (articles == null) {
-            return null;
-        }
+        let articles = this.state.articles;
         return (
             <div className="row">
                 <SparklineContainer>

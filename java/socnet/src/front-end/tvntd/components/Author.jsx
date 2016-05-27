@@ -54,7 +54,7 @@ let Author = React.createClass({
                         <div className="col-sm-7">
                         </div>
                     </div>
-                    <div className="well well-sm">
+                    <div className="well well-sm" style={{background: "rgba(255,255,255,0.8)"}}>
                         <div className="box-header">
                             <h1 className="profile-username text-center">
                             {self.firstName} <span className="semi-bold">{self.lastName}</span>

@@ -115,21 +115,32 @@ let FeedContent = React.createClass({
 });
 
 let NewsFeed = React.createClass({
+    mixins: [
+        Reflux.connect(AuthorStore)
+    ],
 
     renderAuthors: function() {
         let output = [];
-        AuthorStore.iterAuthor(this.props.authorList, function(author, key) {
+        AuthorStore.iterAuthor(this.state.authorList, function(author, key) {
             output.push(<AuthorFeed key={_.uniqueId("author-feed-")} user={author}/>);
         });
         return output;
     },
 
+    getInitialState: function() {
+        return {
+            authorList: this.props.authorList
+        };
+    },
+
+    componentWillMount: function() {
+        this.setState({
+            authorList: AuthorStore.getAuthorUuidList()
+        });
+    },
+
     render: function() {
         let author = AuthorStore.getAuthorByUuid("123452");
-        if (author == null) {
-            return null;
-        }
-        let articles = ArticleStore.getArticlesByAuthor("123452");
         return (
             <div id="author-content">
                 <div className="row">
@@ -139,11 +150,10 @@ let NewsFeed = React.createClass({
                 {this.renderAuthors()}
                 <div className="row"> 
                     <div className="well well-light well-sm">
-                        <div className="col-sm-4 col-md-4 col-lg-4">
-                            <ProfileCover data={{imageId: author._id, imageList: author.coverImg}}/>
+                        <div className="col-sm-3 col-md-3 col-lg-3">
                             <Author user={author}/>
                         </div>
-                        <div className="col-sm-8 col-md-8 col-lg-8">
+                        <div className="col-sm-9 col-md-9 col-lg-9">
                             <FeedContent/>
                         </div>
                     </div>

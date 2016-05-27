@@ -13,7 +13,7 @@ import UserStore    from 'vntd-shared/stores/UserStore.jsx';
 class Author {
     constructor(data) {
         this._id       = _.uniqueId('id-author-');
-        this.profile   = UserStore.getUserByUuid(data.userUuid);
+        this.profile   = null;
         this.userUuid  = data.authorUuid;
         this.coverImg  = this.profile ? this.profile.coverImg0 : "/rs/img/demo/s1.jpg";
         this.aboutList = data.aboutList;
@@ -39,7 +39,15 @@ let AuthorStore = Reflux.createStore({
     listenables: Actions,
 
     getAuthorList: function() {
-        return _.forOwn(this.data.authorMap);
+        return this.data.authorMap;
+    },
+
+    getAuthorUuidList: function() {
+        let uuids = [];
+        _.forOwn(this.data.authorMap, function(author, key) {
+            uuids.push(author.userUuid);
+        });
+        return uuids;
     },
 
     getAuthorByUuid: function(uuid) {
@@ -55,16 +63,16 @@ let AuthorStore = Reflux.createStore({
     },
 
     iterAuthor: function(uuidList, func) {
-        let authors = this.getAuthorList();
         if (uuidList == null) {
             _.forOwn(this.data.authorMap, func);
         } else {
-            _forOwn(uuidList, function(uuid, key) {
+            _.forOwn(uuidList, function(uuid, key) {
                 let author = this.data.authorMap[uuid];
                 if (author != null) {
                     func(author, key);
+                } else {
                 }
-            });
+            }.bind(this));
         }
     },
 

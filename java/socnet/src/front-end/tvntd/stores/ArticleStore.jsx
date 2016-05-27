@@ -83,7 +83,7 @@ let ArticleStore = Reflux.createStore({
      */
     getSortedArticlesByAuthor: function(uuid) {
         let anchor = this.data.articlesByAuthor[uuid];
-        if (anchor === undefined) {
+        if (anchor == null) {
             anchor = this._createArtAnchor(uuid, null);
             this.data.articlesByAuthor[uuid] = anchor;
         }
