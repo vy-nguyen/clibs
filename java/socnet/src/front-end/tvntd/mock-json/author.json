@@ -35,27 +35,46 @@
         "topicList": [ {
             "icon": "label label-danger",
             "tag" : "Education",
-            "text": "Quoc Van Giao Khoa Thu"
+            "text": [
+                "Quoc Van Giao Khoa Thu",
+                "Vat Ly Vui",
+                "Hoa Hoc Vui"
+            ]
         }, {
             "icon": "label label-success",
             "tag" : "History",
-            "text": "Viet Nam Su Luoc, Tran Trong Kim"
+            "text": [
+                "Viet Nam Su Luoc, Tran Trong Kim",
+                "Con Rong Viet Nam, Bao Dai"
+            ]
         }, {
             "icon": "label label-success",
             "tag" : "Politics",
-            "text": "Hien Phap VNCH"
+            "text": [
+                "Hien Phap VNCH",
+                "World War II"
+            ]
         }, {
             "icon": "label label-danger",
             "tag" : "Economics",
-            "text": "Wealth of nations"
+            "text": [
+                "Wealth of nations",
+                "The world is flat"
+            ]
         }, {
             "icon": "label label-info",
             "tag" : "Startup",
-            "text": "How to eat your own dog food"
+            "text": [
+                "How to eat your own dog food",
+                "From zero to billion"
+            ]
         }, {
             "icon": "label label-primary",
             "tag" : "Vietnam War",
-            "text": "Tu Binh va Hoa Binh"
+            "text": [
+                "Tu Binh va Hoa Binh",
+                "Mua he do lua"
+            ]
         } ]
     } ]
 }, {
@@ -83,27 +102,45 @@
         "topicList": [ {
             "icon": "label label-danger",
             "tag" : "Education",
-            "text": "How to sleep in College"
+            "text": [
+                "How to sleep in College",
+                "How to get bad grade"
+            ]
         }, {
             "icon": "label label-success",
             "tag" : "History",
-            "text": "Trinh Nguyen phan tranh"
+            "text": [
+                "Trinh Nguyen phan tranh",
+                "Nha Tay Son"
+            ]
         }, {
             "icon": "label label-success",
             "tag" : "Politics",
-            "text": "Fan of Dr Tran"
+            "text": [
+                "Fan of Dr Tran",
+                "Vi Tuyen 17"
+            ]
         }, {
             "icon": "label label-danger",
             "tag" : "Stock Market",
-            "text": "How to lost money to Wall Street"
+            "text": [
+                "How to lost money to Wall Street",
+                "How to buy hight, sell low"
+            ]
         }, {
             "icon": "label label-info",
             "tag" : "Entertainment",
-            "text": "Karaoke"
+            "text": [
+                "Karaoke",
+                "Cai luong"
+            ]
         }, {
             "icon": "label label-primary",
             "tag" : "Literature",
-            "text": "Luc Van Tien"
+            "text": [
+                "Luc Van Tien",
+                "Ngao so oc hen"
+            ]
         } ]
     } ]
 }, {
@@ -131,27 +168,39 @@
         "topicList": [ {
             "icon": "label label-danger",
             "tag" : "Tom",
-            "text": "How to make money tradding stocks"
+            "text": [
+                "How to make money tradding stocks"
+            ]
         }, {
             "icon": "label label-success",
             "tag" : "Finance",
-            "text": "How to buy IPO shares"
+            "text": [
+                "How to buy IPO shares"
+            ]
         }, {
             "icon": "label label-success",
             "tag" : "Politics",
-            "text": "Fan of Dr Tran"
+            "text": [
+                "Fan of Dr Tran"
+            ]
         }, {
             "icon": "label label-danger",
             "tag" : "History",
-            "text": "Vietnam War, Nguyen Cong Luan"
+            "text": [
+                "Vietnam War, Nguyen Cong Luan"
+            ]
         }, {
             "icon": "label label-info",
             "tag" : "Entertainment",
-            "text": "Karaoke"
+            "text": [
+                "Karaoke"
+            ]
         }, {
             "icon": "label label-primary",
             "tag" : "Literature",
-            "text": "Luc Van Tien"
+            "text": [
+                "Luc Van Tien"
+            ]
         } ]
     } ]
 } ]
