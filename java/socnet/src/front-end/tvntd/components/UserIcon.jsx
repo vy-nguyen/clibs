@@ -19,7 +19,7 @@ let UserIcon = React.createClass({
         }
         let url = (user === UserStore.getSelf()) ? "/#/user" : "/#/user/" + user.userUuid;
         return (
-            <a href={url}>
+            <a href={url} className={this.props.className}>
                 <img width={width} height={height} src={user.userImgUrl}/>
             </a>
         )

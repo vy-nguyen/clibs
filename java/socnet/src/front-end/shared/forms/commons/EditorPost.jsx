@@ -279,11 +279,11 @@ let EditorPost = React.createClass({
         
                 <div className="inbox-compose-footer">
                     <button onClick={this._savePost} disabled={this.state.saveDis}
-                        className={this.state.saveBtn + " margin=top-10 pull-right"}
+                        className={this.state.saveBtn + " margin-top-10 pull-right"}
                         type="button">{this.state.saveTxt}</button>
 
                     <button onClick={this._publishPost} disabled={this.state.publishDis}
-                        className={this.state.publishBtn + " margin=top-10 pull-right"}
+                        className={this.state.publishBtn + " margin-top-10 pull-right"}
                         type="button">{this.state.publishTxt}</button>
                 </div>
             </form>

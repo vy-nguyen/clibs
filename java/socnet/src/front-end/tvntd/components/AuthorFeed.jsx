@@ -68,7 +68,10 @@ let AuthorFeed = React.createClass({
         if (author == null) {
             return null;
         }
-        let articles = this.state.articles;
+        let articles = [];
+        if (this.state.articles != null) {
+            articles = this.state.articles.slice(0, 2);
+        }
         return (
             <div className="row">
                 <SparklineContainer>

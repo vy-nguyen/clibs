@@ -20,40 +20,24 @@ let commentMock = [ {
     moment: "2 days",
     likes: "3",
     comment: "Lorem ipsum represents a long-held tradition for designers, typographers and the like. Some people hate it.",
-    user: {
-        userImgUrl: "/rs/img/avatars/4.png",
-        firstName: "Thao",
-        lastName: "Nguyen"
-    }
+    userUuid: "123450"
 }, {
     moment: "3 days",
     likes: "2",
     comment: "Wow, sign me up.  I will go there next month",
-    user: {
-        userImgUrl: "/rs/img/avatars/3.png",
-        firstName: "Truong",
-        lastName: "Nguyen"
-    }
+    userUuid: "123451"
 } ];
 
 let commentFavMock = [ {
     moment: "5 days",
     likes: "30",
     comment: "This is very very popular comment",
-    user: {
-        userImgUrl: "/rs/img/avatars/2.png",
-        firstName: "Phi",
-        lastName: "Nguyen"
-    }
+    userUuid: "123452"
 }, {
     moment: "30 days",
     likes: "200",
     comment: "Wow, sign me up.  This is way better comment",
-    user: {
-        userImgUrl: "/rs/img/avatars/5.png",
-        firstName: "Thanh",
-        lastName: "Nguyen"
-    }
+    userUuid: "123453"
 } ];
 
 
@@ -113,43 +97,9 @@ let PostPane = React.createClass({
                 <h2>{this.props.data.topic ? this.props.data.topic : "Post"}</h2>
                 <PostItem data={this.props.data.pictureUrl}/>
                 <div style={divStyle} dangerouslySetInnerHTML={this._rawMarkup()}/>
+                <PostComment comments={commentMock} favorites={commentFavMock}/>
             </Panel>
         )
-            /*
-        return (
-            <JarvisWidget color={'purple'}>
-                <header>
-                    <span className="widget-icon"><i className="fa fa-book"/></span>
-                    <h2><strong>{postedDate}</strong></h2>
-                    <div className="widget-toolbar">
-                        <div className="label label-success">${this.props.data.moneyEarned}</div>
-                    </div>
-                    <div className="widget-toolbar">
-                        <div className="label label-warning">{this.props.data.creditEarned}</div>
-                    </div>
-                </header>
-                <div className="panel panel-default">
-                    <div className="panel-body status">
-                        {!_.isEmpty(pictures) ? <PostItem pictures={pictures}/> : <img src={this.props.data.coverImgUrl}/>}
-
-                    <div style={div_style} dangerouslySetInnerHTML={this._rawMarkup()}/>
-                        <ul className="links">
-                            <li><a href="#"><i className="fa fa-thumbs-o-up"></i> Like ({this.props.data.likeCount})</a></li>
-                            <li><a href="#"><i className="fa fa-comment-o"></i> Comment</a></li>
-                            <li><a href="#"><i className="fa fa-share-square-o"></i> Share</a></li>
-                        </ul>
-                        <ul className="comments">
-                            <li>
-                                <img src="/rs/img/avatars/sunny.png" alt="img"/>
-                                <textarea type="text" className="form-control" placeholder="Post your comment..."/>
-                            </li>
-                        </ul>
-                        <PostComment comments={commentMock} favorites={commentFavMock}/>
-                    </div>
-                </div>
-            </JarvisWidget>
-        )
-             */
     }
 });
 
