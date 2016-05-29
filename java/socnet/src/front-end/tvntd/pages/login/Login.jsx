@@ -207,21 +207,21 @@ let LoginForm = React.createClass({
 let Login = React.createClass({
     render: function () {
         return (
-<div id="extr-page" >
-    <LoginHeader/>
-    <div id="main" role="main" className="animated fadeInDown">
-        <div id="content" className="container">
-            <div className="row">
-                <div className="col-xs-12 col-sm-12 col-md-7 col-lg-8 hidden-xs hidden-sm">
-                    <LoginAbout/>
-                </div>
-                <div className="col-xs-12 col-sm-12 col-md-5 col-lg-4">
-                    <LoginForm/>
+            <div id="extr-page" >
+                <LoginHeader/>
+                <div id="main" role="main" className="animated fadeInDown">
+                    <div id="content" className="container">
+                        <div className="row">
+                            <div className="col-xs-12 col-sm-12 col-md-7 col-lg-8 hidden-xs hidden-sm">
+                                <LoginAbout/>
+                            </div>
+                            <div className="col-xs-12 col-sm-12 col-md-5 col-lg-4">
+                                <LoginForm/>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
         )
     }
 });

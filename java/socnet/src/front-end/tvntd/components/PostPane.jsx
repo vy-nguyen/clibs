@@ -93,11 +93,10 @@ let PostPane = React.createClass({
 
         return (
             <Panel className="well no-padding" context={panelData}>
-                <h2>UUID: {this.props.data.articleUuid}</h2>
                 <h2>{this.props.data.topic ? this.props.data.topic : "Post"}</h2>
                 <PostItem data={this.props.data.pictureUrl}/>
                 <div style={divStyle} dangerouslySetInnerHTML={this._rawMarkup()}/>
-                <PostComment comments={commentMock} favorites={commentFavMock}/>
+                <PostComment articleUuid={this.props.data.articleUuid} comments={commentMock} favorites={commentFavMock}/>
             </Panel>
         )
     }

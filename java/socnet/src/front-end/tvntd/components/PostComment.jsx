@@ -28,24 +28,38 @@ let CommentBox = React.createClass({
         e.preventDefault();
     },
 
+    _toggleComment: function(e) {
+        e.preventDefault();
+        let show = !this.state.commentShow;
+        let boxId = "#comment-" + this.props.articleUuid;
+
+        this.setState({commentShow: show});
+        if (show === true) {
+            $(boxId).show();
+        } else {
+            $(boxId).hide();
+        }
+    },
+
     getInitialState: function() {
         return {
             submiting: false,
             submitLike : false,
-            submitShare: false
+            submitShare: false,
+            commentShow: false
         }
     },
 
     render: function() {
         return (
-            <form encType="multipart/form-data" acceptCharset="utf-8" className="form-horizontal">
+            <div className="row no-margin no-padding">
                 <hr/>
                 <div className="btn-group inline">
                     <button onClick={this._submitSelect} disabled={this.state.submitLike} className="text-danger">
                         <i className="fa fa-thumbs-up"></i> Like
                     </button>
-                    <button onClick={this._submitSelect} className="text-info">
-                        <i className="fa fa-comment"></i> Comments
+                    <button onClick={this._toggleComment} className="text-info">
+                        <i className="fa fa-comment"></i> {"Comments (" + this.props.cmtCount + ")"}
                     </button>
                     <button onClick={this._submitSelect} disabled={this.state.submitShare} className="text-info">
                         <i className="fa fa-share"></i> Share
@@ -58,23 +72,39 @@ let CommentBox = React.createClass({
                     </button>
                 </div>
                 <br/>
-                <div className="form-group margin-bottom-none">
-                    <div className="col-sm-11">
-                        <textarea ref="comment" className="form-control input-sm" placeholder="Response"/>
+                <form encType="multipart/form-data" acceptCharset="utf-8" className="form-horizontal">
+                    <div className="row">
+                        <div className="col-sm-11">
+                            <textarea ref="comment" className="form-control input-sm" placeholder="Place your comments here..."/>
+                        </div>
+                        <div className="col-sm-1">
+                            <button className="btn btn-danger pull-right btn-block btn-sm"
+                                onClick={this._submitComment} disabled={this.state.submiting}
+                                type="button">Send</button>
+                        </div>
                     </div>
-                    <div className="col-sm-1">
-                        <button className="btn btn-danger pull-right btn-block btn-sm"
-                            onClick={this._submitComment} disabled={this.state.submiting}
-                            type="button">Send</button>
-                    </div>
-                </div>
+                </form>                                                                                  
                 <br/>
-            </form>                                                                                  
+            </div>
         );
     }
 });
 
 let CommentItem = React.createClass({
+
+    _submitLike: function(e) {
+        e.preventDefault();
+    },
+
+    _makeFavorite: function(e) {
+        e.preventDefault();
+    },
+
+    getInitialState: function() {
+        return {
+            submitedLike: true
+        }
+    },
 
     render: function() {
         let user = this.props.user;
@@ -91,6 +121,16 @@ let CommentItem = React.createClass({
                     {this.props.data.comment}
                 </span>
                 <ul className="list-inline">
+                    <li>
+                        <button onClick={this._submitLike} disabled={this.state.submitedLike} className="text-info">
+                            <i className="fa fa-thumbs-up"></i> Like
+                        </button>
+                    </li>
+                    <li>
+                        <button onClick={this._makeFavorite} className="text-warning">
+                            <i className="fa fa-bookmark"></i> Mark Favorite
+                        </button>
+                    </li>
                     <li>
                         <span className="text-danger">
                             <i className="fa fa-thumbs-up"></i> {this.props.data.likes} Likes
@@ -118,7 +158,7 @@ let PostComment = React.createClass({
         let favColumn = null;
         if (this.props.favorites) {
             favColumn = (
-                <div className="col-sm-12 col-md-6 col-lg-6 chat-body no-margin no-padding">
+                <div className="col-sm-12 col-md-6 col-lg-6 chat-body">
                     <ul>{favCmnts}</ul>
                 </div>
             );
@@ -126,23 +166,25 @@ let PostComment = React.createClass({
         let norColumn = null;
         if (favColumn == null) {
             norColumn = (
-                <div className="col-sm-12 col-md-12 col-lg-12 chat-body no-margin no-padding">
+                <div className="col-sm-12 col-md-12 col-lg-12 chat-body">
                     {norCmnts}
                 </div>
             );
         } else {
             norColumn = (
-                <div className="col-sm-12 col-md-6 col-lg-6 chat-body no-margin no-padding">
+                <div className="col-sm-12 col-md-6 col-lg-6 chat-body">
                     {norCmnts}
                 </div>
             );
         }
+        let cmtCount = favCmnts.length + norCmnts.length;
         return (
             <div className="row">
                 <div className="col-sm-12 col-md-12 col-lg-12">
-                    <CommentBox/>
+                    <CommentBox articleUuid={this.props.articleUuid} cmtCount={cmtCount}/>
                 </div>
-                <div className="col-sm-12 col-md-12 col-lg-12">
+                <div id={"comment-" + this.props.articleUuid}
+                    style={{display: "none"}} className="col-sm-12 col-md-12 col-lg-12">
                     <div className="row no-margin no-padding">
                         {favColumn}
                         {norColumn}
