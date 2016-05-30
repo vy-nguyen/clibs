@@ -5,7 +5,6 @@
 
 import React          from 'react-mod';
 import MenuStore      from 'vntd-shared/stores/DropdownMenuStore.jsx';
-import PanelStore     from 'vntd-shared/stores/PanelStore.jsx';
 import Panel          from 'vntd-shared/widgets/Panel.jsx';
 
 let TaskTimeline = React.createClass({

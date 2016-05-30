@@ -5,7 +5,6 @@
 
 import React          from 'react-mod';
 import MenuStore      from 'vntd-shared/stores/DropdownMenuStore.jsx';
-import PanelStore     from 'vntd-shared/stores/PanelStore.jsx';
 import Panel          from 'vntd-shared/widgets/Panel.jsx';
 
 let Messages = React.createClass({
@@ -43,29 +42,20 @@ let Messages = React.createClass({
             }
         } ]
     },
-    panelDef: {
-        init   : false,
-        reactId: 'mesg-info',
-        icon   : 'fa fa-user',
-        header : 'My Messages',
-        headerMenus: []
-    },
 
     getInitialState: function() {
-        if (this.panelDef.init != true) {
-            this.panelDef.init = true;
-            this.panelDef.headerMenus.push(this.filterMenu);
-            this.panelDef.headerMenus.push(this.queryMenu);
-            MenuStore.setDropdownMenu(this.filterMenu.reactId, this.filterMenu);
-            MenuStore.setDropdownMenu(this.queryMenu.reactId, this.queryMenu);
-            PanelStore.setPanel(this.panelDef.reactId, this.panelDef);
+        return {
+            init   : false,
+            reactId: 'mesg-info',
+            icon   : 'fa fa-user',
+            header : 'My Messages',
+            headerMenus: []
         }
-        return this.panelDef;
     },
 
     render: function() {
         return (
-            <Panel reactId={this.panelDef.reactId}>
+            <Panel reactId={this.state.reactId}>
                 <h1>You don't have any messages yet!</h1>
             </Panel>
         )
