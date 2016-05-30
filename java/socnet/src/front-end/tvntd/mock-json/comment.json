@@ -1,0 +1,46 @@
+[ {
+    "moment"     : "2 days",
+    "articleUuid": "abc123",
+    "commentId"  : 1,
+    "comment"    : "This is simple comment",
+    "userUuid"   : "123450",
+    "likes"      : 3,
+    "favorite"   : false,
+    "ignore"     : false
+}, {
+    "moment"     : "3 days",
+    "articleUuid": "abc123",
+    "commentId"  : 2,
+    "comment"    : "Wow, sign me up.  I will go there next month",
+    "userUuid"   : "123451",
+    "likes"      : 2,
+    "favorite"   : false,
+    "ignore"     : false
+}, {
+    "moment"     : "4 days",
+    "articleUuid": "abc1231",
+    "commentId"  : 3,
+    "comment"    : "Wow, I'm going there to party all day!",
+    "userUuid"   : "123451",
+    "likes"      : 10,
+    "favorite"   : true,
+    "ignore"     : false
+}, {
+    "moment"     : "8 days",
+    "articleUuid": "abc1231",
+    "commentId"  : 4,
+    "comment"    : "I don't know what to do, give me instruction",
+    "userUuid"   : "123451",
+    "likes"      : 2,
+    "favorite"   : false,
+    "ignore"     : false
+}, {
+    "moment"     : "5 days",
+    "articleUuid": "abc1231",
+    "commentId"  : 5,
+    "comment"    : "Wow, haven't seen you for a long time",
+    "userUuid"   : "123451",
+    "likes"      : 2,
+    "favorite"   : false,
+    "ignore"     : false
+} ]

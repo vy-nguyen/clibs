@@ -6,9 +6,11 @@
 
 import _        from 'lodash';
 import React    from 'react-mod';
+import Reflux   from 'reflux';
 
 import UserStore       from 'vntd-shared/stores/UserStore.jsx';
 import UserIcon        from 'vntd-root/components/UserIcon.jsx';
+import CommentStore    from 'vntd-root/stores/CommentStore.jsx';
 import {safeStringify} from 'vntd-shared/utils/Enum.jsx'; 
 
 let CommentBox = React.createClass({
@@ -143,6 +145,8 @@ let CommentItem = React.createClass({
 });
 
 let PostComment = React.createClass({
+    mixins: [Reflux.connect(CommentStore)],
+
     render: function() {
         let favCmnts = [];
         _.forOwn(this.props.favorites, function(item, idx) {

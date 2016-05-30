@@ -31,6 +31,9 @@ const Actions = Reflux.createActions({
     pendingPost:     {children: ['completed']},
     uploadAvataDone: {children: ['completed']},
 
+    // Comment actions
+    switchComment:   {children: ['completed']},
+
     // Preload json for testing.
     preload:         {children: ['completed', 'failed']}
 });
@@ -166,7 +169,8 @@ Actions.preload.listen(function() {
     let data = {
         articles: require('json!../mock-json/article.json'),
         authors : require('json!../mock-json/author.json'),
-        users   : require('json!../mock-json/user.json')
+        users   : require('json!../mock-json/user.json'),
+        comments: require('json!../mock-json/comment.json')
     };
     this.completed(data);
 });
@@ -193,6 +197,13 @@ Actions.publishUserPost.listen(function(data) {
 });
 
 Actions.pendingPost.listen(function(data) {
+    this.completed(data);
+});
+
+/**
+ * Comment actions.
+ */
+Actions.switchComment.listen(function(data) {
     this.completed(data);
 });
 
