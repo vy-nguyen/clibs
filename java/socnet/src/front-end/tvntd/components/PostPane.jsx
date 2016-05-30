@@ -16,31 +16,6 @@ import JarvisWidget from 'vntd-shared/widgets/JarvisWidget.jsx';
 import Panel            from 'vntd-shared/widgets/Panel.jsx'; 
 import { toDateString } from 'vntd-shared/utils/Enum.jsx';
 
-let commentMock = [ {
-    moment: "2 days",
-    likes: "3",
-    comment: "Lorem ipsum represents a long-held tradition for designers, typographers and the like. Some people hate it.",
-    userUuid: "123450"
-}, {
-    moment: "3 days",
-    likes: "2",
-    comment: "Wow, sign me up.  I will go there next month",
-    userUuid: "123451"
-} ];
-
-let commentFavMock = [ {
-    moment: "5 days",
-    likes: "30",
-    comment: "This is very very popular comment",
-    userUuid: "123452"
-}, {
-    moment: "30 days",
-    likes: "200",
-    comment: "Wow, sign me up.  This is way better comment",
-    userUuid: "123453"
-} ];
-
-
 let PostPane = React.createClass({
 
     _rawMarkup: function() {
@@ -96,7 +71,7 @@ let PostPane = React.createClass({
                 <h2>{this.props.data.topic ? this.props.data.topic : "Post"}</h2>
                 <PostItem data={this.props.data.pictureUrl}/>
                 <div style={divStyle} dangerouslySetInnerHTML={this._rawMarkup()}/>
-                <PostComment articleUuid={this.props.data.articleUuid} comments={commentMock} favorites={commentFavMock}/>
+                <PostComment articleUuid={this.props.data.articleUuid}/>
             </Panel>
         )
     }

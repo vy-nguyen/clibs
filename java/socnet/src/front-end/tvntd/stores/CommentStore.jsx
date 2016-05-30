@@ -91,7 +91,6 @@ let CommentStore = Reflux.createStore({
     listenables: [Actions],
 
     init: function() {
-        console.log("Comment store init");
     },
 
     onPreloadCompleted: function(raw) {
@@ -129,3 +128,5 @@ let CommentStore = Reflux.createStore({
         this.dumpData("Comment store");
     }
 });
+
+export default CommentStore;

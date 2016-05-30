@@ -41,7 +41,7 @@ let KeyValueTable = React.createClass({
                 _.forOwn(elm.val, function(v, index) {
                     row.push(
                         <tr key={_.uniqueId("kv-elm-")} className={rowFmt}>
-                            <td colspan="2"><span className={valFmt}>{v}</span></td>
+                            <td colSpan="2"><span className={valFmt}>{v}</span></td>
                         </tr>
                     )
                 });

@@ -147,20 +147,34 @@ let CommentItem = React.createClass({
 let PostComment = React.createClass({
     mixins: [Reflux.connect(CommentStore)],
 
+    getInitialState: function() {
+        return {
+            comment: CommentStore.getByArticleUuid(this.props.articleUuid)
+        }
+    },
+
     render: function() {
+        let normals = [];
+        let favorites = [];
+        let commentArt = this.state.comment;
+
+        if (commentArt != null) {
+            normals = commentArt.getNormals();
+            favorites = commentArt.getFavorites();
+        }
         let favCmnts = [];
-        _.forOwn(this.props.favorites, function(item, idx) {
+        _.forOwn(favorites, function(item, idx) {
             favCmnts.push(<CommentItem key={_.uniqueId('comment-')}
                             user={UserStore.getUserByUuid(item.userUuid)} data={item}/>
             );
         });
         let norCmnts = [];
-        _.forOwn(this.props.comments, function(item, idx) {
+        _.forOwn(normals, function(item, idx) {
             norCmnts.push(<CommentItem key={_.uniqueId('comment-')}
                             user={UserStore.getUserByUuid(item.userUuid)} data={item}/>);
         });
         let favColumn = null;
-        if (this.props.favorites) {
+        if (!_.isEmpty(favorites)) {
             favColumn = (
                 <div className="col-sm-12 col-md-6 col-lg-6 chat-body">
                     <ul>{favCmnts}</ul>
@@ -169,11 +183,13 @@ let PostComment = React.createClass({
         }
         let norColumn = null;
         if (favColumn == null) {
-            norColumn = (
-                <div className="col-sm-12 col-md-12 col-lg-12 chat-body">
-                    {norCmnts}
-                </div>
-            );
+            if (!_.isEmpty(norCmnts)) {
+                norColumn = (
+                    <div className="col-sm-12 col-md-12 col-lg-12 chat-body">
+                        {norCmnts}
+                    </div>
+                );
+            }
         } else {
             norColumn = (
                 <div className="col-sm-12 col-md-6 col-lg-6 chat-body">
@@ -182,6 +198,7 @@ let PostComment = React.createClass({
             );
         }
         let cmtCount = favCmnts.length + norCmnts.length;
+
         return (
             <div className="row">
                 <div className="col-sm-12 col-md-12 col-lg-12">
