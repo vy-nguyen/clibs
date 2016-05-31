@@ -9,15 +9,16 @@ import React    from 'react-mod';
 import Reflux   from 'reflux';
 
 import UserStore       from 'vntd-shared/stores/UserStore.jsx';
+import Actions         from 'vntd-root/actions/Actions.jsx';
 import UserIcon        from 'vntd-root/components/UserIcon.jsx';
 import CommentStore    from 'vntd-root/stores/CommentStore.jsx';
 import {safeStringify} from 'vntd-shared/utils/Enum.jsx'; 
 
 let CommentBox = React.createClass({
-    _submitContent: function(e) {
+    _submitComment: function(e) {
         e.preventDefault();
         let data = {
-            comment: safeStringify(this.refs.comment),
+            comment: safeStringify(this.refs.comment.value),
             articleUuid: this.props.articleUuid,
             like: false,
             share: false
@@ -28,6 +29,7 @@ let CommentBox = React.createClass({
 
     _submitSelect: function(e) {
         e.preventDefault();
+        console.log("submit select");
     },
 
     _toggleComment: function(e) {
@@ -58,19 +60,19 @@ let CommentBox = React.createClass({
                 <hr/>
                 <div className="btn-group inline">
                     <button onClick={this._submitSelect} disabled={this.state.submitLike} className="text-danger">
-                        <i className="fa fa-thumbs-up"></i> Like
+                        <i className="fa fa-thumbs-up"></i>Like
                     </button>
                     <button onClick={this._toggleComment} className="text-info">
-                        <i className="fa fa-comment"></i> {"Comments (" + this.props.cmtCount + ")"}
+                        <i className="fa fa-comment"></i>{"Comments (" + this.props.cmtCount + ")"}
                     </button>
                     <button onClick={this._submitSelect} disabled={this.state.submitShare} className="text-info">
-                        <i className="fa fa-share"></i> Share
+                        <i className="fa fa-share"></i>Share
                     </button>
                     <button onClick={this._submitSelect} disabled={this.state.submitShare} className="text-info">
-                        <i className="fa fa-book"></i> Save
+                        <i className="fa fa-book"></i>Save
                     </button>
                     <button onClick={this._submitSelect} disabled={this.state.submitShare} className="text-info">
-                        <i className="fa fa-money"></i> Micropay
+                        <i className="fa fa-money"></i>Micropay
                     </button>
                 </div>
                 <br/>
@@ -80,9 +82,8 @@ let CommentBox = React.createClass({
                             <textarea ref="comment" className="form-control input-sm" placeholder="Place your comments here..."/>
                         </div>
                         <div className="col-sm-1">
-                            <button className="btn btn-danger pull-right btn-block btn-sm"
-                                onClick={this._submitComment} disabled={this.state.submiting}
-                                type="button">Send</button>
+                            <button className="btn btn-danger pull-right btn-block btn-sm" type="submit"
+                                onClick={this._submitComment}>Send</button>
                         </div>
                     </div>
                 </form>                                                                                  
@@ -100,6 +101,7 @@ let CommentItem = React.createClass({
 
     _makeFavorite: function(e) {
         e.preventDefault();
+        Actions.switchComment(this.props.data);
     },
 
     getInitialState: function() {
@@ -113,6 +115,21 @@ let CommentItem = React.createClass({
         if (user == null) {
             return null;
         }
+        let favBtn = null;
+        let favBtnText = "Mark Favorite";
+        let favClassName = "fa fa-bookmark";
+
+        if (this.props.data.favorite === true) {
+            favBtnText = "Not Favorite";
+            favClassName = "fa fa-thumbs-down";
+        }
+        favBtn = (
+            <li>
+                <button onClick={this._makeFavorite} className="text-warning"> 
+                    <i className={favClassName}></i>{favBtnText}
+                </button>
+            </li>
+        );
         return (
             <li className="message">
                 <UserIcon className="username" userUuid={user.userUuid} width="40" height="40"/>
@@ -125,17 +142,13 @@ let CommentItem = React.createClass({
                 <ul className="list-inline">
                     <li>
                         <button onClick={this._submitLike} disabled={this.state.submitedLike} className="text-info">
-                            <i className="fa fa-thumbs-up"></i> Like
+                            <i className="fa fa-thumbs-up"></i>Like
                         </button>
                     </li>
-                    <li>
-                        <button onClick={this._makeFavorite} className="text-warning">
-                            <i className="fa fa-bookmark"></i> Mark Favorite
-                        </button>
-                    </li>
+                    {favBtn}
                     <li>
                         <span className="text-danger">
-                            <i className="fa fa-thumbs-up"></i> {this.props.data.likes} Likes
+                            <i className="fa fa-thumbs-up"></i>{this.props.data.likes} Likes
                         </span>
                     </li>
                 </ul>

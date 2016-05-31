@@ -46,17 +46,21 @@ class ArticleComment {
                 this.normals[data.commentId] = new CommentText(data);
             }
         }
+        console.log(this);
+        console.log("Added comment");
     }
 
-    swtichComment(id) {
+    switchComment(id) {
         if (this.favorites[id] == null) {
             let comment = this.normals[id];
-            this.normals[id] = null;
-            this.favorite[id] = comment;
+            comment.favorite = !comment.favorite;
+            this.favorites[id] = comment;
+            delete this.normals[id];
         } else {
             let comment = this.favorites[id];
-            this.favorites[id] = null;
+            comment.favorite = !comment.favorite;
             this.normals[id] = comment;
+            delete this.favorites[id];
         }
     }
 
@@ -102,6 +106,9 @@ let CommentStore = Reflux.createStore({
         console.log("store, onswitchcommentCompleted");
         let cmtArt = this.getByArticleUuid(data.articleUuid);
         if (cmtArt != null) {
+            console.log(data);
+            console.log(cmtArt);
+
             cmtArt.switchComment(data.commentId);
             this.trigger(cmtArt);
         }
