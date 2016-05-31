@@ -27,12 +27,6 @@ let Editor = React.createClass({
         }.bind(this));
     },
 
-    componentDidMount: function() {
-        let editor = $('#id-editor');
-        console.log(editor);
-        editor.css({'height': 'auto', 'overflow-y': 'hidden'}).height(editor.scrollHeight);
-    },
-
     componentWillReceiveProps: function(nextProps) {
         this.setState({
             html: nextProps.content
@@ -53,7 +47,7 @@ let Editor = React.createClass({
             toolbarStyle = {marginBottom: 3};
 
         return (
-            <div id='id-editor'>
+            <div>
                 <div style={toolbarStyle}>
                     {/**
                       * For list of supported commands
@@ -181,13 +175,13 @@ let Editor = React.createClass({
                     </button>
                 </div>
 
-                <div ref="editor"
-                    {...this.props} 
+                <div ref="editor" {...this.props} contentEditable="true"
                     style={{
                         'border'   : '1px solid blue',
-                        'minHeight': 200
+                        'minHeight': 200,
+                        'height'   : 'auto',
+                        'overflowY': 'hidden'
                     }}
-                    contentEditable="true"
                     dangerouslySetInnerHTML={{__html: this.state.html}}
                     onInput={this._emitChange}>
                 </div>
