@@ -17,19 +17,23 @@ import {safeStringify} from 'vntd-shared/utils/Enum.jsx';
 let CommentBox = React.createClass({
     _submitComment: function(e) {
         e.preventDefault();
-        let data = {
+        Actions.postComment({
             comment: safeStringify(this.refs.comment.value),
             articleUuid: this.props.articleUuid,
-            like: false,
-            share: false
-        };
-        console.log("Submit comment");
-        console.log(data);
+        });
+        this.setState({ submiting: true });
     },
 
-    _submitSelect: function(e) {
+    _submitSelect: function(type, e) {
         e.preventDefault();
-        console.log("submit select");
+        Actions.postCmtSelect({
+            kind       : type,
+            amount     : 1,
+            comment    : false,
+            favorite   : false,
+            commentId  : 0,
+            articleUuid: this.props.articleUuid
+        });
     },
 
     _toggleComment: function(e) {
@@ -47,7 +51,7 @@ let CommentBox = React.createClass({
 
     getInitialState: function() {
         return {
-            submiting: false,
+            submiting  : false,
             submitLike : false,
             submitShare: false,
             commentShow: false
@@ -59,19 +63,23 @@ let CommentBox = React.createClass({
             <div className="row no-margin no-padding">
                 <hr/>
                 <div className="btn-group inline">
-                    <button onClick={this._submitSelect} disabled={this.state.submitLike} className="text-danger">
+                    <button onClick={this._submitSelect.bind(this, "like")}
+                        disabled={this.state.submitLike} className="text-danger">
                         <i className="fa fa-thumbs-up"></i>Like
                     </button>
                     <button onClick={this._toggleComment} className="text-info">
                         <i className="fa fa-comment"></i>{"Comments (" + this.props.cmtCount + ")"}
                     </button>
-                    <button onClick={this._submitSelect} disabled={this.state.submitShare} className="text-info">
+                    <button onClick={this._submitSelect.bind(this, "share")}
+                        disabled={this.state.submitShare} className="text-info">
                         <i className="fa fa-share"></i>Share
                     </button>
-                    <button onClick={this._submitSelect} disabled={this.state.submitShare} className="text-info">
+                    <button onClick={this._submitSelect.bind(this, "save")}
+                        disabled={this.state.submitShare} className="text-info">
                         <i className="fa fa-book"></i>Save
                     </button>
-                    <button onClick={this._submitSelect} disabled={this.state.submitShare} className="text-info">
+                    <button onClick={this._submitSelect.bind(this, "pay")}
+                        disabled={this.state.submitShare} className="text-info">
                         <i className="fa fa-money"></i>Micropay
                     </button>
                 </div>
@@ -97,6 +105,15 @@ let CommentItem = React.createClass({
 
     _submitLike: function(e) {
         e.preventDefault();
+        Actions.postCmtSelect({
+            kind       : "like",
+            amount     : 1,
+            comment    : true,
+            favorite   : false,
+            commentId  : this.props.data.commentId,
+            articleUuid: this.props.articleUuid
+        });
+        this.setState({ submitedLike: true });
     },
 
     _makeFavorite: function(e) {
@@ -106,7 +123,7 @@ let CommentItem = React.createClass({
 
     getInitialState: function() {
         return {
-            submitedLike: true
+            submitedLike: false
         }
     },
 

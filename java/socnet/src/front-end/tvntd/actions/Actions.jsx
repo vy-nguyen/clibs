@@ -28,11 +28,16 @@ const Actions = Reflux.createActions({
     deleteUserPost:  {children: ['completed', 'failed']},
     publishUserPost: {children: ['completed', 'failed']},
 
+    getArticles:     {children: ['completed', 'failed']},
+    getComments:     {children: ['completed', 'failed']},
+
     pendingPost:     {children: ['completed']},
     uploadAvataDone: {children: ['completed']},
 
     // Comment actions
     switchComment:   {children: ['completed']},
+    postComment:     {children: ['completed', 'failed']},
+    postCmtSelect:   {children: ['completed', 'failed']},
 
     // Preload json for testing.
     preload:         {children: ['completed', 'failed']}
@@ -137,6 +142,14 @@ Actions.refreshArticles.listen(function(authorUuid) {
     $.getJSON("/user/get-posts/" + authorUuid).then(this.completed, this.failed);
 });
 
+Actions.getArticles.listen(function(artUuids) {
+    postRestCall(artUuids, "/user/get-articles", true, this);
+});
+
+Actions.getComments.listen(function(artUuids) {
+    postRestCall(artUuids, "/user/get-comments", true, this);
+});
+
 Actions.uploadAvataDone.listen(function(data) {
     this.completed(data);
 });
@@ -205,6 +218,14 @@ Actions.pendingPost.listen(function(data) {
  */
 Actions.switchComment.listen(function(data) {
     this.completed(data);
+});
+
+Actions.postComment.listen(function(data) {
+    postRestCall(data, "/user/publish-comment", true, this);
+});
+
+Actions.postCmtSelect.listen(function(data) {
+    postRestCall(data, "/user/change-comment", true, this);
 });
 
 export default Actions;

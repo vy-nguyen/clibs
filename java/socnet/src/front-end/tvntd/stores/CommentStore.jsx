@@ -46,8 +46,6 @@ class ArticleComment {
                 this.normals[data.commentId] = new CommentText(data);
             }
         }
-        console.log(this);
-        console.log("Added comment");
     }
 
     switchComment(id) {
@@ -103,12 +101,8 @@ let CommentStore = Reflux.createStore({
     },
 
     onSwitchCommentCompleted: function(data) {
-        console.log("store, onswitchcommentCompleted");
         let cmtArt = this.getByArticleUuid(data.articleUuid);
         if (cmtArt != null) {
-            console.log(data);
-            console.log(cmtArt);
-
             cmtArt.switchComment(data.commentId);
             this.trigger(cmtArt);
         }
