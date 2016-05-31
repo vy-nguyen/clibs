@@ -54,8 +54,15 @@ let CommentBox = React.createClass({
             submiting  : false,
             submitLike : false,
             submitShare: false,
-            commentShow: false
+            commentShow: false,
+            cmtBoxId   : _.uniqueId('comment-box-')
         }
+    },
+
+    componentDidMount: function() {
+        $('#' + this.state.cmtBoxId).on('input', function() {
+            $(this).css({'height': 'auto', 'overflow-y': 'hidden'}).height(this.scrollHeight);
+        });
     },
 
     render: function() {
@@ -87,7 +94,8 @@ let CommentBox = React.createClass({
                 <form encType="multipart/form-data" acceptCharset="utf-8" className="form-horizontal">
                     <div className="row">
                         <div className="col-sm-11">
-                            <textarea ref="comment" className="form-control input-sm" placeholder="Place your comments here..."/>
+                            <textarea ref="comment" className="form-control input-sm"
+                                id={this.state.cmtBoxId} placeholder="Place your comments here..."/>
                         </div>
                         <div className="col-sm-1">
                             <button className="btn btn-danger pull-right btn-block btn-sm" type="submit"
@@ -222,7 +230,7 @@ let PostComment = React.createClass({
             }
         } else {
             norColumn = (
-                <div className="col-sm-12 col-md-6 col-lg-6 chat-body">
+                <div className="col-sm-12 col-md-6 col-lg-6 chat-body" style={{overflow: "auto"}}>
                     {norCmnts}
                 </div>
             );

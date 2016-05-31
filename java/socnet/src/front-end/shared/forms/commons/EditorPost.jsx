@@ -201,11 +201,6 @@ let EditorPost = React.createClass({
     },
 
     render: function() {
-        let editorStyle = {
-            overflow: 'auto',
-            display: 'inline-block',
-            minHeight: 200
-        };
         let djsConfig = {
             addRemoveLinks: true,
             acceptedFiles: "image/*",
@@ -271,7 +266,6 @@ let EditorPost = React.createClass({
 
                 <div className="inbox-message no-padding">
                     <Editor id="main-post"
-                        style={editorStyle}
                         content={this.state.content}
                         onChange={this._handleContentChange}
                     />

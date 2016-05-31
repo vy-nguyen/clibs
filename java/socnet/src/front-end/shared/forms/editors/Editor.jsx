@@ -16,15 +16,21 @@ let Editor = React.createClass({
         return {html: this.props.content};
     },
 
-    _emitChange: function() {
-        let editor = this.refs.editor,
-            newHtml = editor.innerHTML;
+    _emitChange: function(e) {
+        let editor = this.refs.editor;
+        let newHtml = editor.innerHTML;
 
         this.setState({html: newHtml}, function() {
             this.props.onChange({
                 value: newHtml
             });
         }.bind(this));
+    },
+
+    componentDidMount: function() {
+        let editor = $('#id-editor');
+        console.log(editor);
+        editor.css({'height': 'auto', 'overflow-y': 'hidden'}).height(editor.scrollHeight);
     },
 
     componentWillReceiveProps: function(nextProps) {
@@ -47,7 +53,7 @@ let Editor = React.createClass({
             toolbarStyle = {marginBottom: 3};
 
         return (
-            <div>
+            <div id='id-editor'>
                 <div style={toolbarStyle}>
                     {/**
                       * For list of supported commands
@@ -176,8 +182,11 @@ let Editor = React.createClass({
                 </div>
 
                 <div ref="editor"
-                    className="form-control"
                     {...this.props} 
+                    style={{
+                        'border'   : '1px solid blue',
+                        'minHeight': 200
+                    }}
                     contentEditable="true"
                     dangerouslySetInnerHTML={{__html: this.state.html}}
                     onInput={this._emitChange}>
