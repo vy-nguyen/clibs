@@ -28,4 +28,34 @@ package com.tvntd.forms;
 
 public class CommentForm
 {
+    private String comment;
+    private String articleUuid;
+
+    /**
+     * @return the comment
+     */
+    public String getComment() {
+        return comment;
+    }
+
+    /**
+     * @param comment the comment to set
+     */
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    /**
+     * @return the articleUuid
+     */
+    public String getArticleUuid() {
+        return articleUuid;
+    }
+
+    /**
+     * @param articleUuid the articleUuid to set
+     */
+    public void setArticleUuid(String articleUuid) {
+        this.articleUuid = articleUuid;
+    }
 }

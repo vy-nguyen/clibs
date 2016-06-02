@@ -15,13 +15,28 @@ import CommentStore    from 'vntd-root/stores/CommentStore.jsx';
 import {safeStringify} from 'vntd-shared/utils/Enum.jsx'; 
 
 let CommentBox = React.createClass({
+
     _submitComment: function(e) {
         e.preventDefault();
         Actions.postComment({
             comment: safeStringify(this.refs.comment.value),
             articleUuid: this.props.articleUuid,
         });
-        this.setState({ submiting: true });
+        this.setState({
+            sendDisable: " disabled",
+            submiting: true
+        });
+    },
+
+    componentWillReceiveProps: function(nextProps) {
+        if (this.state.submiting === true) {
+            this.refs.comment.value = "";
+            this.setState({
+                sendDisable: "",
+                submiting  : false,
+                commentShow: nextProps.cmtShow
+            });
+        }
     },
 
     _submitSelect: function(type, e) {
@@ -29,7 +44,7 @@ let CommentBox = React.createClass({
         Actions.postCmtSelect({
             kind       : type,
             amount     : 1,
-            comment    : false,
+            article    : false,
             favorite   : false,
             commentId  : 0,
             articleUuid: this.props.articleUuid
@@ -51,10 +66,11 @@ let CommentBox = React.createClass({
 
     getInitialState: function() {
         return {
+            sendDisable: "",
             submiting  : false,
             submitLike : false,
             submitShare: false,
-            commentShow: false,
+            commentShow: this.props.cmtShow,
             cmtBoxId   : _.uniqueId('comment-box-')
         }
     },
@@ -66,6 +82,9 @@ let CommentBox = React.createClass({
     },
 
     render: function() {
+        if (this.state.commentShow === true) {
+            $("#comment-" + this.props.articleUuid).show();
+        }
         return (
             <div className="row no-margin no-padding">
                 <hr/>
@@ -98,7 +117,8 @@ let CommentBox = React.createClass({
                                 id={this.state.cmtBoxId} placeholder="Place your comments here..."/>
                         </div>
                         <div className="col-sm-1">
-                            <button className="btn btn-danger pull-right btn-block btn-sm" type="submit"
+                            <button className={"btn btn-danger pull-right btn-block btn-sm" + this.state.sendDisable}
+                                type="submit" disabled={this.state.submiting}
                                 onClick={this._submitComment}>Send</button>
                         </div>
                     </div>
@@ -183,7 +203,9 @@ let CommentItem = React.createClass({
 });
 
 let PostComment = React.createClass({
-    mixins: [Reflux.connect(CommentStore)],
+    mixins: [
+        Reflux.listenTo(CommentStore, "_onNewComment"),
+    ],
 
     getInitialState: function() {
         return {
@@ -191,14 +213,22 @@ let PostComment = React.createClass({
         }
     },
 
+    _onNewComment: function() {
+        this.setState({
+            comment: CommentStore.getByArticleUuid(this.props.articleUuid)
+        });
+    },
+
     render: function() {
         let normals = [];
         let favorites = [];
+        let showComment = false;
         let commentArt = this.state.comment;
 
         if (commentArt != null) {
             normals = commentArt.getNormals();
             favorites = commentArt.getFavorites();
+            showComment = commentArt.showComment;
         }
         let favCmnts = [];
         _.forOwn(favorites, function(item, idx) {
@@ -240,7 +270,7 @@ let PostComment = React.createClass({
         return (
             <div className="row">
                 <div className="col-sm-12 col-md-12 col-lg-12">
-                    <CommentBox articleUuid={this.props.articleUuid} cmtCount={cmtCount}/>
+                    <CommentBox articleUuid={this.props.articleUuid} cmtCount={cmtCount} cmtShow={showComment}/>
                 </div>
                 <div id={"comment-" + this.props.articleUuid}
                     style={{display: "none"}} className="col-sm-12 col-md-12 col-lg-12">

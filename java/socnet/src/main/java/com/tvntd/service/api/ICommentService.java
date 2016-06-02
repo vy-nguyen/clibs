@@ -26,12 +26,136 @@
  */
 package com.tvntd.service.api;
 
+import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.tvntd.models.Comment;
+import com.tvntd.models.CommentRank;
+
 public interface ICommentService
 {
-    public CommentPost getCommentPost(Long postId);
-    public void saveCommentPost(Long postId, CommentPost comment);
+    public CommentDTOResponse getCommentPost(UUID articleUuid);
+    public void deleteComment(UUID articleUuid);
+    public void saveComment(CommentDTO comment);
+    public Comment saveComment(Comment comment);
 
-    public static class CommentPost
+    public void likeComment(UUID articleUuid, UUID user);
+    public void unLikeComment(UUID articleUuid, UUID user);
+    public void setFavorite(UUID articleUuid, boolean favorite);
+
+    public static class CommentDTOResponse extends GenericResponse
     {
+        private List<CommentDTO> comments;
+
+        public CommentDTOResponse(List<CommentDTO> list)
+        {
+            super(GenericResponse.USER_HOME, null, null);
+            this.comments = list;
+        }
+
+        public CommentDTOResponse(Comment comment, CommentRank rank)
+        {
+            super(GenericResponse.USER_HOME, null, null);
+            comments = new ArrayList<>();
+            CommentDTO dto = new CommentDTO(comment, rank);
+
+            dto.convertUTF();
+            comments.add(dto);
+        }
+
+        /**
+         * @return the comments
+         */
+        public List<CommentDTO> getComments() {
+            return comments;
+        }
+    }
+
+    public static class CommentDTO
+    {
+        private static Logger s_log = LoggerFactory.getLogger(CommentDTO.class);
+        private Comment comment;
+        private CommentRank rank;
+        private String commentText;
+
+        public CommentDTO(Comment comment, CommentRank rank)
+        {
+            this.comment = comment;
+            this.rank = rank;
+        }
+
+        public void convertUTF()
+        {
+            if (comment == null || commentText != null) {
+                return;
+            }
+            try {
+                byte[] str = comment.getContent();
+                if (str != null) {
+                    commentText = new String(str, "UTF-8");
+                }
+            } catch(UnsupportedEncodingException e) {
+                s_log.error(e.toString());
+            }
+        }
+
+        public Comment fetchComment() {
+            return comment;
+        }
+
+        public CommentRank fetchCommentRank() {
+            return rank;
+        }
+
+        public String getArticleUuid() {
+            return comment != null ? comment.getArticleUuid() : null;
+        }
+
+        public Long getCommentId() {
+            return comment != null ? comment.getId() : null;
+        }
+
+        public void setCommentId(Long id)
+        {
+            if (comment != null) {
+                comment.setId(id);
+            }
+        }
+
+        public String getCommentDate()
+        {
+            if (comment == null) {
+                return null;
+            }
+            DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm");
+            return df.format(comment.getTimeStamp());
+        }
+
+        public String getComment() {
+            return commentText;
+        }
+
+        public String getUserUuid() {
+            return comment != null? comment.getUserUuid() : null;
+        }
+
+        public Long getLikes() {
+            return rank != null ? rank.getLikes() : null;
+        }
+
+        public List<UUID> getUserLiked() {
+            return rank != null ? rank.getUserLiked() : null;
+        }
+
+        public boolean isFavorite() {
+            return comment != null ? comment.isFavorite() : null;
+        }
     }
 }

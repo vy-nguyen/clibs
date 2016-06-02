@@ -26,14 +26,20 @@
  */
 package com.tvntd.dao;
 
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tvntd.models.Comment;
 
 public interface CommentRepo extends JpaRepository<Comment, Long>
 {
-    Comment findByArticleUuid(String uuid);
-    
+    Comment findById(Long id);
+    List<Comment> findAllByArticleUuid(String uuid);
+    Page<Comment> findAllByArticleUuid(Pageable page, String uuid);
+
     @Override
     void delete(Comment commend);
 

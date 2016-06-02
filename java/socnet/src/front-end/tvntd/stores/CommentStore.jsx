@@ -18,8 +18,8 @@ class CommentText {
         this.userUuid     = data.userUuid;
         this.likes        = data.likes;
         this.favorite     = data.favorite;
-        this.ignore       = data.ignore;
         this.moment       = data.moment;
+        this.userLiked    = data.userLiked;
         return this;
     }
 }
@@ -84,6 +84,18 @@ class ArticleComment {
         });
         return result;
     }
+
+    newComment(old) {
+        if (old == null) {
+            return true;
+        }
+        if (this.articleUuid === old.articleUuid) {
+            if (this.favorites.length !== old.favorites.length || this.normals.length !== old.normals.length) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 let CommentStore = Reflux.createStore({
@@ -96,7 +108,12 @@ let CommentStore = Reflux.createStore({
     },
 
     onPreloadCompleted: function(raw) {
-        this._updateComments(raw.comments);
+        this._updateComments(raw.comments, false);
+        this.trigger(this.data);
+    },
+
+    onPostCommentCompleted: function(data) {
+        this._updateComments(data.comments, true);
         this.trigger(this.data);
     },
 
@@ -117,16 +134,21 @@ let CommentStore = Reflux.createStore({
         console.log(this.data);
     },
 
-    _updateComments: function(commentList) {
+    _addComment: function(it, show) {
+        let cmtArt = this.data.comentByArticleUuid[it.articleUuid];
+        if (cmtArt == null) {
+            cmtArt = new ArticleComment(it);
+            this.data.comentByArticleUuid[it.articleUuid] = cmtArt;
+        }
+        cmtArt.showComment = show;
+        cmtArt.addComment(it);
+        return cmtArt;
+    },
+
+    _updateComments: function(commentList, show) {
         _.forOwn(commentList, function(it, key) {
-            let cmtArt = this.data.comentByArticleUuid[it.articleUuid];
-            if (cmtArt == null) {
-                cmtArt = new ArticleComment(it);
-                this.data.comentByArticleUuid[it.articleUuid] = cmtArt;
-            }
-            cmtArt.addComment(it);
+            this._addComment(it, show);
         }.bind(this));
-        this.dumpData("Comment store");
     }
 });
 

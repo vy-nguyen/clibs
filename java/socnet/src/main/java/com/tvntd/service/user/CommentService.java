@@ -26,24 +26,69 @@
  */
 package com.tvntd.service.user;
 
+import java.nio.charset.Charset;
+import java.util.UUID;
+
 import javax.transaction.Transactional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.tvntd.dao.CommentRankRepo;
+import com.tvntd.dao.CommentRepo;
+import com.tvntd.forms.CommentForm;
+import com.tvntd.models.Comment;
 import com.tvntd.service.api.ICommentService;
 
 @Service
 @Transactional
 public class CommentService implements ICommentService
 {
+    @Autowired
+    CommentRepo commentRepo;
+
+    @Autowired
+    CommentRankRepo rankRepo;
+
     @Override
-    public CommentPost getCommentPost(Long postId)
+    public CommentDTOResponse getCommentPost(UUID articleUuid)
     {
         return null;
     }
 
     @Override
-    public void saveCommentPost(Long postId, CommentPost comment)
+    public void saveComment(CommentDTO comment)
     {
+    }
+
+    @Override
+    public Comment saveComment(Comment comment) {
+        return  commentRepo.save(comment);
+    }
+
+    @Override
+    public void deleteComment(UUID articleUuid)
+    {
+    }
+
+    @Override
+    public void likeComment(UUID articleUuid, UUID user)
+    {
+    }
+
+    @Override
+    public void unLikeComment(UUID articleUuid, UUID user)
+    {
+    }
+
+    @Override
+    public void setFavorite(UUID articleUuid, boolean favorite)
+    {
+    }
+
+    public static void applyForm(CommentForm form, Comment comment)
+    {
+        comment.setArticleUuid(form.getArticleUuid());
+        comment.setContent(form.getComment().getBytes(Charset.forName("UTF-8")));
     }
 }

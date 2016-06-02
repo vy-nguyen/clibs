@@ -24,28 +24,72 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.models;
+package com.tvntd.forms;
 
-import java.util.List;
-import java.util.UUID;
-
-import javax.persistence.CollectionTable;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-
-@Entity
-public class CommentRank
+public class CommentChangeForm
 {
-    @Id
-    private Long commentId;
+    private String  kind;
+    private Long    amount;
+    private boolean article;
+    private boolean favorite;
+    private Long    commentId;
+    private String  articleUuid;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "CommentLiked",
-            joinColumns = @JoinColumn(name = "commentId"))
-    private List<UUID> userLiked;
+    /**
+     * @return the kind
+     */
+    public String getKind() {
+        return kind;
+    }
+
+    /**
+     * @param kind the kind to set
+     */
+    public void setKind(String kind) {
+        this.kind = kind;
+    }
+
+    /**
+     * @return the amount
+     */
+    public Long getAmount() {
+        return amount;
+    }
+
+    /**
+     * @param amount the amount to set
+     */
+    public void setAmount(Long amount) {
+        this.amount = amount;
+    }
+
+    /**
+     * @return the article
+     */
+    public boolean isArticle() {
+        return article;
+    }
+
+    /**
+     * @param article the article to set
+     */
+    public void setArticle(boolean article) {
+        this.article = article;
+    }
+
+    /**
+     * @return the favorite
+     */
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    /**
+     * @param favorite the favorite to set
+     */
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
+    }
 
     /**
      * @return the commentId
@@ -62,23 +106,16 @@ public class CommentRank
     }
 
     /**
-     * @return the likes
+     * @return the articleUuid
      */
-    public Long getLikes() {
-        return new Long(userLiked.size());
+    public String getArticleUuid() {
+        return articleUuid;
     }
 
     /**
-     * @return the userLiked
+     * @param articleUuid the articleUuid to set
      */
-    public List<UUID> getUserLiked() {
-        return userLiked;
-    }
-
-    /**
-     * @param userLiked the userLiked to set
-     */
-    public void setUserLiked(List<UUID> userLiked) {
-        this.userLiked = userLiked;
+    public void setArticleUuid(String articleUuid) {
+        this.articleUuid = articleUuid;
     }
 }

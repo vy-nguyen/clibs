@@ -53,14 +53,19 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.tvntd.forms.CommentChangeForm;
+import com.tvntd.forms.CommentForm;
 import com.tvntd.forms.PostForm;
 import com.tvntd.lib.ObjectId;
+import com.tvntd.models.Comment;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.GenericResponse;
 import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleService.ArticleDTOResponse;
 import com.tvntd.service.api.IAuthorService;
+import com.tvntd.service.api.ICommentService;
+import com.tvntd.service.api.ICommentService.CommentDTOResponse;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.ITimeLineService;
@@ -90,6 +95,9 @@ public class UserPath
 
     @Autowired
     private ITimeLineService timeLineSvc;
+
+    @Autowired
+    private ICommentService commentSvc;
 
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     @ResponseBody
@@ -312,5 +320,41 @@ public class UserPath
             s_log.info("Exception: " + e.toString());
         }
         return s_noProfile;
+    }
+
+    /**
+     * Comments on article.
+     */
+    @RequestMapping(value = "/user/publish-comment",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    postComment(@RequestBody CommentForm form, HttpSession session)
+    {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
+        // XXX: check for valid article uuid.
+        Comment comment = new Comment();
+        comment.setContent(Jsoup.parse(form.getComment()).text().getBytes());
+        comment.setArticleUuid(form.getArticleUuid());
+        comment.setUserUuid(profile.getUserUuid().toString());
+        comment = commentSvc.saveComment(comment);
+        return new CommentDTOResponse(comment, null);
+    }
+
+    /**
+     * Add/remove comment ranking.
+     */
+    @RequestMapping(value = "/user/change-comment",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    postComment(@RequestBody CommentChangeForm form, HttpSession session)
+    {
+        return null;
     }
 }

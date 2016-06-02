@@ -40,7 +40,7 @@ import javax.persistence.TemporalType;
 
 @Entity
 @Table(indexes = {
-    @Index(columnList = "userId", name = "userId", unique = false),
+    @Index(columnList = "userUuid", name = "userUuid", unique = false),
     @Index(columnList = "articleUuid", name = "articleUuid", unique = false)
 })
 public class Comment
@@ -49,17 +49,53 @@ public class Comment
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    private boolean favorite;
+
+    @Column(length = 1024)
     private byte[] content;
 
     @Column(length = 64, name = "articleUuid")
     private String articleUuid;
 
-    @Column(name = "userId")
-    private Long userId;
+    @Column(name = "userUuid")
+    private String userUuid;
 
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date timeStamp;
+
+    public Comment()
+    {
+        timeStamp = new Date();
+    }
+
+    /**
+     * @return the id
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * @return the favorite
+     */
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    /**
+     * @param favorite the favorite to set
+     */
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
+    }
 
     /**
      * @return the content
@@ -92,15 +128,15 @@ public class Comment
     /**
      * @return the userId
      */
-    public Long getUserId() {
-        return userId;
+    public String getUserUuid() {
+        return userUuid;
     }
 
     /**
      * @param userId the userId to set
      */
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUserUuid(String userUuid) {
+        this.userUuid = userUuid;
     }
 
     /**
