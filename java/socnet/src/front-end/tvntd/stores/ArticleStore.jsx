@@ -33,6 +33,38 @@ class Article {
     }
 }
 
+class AuthorShelf {
+    constructor(article, authorUuid) {
+        this.articles = {};
+        this.sortedArticles = [];
+        if (article != null) {
+            this.sortedArticles.push(article);
+            this.articles[article.articleUuid] = article;
+        } else {
+            Actions.refreshArticles(authorUuid);
+        }
+        return this;
+    }
+
+    addArticle(article) {
+        if (article != null) {
+            this.articles[article.articleUuid] = article;
+            this.sortedArticles = preend(article, this.sortedArticles);
+        }
+    }
+
+    addSortedArticle(article) {
+        this.sortedArticles.push(article);
+        this.articles[article.articleUuid] = article;
+    }
+
+    iterArticles(func, arg) {
+        _.forOwn(this.sortedArticles, function(item, key) {
+            func(item, arg);
+        });
+    }
+}
+
 let ArticleStore = Reflux.createStore({
     data: {
         articlesByUuid: {},
@@ -87,23 +119,15 @@ let ArticleStore = Reflux.createStore({
             anchor = this._createArtAnchor(uuid, null);
             this.data.articlesByAuthor[uuid] = anchor;
         }
-        if (anchor.requestCount == 0) {
-            Actions.refreshArticles(uuid);
-        }
-        anchor.requestCount++;
         return this.data.articlesByAuthor[uuid].sortedArticles;
     },
 
     iterAuthorArticles: function(uuid, func, arg) {
-        let articles = this.data.articlesByAuthor[uuid];
-        if (articles) {
-            _.forOwn(articles, function(item, key) {
-                if (key !== "sortedArticles") {
-                    func(item, arg);
-                }
-            });
+        let shelf = this.data.articlesByAuthor[uuid];
+        if (shelf) {
+            shelf.iterArticles(func, arg);
         }
-        return null;
+        return shelf;
     },
 
     getMyArticles: function() {
@@ -115,7 +139,7 @@ let ArticleStore = Reflux.createStore({
 
     getArticleByUuid: function(artUuid) {
         let article = this.data.articlesByUuid[artUuid];
-        if (article !== undefined) {
+        if (article != null) {
             return article;
         }
         return null;
@@ -192,24 +216,16 @@ let ArticleStore = Reflux.createStore({
     },
 
     _createArtAnchor: function(authorUuid, article) {
-        let anchor = new Object;
-
+        let anchor = new AuthorShelf(article, authorUuid);
         this.data.articlesByAuthor[authorUuid] = anchor;
         if (UserStore.isUserMe(authorUuid)) {
             this.data.myArticles = anchor;
-        }
-        anchor.requestCount = 0;
-        anchor.sortedArticles = [];
-        if (article !== null) {
-            anchor.sortedArticles.push(article);
-            anchor[article.articleUuid] = article;
         }
         return anchor;
     },
 
     _addSortedArticle: function(anchor, article) {
         anchor.sortedArticles.push(article);
-        // insertSorted(article, anchor.sortedArticles, this._compareArticles);
     },
 
     _compareArticles: function(a1, a2) {
@@ -224,14 +240,12 @@ let ArticleStore = Reflux.createStore({
             return;
         }
         let anchor = this.data.articlesByAuthor[article.authorUuid];
-        if (anchor === undefined) {
+        if (anchor == null) {
             anchor = this._createArtAnchor(article.authorUuid, article);
         }
-        if (this.data.articlesByUuid[article.articleUuid] === undefined) {
-            anchor[article.articleUuid] = article;
-            anchor.sortedArticles = preend(article, anchor.sortedArticles);
-
+        if (this.data.articlesByUuid[article.articleUuid] == null) {
             this.data.articlesByUuid[article.articleUuid] = article;
+            anchor.addArticle(article);
         }
     },
 
@@ -241,32 +255,32 @@ let ArticleStore = Reflux.createStore({
     _indexAuthors: function(artList) {
         artList && _.forOwn(artList, function(jsonArt, key) {
             let article = this.data.articlesByUuid[jsonArt.articleUuid];
-            if (article === undefined) {
+            if (article == null) {
                 return;
             }
-            if (article.author === undefined) {
+            if (article.author == null) {
                 article.author = UserStore.getUserByUuid(article.authorUuid);
             }
             let anchor = this.data.articlesByAuthor[article.authorUuid];
-            if (anchor === undefined) {
+            if (anchor == null) {
                 anchor = this._createArtAnchor(article.authorUuid, article);
 
-            } else if (anchor[article.articleUuid] === undefined) {
-                anchor[article.articleUuid] = article;
-                this._addSortedArticle(anchor, article);
+            } else if (anchor.articles[article.articleUuid] == null) {
+                anchor.addSortedArticle(article);
             }
         }.bind(this));
     },
 
     _addFromJson: function(items) {
         items && _.forOwn(items, function(it, key) {
-            if (this.data.articlesByUuid[it.articleUuid] === undefined) {
+            if (this.data.articlesByUuid[it.articleUuid] == null) {
                 let article = new Article(it);
                 this.data.articlesByUuid[it.articleUuid] = article;
             }
         }.bind(this));
 
         this._indexAuthors(items);
+        this.debugDump("Article store");
     },
 
     _addSavedJson: function(items) {
