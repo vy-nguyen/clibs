@@ -184,8 +184,6 @@ let ArticleStore = Reflux.createStore({
             this._addFromJson(data.articles);
             this.trigger(this.data);
         }
-        console.log(data.articles);
-        this.debugDump("Article Store Startup");
     },
 
     /**

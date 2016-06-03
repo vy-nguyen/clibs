@@ -185,7 +185,6 @@ public class ApiPath
     public static void
     fillLoginResponse(LoginResponse resp, ProfileDTO profile, IAuthorService authorSvc)
     {
-        List<AuthorDTO> authors = authorSvc.getAuthorList(profile);
         resp.setAuthors(authorSvc.getAuthorList(profile));
     }
 

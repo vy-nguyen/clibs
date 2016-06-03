@@ -42,6 +42,8 @@ import com.tvntd.models.CommentRank;
 public interface ICommentService
 {
     public CommentDTOResponse getCommentPost(UUID articleUuid);
+    public CommentDTOResponse getCommentPost(String[] uuidList);
+
     public void deleteComment(UUID articleUuid);
     public void saveComment(CommentDTO comment);
     public Comment saveComment(Comment comment);
@@ -66,6 +68,13 @@ public interface ICommentService
             comments = new ArrayList<>();
             CommentDTO dto = new CommentDTO(comment, rank);
 
+            dto.convertUTF();
+            comments.add(dto);
+        }
+
+        public void addComment(Comment comment, CommentRank rank)
+        {
+            CommentDTO dto = new CommentDTO(comment, rank);
             dto.convertUTF();
             comments.add(dto);
         }

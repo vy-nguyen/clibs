@@ -57,6 +57,12 @@ public class CommentService implements ICommentService
     }
 
     @Override
+    public CommentDTOResponse getCommentPost(String[] uuidList)
+    {
+        return null;
+    }
+
+    @Override
     public void saveComment(CommentDTO comment)
     {
     }

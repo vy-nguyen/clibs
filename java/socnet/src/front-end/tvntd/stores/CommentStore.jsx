@@ -112,6 +112,20 @@ let CommentStore = Reflux.createStore({
         this.trigger(this.data);
     },
 
+    onStartupCompleted: function(data) {
+        if (data.articles) {
+            let articleList = [];
+            _.forOwn(data.articles, function(it, key) {
+                articleList.push(it.articleUuid);
+            });
+            Actions.getComments(articleList);
+        }
+    },
+
+    onGetCommentsCompleted: function(data) {
+        console.log(data);
+    },
+
     onPostCommentCompleted: function(data) {
         this._updateComments(data.comments, true);
         this.trigger(this.data);

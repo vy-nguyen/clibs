@@ -102,7 +102,6 @@ let AuthorStore = Reflux.createStore({
             this.addAuthorList(data.userDTO.authors);
             this.trigger(this.data);
         }
-        this.dumpData("Author store");
     },
 
     exports: {

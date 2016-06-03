@@ -201,7 +201,6 @@ let UserStore = Reflux.createStore({
     /* Login actions. */
     onLoginCompleted: function(response, status) {
         this._changedData(response);
-        this.dumpData("User Store");
     },
 
     onLoginFailed: function(xhdr, text, error) {

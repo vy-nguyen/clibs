@@ -56,6 +56,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tvntd.forms.CommentChangeForm;
 import com.tvntd.forms.CommentForm;
 import com.tvntd.forms.PostForm;
+import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.ObjectId;
 import com.tvntd.models.Comment;
 import com.tvntd.objstore.ObjStore;
@@ -115,7 +116,7 @@ public class UserPath
     @RequestMapping(value = "/user/get-posts/{userUuid}", method = RequestMethod.GET)
     @ResponseBody
     public GenericResponse
-    getSavedPosts(Locale locale, HttpSession session,
+    getUserArticles(Locale locale, HttpSession session,
             @PathVariable(value = "userUuid") String uuid)
     {
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
@@ -161,6 +162,19 @@ public class UserPath
             profile.assignSavedArts(saved);
         }
         return new ArticleDTOResponse(published, saved);
+    }
+
+    /**
+     * Get list of articles.
+     */
+    @RequestMapping(value = "/user/get-articles",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    getArticleList(@RequestBody UuidForm uuids, HttpSession session)
+    {
+        return null;
     }
 
     /**
@@ -356,5 +370,18 @@ public class UserPath
     postComment(@RequestBody CommentChangeForm form, HttpSession session)
     {
         return null;
+    }
+
+    /**
+     * Get comments for articles.
+     */
+    @RequestMapping(value = "/user/get-comments",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    getComments(@RequestBody UuidForm uuids, HttpSession session)
+    {
+        return commentSvc.getCommentPost(uuids.getUuids());
     }
 }

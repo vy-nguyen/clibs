@@ -31,14 +31,13 @@ let NewsFeed = React.createClass({
         };
     },
 
-    componentWillMount: function() {
+    componentWillReceiveProps: function(nextProps) {
         this.setState({
             authorList: AuthorStore.getAuthorUuidList()
         });
     },
 
     render: function() {
-        let author = AuthorStore.getAuthorByUuid("123452");
         return (
             <div id="author-content">
                 <div className="row">
