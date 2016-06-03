@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.tvntd.models.Author;
+import com.tvntd.models.Profile;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 public interface IAuthorService
@@ -56,6 +57,7 @@ public interface IAuthorService
     public static class AuthorDTO
     {
         private Author author;
+        private String authorUuid;
 
         public String toString() {
             return author.toString();
@@ -65,24 +67,30 @@ public interface IAuthorService
             this.author = author;
         }
 
+        public AuthorDTO (String userUuid)
+        {
+            this.author = null;
+            this.authorUuid = userUuid;
+        }
+
         public String getAuthorUuid() {
-            return author.getAuthorUuid();
+            return author != null ? author.getAuthorUuid() : authorUuid;
         }
 
         public String getFrontArticleUuid() {
-            return author.getFrontArtUuid();
+            return author != null ? author.getFrontArtUuid() : null;
         }
 
         public List<String> getFavoriteArticles() {
-            return convertUuid(author.getFavArticles());
+            return author != null ? convertUuid(author.getFavArticles()) : null;
         }
 
         public List<String> getTimeLineArticles() {
-            return convertUuid(author.getTimeLineArticles());
+            return author != null ? convertUuid(author.getTimeLineArticles()) : null;
         }
 
         public String getAppUuid() {
-            return author.getAppUuid();
+            return author != null ? author.getAppUuid() : null;
         }
 
         public static List<String> convertUuid(List<UUID> src)

@@ -4,7 +4,6 @@
 'use strict';
 
 import React          from 'react-mod';
-import MenuStore      from 'vntd-shared/stores/DropdownMenuStore.jsx';
 import Panel          from 'vntd-shared/widgets/Panel.jsx';
 
 let TaskTimeline = React.createClass({

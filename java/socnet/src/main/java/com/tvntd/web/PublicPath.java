@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.tvntd.models.User;
+import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IMenuItemService;
 import com.tvntd.service.api.IMenuItemService.MenuItemResp;
@@ -61,7 +61,10 @@ public class PublicPath
     private IAuthorService authorSvc;
 
     @Autowired
-    IMenuItemService menuItemService;
+    IMenuItemService menuItemSvc;
+
+    @Autowired
+    IArticleService articleSvc;
 
     /**
      * Handle public pages.
@@ -72,16 +75,16 @@ public class PublicPath
     getStartupMenu(Locale locale, HttpSession session,
             HttpServletRequest reqt, HttpServletResponse resp)
     {
-        Long userId = menuItemService.getPublicId();
-        User user = (User) session.getAttribute("user");
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
         StartupResponse result = new StartupResponse(profile, reqt);
 
-        if (user != null) {
-            ApiPath.fillStartupResponse(result, profile, profileSvc, authorSvc);
-            userId = menuItemService.getPrivateId();
+        if (profile != null) {
+            ApiPath.fillStartupResponse(result,
+                    profile, profileSvc, authorSvc, menuItemSvc, articleSvc);
+            return result;
         }
-        List<MenuItemResp> items = menuItemService.getMenuItemRespByUser(userId);
+        Long userId = menuItemSvc.getPublicId();
+        List<MenuItemResp> items = menuItemSvc.getMenuItemRespByUser(userId);
         if (items != null) {
             result.setMenuItems(items);
         }

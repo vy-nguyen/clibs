@@ -179,6 +179,15 @@ let ArticleStore = Reflux.createStore({
         this.trigger(this.data);
     },
 
+    onStartupCompleted: function(data) {
+        if (data.articles) {
+            this._addFromJson(data.articles);
+            this.trigger(this.data);
+        }
+        console.log(data.articles);
+        this.debugDump("Article Store Startup");
+    },
+
     /**
      * Save/publish user post.
      */
@@ -280,7 +289,6 @@ let ArticleStore = Reflux.createStore({
         }.bind(this));
 
         this._indexAuthors(items);
-        this.debugDump("Article store");
     },
 
     _addSavedJson: function(items) {

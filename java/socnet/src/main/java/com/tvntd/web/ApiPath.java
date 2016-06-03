@@ -63,6 +63,7 @@ import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleService.ArticleDTOResponse;
 import com.tvntd.service.api.IAuthorService;
+import com.tvntd.service.api.IAuthorService.AuthorDTO;
 import com.tvntd.service.api.IMenuItemService;
 import com.tvntd.service.api.IMenuItemService.MenuItemResp;
 import com.tvntd.service.api.IProfileService;
@@ -80,10 +81,10 @@ public class ApiPath
     static private GenericResponse s_genOkResp = new GenericResponse("ok");
 
     @Autowired
-    private IMenuItemService menuItemService;
+    private IMenuItemService menuItemSvc;
 
     @Autowired
-    private IUserNotifService userNotifService;
+    private IUserNotifService userNotifSvc;
 
     @Autowired
     private IArticleService articleSvc;
@@ -109,13 +110,13 @@ public class ApiPath
     getUserNotification(Locale locale, HttpSession session,
             HttpServletRequest reqt, HttpServletResponse resp)
     {
-        Long userId = menuItemService.getPublicId();
+        Long userId = menuItemSvc.getPublicId();
         User user = (User) session.getAttribute("user");
 
         if (user != null) {
             userId = 0L;
         }
-        return userNotifService.getUserNotif(userId);
+        return userNotifSvc.getUserNotif(userId);
     }
 
     /**
@@ -150,32 +151,41 @@ public class ApiPath
         if (user == null || profile == null) {
             return null;
         }
-        Long userId = menuItemService.getPrivateId();
-        List<MenuItemResp> items = menuItemService.getMenuItemRespByUser(userId);
         StartupResponse result = new StartupResponse(profile, reqt);
-
-        fillStartupResponse(result, profile, profileSvc, authorSvc);
-        if (items != null) {
-            result.setMenuItems(items);
-        }
+        fillStartupResponse(result, profile,
+                profileSvc, authorSvc, menuItemSvc, articleSvc);
         return result;
     }
 
     public static void
     fillStartupResponse(StartupResponse resp, ProfileDTO profile,
-            IProfileService profileSvc, IAuthorService authorSvc)
+            IProfileService profileSvc, IAuthorService authorSvc,
+            IMenuItemService menuItemSvc, IArticleService articleSvc)
     {
+        if (menuItemSvc != null) {
+            Long userId = menuItemSvc.getPrivateId();
+            List<MenuItemResp> items = menuItemSvc.getMenuItemRespByUser(userId);
+
+            if (items != null) {
+                resp.setMenuItems(items);
+            }
+        }
         if (profileSvc != null) {
             resp.setLinkedUsers(profileSvc.getProfileFromRaw(null));
         }
         if (authorSvc != null) {
             fillLoginResponse(resp.getUserDTO(), profile, authorSvc);
         }
+        if (articleSvc != null) {
+            List<UUID> uuids = resp.getAllUserUuids();
+            resp.setArticles(articleSvc.getArticlesByUser(uuids));
+        }
     }
 
     public static void
     fillLoginResponse(LoginResponse resp, ProfileDTO profile, IAuthorService authorSvc)
     {
+        List<AuthorDTO> authors = authorSvc.getAuthorList(profile);
         resp.setAuthors(authorSvc.getAuthorList(profile));
     }
 

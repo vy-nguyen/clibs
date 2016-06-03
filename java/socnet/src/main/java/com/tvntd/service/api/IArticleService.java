@@ -53,6 +53,7 @@ public interface IArticleService
     public List<ArticleDTO> getArticles(List<UUID> uuids);
     public List<ArticleDTO> getArticlesByUser(Long userId);
     public List<ArticleDTO> getArticlesByUser(UUID userUuidId);
+    public List<ArticleDTO> getArticlesByUser(List<UUID> userUuidIds);
 
     public Page<ArticleDTO> getUserArticles(Long userId);
     public Page<ArticleDTO> getUserArticles(UUID userUuid);

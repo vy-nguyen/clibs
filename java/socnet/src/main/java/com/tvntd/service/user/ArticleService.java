@@ -35,7 +35,6 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -68,8 +67,11 @@ public class ArticleService implements IArticleService
     public ArticleDTO getArticle(Long artId)
     {
         Article art = articleRepo.findByArticleId(artId);
-        checkArticleRank(art);
-        return new ArticleDTO(art);
+        if (art != null) {
+            checkArticleRank(art);
+            return new ArticleDTO(art);
+        }
+        return null;
     }
 
     @Override
@@ -77,9 +79,11 @@ public class ArticleService implements IArticleService
     {
         String uuid = artUuid.toString();
         Article art = articleRepo.findByArticleUuid(uuid);
-        checkArticleRank(art);
-
-        return new ArticleDTO(art);
+        if (art != null) {
+            checkArticleRank(art);
+            return new ArticleDTO(art);
+        }
+        return null;
     }
 
     @Override
@@ -88,7 +92,10 @@ public class ArticleService implements IArticleService
         List<ArticleDTO> ret = new LinkedList<>();
 
         for (UUID uuid : uuids) {
-            ret.add(getArticle(uuid));
+            ArticleDTO dto = getArticle(uuid);
+            if (dto != null) {
+                ret.add(dto);
+            }
         }
         return ret;
     }
@@ -107,6 +114,20 @@ public class ArticleService implements IArticleService
         List<Article> articles =
             articleRepo.findAllByAuthorUuidOrderByCreatedDateAsc(userUuid.toString());
         return ArticleDTO.convert(articles);
+    }
+
+    @Override
+    public List<ArticleDTO> getArticlesByUser(List<UUID> uuidList)
+    {
+        List<ArticleDTO> result = new LinkedList<>();
+
+        for (UUID userUuid : uuidList) {
+            List<ArticleDTO> arts = getArticlesByUser(userUuid);
+            if (arts != null && !arts.isEmpty()) {
+                result.addAll(arts);
+            }
+        }
+        return result;
     }
 
     @Override

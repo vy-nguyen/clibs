@@ -114,6 +114,12 @@ public class AuthorService implements IAuthorService
                 s_log.info("Debug author: " + author.toString());
             }
         }
+        for (UUID uid : profile.getConnectList()) {
+            result.add(new AuthorDTO(uid.toString()));
+        }
+        for (UUID uid : profile.getFollowList()) {
+            result.add(new AuthorDTO(uid.toString()));
+        }
         return result;
     }
 

@@ -26,10 +26,16 @@
  */
 package com.tvntd.service.api;
 
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.tvntd.service.api.IArticleService.ArticleDTO;
+import com.tvntd.service.api.IAuthorService.AuthorDTO;
 import com.tvntd.service.api.IMenuItemService.MenuItemResp;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 
@@ -38,12 +44,38 @@ public class StartupResponse
     private LoginResponse      userDTO;
     private List<ProfileDTO>   linkedUsers;
     private List<MenuItemResp> menuItems;
+    private List<ArticleDTO>   articles;
 
     public StartupResponse(ProfileDTO profile, HttpServletRequest reqt)
     {
         if (profile != null) {
             userDTO = new LoginResponse(profile, reqt);
         }
+    }
+
+    public List<UUID> getAllUserUuids()
+    {
+        Map<UUID, UUID> users = new HashMap<>();
+        for (ProfileDTO prof : linkedUsers) {
+            UUID uuid = prof.getUserUuid();
+            if (users.get(uuid) == null) {
+                users.put(uuid, uuid);
+            }
+        }
+        List<AuthorDTO> authors = userDTO.getAuthors();
+        for (AuthorDTO author : authors) {
+            UUID uuid = UUID.fromString(author.getAuthorUuid());
+            if (users.get(uuid) == null) {
+                users.put(uuid, uuid);
+            }
+        }
+
+        List<UUID> result = new LinkedList<>();
+        for (Map.Entry<UUID, UUID> e : users.entrySet()) {
+            result.add(e.getKey());
+        }
+        users.clear();
+        return result;
     }
 
     /**
@@ -86,5 +118,19 @@ public class StartupResponse
      */
     public void setMenuItems(List<MenuItemResp> menuItems) {
         this.menuItems = menuItems;
+    }
+
+    /**
+     * @return the articles
+     */
+    public List<ArticleDTO> getArticles() {
+        return articles;
+    }
+
+    /**
+     * @param articles the articles to set
+     */
+    public void setArticles(List<ArticleDTO> articles) {
+        this.articles = articles;
     }
 }
