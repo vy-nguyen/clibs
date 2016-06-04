@@ -40,8 +40,45 @@ let CommentBox = React.createClass({
         this.setState(nextState);
     },
 
+    _selectButton: function(type) {
+        const likes = [ {
+            like   : false,
+            likeFmt: "text-danger"
+        }, {
+            like   : true,
+            likeFmt: "text-info"
+        } ];
+        const shares = [ {
+            share   : false,
+            shareFmt: "text-danger"
+        }, {
+            share   : true,
+            shareFmt: "text-info"
+        } ];
+
+        if (type === "like") {
+            let choose = !this.state.like;
+            if (choose === true) {
+                return likes[1];
+            }
+            return likes[0];
+        } else if (type === "share") {
+            let choose = !this.state.share;
+            if (choose === true) {
+                return shares[1];
+            }
+            return shares[0];
+        }
+        return null;
+    },
+
     _submitSelect: function(type, e) {
         e.preventDefault();
+        let newState = this._selectButton(type);
+
+        if (newState != null) {
+            this.setState(newState);
+        }
         Actions.postCmtSelect({
             kind       : type,
             amount     : 1,
@@ -69,8 +106,10 @@ let CommentBox = React.createClass({
         return {
             sendDisable: "",
             submiting  : false,
-            submitLike : false,
-            submitShare: false,
+            like       : true,
+            share      : true,
+            likeFmt    : "text-info",
+            shareFmt   : "text-info",
             commentShow: this.props.cmtShow,
             cmtBoxId   : _.uniqueId('comment-box-')
         }
@@ -87,23 +126,19 @@ let CommentBox = React.createClass({
             <div className="row no-margin no-padding">
                 <hr/>
                 <div className="btn-group inline">
-                    <button onClick={this._submitSelect.bind(this, "like")}
-                        disabled={this.state.submitLike} className="text-danger">
+                    <button onClick={this._submitSelect.bind(this, "like")} className={this.state.likeFmt}>
                         <i className="fa fa-thumbs-up"></i>Like
                     </button>
                     <button onClick={this._toggleComment} className="text-info">
                         <i className="fa fa-comment"></i>{"Comments (" + this.props.cmtCount + ")"}
                     </button>
-                    <button onClick={this._submitSelect.bind(this, "share")}
-                        disabled={this.state.submitShare} className="text-info">
+                    <button onClick={this._submitSelect.bind(this, "share")} className={this.state.shareFmt}>
                         <i className="fa fa-share"></i>Share
                     </button>
-                    <button onClick={this._submitSelect.bind(this, "save")}
-                        disabled={this.state.submitShare} className="text-info">
+                    <button onClick={this._submitSelect.bind(this, "save")} className="text-info">
                         <i className="fa fa-book"></i>Save
                     </button>
-                    <button onClick={this._submitSelect.bind(this, "pay")}
-                        disabled={this.state.submitShare} className="text-info">
+                    <button onClick={this._submitSelect.bind(this, "pay")} className="text-info">
                         <i className="fa fa-money"></i>Micropay
                     </button>
                 </div>
@@ -191,7 +226,8 @@ let CommentItem = React.createClass({
                     {favBtn}
                     <li>
                         <span className="text-danger">
-                            <i className="fa fa-thumbs-up"></i>{this.props.data.likes} Likes
+                            <i className="fa fa-thumbs-up"></i>
+                            "  " {this.props.data.likes ? this.props.data.likes : "(0)" } Likes
                         </span>
                     </li>
                 </ul>
@@ -242,7 +278,7 @@ let PostComment = React.createClass({
         let favColumn = null;
         if (!_.isEmpty(favorites)) {
             favColumn = (
-                <div className="col-sm-12 col-md-6 col-lg-6 chat-body">
+                <div className="col-sm-12 col-md-6 col-lg-6 chat-body" style={{ 'height': 'auto', 'maxHeight': 1200 }}>
                     <ul>{favCmnts}</ul>
                 </div>
             );
@@ -251,22 +287,20 @@ let PostComment = React.createClass({
         if (favColumn == null) {
             if (!_.isEmpty(norCmnts)) {
                 norColumn = (
-                    <div className="col-sm-12 col-md-12 col-lg-12 chat-body">
+                    <div className="col-sm-12 col-md-12 col-lg-12 chat-body" style={{ 'height': 'auto', 'maxHeight': 1200 }}>
                         {norCmnts}
                     </div>
                 );
             }
         } else {
             norColumn = (
-                <div className="col-sm-12 col-md-6 col-lg-6 chat-body" style={{overflow: "auto"}}>
+                <div className="col-sm-12 col-md-6 col-lg-6 chat-body" style={{ 'height': 'auto', 'maxHeight': 1200 }}>
                     {norCmnts}
                 </div>
             );
         }
         let cmtCount = favCmnts.length + norCmnts.length;
-        let styleFmt = showComment === true ? {} : { display: "none" };
-        styleFmt.height = "auto";
-        styleFmt.overflowY = "hidden";
+        let styleFmt = showComment === true ? { height: "auto" } : { display: "none" };
 
         return (
             <div className="row">
@@ -281,6 +315,10 @@ let PostComment = React.createClass({
                 </div>
             </div>
         );
+    },
+
+    componentDidMount: function() {
+        //$('.chat-body').css({'height': 'auto', 'max-height': 600});
     }
 });
 

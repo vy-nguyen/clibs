@@ -32,7 +32,7 @@ let Panel = React.createClass({
         }
 
         return (
-           <JarvisWidget editbutton={false} color="purple">
+           <JarvisWidget color="purple">
                <header>
                    <span className="widget-icon"><i className={panel.icon}/></span>
                    <h2>{this.props.context.header}</h2>

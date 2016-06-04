@@ -27,7 +27,7 @@ let PostArticles = React.createClass({
             panes = <div><h2>{name} doesn't have any articles</h2></div>
         }
         return (
-            <WidgetGrid className={this.props.className}>
+            <WidgetGrid className={this.props.className} style={{ height: 'auto' }}>
                 {panes}
             </WidgetGrid>
         )
