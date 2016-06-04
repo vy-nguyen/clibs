@@ -118,11 +118,15 @@ let CommentStore = Reflux.createStore({
             _.forOwn(data.articles, function(it, key) {
                 articleList.push(it.articleUuid);
             });
-            Actions.getComments(articleList);
+            Actions.getComments({
+                uuids: articleList
+            });
         }
     },
 
     onGetCommentsCompleted: function(data) {
+        this._updateComments(data.comments, true);
+        this.trigger(this.data);
         console.log(data);
     },
 

@@ -98,7 +98,7 @@ let AuthorStore = Reflux.createStore({
     },
 
     onStartupCompleted: function(data) {
-        if (data.userDTO.authors) {
+        if (data.userDTO && data.userDTO.authors) {
             this.addAuthorList(data.userDTO.authors);
             this.trigger(this.data);
         }

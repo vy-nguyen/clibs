@@ -30,6 +30,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -55,6 +56,12 @@ public interface ICommentService
     public static class CommentDTOResponse extends GenericResponse
     {
         private List<CommentDTO> comments;
+
+        public CommentDTOResponse()
+        {
+            super(GenericResponse.USER_HOME, null, null);
+            comments = new LinkedList<>();
+        }
 
         public CommentDTOResponse(List<CommentDTO> list)
         {

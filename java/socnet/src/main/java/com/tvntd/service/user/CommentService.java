@@ -27,10 +27,13 @@
 package com.tvntd.service.user;
 
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +47,8 @@ import com.tvntd.service.api.ICommentService;
 @Transactional
 public class CommentService implements ICommentService
 {
+    static private Logger s_log = LoggerFactory.getLogger(CommentService.class);
+
     @Autowired
     CommentRepo commentRepo;
 
@@ -59,7 +64,25 @@ public class CommentService implements ICommentService
     @Override
     public CommentDTOResponse getCommentPost(String[] uuidList)
     {
-        return null;
+        CommentDTOResponse out = new CommentDTOResponse();
+
+        for (String uuid : uuidList) {
+            getCommentForArticle(uuid, out);
+        }
+        getCommentForArticle("abc1233", out);
+        return out;
+    }
+
+    private void getCommentForArticle(String uuid, CommentDTOResponse resp)
+    {
+        List<Comment> out = commentRepo.findAllByArticleUuid(uuid);
+
+        s_log.info("Comment uuid " + uuid + " out " + out);
+        if (out != null && !out.isEmpty()) {
+            for (Comment c : out) {
+                resp.addComment(c, null);
+            }
+        }
     }
 
     @Override

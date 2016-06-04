@@ -57,10 +57,13 @@ let AuthorFeed = React.createClass({
         }
     },
 
-    componentWillMount: function() {
-        this.setState({
-            articles: ArticleStore.getSortedArticlesByAuthor(this.props.user.userUuid)
-        });
+    componentWillReceiveProps: function(nextProps) {
+        let articles = ArticleStore.getSortedArticlesByAuthor(this.props.user.userUuid)
+        if (this.state.articles.length != articles.length) {
+            this.setState({
+                articles: articles
+            });
+        }
     },
 
     render: function() {

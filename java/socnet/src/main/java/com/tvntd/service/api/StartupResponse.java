@@ -56,20 +56,26 @@ public class StartupResponse
     public List<UUID> getAllUserUuids()
     {
         Map<UUID, UUID> users = new HashMap<>();
-        for (ProfileDTO prof : linkedUsers) {
-            UUID uuid = prof.getUserUuid();
-            if (users.get(uuid) == null) {
-                users.put(uuid, uuid);
+        if (linkedUsers != null) {
+            for (ProfileDTO prof : linkedUsers) {
+                UUID uuid = prof.getUserUuid();
+                if (users.get(uuid) == null) {
+                    users.put(uuid, uuid);
+                }
             }
         }
-        List<AuthorDTO> authors = userDTO.getAuthors();
-        for (AuthorDTO author : authors) {
-            UUID uuid = UUID.fromString(author.getAuthorUuid());
-            if (users.get(uuid) == null) {
-                users.put(uuid, uuid);
+        if (userDTO != null) {
+            List<AuthorDTO> authors = userDTO.getAuthors();
+            for (AuthorDTO author : authors) {
+                UUID uuid = UUID.fromString(author.getAuthorUuid());
+                if (users.get(uuid) == null) {
+                    users.put(uuid, uuid);
+                }
             }
         }
-
+        if (users.isEmpty()) {
+            return null;
+        }
         List<UUID> result = new LinkedList<>();
         for (Map.Entry<UUID, UUID> e : users.entrySet()) {
             result.add(e.getKey());

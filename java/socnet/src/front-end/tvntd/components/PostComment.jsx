@@ -29,14 +29,15 @@ let CommentBox = React.createClass({
     },
 
     componentWillReceiveProps: function(nextProps) {
+        let nextState = {
+            commentShow: nextProps.cmtShow
+        };
         if (this.state.submiting === true) {
             this.refs.comment.value = "";
-            this.setState({
-                sendDisable: "",
-                submiting  : false,
-                commentShow: nextProps.cmtShow
-            });
+            nextState.sendDisable = "";
+            nextState.submiting = false;
         }
+        this.setState(nextState);
     },
 
     _submitSelect: function(type, e) {
@@ -82,9 +83,6 @@ let CommentBox = React.createClass({
     },
 
     render: function() {
-        if (this.state.commentShow === true) {
-            $("#comment-" + this.props.articleUuid).show();
-        }
         return (
             <div className="row no-margin no-padding">
                 <hr/>
@@ -266,14 +264,13 @@ let PostComment = React.createClass({
             );
         }
         let cmtCount = favCmnts.length + norCmnts.length;
-
+        let styleFmt = showComment === true ? {} : { display: "none" };
         return (
             <div className="row">
                 <div className="col-sm-12 col-md-12 col-lg-12">
                     <CommentBox articleUuid={this.props.articleUuid} cmtCount={cmtCount} cmtShow={showComment}/>
                 </div>
-                <div id={"comment-" + this.props.articleUuid}
-                    style={{display: "none"}} className="col-sm-12 col-md-12 col-lg-12">
+                <div id={"comment-" + this.props.articleUuid} style={styleFmt} className="col-sm-12 col-md-12 col-lg-12">
                     <div className="row no-margin no-padding">
                         {favColumn}
                         {norColumn}
