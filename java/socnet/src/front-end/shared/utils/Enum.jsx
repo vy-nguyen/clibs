@@ -15,9 +15,50 @@ export function Enum() {
 };
 
 // A utility function to safely escape JSON for embedding in a <script> tag
-function safeStringify(obj) {
-    return obj.replace(/<\/script/g, '<\\/script').replace(/<!--/g, '<\\!--')
-    // return JSON.stringify(obj).replace(/<\/script/g, '<\\/script').replace(/<!--/g, '<\\!--')
+function safeStringify(str) {
+    let returnText = "" + str;
+
+    //-- remove BR tags and replace them with line break
+    returnText = returnText.replace(/<br>/gi, "\n");
+    returnText = returnText.replace(/<br\s\/>/gi, "\n");
+    returnText = returnText.replace(/<br\/>/gi, "\n");
+
+    //-- remove P and A tags but preserve what's inside of them
+    returnText = returnText.replace(/<p.*?>/gi, "\n");
+    returnText = returnText.replace(/<a.*href="(.*?)".*>(.*?)<\/a>/gi, " $2 ($1)");
+
+    //-- remove all inside SCRIPT and STYLE tags
+    returnText = returnText.replace(/<script.*>[\w\W]{1,}(.*?)[\w\W]{1,}<\/script>/gi, "");
+    returnText = returnText.replace(/<style.*>[\w\W]{1,}(.*?)[\w\W]{1,}<\/style>/gi, "");
+
+    //-- remove all else
+    returnText = returnText.replace(/<(?:.|\s)*?>/g, "");
+
+    //-- get rid of more than 2 multiple line breaks:
+    returnText = returnText.replace(/(?:(?:\r\n|\r|\n)\s*){2,}/gim, "\n\n");
+
+    //-- get rid of more than 2 spaces:
+    returnText = returnText.replace(/ +(?= )/g,'');
+
+    //-- get rid of html-encoded characters:
+    returnText = returnText.replace(/&nbsp;/gi," ");
+    returnText = returnText.replace(/&amp;/gi,"&");
+    returnText = returnText.replace(/&quot;/gi,'"');
+    returnText = returnText.replace(/&lt;/gi,'<');
+    returnText = returnText.replace(/&gt;/gi,'>');
+
+    return returnText;
+}
+
+/**
+ * Get a random integer between `min` and `max`.
+ * 
+ * @param {number} min - min number
+ * @param {number} max - max number
+ * @return {int} a random integer
+ */
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 /*
@@ -70,4 +111,4 @@ function preend(elm, array) {
     return newArr;
 }
 
-export { Enum, safeStringify, insertSorted, toDateString, preend }
+export { Enum, safeStringify, insertSorted, toDateString, preend, getRandomInt }

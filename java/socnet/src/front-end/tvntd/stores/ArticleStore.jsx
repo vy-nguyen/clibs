@@ -15,7 +15,6 @@ class Article {
     constructor(data) {
         this._id          = _.uniqueId('id-article-');
         this.author       = UserStore.getUserByUuid(data.authorUuid);
-        this.commentList  = data.commentList;
         this.authorUuid   = data.authorUuid;
         this.articleUuid  = data.articleUuid;
         this.articleUrl   = data.articleUrl;

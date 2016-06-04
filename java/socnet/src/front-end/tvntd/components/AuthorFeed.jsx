@@ -9,6 +9,8 @@ import Reflux             from 'reflux';
 import SparklineContainer from 'vntd-shared/graphs/SparklineContainer.jsx';
 
 import TabPanel       from 'vntd-shared/layout/TabPanel.jsx';
+import UserStore      from 'vntd-shared/stores/UserStore.jsx';
+import Blog           from 'vntd-root/components/Blog.jsx';
 import Author         from 'vntd-root/components/Author.jsx';
 import ProfileCover   from 'vntd-root/components/ProfileCover.jsx';
 import AuthorStore    from 'vntd-root/stores/AuthorStore.jsx';
@@ -71,6 +73,7 @@ let AuthorFeed = React.createClass({
         if (author == null) {
             return null;
         }
+        let user = this._getUser();
         let articles = [];
         if (this.state.articles != null) {
             articles = this.state.articles.slice(0, 2);
@@ -85,8 +88,8 @@ let AuthorFeed = React.createClass({
                             </div>
                             <div className="col-sm-9 col-md-9 col-lg-9">
                                 <TabPanel className="padding-top-10" context={this.getAuthorTab(author.userUuid)}>
-                                    <PostArticles data={articles}/>
-                                    <PostArticles data={author.favorites}/>
+                                    <PostArticles data={articles} user={user}/>
+                                    <Blog author={author} user={user}/>
                                     <Timeline/>
                                     <ProductView/>
                                     <ProductDetail/>
@@ -97,6 +100,11 @@ let AuthorFeed = React.createClass({
                 </SparklineContainer>
             </div>
         )
+    },
+
+    _getUser: function() {
+        let userUuid = this.props.userUuid;
+        return userUuid ? UserStore.getUserByUuid(userUuid) : this.props.user;
     }
 });
 /*<PostTimeline data={this.author.activities}/> */

@@ -17,14 +17,14 @@ let LoginInfo = React.createClass({
 
 	render: function() {
 		return (
-<div className="login-info">
-	<span>
-		<ToggleShortcut>
-            <img src={this.state.userImgUrl} alt="Menu" className="online"/>
-            <span>{ this.state.firstName}</span><i className="fa fa-angle-down"/>
-		</ToggleShortcut>
-	</span>
-</div>
+            <div className="login-info">
+	            <span>
+		            <ToggleShortcut>
+                        <img src={this.state.userImgUrl} alt="Menu" className="online"/>
+                        <span>{ this.state.firstName}</span><i className="fa fa-angle-down"/>
+		            </ToggleShortcut>
+	            </span>
+            </div>
 		)
 	}
 });

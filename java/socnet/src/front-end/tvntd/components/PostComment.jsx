@@ -265,6 +265,9 @@ let PostComment = React.createClass({
         }
         let cmtCount = favCmnts.length + norCmnts.length;
         let styleFmt = showComment === true ? {} : { display: "none" };
+        styleFmt.height = "auto";
+        styleFmt.overflowY = "hidden";
+
         return (
             <div className="row">
                 <div className="col-sm-12 col-md-12 col-lg-12">
