@@ -34,7 +34,6 @@ import java.util.UUID;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -84,9 +83,6 @@ public class Article
     @Column
     private byte[] content;
 
-    @Embedded
-    private ArticleRank articleRank;
-
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "ArtPics",
             uniqueConstraints = @UniqueConstraint(columnNames = {"pictures"}),
@@ -106,7 +102,6 @@ public class Article
         articleUuid = m_articleUuid.toString();
         contentOId = ObjectId.zeroId();
         createdDate = new Date();
-        articleRank = new ArticleRank();
     }
 
     public void markPending() {
@@ -204,48 +199,6 @@ public class Article
     }
 
     /**
-     * @return the creditEarned
-     */
-    public Long getCreditEarned() {
-        return articleRank.getCreditEarned();
-    }
-
-    /**
-     * @param creditEarned the creditEarned to set
-     */
-    public void setCreditEarned(Long creditEarned) {
-        articleRank.setCreditEarned(creditEarned);
-    }
-
-    /**
-     * @return the moneyEarned
-     */
-    public Long getMoneyEarned() {
-        return articleRank.getMoneyEarned();
-    }
-
-    /**
-     * @param moneyEarned the moneyEarned to set
-     */
-    public void setMoneyEarned(Long moneyEarned) {
-        articleRank.setMoneyEarned(moneyEarned);
-    }
-
-    /**
-     * @return the transRoot
-     */
-    public ObjectId getTransRoot() {
-        return articleRank.getTransRoot();
-    }
-
-    /**
-     * @param transRoot the transRoot to set
-     */
-    public void setTransRoot(ObjectId transRoot) {
-        articleRank.setTransRoot(transRoot);
-    }
-
-    /**
      * @return the contentOId
      */
     public ObjectId getContentOId() {
@@ -299,20 +252,6 @@ public class Article
      */
     public void setContent(byte[] content) {
         this.content = content;
-    }
-
-    /**
-     * @return the articleRank
-     */
-    public ArticleRank getArticleRank() {
-        return articleRank;
-    }
-
-    /**
-     * @param articleRank the articleRank to set
-     */
-    public void setArticleRank(ArticleRank articleRank) {
-        this.articleRank = articleRank;
     }
 
     /**

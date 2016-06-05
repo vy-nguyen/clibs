@@ -26,18 +26,41 @@
  */
 package com.tvntd.models;
 
-import javax.persistence.Embeddable;
+import java.util.List;
+import java.util.UUID;
+
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 
 import com.tvntd.lib.ObjectId;
 
-@Embeddable
+@Entity
 public class ArticleRank
 {
+    @Id
+    @Column(length = 64)
+    private String articleUuid;
+
     private Long creditEarned;
     private Long moneyEarned;
     private Long likes;
     private Long shared;
     private Long score;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "ArticleLiked",
+            joinColumns = @JoinColumn(name = "articleId"))
+    private List<UUID> userLiked;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "ArticleShared",
+            joinColumns = @JoinColumn(name = "articleId"))
+    private List<UUID> userShared;
 
     private ObjectId transRoot;
 
@@ -49,6 +72,26 @@ public class ArticleRank
         this.shared = 0L;
         this.score = 0L;
         this.transRoot = ObjectId.zeroId();
+    }
+
+    public ArticleRank(String uuid)
+    {
+        this();
+        this.articleUuid = uuid;
+    }
+
+    /**
+     * @return the articleId
+     */
+    public String getArticleUuid() {
+        return articleUuid;
+    }
+
+    /**
+     * @param articleId the articleId to set
+     */
+    public void setArticleId(String articleUuid) {
+        this.articleUuid = articleUuid;
     }
 
     /**
@@ -119,6 +162,34 @@ public class ArticleRank
      */
     public void setScore(Long score) {
         this.score = score;
+    }
+
+    /**
+     * @return the userLiked
+     */
+    public List<UUID> getUserLiked() {
+        return userLiked;
+    }
+
+    /**
+     * @param userLiked the userLiked to set
+     */
+    public void setUserLiked(List<UUID> userLiked) {
+        this.userLiked = userLiked;
+    }
+
+    /**
+     * @return the userShared
+     */
+    public List<UUID> getUserShared() {
+        return userShared;
+    }
+
+    /**
+     * @param userShared the userShared to set
+     */
+    public void setUserShared(List<UUID> userShared) {
+        this.userShared = userShared;
     }
 
     /**

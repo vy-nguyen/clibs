@@ -26,6 +26,7 @@
  */
 package com.tvntd.service.user;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -42,10 +43,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.tvntd.dao.ArticleRankRepo;
 import com.tvntd.dao.ArticleRepository;
+import com.tvntd.forms.CommentChangeForm;
 import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.service.api.IArticleService;
+import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 @Service
 @Transactional
@@ -56,11 +60,71 @@ public class ArticleService implements IArticleService
     @Autowired
     protected ArticleRepository articleRepo;
 
-    public void checkArticleRank(Article art)
+    @Autowired
+    protected ArticleRankRepo artRankRepo;
+
+    @Override
+    public List<ArticleDTO> convert(List<Article> arts)
     {
-        if (art.getArticleRank() == null) {
-            art.setArticleRank(new ArticleRank());
+        List<ArticleDTO> result = new LinkedList<>();
+        for (Article at : arts) {
+            result.add(new ArticleDTO(at, getRank(at.getArticleUuid())));
         }
+        return result;
+    }
+
+    @Override
+    public ArticleRank getRank(String artUuid)
+    {
+        return artRankRepo.findByArticleUuid(artUuid);
+    }
+
+    @Override
+    public ArticleRank updateRank(CommentChangeForm form, ProfileDTO me)
+    {
+        ArticleRank rank = artRankRepo.findByArticleUuid(form.getArticleUuid());
+        if (rank == null) {
+            rank = new ArticleRank(form.getArticleUuid());
+        }
+        boolean save = false;
+        String kind = form.getKind();
+        
+        if (kind.equals("like")) {
+            Long val = rank.getLikes();
+            List<UUID> users = rank.getUserLiked();
+
+            if (users == null) {
+                users = new ArrayList<>();
+                rank.setUserLiked(users);
+            }
+            if (ProfileDTO.isInList(users, me.getUserUuid()) == null) {
+                val++;
+                save = true;
+                rank.setLikes(val);
+                ProfileDTO.addUnique(users, me.getUserUuid());
+            }
+            form.setAmount(val + 1);
+
+        } else if (kind.equals("share")) {
+            Long val = rank.getShared();
+            List<UUID> users = rank.getUserShared();
+
+            if (users == null) {
+                users = new ArrayList<>();
+                rank.setUserShared(users);
+            }
+            if (ProfileDTO.isInList(users, me.getUserUuid()) == null) {
+                val++;
+                save = true;
+                rank.setShared(val);
+                ProfileDTO.addUnique(users, me.getUserUuid());
+            }
+            form.setAmount(val + 1);
+        }
+        if (save == true) {
+            artRankRepo.save(rank);
+        }
+        return rank;
     }
 
     @Override
@@ -68,8 +132,8 @@ public class ArticleService implements IArticleService
     {
         Article art = articleRepo.findByArticleId(artId);
         if (art != null) {
-            checkArticleRank(art);
-            return new ArticleDTO(art);
+            ArticleRank rank = getRank(art.getArticleUuid());
+            return new ArticleDTO(art, rank);
         }
         return null;
     }
@@ -80,10 +144,14 @@ public class ArticleService implements IArticleService
         String uuid = artUuid.toString();
         Article art = articleRepo.findByArticleUuid(uuid);
         if (art != null) {
-            checkArticleRank(art);
-            return new ArticleDTO(art);
+            return new ArticleDTO(art, getRank(uuid));
         }
         return null;
+    }
+
+    @Override
+    public Article getArticle(String artUuid) {
+        return articleRepo.findByArticleUuid(artUuid);
     }
 
     @Override
@@ -105,7 +173,7 @@ public class ArticleService implements IArticleService
     {
         List<Article> articles =
             articleRepo.findAllByAuthorIdOrderByCreatedDateDesc(userId);
-        return ArticleDTO.convert(articles);
+        return convert(articles);
     }
 
     @Override
@@ -113,7 +181,7 @@ public class ArticleService implements IArticleService
     {
         List<Article> articles =
             articleRepo.findAllByAuthorUuidOrderByCreatedDateAsc(userUuid.toString());
-        return ArticleDTO.convert(articles);
+        return convert(articles);
     }
 
     @Override
@@ -139,7 +207,7 @@ public class ArticleService implements IArticleService
         List<Article> articles = page.getContent();
 
         return new PageImpl<ArticleDTO>(
-                ArticleDTO.convert(articles), req, page.getTotalElements());
+                convert(articles), req, page.getTotalElements());
     }
 
     @Override
@@ -151,7 +219,7 @@ public class ArticleService implements IArticleService
         List<Article> articles = page.getContent();
 
         return new PageImpl<ArticleDTO>(
-                ArticleDTO.convert(articles), req, page.getTotalElements());
+                convert(articles), req, page.getTotalElements());
     }
 
     @Override

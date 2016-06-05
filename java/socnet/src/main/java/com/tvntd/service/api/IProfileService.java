@@ -26,6 +26,7 @@
  */
 package com.tvntd.service.api;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -251,6 +252,15 @@ public interface IProfileService
                 }
             }
             src.add(add);
+        }
+
+        public static List<String> toStringList(List<UUID> uuids)
+        {
+            List<String> result = new ArrayList<>();
+            for (UUID uid : uuids) {
+                result.add(uid.toString());
+            }
+            return result;
         }
 
         public UUID findUuid(List<UUID> src, UUID item)

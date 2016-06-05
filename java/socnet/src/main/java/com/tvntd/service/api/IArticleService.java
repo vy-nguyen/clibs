@@ -39,31 +39,38 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 
+import com.tvntd.forms.CommentChangeForm;
 import com.tvntd.forms.PostForm;
 import com.tvntd.lib.ObjectId;
 import com.tvntd.models.Article;
+import com.tvntd.models.ArticleRank;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 public interface IArticleService
 {
-    public ArticleDTO getArticle(Long artId);
-    public ArticleDTO getArticle(UUID uuid);
+    ArticleDTO getArticle(Long artId);
+    ArticleDTO getArticle(UUID uuid);
+    Article getArticle(String artUuid);
 
-    public List<ArticleDTO> getArticles(List<UUID> uuids);
-    public List<ArticleDTO> getArticlesByUser(Long userId);
-    public List<ArticleDTO> getArticlesByUser(UUID userUuidId);
-    public List<ArticleDTO> getArticlesByUser(List<UUID> userUuidIds);
+    ArticleRank getRank(String artUuid);
+    ArticleRank updateRank(CommentChangeForm form, ProfileDTO user);
 
-    public Page<ArticleDTO> getUserArticles(Long userId);
-    public Page<ArticleDTO> getUserArticles(UUID userUuid);
+    List<ArticleDTO> convert(List<Article> arts);
+    List<ArticleDTO> getArticles(List<UUID> uuids);
+    List<ArticleDTO> getArticlesByUser(Long userId);
+    List<ArticleDTO> getArticlesByUser(UUID userUuidId);
+    List<ArticleDTO> getArticlesByUser(List<UUID> userUuidIds);
 
-    public void saveArticle(Article article);
-    public void saveArticle(ArticleDTO article);
-    public void saveArticles(String josnFile, String dir);
+    Page<ArticleDTO> getUserArticles(Long userId);
+    Page<ArticleDTO> getUserArticles(UUID userUuid);
 
-    public void deleteArticle(Article article);
-    public void deleteArticle(UUID uuid);
+    void saveArticle(Article article);
+    void saveArticle(ArticleDTO article);
+    void saveArticles(String josnFile, String dir);
+
+    void deleteArticle(Article article);
+    void deleteArticle(UUID uuid);
 
     public static class ArticleDTOResponse extends GenericResponse
     {
@@ -101,14 +108,17 @@ public interface IArticleService
         private static String s_baseUri = "/rs/user/";
 
         private Article article;
+        private ArticleRank rank;
+
         private String  topic;
         private String  content;
         private String  articleUrl;
 
-        public ArticleDTO(Article art)
+        public ArticleDTO(Article art, ArticleRank rank)
         {
             super(GenericResponse.USER_HOME, null, null);
-            article = art;
+            this.article = art;
+            this.rank = rank;
             convertUTF();
         }
 
@@ -187,15 +197,6 @@ public interface IArticleService
             return sb.toString();
         }
 
-        public static List<ArticleDTO> convert(List<Article> arts)
-        {
-            List<ArticleDTO> result = new LinkedList<>();
-            for (Article at : arts) {
-                result.add(new ArticleDTO(at));
-            }
-            return result;
-        }
-
         /**
          * Methods to construct fields in the article.
          */
@@ -251,11 +252,11 @@ public interface IArticleService
         }
 
         public Long getCreditEarned() {
-            return article.getCreditEarned();
+            return 0L;
         }
 
         public Long getMoneyEarned() {
-            return article.getMoneyEarned();
+            return 0L;
         }
 
         public Long getLikeCount() {
@@ -267,7 +268,7 @@ public interface IArticleService
         }
 
         public String getTransRoot() {
-            return article.getTransRoot().name();
+            return null;
         }
 
         public String getContentOid() {
@@ -277,6 +278,20 @@ public interface IArticleService
         public String getCreatedDate() {
             DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm");
             return df.format(article.getCreatedDate());
+        }
+
+        /**
+         * @return the rank
+         */
+        public ArticleRank getRank() {
+            return rank;
+        }
+
+        /**
+         * @param rank the rank to set
+         */
+        public void setRank(ArticleRank rank) {
+            this.rank = rank;
         }
 
         public String getTopic() {

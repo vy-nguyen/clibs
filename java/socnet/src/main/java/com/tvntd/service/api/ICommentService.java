@@ -37,8 +37,11 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.tvntd.forms.CommentChangeForm;
+import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Comment;
 import com.tvntd.models.CommentRank;
+import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 public interface ICommentService
 {
@@ -172,6 +175,185 @@ public interface ICommentService
 
         public boolean isFavorite() {
             return comment != null ? comment.isFavorite() : null;
+        }
+    }
+
+    public static class CommentRespDTO extends GenericResponse
+    {
+        private CommentChangeForm resp;
+        private Long creditEarned;
+        private Long moneyEarned;
+        private Long score;
+        private List<String> userLiked;
+        private List<String> userShared;
+
+        public CommentRespDTO(CommentChangeForm resp)
+        {
+            super(GenericResponse.USER_HOME, null, null);
+            this.resp = resp;
+        }
+
+        public void updateArticleRank(ArticleRank rank)
+        {
+            score = rank.getScore();
+            creditEarned = rank.getCreditEarned();
+            moneyEarned = rank.getMoneyEarned();
+            userLiked = ProfileDTO.toStringList(rank.getUserLiked());
+            userShared = ProfileDTO.toStringList(rank.getUserShared());
+        }
+
+        /**
+         * @return the kind
+         */
+        public String getKind() {
+            return resp.getKind();
+        }
+
+        /**
+         * @param kind the kind to set
+         */
+        public void setKind(String kind) {
+            resp.setKind(kind);
+        }
+
+        /**
+         * @return the amount
+         */
+        public Long getAmount() {
+            return resp.getAmount();
+        }
+
+        /**
+         * @param amount the amount to set
+         */
+        public void setAmount(Long amount) {
+            resp.setAmount(amount);
+        }
+
+        /**
+         * @return the article
+         */
+        public boolean isArticle() {
+            return resp.isArticle();
+        }
+
+        /**
+         * @param article the article to set
+         */
+        public void setArticle(boolean article) {
+            resp.setArticle(article);
+        }
+
+        /**
+         * @return the favorite
+         */
+        public boolean isFavorite() {
+            return resp.isFavorite();
+        }
+
+        /**
+         * @param favorite the favorite to set
+         */
+        public void setFavorite(boolean favorite) {
+            resp.setFavorite(favorite);
+        }
+
+        /**
+         * @return the commentId
+         */
+        public Long getCommentId() {
+            return resp.getCommentId();
+        }
+
+        /**
+         * @param commentId the commentId to set
+         */
+        public void setCommentId(Long commentId) {
+            resp.setCommentId(commentId);
+        }
+
+        /**
+         * @return the articleUuid
+         */
+        public String getArticleUuid() {
+            return resp.getArticleUuid();
+        }
+
+        /**
+         * @param articleUuid the articleUuid to set
+         */
+        public void setArticleUuid(String articleUuid) {
+            resp.setArticleUuid(articleUuid);
+        }
+
+        /**
+         * @return the creditEarned
+         */
+        public Long getCreditEarned() {
+            return creditEarned;
+        }
+
+        /**
+         * @param creditEarned the creditEarned to set
+         */
+        public void setCreditEarned(Long creditEarned) {
+            this.creditEarned = creditEarned;
+        }
+
+        /**
+         * @return the moneyEarned
+         */
+        public Long getMoneyEarned() {
+            return moneyEarned;
+        }
+
+        /**
+         * @param moneyEarned the moneyEarned to set
+         */
+        public void setMoneyEarned(Long moneyEarned) {
+            this.moneyEarned = moneyEarned;
+        }
+
+        /**
+         * @return the score
+         */
+        public Long getScore() {
+            return score;
+        }
+
+        /**
+         * @param score the score to set
+         */
+        public void setScore(Long score) {
+            this.score = score;
+        }
+
+        /**
+         * @return the userLiked
+         */
+        public List<String> getUserLiked() {
+            return userLiked;
+        }
+
+        /**
+         * @param userLiked the userLiked to set
+         */
+        public void setUserLiked(List<String> userLiked) {
+            this.userLiked = userLiked;
+        }
+
+        /**
+         * @return the userShared
+         */
+        public List<String> getUserShared() {
+            return userShared;
+        }
+
+        /**
+         * @param userShared the userShared to set
+         */
+        public void setUserShared(List<String> userShared) {
+            this.userShared = userShared;
         }
     }
 }

@@ -82,7 +82,7 @@ let CommentBox = React.createClass({
         Actions.postCmtSelect({
             kind       : type,
             amount     : 1,
-            article    : false,
+            article    : true,
             favorite   : false,
             commentId  : 0,
             articleUuid: this.props.articleUuid
@@ -169,7 +169,7 @@ let CommentItem = React.createClass({
         Actions.postCmtSelect({
             kind       : "like",
             amount     : 1,
-            comment    : true,
+            article    : false,
             favorite   : false,
             commentId  : this.props.data.commentId,
             articleUuid: this.props.articleUuid

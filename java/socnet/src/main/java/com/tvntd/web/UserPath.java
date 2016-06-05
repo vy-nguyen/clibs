@@ -58,6 +58,7 @@ import com.tvntd.forms.CommentForm;
 import com.tvntd.forms.PostForm;
 import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.ObjectId;
+import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Comment;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.GenericResponse;
@@ -67,6 +68,7 @@ import com.tvntd.service.api.IArticleService.ArticleDTOResponse;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.ICommentService;
 import com.tvntd.service.api.ICommentService.CommentDTOResponse;
+import com.tvntd.service.api.ICommentService.CommentRespDTO;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.ITimeLineService;
@@ -84,6 +86,9 @@ public class UserPath
 
     static public  GenericResponse s_saveObjFailed =
         new GenericResponse("Failed to save object", "System Error");
+
+    static public GenericResponse s_invalidArticle =
+        new GenericResponse("Could not retrieve article", "Invalid UUID");
 
     @Autowired
     private IArticleService articleSvc;
@@ -369,7 +374,21 @@ public class UserPath
     public GenericResponse
     postComment(@RequestBody CommentChangeForm form, HttpSession session)
     {
-        return null;
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
+        CommentRespDTO resp = new CommentRespDTO(form);
+
+        if (form.isArticle() == true) {
+            ArticleRank rank = articleSvc.updateRank(form, profile);
+            if (rank == null) {
+                return s_invalidArticle;
+            }
+            resp.updateArticleRank(rank);
+        }
+        s_log.info("Got comment change " + form.toString());
+        return resp;
     }
 
     /**
