@@ -226,8 +226,7 @@ let CommentItem = React.createClass({
                     {favBtn}
                     <li>
                         <span className="text-danger">
-                            <i className="fa fa-thumbs-up"></i>
-                            "  " {this.props.data.likes ? this.props.data.likes : "(0)" } Likes
+                            <i className="fa fa-thumbs-up"></i>  {this.props.data.likes ? this.props.data.likes : "(0)" } Likes
                         </span>
                     </li>
                 </ul>
@@ -276,25 +275,30 @@ let PostComment = React.createClass({
                             user={UserStore.getUserByUuid(item.userUuid)} data={item}/>);
         });
         let favColumn = null;
+        let favColumnId = 'fav-comment-' + this.props.articleUuid;
         if (!_.isEmpty(favorites)) {
             favColumn = (
-                <div className="col-sm-12 col-md-6 col-lg-6 chat-body" style={{ 'height': 'auto', 'maxHeight': 1200 }}>
+                <div className="col-sm-12 col-md-6 col-lg-6 chat-body"
+                    id={favColumnId} style={{ 'height': 'auto', 'maxHeight': 500 }}>
                     <ul>{favCmnts}</ul>
                 </div>
             );
         }
         let norColumn = null;
+        let norColumnId = 'nor-comment-' + this.props.articleUuid;
         if (favColumn == null) {
             if (!_.isEmpty(norCmnts)) {
                 norColumn = (
-                    <div className="col-sm-12 col-md-12 col-lg-12 chat-body" style={{ 'height': 'auto', 'maxHeight': 1200 }}>
+                    <div className="col-sm-12 col-md-12 col-lg-12 chat-body"
+                        id={norColumnId} style={{ 'height': 'auto', 'maxHeight': 500 }}>
                         {norCmnts}
                     </div>
                 );
             }
         } else {
             norColumn = (
-                <div className="col-sm-12 col-md-6 col-lg-6 chat-body" style={{ 'height': 'auto', 'maxHeight': 1200 }}>
+                <div className="col-sm-12 col-md-6 col-lg-6 chat-body"
+                    id={norColumnId} style={{ 'height': 'auto', 'maxHeight': 500 }}>
                     {norCmnts}
                 </div>
             );
@@ -318,7 +322,21 @@ let PostComment = React.createClass({
     },
 
     componentDidMount: function() {
-        //$('.chat-body').css({'height': 'auto', 'max-height': 600});
+        this.componentDidUpdate();
+    },
+
+    componentDidUpdate: function() {
+        [
+            '#nor-comment-' + this.props.articleUuid,
+            '#fav-comment-' + this.props.articleUuid
+        ].forEach(function(id) {
+            let dom = $(id);
+            if (dom[0] != null) {
+                dom.stop().animate({
+                    scrollTop: dom[0].scrollHeight
+                }, 800);
+            }
+        });
     }
 });
 

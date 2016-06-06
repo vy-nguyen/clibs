@@ -5,6 +5,7 @@
 
 import Reflux       from 'reflux';
 import _            from 'lodash';
+import moment       from 'moment';
 import Actions      from 'vntd-root/actions/Actions.jsx';
 import UserStore    from 'vntd-shared/stores/UserStore.jsx';
 
@@ -18,8 +19,9 @@ class CommentText {
         this.userUuid     = data.userUuid;
         this.likes        = data.likes;
         this.favorite     = data.favorite;
-        this.moment       = data.moment;
+        this.moment       = moment(data.commentDate, "MM/DD/YY h:mm").fromNow();
         this.userLiked    = data.userLiked;
+        console.log(this);
         return this;
     }
 }
@@ -30,6 +32,8 @@ class ArticleComment {
         this.showComment = data.showComment;
         this.favorites = {};
         this.normals = {};
+        this.normalSorted = [];
+        this.favoriteSorted = [];
         return this;
     }
 
