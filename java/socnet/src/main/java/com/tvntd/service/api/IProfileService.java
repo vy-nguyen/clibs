@@ -256,11 +256,14 @@ public interface IProfileService
 
         public static List<String> toStringList(List<UUID> uuids)
         {
-            List<String> result = new ArrayList<>();
-            for (UUID uid : uuids) {
-                result.add(uid.toString());
+            if (uuids != null) {
+                List<String> result = new ArrayList<>();
+                for (UUID uid : uuids) {
+                    result.add(uid.toString());
+                }
+                return result;
             }
-            return result;
+            return null;
         }
 
         public UUID findUuid(List<UUID> src, UUID item)

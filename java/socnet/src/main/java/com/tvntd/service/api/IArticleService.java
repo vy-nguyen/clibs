@@ -251,22 +251,6 @@ public interface IArticleService
             return !article.isPending();
         }
 
-        public Long getCreditEarned() {
-            return 0L;
-        }
-
-        public Long getMoneyEarned() {
-            return 0L;
-        }
-
-        public Long getLikeCount() {
-            return 0L;
-        }
-
-        public Long getRankCount() {
-            return 0L;
-        }
-
         public String getTransRoot() {
             return null;
         }

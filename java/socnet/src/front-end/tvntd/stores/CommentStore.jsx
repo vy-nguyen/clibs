@@ -21,8 +21,56 @@ class CommentText {
         this.favorite     = data.favorite;
         this.moment       = moment(data.commentDate, "MM/DD/YY h:mm").fromNow();
         this.userLiked    = data.userLiked;
-        console.log(this);
         return this;
+    }
+}
+
+class CommentAttr {
+    constructor(data) {
+        this.articleUuid  = data.articleUuid;
+        this.commentId    = data.commentId;
+        this.creditEarned = data.creditEarned;
+        this.moneyEarned  = data.moneyEarned;
+        this.score        = data.score;
+        this.likeCount    = data.likes;
+        this.shareCount   = data.shared;
+        this.favorite     = data.favorite;
+        this.userLiked    = data.userLiked;
+        this.userShared   = data.userShared;
+        this.updateCount(data);
+        return this;
+    }
+
+    updateCount(data) {
+        if (data.kind === 'like') {
+            this.likeCount = data.amount;
+
+        } else if (data.kind == 'share') {
+            this.shareCount = data.amount;
+        }
+    }
+
+    getUsersLiked() {
+        return this.userLiked;
+    }
+
+    getUsersShared() {
+        return this.userShared;
+    }
+
+    getUserLiked() {
+    }
+
+    didILikeIt() {
+        let ret = false;
+        let myUuid = UserStore.getSelf().userUuid;
+        _.forOwn(this.userLiked, function(it, idx) {
+            if (it === myUuid) {
+                ret = true;
+                return false;
+            }
+        });
+        return ret;
     }
 }
 
@@ -34,7 +82,41 @@ class ArticleComment {
         this.normals = {};
         this.normalSorted = [];
         this.favoriteSorted = [];
+
+        this.articleAttr = null;
+        this.commentAttr = {};
         return this;
+    }
+
+    updateArtAttr(data) {
+        if (this.articleAttr == null) {
+            this.articleAttr = new CommentAttr(data);
+        } else {
+            this.articleAttr.updateCount(data);
+        }
+    }
+
+    updateCommentAttr(data) {
+    }
+
+    updateAttr(data) {
+        if (data.article === true) {
+            this.updateArtAttr(data);
+        } else {
+            this.updateCommentAttr(data);
+        }
+    }
+
+    didILikeArticle() {
+        return this.articleAttr != null ? this.articleAttr.didILikeIt() : false;
+    }
+
+    getArticleAttr() {
+        return this.articleAttr;
+    }
+
+    getCommentAttr(id) {
+        return this.commentAttr[id];
     }
 
     addComment(data) {
@@ -104,7 +186,7 @@ class ArticleComment {
 
 let CommentStore = Reflux.createStore({
     data: {
-        comentByArticleUuid: {}
+        commentByArticleUuid: {}
     },
     listenables: [Actions],
 
@@ -131,12 +213,16 @@ let CommentStore = Reflux.createStore({
     onGetCommentsCompleted: function(data) {
         this._updateComments(data.comments, true);
         this.trigger(this.data);
-        console.log(data);
     },
 
     onPostCommentCompleted: function(data) {
         this._updateComments(data.comments, true);
         this.trigger(this.data);
+    },
+
+    postCmtSelectCompleted: function(data) {
+        let cmtArt = this.addArtComment(data);
+        cmtArt.updateAttr(data);
     },
 
     onSwitchCommentCompleted: function(data) {
@@ -147,8 +233,24 @@ let CommentStore = Reflux.createStore({
         }
     },
 
+    getArticleAttr: function(articleUuid) {
+        let cmtArt = this.getByArticleUuid(articleUuid);
+        if (cmtArt != null) {
+            return cmtArt.getArticleAttr();
+        }
+        return null;
+    },
+
+    getArticleCommentAttr: function(articleUuid, commentId) {
+        let cmtArt = this.getByArticleUuid(articleUuid);
+        if (cmtArt != null) {
+            return cmtArt.getCommentAttr(commentId);
+        }
+        return null;
+    },
+
     getByArticleUuid: function(articleUuid) {
-        return this.data.comentByArticleUuid[articleUuid];
+        return this.data.commentByArticleUuid[articleUuid];
     },
 
     dumpData: function(header) {
@@ -156,12 +258,25 @@ let CommentStore = Reflux.createStore({
         console.log(this.data);
     },
 
-    _addComment: function(it, show) {
-        let cmtArt = this.data.comentByArticleUuid[it.articleUuid];
+    addArtComment: function(data) {
+        let cmtArt = this.data.commentByArticleUuid[data.articleUuid];
         if (cmtArt == null) {
-            cmtArt = new ArticleComment(it);
-            this.data.comentByArticleUuid[it.articleUuid] = cmtArt;
+            cmtArt = new ArticleComment(data);
+            this.data.commentByArticleUuid[data.articleUuid] = cmtArt;
         }
+        return cmtArt;
+    },
+
+    addArtAttr: function(attr) {
+        let cmtArt = this.addArtComment({
+            articleUuid: attr.articleUuid,
+            showComment: false
+        });
+        cmtArt.updateArtAttr(attr);
+    },
+
+    _addComment: function(it, show) {
+        let cmtArt = this.addArtComment(it);
         cmtArt.showComment = show;
         cmtArt.addComment(it);
         return cmtArt;

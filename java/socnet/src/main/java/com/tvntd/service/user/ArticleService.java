@@ -27,8 +27,10 @@
 package com.tvntd.service.user;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
@@ -168,6 +170,20 @@ public class ArticleService implements IArticleService
         return ret;
     }
 
+    protected Map<String, ArticleRank> getRanks(List<Article> articles)
+    {
+        Map<String, ArticleRank> ranks = new HashMap<>();
+        for (Article art : articles) {
+            String uuid = art.getArticleUuid();
+            ArticleRank rank = artRankRepo.findByArticleUuid(uuid);
+            if (rank == null) {
+                continue;
+            }
+            ranks.put(uuid, rank);
+        }
+        return ranks;
+    }
+
     @Override
     public List<ArticleDTO> getArticlesByUser(Long userId)
     {
@@ -181,6 +197,7 @@ public class ArticleService implements IArticleService
     {
         List<Article> articles =
             articleRepo.findAllByAuthorUuidOrderByCreatedDateAsc(userUuid.toString());
+
         return convert(articles);
     }
 

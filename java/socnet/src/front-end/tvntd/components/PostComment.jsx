@@ -28,42 +28,34 @@ let CommentBox = React.createClass({
         });
     },
 
-    componentWillReceiveProps: function(nextProps) {
-        let nextState = {
-            commentShow: nextProps.cmtShow
-        };
-        if (this.state.submiting === true) {
-            this.refs.comment.value = "";
-            nextState.sendDisable = "";
-            nextState.submiting = false;
-        }
-        this.setState(nextState);
-    },
-
-    _selectButton: function(type) {
+    _selectButton: function(type, likeState, shareState) {
         const likes = [ {
-            like   : false,
+            like    : false,
+            value   : -1,
             likeFmt: "text-danger"
         }, {
-            like   : true,
+            like    : true,
+            value   : 1,
             likeFmt: "text-info"
         } ];
         const shares = [ {
             share   : false,
+            value   : -1,
             shareFmt: "text-danger"
         }, {
             share   : true,
+            value   : 1,
             shareFmt: "text-info"
         } ];
 
         if (type === "like") {
-            let choose = !this.state.like;
+            let choose = !likeState;
             if (choose === true) {
                 return likes[1];
             }
             return likes[0];
         } else if (type === "share") {
-            let choose = !this.state.share;
+            let choose = !shareState;
             if (choose === true) {
                 return shares[1];
             }
@@ -74,14 +66,14 @@ let CommentBox = React.createClass({
 
     _submitSelect: function(type, e) {
         e.preventDefault();
-        let newState = this._selectButton(type);
+        let newState = this._selectButton(type, this.state.like, this.state.share);
 
         if (newState != null) {
             this.setState(newState);
         }
         Actions.postCmtSelect({
             kind       : type,
-            amount     : 1,
+            amount     : newState.value,
             article    : true,
             favorite   : false,
             commentId  : 0,
@@ -110,6 +102,9 @@ let CommentBox = React.createClass({
             share      : true,
             likeFmt    : "text-info",
             shareFmt   : "text-info",
+            likeCount  : 0,
+            shareCount : 0,
+            iShare     : false,
             commentShow: this.props.cmtShow,
             cmtBoxId   : _.uniqueId('comment-box-')
         }
@@ -121,19 +116,45 @@ let CommentBox = React.createClass({
         });
     },
 
+    componentWillMount: function() {
+        let artAttr = CommentStore.getArticleAttr(this.props.articleUuid);
+        if (artAttr != null) {
+            let newState = {};
+            if (artAttr.didILikeIt() === true) {
+                newState = this._selectButton('like', true, false);
+            }
+            newState.likeCount  = artAttr.likeCount;
+            newState.shareCount = artAttr.shareCount;
+            this.setState(newState);
+        }
+    },
+
+    componentWillReceiveProps: function(nextProps) {
+        let nextState = {
+            commentShow: nextProps.cmtShow
+        };
+        if (this.state.submiting === true) {
+            this.refs.comment.value = "";
+            nextState.sendDisable = "";
+            nextState.submiting = false;
+        }
+        this.setState(nextState);
+    },
+
     render: function() {
         return (
             <div className="row no-margin no-padding">
                 <hr/>
                 <div className="btn-group inline">
-                    <button onClick={this._submitSelect.bind(this, "like")} className={this.state.likeFmt}>
-                        <i className="fa fa-thumbs-up"></i>Like
+                    <button onClick={this._submitSelect.bind(this, "like")} className={this.state.likeFmt}
+                        rel="tooltip" title="abc">
+                        <i className="fa fa-thumbs-up"></i>{"Like (" + this.state.likeCount + ")"}
                     </button>
                     <button onClick={this._toggleComment} className="text-info">
                         <i className="fa fa-comment"></i>{"Comments (" + this.props.cmtCount + ")"}
                     </button>
                     <button onClick={this._submitSelect.bind(this, "share")} className={this.state.shareFmt}>
-                        <i className="fa fa-share"></i>Share
+                        <i className="fa fa-share"></i>{"Share (" + this.props.shareCount + ")"}
                     </button>
                     <button onClick={this._submitSelect.bind(this, "save")} className="text-info">
                         <i className="fa fa-book"></i>Save

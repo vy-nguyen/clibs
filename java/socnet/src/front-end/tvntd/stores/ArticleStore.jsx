@@ -4,10 +4,11 @@
  */
 'use strict';
 
-import Reflux    from 'reflux';
-import _         from 'lodash';
-import Actions   from 'vntd-root/actions/Actions.jsx';
-import UserStore from 'vntd-shared/stores/UserStore.jsx';
+import Reflux       from 'reflux';
+import _            from 'lodash';
+import Actions      from 'vntd-root/actions/Actions.jsx';
+import CommentStore from 'vntd-root/stores/CommentStore.jsx';
+import UserStore    from 'vntd-shared/stores/UserStore.jsx';
 
 import {insertSorted, preend} from 'vntd-shared/utils/Enum.jsx';
 
@@ -28,6 +29,10 @@ class Article {
         this.contentOId   = data.contentOId;
         this.pictureUrl   = data.pictureUrl;
         this.topic        = data.topic;
+
+        if (data.rank != null) {
+            CommentStore.addArtAttr(data.rank);
+        }
         return this;
     }
 }
