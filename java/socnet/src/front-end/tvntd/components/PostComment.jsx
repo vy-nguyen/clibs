@@ -102,9 +102,6 @@ let CommentBox = React.createClass({
             share      : true,
             likeFmt    : "text-info",
             shareFmt   : "text-info",
-            likeCount  : 0,
-            shareCount : 0,
-            iShare     : false,
             commentShow: this.props.cmtShow,
             cmtBoxId   : _.uniqueId('comment-box-')
         }
@@ -123,8 +120,6 @@ let CommentBox = React.createClass({
             if (artAttr.didILikeIt() === true) {
                 newState = this._selectButton('like', true, false);
             }
-            newState.likeCount  = artAttr.likeCount;
-            newState.shareCount = artAttr.shareCount;
             this.setState(newState);
         }
     },
@@ -142,19 +137,32 @@ let CommentBox = React.createClass({
     },
 
     render: function() {
+        let likeCount = 0, shareCount = 0, userLiked = null;
+        let artAttr = CommentStore.getArticleAttr(this.props.articleUuid);
+        if (artAttr != null) {
+            likeCount = artAttr.likeCount;
+            shareCount = artAttr.shareCount;
+
+            let likedList = artAttr.getUserLiked();
+            if (likedList != null) {
+                userLiked = (
+                    <p><br/><i className="fa fa-thumbs-up text-danger"></i> {likedList}</p>
+                );
+            }
+        }
         return (
             <div className="row no-margin no-padding">
                 <hr/>
                 <div className="btn-group inline">
                     <button onClick={this._submitSelect.bind(this, "like")} className={this.state.likeFmt}
-                        rel="tooltip" title="abc">
-                        <i className="fa fa-thumbs-up"></i>{"Like (" + this.state.likeCount + ")"}
+                        rel="tooltip" title="like or unlike">
+                        <i className="fa fa-thumbs-up"></i>{"Like (" + likeCount + ")"}
                     </button>
                     <button onClick={this._toggleComment} className="text-info">
                         <i className="fa fa-comment"></i>{"Comments (" + this.props.cmtCount + ")"}
                     </button>
                     <button onClick={this._submitSelect.bind(this, "share")} className={this.state.shareFmt}>
-                        <i className="fa fa-share"></i>{"Share (" + this.props.shareCount + ")"}
+                        <i className="fa fa-share"></i>{"Share (" + shareCount + ")"}
                     </button>
                     <button onClick={this._submitSelect.bind(this, "save")} className="text-info">
                         <i className="fa fa-book"></i>Save
@@ -163,11 +171,12 @@ let CommentBox = React.createClass({
                         <i className="fa fa-money"></i>Micropay
                     </button>
                 </div>
+                {userLiked}
                 <br/>
                 <form encType="multipart/form-data" acceptCharset="utf-8" className="form-horizontal">
                     <div className="row">
                         <div className="col-sm-11">
-                            <textarea ref="comment" className="form-control input-sm"
+                            <textarea rows="2" ref="comment" className="form-control input-sm"
                                 id={this.state.cmtBoxId} placeholder="Place your comments here..."/>
                         </div>
                         <div className="col-sm-1">

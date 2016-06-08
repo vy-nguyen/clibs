@@ -89,6 +89,7 @@ public class ArticleService implements IArticleService
             rank = new ArticleRank(form.getArticleUuid());
         }
         boolean save = false;
+        UUID myUuid = me.getUserUuid();
         String kind = form.getKind();
         
         if (kind.equals("like")) {
@@ -99,13 +100,16 @@ public class ArticleService implements IArticleService
                 users = new ArrayList<>();
                 rank.setUserLiked(users);
             }
-            if (ProfileDTO.isInList(users, me.getUserUuid()) == null) {
+            save = true;
+            if (ProfileDTO.isInList(users, myUuid) == null) {
                 val++;
-                save = true;
-                rank.setLikes(val);
-                ProfileDTO.addUnique(users, me.getUserUuid());
+                ProfileDTO.addUnique(users, myUuid);
+            } else {
+                val--;
+                ProfileDTO.removeFrom(users, myUuid);
             }
-            form.setAmount(val + 1);
+            rank.setLikes(val);
+            form.setAmount(val);
 
         } else if (kind.equals("share")) {
             Long val = rank.getShared();
@@ -115,13 +119,16 @@ public class ArticleService implements IArticleService
                 users = new ArrayList<>();
                 rank.setUserShared(users);
             }
-            if (ProfileDTO.isInList(users, me.getUserUuid()) == null) {
+            save = true;
+            if (ProfileDTO.isInList(users, myUuid) == null) {
                 val++;
-                save = true;
-                rank.setShared(val);
-                ProfileDTO.addUnique(users, me.getUserUuid());
+                ProfileDTO.addUnique(users, myUuid);
+            } else {
+                val--;
+                ProfileDTO.removeFrom(users, myUuid);
             }
-            form.setAmount(val + 1);
+            rank.setShared(val);
+            form.setAmount(val);
         }
         if (save == true) {
             artRankRepo.save(rank);
@@ -197,7 +204,6 @@ public class ArticleService implements IArticleService
     {
         List<Article> articles =
             articleRepo.findAllByAuthorUuidOrderByCreatedDateAsc(userUuid.toString());
-
         return convert(articles);
     }
 

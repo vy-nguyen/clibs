@@ -72,6 +72,20 @@ class CommentAttr {
         });
         return ret;
     }
+
+    getUserLiked() {
+        let out = [];
+        _.forOwn(this.userLiked, function(it, idx) {
+            let user = UserStore.getUserByUuid(it);
+            if (user != null) {
+                out.push(user.lastName + " " + user.firstName);
+            }
+        });
+        if (!_.isEmpty(out)) {
+            return out.join(", ");
+        }
+        return null;
+    }
 }
 
 class ArticleComment {
@@ -223,6 +237,7 @@ let CommentStore = Reflux.createStore({
     postCmtSelectCompleted: function(data) {
         let cmtArt = this.addArtComment(data);
         cmtArt.updateAttr(data);
+        this.trigger(this.data);
     },
 
     onSwitchCommentCompleted: function(data) {

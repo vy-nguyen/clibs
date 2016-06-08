@@ -88,11 +88,10 @@ let UserStore = Reflux.createStore({
     },
 
     getUserByUuid: function(uuid) {
-        if (uuid === null || uuid === undefined) {
+        if (uuid == null) {
             return this.getSelf();
         }
-        let user = this.data.userMap[uuid];
-        return user !== undefined ? user : null;
+        return this.data.userMap[uuid];
     },
 
     getCsrfHeader: function() {
