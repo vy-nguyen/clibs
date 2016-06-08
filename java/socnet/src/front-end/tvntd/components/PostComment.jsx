@@ -137,7 +137,7 @@ let CommentBox = React.createClass({
     },
 
     render: function() {
-        let likeCount = 0, shareCount = 0, userLiked = null;
+        let likeCount = 0, shareCount = 0, userLiked = <p><br/></p>;
         let artAttr = CommentStore.getArticleAttr(this.props.articleUuid);
         if (artAttr != null) {
             likeCount = artAttr.likeCount;
@@ -172,17 +172,24 @@ let CommentBox = React.createClass({
                     </button>
                 </div>
                 {userLiked}
-                <br/>
                 <form encType="multipart/form-data" acceptCharset="utf-8" className="form-horizontal">
                     <div className="row">
-                        <div className="col-sm-11">
+                        <div className="col-sm-12">
                             <textarea rows="2" ref="comment" className="form-control input-sm"
                                 id={this.state.cmtBoxId} placeholder="Place your comments here..."/>
-                        </div>
-                        <div className="col-sm-1">
-                            <button className={"btn btn-danger pull-right btn-block btn-sm" + this.state.sendDisable}
-                                type="submit" disabled={this.state.submiting}
-                                onClick={this._submitComment}>Send</button>
+
+                            <div className="margin-top-10">
+                                <button className={"btn btn-danger btn-primary pull-right " + this.state.sendDisable}
+                                    type="submit" disabled={this.state.submiting}
+                                    onClick={this._submitComment}>Post</button>
+
+                                <a href-void className="btn btn-link profile-link-btn" rel="tooltip" data-placement="bottom"
+                                    title="Add Location"><i className="fa fa-location-arrow"></i></a>
+                                <a href-void className="btn btn-link profile-link-btn" rel="tooltip" data-placement="bottom"
+                                    title="Add Photo"><i className="fa fa-camera"></i></a>
+                                <a href-void className="btn btn-link profile-link-btn" rel="tooltip" data-placement="bottom"
+                                    title="Add File"><i className="fa fa-file"></i></a>
+                            </div>
                         </div>
                     </div>
                 </form>                                                                                  
