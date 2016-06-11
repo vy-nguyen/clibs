@@ -91,11 +91,12 @@ var scripts = {
         "clockpicker": "/node_modules/clockpicker/dist/bootstrap-clockpicker.min.js",
         "x-editable" : "/node_modules/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js",
         "dropzone"   : "/node_modules/dropzone/dist/min/dropzone.min.js",
+        "utf8"       : "/node_modules/utf8/utf8.js",
 
         "fullcalendar": "/src/front-end/smartadmin-plugin/fullcalendar/jquery.fullcalendar.min.js",
         "smartwidgets": "/src/front-end/smartadmin-plugin/smartwidgets/jarvis.widget.js",
         "notification": "/src/front-end/smartadmin-plugin/notification/SmartNotification.min.js",
-        "chatbox"     : "/src/front-end/smartadmin-plugin/chat/chat.box.js"
+        "chatbox"     : "/src/front-end/smartadmin-plugin/chat/chat.box.js",
     },
     "chunks": {
         "vendor": [

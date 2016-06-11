@@ -23,13 +23,13 @@ module.exports = {
         alias: aliases
     },
     module: {
-        loaders: [{
+        loaders: [ {
             test: /\.jsx?$/, // A regexp to test the require path. accepts either js or jsx
-            loaders: (argv.inline && argv.hot ? [
+            loaders: ( argv.inline && argv.hot ?
+            [
                 'react-hot',
                 'babel?compact=false&presets[]=es2015&presets[]=react&plugins[]=transform-object-rest-spread'
             ] : [
-
                 'babel?compact=false&presets[]=es2015&presets[]=react&plugins[]=transform-object-rest-spread'
             ] ),
             exclude: [
@@ -51,7 +51,7 @@ module.exports = {
             exclude: [/node_modules/],
             loader: 'url?limit=10000'
 
-        }],
+        } ],
         noParse: _.values(_.pick(aliases, scripts.noParse))
     },
     plugins: [

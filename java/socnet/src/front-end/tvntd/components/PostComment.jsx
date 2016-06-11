@@ -22,6 +22,8 @@ let CommentBox = React.createClass({
             comment: safeStringify(this.refs.comment.value),
             articleUuid: this.props.articleUuid,
         });
+        console.log(safeStringify(this.refs.comment.value));
+        console.log(this.refs.comment.value);
         this.setState({
             sendDisable: " disabled",
             submiting: true

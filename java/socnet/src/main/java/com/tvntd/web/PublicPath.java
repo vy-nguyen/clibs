@@ -26,6 +26,15 @@
  */
 package com.tvntd.web;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 
@@ -37,10 +46,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.tvntd.lib.Constants;
+import com.tvntd.lib.FileResources;
 import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IMenuItemService;
@@ -89,5 +101,41 @@ public class PublicPath
             result.setMenuItems(items);
         }
         return result;
+    }
+
+    /**
+     * Get JSON files.
+     */
+    @RequestMapping(value = "/public/get-json/{dir}/{json}",
+            method = RequestMethod.GET, produces = "application/json")
+    public @ResponseBody String
+    getJson(HttpServletRequest reqt,
+            @PathVariable(value = "dir") String dirName,
+            @PathVariable(value = "json") String fileName,
+            HttpServletResponse resp)
+    {
+        String relPath = dirName + "/" + fileName + ".json";
+        URL url = getClass().getClassLoader().getResource(relPath);
+        if (url == null) {
+            s_log.info("Invalid request " + relPath);
+            return null;
+        }
+        File f = new File(url.getFile());
+
+        resp.setContentType("text/html;charset=UTF-8");
+        resp.setCharacterEncoding("utf-8");
+        try {
+            int flen = (int)f.length();
+            byte[] buf = FileResources.getBuffer(Constants.FileIOBufferSize);
+
+            DataInputStream dis = new DataInputStream(new FileInputStream(f));
+            dis.readFully(buf, 0, flen);
+            dis.close();
+            return new String(buf, 0, flen, StandardCharsets.UTF_8);
+
+        } catch(IOException e) {
+            s_log.info(e.getMessage());
+        }
+        return null;
     }
 }

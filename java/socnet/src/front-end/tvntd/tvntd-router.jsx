@@ -9,6 +9,7 @@ import {Route, Redirect, IndexRoute, DefaultRoute} from 'react-router';
 
 import Layout        from './pages/layout/Layout.jsx';
 import Public        from './pages/public/Public.jsx';
+import MainPage      from './pages/public/MainPage.jsx';
 import {Login}       from './pages/login/Login.jsx';
 import Logout        from './pages/login/Logout.jsx';
 import Register      from './pages/login/Register.jsx';
@@ -29,7 +30,7 @@ import LoginRequired from 'vntd-shared/utils/LoginRequired.jsx';
 const Routes = (
     <Route>
         <Route path="/" component={Layout} url={"/public/start"}>
-            <IndexRoute component={Public}/>
+            <IndexRoute component={MainPage}/>
             <Redirect from="/" to ="public"/>
             <Route path="public">
                 <Route path="aboutus" component={Public} subHeader={true}/>

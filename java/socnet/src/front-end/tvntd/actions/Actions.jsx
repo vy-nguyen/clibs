@@ -7,40 +7,50 @@
 import Reflux           from 'reflux';
 import ErrorDispatch    from 'vntd-shared/actions/ErrorDispatch.jsx';
 
+const completedFn = {
+    children: ['completed']
+};
+const completdFailedFn = {
+    children: ['completed', 'failed']
+};
+const completedFailedAlwaysFn = {
+    children: ['completed', 'failed', 'always']
+};
+
 const Actions = Reflux.createActions({
 
-    clickMenuItem:   {children: ['completed']},
+    clickMenuItem:   completedFn,
 
     // User actions
-    logout:          {children: ['completed', 'failed']},
-    initialData:     {children: ['completed', 'failed']},
-    startup:         {children: ['completed', 'failed']},
-    getAuthors:      {children: ['completed', 'failed']},
-    refreshArticles: {children: ['completed', 'failed']},
-    refreshNotify:   {children: ['completed', 'failed']},
-    login:           {children: ['completed', 'failed', 'always']},
-    register:        {children: ['completed', 'failed', 'always']},
-    verifyAccount:   {children: ['completed', 'failed']},
-    resetPassword:   {children: ['completed', 'failed', 'always']},
+    logout:          completdFailedFn,
+    initialData:     completdFailedFn,
+    startup:         completdFailedFn,
+    getAuthors:      completdFailedFn,
+    refreshArticles: completdFailedFn,
+    refreshNotify:   completdFailedFn,
+    login:           completdFailedFn,
+    register:        completdFailedFn,
+    verifyAccount:   completdFailedFn,
+    resetPassword:   completedFailedAlwaysFn,
 
-    changeUsers:     {children: ['completed', 'failed']},
-    saveUserPost:    {children: ['completed', 'failed']},
-    deleteUserPost:  {children: ['completed', 'failed']},
-    publishUserPost: {children: ['completed', 'failed']},
+    changeUsers:     completdFailedFn,
+    saveUserPost:    completdFailedFn,
+    deleteUserPost:  completdFailedFn,
+    publishUserPost: completdFailedFn,
 
-    getArticles:     {children: ['completed', 'failed']},
-    getComments:     {children: ['completed', 'failed']},
+    getArticles:     completdFailedFn,
+    getComments:     completdFailedFn,
 
-    pendingPost:     {children: ['completed']},
-    uploadAvataDone: {children: ['completed']},
+    pendingPost:     completedFn,
+    uploadAvataDone: completedFn,
 
     // Comment actions
-    switchComment:   {children: ['completed']},
-    postComment:     {children: ['completed', 'failed']},
-    postCmtSelect:   {children: ['completed', 'failed']},
+    switchComment:   completedFn,
+    postComment:     completdFailedFn,
+    postCmtSelect:   completdFailedFn,
 
     // Preload json for testing.
-    preload:         {children: ['completed', 'failed']}
+    preload:         completdFailedFn
 });
 
 function postRestCall(formData, url, json, cbObj) {
