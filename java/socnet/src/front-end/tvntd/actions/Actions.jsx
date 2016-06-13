@@ -49,6 +49,9 @@ const Actions = Reflux.createActions({
     postComment:     completdFailedFn,
     postCmtSelect:   completdFailedFn,
 
+    // Get public json objs.
+    getPublicJson:   completdFailedFn,
+
     // Preload json for testing.
     preload:         completdFailedFn
 });
@@ -236,6 +239,13 @@ Actions.postComment.listen(function(data) {
 
 Actions.postCmtSelect.listen(function(data) {
     postRestCall(data, "/user/change-comment", true, this);
+});
+
+/**
+ * Get public json objs.
+ */
+Actions.getPublicJson.listen(function(url) {
+    $.getJSON(url).then(this.completed, this.failed);
 });
 
 export default Actions;

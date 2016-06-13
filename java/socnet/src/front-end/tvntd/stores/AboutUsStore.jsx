@@ -5,17 +5,26 @@
 'use strict';
 
 import Reflux    from 'reflux';
+import Actions   from 'vntd-root/actions/Actions.jsx';
 
 let AboutUsStore = Reflux.createStore({
+    data: {},
+    listenables: [Actions],
 
     init: function() {
-        console.log("about us init");
-        $.getJSON("/public/get-json/abc").then(function(json) {
-            console.log(json);
-            console.log(json.abc);
-        }, function(fail) {
-            console.log(fail);
-        });
+        Actions.getPublicJson("/public/get-json/json/aboutus");
+    },
+
+    onGetPublicJsonCompleted: function(data) {
+        this.data = {
+            features: data.features,
+            goals   : data.goals,
+            plan    : data.plan,
+            screen  : data.screen,
+            team    : data.team,
+            welcome : data.welcome
+        };
+        this.trigger(this.data);
     },
 
     getData: function() {

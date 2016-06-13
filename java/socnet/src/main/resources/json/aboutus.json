@@ -1,0 +1,106 @@
+{
+    "welcome": {
+        "title": "Mến Chào Các Bạn",
+        "titleDetail": "Trang Web này là một phần của dự án Tiền Điện Tử cho Việt Nam.  Đây là phiên bản đầu tiên muốn chia xẻ với bạn bè và những người quan tâm, chưa sẵn sàng để quảng bá rộng rãi.  Mong nhận được sự cộng tác từ các bạn để cùng phát triển dự án này"
+    },
+    "goals": {
+        "title": "Mục Đích của Dự Án",
+        "titleDetail": "Tạo niềm tin giữa mọi người bằng quyền lợi của mỗi người.  Tạo môi trường minh bạch để nhiều người có cơ hội cộng tác từ niềm tin chung để tất cả cùng có lợi.  Tạo phương tiện để mọi người quan tâm đến Việt Nam có khả năng đóng góp công sức của mình và được ghi nhận trung thực.  Tạo định chế chịu trách nhiệm với luật pháp Hoa Kỳ để biến dự án thành thiện thực.",
+        "panes": [ {
+            "header"  : "<h1 class='panel-title'>Kết Nối</h1>",
+            "headerHL": "<h3>Xây Dựng Niềm Tin<h3>",
+            "bodyText": [
+                "<span><i class='fa fa-chevron-right'></i> Mạng xã hội gần giống như Facebook.</span>",
+                "<span><i class='fa fa-chevron-right'></i> Nơi sinh hoạt của người Việt yêu <strong>Tự Do</strong>.</span>",
+                "<span><i class='fa fa-chevron-right'></i> <strong>Làm chủ</strong> 100% kỹ thuật, vốn.</span>",
+                "<span><i class='fa fa-chevron-right'></i> Chú trọng vào <strong>người/nhóm</strong> bạn quan tâm.</span>",
+                "<span><i class='fa fa-chevron-right'></i> Kết nối để có cơ hội xây dựng <strong>niềm tin</strong>.</span>",
+                "<span><i class='fa fa-chevron-right'></i> Kết nối để góp phần <strong>thực hiện</strong> những việc mình quan tâm.</span>"
+            ],
+            "footer"  : "Tìm Hiểu Chi Tiết",
+            "footerHL": "(Nội dung được cập nhật thường xuyên)"
+        }, {
+            "header"  : "<h1 class='panel-title'>Tài Trợ</h1>",
+            "headerHL": "<h3>Niềm Tin Thành Hiện Thực</h3>",
+            "bodyText": [
+                "<span><i class='fa fa-chevron-right'></i> <strong>100% tiền quảng cáo</strong> dùng tài trợ công cuộc tranh đấu của người Việt.</span>",
+                "<span><i class='fa fa-chevron-right'></i> Là nơi tin cậy cho người Việt tìm đến quảng cáo/rao vặt.</span>",
+                "<span><i class='fa fa-chevron-right'></i> Là 'CraigList' của người Việt, giả sử $10/tháng quảng cáo/rao vặt.</span>",
+                "<span><i class='fa fa-chevron-right'></i> 1K tiệm buôn bán nhỏ cần quảng cáo/rao vặt <strong>$10K/tháng USD</strong> tài trợ.</span>",
+                "<span><i class='fa fa-chevron-right'></i> 10K cơ sở thương mại như vậy, <strong>$100K/tháng USD</strong> tài trợ.</span>",
+                "<span><i class='fa fa-chevron-right'></i> 100K người muốn đóng góp, <strong>$1 triệu USD/tháng</strong> tài trợ</span>",
+                "<span><i class='fa fa-chevron-right'></i> Người tham gia mạng xã hội bỏ phiếu cho <strong>nhóm đại diện</strong> quyết định chi tiêu tiền tài trợ</span>" ,
+                "<span><i class='fa fa-chevron-right'></i> Tiền tài trợ là ứng dụng của tiền điện tử, <strong>1đ bảo chứng bằng $1 USD</strong>.</span>",
+                "<span><i class='fa fa-chevron-right'></i> Người nhận ở Việt Nam có tài khoản <strong>bảo mật ở Hoa Kỳ</strong> bằng kỹ thuật mật mã.</span>",
+                "<span><i class='fa fa-chevron-right'></i> Mục đích là <strong>không gởi ngoại tệ</strong> về VN mà ghi nhận bằng tiền điện tử bảo mật.</span>"
+            ],
+            "footer"  : "Tìm Hiểu Chi Tiết",
+            "footerHL": "(Nội dung được cập nhật thường xuyên)"
+        }, {
+            "header"  : "<h1 class='panel-title'>Cộng Tác</h1>",
+            "headerHL": "<h3>Thành Tựu Tạo Sức Mạnh</h3>",
+            "bodyText": [
+                "<span><i class='fa fa-chevron-right'></i> Thiết lập e-store miễn phí để mọi người <strong>dễ buôn bán</strong> bằng tiền điện tử.</span>",
+                "<span><i class='fa fa-chevron-right'></i> <strong>Tài trợ</strong> giúp các nhóm dân sự ở Việt Nam khỏi bị cô lập kinh tế.</span>",
+                "<span><i class='fa fa-chevron-right'></i> Tạo môi trường pháp lý cho các <strong>dự án thương mại</strong> tầm cỡ lớn hơn.</span>",
+                "<span><i class='fa fa-chevron-right'></i> <strong>Huy động vốn crowd funding</strong> bằng uy tín đã xây dựng trên mạng xã hội.</span>",
+                "<span><i class='fa fa-chevron-right'></i> Thử nghiệm thị trường, tiếp thị sản phẩm trước khi đầu tư vốn.</span>",
+                "<span><i class='fa fa-chevron-right'></i> Tạo mô hình <strong>tìm người cộng tác</strong> và chia phần từ lợi nhuận khi thành công.</span>",
+                "<span><i class='fa fa-chevron-right'></i> Phát triển các dự án dùng tiền điện tử:</span>",
+                "<span><i class='fa fa-check'></i>   Các chương trình <strong>giáo dục</strong> khai phóng, đào tạo kỹ năng thực tế.</span>",
+                "<span><i class='fa fa-check'></i>   Các dự án IT, Robotics, IoT trong tương lai, cộng tác được với người trong nước.</span>",
+                "<span><i class='fa fa-check'></i>   Khả năng <strong>chi trả tiền điện tử</strong> ở Việt Nam bằng smartphone.</span>"
+            ],
+            "footer"  : "Tìm Hiểu Chi Tiết",
+            "footerHL": "(Nội dung được cập nhật thường xuyên)"
+        }, {
+            "header"  : "<h1 class='panel-title'>Phát Triển</h1>",
+            "headerHL": "<h3>Sức Mạnh Tạo Thay Đổi</h3>",
+            "bodyText": [
+                "<span><i class='fa fa-chevron-right'></i> Lập công ty chịu <strong>trách nhiệm</strong> trước luật pháp Hoa Kỳ.</span>",
+                "<span><i class='fa fa-chevron-right'></i> Đặt dưới dự <strong>giám sát</strong> của các định chế tài chính của Hoa Kỳ.</span>",
+                "<span><i class='fa fa-chevron-right'></i> Hợp thức hoá cổ phiếu để bảo đảm quyền lợi của những người đã đóng góp.</span>",
+                "<span><i class='fa fa-chevron-right'></i> Thu hút nhiều người tài cộng tác ở nhiều lĩnh vực.</span>",
+                "<span><i class='fa fa-chevron-right'></i> Mở rộng nhiều dự án thương mại.</span>",
+                "<span><i class='fa fa-chevron-right'></i> Mở rộng khả năng chi trả tiền điện tử trong nước.</i></span>",
+                "<span><i class='fa fa-chevron-right'></i> Hạn chế nguồn kinh tế nuôi đảng Cộng Sản.</span>",
+                "<span><i class='fa fa-chevron-right'></i> Tổng hợp sức mạnh để <strong>thay đổi Việt Nam</strong> theo nguyện vọng của đa số dân.</span>"
+            ],
+            "footer"  : "Tìm Hiểu Chi Tiết",
+            "footerHL": "(Nội dung được cập nhật thường xuyên)"
+        } ]
+    },
+    "features": {
+        "title": "",
+        "titleDetail": ""
+    },
+    "screen": {
+        "title": "",
+        "titleDetail": ""
+    },
+    "team": {
+        "title": "",
+        "titleDetail": ""
+    },
+    "plan": {
+        "title": "",
+        "titleDetail": "",
+        "events": [ {
+            "entryFormat": "",
+            "dateTime"   : "",
+            "timeMarker" : "",
+            "icon"       : "",
+            "iconFormat" : "",
+            "eventTitle" : "",
+            "eventBrief" : ""
+        }, {
+            "entryFormat": "",
+            "dateTime"   : "",
+            "timeMarker" : "",
+            "icon"       : "",
+            "iconFormat" : "",
+            "eventTitle" : "",
+            "eventBrief" : ""
+        } ]
+    }
+}

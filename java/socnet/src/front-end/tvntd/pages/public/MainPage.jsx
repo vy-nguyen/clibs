@@ -19,16 +19,16 @@ let PriceBox = React.createClass({
         let textList = [];
         _.forOwn(this.props.textList, function(it, idx) {
             textList.push(
-                <li key={_.uniqueId("price-list-")}>{it}</li>
+                <li key={_.uniqueId("price-list-")} dangerouslySetInnerHTML={{__html: it}}></li>
             );
         });
         return (
             <div className="col-xs-12 col-sm-6 col-md-3">
                 <div className="panel panel-success pricing-big">
                     {this.props.headerImg}
-                    <div className="panel-heading">{this.props.headerText}</div>
+                    <div className="panel-heading" dangerouslySetInnerHTML={{__html: this.props.headerText}}></div>
                     <div className="panel-body no-padding text-align-center">
-                        <div className="the-price">{this.props.headerDetail}</div>
+                        <div className="the-price" dangerouslySetInnerHTML={{__html: this.props.headerDetail}}></div>
                         <div className="price-features">
                             <ul className="list-unstyled text-left">
                                 {textList}
@@ -36,8 +36,8 @@ let PriceBox = React.createClass({
                         </div>
                     </div>
                     <div className="panel-footer text-align-center">
-                        <a href="#" className="btn btn-primary btn-block" role="button">{this.props.footerText}</a>
-                        <div><a href="#">{this.props.footerDetail}</a></div>
+                        <a href="#" className="btn btn-primary btn-block" role="button"><span>{this.props.footerText}</span></a>
+                        <div><a href="#"><i>{this.props.footerDetail}</i></a></div>
                     </div>
                 </div>
             </div>
@@ -93,8 +93,8 @@ let FeatureSection = React.createClass({
                         <div className="row">
                             <div className="col-lg-8 col-lg-offset-2">
                                 <div className="section-heading">
-                                    {this.props.title}
-                                    {this.props.titleDetail}
+                                    <h1>{this.props.title}</h1>
+                                    <p style={{fontSize: "130%"}}>{this.props.titleDetail}</p>
                                 </div>
                             </div>
                         </div>
@@ -216,45 +216,27 @@ let MainPage = React.createClass({
         return AboutUsStore.getData();
     },
 
+    componentWillReceiveProps: function(nextProps) {
+        this.setState(AboutUsStore.getData());
+    },
+
     render: function() {
         if (UserStore.isLogin()) {
             return <NewsFeed/>;
         }
         AboutUsStore.dumpData("About Us Store");
 
-        let deals = {
-            title: <h2>Our Deals</h2>,
-            titleDetail: <p>Lorem ipsum dolor sit amet, no nisl mentitum recusabo per, vim at blandit qualisque dissentiunt. Diam efficiantur conclusionemque ut has</p>,
-            plan1: [
-                <span><i className="fa fa-check text-success"></i>abcdef something<strong>to all storage locations</strong></span>,
-                <span><i className="fa fa-check text-success"></i><strong>Unlimited</strong> storage</span>,
-                <span><i className="fa fa-check text-success"></i>Superbig <strong> download quota</strong></span>,
-                <span><i className="fa fa-check text-success"></i><strong>Smart File Storage</strong></span>,
-                <span><i className="fa fa-check text-success"></i>All time <strong> updates</strong></span>,
-                <span><i className="fa fa-check text-success"></i><strong>Unlimited</strong> access to all files</span>,
-                <span><i className="fa fa-check text-success"></i><strong>Allowed</strong> to be exclusing per sale</span>
-            ],
-            plan2: [
-                <span><i className="fa fa-check text-success"></i>2 years access <strong> to all storage locations</strong></span>,
-                <span><i className="fa fa-check text-success"></i> <strong>Unlimited</strong> storage</span>,
-                <span><i className="fa fa-check text-success"></i> Superbig <strong> download quota</strong></span>,
-                <span><i className="fa fa-check text-success"></i> <strong>Smart File Storage</strong></span>,
-                <span><i className="fa fa-check text-success"></i> All time <strong> updates</strong></span>,
-                <span><i className="fa fa-check text-success"></i> <strong>Unlimited</strong> access to all files</span>,
-                <span><i className="fa fa-check text-success"></i> <strong>Allowed</strong> to be exclusing per sale</span>
-            ]
-        };
         let features = {
-            title: <h2>The Network Power</h2>,
-            titleDetail: <p>Lorem ipsum dolor sit amet, no nisl mentitum recusabo per, vim at blandit qualisque dissentiunt. Diam efficiantur conclusionemque ut has</p>
+            title: "The Network Power",
+            titleDetail: "Lorem ipsum dolor sit amet, no nisl mentitum recusabo per, vim at blandit qualisque dissentiunt. Diam efficiantur conclusionemque ut has"
         };
         let screen = {
-            title: <h2>Screen Shots</h2>,
-            titleDetail: <p>Lorem ipsum dolor sit amet, no nisl mentitum recusabo per, vim at blandit qualisque dissentiunt. Diam efficiantur conclusionemque ut has</p>
+            title: "Screen Shots",
+            titleDetail: "Lorem ipsum dolor sit amet, no nisl mentitum recusabo per, vim at blandit qualisque dissentiunt. Diam efficiantur conclusionemque ut has"
         };
         let team = {
-            title: <h2>Our Team</h2>,
-            titleDetail: <p>Lorem ipsum dolor sit amet, no nisl mentitum recusabo per, vim at blandit qualisque dissentiunt. Diam efficiantur conclusionemque ut has</p>
+            title: "Our Team",
+            titleDetail: "Lorem ipsum dolor sit amet, no nisl mentitum recusabo per, vim at blandit qualisque dissentiunt. Diam efficiantur conclusionemque ut has"
         };
         let images = [
             "/rs/img/superbox/superbox-full-1.jpg",
@@ -267,8 +249,8 @@ let MainPage = React.createClass({
             "/rs/img/superbox/superbox-full-8.jpg"
         ];
         let update = {
-            title: <h2>Updates</h2>,
-            titleDetail: <p>Lorem ipsum dolor sit amet, no nisl mentitum recusabo per, vim at blandit qualisque dissentiunt. Diam efficiantur conclusionemque ut has</p>,
+            title: "Updates",
+            titleDetail: "Lorem ipsum dolor sit amet, no nisl mentitum recusabo per, vim at blandit qualisque dissentiunt. Diam efficiantur conclusionemque ut has",
             events: [ {
                 entryFormat: "",
                 dateTime   : "2016-01-10",
@@ -317,23 +299,30 @@ let MainPage = React.createClass({
             } ]
         };
 
+        if (this.state.goals == null) {
+            return (<h1>Waiting for data...</h1>);
+        }
+        let goalBoxes = [];
+        let goals = this.state.goals;
+        _.forOwn(this.state.goals.panes, function(item) {
+            goalBoxes.push(
+                <PriceBox key={_.uniqueId('goal-box-')}
+                    headerText={item.header}
+                    headerImg={null}
+                    headerDetail={item.headerHL}
+                    textList={item.bodyText}
+                    footerText={item.footer}
+                    footerDetail={item.footerHL}/>
+            );
+        });
+        let welcome = this.state.welcome;
         return (
             <div id="content">
-                <FeatureSection title={deals.title} titleDetail={deals.titleDetail}>
-                    <PriceBox
-                        headerText={<h3 className="panel-title">Personal Project</h3>}
-                        headerImg={null}
-                        headerDetail={<h1>$99<span className='subscript'>/mo</span></h1>}
-                        textList={deals.plan1}
-                        footerText={<span>Purchase <span>via Palpal</span></span>}
-                        footerDetail={<i>We accept all major credit cards</i>}/>
-                    <PriceBox
-                        headerText={<h3 className="panel-title">Developer Bundle</h3>}
-                        headerImg={<img src="/rs/img/util/ribbon.png" className="ribbon" alt="ribbon"/>}
-                        headerDetail={<h1>$350<span className="subscript">/mo</span></h1>}
-                        textList={deals.plan2}
-                        footerText={<span>Purchase <span>via Palpal</span></span>}
-                        footerDetail={<i>We accept all major credit cards</i>}/>
+                <FeatureSection title={welcome.title} titleDetail={welcome.titleDetail} format="bg-gray">
+                </FeatureSection>
+
+                <FeatureSection title={goals.title} titleDetail={goals.titleDetail}>
+                    {goalBoxes}
                 </FeatureSection>
 
                 <FeatureSection title={features.title} titleDetail={features.titleDetail} format="bg-gray">

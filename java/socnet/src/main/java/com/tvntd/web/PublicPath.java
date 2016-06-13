@@ -108,7 +108,7 @@ public class PublicPath
      */
     @RequestMapping(value = "/public/get-json/{dir}/{json}",
             method = RequestMethod.GET, produces = "application/json")
-    public @ResponseBody String
+    public void
     getJson(HttpServletRequest reqt,
             @PathVariable(value = "dir") String dirName,
             @PathVariable(value = "json") String fileName,
@@ -118,7 +118,7 @@ public class PublicPath
         URL url = getClass().getClassLoader().getResource(relPath);
         if (url == null) {
             s_log.info("Invalid request " + relPath);
-            return null;
+            return;
         }
         File f = new File(url.getFile());
 
@@ -131,11 +131,10 @@ public class PublicPath
             DataInputStream dis = new DataInputStream(new FileInputStream(f));
             dis.readFully(buf, 0, flen);
             dis.close();
-            return new String(buf, 0, flen, StandardCharsets.UTF_8);
+            resp.getOutputStream().write(buf, 0, flen);
 
         } catch(IOException e) {
             s_log.info(e.getMessage());
         }
-        return null;
     }
 }
