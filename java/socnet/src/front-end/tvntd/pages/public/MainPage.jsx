@@ -226,10 +226,6 @@ let MainPage = React.createClass({
         }
         AboutUsStore.dumpData("About Us Store");
 
-        let features = {
-            title: "The Network Power",
-            titleDetail: "Lorem ipsum dolor sit amet, no nisl mentitum recusabo per, vim at blandit qualisque dissentiunt. Diam efficiantur conclusionemque ut has"
-        };
         let screen = {
             title: "Screen Shots",
             titleDetail: "Lorem ipsum dolor sit amet, no nisl mentitum recusabo per, vim at blandit qualisque dissentiunt. Diam efficiantur conclusionemque ut has"
@@ -304,7 +300,7 @@ let MainPage = React.createClass({
         }
         let goalBoxes = [];
         let goals = this.state.goals;
-        _.forOwn(this.state.goals.panes, function(item) {
+        _.forOwn(goals.panes, function(item) {
             goalBoxes.push(
                 <PriceBox key={_.uniqueId('goal-box-')}
                     headerText={item.header}
@@ -313,6 +309,21 @@ let MainPage = React.createClass({
                     textList={item.bodyText}
                     footerText={item.footer}
                     footerDetail={item.footerHL}/>
+            );
+        });
+        let features = this.state.features;
+        let featureBoxes = [];
+        _.forOwn(features.features, function(item) {
+            let text = [];
+            let key = _.uniqueId('feature-box-');
+
+            _.forOwn(item.text, function(it, idx) {
+                text.push(<p key={key + idx}>{it}</p>);
+            });
+            featureBoxes.push(
+                <FeatureBox key={key} icon={item.icon} title={item.title}>
+                    {text} 
+                </FeatureBox>
             );
         });
         let welcome = this.state.welcome;
@@ -326,18 +337,7 @@ let MainPage = React.createClass({
                 </FeatureSection>
 
                 <FeatureSection title={features.title} titleDetail={features.titleDetail} format="bg-gray">
-                    <FeatureBox icon="fa fa-code" title="Localization">
-                        <p>Vestibulum tincidunt enim in pharetra malesuada. Duis semper magna metus electram accommodare.</p>
-                    </FeatureBox>
-                    <FeatureBox icon="fa fa-suitcase" title="Compact">
-                        <p>Vestibulum tincidunt enim in pharetra malesuada. Duis semper magna metus electram accommodare.</p>
-                    </FeatureBox>
-                    <FeatureBox icon="fa fa-cog" title="State of the Art">
-                        <p>Vestibulum tincidunt enim in pharetra malesuada. Duis semper magna metus electram accommodare.</p>
-                    </FeatureBox>
-                    <FeatureBox icon="fa fa-rocket" title="Cloud System">
-                        <p>Vestibulum tincidunt enim in pharetra malesuada. Duis semper magna metus electram accommodare.</p>
-                    </FeatureBox>
+                    {featureBoxes}
                 </FeatureSection>
 
                 <FeatureSection title={screen.title} titleDetail={screen.titleDetail}>

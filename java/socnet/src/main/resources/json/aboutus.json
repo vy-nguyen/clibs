@@ -71,15 +71,52 @@
         } ]
     },
     "features": {
-        "title": "",
-        "titleDetail": ""
+        "title"      : "Nền Tảng Của Dự Án",
+        "titleDetail": "Xây dựng dự án bằng các nguyên tắc: trách nhiệm - bảo mật - an toàn - minh bạch.  Là công ty hoạt động theo luật pháp Hoa Kỳ, đặt quyền lợi của khách hàng, người dùng mạng xã hội làm ưu tiên hàng đầu.  Áp dụng kỹ thuật đã được hệ thống Bitcoin sử dụng để bảo mật danh tính và quyền riêng tư của người dùng.  Tiền điện tử được bảo chứng tỉ lệ 1/1 USD có khả năng truy cập nguồn gốc được giữ trong trương mục ngân hàng tại Hoa Kỳ.  Phân biệt rõ ràng giao dịch công/tư kiểm chứng được qua mạng.  Tất cả mọi khoảng chi tiêu từ tiền tài trợ là giao dịch công khai trên mạng, người nhận có toàn quyền chuyển đổi tiền điện tử thành sỡ hữu tư.",
+        "features"   : [ {
+            "icon" : "fa fa-anchor",
+            "title": "Trách Nhiệm",
+            "text" : [
+                "Là công ty chuyên nghiệp hoạt động theo luật pháp Hoa Kỳ",
+                "Người dùng là khách hàng, thân chủ của công ty",
+                "Luật pháp Hoa Kỳ bảo đảm quyền lợi khách hàng theo kế ước",
+                "Sẽ đặt dưới sự giám sát của các định chế tài chính Hoa Kỳ khi đạt đúng tiêu chuẩn"
+            ]
+        }, {
+            "icon" : "fa fa-cog",
+            "title": "Bảo Mật",
+            "text" : [
+                "Sử dụng kỹ thuật bảo mật dùng trong kỹ nghệ điện toán ứng dụng cho quân sự, ngân hàng",
+                "Mô hình hoạt động đã được Bitcoin chứng minh độ bảo mật và an toàn khi dùng công khai trên mạng Internet",
+                "Tài khoản được mã hoá, chủ nhân bảo mật chìa khoá bằng quyền kiểm soát tài khoản email của mình, dựa vào độ bảo mật tin cậy của gmail",
+                "Áp dụng kỹ thuật blockchain đã được Bitcoin chứng minh để bảo đảm tính trung thực của mọi khoản giao dịch"
+            ]
+        }, {
+            "icon" : "fa fa-money",
+            "title": "An Toàn",
+            "text" : [
+                "Tiền chỉ chuyển đi khi chủ nhân còn quyền kiểm soát từ 1 đến 4 tài khoản email khác nhau của họ tuỳ theo độ an toàn và tiện lợi do họ chọn",
+                "Tiền điện tử có nguồn gốc kiểm chứng được trên mạng, được bảo chứng bằng 1/1 USD ký gởi trong hệ thống ngân hàng Hoa Kỳ",
+                "Khả năng chuyển khoản vào trương mục khác trong hệ thống ngân hàng Hoa Kỳ hoặc dịch vụ chuyển tiền như Paypal",
+                "Công ty chịu trách nhiệm trước luật pháp Hoa Kỳ về độ an toàn của tiền khách hàng gởi"
+            ]
+        }, {
+            "icon" : "fa fa-sun-o",
+            "title": "Minh Bạch",
+            "text" : [
+                "Mọi khoản giao dịch bằng tiền điện tử được lưu trữ công khai, danh tính người giao dịch được mã hoá để bảo vệ quyền riêng tư",
+                "Tài khoản công chi tiêu vì lợi ích chung của cộng đồng mạng luôn ở chế độ công khai",
+                "Mọi giao dịch chuyển đổi từ tài khoản công sang tư đều được công bố rõ ràng",
+                "Ghi nhận chính xác mức độ đóng góp của mỗi người vì lợi ích chung của cộng đồng, của dân Việt"
+            ]
+        } ]
     },
     "screen": {
-        "title": "",
+        "title"      : "",
         "titleDetail": ""
     },
     "team": {
-        "title": "",
+        "title"      : "",
         "titleDetail": ""
     },
     "plan": {
