@@ -4,7 +4,7 @@
     "email"   : "vy@abc.com",
     "userRole": "self",
     "userUrl" : "/user/vy.nguyen",
-    "userImgUrl": "https://scontent.fsnc1-1.fna.fbcdn.net/hprofile-xpa1/v/t1.0-1/c22.0.111.111/p111x111/150761_10200962648215006_1275337373_n.jpg?oh=109db189ad9ba55610d3e0e5b0344c2b&oe=576E6116", 
+    "userImgUrl": "/rs/img/avatars/male.png",
     "firstName" : "Vy",
     "lastName"  : "Nguyen",
 
@@ -29,13 +29,13 @@
     "follows"     : "100"
 }, {
     "userUuid": "123451",
-    "userName": "Nam Vo",
+    "userName": "Trang",
     "email"   : "nam@abc.com",
     "userRole": "friend",
     "userUrl" : "/user/nam.vo",
-    "userImgUrl": "/rs/img/avatars/nam.jpg",
-    "firstName" : "Nam",
-    "lastName"  : "Vo",
+    "userImgUrl": "/rs/img/avatars/female.png",
+    "firstName" : "Trang",
+    "lastName"  : "Pham",
 
     "userStatus": "online",
     "coverImg0" : "/rs/img/demo/m1.jpg",
@@ -58,13 +58,13 @@
     "follows"     : "1040"
 }, {
     "userUuid": "123452",
-    "userName": "Tom Nguyen",
+    "userName": "Thuy Nguyen",
     "email"   : "tom@abc.com",
     "userRole": "author",
     "userUrl" : "/user/tom.nguyen",
     "userImgUrl": "/rs/img/avatars/1.png",
-    "firstName" : "Tom",
-    "lastName"  : "Nguyen",
+    "firstName" : "Thuy",
+    "lastName"  : "Tran",
 
     "userStatus": "online",
     "coverImg0" : "/rs/img/demo/s1.jpg",

@@ -52,11 +52,12 @@ let TeamBio = React.createClass({
             <div className="col-xs-12 col-sm-3 col-md-3">
                 <div className="team boxed-grey">
                     <div className="inner">
-                        <h5>{this.props.name}</h5>
-                        <p className="subtitle">{this.props.title}</p>
+                        <h3>{this.props.name}</h3>
+                        <p className="subtitle"><strong>{this.props.title}</strong></p>
                         <div className="avatar">
                             <img src={this.props.avatar} alt="" className="img-responsive"/>
                         </div>
+                        <p>{this.props.teamDesc}</p>
                     </div>
                 </div>
             </div>
@@ -93,8 +94,14 @@ let FeatureSection = React.createClass({
                         <div className="row">
                             <div className="col-lg-8 col-lg-offset-2">
                                 <div className="section-heading">
-                                    <h1>{this.props.title}</h1>
-                                    <p style={{fontSize: "130%"}}>{this.props.titleDetail}</p>
+                                    <br/>
+                                    <div style={{fontSize: "300%"}}>
+                                        <h1><strong>{this.props.title}</strong></h1>
+                                    </div>
+                                    <br/>
+                                    <p style={{fontSize: "140%"}}>{this.props.titleDetail}</p>
+                                    <br/>
+                                    <br/>
                                 </div>
                             </div>
                         </div>
@@ -226,75 +233,6 @@ let MainPage = React.createClass({
         }
         AboutUsStore.dumpData("About Us Store");
 
-        let screen = {
-            title: "Screen Shots",
-            titleDetail: "Lorem ipsum dolor sit amet, no nisl mentitum recusabo per, vim at blandit qualisque dissentiunt. Diam efficiantur conclusionemque ut has"
-        };
-        let team = {
-            title: "Our Team",
-            titleDetail: "Lorem ipsum dolor sit amet, no nisl mentitum recusabo per, vim at blandit qualisque dissentiunt. Diam efficiantur conclusionemque ut has"
-        };
-        let images = [
-            "/rs/img/superbox/superbox-full-1.jpg",
-            "/rs/img/superbox/superbox-full-2.jpg",
-            "/rs/img/superbox/superbox-full-3.jpg",
-            "/rs/img/superbox/superbox-full-4.jpg",
-            "/rs/img/superbox/superbox-full-5.jpg",
-            "/rs/img/superbox/superbox-full-6.jpg",
-            "/rs/img/superbox/superbox-full-7.jpg",
-            "/rs/img/superbox/superbox-full-8.jpg"
-        ];
-        let update = {
-            title: "Updates",
-            titleDetail: "Lorem ipsum dolor sit amet, no nisl mentitum recusabo per, vim at blandit qualisque dissentiunt. Diam efficiantur conclusionemque ut has",
-            events: [ {
-                entryFormat: "",
-                dateTime   : "2016-01-10",
-                timeMarker : <span>Next Year</span>,
-                iconFormat : "bg-success",
-                icon       : "entypo-feather",
-                eventTitle : "Patch was released today",
-                eventBrief : <p>Tolerably earnestly middleton extremely distrusts she boy now not. Add and offered prepare how cordial two promise. Greatly who affixed suppose but enquire compact prepare all put. Added forth chief trees but rooms think may.</p>
-            }, {
-                entryFormat: "", //"left-aligned",
-                dateTime   : "2017-01-10",
-                timeMarker : <span>Next 2 Years</span>,
-                iconFormat : "bg-secondary",
-                icon       : "entypo-suitcase",
-                eventTitle : <span>Yahoo buys a share of <strong>ABC</strong></span>,
-                eventBrief : "Yahoo decided to buy a share of ABC"
-            }, {
-                entryFormat: "",
-                dateTime   : "2018-02-28",
-                timeMarker : <span>Next 3 Years</span>,
-                iconFormat : "bg-info",
-                icon       : "entypo-location",
-                eventTitle : "Busy Day!",
-                eventBrief : (
-                    <div>
-                        <blockquote>Place was booked till 3am!</blockquote>
-                        <img src="/rs/img/util/map.png" alt="map" className="img-responsive"/>
-                    </div>
-                )
-            }, {
-                entryFormat: "left-aligned",
-                dateTime   : "2019-03-30",
-                timeMarker : <span>Next 4 Years</span>,
-                iconFormat : "bg-warning",
-                icon       : "entypo-camera",
-                eventTitle : "We are the world",
-                eventBrief : "We are the world"
-            }, {
-                entryFormat: "",
-                dateTime   : "2020-03-12",
-                timeMarker : <span>Next 5 Years</span>,
-                iconFormat : "bg-secondary",
-                icon       : "entypo-suitcase",
-                eventTitle : "Someting important",
-                eventBrief : "Something else isn't important"
-            } ]
-        };
-
         if (this.state.goals == null) {
             return (<h1>Waiting for data...</h1>);
         }
@@ -326,6 +264,14 @@ let MainPage = React.createClass({
                 </FeatureBox>
             );
         });
+        let teamBoxes = [];
+        _.forOwn(this.state.team.members, function(item) {
+            teamBoxes.push(
+                <TeamBio key={_.uniqueId('team-bio-')} name={item.name}
+                    title={item.title} avatar={item.avatar} teamDesc={item.teamDesc}/>
+            );
+        });
+        let plan = this.state.plan;
         let welcome = this.state.welcome;
         return (
             <div id="content">
@@ -340,20 +286,23 @@ let MainPage = React.createClass({
                     {featureBoxes}
                 </FeatureSection>
 
-                <FeatureSection title={screen.title} titleDetail={screen.titleDetail}>
-                    <GallerySection imageList={images}/>
+                <FeatureSection title={this.state.screen.title} titleDetail={this.state.screen.titleDetail}>
+                    <GallerySection imageList={this.state.screen.images}/>
                 </FeatureSection>
 
-                <FeatureSection title={team.title} titleDetail={team.titleDetail} format="bg-gray">
-                    <TeamBio name="TBD" title="TBD" avatar="/rs/img/avatars/male.png"/>
-                    <TeamBio name="TBD" title="TBD" avatar="/rs/img/avatars/male.png"/>
-                    <TeamBio name="TBD" title="TBD" avatar="/rs/img/avatars/male.png"/>
-                    <TeamBio name="TBD" title="TBD" avatar="/rs/img/avatars/male.png"/>
+                <FeatureSection title={this.state.team.title} titleDetail={this.state.team.titleDetail} format="bg-gray">
+                    {teamBoxes}
                 </FeatureSection>
 
-                <FeatureSection title={update.title} titleDetail={update.titleDetail}>
-                    <TimeLineDev timeEvents={update.events}/>
+                <FeatureSection title={plan.title} titleDetail={plan.titleDetail}>
+                    <TimeLineDev timeEvents={plan.events}/>
                 </FeatureSection>
+
+                <section className="home-section text-center">
+                    <div className="container">
+                        <button style={{fontSize: "250%"}} className="btn btn-primary">{this.state.register.text}</button>
+                    </div>
+                </section>
             </div>
         );
     {/*

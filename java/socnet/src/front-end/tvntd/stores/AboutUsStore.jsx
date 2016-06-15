@@ -22,7 +22,8 @@ let AboutUsStore = Reflux.createStore({
             plan    : data.plan,
             screen  : data.screen,
             team    : data.team,
-            welcome : data.welcome
+            welcome : data.welcome,
+            register: data.register
         };
         this.trigger(this.data);
     },

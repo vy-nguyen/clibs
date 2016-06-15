@@ -112,32 +112,118 @@
         } ]
     },
     "screen": {
-        "title"      : "",
-        "titleDetail": ""
+        "title"      : "Vài Hình Ảnh Mẫu",
+        "titleDetail": "Hình ảnh mẫu từ phiên bản alpha của mạng xã hội",
+        "images": [
+            "/rs/img/bg/1.png",
+            "/rs/img/bg/2.png",
+            "/rs/img/bg/3.png",
+            "/rs/img/bg/4.png",
+            "/rs/img/bg/5.png",
+            "/rs/img/bg/6.png",
+            "/rs/img/bg/7.png",
+            "/rs/img/bg/8.png"
+        ]
     },
     "team": {
-        "title"      : "",
-        "titleDetail": ""
+        "title"      : "Dự Án Cần Nhiều Người Hợp Tác",
+        "titleDetail": "Khả năng thành công của dự án là quyết tâm của những người muốn bỏ công sức cùng hợp tác xây dựng nó.  Đây là mồi lửa ban đầu, muốn bắt cháy cần phải có sự cộng tác tận tâm của nhiều người, ngoài tâm và tầm còn có trách nhiệm là chủ nhân của công ty, là bạn đồng hành của những người sáng lập",
+        "members": [ {
+            "name"    : "Bạn",
+            "title"   : "Thành Viên",
+            "avatar"  : "/rs/img/avatars/male.png",
+            "teamDesc": "Không có bạn dự án này sẽ không thể thành công"
+        }, {
+            "name"    : "Bạn",
+            "title"   : "Web/Mobile Design",
+            "avatar"  : "/rs/img/avatars/female.png",
+            "teamDesc": "Đảm nhận thiết kế chuyên ngiệp UI/UX theo phong cách hiện đại"
+        }, {
+            "name"    : "Bạn",
+            "title"   : "Software Engineer",
+            "avatar"  : "/rs/img/avatars/male.png",
+            "teamDesc": "Java, Javascript, C++, IT DevOp, Security.  Cần 1 đến 2 người đồng sáng lập"
+        }, {
+            "name"    : "Bạn",
+            "title"   : "Finance/Kế Toán",
+            "avatar"  : "/rs/img/avatars/female.png",
+            "teamDesc": "Đảm nhận các vấn dề kế toán, thuế để hoạt động đúng luật pháp Hoa Kỳ"
+        }, {
+            "name"    : "Bạn",
+            "title"   : "Business/Kinh Doanh",
+            "avatar"  : "/rs/img/avatars/male.png",
+            "teamDesc": "Đảm nhận các vần để kinh doanh.  Cần 1 người đồng sáng lập"
+        }, {
+            "name"    : "Bạn",
+            "title"   : "Lawyer",
+            "avatar"  : "/rs/img/avatars/female.png",
+            "teamDesc": "Đảm nhận các vấn đề luật pháp, phê duyệt hợp đồng"
+        }, {
+            "name"    : "Bạn",
+            "title"   : "Giáo Chức/Educator",
+            "avatar"  : "/rs/img/avatars/male.png",
+            "teamDesc": "Phát triển các chương trình giáo dục khai phóng, dạy nghề thực tế.  Khi sinh lời sẽ được hưởng bản quyền từ những chương trình do bạn phát triển hoặc cộng tác soạn thảo"
+        }, {
+            "name"    : "Bạn",
+            "title"   : "Marketing/Tiếp Thị",
+            "avatar"  : "/rs/img/avatars/female.png",
+            "teamDesc": "Đảm trách làm nhịp cầu giữa công ty với người dùng, khách hàng của công ty"
+        } ]
     },
     "plan": {
-        "title": "",
-        "titleDetail": "",
+        "title": "Kế Hoạch Phát Triển",
+        "titleDetail": "Đây là vài điểm tiêu biểu trong kế hoạch phát triển dự án này.  Khả năng thành công của dự án này lệ thuộc nhiều vào sự ủng hộ của cộng đồng hơn là các vấn đề kỹ thuật.  Khó khăn về kỹ thuật với thời gian sẽ tìm được giải pháp.  Nếu không được nhiều người nhiệt tình ủng hộ vì đã có Facebook, Paypal, Craiglist... thì dự án này sẽ không tìm được nguồn quảng cáo và không có thị trường để phát triển ứng dụng tiền điện từ.",
         "events": [ {
             "entryFormat": "",
             "dateTime"   : "",
-            "timeMarker" : "",
-            "icon"       : "",
-            "iconFormat" : "",
-            "eventTitle" : "",
-            "eventBrief" : ""
+            "timeMarker" : "Hiện Tại",
+            "icon"       : "entypo-feather",
+            "iconFormat" : "bg-success",
+            "eventTitle" : "Phiên bản đầu tiên alpha cho mạng xã hội",
+            "eventBrief" : "Giới thiệu dự án cho bạn bè thân hữu, những người quan tâm đến tương lai Việt Nam"
         }, {
             "entryFormat": "",
             "dateTime"   : "",
-            "timeMarker" : "",
-            "icon"       : "",
-            "iconFormat" : "",
-            "eventTitle" : "",
-            "eventBrief" : ""
+            "timeMarker" : "1.000 thành viên/thân hữu",
+            "icon"       : "entypo-feather",
+            "iconFormat" : "bg-success",
+            "eventTitle" : "Phiên bản beta mạng xã hội, cung cấp dịch vụ quảng cáo, rao vặt",
+            "eventBrief" : "Phát triển dựa theo góp ý của thành viên, giới thiệu mạng cho nhiều người trong cộng đồng mạng.  Tìm cơ cở thương mại của người Việt ngoài nước cần quảng cáo, rao vặt.  Dịch vụ miễn phí đến khi phát triển được tiền điện tử"
+        }, {
+            "entryFormat": "",
+            "dateTime"   : "",
+            "timeMarker" : "10.000 thành viên/thân hữu",
+            "icon"       : "entypo-feather",
+            "iconFormat" : "bg-success",
+            "eventTitle" : "Phiên bản alpha cho tiền điện tử",
+            "eventBrief" : "Thành viên thử buôn bán, giao dịch bằng tiền điện tử không bảo chứng.  Thành viên phát triển dự thảo điều luật cho mạng xã hội, quan trọng nhất là thể thức chọn lựa cách chi tiêu thu nhập từ tiền quảng cáo cho các lợi ích cộng đồng, ưu tiên hỗ trợ cho các hoạt động tại Việt Nam"
+        }, {
+            "entryFormat": "",
+            "dateTime"   : "",
+            "timeMarker" : "20.000 thành viên",
+            "icon"       : "entypo-feather",
+            "iconFormat" : "bg-success",
+            "eventTitle" : "Phiên bản beta cho tiền điện tử",
+            "eventBrief" : "Lưu hành tiền điện tử bảo chứng bằng thu nhập từ quảng cáo, rao vặt.  Nếu tìm được người tại Việt Nam có nhu cầu tiêu xài, ký gởi USD ngoài Việt Nam thì không cần phải chuyển tiền về Việt Nam.  Người trong nước có khả năng đổi tiền điện tử sang tiền đồng (tiền điện tủ đương nhiên sẽ bất hợp pháp tại Việt Nam ngay từ đầu).  Những người cần dùng nó đều có nhu cầu không thể đáp ứng được bằng các phương tiện hợp pháp đối với chính quyền hiện tại"
+        }, {
+            "entryFormat": "",
+            "dateTime"   : "",
+            "timeMarker" : "100.000 thành viên",
+            "icon"       : "entypo-feather",
+            "iconFormat" : "bg-success",
+            "eventTitle" : "Huy động vốn phát triển công ty",
+            "eventBrief" : "Khi đạt được mốc phát triển này công ty có thể huy động vốn lớn để phát triển từ các nhà đầu tư chuyên nghiệp ở thế mạnh.  Cộng đồng giúp công ty phát triển, có khả năng huy động vốn ngoài mà vẫn kiểm soát được phần lớn quyền sỡ hữu.  Đối với dự án này, năm quyền sở hữu trên 50% đối với nhà đầu tư là vấn đề sống còn của công ty và bảo toàn niềm tin của cộng đồng.  Nếu không giữ được hơn 50% quyền sở hữu, công ty sẽ không huy động vốn ngoài.  Khi huy động vốn, công ty sẽ dành 10% cổ phần cho 10.000 thành viên đầu tiên giúp công ty phát triển, là bạn đồng hành cùng chia xẻ sự thành công của công ty trong tương lai"
+        }, {
+            "entryFormat": "",
+            "dateTime"   : "",
+            "timeMarker" : "1.000.000 thành viên",
+            "icon"       : "entypo-feather",
+            "iconFormat" : "bg-success",
+            "eventTitle" : "Phát triển mobile payment tại Việt Nam",
+            "eventBrief" : "Mục đích là những người buôn gánh bán bưng ở Việt Nam có thể nhận tiền điện tử bằng mã số riêng của họ"
         } ]
+    },
+    "register": {
+        "text": "Đăng Nhập Tài Khoản"
     }
 }
