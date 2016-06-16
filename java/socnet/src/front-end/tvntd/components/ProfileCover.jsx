@@ -5,6 +5,7 @@
 'use strict';
 
 import React          from 'react-mod';
+import _              from 'lodash';
 import { htmlCodes }  from 'vntd-root/config/constants';
 import UserStore      from 'vntd-shared/stores/UserStore.jsx';
 
@@ -21,14 +22,15 @@ let ProfileCover = React.createClass({
             self.coverImg2,
         ];
         let cover_hdr = imgList.map(function(item, index) {
+            let id = _.uniqueId('prof-cover-img-');
             if (index == 0) {
-                return <li key={index} data-target={'#' + imageId} data-slide-to={index.toString()} className='active'></li>;
+                return <li key={id} data-target={'#' + imageId} data-slide-to={index.toString()} className='active'></li>;
             }
-            return <li key={index} data-target={'#' + imageId} data-slide-to={index.toString()} class></li>;
+            return <li key={id} data-target={'#' + imageId} data-slide-to={index.toString()} className=''></li>;
         });
         var cover_img = imgList.map(function(item, index) {
             return (
-                <div key={index} className={index == 0 ? "item active" : "item"}>
+                <div key={_.uniqueId('prof-cover-img-')} className={index == 0 ? "item active" : "item"}>
                     <img src={item} alt="Cover Image"/>
                 </div>
             );

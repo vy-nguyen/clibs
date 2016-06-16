@@ -53,6 +53,8 @@
     "react-dropzone-component": "1.0.0",
     "react-file-input": "0.1.0",
     "react-modal": "1.2.0",
+    "react-modal-dialog": "3.0.1",
+    "react-spinjs": "3.0.0",
     "reflux": "^0.3.0",
     "redux": "^3.x.x",
     "marked": "0.3.5",

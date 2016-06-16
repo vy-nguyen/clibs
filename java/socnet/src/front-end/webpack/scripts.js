@@ -16,7 +16,8 @@ var scripts = {
         "history/lib": "/node_modules/history/umd/History.min.js",
 
         "marked": "/node_modules/marked/lib/marked.js",
-        "lodash": "/node_modules/lodash/lodash.min.js",
+        // "lodash": "/node_modules/lodash/lodash.min.js",
+
         "jquery": "/node_modules/jquery/dist/jquery.min.js",
         "jquery-ui": "/node_modules/jquery-ui/jquery-ui.js",
         "jquery-maskedinput": "/node_modules/jquery.maskedinput/src/jquery.maskedinput.js",

@@ -9,6 +9,7 @@ import React            from 'react-mod';
 import Reflux           from 'reflux';
 import {renderToString} from 'react-dom-server';
 
+import Gallery          from 'vntd-shared/layout/Gallery.jsx';
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import AboutUsStore     from 'vntd-root/stores/AboutUsStore.jsx';
 import NewsFeed         from '../news-feed/NewsFeed.jsx';
@@ -113,33 +114,6 @@ let FeatureSection = React.createClass({
                     </div>
                 </div>
             </section>
-        );
-    }
-});
-
-let GallerySection = React.createClass({
-
-    render: function() {
-        let images = [];
-        _.forEach(this.props.imageList, function(it) {
-            images.push(
-                <div className="col-md-3" key={_.uniqueId("img-box-")}>
-                    <a href={it} title="Image" data-lightbox-gallery="gallery1" data-lightbox-hidpi="/rs/img/pattern/pattern.png">
-                        <img src={it} className="img-responsive"/>
-                    </a>
-                </div>
-            );
-        });
-        return (
-            <div className="container">
-                <div className="row">
-                    <div className="col-sm-12 col-md-12 col-lg-12" >
-                        <div className="row gallery-item">
-                            {images}
-                        </div>
-                    </div>
-                </div>
-            </div>
         );
     }
 });
@@ -287,7 +261,7 @@ let MainPage = React.createClass({
                 </FeatureSection>
 
                 <FeatureSection title={this.state.screen.title} titleDetail={this.state.screen.titleDetail}>
-                    <GallerySection imageList={this.state.screen.images}/>
+                    <Gallery imageList={this.state.screen.images}/>
                 </FeatureSection>
 
                 <FeatureSection title={this.state.team.title} titleDetail={this.state.team.titleDetail} format="bg-gray">
@@ -305,44 +279,6 @@ let MainPage = React.createClass({
                 </section>
             </div>
         );
-    {/*
-        <section id="quotes" className="home-section text-center bg-gray">
-            <div className="container">
-                <div className="row">
-                    <div className="col-md-8 col-md-offset-2">
-                        <div className="quote"><i className="fa fa-quote-left fa-4x"></i></div>
-                        <div className="carousel slide" id="fade-quote-carousel" data-ride="carousel" data-interval="3000">
-                            <ol className="carousel-indicators">
-                                <li data-target="#fade-quote-carousel" data-slide-to="0" className="active"></li>
-                                <li data-target="#fade-quote-carousel" data-slide-to="1"></li>
-                                <li data-target="#fade-quote-carousel" data-slide-to="2"></li>
-                            </ol>
-                            <div className="carousel-inner">
-                                <div className="active item">
-                                    <blockquote>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, veritatis nulla eum laudantium totam tempore optio doloremque laboriosam quas.</p>
-                                    </blockquote>
-                                    <div className="profile-circle" style="background-color: rgba(0,0,0,.2);"></div>
-                                </div>
-                                <div className="item">
-                                    <blockquote>
-                                        <p>Lorem ipsum dolor sit amet, eaque molestias odio aut eius animi. Impedit temporibus nisi accusamus.</p>
-                                    </blockquote>
-                                    <div className="profile-circle" style="background-color: rgba(77,5,51,.2);"></div>
-                                </div>
-                                <div className="item">
-                                    <blockquote>
-                                        <p>Consectetur adipisicing elit. Quidem, veritatis  aut eius animi. Impedit temporibus nisi accusamus.</p>
-                                    </blockquote>
-                                    <div className="profile-circle" style="background-color: rgba(145,169,216,.2);"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>                          
-                </div>
-            </div>
-        </section>
-        */}
     }
 });
 
