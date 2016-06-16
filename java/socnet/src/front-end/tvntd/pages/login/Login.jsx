@@ -10,6 +10,7 @@ import Reflux        from 'reflux';
 
 import {htmlCodes}   from 'vntd-root/config/constants.js';
 import Actions       from 'vntd-root/actions/Actions.jsx';
+import AboutUsStore  from 'vntd-root/stores/AboutUsStore.jsx';
 import UserStore     from 'vntd-shared/stores/UserStore.jsx';
 import UiValidate    from 'vntd-shared/forms/validation/UiValidate.jsx';
 import History       from 'vntd-shared/utils/History.jsx';
@@ -33,31 +34,34 @@ let LoginHeader = React.createClass({
 
 let LoginAbout = React.createClass({
 
+    mixins: [Reflux.connect(AboutUsStore)],
+
     render: function() {
+        let login = AboutUsStore.getData().login;
+        let loginBox = login || { header: "Viet Nam Tu Do" };
+
         return (
             <div>
-                <h1 className="txt-color-red login-header-big">Viet Nam Tu Do</h1>
+                <h1 className="txt-color-red login-header-big">{loginBox.headerBar}</h1>
                 <div className="hero">
                     <div className="pull-left login-desc-box-l">
-                        <h4 className="paragraph-header">
-                            Something here...
-                        </h4>
+                        <h4 className="paragraph-header">{loginBox.headerText}</h4>
                         <div className="login-app-icons">
-                            <a href="#" className="btn btn-danger btn-sm">How does it work</a>
+                            <a href="#" className="btn btn-danger btn-sm">{loginBox.tourButton}</a>
                             <span> </span>
-                            <a href="#" className="btn btn-danger btn-sm">About us</a>
+                            <Link to="/public/aboutus" className="btn btn-danger btn-sm">{loginBox.aboutButton}</Link>
                         </div>
                     </div>
                     <img src="/rs/img/logo/flag.png" className="pull-right display-image" alt="" style={{width:'210px'}}/>
                 </div>
                 <div className="row">
                     <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                        <h5 className="about-heading">About Viet Nam Tu Do</h5>
-                        <p>Something about us</p>
+                        <h5 className="about-heading">{loginBox.aboutBrief}</h5>
+                        <p>{loginBox.aboutText}</p>
                     </div>
                     <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                        <h5 className="about-heading">Not just ordinary social platform!</h5>
-                        <p>Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi voluptatem accusantium!</p>
+                        <h5 className="about-heading">{loginBox.siteBrief}</h5>
+                        <p>{loginBox.siteText}</p>
                     </div>
                 </div>
             </div>

@@ -33,7 +33,7 @@ const Routes = (
             <IndexRoute component={MainPage}/>
             <Redirect from="/" to ="public"/>
             <Route path="public">
-                <Route path="aboutus" component={Public} subHeader={true}/>
+                <Route path="aboutus" component={MainPage} subHeader={true}/>
                 <Route path="vietnam" component={NewsFeed} subHeader={true}/>
                 <Route path="economic" component={NewsFeed} subHeader={true}/>
                 <Route path="education" component={NewsFeed} subHeader={true}/>

@@ -225,5 +225,15 @@
     },
     "register": {
         "text": "Đăng Nhập Tài Khoản"
+    },
+    "login": {
+        "headerBar" : "Việt Nam Tự Do",
+        "headerText": "Lưu ý, đây là phiên bản thử nghiệm chỉ dành cho bạn thân quen.  Bạn đừng dùng email thật, dữ liệu trên trang này có thể mất hoàn toàn trong những phiên bản kế.  Disclaimer, this is alpha version for friends knowing the risk of using this site, please don't use your real email address.  Your data can be completely gone in future versions.",
+        "tourButton" : "Chi tiết mạng xã hội",
+        "aboutButton": "Hiểu về chúng tôi",
+        "aboutBrief" : "Hiểu Về Tiền Việt Nam Tự Do",
+        "aboutText"  : "Mạng ứng dụng cho tiền điện tử với mục đích hỗ trợ công cuộc đấu tranh dân chủ tại Việt Nam",
+        "siteBrief"  : "Không phải là mạng xã hội bình thường",
+        "siteText"   : "Với ứng dụng đã được chứng minh từ mạng Bitcoin, tiền điện tử cho người Việt Nam sẽ là chất keo hàn gắn, thắt chặt quyện lợi giữa những người Việt yêu chuộng tự do với nhau"
     }
 }

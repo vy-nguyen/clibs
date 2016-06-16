@@ -16,15 +16,7 @@ let AboutUsStore = Reflux.createStore({
     },
 
     onGetPublicJsonCompleted: function(data) {
-        this.data = {
-            features: data.features,
-            goals   : data.goals,
-            plan    : data.plan,
-            screen  : data.screen,
-            team    : data.team,
-            welcome : data.welcome,
-            register: data.register
-        };
+        this.data = data;
         this.trigger(this.data);
     },
 
