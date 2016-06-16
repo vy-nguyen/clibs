@@ -7,9 +7,11 @@
 import _                from 'lodash';
 import React            from 'react-mod';
 import Reflux           from 'reflux';
+import {Link}           from 'react-router';
 import {renderToString} from 'react-dom-server';
 
 import Gallery          from 'vntd-shared/layout/Gallery.jsx';
+import ModalButton      from 'vntd-shared/layout/ModalButton.jsx';
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import AboutUsStore     from 'vntd-root/stores/AboutUsStore.jsx';
 import NewsFeed         from '../news-feed/NewsFeed.jsx';
@@ -37,8 +39,8 @@ let PriceBox = React.createClass({
                         </div>
                     </div>
                     <div className="panel-footer text-align-center">
-                        <a href="#" className="btn btn-primary btn-block" role="button"><span>{this.props.footerText}</span></a>
-                        <div><a href="#"><i>{this.props.footerDetail}</i></a></div>
+                        <ModalButton className="btn btn-primary btn-block" buttonText={this.props.footerText}/>
+                        <div><i>{this.props.footerDetail}</i></div>
                     </div>
                 </div>
             </div>
@@ -274,7 +276,9 @@ let MainPage = React.createClass({
 
                 <section className="home-section text-center">
                     <div className="container">
-                        <button style={{fontSize: "250%"}} className="btn btn-primary">{this.state.register.text}</button>
+                        <Link to="/register/form" style={{fontSize: "250%"}} className="btn btn-primary">
+                            {this.state.register.text}
+                        </Link>
                     </div>
                 </section>
             </div>

@@ -35,37 +35,32 @@ let LoginAbout = React.createClass({
 
     render: function() {
         return (
-<div>
-    <h1 className="txt-color-red login-header-big">Viet Nam Tu Do</h1>
-    <div className="hero">
-        <div className="pull-left login-desc-box-l">
-            <h4 className="paragraph-header">
-                Something here...
-            </h4>
-            <div className="login-app-icons">
-                <a href="#" className="btn btn-danger btn-sm">How does it work</a>
-                <span> </span>
-                <a href="#" className="btn btn-danger btn-sm">About us</a>
+            <div>
+                <h1 className="txt-color-red login-header-big">Viet Nam Tu Do</h1>
+                <div className="hero">
+                    <div className="pull-left login-desc-box-l">
+                        <h4 className="paragraph-header">
+                            Something here...
+                        </h4>
+                        <div className="login-app-icons">
+                            <a href="#" className="btn btn-danger btn-sm">How does it work</a>
+                            <span> </span>
+                            <a href="#" className="btn btn-danger btn-sm">About us</a>
+                        </div>
+                    </div>
+                    <img src="/rs/img/logo/flag.png" className="pull-right display-image" alt="" style={{width:'210px'}}/>
+                </div>
+                <div className="row">
+                    <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                        <h5 className="about-heading">About Viet Nam Tu Do</h5>
+                        <p>Something about us</p>
+                    </div>
+                    <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                        <h5 className="about-heading">Not just ordinary social platform!</h5>
+                        <p>Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi voluptatem accusantium!</p>
+                    </div>
+                </div>
             </div>
-        </div>
-        <img src="/rs/img/logo/flag.png" className="pull-right display-image" alt="" style={{width:'210px'}}/>
-    </div>
-    <div className="row">
-        <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-            <h5 className="about-heading">About Viet Nam Tu Do</h5>
-            <p>
-                Something about us
-            </p>
-        </div>
-        <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-            <h5 className="about-heading">Not just ordinary social platform!</h5>
-            <p>
-                Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-                nobis est eligendi voluptatem accusantium!
-            </p>
-        </div>
-    </div>
-</div>
         );
     }
 });
@@ -95,6 +90,7 @@ let LoginForm = React.createClass({
 
     componentWillMount: function() {
         if (UserStore.isLogin()) {
+            this._clearRefs();
             History.pushState(null, "/public/vietnam");
         }
     },
@@ -107,6 +103,7 @@ let LoginForm = React.createClass({
         let form = $('#login-form');
         form.find('input').prop('disabled', false);
 
+        this._clearRefs();
         if (data.authError == null) {
             Actions.startup("/api/user");
             History.pushState(null, "/public/vietnam");
@@ -117,11 +114,18 @@ let LoginForm = React.createClass({
         }
     },
 
+    _clearRefs: function() {
+        this.refs.email.value = '';
+        this.refs.password.value = '';
+        this.refs.remember.value = '';
+    },
+
     _onFocus: function() {
         $('#id-login-error').hide();
     },
 
     _loginFailed: function(error) {
+        this._clearRefs();
         this.authError = error.getXHDR().responseJSON.message;
     },
 
