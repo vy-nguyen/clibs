@@ -5,6 +5,8 @@
 import React from 'react-mod'
 import {Dropdown, MenuItem} from 'react-bootstrap'
 
+import Debug from 'vntd-root/lib/Debug.jsx';
+
 let Footer = React.createClass({
     render: function() {
         return (
@@ -60,6 +62,7 @@ let Footer = React.createClass({
                         </div>
                     </div>
                 </div>
+                <Debug/>
             </div>
         )
     }
