@@ -9,7 +9,6 @@ let ImageCarousel = React.createClass({
 
     render: function() {
         let carouselId = _.uniqueId('img-list-');
-        console.log(this.props.imageList);
         let imgHdr = this.props.imageList.map(function(item, idx) {
             let index = idx.toString();
             let id = _.uniqueId('img-list-');
