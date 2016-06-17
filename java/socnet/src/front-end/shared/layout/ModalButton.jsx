@@ -38,16 +38,18 @@ let ModalButton = React.createClass({
     },
 
     render: function() {
-        return (
-            <div>
-                <button className={this.props.className} onClick={this.openModal}>{this.props.buttonText}</button>
-                <Modal isOpen={this.state.modalIsOpen}
-                    onAfterOpen={this.afterOpenModal}
-                    onRequestClose={this.closeModal}
-                    style={modalStyle} >
 
+        return (
+            <div className={this.props.divClass || ""}>
+                <a className={this.props.className} onClick={this.openModal}>{this.props.buttonText}</a>;
+                <Modal style={modalStyle}
+                    isOpen={this.state.modalIsOpen}
+                    onAfterOpen={this.afterOpenModal}
+                    onRequestClose={this.closeModal}>
+                    <div className="form-group alert ">
+                        <a className="close" aria-label="close" onClick={this.closeModal}>x</a>
+                    </div>
                     <h2 ref="subtitle">Hello</h2>
-                    <button onClick={this.closeModal}>close</button>
                     <div>I am a modal</div>
                     <form>
                         <input />
