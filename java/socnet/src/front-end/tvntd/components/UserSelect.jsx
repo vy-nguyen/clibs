@@ -143,8 +143,9 @@ var UserSelect = function() {
     };
 
     let reqForStranger = function(user, key, arg) {
-        arg.connectFmt = format.noSelect;
-        arg.followFmt  = format.noSelect;
+        arg.hasInput   = true;
+        arg.connectFmt = connectInput(key);
+        arg.followFmt  = followInput(key);
         arg.blockFmt   = format.noSelect;
 
         arg.unFollFmt  = format.noSelect;

@@ -18,7 +18,10 @@ import LoginRegDropDown   from './LoginRegDropDown.jsx';
 
 let Header = React.createClass({
 
-    mixins: [Reflux.connect(AboutUsStore)],
+    mixins: [
+        Reflux.connect(UserStore),
+        Reflux.connect(AboutUsStore)
+    ],
 
     render: function () {
         let login_menu, logout_menu, logo_block;

@@ -111,7 +111,7 @@ let UserStore = Reflux.createStore({
     },
 
     isLogin: function() {
-        return this.data.authToken !== null;
+        return this.data.authToken != null;
     },
 
     isUserMe: function(uuid) {

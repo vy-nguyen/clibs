@@ -17,7 +17,7 @@ let UserTable = React.createClass({
 
         _.forEach(this.props.tableFormat, function(value, key) {
             columns.push({data: value.key});
-            tableFmt.push(<th key={_.uniqueId("user-table")}><i className={value.format}/>{value.header}</th>);
+            tableFmt.push(<th key={_.uniqueId("user-table-")}><i className={value.format}/>{value.header}</th>);
         });
 
         let table = (
