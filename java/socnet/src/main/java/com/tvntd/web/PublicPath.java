@@ -37,6 +37,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -136,5 +137,12 @@ public class PublicPath
         } catch(IOException e) {
             s_log.info(e.getMessage());
         }
+    }
+
+    @RequestMapping(value = "/public/get-html/{html}",
+            method = RequestMethod.GET, produces = "text/html; charset=utf-8")
+    public String getHtml(Map<String, Object> model,
+            @PathVariable(value = "html") String html, HttpSession session) {
+        return html;
     }
 }

@@ -1,16 +1,20 @@
+'use strict';
+
 import React from 'react-mod'
 
 let LoadHtml = React.createClass({
     componentDidMount: function() {
         this._process(this.props.url);
     },
-    render: function () {
+
+    render: function() {
         return (
             <div ref="viewport" />
         )
     },
-    _process: function (url) {
-        $.get(url).then(function (res) {
+
+    _process: function(url) {
+        $.get(url).then(function(res) {
             $(this.refs.viewport).html(res);
         }.bind(this))
     }

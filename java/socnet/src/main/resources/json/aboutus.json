@@ -18,7 +18,10 @@
                 "<span><i class='fa fa-chevron-right'></i> Kết nối để góp phần <strong>thực hiện</strong> những việc mình quan tâm.</span>"
             ],
             "footer"  : "Tìm Hiểu Chi Tiết",
-            "footerHL": "(Nội dung được cập nhật thường xuyên)"
+            "footerHL": "(Nội dung được cập nhật thường xuyên)",
+
+            "modalTitle": "Kết Nối",
+            "modalUrl"  : "/public/get-html/ketnoi"
         }, {
             "header"  : "<h1 class='panel-title'>Tài Trợ</h1>",
             "headerHL": "<h3>Niềm Tin Thành Hiện Thực</h3>",
@@ -35,7 +38,10 @@
                 "<span><i class='fa fa-chevron-right'></i> Mục đích là <strong>không gởi ngoại tệ</strong> về VN mà ghi nhận bằng tiền điện tử bảo mật.</span>"
             ],
             "footer"  : "Tìm Hiểu Chi Tiết",
-            "footerHL": "(Nội dung được cập nhật thường xuyên)"
+            "footerHL": "(Nội dung được cập nhật thường xuyên)",
+
+            "modalTitle": "Tài Trợ",
+            "modalUrl"  : "/public/get-html/taitro"
         }, {
             "header"  : "<h1 class='panel-title'>Cộng Tác</h1>",
             "headerHL": "<h3>Thành Tựu Tạo Sức Mạnh</h3>",
@@ -52,7 +58,10 @@
                 "<span><i class='fa fa-check'></i>   Khả năng <strong>chi trả tiền điện tử</strong> ở Việt Nam bằng smartphone.</span>"
             ],
             "footer"  : "Tìm Hiểu Chi Tiết",
-            "footerHL": "(Nội dung được cập nhật thường xuyên)"
+            "footerHL": "(Nội dung được cập nhật thường xuyên)",
+
+            "modalTitle": "Cộng Tác",
+            "modalUrl"  : "/public/get-html/congtac"
         }, {
             "header"  : "<h1 class='panel-title'>Phát Triển</h1>",
             "headerHL": "<h3>Sức Mạnh Tạo Thay Đổi</h3>",
@@ -67,7 +76,10 @@
                 "<span><i class='fa fa-chevron-right'></i> Tổng hợp sức mạnh để <strong>thay đổi Việt Nam</strong> theo nguyện vọng của đa số dân.</span>"
             ],
             "footer"  : "Tìm Hiểu Chi Tiết",
-            "footerHL": "(Nội dung được cập nhật thường xuyên)"
+            "footerHL": "(Nội dung được cập nhật thường xuyên)",
+
+            "modalTitle": "Phát Triển",
+            "modalUrl"  : "/public/get-html/phattrien"
         } ]
     },
     "features": {

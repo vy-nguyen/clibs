@@ -4,7 +4,6 @@
 'use strict';
 
 import React    from 'react-mod';
-import ReactDOM from 'react-dom';
 import Modal    from 'react-modal';
 
 const modalStyle = {
@@ -30,7 +29,7 @@ let ModalButton = React.createClass({
 
     afterOpenModal: function() {
         // references are now sync'd and can be accessed.
-        this.refs.subtitle.style.color = '#f00';
+        // this.refs.subtitle.style.color = '#f00';
     },
 
     closeModal: function() {
@@ -38,7 +37,6 @@ let ModalButton = React.createClass({
     },
 
     render: function() {
-
         return (
             <div className={this.props.divClass || ""}>
                 <a className={this.props.className} onClick={this.openModal}>{this.props.buttonText}</a>;
@@ -46,22 +44,47 @@ let ModalButton = React.createClass({
                     isOpen={this.state.modalIsOpen}
                     onAfterOpen={this.afterOpenModal}
                     onRequestClose={this.closeModal}>
-                    <div className="form-group alert ">
-                        <a className="close" aria-label="close" onClick={this.closeModal}>x</a>
+                    <div className="container">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <button type="button" aria-label="close" className="close" onClick={this.closeModal}>
+                                    <i className="fa fa-times"/>
+                                </button>
+                                {
+                                    this.props.html ? 
+                                    <div dangerouslySetInnerHTML={{__html: this.props.modalTitle}}/> :
+                                    <h4 className="modal-title">{this.props.modalTitle}</h4>
+                                }
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="well well-lg">
+                                {this.props.children}
+                            </div>
+                        </div>
                     </div>
-                    <h2 ref="subtitle">Hello</h2>
-                    <div>I am a modal</div>
-                    <form>
-                        <input />
-                        <button>tab navigation</button>
-                        <button>stays</button>
-                        <button>inside</button>
-                        <button>the modal</button>
-                    </form>
                 </Modal>
             </div>
         );
     }
 });
 
+/*
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">Confirmation</h4>
+        </div>
+        <div class="modal-body">
+            <p>Do you want to save changes you made to document before closing?</p>
+            <p class="text-warning"><small>If you don't save, your changes will be lost.</small></p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+        </div>
+        </div>
+*/
 export default ModalButton;

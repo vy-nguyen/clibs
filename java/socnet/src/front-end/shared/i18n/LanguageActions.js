@@ -6,12 +6,12 @@ let LanguageActions = Reflux.createActions({
 });
 
 LanguageActions.init.listen(function() {
-    $.getJSON('api/langs/languages.json')
+    $.getJSON('/api/langs/languages.json')
         .then( this.completed, this.failed )
 });
 
 LanguageActions.select.listen(function(language) {
-    $.getJSON('api/langs/'+language.key+'.json')
+    $.getJSON('/api/langs/' + language.key+'.json')
         .then( this.completed, this.failed )
 });
 

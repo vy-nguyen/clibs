@@ -49,8 +49,9 @@ const Actions = Reflux.createActions({
     postComment:     completdFailedFn,
     postCmtSelect:   completdFailedFn,
 
-    // Get public json objs.
+    // Get public JSON objs.
     getPublicJson:   completdFailedFn,
+    getLangJson:     completedFn,
 
     // Preload json for testing.
     preload:         completdFailedFn
@@ -246,6 +247,10 @@ Actions.postCmtSelect.listen(function(data) {
  */
 Actions.getPublicJson.listen(function(url) {
     $.getJSON(url).then(this.completed, this.failed);
+});
+
+Actions.getLangJson.listen(function(lang) {
+    $.getJSON('/api/langs/' + lang).then(this.completed);
 });
 
 export default Actions;

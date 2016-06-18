@@ -9,9 +9,10 @@ import React            from 'react-mod';
 import Reflux           from 'reflux';
 import {Link}           from 'react-router';
 import {renderToString} from 'react-dom-server';
+import ReactSpinner     from 'react-spinjs';
 
 import Gallery          from 'vntd-shared/layout/Gallery.jsx';
-import ModalButton      from 'vntd-shared/layout/ModalButton.jsx';
+import ModalHtml        from 'vntd-shared/layout/ModalHtml.jsx';
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import AboutUsStore     from 'vntd-root/stores/AboutUsStore.jsx';
 import NewsFeed         from '../news-feed/NewsFeed.jsx';
@@ -39,7 +40,9 @@ let PriceBox = React.createClass({
                         </div>
                     </div>
                     <div className="panel-footer text-align-center">
-                        <ModalButton className="btn btn-primary btn-block" buttonText={this.props.footerText}/>
+                        <ModalHtml className="btn btn-primary btn-block"
+                            modalTitle={this.props.modalTitle}
+                            buttonText={this.props.footerText} url={this.props.modalUrl}/>
                         <div><i>{this.props.footerDetail}</i></div>
                     </div>
                 </div>
@@ -207,10 +210,9 @@ let MainPage = React.createClass({
         if (UserStore.isLogin()) {
             return <NewsFeed/>;
         }
-        AboutUsStore.dumpData("About Us Store");
 
         if (this.state.goals == null) {
-            return (<h1>Waiting for data...</h1>);
+            return (<ReactSpinner/>);
         }
         let goalBoxes = [];
         let goals = this.state.goals;
@@ -221,6 +223,8 @@ let MainPage = React.createClass({
                     headerImg={null}
                     headerDetail={item.headerHL}
                     textList={item.bodyText}
+                    modalUrl={item.modalUrl}
+                    modalTitle={item.modalTitle}
                     footerText={item.footer}
                     footerDetail={item.footerHL}/>
             );
