@@ -12,7 +12,7 @@ let DropdownMenu = React.createClass({
 
     render: function() {
         let menu = this.props.context;
-        if (menu === null || menu === undefined) {
+        if (menu == null) {
             return null;
         }
         let menu_items = menu.menuItems.map(function(item, idx) {

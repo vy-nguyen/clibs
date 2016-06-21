@@ -53,12 +53,10 @@ let ModalButton = React.createClass({
                                 {
                                     this.props.html ? 
                                     <div dangerouslySetInnerHTML={{__html: this.props.modalTitle}}/> :
-                                    <h4 className="modal-title">{this.props.modalTitle}</h4>
+                                    <h3 className="modal-title">{this.props.modalTitle}</h3>
                                 }
                             </div>
-                        </div>
-                        <div className="row">
-                            <div className="well well-lg">
+                            <div className="modal-body">
                                 {this.props.children}
                             </div>
                         </div>
