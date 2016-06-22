@@ -31,7 +31,7 @@
     <ul>
       <li>Mô hình dễ hiểu nhất là trung gian, đại lý không chính thức tương tự như buôn bán vàng bất hợp pháp tại Việt Nam.</li>
       <li>Người có tiền điện tử đến đại lý đổi sang VND.</li>
-      <li>Cá nhân hoặc doanh nghiệp cần USD đến đại lý đổi tiền Hồ sang tiền điện tử.</li>
+      <li>Cá nhân hoặc doanh nghiệp cần USD đến đại lý đổi tiền VND sang tiền điện tử.</li>
       <li>Họ có thể dùng tiền điện tử để chi trả trên mạng như PayPal.  Với thời gian, lện phí sẽ càng giảm với số lượng giao dịch lớn.</li>
       <li>Mọi khoản mua bán ở Hoa Kỳ phải đóng thuế địa phương theo luật pháp Hoa Kỳ.</li>
     </ul>
@@ -67,16 +67,18 @@
     <ul>
       <li>Đặc tính của tiền điện tử là nó nằm trong chuỗi liên kết bất biến, truy được đến tận gốc từ đơn vị mà bạn đang làm chủ.  Tải toàn bộ chuỗi liên kết đó vào Gdrive của bạn là cách tốt nhất để chứng minh quyền sở hữu của bạn.</li>
       <li>Bạn cho công ty từ 1 đến 4 địa chỉ email khác nhau tuỳ độ bảo mật và tiện dụng theo ý bạn.  Khi bạn trả tiền, bạn phải có quyền kiểm soát cả 4 trương mục email thì mới giải mã được tiền của bạn để trao cho người nhận.</li>
-      <li>Chỉ dùng phần mềm của công ty và thực hành các nguên tắc an toàn trên mạng.</li>
+      <li>Chỉ dùng phần mềm của công ty và thực hành các nguyên tắc an toàn trên mạng.</li>
       <li>Công ty sẽ cung cấp kênh liên lạc để giúp đỡ bạn trong mọi vấn đề.</li>
+      <li>Bạn dùng tiền này để mua các dịch vụ trên mạng xã hội ví dụ trả lệ phí cho các chương trình giáo dục được phát triển trên mạng, mua hàng trực tuyến trong khu vực bạn sống.</li>
+      <li>Bạn trả lệ phí để chuyển tiền này sang tài khoản PayPal của bạn.</li>
     </ul>
   <h4>Mô hình nào để những người buôn thúng bán bưng ở Việt Nam xài được đồng tiền này?</h4>
     <ul>
       <li>Dùng mô hình đại lý để giúp họ nhận và tiêu tiền điện tử.</li>
       <li>In cho họ mã số QR từ tài khoản của họ chỉ có nhận mà không thể chi.</li>
       <li>Khách hàng có smartphone trả tiền cho họ bằng cách scan mã QR của họ.</li>
-      <li>Họ nhìn thấy số tiền trong tài khoản được cập nhật.  Chỉ có họ mới biết chính xãc là bao nhiêu trong ngày và an tâm rằng họ được trả tiền đầy đủ.</li>
+      <li>Họ nhìn thấy số tiền trong tài khoản được cập nhật.  Chỉ có họ mới biết chính xác là bao nhiêu trong ngày và an tâm rằng họ được trả tiền đầy đủ.</li>
       <li>Cuối ngày họ có thể đến đại lý để dổi lấy VND để tiêu xài theo tỷ giá trong ngày vì tiền điện tử được cố định là 1/1 với USD.</li>
-      <li>Họ cũng có thể nhờ đại lý in mã số QR là dạng tiền chỉ có giá trị 1 lần.  Khi trao tay người khác, mã số đó không còn giá trị nữa.  Người nhận dùng smartphone scan mẫ đó nếu có giá trị, toàn bộ số tiền trong mã đó thuộc về người ấy.  Người nhận thối lại tièn dư bằng VND.</li>
+      <li>Họ cũng có thể nhờ đại lý in mã số QR là dạng tiền chỉ có giá trị 1 lần.  Khi trao tay người khác, mã số đó không còn giá trị nữa.  Người nhận dùng smartphone scan mẫ đó nếu có giá trị, toàn bộ số tiền trong mã đó thuộc về người ấy.  Người nhận thối lại tièn dư bằng VND.  Mất mã đó tương tự như mất số tiền mặt đã rủt ra từ máy ATM.</li>
     </ul>
 </div>

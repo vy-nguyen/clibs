@@ -7,10 +7,36 @@
 import React        from 'react-mod';
 import _            from 'lodash';
 import ArticleStore from 'vntd-root/stores/ArticleStore.jsx';
+import PostPane     from 'vntd-root/components/PostPane.jsx';
 
 import {getRandomInt, safeStringify} from 'vntd-shared/utils/Enum.jsx';
 
 let BlogItem = React.createClass({
+
+    getInitialState: function() {
+        return {
+            fullArticle: false,
+            buttonText : "Read more..."
+        }
+    },
+
+    _selectFullArticle: function() {
+        let fullArt = !this.state.fullArticle;
+        if (fullArt == true) {
+            this.setState({
+                fullArticle: true,
+                buttonText : "Hide article..."
+            });
+            $('#' + this.props.article._id).show();
+        } else {
+            this.setState({
+                fullArticle: false,
+                buttonText : "Read more..."
+            });
+            $('#' + this.props.article._id).hide();
+        }
+    },
+
     render: function() {
         let article = this.props.article;
         const artInfo = [ {
@@ -38,21 +64,27 @@ let BlogItem = React.createClass({
             imgUrl = this.props.user.userImgUrl;
         }
         let content = safeStringify(article.content);
+        let artStyle = this.state.fullArticle == false ? { display: "none" } : { height: "auto" };
         return (
-            <div className="row">
-                <div className="col-md-4">
-                    <img src={imgUrl} className="img-responsive"/>
-                    <ul className="list-inline padding-10">
-                        {artInfoBlock}
-                    </ul>
+            <div className="content">
+                <div className="row">
+                    <div className="col-md-4">
+                        <img src={imgUrl} className="img-responsive"/>
+                        <ul className="list-inline padding-10">
+                            {artInfoBlock}
+                        </ul>
+                    </div>
+                    <div className="col-md-8 padding-left-0">
+                        <h3 className="margin-top-0">
+                            <a href-void="#">{article.topic}</a>
+                            <br/>
+                        </h3>
+                        <p>{content.slice(0, 600)} ...</p>
+                        <a className="btn btn-primary" onClick={this._selectFullArticle}>{this.state.buttonText}</a>
+                    </div>
                 </div>
-                <div className="col-md-8 padding-left-0">
-                    <h3 className="margin-top-0">
-                        <a href-void="#">{article.topic}</a>
-                        <br/>
-                    </h3>
-                    <p>{content.slice(0, 600)} ...</p>
-                    <a className="btn btn-primary">Read more</a>
+                <div className="row" style={artStyle} id={article._id}>
+                    <PostPane data={article}/>
                 </div>
             </div>
         );
@@ -101,7 +133,7 @@ let Blog = React.createClass({
             );
         }
         return (
-            <div className="well padding-10">
+            <div>
                 {items}
             </div>
         );

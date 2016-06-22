@@ -32,19 +32,20 @@ let Panel = React.createClass({
         }
 
         return (
-           <JarvisWidget color="purple">
-               <header>
-                   <span className="widget-icon"><i className={panel.icon}/></span>
-                   <h2>{this.props.context.header}</h2>
-                   <div className="widget-toolbar">
-                       {dropdownMenu}
-                   </div>
-                   {panelLabel}
-               </header>
-               <div className="panel panel-default">
-                   {this.props.children}
-               </div>
-           </JarvisWidget>
+            <JarvisWidget colorbutton={false} editbutton={false} togglebutton={false}
+                deletebutton={false} fullscreenbutton={false} color="purple">
+                <header>
+                    <span className="widget-icon"><i className={panel.icon}/></span>
+                    <h2>{this.props.context.header}</h2>
+                    <div className="widget-toolbar">
+                        {dropdownMenu}
+                    </div>
+                    {panelLabel}
+                </header>
+                <div className="panel panel-default">
+                    {this.props.children}
+                </div>
+            </JarvisWidget>
         );
     }
 });
