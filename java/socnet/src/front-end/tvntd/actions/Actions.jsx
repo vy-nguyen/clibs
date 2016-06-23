@@ -49,6 +49,10 @@ const Actions = Reflux.createActions({
     postComment:     completdFailedFn,
     postCmtSelect:   completdFailedFn,
 
+    // Rank article
+    updateArtRank:   completdFailedFn,
+    postArtSelect:   completdFailedFn,
+
     // Get public JSON objs.
     getPublicJson:   completdFailedFn,
     getLangJson:     completedFn,
@@ -240,6 +244,17 @@ Actions.postComment.listen(function(data) {
 
 Actions.postCmtSelect.listen(function(data) {
     postRestCall(data, "/user/change-comment", true, this);
+});
+
+/**
+ * Rank article actions.
+ */
+Actions.updateArtRank.listen(function(data) {
+    postRestCall(data, "/user/update-art-rank", true, this);
+});
+
+Actions.postArtSelect.listen(function(data) {
+    postRestCall(data, "/user/update-art-rank", true, this);
 });
 
 /**

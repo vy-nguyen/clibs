@@ -163,12 +163,21 @@ let RegisterForm = React.createClass({
         );
     },
 
+    _resetRefs: function() {
+        this.refs.email.value = '';
+        this.refs.password0 = '';
+        this.refs.password1 = '';
+        this.refs.firstName = '';
+        this.refs.lastName  = '';
+    },
+
     _registerResult: function(data) {
         let form = $('#smart-form-register');
         form.find('input').prop('disabled', false);
 
         if (data.authCode == "register-done") {
             $('#id-register-info').show();
+
         } else if (data.authCode == "register-verify") {
             Actions.verifyAccount({
                 type: data.authCode,
@@ -178,6 +187,7 @@ let RegisterForm = React.createClass({
             data.authError.dispatchDefault("#id-register-error-text", "#id-register-error");
         } else {
         }
+        this._resetRefs();
     },
 
     _onFocus: function() {

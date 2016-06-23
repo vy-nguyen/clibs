@@ -24,24 +24,79 @@ const tags = [
 
 let TagPost = React.createClass({
 
-    onOptionSelected: function(val) {
-        console.log("Select option");
-        console.log(val);
+    _onOptionSelected: function(val) {
+        this.setState({
+            tagName: val
+        });
+    },
+
+    _onBlur: function(val) {
+        this.setState({
+            tagName: val.target.value
+        });
+    },
+
+    _onChangeFav: function() {
+        this.setState({
+            favorite: !this.state.favorite
+        });
+    },
+
+    _submitUpdate: function(e) {
+        e.preventDefault();
+        let rank = parseInt(this.refs.rank.value, 10);
+        if (rank === NaN || rank < 0 || rank > 100) {
+            rank = 50;
+            this.refs.rank.value = rank;
+        }
+        Actions.updateArtRank({
+            tagName    : this.state.tagName,
+            favorite   : this.state.favorite,
+            articleRank: rank,
+            likeInc    : 0,
+            shareInc   : 0,
+            userUuid   : UserStore.getSelf().userUuid
+        });
+        this.setState({
+            rankVal : rank,
+        });
+    },
+
+    getInitialState: function() {
+        return {
+            tagText: "Tag your article",
+            tagName: "My Posts",
+            rankVal: "Rank 0-100",
+            favorite: true
+        }
     },
 
     render: function() {
         return (
-            <div className="row">
-                <div className="col-xs-6 col-sm-6 col-md-6">
-                    <TA.Typeahead options={['Kinh te', 'Chinh tri', 'Viet Nam', 'Giao duc']} maxVisible={2}
-                        placeholder={"Tag your article"}
-                        customClasses={{input: "form-control input-sm"}}
-                        onOptionSelected={this.onOptionSelected}/>
+            <form enclType="form-data" acceptCharset="utf-8" className="form-horizontal">
+                <div className="row">
+                    <div className="col-xs-5 col-sm-5 col-md-5">
+                        <TA.Typeahead options={['Kinh te', 'Chinh tri', 'Viet Nam', 'Giao duc']} maxVisible={2}
+                            placeholder="Tag your article"
+                            value={this.state.tagName}
+                            customClasses={{input: "form-control input-sm"}}
+                            onBlur={this._onBlur}
+                            onOptionSelected={this._onOptionSelected}/>
+                    </div>
+                    <div className="col-xs-3 col-sm-3 col-md-3">
+                        <input className="form-control input-sm" ref="rank" placeholder={this.state.rankVal}/>
+                    </div>
+                    <div className="col-xs-2 col-sm-2 col-md-2">
+                        <section>
+                            <label className="checkbox">
+                                <input type="checkbox" checked={this.state.favorite} onChange={this._onChangeFav}/>
+                                <i/>Mark Favorite
+                            </label>
+                        </section>
+                    </div>
+                    <button onClick={this._submitUpdate} className="btn btn-primary">Update</button>
                 </div>
-                <div className="col-xs-6 col-sm-6 col-md-6">
-                    <input name="rank" ref="rank" className="form-control input-sm" placeholder="Rank your post"/>;
-                </div>
-            </div>
+            </form>
         );
     }
 });

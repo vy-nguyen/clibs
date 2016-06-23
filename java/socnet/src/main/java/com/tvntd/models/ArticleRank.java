@@ -35,22 +35,37 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
+import javax.persistence.Table;
 
 import com.tvntd.lib.ObjectId;
 
 @Entity
+@Table(indexes = {
+    @Index(columnList = "tag", name = "tag", unique = false),
+    @Index(columnList = "authorUuid", name = "authorUuid", unique = false)
+})
 public class ArticleRank
 {
     @Id
     @Column(length = 64)
     private String articleUuid;
 
+    @Column(length = 64)
+    private String tag;
+
+    @Column(length = 64)
+    private String authorUuid;
+
     private Long creditEarned;
     private Long moneyEarned;
     private Long likes;
     private Long shared;
+    private Long rank;
     private Long score;
+    private boolean favorite;
+    private ObjectId transRoot;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "ArticleLiked",
@@ -61,8 +76,6 @@ public class ArticleRank
     @CollectionTable(name = "ArticleShared",
             joinColumns = @JoinColumn(name = "articleId"))
     private List<UUID> userShared;
-
-    private ObjectId transRoot;
 
     public ArticleRank()
     {
@@ -92,6 +105,20 @@ public class ArticleRank
      */
     public void setArticleId(String articleUuid) {
         this.articleUuid = articleUuid;
+    }
+
+    /**
+     * @return the authorUuid
+     */
+    public String getAuthorUuid() {
+        return authorUuid;
+    }
+
+    /**
+     * @param authorUuid the authorUuid to set
+     */
+    public void setAuthorUuid(String authorUuid) {
+        this.authorUuid = authorUuid;
     }
 
     /**
@@ -151,6 +178,20 @@ public class ArticleRank
     }
 
     /**
+     * @return the rank
+     */
+    public Long getRank() {
+        return rank;
+    }
+
+    /**
+     * @param rank the rank to set
+     */
+    public void setRank(Long rank) {
+        this.rank = rank;
+    }
+
+    /**
      * @return the score
      */
     public Long getScore() {
@@ -162,6 +203,20 @@ public class ArticleRank
      */
     public void setScore(Long score) {
         this.score = score;
+    }
+
+    /**
+     * @return the favorite
+     */
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    /**
+     * @param favorite the favorite to set
+     */
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
     }
 
     /**
