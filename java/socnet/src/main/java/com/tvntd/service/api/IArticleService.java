@@ -41,9 +41,11 @@ import org.springframework.data.domain.Page;
 
 import com.tvntd.forms.CommentChangeForm;
 import com.tvntd.forms.PostForm;
+import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.ObjectId;
 import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
+import com.tvntd.models.AuthorTag;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 
@@ -55,6 +57,8 @@ public interface IArticleService
 
     ArticleRank getRank(String artUuid);
     ArticleRank updateRank(CommentChangeForm form, ProfileDTO user);
+    List<ArticleRankDTO> getArticleRank(UuidForm uuids);
+    List<ArticleRankDTO> convertRank(List<ArticleRank> ranks);
 
     List<ArticleDTO> convert(List<Article> arts);
     List<ArticleDTO> getArticles(List<UUID> uuids);
@@ -76,12 +80,22 @@ public interface IArticleService
     {
         private List<ArticleDTO> articles;
         private List<ArticleDTO> pendPosts;
+        private List<ArticleRankDTO> articleRank;
 
         public ArticleDTOResponse(List<ArticleDTO> arts, List<ArticleDTO> pend)
         {
             super(GenericResponse.USER_HOME, null, null);
             this.articles = arts;
             this.pendPosts = pend;
+            this.articleRank = null;
+        }
+
+        public ArticleDTOResponse(List<ArticleRankDTO> rank)
+        {
+            super(GenericResponse.USER_HOME, null, null);
+            this.articleRank = rank;
+            this.articles = null;
+            this.pendPosts = null;
         }
 
         /**
@@ -96,6 +110,13 @@ public interface IArticleService
          */
         public List<ArticleDTO> getPendPosts() {
             return pendPosts;
+        }
+
+        /**
+         * @return the articleRank
+         */
+        public List<ArticleRankDTO> getArticleRank() {
+            return articleRank;
         }
     }
 
@@ -303,6 +324,186 @@ public interface IArticleService
                 }
             }
             return ret;
+        }
+    }
+
+    public static class ArticleRankDTO extends GenericResponse
+    {
+        private String  articleUuid;
+        private String  authorUuid;
+        private String  tagName;
+        private String  artTitle;
+        private String  contentBrief;
+
+        private String  notifHead;
+        private Long    creditEarned;
+        private Long    moneyEarned;
+        private Long    likes;
+        private Long    shares;
+        private Long    rank;
+        private Long    score;
+        private Long    notifCount;
+        private Long    tagRank;
+        private boolean favorite;
+
+        private List<String> userLiked;
+        private List<String> userShared;
+
+        public ArticleRankDTO() {
+            super(GenericResponse.USER_HOME, null, null);
+        }
+
+        public ArticleRankDTO(ArticleRank rank)
+        {
+            super(GenericResponse.USER_HOME, null, null);
+            setRank(rank);
+        }
+
+        public void setRank(ArticleRank rank, AuthorTag tag)
+        {
+            setRank(rank);
+            tagName = tag.getTag();
+            tagRank = tag.getRank();
+            notifHead = tag.getHeadNotif();
+            notifCount = tag.getNotifCount();
+        }
+
+        protected void setRank(ArticleRank rank)
+        {
+            articleUuid = rank.getArticleUuid();
+            authorUuid = rank.getAuthorUuid();
+            creditEarned = rank.getCreditEarned();
+            moneyEarned = rank.getMoneyEarned();
+            likes = rank.getLikes();
+            shares = rank.getShared();
+            this.rank = rank.getRank();
+            favorite = rank.isFavorite();
+            score = rank.getScore();
+            userLiked = ProfileDTO.toStringList(rank.getUserLiked());
+            userShared = ProfileDTO.toStringList(rank.getUserShared());
+
+            artTitle = rank.getArtTitle();
+            tagName = rank.getTag();
+            contentBrief = rank.getContentBrief();
+        }
+
+        /**
+         * @return the articleUuid
+         */
+        public String getArticleUuid() {
+            return articleUuid;
+        }
+
+        /**
+         * @return the authorUuid
+         */
+        public String getAuthorUuid() {
+            return authorUuid;
+        }
+
+        /**
+         * @return the tagName
+         */
+        public String getTagName() {
+            return tagName;
+        }
+
+        /**
+         * @return the artTitle
+         */
+        public String getArtTitle() {
+            return artTitle;
+        }
+
+        /**
+         * @return the contentBrief
+         */
+        public String getContentBrief() {
+            return contentBrief;
+        }
+
+        /**
+         * @return the notifHead
+         */
+        public String getNotifHead() {
+            return notifHead;
+        }
+
+        /**
+         * @return the creditEarned
+         */
+        public Long getCreditEarned() {
+            return creditEarned;
+        }
+
+        /**
+         * @return the moneyEarned
+         */
+        public Long getMoneyEarned() {
+            return moneyEarned;
+        }
+
+        /**
+         * @return the likes
+         */
+        public Long getLikes() {
+            return likes;
+        }
+
+        /**
+         * @return the shares
+         */
+        public Long getShares() {
+            return shares;
+        }
+
+        /**
+         * @return the rank
+         */
+        public Long getRank() {
+            return rank;
+        }
+
+        /**
+         * @return the score
+         */
+        public Long getScore() {
+            return score;
+        }
+
+        /**
+         * @return the notifCount
+         */
+        public Long getNotifCount() {
+            return notifCount;
+        }
+
+        /**
+         * @return the tagRank
+         */
+        public Long getTagRank() {
+            return tagRank;
+        }
+
+        /**
+         * @return the favorite
+         */
+        public boolean isFavorite() {
+            return favorite;
+        }
+
+        /**
+         * @return the userLiked
+         */
+        public List<String> getUserLiked() {
+            return userLiked;
+        }
+
+        /**
+         * @return the userShared
+         */
+        public List<String> getUserShared() {
+            return userShared;
         }
     }
 }

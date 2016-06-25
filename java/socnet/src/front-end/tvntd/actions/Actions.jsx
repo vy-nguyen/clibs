@@ -50,6 +50,7 @@ const Actions = Reflux.createActions({
     postCmtSelect:   completdFailedFn,
 
     // Rank article
+    getArticleRank:  completdFailedFn,
     updateArtRank:   completdFailedFn,
     postArtSelect:   completdFailedFn,
 
@@ -255,6 +256,11 @@ Actions.updateArtRank.listen(function(data) {
 
 Actions.postArtSelect.listen(function(data) {
     postRestCall(data, "/user/update-art-rank", true, this);
+});
+
+Actions.getArticleRank.listen(function(data) {
+    console.log("Get article rank " + data);
+    postRestCall(data, "/user/get-art-rank", true, this);
 });
 
 /**

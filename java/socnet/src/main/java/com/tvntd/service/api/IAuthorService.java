@@ -26,12 +26,16 @@
  */
 package com.tvntd.service.api;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import com.tvntd.forms.ArticleForm;
+import com.tvntd.lib.ObjectId;
 import com.tvntd.models.Author;
-import com.tvntd.models.Profile;
+import com.tvntd.models.AuthorTag;
+import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 public interface IAuthorService
@@ -39,6 +43,7 @@ public interface IAuthorService
     public Author getAuthor(UUID uuid);
     public Author getAuthor(String uuid);
 
+    public Author updateAuthor(ProfileDTO me, ArticleForm form, ArticleRankDTO rank);
     public void addFavoriteArticle(Author author, UUID articleUuid);
     public void removeFavoriteArticle(Author author, UUID articleUuid);
 
@@ -67,12 +72,15 @@ public interface IAuthorService
             this.author = author;
         }
 
-        public AuthorDTO (String userUuid)
+        public AuthorDTO(String userUuid)
         {
             this.author = null;
             this.authorUuid = userUuid;
         }
 
+        /**
+         * JSON getters.
+         */
         public String getAuthorUuid() {
             return author != null ? author.getAuthorUuid() : authorUuid;
         }
@@ -93,6 +101,23 @@ public interface IAuthorService
             return author != null ? author.getAppUuid() : null;
         }
 
+        public List<AuthorTagDTO> getAuthorTags()
+        {
+            if (author == null) {
+                return null;
+            }
+            List<AuthorTagDTO> result = new ArrayList<>();
+            List<AuthorTag> tags = author.getAuthorTags();
+
+            for (AuthorTag t : tags) {
+                result.add(new AuthorTagDTO(t));
+            }
+            return result;
+        }
+
+        /**
+         * Common methods.
+         */
         public static List<String> convertUuid(List<UUID> src)
         {
             List<String> ret = new LinkedList<>();
@@ -110,6 +135,44 @@ public interface IAuthorService
                 ret.add(new AuthorDTO(author));
             }
             return ret;
+        }
+    }
+
+    /**
+     * Tags organized by the author.
+     */
+    public static class AuthorTagDTO
+    {
+        private AuthorTag tag;
+
+        public AuthorTagDTO(AuthorTag tag) {
+            this.tag = tag;
+        }
+
+        public String getTagName() {
+            return tag.getTag();
+        }
+
+        public String getHeadNotif() {
+            return tag.getHeadNotif();
+        }
+
+        public boolean isFavorite() {
+            return tag.isFavorite();
+        }
+
+        public Long getRank() {
+            return tag.getRank();
+        }
+
+        public Long getNotifCount() {
+            return tag.getNotifCount();
+        }
+
+        public String getHeadChain()
+        {
+            ObjectId id = tag.getHeadChain();
+            return id == null ? null : id.name();
         }
     }
 }

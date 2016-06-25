@@ -47,11 +47,14 @@ import org.springframework.stereotype.Service;
 
 import com.tvntd.dao.ArticleRankRepo;
 import com.tvntd.dao.ArticleRepository;
+import com.tvntd.forms.ArticleForm;
 import com.tvntd.forms.CommentChangeForm;
+import com.tvntd.forms.UuidForm;
 import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
+import com.tvntd.util.Constants;
 
 @Service
 @Transactional
@@ -65,6 +68,9 @@ public class ArticleService implements IArticleService
     @Autowired
     protected ArticleRankRepo artRankRepo;
 
+    /**
+     * Utilities to convert to DTO forms.
+     */
     @Override
     public List<ArticleDTO> convert(List<Article> arts)
     {
@@ -76,6 +82,19 @@ public class ArticleService implements IArticleService
     }
 
     @Override
+    public List<ArticleRankDTO> convertRank(List<ArticleRank> ranks)
+    {
+        List<ArticleRankDTO> result = new LinkedList<>();
+        for (ArticleRank r : ranks) {
+            result.add(new ArticleRankDTO(r));
+        }
+        return result;
+    }
+
+    /**
+     * Article ranking.
+     */
+    @Override
     public ArticleRank getRank(String artUuid)
     {
         return artRankRepo.findByArticleUuid(artUuid);
@@ -86,7 +105,14 @@ public class ArticleService implements IArticleService
     {
         ArticleRank rank = artRankRepo.findByArticleUuid(form.getArticleUuid());
         if (rank == null) {
-            rank = new ArticleRank(form.getArticleUuid());
+            Article article = articleRepo.findByArticleUuid(form.getArticleUuid());
+            if (article != null) {
+                return null;
+            }
+            rank = createArticleRank(article);
+            if (rank == null) {
+                return null;
+            }
         }
         boolean save = false;
         UUID myUuid = me.getUserUuid();
@@ -136,6 +162,22 @@ public class ArticleService implements IArticleService
         return rank;
     }
 
+    public List<ArticleRankDTO> getArticleRank(UuidForm uuids)
+    {
+        List<ArticleRankDTO> ranks = new LinkedList<>();
+
+        for (String uuid : uuids.getUuids()) {
+            List<ArticleRank> r = artRankRepo.findByAuthorUuid(uuid);
+            if (r != null && !r.isEmpty()) {
+                ranks.addAll(convertRank(r));
+            }
+        }
+        return ranks;
+    }
+
+    /**
+     * Article services.
+     */
     @Override
     public ArticleDTO getArticle(Long artId)
     {
@@ -250,8 +292,17 @@ public class ArticleService implements IArticleService
         saveArticle(article.fetchArticle());
     }
 
+    protected ArticleRank createArticleRank(Article article)
+    {
+        ArticleForm form = new ArticleForm(Constants.DefaultTag, false, 0L,
+                article.getAuthorUuid(), article.getArticleUuid());
+        return artRankRepo.save(new ArticleRank(form, article));
+    }
+
     @Override
-    public void saveArticle(Article article) {
+    public void saveArticle(Article article)
+    {
+        createArticleRank(article);
         articleRepo.save(article);
     }
 

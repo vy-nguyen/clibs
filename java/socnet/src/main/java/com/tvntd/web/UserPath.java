@@ -53,18 +53,21 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.tvntd.forms.ArticleForm;
 import com.tvntd.forms.CommentChangeForm;
 import com.tvntd.forms.CommentForm;
 import com.tvntd.forms.PostForm;
 import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.ObjectId;
 import com.tvntd.models.ArticleRank;
+import com.tvntd.models.Author;
 import com.tvntd.models.Comment;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.GenericResponse;
 import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleService.ArticleDTOResponse;
+import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.ICommentService;
 import com.tvntd.service.api.ICommentService.CommentDTOResponse;
@@ -401,6 +404,49 @@ public class UserPath
     public GenericResponse
     getComments(@RequestBody UuidForm uuids, HttpSession session)
     {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
         return commentSvc.getCommentPost(uuids.getUuids());
+    }
+
+    /**
+     * Get article rankings.
+     */
+    @RequestMapping(value = "/user/get-art-rank",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    getArticleRank(@RequestBody UuidForm uuids, HttpSession session)
+    {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
+        return new ArticleDTOResponse(articleSvc.getArticleRank(uuids));
+    }
+
+    /**
+     * Change article attributes/tags.
+     */
+    @RequestMapping(value = "/user/update-art-rank",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    updateArticle(@RequestBody ArticleForm form, HttpSession session)
+    {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
+        ArticleRankDTO rank = new ArticleRankDTO();
+        Author author = authorSvc.updateAuthor(profile, form, rank);
+        if (author != null) {
+            return rank;
+        }
+        return s_invalidArticle;
     }
 }

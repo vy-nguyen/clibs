@@ -26,6 +26,7 @@
  */
 package com.tvntd.models;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -39,6 +40,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.UniqueConstraint;
 
+import com.tvntd.forms.ArticleForm;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 @Entity
@@ -66,6 +68,14 @@ public class Author
             }),
             joinColumns = @JoinColumn(name = "authorUuid"))
     private List<UUID> timeLineArticles;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "AuthorTags",
+            uniqueConstraints = @UniqueConstraint(columnNames = {
+                "authorUuid", "tag"
+            }),
+            joinColumns = @JoinColumn(name = "authorUuid"))
+    private List<AuthorTag> authorTags;
 
     @Column(length = 64)
     private String appUuid;
@@ -128,6 +138,37 @@ public class Author
     }
 
     /**
+     * Add a tag from user input.  No op if the tag already exists.
+     */
+    public AuthorTag addTag(ArticleForm form)
+    {
+        String tagName = form.getTagName();
+        for (AuthorTag t : authorTags) {
+            if (tagName.equals(t.getTag())) {
+                return t;
+            }
+        }
+        AuthorTag t = new AuthorTag(tagName, form.getTagRank(), form.isFavorite());
+        authorTags.add(t);
+        return t;
+    }
+
+    /**
+     * Remove a tag from Author record.
+     */
+    public AuthorTag removeTag(String tag)
+    {
+        for (Iterator<AuthorTag> it = authorTags.listIterator(); it.hasNext(); ) {
+            AuthorTag t = it.next();
+            if (tag.equals(t.getTag())) {
+                it.remove();
+                return t;
+            }
+        }
+        return null;
+    }
+
+    /**
      * @return the authorUuid
      */
     public String getAuthorUuid() {
@@ -181,6 +222,20 @@ public class Author
      */
     public void setTimeLineArticles(List<UUID> timeLineArticles) {
         this.timeLineArticles = timeLineArticles;
+    }
+
+    /**
+     * @return the authorTags
+     */
+    public List<AuthorTag> getAuthorTags() {
+        return authorTags;
+    }
+
+    /**
+     * @param authorTags the authorTags to set
+     */
+    public void setAuthorTags(List<AuthorTag> authorTags) {
+        this.authorTags = authorTags;
     }
 
     /**

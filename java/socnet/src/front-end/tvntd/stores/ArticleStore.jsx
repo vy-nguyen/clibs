@@ -155,7 +155,7 @@ let ArticleStore = Reflux.createStore({
     sortArticlesByScore: function(articles) {
     },
 
-    debugDump: function(header) {
+    dumpData: function(header) {
         console.log(header);
         console.log(this.data);
     },

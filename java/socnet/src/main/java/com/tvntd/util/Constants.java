@@ -32,4 +32,6 @@ public interface Constants
 	String REGISTRATION = "registration";
 	String IMPORT_CONTACTS = "importContacts";
 	String SHARE = "share";
+    String DefaultTag = "My Post";
+    String DefaultTopic = "Post";
 }

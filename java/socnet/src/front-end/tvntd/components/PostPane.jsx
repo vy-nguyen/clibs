@@ -9,6 +9,7 @@ import _            from 'lodash';
 import TA           from 'react-typeahead';
 
 import Actions      from 'vntd-root/actions/Actions.jsx';
+import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
 import PostItem     from 'vntd-root/components/PostItem.jsx';
 import PostComment  from 'vntd-root/components/PostComment.jsx';
 import WidgetGrid   from 'vntd-shared/widgets/WidgetGrid.jsx';
@@ -52,10 +53,13 @@ let TagPost = React.createClass({
         Actions.updateArtRank({
             tagName    : this.state.tagName,
             favorite   : this.state.favorite,
+            tagRank    : 50,
             articleRank: rank,
             likeInc    : 0,
             shareInc   : 0,
-            userUuid   : UserStore.getSelf().userUuid
+            userUuid   : UserStore.getSelf().userUuid,
+            title      : this.props.postTitle,
+            articleUuid: this.props.articleUuid
         });
         this.setState({
             rankVal : rank,
@@ -72,11 +76,14 @@ let TagPost = React.createClass({
     },
 
     render: function() {
+        let myUuid = UserStore.getSelf().userUuid;
+        let tags = AuthorStore.getTagsByAuthorUuid(myUuid);
+
         return (
             <form enclType="form-data" acceptCharset="utf-8" className="form-horizontal">
                 <div className="row">
                     <div className="col-xs-5 col-sm-5 col-md-5">
-                        <TA.Typeahead options={['Kinh te', 'Chinh tri', 'Viet Nam', 'Giao duc']} maxVisible={2}
+                        <TA.Typeahead options={tags} maxVisible={4}
                             placeholder="Tag your article"
                             value={this.state.tagName}
                             customClasses={{input: "form-control input-sm"}}
@@ -151,17 +158,17 @@ let PostPane = React.createClass({
             fontSize: "130%"
         };
         let tagPost = null;
-        if (UserStore.isUserMe(this.props.data.authorUuid)) {
-            tagPost = <TagPost/>
-                //<input name="tag" ref="tag" className="form-control input-sm" placeholder="Tag your post"/>;
+        let article = this.props.data;
+        if (UserStore.isUserMe(article.authorUuid)) {
+            tagPost = <TagPost articleUuid={article.articleUuid} title={article.topic}/>
         }
         return (
             <Panel className="well no-padding" context={panelData}>
                 {tagPost}
-                <h2>{this.props.data.topic ? this.props.data.topic : "Post"}</h2>
-                <PostItem data={this.props.data.pictureUrl}/>
+                <h2>{article.topic ? article.topic : "Post"}</h2>
+                <PostItem data={article.pictureUrl}/>
                 <div style={divStyle} dangerouslySetInnerHTML={this._rawMarkup()}/>
-                <PostComment articleUuid={this.props.data.articleUuid}/>
+                <PostComment articleUuid={article.articleUuid}/>
             </Panel>
         )
     }

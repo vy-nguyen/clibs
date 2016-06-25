@@ -26,6 +26,8 @@
  */
 package com.tvntd.models;
 
+import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,7 +41,10 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
+import com.tvntd.forms.ArticleForm;
 import com.tvntd.lib.ObjectId;
+import com.tvntd.util.Constants;
+import com.tvntd.util.Util;
 
 @Entity
 @Table(indexes = {
@@ -53,10 +58,16 @@ public class ArticleRank
     private String articleUuid;
 
     @Column(length = 64)
-    private String tag;
+    private byte[] tag;
 
     @Column(length = 64)
     private String authorUuid;
+
+    @Column(length = 128)
+    private byte[] artTitle;
+
+    @Column(length = 128)
+    private byte[] contentBrief;
 
     private Long creditEarned;
     private Long moneyEarned;
@@ -84,13 +95,64 @@ public class ArticleRank
         this.likes = 0L;
         this.shared = 0L;
         this.score = 0L;
+        this.rank = 0L;
+        this.favorite = false;
+        this.tag = Util.DefaultTag;
+        this.artTitle = Util.DefaultTopic;
+        this.contentBrief = null;
         this.transRoot = ObjectId.zeroId();
     }
 
-    public ArticleRank(String uuid)
+    public ArticleRank(ArticleForm form, Article article)
     {
-        this();
-        this.articleUuid = uuid;
+        this.articleUuid = form.getArticleUuid();
+        this.authorUuid = form.getUserUuid();
+        this.tag = form.getTagName().getBytes(Charset.forName("UTF-8"));
+        this.favorite = form.isFavorite();
+        this.rank = form.getArticleRank();
+
+        String title = form.getTitle();
+        if (title != null) {
+            this.artTitle = title.getBytes(Charset.forName("UTF-8"));
+        } else {
+            this.artTitle = Util.DefaultTopic;
+        }
+        if (article != null) {
+            this.contentBrief = Arrays.copyOfRange(article.getContent(), 0, 200);
+        } else {
+            this.contentBrief = Util.DefaultEmpty;
+        }
+    }
+
+    public void updateFromUser(ArticleForm form)
+    {
+        String title = form.getTitle();
+        if (artTitle == null) {
+            artTitle = Util.DefaultTopic;
+        }
+        if (title != null && !title.isEmpty()) {
+            artTitle = title.getBytes(Charset.forName("UTF-8"));
+        }
+        favorite = form.isFavorite();
+        rank = form.getArticleRank();
+        if (form.getTagName() != null) {
+            tag = form.getTagName().getBytes(Charset.forName("UTF-8"));
+        }
+        Long likeCnt = form.getLikeInc();
+        if (likeCnt > 0) {
+            likes++;
+            // TODO: update userLiked
+            //
+        } else if (likeCnt < 0 && likes > 0) {
+            likes--;
+        }
+
+        Long shareCnt = form.getShareInc();
+        if (shareCnt > 0) {
+            shared++;
+        } else if (shareCnt < 0 && shared > 0) {
+            shared--;
+        }
     }
 
     /**
@@ -108,6 +170,17 @@ public class ArticleRank
     }
 
     /**
+     * @return the tag
+     */
+    public String getTag()
+    {
+        if (tag != null) {
+            return new String(tag, Charset.forName("UTF-8"));
+        }
+        return Constants.DefaultTag;
+    }
+
+    /**
      * @return the authorUuid
      */
     public String getAuthorUuid() {
@@ -119,6 +192,37 @@ public class ArticleRank
      */
     public void setAuthorUuid(String authorUuid) {
         this.authorUuid = authorUuid;
+    }
+
+    /**
+     * @return the artTitle
+     */
+    public String getArtTitle()
+    {
+        return artTitle == null ?
+            "Post" : new String(artTitle, Charset.forName("UTF-8"));
+    }
+
+    /**
+     * @param artTitle the artTitle to set
+     */
+    public void setArtTitle(String artTitle)
+    {
+        if (artTitle == null) {
+            artTitle = "Post";
+        }
+        this.artTitle = artTitle.getBytes(Charset.forName("UTF-8"));
+    }
+
+    /**
+     * @return the contentBrief
+     */
+    public String getContentBrief()
+    {
+        if (contentBrief != null) {
+            return new String(contentBrief, Charset.forName("UTF-8"));
+        }
+        return "...";
     }
 
     /**

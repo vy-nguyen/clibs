@@ -26,6 +26,8 @@
  */
 package com.tvntd.dao;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tvntd.models.ArticleRank;
@@ -33,6 +35,9 @@ import com.tvntd.models.ArticleRank;
 public interface ArticleRankRepo extends JpaRepository<ArticleRank, Long>
 {
     ArticleRank findByArticleUuid(String uuid);
+
+    List<ArticleRank> findByAuthorUuid(String uuid);
+    List<ArticleRank> findByAuthorUuidAndTag(String uuid, String tag);
 
     @Override
     void delete(ArticleRank rank);

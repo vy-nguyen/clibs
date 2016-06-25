@@ -27,10 +27,21 @@
 
 package com.tvntd.util;
 
+import java.nio.charset.Charset;
 import java.util.UUID;
 
 public final class Util
 {
+    static public final byte[] DefaultTag;
+    static public final byte[] DefaultTopic;
+    static public final byte[] DefaultEmpty;
+
+    static {
+        DefaultTag = Constants.DefaultTag.getBytes(Charset.forName("UTF-8"));
+        DefaultTopic = Constants.DefaultTopic.getBytes(Charset.forName("UTF-8"));
+        DefaultEmpty = "".getBytes(Charset.forName("UTF-8"));
+    }
+
     static public UUID toUuid(String uuid)
     {
         try {

@@ -38,8 +38,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 
+import com.tvntd.dao.ArticleRankRepo;
 import com.tvntd.dao.AuthorRepo;
+import com.tvntd.forms.ArticleForm;
+import com.tvntd.models.Article;
+import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Author;
+import com.tvntd.models.AuthorTag;
+import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 
@@ -52,6 +58,9 @@ public class AuthorService implements IAuthorService
 
     @Autowired
     protected AuthorRepo authorRepo;
+
+    @Autowired
+    protected ArticleRankRepo rankRepo;
 
     @Override
     public Author getAuthor(UUID uuid)
@@ -107,8 +116,12 @@ public class AuthorService implements IAuthorService
         List<AuthorDTO> result = new LinkedList<>();
         List<UUID> uuids = profile.fetchNewsFeed();
 
+        Author author = authorRepo.findByAuthorUuid(profile.getUserUuid().toString());
+        if (author != null) {
+            result.add(new AuthorDTO(author));
+        }
         for (UUID uid : uuids) {
-            Author author = authorRepo.findByAuthorUuid(uid.toString());
+            author = authorRepo.findByAuthorUuid(uid.toString());
             if (author != null) {
                 result.add(new AuthorDTO(author));
                 s_log.info("Debug author: " + author.toString());
@@ -133,5 +146,32 @@ public class AuthorService implements IAuthorService
     public void deleteAuthor(String uuid)
     {
         authorRepo.delete(uuid);
+    }
+
+    @Override
+    public Author updateAuthor(ProfileDTO me, ArticleForm form, ArticleRankDTO rankDto)
+    {
+        Author author = authorRepo.findByAuthorUuid(me.getUserUuid().toString());
+        String artUuid = form.getArticleUuid();
+
+        if (author == null || artUuid == null || artUuid.isEmpty()) {
+            return null;
+        }
+        // TODO: validate article uuid.
+        //
+        Article article = null;
+        AuthorTag tag = author.addTag(form);
+        ArticleRank rank = rankRepo.findByArticleUuid(form.getArticleUuid());
+
+        if (rank == null) {
+            form.setUserUuid(me.getUserUuid().toString());
+            rank = new ArticleRank(form, article);
+        } else {
+            rank.updateFromUser(form);
+        }
+        authorRepo.save(author);
+        rankRepo.save(rank);
+        rankDto.setRank(rank, tag);
+        return author;
     }
 }
