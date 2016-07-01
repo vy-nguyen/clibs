@@ -5,10 +5,12 @@
 'use strict';
 
 import Reflux from 'reflux';
-import _ from 'lodash';
+import React  from 'react-mod';
+import _      from 'lodash';
 
-import Actions      from 'vntd-root/actions/Actions.jsx';
-import UserStore    from 'vntd-shared/stores/UserStore.jsx';
+import Actions        from 'vntd-root/actions/Actions.jsx';
+import UserStore      from 'vntd-shared/stores/UserStore.jsx';
+import {insertSorted} from 'vntd-shared/utils/Enum.jsx';
 
 class Author {
     constructor(data) {
@@ -33,21 +35,161 @@ class Author {
     }
 }
 
+class AuthorTag {
+    constructor(tag) {
+        this._id        = _.uniqueId('id-author-tag-');
+        this.articles   = {};
+        this.sortedArts = [];
+        this.tagName    = tag.tagName;
+        this.headNotif  = tag.headNotif;
+        this.isFavorite = tag.isFavorite;
+        this.rank       = tag.rank;
+        this.notifCount = tag.notifCount;
+        this.headChain  = tag.headChain;
+        return this;
+    }
+
+    addArticleRank(rank) {
+        if (this.articles[rank.articleUuid] != null) {
+            return;
+            //this.removeArticleRank(rank);
+        }
+        this.articles[rank.articleUuid] = rank;
+        insertSorted(rank, this.sortedArts, function(r1, r2) {
+            return r1.rank - r2.rank;
+        });
+    }
+
+    removeArticleRank(rank) {
+        delete this.articles[rank.articleUuid];
+        _.forOwn(this.sortedArts, function(it, idx) {
+            if (it.articleUuid === rank.articleUuid) {
+                this.sortedArts = this.sortedArts.splice(idx, 1);
+                return false;
+            }
+        }.bind(this));
+    }
+
+    getArticleRank(artUuid) {
+        return this.articles[artUuid];
+    }
+
+    getSortedArticleRank() {
+        return this.sortedArts;
+    }
+}
+
+class AuthorTagMgr {
+    constructor(uuid) {
+        this.authorUuid = uuid;
+        this.authorTags = {};
+        this.sortedTags = [];
+        this.stringTags = [];
+        return this;
+    }
+
+    addAuthorTag(tag) {
+        let authorTag = this.authorTags[tag.tagName];
+        if (authorTag != null) {
+            this.removeAuthorTag(tag);
+        }
+        authorTag = new AuthorTag(tag);
+        this.authorTags[tag.tagName] = authorTag;
+        insertSorted(authorTag, this.sortedTags, function(t1, t2) {
+            return t1.rank - t2.rank;
+        });
+        this.stringTags = _.map(this.sortedTags, function(it) {
+            return it.tagName;
+        });
+        return authorTag;
+    }
+
+    addAuthorTagList(tagList) {
+        _.forOwn(tagList, function(it) {
+            this.addAuthorTag(it);
+        }.bind(this));
+    }
+
+    removeAuthorTag(tag) {
+        delete this.authorTags[tag.tagName];
+        _.forOwn(this.sortedTags, function(it, idx) {
+            if (it.tagName === tag.tagName) {
+                this.sortedTags = this.sortedTags.splice(idx, 1);
+                return false;
+            }
+        }.bind(this));
+    }
+
+    createAuthorTag(rank) {
+        return this.addAuthorTag({
+            tagName   : rank.tagName,
+            headNotif : rank.notifCount,
+            isFavorite: rank.favorite,
+            rank      : rank.rank,
+            notifCount: rank.notifCount
+        });
+    }
+
+    addArticleRank(rank) {
+        console.log("Add article rank");
+        console.log(rank);
+        let authorTag = this.authorTags[rank.tagName];
+        if (authorTag == null) {
+            authorTag = this.createAuthorTag(rank);
+            this.authorTags[rank.tagName] = authorTag;
+        }
+        authorTag.addArticleRank(rank);
+    }
+
+    removeArticleRank(rank) {
+        let authorTag = this.authorTags[rank.tagName];
+        if (authorTag != null) {
+            authorTag.removeArticleRank(rank);
+        }
+    }
+
+    getArticleRank(tagName, articleUuid) {
+        let authorTag = this.authorTags[tagName];
+        if (authorTag != null) {
+            return authorTag.getArticleRank(articleUuid);
+        }
+        return null;
+    }
+
+    getArticleRankList(tagName) {
+        let authorTag = this.authorTags[tagName];
+        if (authorTag != null) {
+            return authorTag.sortedArts;
+        }
+        return null;
+    }
+
+    getStringTags() {
+        return this.stringTags;
+    }
+
+    /**
+     * Invoke the renderFn to format output based on tag tree.
+     */
+    getTreeViewJson(renderFn, output) {
+        _.forOwn(this.authorTags, function(tag) {
+            let sortedRank = tag.getSortedArticleRank();
+            if (_.isEmpty(sortedRank)) {
+                renderFn(tag, null, output);
+            } else {
+                renderFn(tag, sortedRank, output);
+            }
+        });
+        return output;
+    }
+}
+
 let AuthorStore = Reflux.createStore({
     data: {},
     listenables: Actions,
 
     getAuthorList: function() {
         return this.data.authorMap;
-    },
-
-    getAuthorTags: function(uuid) {
-        return this.data.authorTags[uuid];
-    },
-
-    getTagsByAuthorUuid: function(uuid) {
-        let tags = this.data.rawTagList[uuid];
-        return tags != null ? tags : [];
     },
 
     getAuthorUuidList: function() {
@@ -58,19 +200,23 @@ let AuthorStore = Reflux.createStore({
         return this.data.authorMap[uuid];
     },
 
-    addAuthorList: function(authorList) {
-        _.forEach(authorList, function(author, key) {
-            if (this.data.authorMap[author.authorUuid] == null) {
-                this.data.authorMap[author.authorUuid] = new Author(author);
-            }
-            if (this.data.authorTags[author.authorUuid] == null) {
-                this.data.authorTags[author.authorUuid] = author.authorTags;
-                this.data.rawTagList[author.authorUuid] = _.map(author.authorTags, function(it) {
-                    return it.tagName;
-                });
-            }
-            this.data.authorUuids.push(author.authorUuid);
-        }.bind(this));
+    /**
+     * @return string tags used for autocomplete.
+     */
+    getTagsByAuthorUuid: function(uuid) {
+        return this.getAuthorTagMgr(uuid).getStringTags();
+    },
+
+    /**
+     * @return the tag mgr matching with the author uuid.
+     */
+    getAuthorTagMgr: function(uuid) {
+        let authorTagMgr = this.data.authorTagMgr[uuid];
+        if (authorTagMgr == null) {
+            this.data.authorTagMgr[uuid] = new AuthorTagMgr(uuid);
+            return this.data.authorTagMgr[uuid];
+        }
+        return authorTagMgr;
     },
 
     iterAuthor: function(uuidList, func) {
@@ -87,16 +233,33 @@ let AuthorStore = Reflux.createStore({
         }
     },
 
+    _addAuthorList: function(authorList) {
+        _.forOwn(authorList, function(author, key) {
+            let uuid = author.authorUuid;
+            this.data.authorUuids.push(uuid);
+            if (this.data.authorMap[uuid] == null) {
+                this.data.authorMap[uuid] = new Author(author);
+            }
+            this.getAuthorTagMgr(uuid).addAuthorTagList(author.authorTags);
+        }.bind(this));
+
+        this.trigger(this.data);
+    },
+
     _updateArticleRank: function(data) {
-        console.log("update result");
-        console.log(data);
+        console.log(data.articleRank);
+        _.forOwn(data.articleRank, function(rank) {
+            console.log(this.getAuthorTagMgr(rank.authorUuid));
+            this.getAuthorTagMgr(rank.authorUuid).addArticleRank(rank);
+        }.bind(this));
+
+        this.trigger(this.data);
     },
     
     reset: function() {
         this.data = {
             authorMap: {},
-            authorTags: {},
-            rawTagList: {},
+            authorTagMgr: {},
             authorUuids: []
         };
     },
@@ -122,27 +285,23 @@ let AuthorStore = Reflux.createStore({
     },
 
     onPreloadCompleted: function(data) {
-        this.addAuthorList(data.authors);
-        this.trigger(this.data);
+        this._addAuthorList(data.authors);
     },
 
     onGetAuthorsCompleted: function(data) {
-        this.addAuthorList(data.authors);
-        this.trigger(this.data);
+        this._addAuthorList(data.authors);
     },
 
     onGetArticleRankCompleted: function(data) {
-        console.log("Get article ranks");
-        console.log(data);
+        this._updateArticleRank(data);
     },
 
     onStartupCompleted: function(data) {
         if (data.userDTO && data.userDTO.authors) {
-            this.addAuthorList(data.userDTO.authors);
+            this._addAuthorList(data.userDTO.authors);
             Actions.getArticleRank({
                 uuids: this.getAuthorUuidList()
             });
-            this.trigger(this.data);
         }
     },
 

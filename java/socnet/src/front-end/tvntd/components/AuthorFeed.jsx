@@ -15,6 +15,7 @@ import Author         from 'vntd-root/components/Author.jsx';
 import ProfileCover   from 'vntd-root/components/ProfileCover.jsx';
 import AuthorStore    from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleStore   from 'vntd-root/stores/ArticleStore.jsx';
+import UserPostView   from '../pages/user/UserPostView.jsx';
 import ProductView    from '../pages/e-store/ProductView.jsx';
 import ProductDetail  from '../pages/e-store/ProductDetail.jsx';
 import Timeline       from '../pages/blog/Timeline.jsx';
@@ -38,17 +39,21 @@ let AuthorFeed = React.createClass({
                 tabText: 'Favorites',
                 tabIdx : 1
             }, {
+                domId  : 'all-' + uuid,
+                tabText: 'All',
+                tabIdx : 2
+            }, {
                 domId  : 'timeline-' + uuid,
                 tabText: 'Timeline',
-                tabIdx : 2
+                tabIdx : 3
             }, {
                 domId  : 'estore-' + uuid,
                 tabText: 'E-Store',
-                tabIdx : 3
+                tabIdx : 4
             }, {
                 domId  : 'product-' + uuid,
                 tabText: 'Product',
-                tabIdx : 4
+                tabIdx : 5
             } ]
         };
     },
@@ -90,6 +95,7 @@ let AuthorFeed = React.createClass({
                                 <TabPanel className="padding-top-10" context={this.getAuthorTab(author.userUuid)}>
                                     <PostArticles data={articles} user={user}/>
                                     <Blog author={author} user={user}/>
+                                    <UserPostView userUuid={author.userUuid}/>
                                     <Timeline/>
                                     <ProductView/>
                                     <ProductDetail/>

@@ -10,7 +10,7 @@ import ErrorDispatch    from 'vntd-shared/actions/ErrorDispatch.jsx';
 const completedFn = {
     children: ['completed']
 };
-const completdFailedFn = {
+const completedFailedFn = {
     children: ['completed', 'failed']
 };
 const completedFailedAlwaysFn = {
@@ -22,44 +22,45 @@ const Actions = Reflux.createActions({
     clickMenuItem:   completedFn,
 
     // User actions
-    logout:          completdFailedFn,
-    initialData:     completdFailedFn,
-    startup:         completdFailedFn,
-    getAuthors:      completdFailedFn,
-    refreshArticles: completdFailedFn,
-    refreshNotify:   completdFailedFn,
-    login:           completdFailedFn,
-    register:        completdFailedFn,
-    verifyAccount:   completdFailedFn,
+    logout:          completedFailedFn,
+    initialData:     completedFailedFn,
+    startup:         completedFailedFn,
+    getAuthors:      completedFailedFn,
+    refreshArticles: completedFailedFn,
+    refreshNotify:   completedFailedFn,
+    login:           completedFailedFn,
+    register:        completedFailedFn,
+    verifyAccount:   completedFailedFn,
     resetPassword:   completedFailedAlwaysFn,
 
-    changeUsers:     completdFailedFn,
-    saveUserPost:    completdFailedFn,
-    deleteUserPost:  completdFailedFn,
-    publishUserPost: completdFailedFn,
+    changeUsers:     completedFailedFn,
+    saveUserPost:    completedFailedFn,
+    deleteUserPost:  completedFailedFn,
+    publishUserPost: completedFailedFn,
 
-    getArticles:     completdFailedFn,
-    getComments:     completdFailedFn,
+    getArticles:     completedFailedFn,
+    getOneArticle:   completedFailedFn,
+    getComments:     completedFailedFn,
 
     pendingPost:     completedFn,
     uploadAvataDone: completedFn,
 
     // Comment actions
     switchComment:   completedFn,
-    postComment:     completdFailedFn,
-    postCmtSelect:   completdFailedFn,
+    postComment:     completedFailedFn,
+    postCmtSelect:   completedFailedFn,
 
     // Rank article
-    getArticleRank:  completdFailedFn,
-    updateArtRank:   completdFailedFn,
-    postArtSelect:   completdFailedFn,
+    getArticleRank:  completedFailedFn,
+    updateArtRank:   completedFailedFn,
+    postArtSelect:   completedFailedFn,
 
     // Get public JSON objs.
-    getPublicJson:   completdFailedFn,
+    getPublicJson:   completedFailedFn,
     getLangJson:     completedFn,
 
     // Preload json for testing.
-    preload:         completdFailedFn
+    preload:         completedFailedFn
 });
 
 function postRestCall(formData, url, json, cbObj) {
@@ -161,6 +162,10 @@ Actions.refreshArticles.listen(function(authorUuid) {
     $.getJSON("/user/get-posts/" + authorUuid).then(this.completed, this.failed);
 });
 
+Actions.getOneArticle.listen(function(artUuid) {
+    $.getJSON("/user/get-article/" + artUuid).then(this.completed, this.failed);
+});
+
 Actions.getArticles.listen(function(artUuids) {
     postRestCall(artUuids, "/user/get-articles", true, this);
 });
@@ -259,7 +264,6 @@ Actions.postArtSelect.listen(function(data) {
 });
 
 Actions.getArticleRank.listen(function(data) {
-    console.log("Get article rank " + data);
     postRestCall(data, "/user/get-art-rank", true, this);
 });
 

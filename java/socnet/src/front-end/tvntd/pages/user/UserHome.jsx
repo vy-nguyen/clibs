@@ -11,6 +11,7 @@ import {Link}              from 'react-router';
 import UserStore           from 'vntd-shared/stores/UserStore.jsx';
 import TabPanel            from 'vntd-shared/layout/TabPanel.jsx';
 import EditorPost          from 'vntd-shared/forms/commons/EditorPost.jsx';
+import UserPostView        from 'vntd-root/pages/user/UserPostView.jsx';
 import ArticleStore        from 'vntd-root/stores/ArticleStore.jsx';
 import PostArticles        from 'vntd-root/components/PostArticles.jsx';
 import ProfileCover        from 'vntd-root/components/ProfileCover.jsx';
@@ -32,11 +33,11 @@ let UserHome = React.createClass({
         }, {
             domId  : 'connections',
             tabText: 'Connections',
-            tabIdx : 2
+            tabIdx : 3
         }, {
             domId  : 'block-chain',
             tabText: 'Block Chains',
-            tabIdx : 3
+            tabIdx : 4
         } ]
     },
     myUserTab: {
@@ -49,13 +50,17 @@ let UserHome = React.createClass({
             tabText: 'Saved Articles',
             tabIdx : 1
         }, {
+            domId  : 'manage-articles',
+            tabText: 'Mananged Articles',
+            tabIdx : 2
+        }, {
             domId  : 'connections',
             tabText: 'Connections',
-            tabIdx : 2
+            tabIdx : 3
         }, {
             domId  : 'block-chain',
             tabText: 'Block Chains',
-            tabIdx : 3
+            tabIdx : 4
         } ]
     },
 
@@ -121,6 +126,7 @@ let UserHome = React.createClass({
                         <TabPanel context={tabCtx}>
                             <PostArticles userUuid={self.userUuid} data={articles}/>
                             {me === true ? <PostArticles userUuid={self.userUuid} data={this.state.mySavedArticles}/> : null}
+                            {me === true ? <UserPostView userUuid={self.userUuid}/> : null}
                             <Friends userUuid={self.userUuid}/>
                             <div><h1>Nothing yet</h1></div>
                         </TabPanel>

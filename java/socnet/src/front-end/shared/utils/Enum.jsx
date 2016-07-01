@@ -93,8 +93,10 @@ function _locationOf(elm, array, compareFn, start, end) {
 }
 
 function insertSorted(elm, array, compareFn) {
-    array.splice(_locationOf(elm, array, compareFn) + 1, 0, elm);
-    return array;
+    if (array.length === 0) {
+        return array.splice(0, 0, elm);
+    }
+    return array.splice(_locationOf(elm, array, compareFn) + 1, 0, elm);
 }
 
 function toDateString(milli) {

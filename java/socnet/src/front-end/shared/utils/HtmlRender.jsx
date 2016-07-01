@@ -1,14 +1,14 @@
+'use strict';
+
 import React from 'react-mod'
 
 let HtmlRender = React.createClass({
-    rawMarkup: function(){
+    rawMarkup: function() {
         return { __html: this.props.html }
     },
-    render: function () {
+    render: function() {
         return (
-            this.props.html ?
-                <p {...this.props} dangerouslySetInnerHTML={this.rawMarkup()} ></p>
-                : null
+            this.props.html ? <div {...this.props} dangerouslySetInnerHTML={this.rawMarkup()}></div> : null
         )
     }
 });
