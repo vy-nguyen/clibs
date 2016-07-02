@@ -165,10 +165,10 @@ let RegisterForm = React.createClass({
 
     _resetRefs: function() {
         this.refs.email.value = '';
-        this.refs.password0 = '';
-        this.refs.password1 = '';
-        this.refs.firstName = '';
-        this.refs.lastName  = '';
+        this.refs.password0.value = '';
+        this.refs.password1.value = '';
+        this.refs.firstName.value = '';
+        this.refs.lastName.value  = '';
     },
 
     _registerResult: function(data) {

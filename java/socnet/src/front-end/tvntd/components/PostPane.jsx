@@ -19,10 +19,6 @@ import UserStore    from 'vntd-shared/stores/UserStore.jsx';
 import Panel            from 'vntd-shared/widgets/Panel.jsx'; 
 import { toDateString } from 'vntd-shared/utils/Enum.jsx';
 
-const tags = [
-    "Kinh te", "Chinh tri", "Viet Nam", "Giao duc"
-];
-
 let TagPost = React.createClass({
 
     _onOptionSelected: function(val) {

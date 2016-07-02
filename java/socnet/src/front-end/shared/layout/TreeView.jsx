@@ -18,7 +18,6 @@ let TreeViewItem = React.createClass({
                 expanded: !this.state.expanded
             });
         }
-        console.log(this);
     },
 
     getInitialState: function() {
@@ -58,20 +57,28 @@ let TreeViewItem = React.createClass({
             parent_li: item.children && item.children.length
         });
         let output = null;
+        let fmtLabel = null;
+
         if (item.renderFn == null) {
-            if (item.noHtml == null) {
+            if (item.defLabel == null) {
                 output = <HtmlRender html={item.content}/>;
             } else {
-                output = (
-                    <span className="label label-primary" style={{fontSize: '14'}}>
-                        {this.state.expanded ? <i className={item.iconOpen}></i> : <i className={item.iconClose}></i>}
-                        {item.content}
-                        {itemCnt}
-                    </span>
-                );
+                fmtLabel = item.content;
             }
         } else {
             output = item.renderFn(item.renderArg, "content");
+            if (item.defLabel != null) {
+                fmtLabel = output;
+            }
+        }
+        if (fmtLabel != null) {
+            output = (
+                <span className="label label-primary" style={{fontSize: '14'}}>
+                    {this.state.expanded ? <i className={item.iconOpen}></i> : <i className={item.iconClose}></i>}
+                    {fmtLabel}
+                    {itemCnt}
+                </span>
+            );
         }
         return (
             <li className={className} onClick={this._handleExpand}>

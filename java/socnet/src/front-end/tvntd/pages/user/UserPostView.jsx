@@ -13,32 +13,39 @@ import TreeView     from 'vntd-shared/layout/TreeView.jsx';
 import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleRank  from 'vntd-root/components/ArticleRank.jsx';
 
-// let demo = require('json!/data/prod/DEVELOPER/ReactJS_Full_Version (beta)/web/api/ui/treeview.json');
-
 let UserPostView = React.createClass({
     mixins: [
         Reflux.connect(AuthorStore)
     ],
 
-    renderTag: function(tag, t) {
-        console.log(this);
-        console.log(tag);
-        console.log(t);
+    data: {},
+
+    moveUp: function(tag, e) {
+        e.stopPropagation();
+        this.data.tagMgr.reRankTag(tag, true);
+    },
+
+    moveDown: function(tag, e) {
+        e.stopPropagation();
+        this.data.tagMgr.reRankTag(tag, false);
+    },
+
+    renderTag: function(tag) {
         return (
-            <div>
-                <h1>test</h1>
+            <span>
                 {tag.tagName}
-            </div>
+                <span className="label label-info" onClick={this.moveUp.bind(this, tag)}><i className="fa fa-sort-desc"/>Up</span>
+                <span className="label label-info" onClick={this.moveDown.bind(this, tag)}><i className="fa fa-sort-asc"/>Down</span>
+            </span>
         )
     },
 
     renderElement: function(parent, children, output) {
         if (children == null) {
             output.push({
-                content: parent.tagName,
-                noHtml : true,
-                //renderFn : this.renderTag.bind(this, parent),
-                //renderArg: parent,
+                renderFn : this.renderTag,
+                renderArg: parent,
+                defLabel : true,
                 iconOpen : "fa fa-lg fa-folder-open",
                 iconClose: "fa fa-lg fa-folder"
             });
@@ -51,9 +58,11 @@ let UserPostView = React.createClass({
                 })
             });
             output.push({
-                content : parent.tagName,
-                noHtml  : true,
-                children: sub,
+                //content : parent.tagName,
+                renderFn : this.renderTag,
+                renderArg: parent,
+                defLabel : true,
+                children : sub,
                 iconOpen : "fa fa-lg fa-folder-open",
                 iconClose: "fa fa-lg fa-folder"
             });
@@ -61,8 +70,12 @@ let UserPostView = React.createClass({
     },
 
     render: function() {
+        let tagMgr = this.data.tagMgr;
+        if (tagMgr == null) {
+            tagMgr = AuthorStore.getAuthorTagMgr(this.props.userUuid);
+            this.data.tagMgr = tagMgr;
+        }
         let json = [];
-        let tagMgr = AuthorStore.getAuthorTagMgr(this.props.userUuid);
         tagMgr.getTreeViewJson(this.renderElement, json);
 
         return (

@@ -95,6 +95,7 @@ class AuthorTagMgr {
         }
         authorTag = new AuthorTag(tag);
         this.authorTags[tag.tagName] = authorTag;
+
         insertSorted(authorTag, this.sortedTags, function(t1, t2) {
             return t1.rank - t2.rank;
         });
@@ -131,8 +132,6 @@ class AuthorTagMgr {
     }
 
     addArticleRank(rank) {
-        console.log("Add article rank");
-        console.log(rank);
         let authorTag = this.authorTags[rank.tagName];
         if (authorTag == null) {
             authorTag = this.createAuthorTag(rank);
@@ -168,11 +167,29 @@ class AuthorTagMgr {
         return this.stringTags;
     }
 
+    swapSortedTags(frIdx, toIdx) {
+        let tmp = this.sortedTags[frIdx];
+        this.sortedTags[frIdx] = this.sortedTags[toIdx];
+        this.sortedTags[toIdx] = tmp;
+    }
+
+    reRankTag(tag, inc) {
+        let len = this.sortedTags.length;
+        for (let i = 0; i < len; i++) {
+            if (this.sortedTags[i] === tag) {
+                let toIdx = ((inc === true) ? (i + len - 1) : (i + 1)) % len;
+                this.swapSortedTags(i, toIdx);
+                break;
+            }
+        }
+        Actions.reRankTags(this);
+    }
+
     /**
      * Invoke the renderFn to format output based on tag tree.
      */
     getTreeViewJson(renderFn, output) {
-        _.forOwn(this.authorTags, function(tag) {
+        _.forOwn(this.sortedTags, function(tag) {
             let sortedRank = tag.getSortedArticleRank();
             if (_.isEmpty(sortedRank)) {
                 renderFn(tag, null, output);
@@ -247,9 +264,7 @@ let AuthorStore = Reflux.createStore({
     },
 
     _updateArticleRank: function(data) {
-        console.log(data.articleRank);
         _.forOwn(data.articleRank, function(rank) {
-            console.log(this.getAuthorTagMgr(rank.authorUuid));
             this.getAuthorTagMgr(rank.authorUuid).addArticleRank(rank);
         }.bind(this));
 
@@ -294,6 +309,11 @@ let AuthorStore = Reflux.createStore({
 
     onGetArticleRankCompleted: function(data) {
         this._updateArticleRank(data);
+    },
+
+    onReRankTagsCompleted: function(tagMgr) {
+        console.log(tagMgr);
+        this.trigger(this.data);
     },
 
     onStartupCompleted: function(data) {
