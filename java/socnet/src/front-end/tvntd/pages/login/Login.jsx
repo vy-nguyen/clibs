@@ -15,6 +15,7 @@ import UserStore     from 'vntd-shared/stores/UserStore.jsx';
 import UiValidate    from 'vntd-shared/forms/validation/UiValidate.jsx';
 import History       from 'vntd-shared/utils/History.jsx';
 import ErrorDispatch from 'vntd-shared/actions/ErrorDispatch.jsx';
+import ErrorView     from 'vntd-shared/layout/ErrorView.jsx';
 
 let LoginHeader = React.createClass({
     render: function() {
@@ -114,7 +115,8 @@ let LoginForm = React.createClass({
             return;
         }
         if (data.authError) {
-            data.authError.dispatchDefault("#id-login-error-text", "#id-login-error");
+            console.log("handle error ");
+            data.authError.handle();
         }
     },
 
@@ -156,10 +158,7 @@ let LoginForm = React.createClass({
             <header> Sign In </header>
             <fieldset>
                 <section>
-                    <div className="form-group alert alert-danger" id="id-login-error" style={{display:"none"}}>
-                        <a className="close" data-dismiss="alert" aria-label="close">x</a>
-                        <div id="id-login-error-text"></div>
-                    </div>
+                    <ErrorView className="form-group alert-danger"/>
                 </section>
             </fieldset>
             <fieldset>

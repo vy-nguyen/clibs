@@ -2,7 +2,6 @@
 'use strict';
 
 import React         from 'react';
-import ReactDOM      from 'react-dom';
 import _             from 'lodash';
 import classnames    from 'classnames';
 import HtmlRender    from 'vntd-shared/utils/HtmlRender.jsx';

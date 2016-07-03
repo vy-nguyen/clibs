@@ -1,6 +1,8 @@
-import React         from 'react-mod'
-import ScriptLoader  from 'vntd-shared/utils/mixins/ScriptLoader.jsx'
-import {findDOMNode} from 'react-dom'
+'use strict';
+
+import React         from 'react-mod';
+import ScriptLoader  from 'vntd-shared/utils/mixins/ScriptLoader.jsx';
+import {findDOMNode} from 'react-dom';
 
 let Dropzone = React.createClass({
     mixins: [ScriptLoader],

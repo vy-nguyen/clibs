@@ -21,7 +21,11 @@ let Navigation = React.createClass({
     ],
 
     getInitialState: function() {
-        return { menuItems: { items: [] } };
+        return {
+            menuItems: {
+                items: []
+            }
+        };
     },
 
     componentDidMount: function() {
@@ -32,7 +36,6 @@ let Navigation = React.createClass({
         this.setState({
             menuItems: json
         });
-        this.forceUpdate();
     },
 
     render: function() {

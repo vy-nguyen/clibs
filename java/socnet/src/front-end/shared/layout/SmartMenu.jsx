@@ -11,7 +11,7 @@ import {Link}     from 'react-router';
 import classnames from 'classnames';
 
 import SmartMenuList     from './SmartMenuList.jsx';
-import NavigationStore   from '../stores/NavigationStore.jsx';
+import NavigationStore   from 'vntd-shared/stores/NavigationStore.jsx';
 
 let SmartMenu = React.createClass({
 
