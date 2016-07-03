@@ -76,6 +76,7 @@ class ErrorDispatch
         let status = this.xhdr.status;
         if (status === 0) {
             console.log("no error");
+
         } else if (200 <= status && status < 300) {
             return;
 

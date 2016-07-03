@@ -8,6 +8,7 @@ import Reflux            from 'reflux';
 import Actions           from 'vntd-root/actions/Actions.jsx';
 import NavigationActions from 'vntd-shared/actions/NavigationActions.jsx';
 import NavigationStore   from 'vntd-shared/stores/NavigationStore.jsx';
+import ErrorDispatch     from 'vntd-shared/actions/ErrorDispatch.jsx';
 
 let RenderStore = Reflux.createStore({
     data: {
@@ -59,8 +60,8 @@ let RenderStore = Reflux.createStore({
     },
 
     onStartupFailed: function(xhdr, text, status) {
-        let error = new ErrorHandler(xhdr, text, status);
-        error.dispatch();
+        let error = new ErrorDispatch(xhdr, text, status);
+        error.handle();
         error = null;
     }
 });

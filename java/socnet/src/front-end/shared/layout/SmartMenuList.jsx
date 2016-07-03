@@ -8,13 +8,13 @@ let SmartMenuList = React.createClass({
 
     render: function() {
         let {items, ...props} = this.props;
-        let menu_item = items.map(function(item) {
+        let menuItem = items.map(function(item) {
             return <SmartMenuItem item={item} key={item._id}/>
-        }.bind(this));
+        });
 
         return (
             <ul {...props}>
-                {menu_item}
+                {menuItem}
             </ul>
         )
     }

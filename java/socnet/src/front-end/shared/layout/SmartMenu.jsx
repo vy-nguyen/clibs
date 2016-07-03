@@ -19,7 +19,7 @@ let SmartMenu = React.createClass({
 
     getInitialState: function() {
         if (this.props.rawItems) {
-            NavigationStore.initRawItems(this.props.rawItems)
+            NavigationStore.addRawItems(this.props.rawItems)
         }
         return NavigationStore.getData()
     },
