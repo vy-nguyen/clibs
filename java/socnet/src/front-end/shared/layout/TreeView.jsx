@@ -111,7 +111,7 @@ let TreeView = React.createClass({
         });
         let views = items.map(function(it) {
             return (
-                <TreeViewItem item={it} parent={this}/>
+                <TreeViewItem item={it} key={_.uniqueId('tree-item-')} parent={this}/>
             )
         }.bind(this));
 

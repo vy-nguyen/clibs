@@ -10,59 +10,32 @@ import {Link}            from 'react-router';
 import classnames        from 'classnames';
 import {findDOMNode}     from 'react-dom';
 
-import Msg               from '../i18n/Msg.jsx';
-import SmartMenuList     from './SmartMenuList.jsx';
+import Msg               from 'vntd-shared/i18n/Msg.jsx';
 import NavigationActions from 'vntd-shared/actions/NavigationActions.jsx';
 import NavigationStore   from 'vntd-shared/stores/NavigationStore.jsx';
-
-let config = window.GlobalConfigs;
+import SmartMenuList     from './SmartMenuList.jsx';
 
 let SmartMenuItem = React.createClass({
 
-    getDefaultProps: function() {
+    getInitialState: function() {
         return {
-            menuSpeed: 200 // config.menu_speed || 200
+            menuSpeed: window.GlobalConfigs.menu_speed || 200
         }
-    },
-    mixins: [Reflux.listenTo(NavigationStore, '_handleNav')],
-    shouldComponentUpdate: function() {
-        return false
     },
 
-    _handleNav: function(data) {
-        let item = this.props.item;
-        item.updateActive();
-        if (data.item._id == item._id) {
-            if (item.isOpen) {
-                this._close()
-            } else {
-                this._open()
-            }
-        } else if (!item.isParentOf(data.item) || item.isSibling(data.item)) {
-            this._close()
-        }
-    },
+    mixins: [Reflux.connect(NavigationStore)],
 
     _handleClick: function (e) {
         e.preventDefault();
-        let item = this.props.item;
-        NavigationActions.activate(item);
+        NavigationActions.activate(this.props.item);
     },
 
     _open: function() {
-        this.props.item.isOpen = true;
-        this._getChildrenListNode().slideDown(this.props.menuSpeed);
-        setTimeout(function() {
-            this.forceUpdate()
-        }.bind(this), this.props.menuSpeed)
+        this._getChildrenListNode().slideDown(this.state.menuSpeed);
     },
 
     _close: function() {
-        this.props.item.isOpen = false;
-        this._getChildrenListNode().slideUp(this.props.menuSpeed);
-        setTimeout(function() {
-            this.forceUpdate()
-        }.bind(this), this.props.menuSpeed)
+        this._getChildrenListNode().slideUp(this.state.menuSpeed);
     },
 
     _getChildrenListNode: function() {
@@ -70,37 +43,39 @@ let SmartMenuItem = React.createClass({
     },
 
     render: function() {
-        var item = this.props.item;
+        let item = this.props.item;
+        item.updateState();
 
-        var title = !item.parent ?
+        let isOpen = item.isOpen;
+        let title = !item.parent ?
             (<span className="menu-item-parent"><Msg phrase={item.title} /></span>) :
                 <Msg phrase={item.title} />;
 
-        var badge = item.badge ?
+        let badge = item.badge ?
             <span className={item.badge.class}>{item.badge.label || ''}</span> : null;
 
-        var childItems = item.items ?
-            (<SmartMenuList style={{ display: (item.isOpen ? 'block' : 'none') }} isTop={false} items={item.items}/>) : null;
+        let childItems = item.items ?
+            (<SmartMenuList style={{ display: (isOpen ? 'block' : 'none') }} isTop={false} items={item.items}/>) : null;
 
-        var icon = item.icon ?
+        let icon = item.icon ?
             (item.counter ? <i className={item.icon}><em>{item.counter}</em></i> : <i className={item.icon}/>) : null;
 
-        var collapseSign = item.items ?
-            (item.isOpen ?
+        let collapseSign = item.items ?
+            (isOpen ?
                  (<b className="collapse-sign"><em className="fa fa-minus-square-o"/></b>) :
-                 (<b className="collapse-sign"><em className="fa fa-plus-square-o"/></b>)) : null;
+                 (<b className="collapse-sign"><em className="fa fa-plus-square-o"/></b>)
+            ) : null;
 
-        var link = item.route ?
+        let link = item.route ?
             (<Link to={item.route} title={item.title} onClick={this._handleClick}>{icon} {title} {badge}</Link>) :
             (<a href={item.href || '#'} onClick={this._handleClick} title={item.title}>
                 {icon} {title} {badge}{collapseSign}
             </a>);
 
         let itemClasses = classnames({
-            open: item.isOpen,
+            open: isOpen,
             active: item.isActive
         });
-
         return <li className={itemClasses}>{link}{childItems}</li>
     }
 });

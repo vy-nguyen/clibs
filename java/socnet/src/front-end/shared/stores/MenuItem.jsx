@@ -26,7 +26,14 @@ export default class MenuItem {
     }
 
     _isOpen() {
-        return _.startsWith(MenuItem.getRoute(), this.route) || this._hasOpenChildren();
+        if (this._hasOpenChildren()) {
+            return true;
+        }
+        let route = MenuItem.getRoute();
+        if (route === '/' && this.route === '/') {
+            return true;
+        }
+        return (this.route && route == this.route);
     }
 
     _hasOpenChildren() {
@@ -37,6 +44,11 @@ export default class MenuItem {
 
     _isActive() {
         return MenuItem.getRoute() == this.route || (this._isOpen() && !this.parent);
+    }
+
+    updateState() {
+        this.isOpen = this._isOpen();
+        this.isActive = this._isActive();
     }
 
     updateActive() {
