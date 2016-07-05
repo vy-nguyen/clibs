@@ -7,7 +7,6 @@
 import React        from 'react';
 import _            from 'lodash';
 import Reflux       from 'reflux';
-import {renderToString} from 'react-dom-server';
 
 import TreeView     from 'vntd-shared/layout/TreeView.jsx';
 import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
@@ -58,7 +57,6 @@ let UserPostView = React.createClass({
                 })
             });
             output.push({
-                //content : parent.tagName,
                 renderFn : this.renderTag,
                 renderArg: parent,
                 defLabel : true,

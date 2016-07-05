@@ -21,6 +21,7 @@ export default class MenuItem {
         }
         this.isOpen = this._isOpen();
         this.isActive = this._isActive();
+        this.isHome = this.route === '/';
 
         return this;
     }

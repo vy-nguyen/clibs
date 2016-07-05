@@ -71,8 +71,10 @@ let TreeViewItem = React.createClass({
             }
         }
         if (fmtLabel != null) {
+            let fontSize = item.fontSize || "14";
+            let textStyle = item.textStyle || "label label-primary";
             output = (
-                <span className="label label-primary" style={{fontSize: '14'}}>
+                <span className={textStyle} style={{fontSize: fontSize}}>
                     {this.state.expanded ? <i className={item.iconOpen}></i> : <i className={item.iconClose}></i>}
                     {fmtLabel}
                     {itemCnt}

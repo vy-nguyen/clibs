@@ -52,14 +52,25 @@ let NavigationStore = Reflux.createStore({
     },
 
     _setInitialItem: function(items) {
+        let home = null;
         items.forEach(function(item) {
             if (item.isActive) {
                 this.data.item = item;
+            }
+            if (item.isHome) {
+                home = item;
             }
             if (item.items) {
                 this._setInitialItem(item.items);
             }
         }.bind(this));
+
+        if (this.data.item == null) {
+            if (home == null) {
+                home = items[0];
+            }
+            this.data.item = home;
+        }
     },
 
     getData: function() {

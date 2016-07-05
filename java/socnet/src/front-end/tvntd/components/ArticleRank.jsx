@@ -23,7 +23,6 @@ let ArticleRank = React.createClass({
     },
 
     _getArticleResult: function() {
-        console.log("get article result");
     },
 
     componentDidMount: function() {

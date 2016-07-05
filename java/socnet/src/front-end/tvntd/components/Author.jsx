@@ -9,6 +9,7 @@ import React            from 'react-mod';
 import ProfileCover     from './ProfileCover.jsx';
 import { htmlCodes }    from 'vntd-root/config/constants';
 import UserIcon         from 'vntd-root/components/UserIcon.jsx';
+import AuthorLinks      from 'vntd-root/components/AuthorLinks.jsx';
 import KeyValueTable    from 'vntd-shared/layout/KeyValueTable.jsx';
 
 let Author = React.createClass({
@@ -89,6 +90,7 @@ let Author = React.createClass({
                             <KeyValueTable keyValueList={creditKv}/>
 
                             {this.renderAboutMe(this.props.user.aboutList)}
+                            <AuthorLinks authorUuid={self.userUuid}/>
                         </div>
                     </div>
                 </div>
