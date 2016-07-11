@@ -17,5 +17,5 @@ popd
 pushd .
 cd java/socnet
 npm install
-bowel install
+bower install
 popd
