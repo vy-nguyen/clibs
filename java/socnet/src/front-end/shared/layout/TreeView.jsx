@@ -39,7 +39,7 @@ let TreeViewItem = React.createClass({
         event.preventDefault();
     },
 
-    render: function () {
+    render: function() {
         let item = this.props.item;
 
         let subClassName = classnames({
@@ -50,7 +50,7 @@ let TreeViewItem = React.createClass({
         let children = null;
         if (item.children && item.children.length) {
             children = <TreeView className={subClassName} items={item.children} role="group"/>;
-            itemCnt  = <span className="badge">{item.children.length}</span>;
+            itemCnt  = <span className="badge alert-danger">{item.children.length}</span>;
         }
         let className = classnames({
             parent_li: item.children && item.children.length
@@ -65,21 +65,16 @@ let TreeViewItem = React.createClass({
                 fmtLabel = item.content;
             }
         } else {
-            output = item.renderFn(item.renderArg, "content");
+            output = item.renderFn(item.renderArg, "content", this.state.expanded);
             if (item.defLabel != null) {
                 fmtLabel = output;
             }
         }
         if (fmtLabel != null) {
-            let fontSize = item.fontSize || "14";
-            let textStyle = item.textStyle || "label label-primary";
-            output = (
-                <span className={textStyle} style={{fontSize: fontSize}}>
-                    {this.state.expanded ? <i className={item.iconOpen}></i> : <i className={item.iconClose}></i>}
-                    {fmtLabel}
-                    {itemCnt}
-                </span>
-            );
+            if (item.formatLabel == null) {
+                item.formatLabel = TreeViewItem.formatLabel;
+            }
+            output = item.formatLabel(item, fmtLabel, itemCnt, this.state.expanded);
         }
         return (
             <li className={className} onClick={this._handleExpand}>
@@ -87,6 +82,20 @@ let TreeViewItem = React.createClass({
                 {children}
             </li>
         )
+    },
+
+    statics: {
+        formatLabel: function(item, label, itemCnt, expanded) {
+            let fontSize = item.fontSize || "14";
+            let textStyle = item.textStyle || "label label-primary";
+            return (
+                <span className={textStyle} style={{fontSize: fontSize}}>
+                    {expanded ? <i className={item.iconOpen}/> : <i className={item.iconClose}/>}
+                    {label}
+                    {itemCnt}
+                </span>
+            );
+        }
     }
 });
 
@@ -108,9 +117,9 @@ let TreeView = React.createClass({
 
     render: function () {
         let items = this.props.items;
-        _.forOwn(items, function(it) {
-            it.expanded = true;
-        });
+        //_.forOwn(items, function(it) {
+        //    it.expanded = true;
+        //});
         let views = items.map(function(it) {
             return (
                 <TreeViewItem item={it} key={_.uniqueId('tree-item-')} parent={this}/>

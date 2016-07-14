@@ -9,14 +9,19 @@ import React     from 'react-mod';
 import Reflux    from 'reflux';
 
 import TreeView     from 'vntd-shared/layout/TreeView.jsx';
+import ModalButton  from 'vntd-shared/layout/ModalButton.jsx';
 import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
+import ArticleStore from 'vntd-root/stores/ArticleStore.jsx';
+import PostPane     from 'vntd-root/components/PostPane.jsx';
 
 let AuthorLinks = React.createClass({
     mixins: [
         Reflux.connect(AuthorStore)
     ],
 
-    data: {},
+    data: {
+        evenRow: true
+    },
 
     renderTag: function(tag) {
         return (
@@ -24,28 +29,40 @@ let AuthorLinks = React.createClass({
         );
     },
 
+    renderLink: function(item) {
+        let article = ArticleStore.getArticleByUuid(item.articleUuid);
+        if (article == null) {
+            return null;
+        }
+        let pane = $('.nav-tabs a[href="#all-' + item.authorUuid + '"]');
+        let clickCb = function() {
+            console.log("click cb");
+            pane.tab('show');
+        }
+        return (
+            <ModalButton className="btn btn-sm btn-primary" buttonText={item.artTitle} closeCb={clickCb.bind(pane)}>
+                <PostPane data={article}/>
+            </ModalButton>
+        );
+    },
+
     renderElement: function(parent, children, output) {
-        if (children == null) {
-            output.push({
-                renderFn : this.renderTag,
-                renderArg: parent,
-                textStyle: 'label label-info',
-                fontSize : '12',
-                defLabel : true,
-                iconOpen : 'fa fa-folder-open',
-                iconClose: 'fa fa-folder'
-            });
-        } else {
+        if ((children != null) && !_.isEmpty(children)) {
             let sub = [];
             _.forOwn(children, function(item) {
                 sub.push({
-                    content: item.artTitle
+                    renderFn : this.renderLink,
+                    renderArg: item
+                    //content: item.artTitle
                 });
-            });
+            }.bind(this));
+
+            let style = this.data.evenRow ? "label label-info" : "label label-primary";
+            this.data.evenRow = !this.data.evenRow;
             output.push({
                 renderFn : this.renderTag,
                 renderArg: parent,
-                textStyle: 'label label-info',
+                textStyle: style,
                 fontSize : '12',
                 defLabel : true,
                 children : sub,
@@ -57,8 +74,6 @@ let AuthorLinks = React.createClass({
 
     render: function() {
         let tagMgr = AuthorStore.getAuthorTagMgr(this.props.authorUuid);
-        console.log("Get tag mgr author " + this.props.authorUuid);
-        console.log(tagMgr);
 
         let json = [];
         tagMgr.getTreeViewJson(this.renderElement, json);

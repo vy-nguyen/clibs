@@ -42,7 +42,7 @@ let Panel = React.createClass({
                     </div>
                     {panelLabel}
                 </header>
-                <div className="panel panel-default">
+                <div className="panel panel-default" style={{overflow: 'auto'}}>
                     {this.props.children}
                 </div>
             </JarvisWidget>

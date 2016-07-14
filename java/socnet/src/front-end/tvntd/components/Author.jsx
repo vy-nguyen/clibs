@@ -15,7 +15,7 @@ import KeyValueTable    from 'vntd-shared/layout/KeyValueTable.jsx';
 let Author = React.createClass({
 
     renderAboutMe: function(aboutList) {
-        if (aboutList == null) {
+        if (aboutList == null || _.isEmpty(aboutList)) {
             return null;
         }
         return aboutList.map(function(item, index) {
@@ -90,6 +90,9 @@ let Author = React.createClass({
                             <KeyValueTable keyValueList={creditKv}/>
 
                             {this.renderAboutMe(this.props.user.aboutList)}
+
+                            <p/>
+                            <strong><i className="fa fa-book"/> Favorite Posts</strong>
                             <AuthorLinks authorUuid={self.userUuid}/>
                         </div>
                     </div>

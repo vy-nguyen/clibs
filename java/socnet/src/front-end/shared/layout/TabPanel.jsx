@@ -17,7 +17,7 @@ let TabPanel = React.createClass({
         let tabHeader = tab.tabItems.map(function(item, idx) {
             return (
                 <li key={_.uniqueId('tab-panel-')} className={idx == 0 ? "active" : ""}>
-                    <a data-toggle="tab" href={'#' + item.domId + '-' + item.tabIdx}>{item.tabText}</a>
+                    <a data-toggle="tab" href={'#' + item.domId}>{item.tabText}</a>
                 </li>
             )
         });
@@ -29,7 +29,7 @@ let TabPanel = React.createClass({
             let clasname = classnames("tab-pane", {active: idx == 0 });
             return (
                 <div key={_.uniqueId('tab-panel-')}
-                    id={item.domId + '-' + item.tabIdx} className={classnames("tab-pane", {active: idx == 0})}>
+                    id={item.domId} className={classnames("tab-pane", {active: idx == 0})}>
                     <div className={classnames("panel-body", tabClsn)}>
                         {tabRef}
                     </div>
@@ -42,9 +42,9 @@ let TabPanel = React.createClass({
                 <ul className="nav nav-tabs">
                     {tabHeader}
                 </ul>
-            <div className="tab-content">
-                {tabContent}
-            </div>
+                <div className="tab-content">
+                    {tabContent}
+                </div>
             </div>
         );
     }

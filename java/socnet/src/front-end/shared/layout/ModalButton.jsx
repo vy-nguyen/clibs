@@ -13,7 +13,10 @@ const modalStyle = {
         right      : 'auto',
         bottom     : 'auto',
         marginRight: '-50%',
-        transform  : 'translate(-50%, -50%)'
+        transform  : 'translate(-50%, -50%)',
+        overflowX  : 'auto',
+        overflowY  : 'scroll',
+        zIndex     : 9999
     }
 };
 
@@ -25,6 +28,10 @@ let ModalButton = React.createClass({
 
     openModal: function() {
         this.setState({modalIsOpen: true});
+        $("body").css("overflow", "hidden");
+        if (this.props.openCb != null) {
+            this.props.openCb();
+        }
     },
 
     afterOpenModal: function() {
@@ -34,12 +41,16 @@ let ModalButton = React.createClass({
 
     closeModal: function() {
         this.setState({modalIsOpen: false});
+        $("body").css("overflow", "auto");
+        if (this.props.closeCb != null) {
+            this.props.closeCb();
+        }
     },
 
     render: function() {
         return (
             <div className={this.props.divClass || ""}>
-                <a className={this.props.className} onClick={this.openModal}>{this.props.buttonText}</a>;
+                <a className={this.props.className} onClick={this.openModal}>{this.props.buttonText}</a>
                 <Modal style={modalStyle}
                     isOpen={this.state.modalIsOpen}
                     onAfterOpen={this.afterOpenModal}
@@ -67,22 +78,4 @@ let ModalButton = React.createClass({
     }
 });
 
-/*
-<div class="modal-dialog">
-    <div class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title">Confirmation</h4>
-        </div>
-        <div class="modal-body">
-            <p>Do you want to save changes you made to document before closing?</p>
-            <p class="text-warning"><small>If you don't save, your changes will be lost.</small></p>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
-        </div>
-        </div>
-        </div>
-*/
 export default ModalButton;
