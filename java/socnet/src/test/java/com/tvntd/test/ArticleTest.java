@@ -57,12 +57,12 @@ import com.tvntd.models.Author;
 import com.tvntd.models.Profile;
 import com.tvntd.models.User;
 import com.tvntd.service.api.IArticleService;
-import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.ITimeLineService;
 import com.tvntd.service.api.ITimeLineService.TimeLineDTO;
+import com.tvntd.service.user.ArticleService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -210,7 +210,7 @@ public class ArticleTest
             post.setTopic(RandUtil.genRandString(topicLen, topicLen));
             post.setContent(RandUtil.genRandString(contentLen, contentLen));
 
-            result.add(ArticleDTO.toArticle(post, profile, true));
+            result.add(ArticleService.toArticle(post, profile, true));
         }
         return result;
     }

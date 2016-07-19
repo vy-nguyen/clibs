@@ -81,7 +81,7 @@ let ArticleRank = React.createClass({
                 <div className="well padding-10">
                     <div className="row padding-10">
                         <div className="col-xs-4 col-sm-4 col-md-4">
-                            <h4>{rank.artTitle}</h4>
+                            <h3>{rank.artTitle}</h3>
                             <br/>
                             <i className="fa fa-calendar"/>1/1/1970
                             <i className="fa fa-comment"/>20

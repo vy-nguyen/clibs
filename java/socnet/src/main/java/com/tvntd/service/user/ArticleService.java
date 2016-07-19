@@ -26,7 +26,9 @@
  */
 package com.tvntd.service.user;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,6 +37,8 @@ import java.util.UUID;
 
 import javax.transaction.Transactional;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,10 +53,12 @@ import com.tvntd.dao.ArticleRankRepo;
 import com.tvntd.dao.ArticleRepository;
 import com.tvntd.forms.ArticleForm;
 import com.tvntd.forms.CommentChangeForm;
+import com.tvntd.forms.PostForm;
 import com.tvntd.forms.UuidForm;
 import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.service.api.IArticleService;
+import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.util.Constants;
 
@@ -67,6 +73,39 @@ public class ArticleService implements IArticleService
 
     @Autowired
     protected ArticleRankRepo artRankRepo;
+
+    @Autowired
+    protected IAuthorService authorSvc;
+
+    /**
+     * Common static methods.
+     */
+    public static Document applyPostForm(PostForm form, Article art, boolean publish)
+    {
+        if (publish == true) {
+            art.markActive();
+        } else {
+            art.markPending();
+        }
+        Document doc = Jsoup.parse(form.getContent());
+        art.setCreatedDate(new Date());
+        art.setTopic(form.getTopic().getBytes(Charset.forName("UTF-8")));
+        art.setContent(doc.text().getBytes(Charset.forName("UTF-8")));
+        return doc;
+    }
+
+    public static Article toArticle(PostForm form, ProfileDTO profile, boolean pub)
+    {
+        Article art = new Article();
+        art.setAuthorId(profile.fetchUserId());
+        art.setAuthorUuid(profile.getUserUuid());
+        ArticleService.applyPostForm(form, art, false);
+        return art;
+    }
+
+    public static void toArticleRank(ArticleDTO art, ProfileDTO author, String tag)
+    {
+    }
 
     /**
      * Utilities to convert to DTO forms.
@@ -168,6 +207,8 @@ public class ArticleService implements IArticleService
 
         for (String uuid : uuids.getUuids()) {
             List<ArticleRank> r = artRankRepo.findByAuthorUuid(uuid);
+            System.out.println("Uuid " + uuid + ", ranks " + r.size());
+
             if (r != null && !r.isEmpty()) {
                 ranks.addAll(convertRank(r));
             }
@@ -292,11 +333,8 @@ public class ArticleService implements IArticleService
         saveArticle(article.fetchArticle());
     }
 
-    protected ArticleRank createArticleRank(Article article)
-    {
-        ArticleForm form = new ArticleForm(Constants.DefaultTag, false, 0L,
-                article.getAuthorUuid(), article.getArticleUuid());
-        return artRankRepo.save(new ArticleRank(form, article));
+    protected ArticleRank createArticleRank(Article article) {
+        return authorSvc.createArticleRank(article, Constants.DefaultTag);
     }
 
     @Override

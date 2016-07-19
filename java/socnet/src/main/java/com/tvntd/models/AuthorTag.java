@@ -50,11 +50,14 @@ public class AuthorTag
     public AuthorTag() {}
     public AuthorTag(String name, Long rank, boolean fav)
     {
-        System.out.println("Tag name " + name);
         this.tag = name.getBytes(Charset.forName("UTF-8"));
         this.favorite = fav;
         this.rank = rank;
         this.notifCount = 0L;
+    }
+
+    public byte[] fetchTag() {
+        return tag;
     }
 
     /**

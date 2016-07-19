@@ -8,9 +8,11 @@ import React        from 'react';
 import _            from 'lodash';
 import Reflux       from 'reflux';
 
-import TreeView     from 'vntd-shared/layout/TreeView.jsx';
-import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
-import ArticleRank  from 'vntd-root/components/ArticleRank.jsx';
+import UserStore    from  'vntd-shared/stores/UserStore.jsx';
+import TreeView     from  'vntd-shared/layout/TreeView.jsx';
+import AccordionView from 'vntd-shared/layout/AccordionView.jsx';
+import AuthorStore  from  'vntd-root/stores/AuthorStore.jsx';
+import ArticleRank  from  'vntd-root/components/ArticleRank.jsx';
 
 let UserPostView = React.createClass({
     mixins: [
@@ -21,22 +23,35 @@ let UserPostView = React.createClass({
 
     moveUp: function(tag, e) {
         e.stopPropagation();
-        this.data.tagMgr.reRankTag(tag, true);
+        let tagMgr = AuthorStore.getAuthorTagMgr(this.props.userUuid);
+        tagMgr.reRankTag(tag, true);
     },
 
     moveDown: function(tag, e) {
         e.stopPropagation();
-        this.data.tagMgr.reRankTag(tag, false);
+        let tagMgr = AuthorStore.getAuthorTagMgr(this.props.userUuid);
+        tagMgr.reRankTag(tag, false);
     },
 
     renderTag: function(tag) {
+        let upRank = null;
+        let downRank = null;
+
+        if (UserStore.isUserMe(this.props.userUuid) === true) {
+            upRank = (
+                <span className="label label-info" onClick={this.moveUp.bind(this, tag)}>
+                    <i className="fa fa-sort-desc"/>Up
+                </span>
+            );
+            downRank = (
+                <span className="label label-info" onClick={this.moveDown.bind(this, tag)}>
+                    <i className="fa fa-sort-asc"/>Down
+                </span>
+            );
+        }
         return (
-            <span>
-                {tag.tagName}
-                <span className="label label-info" onClick={this.moveUp.bind(this, tag)}><i className="fa fa-sort-desc"/>Up</span>
-                <span className="label label-info" onClick={this.moveDown.bind(this, tag)}><i className="fa fa-sort-asc"/>Down</span>
-            </span>
-        )
+            <span>{tag.tagName} {upRank} {downRank}</span>
+        );
     },
 
     renderElement: function(parent, children, output) {
@@ -68,19 +83,18 @@ let UserPostView = React.createClass({
     },
 
     render: function() {
-        let tagMgr = this.data.tagMgr;
-        if (tagMgr == null) {
-            tagMgr = AuthorStore.getAuthorTagMgr(this.props.userUuid);
-            this.data.tagMgr = tagMgr;
-        }
+        let tagMgr = AuthorStore.getAuthorTagMgr(this.props.userUuid);
         let json = [];
         tagMgr.getTreeViewJson(this.renderElement, json);
+        return <AccordionView items={json}/>;
 
+        /*
         return (
             <div className="tree">
-                <TreeView items={json} role="tree"/>
+                <TreeView items={json} role="group"/>
             </div>
         )
+        */
     }
 });
 

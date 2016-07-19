@@ -41,44 +41,22 @@ let TreeViewItem = React.createClass({
 
     render: function() {
         let item = this.props.item;
-
-        let subClassName = classnames({
-            'smart-treeview-group': true,
-            hidden: !this.state.expanded
-        });
-        let itemCnt  = null;
         let children = null;
+
         if (item.children && item.children.length) {
+            let subClassName = classnames({
+                'smart-treeview-group': true,
+                hidden: !this.state.expanded
+            });
             children = <TreeView className={subClassName} items={item.children} role="group"/>;
-            itemCnt  = <span className="badge alert-danger">{item.children.length}</span>;
         }
         let className = classnames({
             parent_li: item.children && item.children.length
         });
-        let output = null;
-        let fmtLabel = null;
 
-        if (item.renderFn == null) {
-            if (item.defLabel == null) {
-                output = <HtmlRender html={item.content}/>;
-            } else {
-                fmtLabel = item.content;
-            }
-        } else {
-            output = item.renderFn(item.renderArg, "content", this.state.expanded);
-            if (item.defLabel != null) {
-                fmtLabel = output;
-            }
-        }
-        if (fmtLabel != null) {
-            if (item.formatLabel == null) {
-                item.formatLabel = TreeViewItem.formatLabel;
-            }
-            output = item.formatLabel(item, fmtLabel, itemCnt, this.state.expanded);
-        }
         return (
             <li className={className} onClick={this._handleExpand}>
-                {output}
+                {TreeView.renderTreeItem(item, this.state.expanded, null)}
                 {children}
             </li>
         )
@@ -131,6 +109,40 @@ let TreeView = React.createClass({
                 {views}
             </ul>
         )
+    },
+
+    statics: {
+        renderTreeItem: function(item, expanded, itemCntClass) {
+            let itemCnt = null;
+            if (itemCntClass == null) {
+                itemCntClass = "badge alert-danger";
+            }
+            if (item.children && item.children.length) {
+                itemCnt = <span className={itemCntClass}>{item.children.length}</span>;
+            }
+            let output = null;
+            let fmtLabel = null;
+
+            if (item.renderFn == null) {
+                if (item.defLabel == null) {
+                    output = <HtmlRender html={item.content}/>;
+                } else {
+                    fmtLabel = item.content;
+                }
+            } else {
+                output = item.renderFn(item.renderArg, "content", expanded);
+                if (item.defLabel != null) {
+                    fmtLabel = output;
+                }
+            }
+            if (fmtLabel != null) {
+                if (item.formatLabel == null) {
+                    item.formatLabel = TreeViewItem.formatLabel;
+                }
+                output = item.formatLabel(item, fmtLabel, itemCnt, expanded);
+            }
+            return output;
+        }
     }
 });
 

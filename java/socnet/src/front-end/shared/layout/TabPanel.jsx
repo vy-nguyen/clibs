@@ -9,6 +9,7 @@ import _                from 'lodash';
 import classnames       from 'classnames';
 
 let TabPanel = React.createClass({
+
     render: function() {
         let tab = this.props.context;
         if (tab === null || tab === undefined) {
@@ -20,13 +21,13 @@ let TabPanel = React.createClass({
                     <a data-toggle="tab" href={'#' + item.domId}>{item.tabText}</a>
                 </li>
             )
-        });
+        }.bind(this));
 
         let tabList = this.props.children;
         let tabClsn = this.props.className;
         let tabContent = tab.tabItems.map(function(item, idx) {
             let tabRef = tabList[item.tabIdx];
-            let clasname = classnames("tab-pane", {active: idx == 0 });
+            let clasname = classnames("tab-pane", {active: idx == 0});
             return (
                 <div key={_.uniqueId('tab-panel-')}
                     id={item.domId} className={classnames("tab-pane", {active: idx == 0})}>
@@ -35,7 +36,7 @@ let TabPanel = React.createClass({
                     </div>
                 </div>
             )
-        });
+        }.bind(this));
 
         return (
             <div className="tab-container">

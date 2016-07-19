@@ -39,6 +39,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 
 import com.tvntd.dao.ArticleRankRepo;
+import com.tvntd.dao.ArticleRepository;
 import com.tvntd.dao.AuthorRepo;
 import com.tvntd.forms.ArticleForm;
 import com.tvntd.models.Article;
@@ -61,6 +62,9 @@ public class AuthorService implements IAuthorService
 
     @Autowired
     protected ArticleRankRepo rankRepo;
+
+    @Autowired
+    protected ArticleRepository articleRepo;
 
     @Override
     public Author getAuthor(UUID uuid)
@@ -124,7 +128,6 @@ public class AuthorService implements IAuthorService
             author = authorRepo.findByAuthorUuid(uid.toString());
             if (author != null) {
                 result.add(new AuthorDTO(author));
-                s_log.info("Debug author: " + author.toString());
             }
         }
         for (UUID uid : profile.getConnectList()) {
@@ -151,27 +154,56 @@ public class AuthorService implements IAuthorService
     @Override
     public Author updateAuthor(ProfileDTO me, ArticleForm form, ArticleRankDTO rankDto)
     {
-        Author author = authorRepo.findByAuthorUuid(me.getUserUuid().toString());
         String artUuid = form.getArticleUuid();
+        String authorUuid = me.getUserUuid().toString();
+        Author author = authorRepo.findByAuthorUuid(authorUuid);
 
         if (author == null || artUuid == null || artUuid.isEmpty()) {
             return null;
         }
-        // TODO: validate article uuid.
-        //
-        Article article = null;
-        AuthorTag tag = author.addTag(form);
-        ArticleRank rank = rankRepo.findByArticleUuid(form.getArticleUuid());
-
+        AuthorTag tag = updateAuthorTag(author, form.getTagName(),
+                            form.getTagRank(), form.isFavorite());
+        ArticleRank rank = rankRepo.findByArticleUuid(artUuid);
         if (rank == null) {
-            form.setUserUuid(me.getUserUuid().toString());
-            rank = new ArticleRank(form, article);
+            form.setUserUuid(authorUuid);
+            Article article = articleRepo.findByArticleUuid(artUuid);
+
+            if (article == null) {
+                return null;
+            }
+            rank = new ArticleRank(tag, article);
         } else {
             rank.updateFromUser(form);
         }
-        authorRepo.save(author);
         rankRepo.save(rank);
         rankDto.setRank(rank, tag);
         return author;
+    }
+
+    public AuthorTag
+    updateAuthorTag(Author author, String tagName, Long order, boolean isFav)
+    {
+        AuthorTag tag = author.addTag(tagName, order, isFav);
+        if (author.isNeedSave() == true) {
+            authorRepo.save(author);
+        }
+        s_log.debug("Save author tag " + author.isNeedSave());
+        return tag;
+    }
+
+    public ArticleRank createArticleRank(Article article, String tagName)
+    {
+        System.out.println("Create art tag " + article.getAuthorUuid() + " " + tagName);
+        s_log.debug("Create art tag " + article.getAuthorUuid() + " " + tagName);
+        String authorUuid = article.getAuthorUuid();
+        Author author = authorRepo.findByAuthorUuid(authorUuid);
+        if (author == null) {
+            author = new Author(authorUuid, article.getArticleUuid());
+        }
+        AuthorTag tag = updateAuthorTag(author, tagName, 0L, false);
+        ArticleRank rank = new ArticleRank(tag, article);
+
+        rankRepo.save(rank);
+        return rank;
     }
 }

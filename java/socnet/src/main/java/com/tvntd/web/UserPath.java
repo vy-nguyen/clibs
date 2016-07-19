@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +60,7 @@ import com.tvntd.forms.CommentForm;
 import com.tvntd.forms.PostForm;
 import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.ObjectId;
+import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Author;
 import com.tvntd.models.Comment;
@@ -77,6 +79,8 @@ import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.ITimeLineService;
 import com.tvntd.service.api.ImageUploadResp;
 import com.tvntd.service.api.LoginResponse;
+import com.tvntd.service.user.ArticleService;
+import com.tvntd.service.user.AuthorService;
 import com.tvntd.util.Util;
 
 @Controller
@@ -225,7 +229,8 @@ public class UserPath
             form.setContent("");
         }
         ArticleDTO art = genPendPost(profile, true, form.getArticleUuid());
-        art.applyForm(form, publish);
+        Article article = art.fetchArticle();
+        ArticleService.applyPostForm(form, article, publish);
 
         if (publish == true) {
             art.fetchArticle().markActive();
@@ -236,10 +241,11 @@ public class UserPath
             profile.assignPendPost(null);
             profile.pushPublishArticle(art);
 
-            byte[] brief = Jsoup.parse(art.getContent()).text().getBytes();
+            byte[] brief = Arrays.copyOfRange(article.getContent(), 0, 200);
             timeLineSvc.saveTimeLine(profile.getUserUuid(),
-                    UUID.fromString(art.getArticleUuid()), null,
-                    Arrays.copyOfRange(brief, 0, 200));
+                    UUID.fromString(art.getArticleUuid()), null, brief);
+
+            authorSvc.createArticleRank(article, form.getTags());
         } else {
             articleSvc.saveArticle(art);
             profile.pushSavedArticle(art);

@@ -27,10 +27,8 @@
 package com.tvntd.service.api;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -48,6 +46,7 @@ import com.tvntd.models.ArticleRank;
 import com.tvntd.models.AuthorTag;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
+import com.tvntd.service.user.ArticleService;
 
 public interface IArticleService
 {
@@ -155,7 +154,7 @@ public interface IArticleService
         public ArticleDTO(PostForm form, ProfileDTO profile)
         {
             super(GenericResponse.USER_HOME, null, null);
-            this.article = toArticle(form, profile, false);
+            this.article = ArticleService.toArticle(form, profile, false);
             convertUTF();
         }
 
@@ -174,32 +173,6 @@ public interface IArticleService
             } catch(UnsupportedEncodingException e) {
                 s_log.error(e.toString());
             }
-        }
-
-        public static Article toArticle(PostForm form, ProfileDTO profile, boolean pub)
-        {
-            Article art = new Article();
-
-            art.setAuthorId(profile.fetchUserId());
-            art.setAuthorUuid(profile.getUserUuid());
-            applyForm(form, art, false);
-            return art;
-        }
-
-        private static void applyForm(PostForm form, Article art, boolean publish)
-        {
-            if (publish == true) {
-                art.markActive();
-            } else {
-                art.markPending();
-            }
-            art.setCreatedDate(new Date());
-            art.setTopic(form.getTopic().getBytes(Charset.forName("UTF-8")));
-            art.setContent(form.getContent().getBytes(Charset.forName("UTF-8")));
-        }
-
-        public void applyForm(PostForm form, boolean publish) {
-            applyForm(form, article, publish);
         }
 
         public String toString()

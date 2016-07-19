@@ -26,6 +26,7 @@
  */
 package com.tvntd.models;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,14 +39,19 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
-import com.tvntd.forms.ArticleForm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 @Entity
 public class Author
 {
+    static private Logger s_log = LoggerFactory.getLogger(Author.class);
+
     @Id
     @Column(length = 64)
     private String authorUuid;
@@ -79,6 +85,23 @@ public class Author
 
     @Column(length = 64)
     private String appUuid;
+
+    @Transient
+    private boolean needSave;
+
+    public Author() {
+        needSave = false;
+    }
+
+    public Author(String authorUuid, String artUuid)
+    {
+        needSave = true;
+        this.authorUuid = authorUuid;
+        this.frontArtUuid = artUuid;
+        this.favArticles = new ArrayList<>();
+        this.timeLineArticles = new ArrayList<>();
+        this.authorTags = new ArrayList<>();
+    }
 
     public static Author fromUserUuid(String userUuid)
     {
@@ -140,16 +163,18 @@ public class Author
     /**
      * Add a tag from user input.  No op if the tag already exists.
      */
-    public AuthorTag addTag(ArticleForm form)
+    public AuthorTag addTag(String tagName, Long rank, boolean isFav)
     {
-        String tagName = form.getTagName();
         for (AuthorTag t : authorTags) {
             if (tagName.equals(t.getTag())) {
+                s_log.debug("Return matcihng tag " + tagName);
                 return t;
             }
         }
-        AuthorTag t = new AuthorTag(tagName, form.getTagRank(), form.isFavorite());
+        AuthorTag t = new AuthorTag(tagName, rank, isFav);
         authorTags.add(t);
+        needSave = true;
+        s_log.debug("Create new tag " + tagName);
         return t;
     }
 
@@ -162,6 +187,7 @@ public class Author
             AuthorTag t = it.next();
             if (tag.equals(t.getTag())) {
                 it.remove();
+                needSave = true;
                 return t;
             }
         }
@@ -250,5 +276,19 @@ public class Author
      */
     public void setAppUuid(String appUuid) {
         this.appUuid = appUuid;
+    }
+
+    /**
+     * @return the needSave
+     */
+    public boolean isNeedSave() {
+        return needSave;
+    }
+
+    /**
+     * @param needSave the needSave to set
+     */
+    public void setNeedSave(boolean needSave) {
+        this.needSave = needSave;
     }
 }

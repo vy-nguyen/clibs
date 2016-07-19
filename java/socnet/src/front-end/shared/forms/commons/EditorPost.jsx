@@ -240,7 +240,7 @@ let EditorPost = React.createClass({
                 <div className="inbox-info-bar no-padding">
                     <div className="row">
                         <div className="form-group">
-                            <label className="control-label col-md-1"><strong>Link Chain</strong></label>
+                            <label className="control-label col-md-1"><strong>Tags</strong></label>
                             <div className="col-md-10">
                                 <input ref="tags" className="form-control" placeholder={this.initValues.tags} type="text"/>
                             </div>

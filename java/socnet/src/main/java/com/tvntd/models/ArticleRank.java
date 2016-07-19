@@ -103,25 +103,15 @@ public class ArticleRank
         this.transRoot = ObjectId.zeroId();
     }
 
-    public ArticleRank(ArticleForm form, Article article)
+    public ArticleRank(AuthorTag tag, Article article)
     {
-        this.articleUuid = form.getArticleUuid();
-        this.authorUuid = form.getUserUuid();
-        this.tag = form.getTagName().getBytes(Charset.forName("UTF-8"));
-        this.favorite = form.isFavorite();
-        this.rank = form.getArticleRank();
-
-        String title = form.getTitle();
-        if (title != null) {
-            this.artTitle = title.getBytes(Charset.forName("UTF-8"));
-        } else {
-            this.artTitle = Util.DefaultTopic;
-        }
-        if (article != null) {
-            this.contentBrief = Arrays.copyOfRange(article.getContent(), 0, 200);
-        } else {
-            this.contentBrief = Util.DefaultEmpty;
-        }
+        this.articleUuid = article.getArticleUuid();
+        this.authorUuid = article.getAuthorUuid();
+        this.tag = tag.fetchTag();
+        this.favorite = tag.isFavorite();
+        this.rank = tag.getRank();
+        this.artTitle = article.getTopic();
+        this.contentBrief = Arrays.copyOfRange(article.getContent(), 0, 200);
     }
 
     public void updateFromUser(ArticleForm form)
