@@ -86,7 +86,7 @@ let UserPostView = React.createClass({
         let tagMgr = AuthorStore.getAuthorTagMgr(this.props.userUuid);
         let json = [];
         tagMgr.getTreeViewJson(this.renderElement, json);
-        return <AccordionView items={json}/>;
+        return <AccordionView className="no-padding" items={json}/>;
 
         /*
         return (

@@ -10,15 +10,23 @@ import classnames       from 'classnames';
 
 let TabPanel = React.createClass({
 
+    _selectTab: function(index) {
+        this.props.context.setActivePane(index);
+    },
+
     render: function() {
         let tab = this.props.context;
         if (tab === null || tab === undefined) {
             return null;
         }
+        let activeIdx = tab.getActivePane();
         let tabHeader = tab.tabItems.map(function(item, idx) {
             return (
-                <li key={_.uniqueId('tab-panel-')} className={idx == 0 ? "active" : ""}>
-                    <a data-toggle="tab" href={'#' + item.domId}>{item.tabText}</a>
+                <li key={_.uniqueId('tab-panel-')} className={idx == activeIdx ? "active" : ""}>
+                    <a data-toggle="tab" href={'#' + item.domId}
+                        id={'tab-panel-' + item.domId} onClick={this._selectTab.bind(this, idx)}>
+                        {item.tabText}
+                    </a>
                 </li>
             )
         }.bind(this));
@@ -27,11 +35,11 @@ let TabPanel = React.createClass({
         let tabClsn = this.props.className;
         let tabContent = tab.tabItems.map(function(item, idx) {
             let tabRef = tabList[item.tabIdx];
-            let clasname = classnames("tab-pane", {active: idx == 0});
+            let clasname = classnames("tab-pane", {active: idx == activeIdx});
             return (
                 <div key={_.uniqueId('tab-panel-')}
-                    id={item.domId} className={classnames("tab-pane", {active: idx == 0})}>
-                    <div className={classnames("panel-body", tabClsn)}>
+                    id={item.domId} className={classnames("tab-pane", {active: idx == activeIdx})}>
+                    <div className={classnames("panel-body no-padding", tabClsn)}>
                         {tabRef}
                     </div>
                 </div>
@@ -39,11 +47,11 @@ let TabPanel = React.createClass({
         }.bind(this));
 
         return (
-            <div className="tab-container">
+            <div className="tab-container no-padding">
                 <ul className="nav nav-tabs">
                     {tabHeader}
                 </ul>
-                <div className="tab-content">
+                <div className="tab-content no-padding">
                     {tabContent}
                 </div>
             </div>

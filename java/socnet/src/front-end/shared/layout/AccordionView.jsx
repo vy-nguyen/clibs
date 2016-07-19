@@ -30,7 +30,7 @@ let AccordionView = React.createClass({
 
         return (
             <UiAccordion>
-                <div>
+                <div className={this.props.className}>
                     {elmView}
                 </div>
             </UiAccordion>

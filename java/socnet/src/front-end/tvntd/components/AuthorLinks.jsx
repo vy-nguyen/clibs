@@ -10,7 +10,6 @@ import Reflux    from 'reflux';
 
 import TreeView      from 'vntd-shared/layout/TreeView.jsx';
 import AccordionView from 'vntd-shared/layout/AccordionView.jsx';
-import ModalButton   from 'vntd-shared/layout/ModalButton.jsx';
 import AuthorStore   from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleStore  from 'vntd-root/stores/ArticleStore.jsx';
 import PostPane      from 'vntd-root/components/PostPane.jsx';
@@ -30,20 +29,21 @@ let AuthorLinks = React.createClass({
         );
     },
 
+    showItem: function(item) {
+        console.log("click showItem");
+        $('#tab-panel-all-' + item.authorUuid).trigger('click');
+        $('#art-rank-full-' + item.articleUuid).trigger('click');
+        console.log($('#art-rank-full-' + item.articleUuid));
+    },
+
     renderLink: function(item) {
         let article = ArticleStore.getArticleByUuid(item.articleUuid);
         if (article == null) {
             return null;
         }
-        let pane = $('.nav-tabs a[href="#all-' + item.authorUuid + '"]');
-        let clickCb = function() {
-            console.log("click cb");
-            pane.tab('show');
-        }
+        let text = item.artTitle.subString(0, 40);
         return (
-            <ModalButton className="btn btn-sm btn-primary" buttonText={item.artTitle} closeCb={clickCb.bind(pane)}>
-                <PostPane data={article}/>
-            </ModalButton>
+            <p><a onClick={this.showItem.bind(this, item)}>{text}</a></p>
         );
     },
 
@@ -90,3 +90,8 @@ let AuthorLinks = React.createClass({
 });
 
 export default AuthorLinks;
+        /*
+            <ModalButton className="btn btn-sm btn-primary" buttonText={item.artTitle} closeCb={clickCb.bind(this, item.authorUuid)}>
+                <PostPane data={article}/>
+            </ModalButton>
+        */

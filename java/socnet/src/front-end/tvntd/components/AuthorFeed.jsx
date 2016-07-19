@@ -30,6 +30,9 @@ let AuthorFeed = React.createClass({
 
     getAuthorTab: function(uuid) {
         return {
+            getActivePane: this._getActivePane,
+            setActivePane: this._setActivePane,
+
             tabItems: [ {
                 domId  : 'article-' + uuid,
                 tabText: 'Articles',
@@ -56,6 +59,18 @@ let AuthorFeed = React.createClass({
                 tabIdx : 5
             } ]
         };
+    },
+
+    _getActivePane: function() {
+        let author = this.props.user;
+        if (author.tabPanelIdx == null) {
+            author.tabPanelIdx = 0;
+        }
+        return author.tabPanelIdx;
+    },
+
+    _setActivePane: function(index) {
+        this.props.user.tabPanelIdx = index;
     },
 
     getInitialState: function() {

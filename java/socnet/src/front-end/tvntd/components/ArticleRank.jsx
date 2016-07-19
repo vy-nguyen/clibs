@@ -71,7 +71,9 @@ let ArticleRank = React.createClass({
             artPane = (
                 <div className="row" style={artStyle} id={this.state.article._id}>
                     <PostPane data={this.state.article}/>
-                    <a className="btn btn-primary" onClick={this._toggleFullArticle}>{this.state.buttonText}</a>
+                    <a className="btn btn-primary" id={"art-rank-full-" + this.props.articleUuid} onClick={this._toggleFullArticle}>
+                        {this.state.buttonText}
+                    </a>
                 </div>
             );
         }
