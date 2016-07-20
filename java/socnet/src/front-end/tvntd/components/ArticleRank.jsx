@@ -45,6 +45,7 @@ let ArticleRank = React.createClass({
                 Actions.getOneArticle(this.props.articleUuid);
             }
         }
+        console.log("toggle article " + this.props.articleUuid);
         if (this.state.fullArticle == true) {
             if (this.state.article != null) {
                 $('#' + this.state.article._id).hide();
@@ -71,7 +72,7 @@ let ArticleRank = React.createClass({
             artPane = (
                 <div className="row" style={artStyle} id={this.state.article._id}>
                     <PostPane data={this.state.article}/>
-                    <a className="btn btn-primary" id={"art-rank-full-" + this.props.articleUuid} onClick={this._toggleFullArticle}>
+                    <a className="btn btn-primary" onClick={this._toggleFullArticle}>
                         {this.state.buttonText}
                     </a>
                 </div>
@@ -85,13 +86,18 @@ let ArticleRank = React.createClass({
                         <div className="col-xs-4 col-sm-4 col-md-4">
                             <h3>{rank.artTitle}</h3>
                             <br/>
-                            <i className="fa fa-calendar"/>1/1/1970
-                            <i className="fa fa-comment"/>20
-                            <i className="fa fa-thumbs-up"/>10
+                            <ul className="list-inline">
+                                <li>1/1/1970 </li>
+                                <li><i className="fa fa-comment"/> 20</li>
+                                <li><i className="fa fa-thumbs-up"/> 10</li>
+                            </ul>
                         </div>
                         <div className="col-xs-7 col-sm-7 col-md-7">
                             <p>{rank.contentBrief}</p>
-                            <a className="btn btn-primary" onClick={this._toggleFullArticle}>{this.state.buttonText}</a>
+                            <a className="btn btn-primary"
+                                id={"art-rank-full-" + this.props.articleUuid} onClick={this._toggleFullArticle}>
+                                {this.state.buttonText}
+                            </a>
                         </div>
                     </div>
                 </div>

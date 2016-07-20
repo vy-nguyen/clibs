@@ -30,10 +30,8 @@ let AuthorLinks = React.createClass({
     },
 
     showItem: function(item) {
-        console.log("click showItem");
         $('#tab-panel-all-' + item.authorUuid).trigger('click');
         $('#art-rank-full-' + item.articleUuid).trigger('click');
-        console.log($('#art-rank-full-' + item.articleUuid));
     },
 
     renderLink: function(item) {
@@ -41,7 +39,8 @@ let AuthorLinks = React.createClass({
         if (article == null) {
             return null;
         }
-        let text = item.artTitle.subString(0, 40);
+        let text = item.artTitle.substring(0, 40);
+        this.data.evenRow = !this.data.evenRow;
         return (
             <p><a onClick={this.showItem.bind(this, item)}>{text}</a></p>
         );
