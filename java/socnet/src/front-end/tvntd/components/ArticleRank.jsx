@@ -45,7 +45,6 @@ let ArticleRank = React.createClass({
                 Actions.getOneArticle(this.props.articleUuid);
             }
         }
-        console.log("toggle article " + this.props.articleUuid);
         if (this.state.fullArticle == true) {
             if (this.state.article != null) {
                 $('#' + this.state.article._id).hide();
@@ -67,18 +66,18 @@ let ArticleRank = React.createClass({
 
     render: function() {
         let artPane = null;
+        let rank = this.props.rank;
         if (this.state.article != null) {
             let artStyle = this.state.fullArticle == false ? { display: "none" } : { height: "auto" };
             artPane = (
                 <div className="row" style={artStyle} id={this.state.article._id}>
-                    <PostPane data={this.state.article}/>
+                    <PostPane data={this.state.article} artRank={rank}/>
                     <a className="btn btn-primary" onClick={this._toggleFullArticle}>
                         {this.state.buttonText}
                     </a>
                 </div>
             );
         }
-        let rank = this.props.rank;
         return (
             <div>
                 <div className="well padding-10">

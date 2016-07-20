@@ -163,6 +163,19 @@ class AuthorTagMgr {
         return null;
     }
 
+    getArticleRankByUuid(articleUuid) {
+        let rank = null;
+        _.forOwn(this.authorTags, function(authorTag) {
+            if (rank == null) {
+                rank = authorTag.getArticleRank(articleUuid);
+            }
+            if (rank != null) {
+                return false;
+            }
+        });
+        return rank;
+    }
+
     getStringTags() {
         return this.stringTags;
     }

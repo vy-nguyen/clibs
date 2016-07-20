@@ -63,11 +63,13 @@ let TagPost = React.createClass({
     },
 
     getInitialState: function() {
+        let rank = this.props.artRank;
+        console.log(rank);
         return {
             tagText: "Tag your article",
-            tagName: "My Posts",
-            rankVal: "Rank 0-100",
-            favorite: true
+            tagName: rank.tagName,
+            rankVal: rank.rank,
+            favorite: rank.favorite
         }
     },
 
@@ -80,7 +82,7 @@ let TagPost = React.createClass({
                 <div className="row">
                     <div className="col-xs-5 col-sm-5 col-md-5">
                         <TA.Typeahead options={tags} maxVisible={4}
-                            placeholder="Tag your article"
+                            placeholder={this.state.tagName ? this.state.tagName : this.state.tagText}
                             value={this.state.tagName}
                             customClasses={{input: "form-control input-sm"}}
                             onBlur={this._onBlur}
@@ -156,7 +158,16 @@ let PostPane = React.createClass({
         let tagPost = null;
         let article = this.props.data;
         if (UserStore.isUserMe(article.authorUuid)) {
-            tagPost = <TagPost articleUuid={article.articleUuid} title={article.topic}/>
+            let rank = this.props.artRank;
+            if (rank == null) {
+                let tagMgr = AuthorStore.getAuthorTagMgr(article.authorUuid);
+                if (tagMgr != null) {
+                    rank = tagMgr.getArticleRankByUuid(article.articleUuid);
+                }
+            }
+            if (rank != null) {
+                tagPost = <TagPost articleUuid={article.articleUuid} artRank={rank} title={article.topic}/>
+            }
         }
         return (
             <Panel className="well no-padding" context={panelData}>

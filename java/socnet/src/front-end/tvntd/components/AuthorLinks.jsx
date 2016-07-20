@@ -12,7 +12,6 @@ import TreeView      from 'vntd-shared/layout/TreeView.jsx';
 import AccordionView from 'vntd-shared/layout/AccordionView.jsx';
 import AuthorStore   from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleStore  from 'vntd-root/stores/ArticleStore.jsx';
-import PostPane      from 'vntd-root/components/PostPane.jsx';
 
 let AuthorLinks = React.createClass({
     mixins: [
@@ -77,14 +76,6 @@ let AuthorLinks = React.createClass({
         let json = [];
         tagMgr.getTreeViewJson(this.renderElement, json);
         return <AccordionView items={json}/>;
-
-            /*
-        return (
-            <div className="tree">
-                <TreeView items={json} role="tree"/>
-            </div>
-        );
-             */
     }
 });
 
