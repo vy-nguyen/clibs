@@ -240,7 +240,10 @@ class AuthorTagMgr {
             }
         });
         if (rank == null && def == true) {
-            return AuthorStore.createDefArtRank(articleUuid);
+            let article = ArticleStore.getArticleByUuid(articleUuid);
+            if (article != null) {
+                return new ArticleRank(null, null, article);
+            }
         }
         return rank;
     }
