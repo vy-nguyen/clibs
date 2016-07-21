@@ -10,6 +10,7 @@ import _      from 'lodash';
 
 import Actions        from 'vntd-root/actions/Actions.jsx';
 import UserStore      from 'vntd-shared/stores/UserStore.jsx';
+import ArticleStore   from 'vntd-root/stores/ArticleStore.jsx';
 import {insertSorted} from 'vntd-shared/utils/Enum.jsx';
 
 class Author {
@@ -35,6 +36,51 @@ class Author {
     }
 }
 
+class ArticleRank {
+    constructor(data, authorTag, article) {
+        if (data == null) {
+            data = {
+                artTitle    : article.topic,
+                articleUuid : article.articleUuid,
+                authorUuid  : article.authorUuid,
+                contentBrief: null,
+                creditEarned: 0,
+                favorite    : false,
+                likes       : 0,
+                moneyEarned : 0,
+                notifCount  : 0,
+                notifHead   : 0,
+                rank        : 0,
+                score       : 0,
+                shares      : 0,
+                tagName     : "My Post",
+                tagRank     : null,
+                userLiked   : [],
+                userShared  : []
+            }
+        }
+        this.authorTag = authorTag;
+        this.artRank = {};
+        _.forEach(data, function(v, k) {
+            this[k] = v;
+        }.bind(this));
+
+        return this;
+    }
+
+    detachTag() {
+        if (this.authorTag != null) {
+            this.authorTag.removeArticleRank(this);
+        }
+        this.authorTag = null;
+    }
+
+    attachTag(authorTag) {
+        this.authorTag = authorTag;
+        authorTag.addArticleRankObj(this);
+    }
+}
+
 class AuthorTag {
     constructor(tag) {
         this._id        = _.uniqueId('id-author-tag-');
@@ -49,11 +95,14 @@ class AuthorTag {
         return this;
     }
 
-    addArticleRank(rank) {
-        if (this.articles[rank.articleUuid] != null) {
+    addArticleRank(json) {
+        if (this.articles[json.articleUuid] != null) {
             return;
-            //this.removeArticleRank(rank);
         }
+        this.addArticleRankObj(new ArticleRank(json, this, null));
+    }
+
+    addArticleRankObj(rank) {
         this.articles[rank.articleUuid] = rank;
         insertSorted(rank, this.sortedArts, function(r1, r2) {
             return r1.rank - r2.rank;
@@ -61,10 +110,12 @@ class AuthorTag {
     }
 
     removeArticleRank(rank) {
+        rank.authorTag = null;
         delete this.articles[rank.articleUuid];
+
         _.forOwn(this.sortedArts, function(it, idx) {
             if (it.articleUuid === rank.articleUuid) {
-                this.sortedArts = this.sortedArts.splice(idx, 1);
+                this.sortedArts.splice(idx, 1);
                 return false;
             }
         }.bind(this));
@@ -88,10 +139,25 @@ class AuthorTagMgr {
         return this;
     }
 
+    getAuthorTag(tagName, tagRank, isFav) {
+        let authorTag = this.authorTags[tagName];
+        if (authorTag != null) {
+            return authorTag;
+        }
+        return this.addAuthorTag({
+            tagName   : tagName,
+            headNotif : 0,
+            isFavorite: isFav,
+            rank      : tagRank,
+            notifCount: 0,
+            headChain : 0
+        });
+    }
+
     addAuthorTag(tag) {
         let authorTag = this.authorTags[tag.tagName];
         if (authorTag != null) {
-            this.removeAuthorTag(tag);
+            return authorTag;
         }
         authorTag = new AuthorTag(tag);
         this.authorTags[tag.tagName] = authorTag;
@@ -115,7 +181,7 @@ class AuthorTagMgr {
         delete this.authorTags[tag.tagName];
         _.forOwn(this.sortedTags, function(it, idx) {
             if (it.tagName === tag.tagName) {
-                this.sortedTags = this.sortedTags.splice(idx, 1);
+                this.sortedTags.splice(idx, 1);
                 return false;
             }
         }.bind(this));
@@ -163,7 +229,7 @@ class AuthorTagMgr {
         return null;
     }
 
-    getArticleRankByUuid(articleUuid) {
+    getArticleRankByUuid(articleUuid, def) {
         let rank = null;
         _.forOwn(this.authorTags, function(authorTag) {
             if (rank == null) {
@@ -173,6 +239,9 @@ class AuthorTagMgr {
                 return false;
             }
         });
+        if (rank == null && def == true) {
+            return AuthorStore.createDefArtRank(articleUuid);
+        }
         return rank;
     }
 
@@ -247,6 +316,24 @@ let AuthorStore = Reflux.createStore({
             return this.data.authorTagMgr[uuid];
         }
         return authorTagMgr;
+    },
+
+    updateAuthorTag: function(tagInfo) {
+        let authorTagMgr = this.getAuthorTagMgr(tagInfo.userUuid);
+        let authorTag = authorTagMgr.getAuthorTag(tagInfo.tagName, tagInfo.tagRank, tagInfo.favorite);
+        let artRank = tagInfo.artRank;
+
+        if (artRank == null) {
+            let article = ArticleStore.getArticleByUuid(tagInfo.articleUuid);
+            if (article == null) {
+                return;
+            }
+            artRank = new ArticleRank(null, authorTag, article);
+        } else {
+            artRank.detachTag();
+        }
+        artRank.attachTag(authorTag);
+        this.trigger(this.data);
     },
 
     iterAuthor: function(uuidList, func) {
@@ -337,7 +424,14 @@ let AuthorStore = Reflux.createStore({
         }
     },
 
-    exports: {
+    statics: {
+        createDefArtRank: function(articleUuid) {
+            let article = ArticleStore.getArticleByUuid(articleUuid);
+            if (article != null) {
+                return new ArticleRank(null, null, article);
+            }
+            return null;
+        }
     }
 });
 

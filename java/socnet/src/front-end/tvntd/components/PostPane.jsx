@@ -46,17 +46,20 @@ let TagPost = React.createClass({
             rank = 50;
             this.refs.rank.value = rank;
         }
-        Actions.updateArtRank({
+        let tagInfo = {
             tagName    : this.state.tagName,
             favorite   : this.state.favorite,
+            userUuid   : UserStore.getSelf().userUuid,
+            title      : this.props.postTitle,
             tagRank    : 50,
             articleRank: rank,
             likeInc    : 0,
             shareInc   : 0,
-            userUuid   : UserStore.getSelf().userUuid,
-            title      : this.props.postTitle,
+            artRank    : this.props.artRank,
             articleUuid: this.props.articleUuid
-        });
+        };
+        AuthorStore.updateAuthorTag(tagInfo);
+        Actions.updateArtRank(tagInfo);
         this.setState({
             rankVal : rank,
         });
@@ -64,7 +67,6 @@ let TagPost = React.createClass({
 
     getInitialState: function() {
         let rank = this.props.artRank;
-        console.log(rank);
         return {
             tagText: "Tag your article",
             tagName: rank.tagName,
@@ -162,7 +164,7 @@ let PostPane = React.createClass({
             if (rank == null) {
                 let tagMgr = AuthorStore.getAuthorTagMgr(article.authorUuid);
                 if (tagMgr != null) {
-                    rank = tagMgr.getArticleRankByUuid(article.articleUuid);
+                    rank = tagMgr.getArticleRankByUuid(article.articleUuid, true);
                 }
             }
             if (rank != null) {
