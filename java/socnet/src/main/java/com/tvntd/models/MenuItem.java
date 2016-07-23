@@ -54,6 +54,18 @@ public class MenuItem
         super();
     }
 
+    public MenuItem(MenuItem copy)
+    {
+        itemId = new Long(copy.itemId);
+        userId = new Long(copy.userId);
+        parentId = new Long(copy.parentId);
+        title = copy.title;
+        icon = copy.icon;
+        route = copy.route;
+        badgeLabel = copy.badgeLabel;
+        badgeClass = copy.badgeClass;
+    }
+
     public MenuItem(MenuItemResp mem)
     {
         this.itemId = mem.getItemId();

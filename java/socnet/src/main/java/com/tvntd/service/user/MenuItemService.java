@@ -99,9 +99,10 @@ public class MenuItemService implements IMenuItemService
 
         for (MenuItem raw : rawList) {
             MenuItemResp item = new MenuItemResp(raw);
+            Long parentId = item.getParentId();
 
             map.put(item.getItemId(), item);
-            if (item.getParentId().equals(base)) {
+            if (parentId.equals(base)) {
                 result.add(item);
             } else {
                 sub.add(item);
@@ -212,17 +213,20 @@ public class MenuItemService implements IMenuItemService
                 s_log.info("Error in parsing json, items has nothing to save ");
                 return;
             }
-            for (MenuItem it : items) {
-                Long base = userId * itemIdMul;
+            Long base = userId * itemIdMul;
+            for (MenuItem item : items) {
+                MenuItem it = new MenuItem(item);
                 Long parentId = it.getParentId();
 
-                if (parentId != 0L) {
-                    parentId = parentId + base;
-                }
+                parentId = parentId + base;
                 it.setParentId(parentId);
                 it.setUserId(userId);
                 it.setItemId(it.getItemId() + base);
+
                 repo.save(it);
+                s_log.debug("UserId " + it.getUserId() + ", title " + it.getTitle() +
+                        ", parentId " + it.getParentId() + ", item " +
+                        it.getItemId());
             }
         }
 
