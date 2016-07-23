@@ -28,6 +28,9 @@ package com.tvntd.forms;
 
 import javax.validation.constraints.Size;
 
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
+
 public class ArticleForm
 {
     @Size(max = 64)
@@ -56,6 +59,17 @@ public class ArticleForm
         this.shareInc = 0L;
         this.userUuid = userUuid;
         this.articleUuid = articleUuid;
+    }
+
+    public boolean cleanInput()
+    {
+        if (userUuid == null || articleUuid == null) {
+            return false;
+        }
+        Whitelist wlist = Whitelist.basic();
+        userUuid = Jsoup.clean(userUuid, wlist);
+        articleUuid = Jsoup.clean(articleUuid, wlist);
+        return true;
     }
 
     /**

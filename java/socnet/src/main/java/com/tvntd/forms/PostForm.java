@@ -29,6 +29,11 @@ package com.tvntd.forms;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
+
+import com.tvntd.util.Constants;
+
 public class PostForm
 {
     @Size(max = 140)
@@ -41,6 +46,26 @@ public class PostForm
     private String tags;
     private String authorUuid;
     private String articleUuid;
+
+    public boolean cleanInput()
+    {
+        if (content == null || authorUuid == null || articleUuid == null) {
+            return false;
+        }
+        if (topic == null) {
+            topic = Constants.DefaultTopic;
+        }
+        if (tags == null) {
+            tags = Constants.DefaultTag;
+        }
+        Whitelist wlist = Whitelist.basic();
+        topic = Jsoup.clean(topic, wlist);
+        content = Jsoup.clean(content, wlist);
+        tags = Jsoup.clean(tags, wlist);
+        authorUuid = Jsoup.clean(authorUuid, wlist);
+        articleUuid = Jsoup.clean(articleUuid, wlist);
+        return true;
+    }
 
     /**
      * @return the topic

@@ -220,6 +220,9 @@ public class UserPath
         if (profile == null) {
             return s_noProfile;
         }
+        if (form.cleanInput() == false) {
+            return s_noProfile;
+        }
         if (form.getTopic() == null) {
             form.setTopic("");
         }

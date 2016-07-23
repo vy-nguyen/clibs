@@ -26,7 +26,7 @@
  */
 package com.tvntd.service.user;
 
-import java.nio.charset.Charset;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,8 +37,6 @@ import java.util.UUID;
 
 import javax.transaction.Transactional;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +49,6 @@ import org.springframework.stereotype.Service;
 
 import com.tvntd.dao.ArticleRankRepo;
 import com.tvntd.dao.ArticleRepository;
-import com.tvntd.forms.ArticleForm;
 import com.tvntd.forms.CommentChangeForm;
 import com.tvntd.forms.PostForm;
 import com.tvntd.forms.UuidForm;
@@ -80,18 +77,21 @@ public class ArticleService implements IArticleService
     /**
      * Common static methods.
      */
-    public static Document applyPostForm(PostForm form, Article art, boolean publish)
+    public static void applyPostForm(PostForm form, Article art, boolean publish)
     {
         if (publish == true) {
             art.markActive();
         } else {
             art.markPending();
         }
-        Document doc = Jsoup.parse(form.getContent());
         art.setCreatedDate(new Date());
-        art.setTopic(form.getTopic().getBytes(Charset.forName("UTF-8")));
-        art.setContent(doc.text().getBytes(Charset.forName("UTF-8")));
-        return doc;
+        try {
+            art.setTopic(form.getTopic().getBytes("UTF-8"));
+            art.setContent(form.getContent().getBytes("UTF-8"));
+
+        } catch(UnsupportedEncodingException e) {
+            s_log.info(e.getMessage());
+        }
     }
 
     public static Article toArticle(PostForm form, ProfileDTO profile, boolean pub)
