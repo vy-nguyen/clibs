@@ -55,7 +55,7 @@ public interface IAuthorService
     public List<Author> getAuthors(List<UUID> uuids);
     public List<AuthorDTO> getAuthorList(ProfileDTO profile);
 
-    public void saveAuthor(Author author);
+    public void saveAuthor(Author author, boolean flush);
     public void deleteAuthor(String uuid);
 
     public ArticleRank createArticleRank(Article article, String tagName);

@@ -27,6 +27,7 @@
 package com.tvntd.service.api;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -42,13 +43,15 @@ import org.springframework.data.domain.Page;
 
 import com.tvntd.lib.ObjectId;
 import com.tvntd.models.Profile;
+import com.tvntd.models.Role;
 import com.tvntd.models.User;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
+import com.tvntd.util.Constants;
 
 public interface IProfileService
 {
-    public ProfileDTO getProfile(Long userId);
+    public ProfileDTO getProfile(User user);
     public ProfileDTO getProfile(UUID uuid);
 
     public List<ProfileDTO> getProfileList(List<UUID> userIds);
@@ -87,7 +90,9 @@ public interface IProfileService
         private String transRoot;
         private String mainRoot;
         private String userUrl;
+        private String role;
 
+        private Long roleMask;
         private Long connections;
         private Long follows;
         private Long followers;
@@ -119,6 +124,8 @@ public interface IProfileService
             transRoot = prof.getTransRoot().name();
             mainRoot = prof.getTransRoot().name();
             userUrl = "/user/id/" + profile.getUserUuid().toString();
+            role = Role.User;
+            roleMask = Constants.Role_User;
 
             creditEarned = 200L;
             creditIssued = 300L;
@@ -138,6 +145,27 @@ public interface IProfileService
             if (userImgUrl == null) {
                 userImgUrl = "/rs/img/avatars/male.png";
             }
+        }
+
+        public ProfileDTO(Profile prof, User user)
+        {
+            this(prof);
+            roleMask = 0L;
+            StringBuilder sb = new StringBuilder();
+            Collection<Role> roles = user.getRoles();
+
+            for (Role r : roles) {
+                String rname = r.getName();
+                if (rname.equals(Role.AuthUser)) {
+                    sb.append(Role.User).append(" ");
+                    roleMask |= Constants.Role_User;
+
+                } else if (rname.equals(Role.AuthAdmin)) {
+                    sb.append(Role.Admin).append(" ");
+                    roleMask |= Constants.Role_Admin;
+                }
+            }
+            role = sb.toString();
         }
 
         public Profile toProfile() {
@@ -469,13 +497,6 @@ public interface IProfileService
         }
 
         /**
-         * @return the userRole
-         */
-        public String getUserRole() {
-            return null;
-        }
-
-        /**
          * @return the userStatus
          */
         public String getUserStatus() {
@@ -592,6 +613,20 @@ public interface IProfileService
          */
         public List<Long> getChainLinks() {
             return profile.getChainLinks();
+        }
+
+        /**
+         * @return the role
+         */
+        public String getRole() {
+            return role;
+        }
+
+        /**
+         * @return the roleMask
+         */
+        public Long getRoleMask() {
+            return roleMask;
         }
 
         /**

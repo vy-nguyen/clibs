@@ -1,0 +1,9 @@
+{
+    "userRoles": [ {
+        "email": "a@abc.com",
+        "roles": [ "admin", "dba" ]
+    }, {
+        "email": "c@abc.com",
+        "roles": [ "admin" ]
+    } ]
+}

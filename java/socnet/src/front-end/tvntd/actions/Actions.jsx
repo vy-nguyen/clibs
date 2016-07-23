@@ -61,7 +61,10 @@ const Actions = Reflux.createActions({
     getLangJson:     completedFn,
 
     // Preload json for testing.
-    preload:         completedFailedFn
+    preload:         completedFailedFn,
+
+    // Admin actions
+    listUsers:       completedFailedFn
 });
 
 function postRestCall(formData, url, json, cbObj) {
@@ -281,6 +284,14 @@ Actions.getPublicJson.listen(function(url) {
 
 Actions.getLangJson.listen(function(lang) {
     $.getJSON('/api/langs/' + lang).then(this.completed);
+});
+
+/**
+ * Admin actions.
+ */
+Actions.listUsers.listen(function() {
+    console.log("Request admin get users");
+    $.getJSON("/admin/list-users").then(this.completed, this.failed);
 });
 
 export default Actions;

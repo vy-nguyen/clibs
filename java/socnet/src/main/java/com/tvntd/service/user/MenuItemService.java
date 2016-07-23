@@ -194,10 +194,10 @@ public class MenuItemService implements IMenuItemService
             saveMenuItems(home, repo, userId);
             saveMenuItems(aboutUs, repo, userId);
             saveMenuItems(funding, repo, userId);
+            saveMenuItems(publicMenu, repo, userId);
 
             if (uid == publicId) {
                 saveMenuItems(login, repo, userId);
-                saveMenuItems(publicMenu, repo, userId);
             } else if (uid == adminId) {
                 saveMenuItems(adminMenu, repo, userId);
             } else {
@@ -214,10 +214,14 @@ public class MenuItemService implements IMenuItemService
             }
             for (MenuItem it : items) {
                 Long base = userId * itemIdMul;
+                Long parentId = it.getParentId();
+
+                if (parentId != 0L) {
+                    parentId = parentId + base;
+                }
+                it.setParentId(parentId);
                 it.setUserId(userId);
                 it.setItemId(it.getItemId() + base);
-                it.setParentId(it.getParentId() + base);
-
                 repo.save(it);
             }
         }

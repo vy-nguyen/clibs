@@ -140,9 +140,13 @@ public class AuthorService implements IAuthorService
     }
 
     @Override
-    public void saveAuthor(Author author)
+    public void saveAuthor(Author author, boolean flush)
     {
-        authorRepo.save(author);
+        if (flush == false) {
+            authorRepo.save(author);
+        } else {
+            authorRepo.saveAndFlush(author);
+        }
     }
 
     @Override

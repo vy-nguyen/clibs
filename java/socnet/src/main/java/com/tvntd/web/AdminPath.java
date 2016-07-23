@@ -26,9 +26,61 @@
  */
 package com.tvntd.web;
 
+import java.util.Locale;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.tvntd.service.api.GenericResponse;
+import com.tvntd.service.api.IAuthorService;
+import com.tvntd.service.api.IProfileService;
+import com.tvntd.service.api.IProfileService.ProfileDTO;
+import com.tvntd.service.api.LoginResponse;
 
 @Controller
 public class AdminPath
 {
+    static private Logger s_log = LoggerFactory.getLogger(AdminPath.class);
+
+    @Autowired
+    private IAuthorService authorSvc;
+
+    @Autowired
+    private IProfileService profileSvc;
+
+    @Secured({"ROLE_Admin"})
+    @RequestMapping(value = "/admin", params = {"user"}, method = RequestMethod.GET)
+    @ResponseBody
+    public LoginResponse admin(Locale locale, HttpSession session,
+            HttpServletRequest reqt, @RequestParam(value = "user") String user)
+    {
+        s_log.info("Request admin");
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            s_log.info("No profile " + user);
+            return null;
+        }
+        LoginResponse resp = new LoginResponse(profile, reqt);
+        ApiPath.fillLoginResponse(resp, profile, authorSvc);
+        return resp;
+    }
+
+    @Secured({"ROLE_Admin"})
+    @RequestMapping(value = "/admin/list-users", method = RequestMethod.GET)
+    @ResponseBody
+    public GenericResponse getUserList(HttpSession session)
+    {
+        s_log.info("Request from admin");
+        return UserPath.s_genOkResp;
+    }
 }

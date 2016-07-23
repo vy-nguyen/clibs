@@ -72,6 +72,7 @@ import com.tvntd.service.api.LoginResponse;
 import com.tvntd.service.api.StartupResponse;
 import com.tvntd.service.api.UserConnectionChange;
 import com.tvntd.service.api.UserNotifResponse;
+import com.tvntd.util.Constants;
 
 @Controller
 public class ApiPath
@@ -162,7 +163,9 @@ public class ApiPath
             IMenuItemService menuItemSvc, IArticleService articleSvc)
     {
         if (menuItemSvc != null) {
-            Long userId = menuItemSvc.getPrivateId();
+            Long mask = profile.getRoleMask();
+            Long userId = ((mask & Constants.Role_Admin) != 0) ?
+                menuItemSvc.getAdminId() : menuItemSvc.getPrivateId();
             List<MenuItemResp> items = menuItemSvc.getMenuItemRespByUser(userId);
 
             if (items != null) {

@@ -16,36 +16,12 @@ let ConnetEnum = ["self", "connected", "followed", "follower", "stranger"];
  */
 class User {
     constructor(data) {
+        _.forEach(data, function(v, k) {
+            this[k] = v;
+        }.bind(this));
+
         this._id          = _.uniqueId('id-user-info-');
-        this.email        = data.email;
-        this.userUuid     = data.userUuid;
-        this.firstName    = data.firstName;
-
-        this.lastName     = data.lastName;
-        this.userRole     = data.userRole;
-        this.userUrl      = data.userUrl;
-        this.userImgUrl   = data.userImgUrl;
-        this.userStatus   = data.userStatus;
-
-        this.coverImg0    = data.coverImg0;
-        this.coverImg1    = data.coverImg1;
-        this.coverImg2    = data.coverImg2;
-
-        this.transRoot    = data.transRoot;
-        this.mainRoot     = data.mainRoot;
-
-        this.creditEarned = data.creditEarned;
-        this.moneyEarned  = data.moneyEarned;
-        this.creditIssued = data.creditIssued;
-        this.moneyIssued  = data.moneyIssued;
-
         this.connectState = "stranger";
-
-        this.connectList  = data.connectList;
-        this.followList   = data.followList;
-        this.followerList = data.followerList;
-        this.chainLinks   = data.chainLinks;
-
         this.followers    = this.followerList.length;
         this.follows      = this.followList.length;
         this.connections  = this.connectList.length;

@@ -25,43 +25,71 @@ let UserHome = React.createClass({
         Reflux.listenTo(ArticleStore, "_onArticleUpdate")
     ],
 
-    userTab: {
-        tabItems: [ {
-            domId  : 'published-articles',
-            tabText: 'Published Articles',
-            tabIdx : 0
-        }, {
-            domId  : 'connections',
-            tabText: 'Connections',
-            tabIdx : 3
-        }, {
-            domId  : 'block-chain',
-            tabText: 'Block Chains',
-            tabIdx : 4
-        } ]
+    getUserTab: function() {
+        return {
+            getActivePane: this._getActivePane,
+            setActivePane: this._setActivePane,
+
+            tabItems: [ {
+                domId  : 'published-articles',
+                tabText: 'Published Articles',
+                tabIdx : 0
+            }, {
+                domId  : 'connections',
+                tabText: 'Connections',
+                tabIdx : 3
+            }, {
+                domId  : 'block-chain',
+                tabText: 'Block Chains',
+                tabIdx : 4
+            } ]
+        }
     },
-    myUserTab: {
-        tabItems: [ {
-            domId  : 'published-articles',
-            tabText: 'Published Articles',
-            tabIdx : 0
-        }, {
-            domId  : 'saved-articles',
-            tabText: 'Saved Articles',
-            tabIdx : 1
-        }, {
-            domId  : 'manage-articles',
-            tabText: 'Mananged Articles',
-            tabIdx : 2
-        }, {
-            domId  : 'connections',
-            tabText: 'Connections',
-            tabIdx : 3
-        }, {
-            domId  : 'block-chain',
-            tabText: 'Block Chains',
-            tabIdx : 4
-        } ]
+    getMyUserTab: function() {
+        return {
+            getActivePane: this._getActivePane,
+            setActivePane: this._setActivePane,
+
+            tabItems: [ {
+                domId  : 'published-articles',
+                tabText: 'Published Articles',
+                tabIdx : 0
+            }, {
+                domId  : 'saved-articles',
+                tabText: 'Saved Articles',
+                tabIdx : 1
+            }, {
+                domId  : 'manage-articles',
+                tabText: 'Mananged Articles',
+                tabIdx : 2
+            }, {
+                domId  : 'connections',
+                tabText: 'Connections',
+                tabIdx : 3
+            }, {
+                domId  : 'block-chain',
+                tabText: 'Block Chains',
+                tabIdx : 4
+            } ]
+        }
+    },
+
+    _getActivePane: function() {
+        let owner = this._getOwner();
+        if (owner != null) {
+            if (owner.tabPanelIdx == null) {
+                owner.tabPanelIdx = 0;
+            }
+            return owner.tabPanelIdx;
+        }
+        return 0;
+    },
+
+    _setActivePane: function(index) {
+        let owner = this._getOwner();
+        if (owner != null) {
+            owner.tabPanelIdx = index;
+        }
     },
 
     getInitialState: function() {
@@ -98,14 +126,14 @@ let UserHome = React.createClass({
             );
         }
         let articles = null;
-        let tabCtx = this.userTab;
+        let tabCtx = this.getUserTab();
         let { userUuid } = this.props.params;
 
         if (userUuid !== null && userUuid !== undefined) {
             me = false;
             articles = ArticleStore.getSortedArticlesByAuthor(userUuid);
         } else {
-            tabCtx = this.myUserTab;
+            tabCtx = this.getMyUserTab();
             articles = {};
             if (this.state.myArticles !== null) {
                 articles = this.state.myArticles.sortedArticles;

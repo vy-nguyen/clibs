@@ -60,7 +60,6 @@ class ArticleRank {
             }
         }
         this.authorTag = authorTag;
-        this.artRank = {};
         _.forEach(data, function(v, k) {
             this[k] = v;
         }.bind(this));
@@ -341,13 +340,16 @@ let AuthorStore = Reflux.createStore({
 
     iterAuthor: function(uuidList, func) {
         if (uuidList == null) {
-            _.forOwn(this.data.authorMap, func);
+            _.forOwn(this.data.authorMap, function(author, key) {
+                if (author.getUser() != null) {
+                    func(author, key);
+                }
+            });
         } else {
             _.forOwn(uuidList, function(uuid, key) {
                 let author = this.data.authorMap[uuid];
-                if (author != null) {
+                if (author != null && author.getUser() != null) {
                     func(author, key);
-                } else {
                 }
             }.bind(this));
         }

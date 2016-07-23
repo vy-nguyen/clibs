@@ -82,7 +82,7 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
             session.setAttribute("user", user);
             session.setMaxInactiveInterval(120 * 60);
 
-            ProfileDTO profile = profileSvc.getProfile(user.getId());
+            ProfileDTO profile = profileSvc.getProfile(user);
             if (profile != null) {
                 session.setAttribute("profile", profile);
                 newsFeedSvc.generateNewsFeed(profile, profile.getUserUuid());

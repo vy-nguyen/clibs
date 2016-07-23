@@ -231,7 +231,7 @@
         "parentId": 60,
         "title"   : "All Users",
         "icon"    : "fa fa-users",
-        "route"   : "/user/all"
+        "route"   : "/admin/list-users"
     }, {
         "userId"  : 0,
         "itemId"  : 65,

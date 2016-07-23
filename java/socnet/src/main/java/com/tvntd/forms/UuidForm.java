@@ -43,4 +43,38 @@ public class UuidForm
     public void setUuids(String[] uuids) {
         this.uuids = uuids;
     }
+
+    public static class UserRoleForm
+    {
+        private String[] uuids;
+        private Long[] roleMasks;
+
+        /**
+         * @return the uuids
+         */
+        public String[] getUuids() {
+            return uuids;
+        }
+
+        /**
+         * @param uuids the uuids to set
+         */
+        public void setUuids(String[] uuids) {
+            this.uuids = uuids;
+        }
+
+        /**
+         * @return the roleMasks
+         */
+        public Long[] getRoleMasks() {
+            return roleMasks;
+        }
+
+        /**
+         * @param roleMasks the roleMasks to set
+         */
+        public void setRoleMasks(Long[] roleMasks) {
+            this.roleMasks = roleMasks;
+        }
+    }
 }

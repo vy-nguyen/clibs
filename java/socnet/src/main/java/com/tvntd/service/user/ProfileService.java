@@ -64,11 +64,11 @@ public class ProfileService implements IProfileService
     protected IAuthorService authorSvc;
 
     @Override
-    public ProfileDTO getProfile(Long userId)
+    public ProfileDTO getProfile(User user)
     {
-        Profile prof = profileRepo.findByUserId(userId);
+        Profile prof = profileRepo.findByUserId(user.getId());
         if (prof != null) {
-            return new ProfileDTO(prof);
+            return new ProfileDTO(prof, user);
         }
         return null;
     }
@@ -209,7 +209,7 @@ public class ProfileService implements IProfileService
             Profile profile = Profile.createProfile(user);
 
             profileRepo.save(profile);
-            authorSvc.saveAuthor(Author.fromUserUuid(profile.getUserUuid()));
+            authorSvc.saveAuthor(Author.fromUserUuid(profile.getUserUuid()), false);
         }
     }
 

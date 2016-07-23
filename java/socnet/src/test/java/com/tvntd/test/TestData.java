@@ -24,25 +24,39 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.util;
+package com.tvntd.test;
 
-public interface Constants
+public class TestData
 {
-	String REQUEST_TYPE    = "requestType";
-	String REGISTRATION    = "registration";
-	String IMPORT_CONTACTS = "importContacts";
+    public static class UserRoleItem
+    {
+        private String email;
+        private String[] roles;
 
-	String SHARE        = "share";
-    String DefaultTag   = "My Post";
-    String DefaultTopic = "Post";
+        /**
+         * @return the email
+         */
+        public String getEmail() {
+            return email;
+        }
 
-    Long Role_Public   = 0x0000L;
-    Long Role_Circle1  = 0x0001L;
-    Long Role_Circle2  = 0x0002L | Role_Circle1;
-    Long Role_Circle3  = 0x0004L | Role_Circle2;
-    Long Role_Circle4  = 0x0008L | Role_Circle3;
-    Long Role_User     = 0x1000L;
-    Long Role_Admin    = 0x2000L;
-    Long Role_Dba      = 0x4000L;
-    Long Role_Banker   = 0x8000L;
+        /**
+         * @return the roles
+         */
+        public String[] getRoles() {
+            return roles;
+        }
+    }
+
+    public static class UserRoles
+    {
+        private UserRoleItem[] userRoles;
+
+        /**
+         * @return the userRoles
+         */
+        public UserRoleItem[] getUserRoles() {
+            return userRoles;
+        }
+    }
 }

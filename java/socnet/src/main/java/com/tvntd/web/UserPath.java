@@ -38,7 +38,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +79,6 @@ import com.tvntd.service.api.ITimeLineService;
 import com.tvntd.service.api.ImageUploadResp;
 import com.tvntd.service.api.LoginResponse;
 import com.tvntd.service.user.ArticleService;
-import com.tvntd.service.user.AuthorService;
 import com.tvntd.util.Util;
 
 @Controller
@@ -455,4 +453,4 @@ public class UserPath
         }
         return s_invalidArticle;
     }
-}
+ }

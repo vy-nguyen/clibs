@@ -28,9 +28,13 @@ package com.tvntd.test;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,16 +52,25 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.tvntd.config.TestCacheConfig;
 import com.tvntd.config.TestPersistenceJPAConfig;
 import com.tvntd.config.TestSecurityConfig;
 import com.tvntd.config.TestTvntdRootConfig;
 import com.tvntd.config.TestTvntdWebConfig;
+import com.tvntd.dao.RoleRepository;
+import com.tvntd.dao.UserRepository;
 import com.tvntd.lib.RandUtil;
 import com.tvntd.models.Profile;
+import com.tvntd.models.Role;
 import com.tvntd.models.User;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
+import com.tvntd.test.TestData.UserRoleItem;
+import com.tvntd.test.TestData.UserRoles;
+import com.tvntd.util.Constants;
+import com.tvntd.web.UserPath;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -83,7 +96,13 @@ public class ProfileTest
     static protected Long testId = 10000L;
 
     @Autowired
-    IProfileService profileSvc;
+    private RoleRepository roleRepo;
+
+    @Autowired
+    private IProfileService profileSvc;
+
+    @Autowired
+    private UserRepository userRepo;
 
     static public Long getTestId() 
     {
@@ -177,7 +196,7 @@ public class ProfileTest
     @Test
     public void testProfiles()
     {
-        List<UUID> uuids = genProfiles(1000);
+        List<UUID> uuids = genProfiles(10);
         testConnectAll(uuids, 10);
         deleteProfiles(uuids);
     }
@@ -185,7 +204,7 @@ public class ProfileTest
     void testConnectAll(List<UUID> uuids, int max)
     {
         for (int i = 0; i < max; i++) {
-            int index = RandUtil.genRandInt(0, uuids.size());
+            int index = RandUtil.genRandInt(0, uuids.size() - 1);
             ProfileDTO me = profileSvc.getProfile(uuids.get(index));
 
             assertNotNull(me);
@@ -335,6 +354,102 @@ public class ProfileTest
             profile.setFollowerList(new LinkedList<UUID>());
             profile.setChainLinks(new LinkedList<Long>());
             return profile;
+        }
+    }
+
+    /**
+     * Set user roles.
+     */
+    @Test
+    public void setUserRoles()
+    {
+        String rsDir = System.getProperty("TestResource");
+        String jsonFile = rsDir + "/user-role.json";
+        Gson gson  = new Gson();
+        try {
+            BufferedReader brd = new BufferedReader(new FileReader(jsonFile));
+            UserRoles roles = gson.fromJson(brd, UserRoles.class);
+            UserRoleItem[] input = roles.getUserRoles();
+
+            for (UserRoleItem item : input) {
+                User user = userRepo.findByEmail(item.getEmail());
+                if (user == null) {
+                    continue;
+                }
+                Long mask = Constants.Role_User;
+                for (String r : item.getRoles()) {
+                    if (r.equals("admin")) {
+                        mask |= Constants.Role_Admin;
+                        continue;
+                    }
+                    if (r.equals("dba")) {
+                        mask |= Constants.Role_Dba;
+                    }
+                }
+                grantUserRole(user, mask);
+            }
+            brd.close();
+
+        } catch(IOException | JsonSyntaxException e) {
+            s_log.info("Failed to parse json file " + e.toString());
+        }
+    }
+
+    /**
+     * Grant user roles according to the mask.
+     */
+    public void grantUserRole(User user, Long mask)
+    {
+        addRoles(user.getRoles(), mask);
+        userRepo.save(user);
+    }
+
+    public void addRoles(Collection<Role> roles, Long mask)
+    {
+        for (Role r : roles) {
+            String name = r.getName();
+            s_log.info(">> Role name " + name);
+            if (name.equals(Role.AuthUser)) {
+                mask &= ~Constants.Role_User;
+                continue;
+            }
+            if (name.equals(Role.AuthAdmin)) {
+                mask &= ~Constants.Role_Admin;
+                continue;
+            }
+            if (name.equals(Role.AuthDba)) {
+                mask &= ~Constants.Role_Dba;
+                continue;
+            }
+            if (name.equals(Role.AuthBanker)) {
+                mask &= ~Constants.Role_Banker;
+                continue;
+            }
+        }
+        Role role = null;
+        if ((mask & Constants.Role_User) != 0) {
+            role = roleRepo.findByName(Role.AuthUser);
+            if (role != null) {
+                roles.add(role);
+            }
+        }
+        if ((mask & Constants.Role_Admin) != 0) {
+            role = roleRepo.findByName(Role.AuthAdmin);
+            if (role != null) {
+                roles.add(role);
+            }
+        }
+        if ((mask & Constants.Role_Dba) != 0) {
+            role = roleRepo.findByName(Role.AuthDba);
+            if (role != null) {
+                roles.add(role);
+            }
+        }
+        if ((mask & Constants.Role_Banker) != 0) {
+            role = roleRepo.findByName(Role.AuthBanker);
+            if (role != null) {
+                roles.add(role);
+            }
         }
     }
 }
