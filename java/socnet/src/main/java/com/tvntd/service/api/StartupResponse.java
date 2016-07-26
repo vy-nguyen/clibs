@@ -26,6 +26,7 @@
  */
 package com.tvntd.service.api;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,12 +46,21 @@ public class StartupResponse
     private List<ProfileDTO>   linkedUsers;
     private List<MenuItemResp> menuItems;
     private List<ArticleDTO>   articles;
+    private List<Language>     languages;
 
     public StartupResponse(ProfileDTO profile, HttpServletRequest reqt)
     {
+        initLanguages();
         if (profile != null) {
             userDTO = new LoginResponse(profile, reqt);
         }
+    }
+
+    protected void initLanguages()
+    {
+        languages = new ArrayList<>();
+        languages.add(new Language("us", "USA", "English"));
+        languages.add(new Language("vi", "Tiếng Việt", "Tiếng Việt"));
     }
 
     public List<UUID> getAllUserUuids()
@@ -138,5 +148,47 @@ public class StartupResponse
      */
     public void setArticles(List<ArticleDTO> articles) {
         this.articles = articles;
+    }
+
+    /**
+     * @return the languages
+     */
+    public List<Language> getLanguages() {
+        return languages;
+    }
+
+    public static class Language
+    {
+        private String key;
+        private String alt;
+        private String title;
+
+        public Language(String key, String alt, String title)
+        {
+            this.key = key;
+            this.alt = alt;
+            this.title = title;
+        }
+
+        /**
+         * @return the key
+         */
+        public String getKey() {
+            return key;
+        }
+
+        /**
+         * @return the alt
+         */
+        public String getAlt() {
+            return alt;
+        }
+
+        /**
+         * @return the title
+         */
+        public String getTitle() {
+            return title;
+        }
     }
 }

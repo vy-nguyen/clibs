@@ -26,6 +26,7 @@ import UserTrans     from './pages/user/UserTransaction.jsx';
 import UserProfile   from './pages/user/UserProfile.jsx';
 import UserConnect   from './pages/user/UserConnect.jsx';
 import ListUsers     from './pages/admin/ListUsers.jsx';
+import MainBlog      from './pages/blog/MainBlog.jsx';
 import LoginRequired from 'vntd-shared/utils/LoginRequired.jsx';
 
 const Routes = (
@@ -34,7 +35,7 @@ const Routes = (
             <IndexRoute component={MainPage}/>
             <Redirect from="/" to ="public"/>
             <Route path="public">
-                <Route path="aboutus" component={MainPage} subHeader={true}/>
+                <Route path="blogs" component={MainBlog} subHeader={true}/>
                 <Route path="vietnam" component={NewsFeed} subHeader={true}/>
                 <Route path="economic" component={NewsFeed} subHeader={true}/>
                 <Route path="education" component={NewsFeed} subHeader={true}/>

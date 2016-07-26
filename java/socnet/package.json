@@ -58,6 +58,7 @@
     "react-autosuggest": "3.7.4",
     "react-typeahead": "2.0.0-alpha.4",
     "react-widgets": "3.2.4",
+    "react-sidebar": "2.2",
     "reflux": "^0.3.0",
     "redux": "^3.x.x",
     "marked": "0.3.5",

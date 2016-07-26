@@ -51,6 +51,7 @@ public class LoginResponse extends GenericResponse
     public LoginResponse(String type, String message, String error, String token)
     {
         super(type, message, error);
+
         this.authVerifToken = token;
         this.authToken = null;
         this.csrfToken = null;

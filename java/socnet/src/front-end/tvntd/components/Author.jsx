@@ -7,7 +7,6 @@
 import _                from 'lodash';
 import React            from 'react-mod';
 import ProfileCover     from './ProfileCover.jsx';
-import { htmlCodes }    from 'vntd-root/config/constants';
 import UserIcon         from 'vntd-root/components/UserIcon.jsx';
 import AuthorLinks      from 'vntd-root/components/AuthorLinks.jsx';
 import KeyValueTable    from 'vntd-shared/layout/KeyValueTable.jsx';

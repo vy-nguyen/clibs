@@ -101,7 +101,6 @@ public class NewsFeedService implements INewsFeedService
             userUuid = uuid;
             profile = prof;
             newsRepo = repo;
-            s_log.info("Repo " + repo);
         }
 
         public List<UUID> call()

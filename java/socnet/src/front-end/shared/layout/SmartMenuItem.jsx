@@ -10,7 +10,6 @@ import {Link}            from 'react-router';
 import classnames        from 'classnames';
 import {findDOMNode}     from 'react-dom';
 
-import Msg               from 'vntd-shared/i18n/Msg.jsx';
 import NavigationActions from 'vntd-shared/actions/NavigationActions.jsx';
 import NavigationStore   from 'vntd-shared/stores/NavigationStore.jsx';
 import SmartMenuList     from './SmartMenuList.jsx';
@@ -48,8 +47,7 @@ let SmartMenuItem = React.createClass({
 
         let isOpen = item.isOpen;
         let title = !item.parent ?
-            (<span className="menu-item-parent"><Msg phrase={item.title} /></span>) :
-                <Msg phrase={item.title} />;
+            (<span className="menu-item-parent">{item.title}</span>) : item.title;
 
         let badge = item.badge ?
             <span className={item.badge.class}>{item.badge.label || ''}</span> : null;

@@ -40,39 +40,39 @@
         "userId"  : 0,
         "itemId"  : 300,
         "parentId": 0,
-        "title"   : "Categories",
+        "title"   : "News/Blogs",
         "icon"    : "fa fa-lg fa-fw fa-book",
-        "route"   : "/public"
+        "route"   : "/public/blogs"
     }, {
         "userId"  : 0,
         "itemId"  : 310,
-        "parentId": 300,
-        "title"   : "Viet Nam",
-        "icon"    : "fa fa-home",
-        "route"   : "/public/vietnam",
+        "parentId": 0,
+        "title"   : "Commercials",
+        "icon"    : "fa fa-lg fa-fw fa-home",
+        "route"   : "/public/ads",
         "badgeClass": "badge pull-right"
     }, {
         "userId"  : 0,
         "itemId"  : 320,
-        "parentId": 300,
-        "title"   : "Kinh Te",
-        "icon"    : "fa fa-money",
-        "route"   : "/public/economic",
+        "parentId": 0,
+        "title"   : "E Stores",
+        "icon"    : "fa fa-lg fa-fw fa-money",
+        "route"   : "/public/estore",
         "badgeClass": "badge pull-right"
     }, {
         "userId"  : 0,
         "itemId"  : 330,
-        "parentId": 300,
+        "parentId": 0,
         "title"   : "Giao Duc",
-        "icon"    : "fa fa-book",
+        "icon"    : "fa fa-lg fa-fw fa-book",
         "route"   : "/public/education",
         "badgeClass": "badge pull-right"
     }, {
         "userId"  : 0,
         "itemId"  : 340,
-        "parentId": 300,
+        "parentId": 0,
         "title"   : "Ky Thuat",
-        "icon"    : "fa fa-gear",
+        "icon"    : "fa fg-lg fa-fw fa-gear",
         "route"   : "/public/tech",
         "badgeClass": "badge pull-right"
     } ],
@@ -246,7 +246,7 @@
         "parentId": 0,
         "title"   : "Public Funding",
         "icon"    : "fa fa-lg fa-fw fa-briefcase",
-        "route"   : "/public/project"
+        "route"   : "/public/funding"
     }, {
         "userId"  : 0,
         "itemId"  : 461,

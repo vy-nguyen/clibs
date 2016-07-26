@@ -12,7 +12,6 @@ let ListUsers = React.createClass({
     mixins: [Reflux.connect(AdminStore)],
 
     render: function() {
-        console.log("Invoke action list users");
         Actions.listUsers(); 
         return (
             <div>

@@ -114,6 +114,9 @@ public class AuthorService implements IAuthorService
         return result;
     }
 
+    /**
+     * Get list of authors for a news feed.
+     */
     @Override
     public List<AuthorDTO> getAuthorList(ProfileDTO profile)
     {

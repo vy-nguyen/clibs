@@ -58,10 +58,13 @@ const Actions = Reflux.createActions({
 
     // Get public JSON objs.
     getPublicJson:   completedFailedFn,
-    getLangJson:     completedFn,
 
     // Preload json for testing.
     preload:         completedFailedFn,
+
+    // Language choices
+    getLangJson:     completedFailedFn,
+    selectLanguage:  completedFailedFn,
 
     // Admin actions
     listUsers:       completedFailedFn
@@ -282,16 +285,24 @@ Actions.getPublicJson.listen(function(url) {
     $.getJSON(url).then(this.completed, this.failed);
 });
 
-Actions.getLangJson.listen(function(lang) {
-    $.getJSON('/api/langs/' + lang).then(this.completed);
-});
-
 /**
  * Admin actions.
  */
 Actions.listUsers.listen(function() {
     console.log("Request admin get users");
     $.getJSON("/admin/list-users").then(this.completed, this.failed);
+});
+
+/**
+ * Language choices.
+ */
+Actions.getLangJson.listen(function(lang) {
+    $.getJSON('/public/get-json/langs/' + lang)
+        .then(this.completed.bind(this, lang), this.failed.bind(this, lang));
+});
+
+Actions.selectLanguage.listen(function(lang) {
+    console.log("Set languages " + lang);
 });
 
 export default Actions;
