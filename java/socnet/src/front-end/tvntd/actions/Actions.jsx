@@ -63,11 +63,13 @@ const Actions = Reflux.createActions({
     preload:         completedFailedFn,
 
     // Language choices
+    translate:       completedFn,
     getLangJson:     completedFailedFn,
     selectLanguage:  completedFailedFn,
 
     // Admin actions
-    listUsers:       completedFailedFn
+    listUsers:       completedFailedFn,
+    setTags:         completedFailedFn
 });
 
 function postRestCall(formData, url, json, cbObj) {
@@ -147,7 +149,13 @@ Actions.clickMenuItem.listen(function(item) {
  * User menu actions.
  */
 Actions.startup.listen(function(url) {
-    $.getJSON(url).then(this.completed, this.failed);
+    $('[data-toggle="tooltip"]').tooltip();
+    $.getJSON(url).then(function(data) {
+        if (this.translate != null) {
+            this.translate(data);
+        }
+        this.completed(data);
+    }.bind(this), this.failed);
 });
 
 Actions.refreshNotify.listen(function() {
@@ -293,12 +301,21 @@ Actions.listUsers.listen(function() {
     $.getJSON("/admin/list-users").then(this.completed, this.failed);
 });
 
+Actions.setTags.listen(function(data) {
+    console.log("Request set tags");
+    postRestCall(data, "/admin/set-tags", true, this);
+});
+
 /**
  * Language choices.
  */
 Actions.getLangJson.listen(function(lang) {
     $.getJSON('/public/get-json/langs/' + lang)
         .then(this.completed.bind(this, lang), this.failed.bind(this, lang));
+});
+
+Actions.translate.listen(function() {
+    this.completed();
 });
 
 Actions.selectLanguage.listen(function(lang) {

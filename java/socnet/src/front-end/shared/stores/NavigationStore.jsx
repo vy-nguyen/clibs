@@ -8,12 +8,14 @@ import _      from 'lodash';
 
 import NavigationActions from 'vntd-shared/actions/NavigationActions.jsx';
 import History           from 'vntd-shared/utils/History.jsx';
+import Actions           from 'vntd-root/actions/Actions.jsx';
+import LanguageStore     from 'vntd-root/stores/LanguageStore.jsx';
 import MenuItem          from './MenuItem.jsx';
 
 let NavigationStore = Reflux.createStore({
 
     data: {},
-    listenables: NavigationActions,
+    listenables: [NavigationActions, Actions],
 
     init: function() {
         this.data = {
@@ -34,6 +36,11 @@ let NavigationStore = Reflux.createStore({
         this.trigger(this.data)
     },
 
+    onTranslateCompleted: function() {
+        console.log("Do translate");
+        this._translate(this.data.items);
+    },
+
     onActivate: function(item) {
         this.data.item = item;
         if (item.route) {
@@ -49,6 +56,15 @@ let NavigationStore = Reflux.createStore({
             return new MenuItem(item)
         });
         this._setInitialItem(this.data.items);
+    },
+
+    _translate: function(items) {
+        items.forEach(function(item) {
+            item.title = LanguageStore.translate(item.title);
+            if (item.items != null) {
+                this._translate(item.items);
+            }
+        }.bind(this));
     },
 
     _setInitialItem: function(items) {

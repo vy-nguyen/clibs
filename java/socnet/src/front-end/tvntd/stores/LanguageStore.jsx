@@ -32,6 +32,7 @@ let LanguageStore = Reflux.createStore({
 
     onGetLangJsonCompleted: function(key, json) {
         this._setLangTranslation(key, json);
+        Actions.translate();
     },
 
     onSelectCompleted: function(key, json) {

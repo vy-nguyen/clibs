@@ -25,7 +25,6 @@ let FlotChart = React.createClass({
     },
     _renderChart: function (data) {
         if (data) {
-            console.log($.plot);
             // $.plot(this.getHold(), data, this.props.options);
         }
     },

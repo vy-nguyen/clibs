@@ -308,6 +308,7 @@ public interface IArticleService
         private String  artTitle;
         private String  contentBrief;
 
+        private String  timeStamp;
         private String  notifHead;
         private Long    creditEarned;
         private Long    moneyEarned;
@@ -358,6 +359,9 @@ public interface IArticleService
             artTitle = rank.getArtTitle();
             tagName = rank.getTag();
             contentBrief = rank.getContentBrief();
+
+            DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm");
+            timeStamp = df.format(rank.getTimeStamp());
         }
 
         /**
@@ -393,6 +397,13 @@ public interface IArticleService
          */
         public String getContentBrief() {
             return contentBrief;
+        }
+
+        /**
+         * @return the timeStamp
+         */
+        public String getTimeStamp() {
+            return timeStamp;
         }
 
         /**

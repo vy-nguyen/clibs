@@ -36,12 +36,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tvntd.service.api.GenericResponse;
+import com.tvntd.service.api.IArtTagService;
+import com.tvntd.service.api.IArtTagService.ArtTagDTO;
+import com.tvntd.service.api.IArtTagService.ArtTagList;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
@@ -53,10 +58,13 @@ public class AdminPath
     static private Logger s_log = LoggerFactory.getLogger(AdminPath.class);
 
     @Autowired
-    private IAuthorService authorSvc;
+    protected IAuthorService authorSvc;
 
     @Autowired
-    private IProfileService profileSvc;
+    protected IProfileService profileSvc;
+
+    @Autowired
+    protected IArtTagService artTagSvc;
 
     @Secured({"ROLE_Admin"})
     @RequestMapping(value = "/admin", params = {"user"}, method = RequestMethod.GET)
@@ -75,12 +83,49 @@ public class AdminPath
         return resp;
     }
 
+    /**
+     * Get list of users.
+     */
     @Secured({"ROLE_Admin"})
     @RequestMapping(value = "/admin/list-users", method = RequestMethod.GET)
     @ResponseBody
     public GenericResponse getUserList(HttpSession session)
     {
         s_log.info("Request from admin");
+        return UserPath.s_genOkResp;
+    }
+
+    /**
+     * Make public tag and sub tags.
+     */
+    @Secured({"ROLE_Admin"})
+    @RequestMapping(value = "/admin/set-tags",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    setPulicTags(@RequestBody ArtTagList tagList, HttpSession session)
+    {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return UserPath.s_noProfile;
+        }
+        s_log.info("Got set tags requests");
+        for (ArtTagDTO tag : tagList.getTagList()) {
+            tag.setUserUuid(profile.getUserUuid().toString());
+            tag.makeTagOid();
+            artTagSvc.saveTag(tag);
+
+            System.out.println("Tag " + tag.getTagName());
+            System.out.println("Uuid " + tag.getUserUuid());
+
+        }
+        for (ArtTagDTO tag : tagList.getTagList()) {
+            ArtTagDTO check = artTagSvc.getTag(tag.getTagName(), tag.getUserUuid());
+            if (check != null) {
+                System.out.println("Check " + check.getTagName());
+            }
+        }
         return UserPath.s_genOkResp;
     }
 }

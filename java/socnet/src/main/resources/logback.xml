@@ -24,7 +24,7 @@
         <appender-ref ref="FILE" />
     </logger>
 
-    <logger name="com.tvntd" level="debug" additivity="false">
+    <logger name="com.tvntd" level="info" additivity="false">
         <appender-ref ref="FILE" />
     </logger>
 

@@ -26,6 +26,7 @@ import UserTrans     from './pages/user/UserTransaction.jsx';
 import UserProfile   from './pages/user/UserProfile.jsx';
 import UserConnect   from './pages/user/UserConnect.jsx';
 import ListUsers     from './pages/admin/ListUsers.jsx';
+import SetTags       from './pages/admin/SetTags.jsx';
 import MainBlog      from './pages/blog/MainBlog.jsx';
 import LoginRequired from 'vntd-shared/utils/LoginRequired.jsx';
 
@@ -80,6 +81,7 @@ const Routes = (
                 <Route path="admin">
                     <IndexRoute component={UserConnect} userList={null}/>
                     <Route path="list-users" component={ListUsers} userList={null}/>
+                    <Route path="set-tags" component={SetTags}/>
                 </Route>
 
                 <Redirect from="/" to="user"/>

@@ -21,6 +21,9 @@ let RenderStore = Reflux.createStore({
     },
     listenables: [Actions, NavigationActions],
 
+    init: function() {
+    },
+
     getMenuItems: function() {
         return this.data.items;
     },

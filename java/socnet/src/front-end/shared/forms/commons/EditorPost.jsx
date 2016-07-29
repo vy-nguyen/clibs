@@ -182,17 +182,14 @@ let EditorPost = React.createClass({
     },
 
     _onComplete: function(file, a) {
-        console.log("Upload complete");
         console.log(file.xhr);
     },
 
     _onSuccess: function(files) {
-        console.log("scuesss");
-        console.log(files);
     },
 
     _onError: function(file) {
-        console.log("Error ");
+        console.log("Error upload");
         console.log(file.xhr);
     },
 

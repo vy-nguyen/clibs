@@ -77,7 +77,6 @@ public class CommentService implements ICommentService
     {
         List<Comment> out = commentRepo.findAllByArticleUuid(uuid);
 
-        s_log.info("Comment uuid " + uuid + " out " + out);
         if (out != null && !out.isEmpty()) {
             for (Comment c : out) {
                 resp.addComment(c, null);

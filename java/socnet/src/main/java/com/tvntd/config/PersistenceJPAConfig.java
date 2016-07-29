@@ -105,13 +105,14 @@ public class PersistenceJPAConfig
 
     final Properties additionalProperties()
     {
-        final Properties hibernateProperties = new Properties();
-        hibernateProperties.
-            setProperty("hibernate.hbm2ddl.auto",
-                    env.getProperty("hibernate.hbm2ddl.auto"));
-        hibernateProperties.
-            setProperty("hibernate.dialect",
-                    env.getProperty("hibernate.dialect"));
-        return hibernateProperties;
+        Properties props = new Properties();
+        props.setProperty("hibernate.hbm2ddl.auto",
+                env.getProperty("hibernate.hbm2ddl.auto"));
+        props.setProperty("hibernate.dialect", env.getProperty("hibernate.dialect"));
+        props.put("hibernate.connection.CharSet", "utf-8");
+        props.put("hibernate.connection.useUnicode", true);
+        props.put("hibernate.connection.characterEncoding", "utf-8");
+
+        return props;
     }
 }

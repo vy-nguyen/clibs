@@ -26,8 +26,10 @@
  */
 package com.tvntd.models;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -58,7 +60,7 @@ public class ArticleRank
     private String articleUuid;
 
     @Column(length = 64)
-    private byte[] tag;
+    private String tag;
 
     @Column(length = 64)
     private String authorUuid;
@@ -69,6 +71,7 @@ public class ArticleRank
     @Column(length = 128)
     private byte[] contentBrief;
 
+    private Date timeStamp;
     private Long creditEarned;
     private Long moneyEarned;
     private Long likes;
@@ -97,21 +100,29 @@ public class ArticleRank
         this.score = 0L;
         this.rank = 0L;
         this.favorite = false;
-        this.tag = Util.DefaultTag;
         this.artTitle = Util.DefaultTopic;
         this.contentBrief = null;
         this.transRoot = ObjectId.zeroId();
+        this.timeStamp = new Date();
+        try {
+            this.tag = new String(Util.DefaultTag, "UTF-8");
+        } catch(UnsupportedEncodingException e) {
+        }
     }
 
     public ArticleRank(AuthorTag tag, Article article)
     {
+        this();
         this.articleUuid = article.getArticleUuid();
         this.authorUuid = article.getAuthorUuid();
-        this.tag = tag.fetchTag();
         this.favorite = tag.isFavorite();
         this.rank = tag.getRank();
         this.artTitle = article.getTopic();
         this.contentBrief = Arrays.copyOfRange(article.getContent(), 0, 200);
+        try {
+            this.tag = new String(tag.fetchTag(), "UTF-8");
+        } catch(UnsupportedEncodingException e) {
+        }
     }
 
     public void updateFromUser(ArticleForm form)
@@ -125,8 +136,13 @@ public class ArticleRank
         }
         favorite = form.isFavorite();
         rank = form.getArticleRank();
+
         if (form.getTagName() != null) {
-            tag = form.getTagName().getBytes(Charset.forName("UTF-8"));
+            try {
+                tag = new String(form.getTagName().
+                        getBytes(Charset.forName("UTF-8")), "UTF-8");
+            } catch(UnsupportedEncodingException e) {
+            }
         }
         Long likeCnt = form.getLikeInc();
         if (likeCnt > 0) {
@@ -165,7 +181,7 @@ public class ArticleRank
     public String getTag()
     {
         if (tag != null) {
-            return new String(tag, Charset.forName("UTF-8"));
+            return tag;
         }
         return Constants.DefaultTag;
     }
@@ -213,6 +229,20 @@ public class ArticleRank
             return new String(contentBrief, Charset.forName("UTF-8"));
         }
         return "...";
+    }
+
+    /**
+     * @return the timeStamp
+     */
+    public Date getTimeStamp() {
+        return timeStamp;
+    }
+
+    /**
+     * @param timeStamp the timeStamp to set
+     */
+    public void setTimeStamp(Date timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
     /**

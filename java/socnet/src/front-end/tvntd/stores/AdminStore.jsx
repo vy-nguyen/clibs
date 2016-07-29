@@ -23,7 +23,17 @@ let AdminStore = Reflux.createStore({
     onListUsersFailed: function(data) {
         console.log("List user failed");
         console.log(data);
-    }
+    },
+
+    onSetTagsCompleted: function(data) {
+        console.log("set tag done");
+        console.log(data);
+    },
+
+    onSetTagsFailed: function(data) {
+        console.log("set tag failed");
+        console.log(data);
+    },
 });
 
 export default AdminStore;

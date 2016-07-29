@@ -63,7 +63,7 @@
         "userId"  : 0,
         "itemId"  : 330,
         "parentId": 0,
-        "title"   : "Giao Duc",
+        "title"   : "Education",
         "icon"    : "fa fa-lg fa-fw fa-book",
         "route"   : "/public/education",
         "badgeClass": "badge pull-right"
@@ -71,7 +71,7 @@
         "userId"  : 0,
         "itemId"  : 340,
         "parentId": 0,
-        "title"   : "Ky Thuat",
+        "title"   : "Technology",
         "icon"    : "fa fg-lg fa-fw fa-gear",
         "route"   : "/public/tech",
         "badgeClass": "badge pull-right"
@@ -235,6 +235,13 @@
     }, {
         "userId"  : 0,
         "itemId"  : 65,
+        "parentId": 60,
+        "title"   : "Set Tags",
+        "icon"    : "fa fa-tag",
+        "route"   : "/admin/set-tags"
+    }, {
+        "userId"  : 0,
+        "itemId"  : 66,
         "parentId": 60,
         "title"   : "Logout",
         "icon"    : "fa fa-sign-out",
