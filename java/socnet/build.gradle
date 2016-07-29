@@ -17,6 +17,7 @@ apply from: rootProject.file('common.gradle')
 apply plugin: 'java'
 apply plugin: 'war'
 apply plugin: 'org.akhikhl.gretty'
+//apply plugin: 'jetty'
 apply plugin: 'eclipse-wtp'
 
 ext {
@@ -58,7 +59,7 @@ dependencies {
     compile "com.fasterxml.jackson.core:jackson-databind:${jackson_version}"
 
     compile "ch.qos.logback:logback-classic:${logback_version}"
-    compile "org.webjars:react:0.13.1"
+    // compile "org.webjars:react:0.13.1"
     compile "org.springframework:spring-core:${spring_version}"
     compile "org.springframework:spring-jdbc:${spring_version}"
     compile "org.springframework:spring-web:${spring_version}"
@@ -109,6 +110,11 @@ gretty {
     port  = 8080
     contextPath = '/'
     servletContainer = 'jetty9'
+    jvmArgs = ['-Djava.net.preferIPv4Stack=true']
+
+    if (System.properties['org.eclipse.jetty.annotations.maxWait'] != null) {
+        jvmArgs.add('-Dorg.eclipse.jetty.annotations.maxWait=' + System.properties['org.eclipse.jetty.annotations.maxWait'])
+    }
 }
 
 eclipse {

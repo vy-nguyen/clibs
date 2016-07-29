@@ -1,6 +1,6 @@
 {
-    "${keyTestCnt}": 50,
-    "${cryptoTestCnt}": 1000,
+    "${keyTestCnt}": 5000,
+    "${cryptoTestCnt}": 100000,
 
     "import": {
         "json": [
