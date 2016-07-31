@@ -5,9 +5,11 @@
 
 import React          from 'react-mod';
 import Reflux         from 'reflux';
-import ErrorView      from 'vntd-shared/layout/ErrorView.jsx';
-import Actions        from 'vntd-root/actions/Actions.jsx';
-import AdminStore     from 'vntd-root/stores/AdminStore.jsx';
+
+import ErrorView          from 'vntd-shared/layout/ErrorView.jsx';
+import Actions            from 'vntd-root/actions/Actions.jsx';
+import AdminStore         from 'vntd-root/stores/AdminStore.jsx';
+import ArticleBox         from 'vntd-root/components/ArticleBox.jsx';
 
 let SetTags = React.createClass({
     mixins: [Reflux.connect(AdminStore)],
@@ -20,13 +22,27 @@ let SetTags = React.createClass({
                 artTagUuids: this.refs.artTag.value
             } ]
         };
-        console.log(data);
         Actions.setTags(data);
     },
 
     render: function() {
+        let publicArts = AdminStore.getPublicArticle();
+        let selected = [];
+        _.forOwn(publicArts, function(v, artUuid) {
+            selected.push(
+                <div className="col-sm-6 col-md-6 col-lg-4" key={_.uniqueId("pub-art-selected-")}>
+                    {ArticleBox.article(artUuid)}
+                </div> 
+            )
+        });
+
         return (
-            <div>
+            <div id="content">
+                <section id="widget-grid" className="">
+                    <div className="row">
+                        {selected}
+                    </div>
+                </section>
                 <form className="smart-form client-form">
                     <header>Admin Set Tags</header>
                     <fieldset>

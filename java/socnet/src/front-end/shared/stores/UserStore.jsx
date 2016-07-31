@@ -28,6 +28,10 @@ class User {
         return this;
     }
 
+    getUserName() {
+        return this.firstName + " " + this.lastName;
+    }
+
     isInConnection() {
         return this.connectState === "connected"
     }
@@ -95,6 +99,16 @@ let UserStore = Reflux.createStore({
             return false;
         }
         return this.data.userSelf.userUuid === uuid;
+    },
+
+    amIAdmin: function() {
+        let self = this.data.userSelf;
+        if (self != null) {
+            if (self.role && self.role.indexOf("Admin") >= 0) {
+                return true;
+            }
+        }
+        return false;
     },
 
     getSelf: function() {

@@ -18,7 +18,8 @@ let LangMenu = React.createClass({
     },
 
     _selectLanguage: function(lang) {
-        LanguageStore.setLanguage(lang.key)
+        LanguageStore.setLanguage(lang.key);
+        Actions.translate();
     },
 
     _getFlagIcon: function(lang) {

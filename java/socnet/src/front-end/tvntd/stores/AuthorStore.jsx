@@ -320,6 +320,14 @@ let AuthorStore = Reflux.createStore({
         return authorTagMgr;
     },
 
+    /**
+     * @return artRank matching with author uuid and article uuid.
+     */
+    getArticleTag: function(authorUuid, articleUuid) {
+        let tagMgr = this.getAuthorTagMgr(authorUuid);
+        return tagMgr.getArticleRankByUuid(articleUuid, true);
+    },
+
     updateAuthorTag: function(tagInfo) {
         let authorTagMgr = this.getAuthorTagMgr(tagInfo.userUuid);
         let authorTag = authorTagMgr.getAuthorTag(tagInfo.tagName, tagInfo.tagRank, tagInfo.favorite);

@@ -66,6 +66,11 @@ let RenderStore = Reflux.createStore({
         let error = new ErrorDispatch(xhdr, text, status);
         error.handle();
         error = null;
+    },
+
+    dumpData: function(header) {
+        console.log(header);
+        console.log(this.data);
     }
 });
 

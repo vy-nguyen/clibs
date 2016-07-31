@@ -91,8 +91,12 @@ let NavigationStore = Reflux.createStore({
 
     getData: function() {
         return this.data;
-    }
+    },
 
+    dumpData: function(header) {
+        console.log(header);
+        console.log(this.data);
+    }
 });
 
 export default NavigationStore

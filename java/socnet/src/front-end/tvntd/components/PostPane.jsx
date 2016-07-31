@@ -10,6 +10,7 @@ import TA           from 'react-typeahead';
 
 import Actions      from 'vntd-root/actions/Actions.jsx';
 import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
+import AdminStore   from 'vntd-root/stores/AdminStore.jsx';
 import PostItem     from 'vntd-root/components/PostItem.jsx';
 import PostComment  from 'vntd-root/components/PostComment.jsx';
 import WidgetGrid   from 'vntd-shared/widgets/WidgetGrid.jsx';
@@ -115,6 +116,17 @@ let PostPane = React.createClass({
     },
 
     render: function() {
+        let adminItem = null;
+        if (UserStore.amIAdmin() == true) {
+            adminItem = {
+                itemFmt : 'fa fa-circle txt-color-blue',
+                itemText: 'Publish Post',
+                itemHandler: function(e, pane) {
+                    e.preventDefault();
+                    AdminStore.addPublicArticle(this.props.data.articleUuid);
+                }.bind(this)
+            };
+        }
         let ownerPostMenu = {
             iconFmt  : 'btn-xs btn-success',
             titleText: 'Options',
@@ -141,6 +153,9 @@ let PostPane = React.createClass({
                 }
             } ]
         };
+        if (adminItem != null) {
+            ownerPostMenu.menuItems.push(adminItem);
+        }
         let panelData = {
             icon   : 'fa fa-book',
             header : toDateString(this.props.data.createdDate),

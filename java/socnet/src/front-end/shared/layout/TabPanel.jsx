@@ -14,10 +14,30 @@ let TabPanel = React.createClass({
         this.props.context.setActivePane(index);
     },
 
+    _getActivePane: function() {
+        return this.state.activePane;
+    },
+
+    _setActivePane: function(index) {
+        this.setState({
+            activePane: index
+        });
+    },
+
+    getInitialState: function() {
+        return {
+            activePane: 0
+        }
+    },
+
     render: function() {
         let tab = this.props.context;
         if (tab === null || tab === undefined) {
             return null;
+        }
+        if (tab.getActivePane == null) {
+            tab.getActivePane = this._getActivePane.bind(this);
+            tab.setActivePane = this._setActivePane.bind(this);
         }
         let activeIdx = tab.getActivePane();
         let tabHeader = tab.tabItems.map(function(item, idx) {

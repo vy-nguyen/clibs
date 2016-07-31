@@ -9,10 +9,13 @@ import _         from 'lodash';
 import Actions   from 'vntd-root/actions/Actions.jsx';
 
 let AdminStore = Reflux.createStore({
+    data: {},
     listenables: [Actions],
 
     init: function() {
-        console.log("Admin Store init");
+        this.data = {
+            publicArticle: {}
+        }
     },
 
     /* Admin actions to list users. */
@@ -34,6 +37,23 @@ let AdminStore = Reflux.createStore({
         console.log("set tag failed");
         console.log(data);
     },
+
+    addPublicArticle: function(artUuid, artRank) {
+        this.data.publicArticle[artUuid] = artRank;
+    },
+
+    getPublicArticle: function() {
+        return this.data.publicArticle;
+    },
+
+    clearPublicArticle: function() {
+        this.data.publicArticle = {};
+    },
+
+    dumpData: function(header) {
+        console.log(header);
+        console.log(this.data);
+    }
 });
 
 export default AdminStore;

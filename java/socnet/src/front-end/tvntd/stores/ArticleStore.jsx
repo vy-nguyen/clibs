@@ -6,6 +6,7 @@
 
 import Reflux       from 'reflux';
 import _            from 'lodash';
+import moment       from 'moment';
 import Actions      from 'vntd-root/actions/Actions.jsx';
 import CommentStore from 'vntd-root/stores/CommentStore.jsx';
 import UserStore    from 'vntd-shared/stores/UserStore.jsx';
@@ -14,21 +15,14 @@ import {insertSorted, preend} from 'vntd-shared/utils/Enum.jsx';
 
 class Article {
     constructor(data) {
+        _.forEach(data, function(v, k) {
+            this[k] = v;
+        }.bind(this));
+
         this._id          = _.uniqueId('id-article-');
         this.author       = UserStore.getUserByUuid(data.authorUuid);
-        this.authorUuid   = data.authorUuid;
-        this.articleUuid  = data.articleUuid;
-        this.articleUrl   = data.articleUrl;
-        this.likeCount    = data.likeCount;
-        this.rankCount    = data.rankCount;
-        this.creditEarned = data.creditEarned;
-        this.moneyEarned  = data.moneyEarned;
-        this.transactions = data.transactions;
         this.createdDate  = Date.parse(data.createdDate);
-        this.content      = data.content;
-        this.contentOId   = data.contentOId;
-        this.pictureUrl   = data.pictureUrl;
-        this.topic        = data.topic;
+        this.dateString   = moment(this.currentDate).format("DD/MM/YYYY - HH:mm");
 
         if (data.rank != null) {
             CommentStore.addArtAttr(data.rank);
