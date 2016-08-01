@@ -9,6 +9,7 @@ import Reflux from 'reflux';
 
 import Actions      from 'vntd-root/actions/Actions.jsx';
 import PostPane     from 'vntd-root/components/PostPane.jsx';
+import LikeStat     from 'vntd-root/components/LikeStat.jsx';
 import ArticleStore from 'vntd-root/stores/ArticleStore.jsx';
 
 let ArticleRank = React.createClass({
@@ -78,6 +79,12 @@ let ArticleRank = React.createClass({
                 </div>
             );
         }
+        let likeStat = {
+            dateString: "1/1/1970",
+            commentCount: 0,
+            likesCount  : 0,
+            sharesCount : 0
+        }
         return (
             <div>
                 <div className="well padding-10">
@@ -85,11 +92,7 @@ let ArticleRank = React.createClass({
                         <div className="col-xs-4 col-sm-4 col-md-4">
                             <h3>{rank.artTitle}</h3>
                             <br/>
-                            <ul className="list-inline">
-                                <li>1/1/1970 </li>
-                                <li><i className="fa fa-comment"/> 20</li>
-                                <li><i className="fa fa-thumbs-up"/> 10</li>
-                            </ul>
+                            <LikeStat data={likeStat}/>
                         </div>
                         <div className="col-xs-7 col-sm-7 col-md-7">
                             <p>{rank.contentBrief}</p>

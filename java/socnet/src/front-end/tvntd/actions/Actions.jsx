@@ -5,6 +5,7 @@
 'use strict';
 
 import Reflux           from 'reflux';
+import moment           from 'moment';
 import ErrorDispatch    from 'vntd-shared/actions/ErrorDispatch.jsx';
 
 const completedFn = {

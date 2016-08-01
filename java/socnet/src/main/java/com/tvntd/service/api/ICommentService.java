@@ -133,6 +133,9 @@ public interface ICommentService
             return rank;
         }
 
+        /**
+         * Getters/setters.
+         */
         public String getArticleUuid() {
             return comment != null ? comment.getArticleUuid() : null;
         }
@@ -162,7 +165,7 @@ public interface ICommentService
         }
 
         public String getUserUuid() {
-            return comment != null? comment.getUserUuid() : null;
+            return comment != null ? comment.getUserUuid() : null;
         }
 
         public Long getLikes() {

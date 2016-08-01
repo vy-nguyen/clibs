@@ -25,16 +25,21 @@ let SetTags = React.createClass({
         Actions.setTags(data);
     },
 
+    _deleteArticle: function(uuid) {
+        console.log("delete article uuid " + uuid);
+        console.log(this);
+    },
+
     render: function() {
         let publicArts = AdminStore.getPublicArticle();
         let selected = [];
         _.forOwn(publicArts, function(v, artUuid) {
             selected.push(
                 <div className="col-sm-6 col-md-6 col-lg-4" key={_.uniqueId("pub-art-selected-")}>
-                    {ArticleBox.article(artUuid)}
+                    {ArticleBox.article(artUuid, this._deleteArticle.bind(this, artUuid))}
                 </div> 
             )
-        });
+        }.bind(this));
 
         return (
             <div id="content">

@@ -9,6 +9,7 @@ import React     from 'react-mod';
 import UserStore     from 'vntd-shared/stores/UserStore.jsx';
 import ArticleStore  from 'vntd-root/stores/ArticleStore.jsx';
 import AuthorStore   from 'vntd-root/stores/AuthorStore.jsx';
+import LikeStat      from 'vntd-root/components/LikeStat.jsx';
 
 let ArticleBox = React.createClass({
 
@@ -28,6 +29,9 @@ let ArticleBox = React.createClass({
                     <p>{data.artBrief}</p>
                 </div>
             );
+        }
+        if (data.clickCbFn == null) {
+            data.clickCbFn = this._clickSelect;
         }
         return (
             <div className="product-content product-wrap clearfix">
@@ -58,7 +62,7 @@ let ArticleBox = React.createClass({
                         <div className="product-info smart-form">
                             <div className="row">
                                 <div className="col-md-6 col-sm-6 col-xs-6">
-                                    <a className="btn btn-success" onClick={this._clickSelect}>{data.selectButton}</a>
+                                    <a className="btn btn-success" onClick={data.clickCbFn}>{data.selectButton}</a>
                                 </div>
                                 <div className="col-md-6 col-sm-6 col-xs-6">
                                     <div className="rating">
@@ -76,6 +80,9 @@ let ArticleBox = React.createClass({
                                 </div>
                             </div>
                         </div>
+                        <div className="product-info">
+                            <LikeStat data={data.likeStat}/>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -83,7 +90,7 @@ let ArticleBox = React.createClass({
     },
 
     statics: {
-        article: function(articleUuid, tagImage) {
+        article: function(articleUuid, clickCb) {
             let article = ArticleStore.getArticleByUuid(articleUuid);
             if (article == null) {
                 console.log("No matching uuid " + articleUuid);
@@ -99,6 +106,13 @@ let ArticleBox = React.createClass({
                 artTitle   : article.topic,
                 artCategory: 'Blog',
                 artPrice   : author.getUserName(),
+                clickCbFn  : clickCb,
+                likeStat   : {
+                    dateMoment  : article.createdDate,
+                    commentCount: 0,
+                    likesCount  : 0,
+                    sharesCount : 0
+                },
                 selectButton: 'Read more...'
             };
             if (artTag != null) {
