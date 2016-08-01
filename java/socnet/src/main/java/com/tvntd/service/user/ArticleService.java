@@ -207,7 +207,6 @@ public class ArticleService implements IArticleService
 
         for (String uuid : uuids.getUuids()) {
             List<ArticleRank> r = artRankRepo.findByAuthorUuid(uuid);
-            System.out.println("Uuid " + uuid + ", ranks " + r.size());
 
             if (r != null && !r.isEmpty()) {
                 ranks.addAll(convertRank(r));
@@ -219,17 +218,6 @@ public class ArticleService implements IArticleService
     /**
      * Article services.
      */
-    @Override
-    public ArticleDTO getArticle(Long artId)
-    {
-        Article art = articleRepo.findByArticleId(artId);
-        if (art != null) {
-            ArticleRank rank = getRank(art.getArticleUuid());
-            return new ArticleDTO(art, rank);
-        }
-        return null;
-    }
-
     @Override
     public ArticleDTO getArticle(UUID artUuid)
     {
@@ -346,7 +334,7 @@ public class ArticleService implements IArticleService
 
     @Override
     public void deleteArticle(Article art) {
-        articleRepo.delete(art.getArticleId());
+        articleRepo.delete(art.getArticleUuid());
     }
 
     @Override

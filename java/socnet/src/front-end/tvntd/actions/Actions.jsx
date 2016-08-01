@@ -219,6 +219,7 @@ Actions.resetPassword.listen(function(resetData) {
 });
 
 Actions.preload.listen(function() {
+    /*
     let data = {
         articles: require('json!../mock-json/article.json'),
         authors : require('json!../mock-json/author.json'),
@@ -226,6 +227,7 @@ Actions.preload.listen(function() {
         comments: require('json!../mock-json/comment.json')
     };
     this.completed(data);
+     */
 });
 
 /**

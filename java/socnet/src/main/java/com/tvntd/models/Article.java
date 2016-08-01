@@ -36,8 +36,6 @@ import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
@@ -52,27 +50,22 @@ import com.tvntd.lib.ObjectId;
 
 @Entity
 @Table(indexes = {
-    @Index(columnList = "articleUuid", name = "articleUuid", unique = true),
     @Index(columnList = "authorUuid", name = "authorUuid", unique = false)
 })
 public class Article
 {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long articleId;
-
-    private Long     authorId;
+    @Column(length = 64)
+    private String   articleUuid;
 
     @Column(length = 64)
     private String   authorUuid;
 
-    @Column(length = 64)
-    private String   articleUuid;
-
+    private Long     authorId;
     private boolean  pending;
     private ObjectId contentOId;
 
-    @Column(name="DATE_CREATED")
+    @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
 
@@ -112,6 +105,20 @@ public class Article
         pending = false;
     }
 
+    /**
+     * @return the authorId
+     */
+    public Long getAuthorId() {
+        return authorId;
+    }
+
+    /**
+     * @param authorId the authorId to set
+     */
+    public void setAuthorId(Long authorId) {
+        this.authorId = authorId;
+    }
+
     public boolean isPending() {
         return pending;
     }
@@ -129,27 +136,6 @@ public class Article
         if (pictures != null) {
             pictures.remove(img);
         }
-    }
-
-    /**
-     * @return the articleId
-     */
-    public Long getArticleId() {
-        return articleId;
-    }
-
-    /**
-     * @return the authorId
-     */
-    public Long getAuthorId() {
-        return authorId;
-    }
-
-    /**
-     * @param authorId the authorId to set
-     */
-    public void setAuthorId(Long userId) {
-        this.authorId = userId;
     }
 
     /**

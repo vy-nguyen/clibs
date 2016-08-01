@@ -35,10 +35,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tvntd.models.Article;
 
-public interface ArticleRepository extends JpaRepository<Article, Long>
+public interface ArticleRepository extends JpaRepository<Article, String>
 {
-    Article findByArticleId(Long id);
-
     Article findByArticleUuid(String uuid);
 
     Article findByAuthorUuid(String uuid);

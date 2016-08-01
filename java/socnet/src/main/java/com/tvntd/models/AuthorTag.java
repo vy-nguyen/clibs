@@ -26,12 +26,12 @@
  */
 package com.tvntd.models;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-
-import com.tvntd.lib.ObjectId;
+import javax.persistence.Transient;
 
 @Embeddable
 public class AuthorTag
@@ -45,7 +45,10 @@ public class AuthorTag
     private boolean  favorite;
     private Long     rank;
     private Long     notifCount;
-    private ObjectId headChain;
+    private String   headChain;
+
+    @Transient
+    private String   tagName;
 
     public AuthorTag() {}
     public AuthorTag(String name, Long rank, boolean fav)
@@ -63,14 +66,26 @@ public class AuthorTag
     /**
      * @return the tag
      */
-    public String getTag() {
-        return new String(tag, Charset.forName("UTF-8"));
+    public String getTag()
+    {
+        if (tagName != null) {
+            return tagName;
+        }
+        try {
+            tagName = new String(tag, "UTF-8");
+            return tagName;
+
+        } catch(UnsupportedEncodingException e) {
+        }
+        return null;
     }
 
     /**
      * @param tag the tag to set
      */
-    public void setTag(String tag) {
+    public void setTag(String tag)
+    {
+        this.tagName = tag;
         this.tag = tag.getBytes(Charset.forName("UTF-8"));
     }
 
@@ -126,14 +141,14 @@ public class AuthorTag
     /**
      * @return the headChain
      */
-    public ObjectId getHeadChain() {
+    public String getHeadChain() {
         return headChain;
     }
 
     /**
      * @param headChain the headChain to set
      */
-    public void setHeadChain(ObjectId headChain) {
+    public void setHeadChain(String headChain) {
         this.headChain = headChain;
     }
 }

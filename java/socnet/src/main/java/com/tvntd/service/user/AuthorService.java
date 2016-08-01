@@ -200,8 +200,6 @@ public class AuthorService implements IAuthorService
 
     public ArticleRank createArticleRank(Article article, String tagName)
     {
-        System.out.println("Create art tag " + article.getAuthorUuid() + " " + tagName);
-        s_log.debug("Create art tag " + article.getAuthorUuid() + " " + tagName);
         String authorUuid = article.getAuthorUuid();
         Author author = authorRepo.findByAuthorUuid(authorUuid);
         if (author == null) {

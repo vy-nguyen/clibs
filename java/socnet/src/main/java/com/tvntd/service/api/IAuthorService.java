@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.UUID;
 
 import com.tvntd.forms.ArticleForm;
-import com.tvntd.lib.ObjectId;
 import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Author;
@@ -173,10 +172,8 @@ public interface IAuthorService
             return tag.getNotifCount();
         }
 
-        public String getHeadChain()
-        {
-            ObjectId id = tag.getHeadChain();
-            return id == null ? null : id.name();
+        public String getHeadChain() {
+            return tag.getHeadChain();
         }
     }
 }

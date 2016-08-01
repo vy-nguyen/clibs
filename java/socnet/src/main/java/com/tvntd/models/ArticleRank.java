@@ -78,6 +78,7 @@ public class ArticleRank
     private Long shared;
     private Long rank;
     private Long score;
+    private Long permMask;
     private boolean favorite;
     private ObjectId transRoot;
 
@@ -327,6 +328,13 @@ public class ArticleRank
      */
     public void setScore(Long score) {
         this.score = score;
+    }
+
+    /**
+     * @return the permMask
+     */
+    public Long getPermMask() {
+        return permMask;
     }
 
     /**

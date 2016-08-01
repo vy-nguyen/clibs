@@ -128,6 +128,7 @@ public class NewsFeedService implements INewsFeedService
                 }
                 feed.setAuthorUuid(authors);
                 newsRepo.save(feed);
+
             } catch(Exception e) {
                 s_log.info("Exception: " + e.toString());
             }

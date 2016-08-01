@@ -32,34 +32,23 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Table;
 
-import com.tvntd.lib.ObjectId;
-
 @Entity
 @Table(indexes = {
-    @Index(columnList = "authorUuid", name = "authorUuid", unique = true)
+    @Index(columnList = "chainRoot", name = "chainRoot", unique = true)
 })
 public class AuthorRank
 {
     @Id
-    @Column
-    private Long authorId;
+    @Column(length = 64)
+    private String authorUuid;
 
     private Long publicScore;
     private Long groupScore;
     private Long topicScore;
     private Long promoteScore;
 
-    private ObjectId chainRoot;
-
     @Column(length = 64)
-    private String authorUuid;
-
-    /**
-     * @return the authorId
-     */
-    public Long getAuthorId() {
-        return authorId;
-    }
+    private String chainRoot;
 
     /**
      * @return the publicScore
@@ -134,14 +123,14 @@ public class AuthorRank
     /**
      * @return the chainRoot
      */
-    public ObjectId getChainRoot() {
+    public String getChainRoot() {
         return chainRoot;
     }
 
     /**
      * @param chainRoot the chainRoot to set
      */
-    public void setChainRoot(ObjectId chainRoot) {
+    public void setChainRoot(String chainRoot) {
         this.chainRoot = chainRoot;
     }
 }

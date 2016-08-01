@@ -69,7 +69,6 @@ public class CommentService implements ICommentService
         for (String uuid : uuidList) {
             getCommentForArticle(uuid, out);
         }
-        getCommentForArticle("abc1233", out);
         return out;
     }
 

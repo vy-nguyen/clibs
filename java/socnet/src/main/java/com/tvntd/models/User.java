@@ -27,6 +27,7 @@
 package com.tvntd.models;
 
 import java.util.Collection;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,11 +35,14 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 
 @Entity
+@Table(indexes = {@Index(columnList = "email", unique = true)})
 public class User
 {
     static private final Long userIdStart = 10000L;
@@ -61,6 +65,8 @@ public class User
 
     private boolean enabled;
     private boolean tokenExpired;
+
+    private Date lastLogin;
 
     //
     @ManyToMany(fetch = FetchType.EAGER)
@@ -119,6 +125,20 @@ public class User
 
     public void setPassword(final String password) {
         this.password = password;
+    }
+
+    /**
+     * @return the lastLogin
+     */
+    public Date getLastLogin() {
+        return lastLogin;
+    }
+
+    /**
+     * @param lastLogin the lastLogin to set
+     */
+    public void setLastLogin(Date lastLogin) {
+        this.lastLogin = lastLogin;
     }
 
     public Collection<Role> getRoles() {

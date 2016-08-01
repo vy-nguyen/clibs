@@ -28,6 +28,7 @@ package com.tvntd.security;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -85,6 +86,8 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
             ProfileDTO profile = profileSvc.getProfile(user);
             if (profile != null) {
                 session.setAttribute("profile", profile);
+                user.setLastLogin(new Date());
+                userRepository.save(user);
                 newsFeedSvc.generateNewsFeed(profile, profile.getUserUuid());
             }
         }

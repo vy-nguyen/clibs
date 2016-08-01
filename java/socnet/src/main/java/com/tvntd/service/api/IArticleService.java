@@ -50,7 +50,6 @@ import com.tvntd.service.user.ArticleService;
 
 public interface IArticleService
 {
-    ArticleDTO getArticle(Long artId);
     ArticleDTO getArticle(UUID uuid);
     Article getArticle(String artUuid);
 
@@ -194,10 +193,6 @@ public interface IArticleService
         /**
          * Methods to construct fields in the article.
          */
-        public Long fetchArticleId() {
-            return article.getArticleId();
-        }
-
         public void assignAuthorId(Long id) {
             article.setAuthorId(id);
         }

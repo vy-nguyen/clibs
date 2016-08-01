@@ -30,13 +30,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tvntd.models.AuthorRank;
 
-public interface AuthorRankRepo extends JpaRepository<AuthorRank, Long>
+public interface AuthorRankRepo extends JpaRepository<AuthorRank, String>
 {
-    AuthorRank findByAuthorId(Long id);
+    AuthorRank findByAuthorUuid(String id);
     
     @Override
     void delete(AuthorRank rank);
 
     @Override
-    void delete(Long id);
+    void delete(String Uuid);
 }
