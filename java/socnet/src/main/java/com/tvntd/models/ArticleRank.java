@@ -31,7 +31,6 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -44,14 +43,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
 import com.tvntd.forms.ArticleForm;
-import com.tvntd.lib.ObjectId;
+import com.tvntd.key.HashKey;
 import com.tvntd.util.Constants;
 import com.tvntd.util.Util;
 
 @Entity
 @Table(indexes = {
-    @Index(columnList = "tag", name = "tag", unique = false),
-    @Index(columnList = "authorUuid", name = "authorUuid", unique = false)
+    @Index(columnList = "authorUuid", unique = false)
 })
 public class ArticleRank
 {
@@ -60,7 +58,10 @@ public class ArticleRank
     private String articleUuid;
 
     @Column(length = 64)
-    private String tag;
+    private String tagHash;
+
+    @Column(length = 64)
+    private byte[] tag;
 
     @Column(length = 64)
     private String authorUuid;
@@ -80,17 +81,17 @@ public class ArticleRank
     private Long score;
     private Long permMask;
     private boolean favorite;
-    private ObjectId transRoot;
+    private String transRoot;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "ArticleLiked",
             joinColumns = @JoinColumn(name = "articleId"))
-    private List<UUID> userLiked;
+    private List<String> userLiked;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "ArticleShared",
             joinColumns = @JoinColumn(name = "articleId"))
-    private List<UUID> userShared;
+    private List<String> userShared;
 
     public ArticleRank()
     {
@@ -103,12 +104,8 @@ public class ArticleRank
         this.favorite = false;
         this.artTitle = Util.DefaultTopic;
         this.contentBrief = null;
-        this.transRoot = ObjectId.zeroId();
         this.timeStamp = new Date();
-        try {
-            this.tag = new String(Util.DefaultTag, "UTF-8");
-        } catch(UnsupportedEncodingException e) {
-        }
+        this.tag = Util.DefaultTag;
     }
 
     public ArticleRank(AuthorTag tag, Article article)
@@ -120,10 +117,8 @@ public class ArticleRank
         this.rank = tag.getRank();
         this.artTitle = article.getTopic();
         this.contentBrief = Arrays.copyOfRange(article.getContent(), 0, 200);
-        try {
-            this.tag = new String(tag.fetchTag(), "UTF-8");
-        } catch(UnsupportedEncodingException e) {
-        }
+        this.tag = tag.fetchTag();
+        this.tagHash = HashKey.toSha1Key(this.tag, authorUuid);
     }
 
     public void updateFromUser(ArticleForm form)
@@ -139,11 +134,7 @@ public class ArticleRank
         rank = form.getArticleRank();
 
         if (form.getTagName() != null) {
-            try {
-                tag = new String(form.getTagName().
-                        getBytes(Charset.forName("UTF-8")), "UTF-8");
-            } catch(UnsupportedEncodingException e) {
-            }
+            tag = form.getTagName().getBytes(Charset.forName("UTF-8"));
         }
         Long likeCnt = form.getLikeInc();
         if (likeCnt > 0) {
@@ -182,7 +173,11 @@ public class ArticleRank
     public String getTag()
     {
         if (tag != null) {
-            return tag;
+            try {
+                return new String(tag, "UTF-8");
+
+            } catch(UnsupportedEncodingException e) {
+            }
         }
         return Constants.DefaultTag;
     }
@@ -354,42 +349,42 @@ public class ArticleRank
     /**
      * @return the userLiked
      */
-    public List<UUID> getUserLiked() {
+    public List<String> getUserLiked() {
         return userLiked;
     }
 
     /**
      * @param userLiked the userLiked to set
      */
-    public void setUserLiked(List<UUID> userLiked) {
+    public void setUserLiked(List<String> userLiked) {
         this.userLiked = userLiked;
     }
 
     /**
      * @return the userShared
      */
-    public List<UUID> getUserShared() {
+    public List<String> getUserShared() {
         return userShared;
     }
 
     /**
      * @param userShared the userShared to set
      */
-    public void setUserShared(List<UUID> userShared) {
+    public void setUserShared(List<String> userShared) {
         this.userShared = userShared;
     }
 
     /**
      * @return the transRoot
      */
-    public ObjectId getTransRoot() {
+    public String getTransRoot() {
         return transRoot;
     }
 
     /**
      * @param transRoot the transRoot to set
      */
-    public void setTransRoot(ObjectId transRoot) {
+    public void setTransRoot(String transRoot) {
         this.transRoot = transRoot;
     }
 }

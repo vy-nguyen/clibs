@@ -421,6 +421,8 @@ let AuthorStore = Reflux.createStore({
     },
 
     onGetArticleRankCompleted: function(data) {
+        console.log("------");
+        console.log(data);
         this._updateArticleRank(data);
     },
 

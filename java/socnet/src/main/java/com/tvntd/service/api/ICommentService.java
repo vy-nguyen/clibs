@@ -41,7 +41,6 @@ import com.tvntd.forms.CommentChangeForm;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Comment;
 import com.tvntd.models.CommentRank;
-import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 public interface ICommentService
 {
@@ -201,8 +200,8 @@ public interface ICommentService
             score = rank.getScore();
             creditEarned = rank.getCreditEarned();
             moneyEarned = rank.getMoneyEarned();
-            userLiked = ProfileDTO.toStringList(rank.getUserLiked());
-            userShared = ProfileDTO.toStringList(rank.getUserShared());
+            userLiked = rank.getUserLiked();
+            userShared = rank.getUserShared();
         }
 
         /**

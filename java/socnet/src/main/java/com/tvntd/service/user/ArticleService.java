@@ -58,6 +58,7 @@ import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.util.Constants;
+import com.tvntd.util.Util;
 
 @Service
 @Transactional
@@ -154,43 +155,43 @@ public class ArticleService implements IArticleService
             }
         }
         boolean save = false;
-        UUID myUuid = me.getUserUuid();
+        String myUuid = me.getUserUuid().toString();
         String kind = form.getKind();
         
         if (kind.equals("like")) {
             Long val = rank.getLikes();
-            List<UUID> users = rank.getUserLiked();
+            List<String> users = rank.getUserLiked();
 
             if (users == null) {
                 users = new ArrayList<>();
                 rank.setUserLiked(users);
             }
             save = true;
-            if (ProfileDTO.isInList(users, myUuid) == null) {
+            if (Util.<String>isInList(users, myUuid) == null) {
                 val++;
-                ProfileDTO.addUnique(users, myUuid);
+                Util.<String>addUnique(users, myUuid);
             } else {
                 val--;
-                ProfileDTO.removeFrom(users, myUuid);
+                Util.<String>removeFrom(users, myUuid);
             }
             rank.setLikes(val);
             form.setAmount(val);
 
         } else if (kind.equals("share")) {
             Long val = rank.getShared();
-            List<UUID> users = rank.getUserShared();
+            List<String> users = rank.getUserShared();
 
             if (users == null) {
                 users = new ArrayList<>();
                 rank.setUserShared(users);
             }
             save = true;
-            if (ProfileDTO.isInList(users, myUuid) == null) {
+            if (Util.<String>isInList(users, myUuid) == null) {
                 val++;
-                ProfileDTO.addUnique(users, myUuid);
+                Util.<String>addUnique(users, myUuid);
             } else {
                 val--;
-                ProfileDTO.removeFrom(users, myUuid);
+                Util.<String>removeFrom(users, myUuid);
             }
             rank.setShared(val);
             form.setAmount(val);

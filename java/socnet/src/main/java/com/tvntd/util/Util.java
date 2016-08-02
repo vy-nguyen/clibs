@@ -28,6 +28,8 @@
 package com.tvntd.util;
 
 import java.nio.charset.Charset;
+import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 
 public final class Util
@@ -49,6 +51,36 @@ public final class Util
 
         } catch(Exception e) {
             return null;
+        }
+    }
+
+    static public <T> T isInList(List<T> list, T item)
+    {
+        for (T elm : list) {
+            if (elm.equals(item)) {
+                return elm;
+            }
+        }
+        return null;
+    }
+
+    static public <T> T removeFrom(List<T> list, T item)
+    {
+        Iterator<T> iter = list.iterator();
+        while (iter.hasNext()) {
+            T elm = iter.next();
+            if (elm.equals(item)) {
+                iter.remove();
+                return elm;
+            }
+        }
+        return null;
+    }
+
+    static public <T> void addUnique(List<T> list, T item)
+    {
+        if (isInList(list, item) == null) {
+            list.add(item);
         }
     }
 

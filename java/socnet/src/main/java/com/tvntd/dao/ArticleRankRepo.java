@@ -35,9 +35,9 @@ import com.tvntd.models.ArticleRank;
 public interface ArticleRankRepo extends JpaRepository<ArticleRank, Long>
 {
     ArticleRank findByArticleUuid(String uuid);
+    ArticleRank findByTagHash(String tagHash);
 
     List<ArticleRank> findByAuthorUuid(String uuid);
-    List<ArticleRank> findByAuthorUuidAndTag(String uuid, String tag);
 
     @Override
     void delete(ArticleRank rank);

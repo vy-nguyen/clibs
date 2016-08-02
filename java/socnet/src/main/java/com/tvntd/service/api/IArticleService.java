@@ -348,8 +348,8 @@ public interface IArticleService
             this.rank = rank.getRank();
             favorite = rank.isFavorite();
             score = rank.getScore();
-            userLiked = ProfileDTO.toStringList(rank.getUserLiked());
-            userShared = ProfileDTO.toStringList(rank.getUserShared());
+            userLiked = rank.getUserLiked();
+            userShared = rank.getUserShared();
 
             artTitle = rank.getArtTitle();
             tagName = rank.getTag();
