@@ -63,7 +63,9 @@ public class Article
 
     private Long     authorId;
     private boolean  pending;
-    private ObjectId contentOId;
+
+    @Column(length = 64)
+    private String   contentOId;
 
     @Column
     @Temporal(TemporalType.TIMESTAMP)
@@ -73,14 +75,15 @@ public class Article
     private byte[] topic;
 
     @Lob
-    @Column
+    @Column(length = 1 << 16)
     private byte[] content;
 
+    @Column(length = 64)
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "ArtPics",
             uniqueConstraints = @UniqueConstraint(columnNames = {"pictures"}),
             joinColumns = @JoinColumn(name = "articleId"))
-    private List<ObjectId> pictures;
+    private List<String> pictures;
 
     @Transient
     private UUID m_authorUuid;
@@ -93,7 +96,6 @@ public class Article
         super();
         m_articleUuid = UUID.randomUUID();
         articleUuid = m_articleUuid.toString();
-        contentOId = ObjectId.zeroId();
         createdDate = new Date();
     }
 
@@ -128,13 +130,13 @@ public class Article
         if (pictures == null) {
             pictures = new ArrayList<>();
         }
-        pictures.add(img);
+        pictures.add(img.name());
     }
 
     public void removePicture(ObjectId img)
     {
         if (pictures != null) {
-            pictures.remove(img);
+            pictures.remove(img.name());
         }
     }
 
@@ -187,14 +189,14 @@ public class Article
     /**
      * @return the contentOId
      */
-    public ObjectId getContentOId() {
+    public String getContentOId() {
         return contentOId;
     }
 
     /**
      * @param contentOId the contentOId to set
      */
-    public void setContentOId(ObjectId contentOId) {
+    public void setContentOId(String contentOId) {
         this.contentOId = contentOId;
     }
 
@@ -243,14 +245,14 @@ public class Article
     /**
      * @return the pictures
      */
-    public List<ObjectId> getPictures() {
+    public List<String> getPictures() {
         return pictures;
     }
 
     /**
      * @param pictures the pictures to set
      */
-    public void setPictures(List<ObjectId> pictures) {
+    public void setPictures(List<String> pictures) {
         this.pictures = pictures;
     }
 }

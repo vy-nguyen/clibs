@@ -30,22 +30,21 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import com.tvntd.models.TimeLine;
 
 public interface ITimeLineService
 {
-    public TimeLineDTO createTimeLine(UUID userUuid, UUID articleUuid);
-    public TimeLineDTO getTimeLine(UUID userUuid, UUID articleUuid);
-    public List<TimeLineDTO> getTimeLine(UUID userUuid);
+    public TimeLineDTO createTimeLine(String userUuid, String articleUuid);
+    public TimeLineDTO getTimeLine(String userUuid, String articleUuid);
+    public List<TimeLineDTO> getTimeLine(String userUuid);
 
     public void saveTimeLine(TimeLineDTO tline);
     public void saveTimeLine(List<TimeLineDTO> list);
-    public void saveTimeLine(UUID userUuid, UUID artUuid, UUID event, byte[] text);
+    public void saveTimeLine(String userUuid, String artUuid, String event, byte[] text);
 
-    public void deleteTimeLine(UUID userUuid, UUID articleUuid);
-    public void deleteTimeLineOlder(UUID userUuid, Date older);
+    public void deleteTimeLine(String userUuid, String articleUuid);
+    public void deleteTimeLineOlder(String userUuid, Date older);
 
     public List<TimeLineDTO> convert(List<TimeLine> src);
 
@@ -57,7 +56,7 @@ public interface ITimeLineService
             this.timeLine = tline;
         }
 
-        public TimeLineDTO(UUID userUuid, UUID articleUuid)
+        public TimeLineDTO(String userUuid, String articleUuid)
         {
             timeLine = new TimeLine(userUuid.toString(), articleUuid.toString());
             timeLine.setTimeStamp(new Date());

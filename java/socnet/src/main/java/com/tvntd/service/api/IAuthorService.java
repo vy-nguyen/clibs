@@ -41,17 +41,16 @@ import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 public interface IAuthorService
 {
-    public Author getAuthor(UUID uuid);
     public Author getAuthor(String uuid);
 
     public Author updateAuthor(ProfileDTO me, ArticleForm form, ArticleRankDTO rank);
-    public void addFavoriteArticle(Author author, UUID articleUuid);
-    public void removeFavoriteArticle(Author author, UUID articleUuid);
+    public void addFavoriteArticle(Author author, String articleUuid);
+    public void removeFavoriteArticle(Author author, String articleUuid);
 
-    public void addTimeLineArticle(Author author, UUID articleUuid);
-    public void removeTimeLineArticle(Author author, UUID articleUuid);
+    public void addTimeLineArticle(Author author, String articleUuid);
+    public void removeTimeLineArticle(Author author, String articleUuid);
 
-    public List<Author> getAuthors(List<UUID> uuids);
+    public List<Author> getAuthors(List<String> uuids);
     public List<AuthorDTO> getAuthorList(ProfileDTO profile);
 
     public void saveAuthor(Author author, boolean flush);
@@ -93,11 +92,11 @@ public interface IAuthorService
         }
 
         public List<String> getFavoriteArticles() {
-            return author != null ? convertUuid(author.getFavArticles()) : null;
+            return author != null ? author.getFavArticles() : null;
         }
 
         public List<String> getTimeLineArticles() {
-            return author != null ? convertUuid(author.getTimeLineArticles()) : null;
+            return author != null ? author.getTimeLineArticles() : null;
         }
 
         public String getAppUuid() {

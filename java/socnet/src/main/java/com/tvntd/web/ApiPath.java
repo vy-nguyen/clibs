@@ -32,7 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -179,7 +178,7 @@ public class ApiPath
             fillLoginResponse(resp.getUserDTO(), profile, authorSvc);
         }
         if (articleSvc != null) {
-            List<UUID> uuids = resp.getAllUserUuids();
+            List<String> uuids = resp.getAllUserUuids();
             resp.setArticles(articleSvc.getArticlesByUser(uuids));
         }
     }
@@ -247,7 +246,7 @@ public class ApiPath
             return new GenericResponse("failure", "Invalid session");
         }
         String[] uuids = form.getFollow();
-        HashMap<UUID, ProfileDTO> pending = new HashMap<>();
+        HashMap<String, ProfileDTO> pending = new HashMap<>();
 
         if (uuids != null) {
             profileSvc.followProfiles(profile, uuids, pending);
@@ -258,19 +257,19 @@ public class ApiPath
         }
         if (!pending.isEmpty()) {
             pending.put(profile.getUserUuid(), profile);
-            for (Map.Entry<UUID, ProfileDTO> entry : pending.entrySet()) {
+            for (Map.Entry<String, ProfileDTO> entry : pending.entrySet()) {
                 profileSvc.saveProfile(entry.getValue());
             }
             int i = 0;
-            List<UUID> connect = profile.getConnectList();
+            List<String> connect = profile.getConnectList();
             String[] connUuid = new String[connect.size()];
-            for (UUID uuid : connect) {
+            for (String uuid : connect) {
                 connUuid[i++] = uuid.toString();
             }
             i = 0;
-            List<UUID> follow = profile.getFollowList();
+            List<String> follow = profile.getFollowList();
             String[] followUuid = new String[follow.size()];
-            for (UUID uuid : follow) {
+            for (String uuid : follow) {
                 followUuid[i++] = uuid.toString();
             }
             form.setFollow(followUuid);

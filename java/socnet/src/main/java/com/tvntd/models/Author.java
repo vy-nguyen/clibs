@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -46,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.tvntd.service.api.IProfileService.ProfileDTO;
+import com.tvntd.util.Util;
 
 @Entity
 public class Author
@@ -59,21 +59,23 @@ public class Author
     @Column(length = 64)
     private String frontArtUuid;
 
+    @Column(length = 64)
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "FavoriteArticles",
             uniqueConstraints = @UniqueConstraint(columnNames = {
                 "authorUuid", "favArticles"
             }),
             joinColumns = @JoinColumn(name = "authorUuid"))
-    private List<UUID> favArticles;
+    private List<String> favArticles;
 
+    @Column(length = 64)
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "TimeLineArticles",
             uniqueConstraints = @UniqueConstraint(columnNames = {
                 "authorUuid", "timeLineArticles"
             }),
             joinColumns = @JoinColumn(name = "authorUuid"))
-    private List<UUID> timeLineArticles;
+    private List<String> timeLineArticles;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "AuthorTags",
@@ -128,34 +130,34 @@ public class Author
         return sb.toString();
     }
 
-    public void addFavoriteArticle(UUID articleUuid)
+    public void addFavoriteArticle(String articleUuid)
     {
         if (favArticles == null) {
             favArticles = new LinkedList<>();
         }
-        ProfileDTO.addUnique(favArticles, articleUuid);
+        Util.addUnique(favArticles, articleUuid);
     }
 
-    public UUID removeFavoriteArticle(UUID articleUuid)
+    public String removeFavoriteArticle(String articleUuid)
     {
         if (favArticles != null) {
-            return ProfileDTO.removeFrom(favArticles, articleUuid);
+            return Util.removeFrom(favArticles, articleUuid);
         }
         return null;
     }
 
-    public void addTimeLineArticle(UUID articleUuid)
+    public void addTimeLineArticle(String articleUuid)
     {
         if (timeLineArticles == null) {
             timeLineArticles = new LinkedList<>();
         }
-        ProfileDTO.addUnique(timeLineArticles, articleUuid);
+        Util.addUnique(timeLineArticles, articleUuid);
     }
 
-    public UUID removeTimeLineArticle(UUID articleUuid)
+    public String removeTimeLineArticle(String articleUuid)
     {
         if (timeLineArticles != null) {
-            return ProfileDTO.removeFrom(timeLineArticles, articleUuid);
+            return Util.removeFrom(timeLineArticles, articleUuid);
         }
         return null;
     }
@@ -225,28 +227,28 @@ public class Author
     /**
      * @return the favArticles
      */
-    public List<UUID> getFavArticles() {
+    public List<String> getFavArticles() {
         return favArticles;
     }
 
     /**
      * @param favArticles the favArticles to set
      */
-    public void setFavArticles(List<UUID> favArticles) {
+    public void setFavArticles(List<String> favArticles) {
         this.favArticles = favArticles;
     }
 
     /**
      * @return the timeLineArticles
      */
-    public List<UUID> getTimeLineArticles() {
+    public List<String> getTimeLineArticles() {
         return timeLineArticles;
     }
 
     /**
      * @param timeLineArticles the timeLineArticles to set
      */
-    public void setTimeLineArticles(List<UUID> timeLineArticles) {
+    public void setTimeLineArticles(List<String> timeLineArticles) {
         this.timeLineArticles = timeLineArticles;
     }
 

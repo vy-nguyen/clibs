@@ -27,7 +27,6 @@
 package com.tvntd.dao;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -53,7 +52,7 @@ public interface ArticleRepository extends JpaRepository<Article, String>
     findByAuthorIdOrderByCreatedDateDesc(Long author, Pageable pageable);
 
     Page<Article>
-    findByAuthorUuidOrderByCreatedDateDesc(UUID authorUuid, Pageable pageable);
+    findByAuthorUuidOrderByCreatedDateDesc(String authorUuid, Pageable pageable);
 
     @Override
     void delete(Article article);

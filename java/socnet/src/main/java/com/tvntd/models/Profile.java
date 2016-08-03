@@ -63,35 +63,38 @@ public class Profile
     private ObjectId transRoot;
     private ObjectId mainRoot;
 
-    @Column(name = "userUuid") //, updatable = false)
+    @Column(length = 64) //, updatable = false)
     private String userUuid;
 
     @Transient
     private UUID m_userUuid;
 
+    @Column(length = 64)
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "ConnectList",
             uniqueConstraints = @UniqueConstraint(columnNames = {
                 "userId", "connectList"
             }),
             joinColumns = @JoinColumn(name="userId"))
-    private List<UUID> connectList;
+    private List<String> connectList;
 
+    @Column(length = 64)
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "FollowerList",
             uniqueConstraints = @UniqueConstraint(columnNames = {
                 "userId", "followerList"
             }),
             joinColumns = @JoinColumn(name="userId"))
-    private List<UUID> followerList;
+    private List<String> followerList;
 
+    @Column(length = 64)
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "FollowList",
             uniqueConstraints = @UniqueConstraint(columnNames = {
                 "userId", "followList"
             }),
             joinColumns = @JoinColumn(name="userId"))
-    private List<UUID> followList;
+    private List<String> followList;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "ChainLinks",
@@ -330,50 +333,51 @@ public class Profile
     /**
      * @param userUuid the userUuid to set
      */
+    /*
     public void setUserUuid(String userUuid) {
         this.userUuid = userUuid;
         this.m_userUuid = UUID.fromString(userUuid);
     }
-
+    */
     /**
      * @return the connectList
      */
-    public List<UUID> getConnectList() {
+    public List<String> getConnectList() {
         return connectList;
     }
 
     /**
      * @param connectList the connectList to set
      */
-    public void setConnectList(List<UUID> connectList) {
+    public void setConnectList(List<String> connectList) {
         this.connectList = connectList;
     }
 
     /**
      * @return the followerList
      */
-    public List<UUID> getFollowerList() {
+    public List<String> getFollowerList() {
         return followerList;
     }
 
     /**
      * @param followerList the followerList to set
      */
-    public void setFollowerList(List<UUID> followerList) {
+    public void setFollowerList(List<String> followerList) {
         this.followerList = followerList;
     }
 
     /**
      * @return the followList
      */
-    public List<UUID> getFollowList() {
+    public List<String> getFollowList() {
         return followList;
     }
 
     /**
      * @param followList the followList to set
      */
-    public void setFollowList(List<UUID> followList) {
+    public void setFollowList(List<String> followList) {
         this.followList = followList;
     }
 

@@ -32,7 +32,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 import org.junit.After;
 import org.junit.Before;
@@ -130,8 +129,7 @@ public class ArticleTest
         for (Article at : arts) {
             articleSvc.saveArticle(at);
             TimeLineDTO tline = timeLineSvc.createTimeLine(
-                    UUID.fromString(at.getAuthorUuid()),
-                    UUID.fromString(at.getArticleUuid()));
+                    at.getAuthorUuid(), at.getArticleUuid());
 
             tline.setSummarized(RandUtil.genRandString(10, 20).getBytes());
             tlist.add(tline);
@@ -150,9 +148,7 @@ public class ArticleTest
             articleSvc.deleteArticle(at);
         }
         for (TimeLineDTO tl : check) {
-            timeLineSvc.deleteTimeLine(
-                    UUID.fromString(tl.getUserUuid()),
-                    UUID.fromString(tl.getArticleUuid()));
+            timeLineSvc.deleteTimeLine(tl.getUserUuid(), tl.getArticleUuid());
         }
     }
 
@@ -167,7 +163,7 @@ public class ArticleTest
         int limit = articles.size() / 2;
         for (int i = 0; i < limit; i++) {
             art = articles.get(i);
-            author.addFavoriteArticle(UUID.fromString(art.getArticleUuid()));
+            author.addFavoriteArticle(art.getArticleUuid());
         }
         authorSvc.saveAuthor(author, true);
 
@@ -236,9 +232,9 @@ public class ArticleTest
         {
             Profile profile = Profile.createProfile(user);
 
-            profile.setConnectList(new LinkedList<UUID>());
-            profile.setFollowList(new LinkedList<UUID>());
-            profile.setFollowerList(new LinkedList<UUID>());
+            profile.setConnectList(new LinkedList<String>());
+            profile.setFollowList(new LinkedList<String>());
+            profile.setFollowerList(new LinkedList<String>());
             profile.setChainLinks(new LinkedList<Long>());
             return profile;
         }

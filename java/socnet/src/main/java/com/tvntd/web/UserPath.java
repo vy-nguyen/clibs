@@ -32,7 +32,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -79,7 +78,6 @@ import com.tvntd.service.api.ITimeLineService;
 import com.tvntd.service.api.ImageUploadResp;
 import com.tvntd.service.api.LoginResponse;
 import com.tvntd.service.user.ArticleService;
-import com.tvntd.util.Util;
 
 @Controller
 public class UserPath
@@ -133,17 +131,10 @@ public class UserPath
         if (profile == null) {
             return s_noProfile;
         }
-        UUID userUuid = null;
         LinkedList<ArticleDTO> saved = null;
           
-        try {
-            userUuid = UUID.fromString(uuid);
-        } catch(Exception e) {
-            s_log.info("Invalid uuid " + uuid);
-            return s_noProfile;
-        }
-        if (!userUuid.equals(profile.getUserUuid())) {
-            profile = profileSvc.getProfile(userUuid);
+        if (!uuid.equals(profile.getUserUuid())) {
+            profile = profileSvc.getProfile(uuid);
             if (profile == null) {
                 s_log.info("Invalid uuid " + uuid);
                 return s_noProfile;
@@ -244,7 +235,7 @@ public class UserPath
 
             byte[] brief = Arrays.copyOfRange(article.getContent(), 0, 200);
             timeLineSvc.saveTimeLine(profile.getUserUuid(),
-                    UUID.fromString(art.getArticleUuid()), null, brief);
+                    art.getArticleUuid(), null, brief);
 
             authorSvc.createArticleRank(article, form.getTags());
         } else {
@@ -294,19 +285,18 @@ public class UserPath
     }
 
     private ArticleDTO
-    genPendPost(ProfileDTO profile, boolean creat, String artUuid)
+    genPendPost(ProfileDTO profile, boolean creat, String articleUuid)
     {
         ArticleDTO pendPost = profile.fetchPendPost();
 
         if (pendPost != null) {
             return pendPost;
         }
-        UUID articleUuid = Util.toUuid(artUuid);
         if (articleUuid != null) {
-            pendPost = articleSvc.getArticle(articleUuid);
+            pendPost = articleSvc.getArticleDTO(articleUuid);
         }
         if (creat == true && pendPost == null) {
-            UUID authorUuid = profile.getUserUuid();
+            String authorUuid = profile.getUserUuid();
             pendPost = new ArticleDTO(authorUuid, profile.toProfile().getUserId());
         }
         if (pendPost != null) {

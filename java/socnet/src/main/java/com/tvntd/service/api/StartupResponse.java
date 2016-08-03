@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -63,12 +62,12 @@ public class StartupResponse
         languages.add(new Language("vi", "Tiếng Việt", "Tiếng Việt"));
     }
 
-    public List<UUID> getAllUserUuids()
+    public List<String> getAllUserUuids()
     {
-        Map<UUID, UUID> users = new HashMap<>();
+        Map<String, String> users = new HashMap<>();
         if (linkedUsers != null) {
             for (ProfileDTO prof : linkedUsers) {
-                UUID uuid = prof.getUserUuid();
+                String uuid = prof.getUserUuid();
                 if (users.get(uuid) == null) {
                     users.put(uuid, uuid);
                 }
@@ -77,7 +76,7 @@ public class StartupResponse
         if (userDTO != null) {
             List<AuthorDTO> authors = userDTO.getAuthors();
             for (AuthorDTO author : authors) {
-                UUID uuid = UUID.fromString(author.getAuthorUuid());
+                String uuid = author.getAuthorUuid();
                 if (users.get(uuid) == null) {
                     users.put(uuid, uuid);
                 }
@@ -86,8 +85,8 @@ public class StartupResponse
         if (users.isEmpty()) {
             return null;
         }
-        List<UUID> result = new LinkedList<>();
-        for (Map.Entry<UUID, UUID> e : users.entrySet()) {
+        List<String> result = new LinkedList<>();
+        for (Map.Entry<String, String> e : users.entrySet()) {
             result.add(e.getKey());
         }
         users.clear();

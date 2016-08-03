@@ -31,7 +31,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +49,7 @@ import com.tvntd.service.user.ArticleService;
 
 public interface IArticleService
 {
-    ArticleDTO getArticle(UUID uuid);
+    ArticleDTO getArticleDTO(String uuid);
     Article getArticle(String artUuid);
 
     ArticleRank getRank(String artUuid);
@@ -59,20 +58,20 @@ public interface IArticleService
     List<ArticleRankDTO> convertRank(List<ArticleRank> ranks);
 
     List<ArticleDTO> convert(List<Article> arts);
-    List<ArticleDTO> getArticles(List<UUID> uuids);
+    List<ArticleDTO> getArticles(List<String> uuids);
     List<ArticleDTO> getArticlesByUser(Long userId);
-    List<ArticleDTO> getArticlesByUser(UUID userUuidId);
-    List<ArticleDTO> getArticlesByUser(List<UUID> userUuidIds);
+    List<ArticleDTO> getArticlesByUser(String userUuidId);
+    List<ArticleDTO> getArticlesByUser(List<String> userUuidIds);
 
     Page<ArticleDTO> getUserArticles(Long userId);
-    Page<ArticleDTO> getUserArticles(UUID userUuid);
+    Page<ArticleDTO> getUserArticles(String userUuid);
 
     void saveArticle(Article article);
     void saveArticle(ArticleDTO article);
     void saveArticles(String josnFile, String dir);
 
     void deleteArticle(Article article);
-    void deleteArticle(UUID uuid);
+    void deleteArticle(String uuid);
 
     public static class ArticleDTOResponse extends GenericResponse
     {
@@ -141,7 +140,7 @@ public interface IArticleService
             convertUTF();
         }
 
-        public ArticleDTO(UUID author, Long id)
+        public ArticleDTO(String author, Long id)
         {
             super(GenericResponse.USER_HOME, null, null);
             article = new Article();
@@ -182,8 +181,8 @@ public interface IArticleService
 
             if (article.getPictures() != null) {
                 sb.append("Pic [");
-                for (ObjectId oid : article.getPictures()) {
-                    sb.append(oid.name());
+                for (String oid : article.getPictures()) {
+                    sb.append(oid);
                 }
                 sb.append("]\n");
             }
@@ -245,7 +244,7 @@ public interface IArticleService
         }
 
         public String getContentOid() {
-            return article.getContentOId().name();
+            return article.getContentOId();
         }
 
         public String getCreatedDate() {
@@ -283,11 +282,12 @@ public interface IArticleService
         {
             ObjStore objStore = ObjStore.getInstance();
             List<String> ret = new LinkedList<>();
-            List<ObjectId> pictures = article.getPictures();
+            List<String> pictures = article.getPictures();
             String store = s_baseUri + Long.toString(article.getAuthorId());
 
             if (pictures != null) {
-                for (ObjectId oid : pictures) {
+                for (String poid : pictures) {
+                    ObjectId oid = ObjectId.fromString(poid);
                     ret.add(objStore.imgObjUri(oid, store));
                 }
             }

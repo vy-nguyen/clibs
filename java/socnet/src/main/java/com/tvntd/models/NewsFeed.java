@@ -29,7 +29,6 @@ package com.tvntd.models;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -41,6 +40,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.UniqueConstraint;
 
 import com.tvntd.service.api.IProfileService.ProfileDTO;
+import com.tvntd.util.Util;
 
 @Entity
 public class NewsFeed
@@ -52,13 +52,14 @@ public class NewsFeed
     private Date lastUpdate;
     private Date lastLogin;
 
+    @Column(length = 64)
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "AuthorFeed",
             uniqueConstraints = @UniqueConstraint(columnNames = {
                 "userUuid", "authorUuid"
             }),
             joinColumns = @JoinColumn(name = "userUuid"))
-    private List<UUID> authorUuid;
+    private List<String> authorUuid;
 
     public static NewsFeed fromProfile(ProfileDTO profile)
     {
@@ -79,18 +80,18 @@ public class NewsFeed
         return sb.toString();
     }
 
-    public void addAuthor(UUID author)
+    public void addAuthor(String author)
     {
         if (authorUuid == null) {
             authorUuid = new LinkedList<>();
         }
-        ProfileDTO.addUnique(authorUuid, author);
+        Util.<String>addUnique(authorUuid, author);
     }
 
-    public UUID removeAuthor(UUID author)
+    public String removeAuthor(String author)
     {
         if (authorUuid != null) {
-            return ProfileDTO.removeFrom(authorUuid, author);
+            return Util.<String>removeFrom(authorUuid, author);
         }
         return null;
     }
@@ -140,14 +141,14 @@ public class NewsFeed
     /**
      * @return the authorUuid
      */
-    public List<UUID> getAuthorUuid() {
+    public List<String> getAuthorUuid() {
         return authorUuid;
     }
 
     /**
      * @param authorUuid the authorUuid to set
      */
-    public void setAuthorUuid(List<UUID> authorUuid) {
+    public void setAuthorUuid(List<String> authorUuid) {
         this.authorUuid = authorUuid;
     }
 }

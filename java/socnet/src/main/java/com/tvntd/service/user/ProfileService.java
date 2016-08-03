@@ -29,7 +29,6 @@ package com.tvntd.service.user;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 import javax.transaction.Transactional;
 
@@ -74,9 +73,9 @@ public class ProfileService implements IProfileService
     }
 
     @Override
-    public ProfileDTO getProfile(UUID uuid)
+    public ProfileDTO getProfile(String uuid)
     {
-        Profile prof = profileRepo.findByUserUuid(uuid.toString());
+        Profile prof = profileRepo.findByUserUuid(uuid);
         if (prof != null) {
             return new ProfileDTO(prof);
         }
@@ -84,12 +83,12 @@ public class ProfileService implements IProfileService
     }
 
     @Override
-    public List<ProfileDTO> getProfileList(List<UUID> userIds)
+    public List<ProfileDTO> getProfileList(List<String> userIds)
     {
         List<ProfileDTO> ret = new LinkedList<>();
 
-        for (UUID uuid : userIds) {
-            Profile prof = profileRepo.findByUserUuid(uuid.toString());
+        for (String uuid : userIds) {
+            Profile prof = profileRepo.findByUserUuid(uuid);
             if (prof == null) {
                 continue;
             }
@@ -130,16 +129,15 @@ public class ProfileService implements IProfileService
      */
     @Override
     public void
-    followProfiles(ProfileDTO me, String[] uuids, HashMap<UUID, ProfileDTO> changes)
+    followProfiles(ProfileDTO me, String[] uuids, HashMap<String, ProfileDTO> changes)
     {
         for (String uuid : uuids) {
             try {
-                UUID key = UUID.fromString(uuid);
-                ProfileDTO peer = getProfile(key);
+                ProfileDTO peer = getProfile(uuid);
                 if (peer != null) {
                     me.followProfile(peer);
-                    if (changes.get(key) == null) {
-                        changes.put(key, peer);
+                    if (changes.get(uuid) == null) {
+                        changes.put(uuid, peer);
                     }
                 }
             } catch(Exception e) {
@@ -150,17 +148,16 @@ public class ProfileService implements IProfileService
 
     @Override
     public void
-    connectProfiles(ProfileDTO me, String[] uuids, HashMap<UUID, ProfileDTO> changes)
+    connectProfiles(ProfileDTO me, String[] uuids, HashMap<String, ProfileDTO> changes)
     {
         for (String uuid : uuids) {
             try {
-                UUID key = UUID.fromString(uuid);
-                ProfileDTO peer = getProfile(key);
+                ProfileDTO peer = getProfile(uuid);
 
                 if (peer != null) {
                     me.connectProfile(peer);
-                    if (changes.get(key) == null) {
-                        changes.put(key, peer);
+                    if (changes.get(uuid) == null) {
+                        changes.put(uuid, peer);
                     }
                 }
             } catch(Exception e) {
@@ -220,7 +217,7 @@ public class ProfileService implements IProfileService
     }
 
     @Override
-    public void deleteProfile(UUID uuid)
+    public void deleteProfile(String uuid)
     {
         profileRepo.deleteByUserUuid(uuid.toString());
     }

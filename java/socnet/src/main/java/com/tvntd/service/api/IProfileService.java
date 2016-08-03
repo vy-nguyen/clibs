@@ -26,14 +26,10 @@
  */
 package com.tvntd.service.api;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -48,35 +44,32 @@ import com.tvntd.models.User;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.util.Constants;
+import com.tvntd.util.Util;
 
 public interface IProfileService
 {
     public ProfileDTO getProfile(User user);
-    public ProfileDTO getProfile(UUID uuid);
+    public ProfileDTO getProfile(String uuid);
 
-    public List<ProfileDTO> getProfileList(List<UUID> userIds);
+    public List<ProfileDTO> getProfileList(List<String> userIds);
     public List<ProfileDTO> getProfileFromRaw(List<Profile> raw);
     public Page<ProfileDTO> getProfileList();
 
     public void followProfiles(ProfileDTO me,
-            String[] uuids, HashMap<UUID, ProfileDTO> changes);
+            String[] uuids, HashMap<String, ProfileDTO> changes);
     public void connectProfiles(ProfileDTO me,
-            String[] uuids, HashMap<UUID, ProfileDTO> changes);
+            String[] uuids, HashMap<String, ProfileDTO> changes);
 
     public void saveProfile(ProfileDTO profile);
     public void saveProfiles(List<ProfileDTO> profiles);
     public void saveUserImgUrl(ProfileDTO profile, ObjectId oid);
     public void createProfile(User user);
     public void deleteProfile(Long userId);
-    public void deleteProfile(UUID userUuid);
+    public void deleteProfile(String userUuid);
 
-    public static Comparator<UUID> s_uuidCompare = new Comparator<UUID>() {
-        @Override
-        public int compare(UUID u1, UUID u2) {
-            return u1.compareTo(u2);
-        }
-    };
-
+    /*
+     * Transfer profile to front-end.
+     */
     public static class ProfileDTO
     {
         private static Logger s_log = LoggerFactory.getLogger(ProfileDTO.class);
@@ -108,8 +101,8 @@ public interface IProfileService
 
         // NewsFeed for this profile.
         //
-        private Future<List<UUID>> task;
-        private List<UUID> authors;
+        private Future<List<String>> task;
+        private List<String> authors;
 
         public ProfileDTO(Profile prof)
         {
@@ -123,7 +116,7 @@ public interface IProfileService
 
             transRoot = prof.getTransRoot().name();
             mainRoot = prof.getTransRoot().name();
-            userUrl = "/user/id/" + profile.getUserUuid().toString();
+            userUrl = "/user/id/" + profile.getUserUuid();
             role = Role.User;
             roleMask = Constants.Role_User;
 
@@ -183,13 +176,13 @@ public interface IProfileService
             this.pendPost = art;
         }
 
-        public void assignPendTask(Future<List<UUID>> task)
+        public void assignPendTask(Future<List<String>> task)
         {
             this.task = task;
             this.authors = null;
         }
 
-        public List<UUID> fetchNewsFeed()
+        public List<String> fetchNewsFeed()
         {
             if (authors == null && task != null) {
                 try {
@@ -204,7 +197,7 @@ public interface IProfileService
             return authors;
         }
 
-        public void assignNewsFeed(List<UUID> authors) {
+        public void assignNewsFeed(List<String> authors) {
             this.authors = authors;
         }
 
@@ -244,74 +237,24 @@ public interface IProfileService
             return profile.getUserId();
         }
 
-        /**
-         * Common code for UUID list.
-         */
-        public static UUID isInList(List<UUID> src, UUID item)
-        {
-            for (UUID uuid : src) {
-                if (uuid.compareTo(item) == 0) {
-                    return uuid;
-                }
-            }
-            return null;
-        }
-
-        public static UUID removeFrom(List<UUID> src, UUID giving)
-        {
-            Iterator<UUID> iter = src.iterator();
-            while (iter.hasNext()) {
-                UUID item = iter.next();
-                if (item.compareTo(giving) == 0) {
-                    iter.remove();
-                    return item;
-                }
-            }
-            return null;
-        }
-
-        public static void addUnique(List<UUID> src, UUID add)
-        {
-            Iterator<UUID> iter = src.iterator();
-            while (iter.hasNext()) {
-                UUID item = iter.next();
-                if (item.compareTo(add) == 0) {
-                    return;
-                }
-            }
-            src.add(add);
-        }
-
-        public static List<String> toStringList(List<UUID> uuids)
-        {
-            if (uuids != null) {
-                List<String> result = new ArrayList<>();
-                for (UUID uid : uuids) {
-                    result.add(uid.toString());
-                }
-                return result;
-            }
-            return null;
-        }
-
-        public UUID findUuid(List<UUID> src, UUID item)
+        public String findUuid(List<String> src, String item)
         {
             synchronized(this) {
-                return isInList(src, item);
+                return Util.<String>isInList(src, item);
             }
         }
 
-        protected UUID removeUuid(List<UUID> src, UUID giving)
+        protected String removeUuid(List<String> src, String giving)
         {
             synchronized(this) {
-                return removeFrom(src, giving);
+                return Util.<String>removeFrom(src, giving);
             }
         }
 
-        protected void addUuidList(List<UUID> src, UUID add)
+        protected void addUuidList(List<String> src, String add)
         {
             synchronized(this) {
-                addUnique(src, add);
+                Util.<String>addUnique(src, add);
             }
         }
 
@@ -321,8 +264,8 @@ public interface IProfileService
         public void connectProfile(ProfileDTO peer)
         {
             boolean connected = false;
-            UUID myUuid = getUserUuid();
-            UUID peerUuid = peer.getUserUuid();
+            String myUuid = getUserUuid();
+            String peerUuid = peer.getUserUuid();
 
             if (myUuid.compareTo(peerUuid) == 0) {
                 return;
@@ -345,8 +288,8 @@ public interface IProfileService
 
         private void cleanupAfterConnect(ProfileDTO peer)
         {
-            UUID myUuid = getUserUuid();
-            UUID peerUuid = peer.getUserUuid();
+            String myUuid = getUserUuid();
+            String peerUuid = peer.getUserUuid();
 
             peer.removeUuid(peer.getFollowList(), myUuid);
             peer.removeUuid(peer.getFollowerList(), myUuid);
@@ -365,8 +308,8 @@ public interface IProfileService
          */
         public void followProfile(ProfileDTO peer)
         {
-            UUID myUuid = getUserUuid();
-            UUID peerUuid = peer.getUserUuid();
+            String myUuid = getUserUuid();
+            String peerUuid = peer.getUserUuid();
 
             if (myUuid.compareTo(peerUuid) == 0) {
                 return;
@@ -569,8 +512,8 @@ public interface IProfileService
         /**
          * @return the userUuid
          */
-        public UUID getUserUuid() {
-            return profile.fetchUserUuid();
+        public String getUserUuid() {
+            return profile.getUserUuid();
         }
 
         /**
@@ -590,21 +533,21 @@ public interface IProfileService
         /**
          * @return the connectList
          */
-        public List<UUID> getConnectList() {
+        public List<String> getConnectList() {
             return profile.getConnectList();
         }
 
         /**
          * @return the followList
          */
-        public List<UUID> getFollowList() {
+        public List<String> getFollowList() {
             return profile.getFollowList();
         }
 
         /**
          * @return the followerList
          */
-        public List<UUID> getFollowerList() {
+        public List<String> getFollowerList() {
             return profile.getFollowerList();
         }
 

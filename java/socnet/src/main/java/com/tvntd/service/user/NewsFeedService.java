@@ -28,7 +28,6 @@ package com.tvntd.service.user;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 
@@ -50,13 +49,13 @@ public class NewsFeedService implements INewsFeedService
 {
     private static Logger s_log = LoggerFactory.getLogger(NewsFeedService.class);
     public static String publicNewsFeed = "ffff-000-ffff-000-ffff";
-    protected static List<UUID> publicAuthors;
+    protected static List<String> publicAuthors;
 
     @Autowired
     NewsFeedRepo newsFeedRepo;
 
     @Override
-    public void generateNewsFeed(ProfileDTO profile, UUID user)
+    public void generateNewsFeed(ProfileDTO profile, String user)
     {
         NewsFeedTask task = new NewsFeedTask(user, profile, newsFeedRepo);
         ExecutorService exec = LibModule.getExecutorService();
@@ -64,9 +63,9 @@ public class NewsFeedService implements INewsFeedService
     }
 
     @Override
-    public List<UUID> getPrivateFeed(ProfileDTO profile, UUID user)
+    public List<String> getPrivateFeed(ProfileDTO profile, String user)
     {
-        List<UUID> result = profile.fetchNewsFeed();
+        List<String> result = profile.fetchNewsFeed();
         if (result != null) {
             return result;
         }
@@ -79,7 +78,7 @@ public class NewsFeedService implements INewsFeedService
     }
 
     @Override
-    public List<UUID> getPublicFeed(ProfileDTO profile, UUID user)
+    public List<String> getPublicFeed(ProfileDTO profile, String user)
     {
         if (publicAuthors == null) {
             NewsFeed feed = newsFeedRepo.findByUserUuid(publicNewsFeed);
@@ -90,33 +89,33 @@ public class NewsFeedService implements INewsFeedService
         return publicAuthors;
     }
 
-    class NewsFeedTask implements Callable<List<UUID>>
+    class NewsFeedTask implements Callable<List<String>>
     {
-        protected UUID userUuid;
+        protected String userUuid;
         protected ProfileDTO profile;
         protected NewsFeedRepo newsRepo;
 
-        public NewsFeedTask(UUID uuid, ProfileDTO prof, NewsFeedRepo repo)
+        public NewsFeedTask(String uuid, ProfileDTO prof, NewsFeedRepo repo)
         {
             userUuid = uuid;
             profile = prof;
             newsRepo = repo;
         }
 
-        public List<UUID> call()
+        public List<String> call()
         {
-            List<UUID> authors = new LinkedList<>();
-            List<UUID> connect = profile.getConnectList();
-            List<UUID> follow = profile.getFollowList();
-            List<UUID> follower = profile.getFollowerList();
+            List<String> authors = new LinkedList<>();
+            List<String> connect = profile.getConnectList();
+            List<String> follow = profile.getFollowList();
+            List<String> follower = profile.getFollowerList();
 
-            for (UUID uuid : connect) {
+            for (String uuid : connect) {
                 authors.add(uuid);
             }
-            for (UUID uuid : follow) {
+            for (String uuid : follow) {
                 authors.add(uuid);
             }
-            for (UUID uuid : follower) {
+            for (String uuid : follower) {
                 authors.add(uuid);
             }
             profile.assignNewsFeed(authors);

@@ -28,7 +28,6 @@ package com.tvntd.service.user;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 import javax.transaction.Transactional;
 
@@ -67,46 +66,40 @@ public class AuthorService implements IAuthorService
     protected ArticleRepository articleRepo;
 
     @Override
-    public Author getAuthor(UUID uuid)
-    {
-        return authorRepo.findByAuthorUuid(uuid.toString());
-    }
-
-    @Override
     public Author getAuthor(String uuid)
     {
         return authorRepo.findByAuthorUuid(uuid);
     }
 
     @Override
-    public void addFavoriteArticle(Author author, UUID articleUuid)
+    public void addFavoriteArticle(Author author, String articleUuid)
     {
         author.addFavoriteArticle(articleUuid);
     }
 
     @Override
-    public void removeFavoriteArticle(Author author, UUID articleUuid)
+    public void removeFavoriteArticle(Author author, String articleUuid)
     {
     }
 
     @Override
-    public void addTimeLineArticle(Author author, UUID articleUuid)
+    public void addTimeLineArticle(Author author, String articleUuid)
     {
         author.addTimeLineArticle(articleUuid);
     }
 
     @Override
-    public void removeTimeLineArticle(Author author, UUID articleUuid)
+    public void removeTimeLineArticle(Author author, String articleUuid)
     {
     }
 
     @Override
-    public List<Author> getAuthors(List<UUID> uuids)
+    public List<Author> getAuthors(List<String> uuids)
     {
         List<Author> result = new LinkedList<>();
 
-        for (UUID uid : uuids) {
-            Author author = authorRepo.findByAuthorUuid(uid.toString());
+        for (String uid : uuids) {
+            Author author = authorRepo.findByAuthorUuid(uid);
             if (author != null) {
                 result.add(author);
             }
@@ -121,22 +114,22 @@ public class AuthorService implements IAuthorService
     public List<AuthorDTO> getAuthorList(ProfileDTO profile)
     {
         List<AuthorDTO> result = new LinkedList<>();
-        List<UUID> uuids = profile.fetchNewsFeed();
+        List<String> uuids = profile.fetchNewsFeed();
 
         Author author = authorRepo.findByAuthorUuid(profile.getUserUuid().toString());
         if (author != null) {
             result.add(new AuthorDTO(author));
         }
-        for (UUID uid : uuids) {
+        for (String uid : uuids) {
             author = authorRepo.findByAuthorUuid(uid.toString());
             if (author != null) {
                 result.add(new AuthorDTO(author));
             }
         }
-        for (UUID uid : profile.getConnectList()) {
+        for (String uid : profile.getConnectList()) {
             result.add(new AuthorDTO(uid.toString()));
         }
-        for (UUID uid : profile.getFollowList()) {
+        for (String uid : profile.getFollowList()) {
             result.add(new AuthorDTO(uid.toString()));
         }
         return result;

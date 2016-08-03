@@ -39,7 +39,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.junit.After;
 import org.junit.Before;
@@ -70,7 +69,6 @@ import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.test.TestData.UserRoleItem;
 import com.tvntd.test.TestData.UserRoles;
 import com.tvntd.util.Constants;
-import com.tvntd.web.UserPath;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -196,19 +194,19 @@ public class ProfileTest
     @Test
     public void testProfiles()
     {
-        List<UUID> uuids = genProfiles(10);
+        List<String> uuids = genProfiles(10);
         testConnectAll(uuids, 10);
         deleteProfiles(uuids);
     }
 
-    void testConnectAll(List<UUID> uuids, int max)
+    void testConnectAll(List<String> uuids, int max)
     {
         for (int i = 0; i < max; i++) {
             int index = RandUtil.genRandInt(0, uuids.size() - 1);
             ProfileDTO me = profileSvc.getProfile(uuids.get(index));
 
             assertNotNull(me);
-            for (UUID uid : uuids) {
+            for (String uid : uuids) {
                 ProfileDTO peer = profileSvc.getProfile(uid);
                 assertNotNull(peer);
 
@@ -226,9 +224,9 @@ public class ProfileTest
     /**
      * Generate number of profiles and save it to the database.
      */
-    List<UUID> genProfiles(int max)
+    List<String> genProfiles(int max)
     {
-        List<UUID> uuids = new ArrayList<>(max);
+        List<String> uuids = new ArrayList<>(max);
 
         for (int i = 0; i < max; i++) {
             String first = RandUtil.genRandString(3, 5);
@@ -242,9 +240,9 @@ public class ProfileTest
         return uuids;
     }
 
-    void deleteProfiles(List<UUID> uuids)
+    void deleteProfiles(List<String> uuids)
     {
-        for (UUID uid : uuids) {
+        for (String uid : uuids) {
             profileSvc.deleteProfile(uid);
         }
     }
@@ -268,14 +266,14 @@ public class ProfileTest
     /**
      * Verify that two lists are equals.
      */
-    void verifyList(ProfileDTO ap, List<UUID> a, ProfileDTO bp, List<UUID> b)
+    void verifyList(ProfileDTO ap, List<String> a, ProfileDTO bp, List<String> b)
     {
-        Map<UUID, Long> map = new HashMap<>();
+        Map<String, Long> map = new HashMap<>();
 
-        for (UUID uuid : a) {
+        for (String uuid : a) {
             map.put(uuid, 1L);
         }
-        for (UUID uuid : b) {
+        for (String uuid : b) {
             if (map.get(uuid) == null) {
                 s_log.info("Orig: " + ap);
                 s_log.info("Verf: " + bp);
@@ -295,8 +293,8 @@ public class ProfileTest
      */
     void verifyConnected(ProfileDTO ap, ProfileDTO bp)
     {
-        UUID auid = ap.getUserUuid();
-        UUID buid = bp.getUserUuid();
+        String auid = ap.getUserUuid();
+        String buid = bp.getUserUuid();
 
         assertNotNull(ap.findUuid(ap.getConnectList(), buid));
         assertNull(ap.findUuid(ap.getFollowList(), buid));
@@ -312,8 +310,8 @@ public class ProfileTest
      */
     void verifyFollow(ProfileDTO ap, ProfileDTO bp)
     {
-        UUID auid = ap.getUserUuid();
-        UUID buid = bp.getUserUuid();
+        String auid = ap.getUserUuid();
+        String buid = bp.getUserUuid();
 
         if (ap.findUuid(ap.getFollowList(), buid) == null) {
             verifyConnected(ap, bp);
@@ -327,7 +325,7 @@ public class ProfileTest
 
     void verifyFollower(ProfileDTO me, ProfileDTO follower)
     {
-        UUID peer = follower.getUserUuid();
+        String peer = follower.getUserUuid();
 
         if (me.findUuid(me.getFollowerList(), peer) == null) {
             verifyConnected(me, follower);
@@ -349,9 +347,9 @@ public class ProfileTest
         {
             Profile profile = Profile.createProfile(user);
 
-            profile.setConnectList(new LinkedList<UUID>());
-            profile.setFollowList(new LinkedList<UUID>());
-            profile.setFollowerList(new LinkedList<UUID>());
+            profile.setConnectList(new LinkedList<String>());
+            profile.setFollowList(new LinkedList<String>());
+            profile.setFollowerList(new LinkedList<String>());
             profile.setChainLinks(new LinkedList<Long>());
             return profile;
         }

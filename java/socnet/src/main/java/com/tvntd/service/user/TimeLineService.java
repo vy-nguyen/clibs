@@ -29,7 +29,6 @@ package com.tvntd.service.user;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 import javax.transaction.Transactional;
 
@@ -52,20 +51,20 @@ public class TimeLineService implements ITimeLineService
     TimeLineRepo timeLineRepo;
 
     @Override
-    public TimeLineDTO createTimeLine(UUID user, UUID article)
+    public TimeLineDTO createTimeLine(String user, String article)
     {
         return new TimeLineDTO(user, article);
     }
 
     @Override
-    public TimeLineDTO getTimeLine(UUID user, UUID article)
+    public TimeLineDTO getTimeLine(String user, String article)
     {
         return new TimeLineDTO(timeLineRepo
                 .findByUserUuidAndArticleUuid(user.toString(), article.toString()));
     }
 
     @Override
-    public List<TimeLineDTO> getTimeLine(UUID user)
+    public List<TimeLineDTO> getTimeLine(String user)
     {
         return convert(timeLineRepo.findByUserUuid(user.toString()));
     }
@@ -101,7 +100,7 @@ public class TimeLineService implements ITimeLineService
     }
 
     @Override
-    public void saveTimeLine(UUID user, UUID article, UUID event, byte[] text)
+    public void saveTimeLine(String user, String article, String event, byte[] text)
     {
         TimeLineDTO tline = new TimeLineDTO(user, article);
 
@@ -113,14 +112,14 @@ public class TimeLineService implements ITimeLineService
     }
 
     @Override
-    public void deleteTimeLine(UUID user, UUID article)
+    public void deleteTimeLine(String user, String article)
     {
         TimeLine tline = new TimeLine(user.toString(), article.toString());
         timeLineRepo.delete(tline);
     }
 
     @Override
-    public void deleteTimeLineOlder(UUID user, Date older)
+    public void deleteTimeLineOlder(String user, Date older)
     {
     }
 }

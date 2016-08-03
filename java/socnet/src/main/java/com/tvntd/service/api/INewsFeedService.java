@@ -27,13 +27,12 @@
 package com.tvntd.service.api;
 
 import java.util.List;
-import java.util.UUID;
 
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 public interface INewsFeedService
 {
-    public void generateNewsFeed(ProfileDTO profile, UUID user);
-    public List<UUID> getPrivateFeed(ProfileDTO profile, UUID user);
-    public List<UUID> getPublicFeed(ProfileDTO profile, UUID user);
+    public void generateNewsFeed(ProfileDTO profile, String user);
+    public List<String> getPrivateFeed(ProfileDTO profile, String user);
+    public List<String> getPublicFeed(ProfileDTO profile, String user);
 }

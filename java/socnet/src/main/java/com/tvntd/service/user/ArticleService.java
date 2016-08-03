@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.transaction.Transactional;
 
@@ -220,7 +219,7 @@ public class ArticleService implements IArticleService
      * Article services.
      */
     @Override
-    public ArticleDTO getArticle(UUID artUuid)
+    public ArticleDTO getArticleDTO(String artUuid)
     {
         String uuid = artUuid.toString();
         Article art = articleRepo.findByArticleUuid(uuid);
@@ -236,12 +235,12 @@ public class ArticleService implements IArticleService
     }
 
     @Override
-    public List<ArticleDTO> getArticles(List<UUID> uuids)
+    public List<ArticleDTO> getArticles(List<String> uuids)
     {
         List<ArticleDTO> ret = new LinkedList<>();
 
-        for (UUID uuid : uuids) {
-            ArticleDTO dto = getArticle(uuid);
+        for (String uuid : uuids) {
+            ArticleDTO dto = getArticleDTO(uuid);
             if (dto != null) {
                 ret.add(dto);
             }
@@ -272,7 +271,7 @@ public class ArticleService implements IArticleService
     }
 
     @Override
-    public List<ArticleDTO> getArticlesByUser(UUID userUuid)
+    public List<ArticleDTO> getArticlesByUser(String userUuid)
     {
         List<Article> articles =
             articleRepo.findAllByAuthorUuidOrderByCreatedDateAsc(userUuid.toString());
@@ -280,11 +279,11 @@ public class ArticleService implements IArticleService
     }
 
     @Override
-    public List<ArticleDTO> getArticlesByUser(List<UUID> uuidList)
+    public List<ArticleDTO> getArticlesByUser(List<String> uuidList)
     {
         List<ArticleDTO> result = new LinkedList<>();
 
-        for (UUID userUuid : uuidList) {
+        for (String userUuid : uuidList) {
             List<ArticleDTO> arts = getArticlesByUser(userUuid);
             if (arts != null && !arts.isEmpty()) {
                 result.addAll(arts);
@@ -306,7 +305,7 @@ public class ArticleService implements IArticleService
     }
 
     @Override
-    public Page<ArticleDTO> getUserArticles(UUID userUuid)
+    public Page<ArticleDTO> getUserArticles(String userUuid)
     {
         Pageable req = new PageRequest(0, 10, new Sort(Sort.Direction.DESC, "created"));
         Page<Article> page =
@@ -339,9 +338,9 @@ public class ArticleService implements IArticleService
     }
 
     @Override
-    public void deleteArticle(UUID uuid)
+    public void deleteArticle(String uuid)
     {
-        ArticleDTO art = getArticle(uuid);
+        ArticleDTO art = getArticleDTO(uuid);
         if (art != null) {
             articleRepo.delete(art.fetchArticle());
         }
