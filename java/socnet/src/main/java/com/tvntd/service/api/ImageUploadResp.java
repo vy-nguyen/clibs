@@ -26,8 +26,6 @@
  */
 package com.tvntd.service.api;
 
-import java.util.UUID;
-
 import com.tvntd.lib.ObjectId;
 
 public class ImageUploadResp extends GenericResponse

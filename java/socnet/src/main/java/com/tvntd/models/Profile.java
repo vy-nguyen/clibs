@@ -38,7 +38,6 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 import com.tvntd.lib.ObjectId;
@@ -56,18 +55,27 @@ public class Profile
     private String email;
     private String firstName;
     private String lastName;
-    private ObjectId coverImg0;
-    private ObjectId coverImg1;
-    private ObjectId coverImg2;
-    private ObjectId userImgUrl;
-    private ObjectId transRoot;
-    private ObjectId mainRoot;
+
+    @Column(length = 64)
+    private String coverImg0;
+
+    @Column(length = 64)
+    private String coverImg1;
+
+    @Column(length = 64)
+    private String coverImg2;
+
+    @Column(length = 64)
+    private String userImgUrl;
+
+    @Column(length = 64)
+    private String transRoot;
+
+    @Column(length = 64)
+    private String mainRoot;
 
     @Column(length = 64) //, updatable = false)
     private String userUuid;
-
-    @Transient
-    private UUID m_userUuid;
 
     @Column(length = 64)
     @ElementCollection(fetch = FetchType.EAGER)
@@ -117,27 +125,13 @@ public class Profile
         prof.email = user.getEmail();
         prof.firstName = user.getFirstName();
         prof.lastName = user.getLastName();
-        prof.transRoot = ObjectId.zeroId();
-        prof.mainRoot = ObjectId.zeroId();
-        prof.m_userUuid = UUID.randomUUID();
-        prof.userUuid = prof.m_userUuid.toString();
+        prof.userUuid = UUID.randomUUID().toString();
 
         prof.coverImg0 = null;
         prof.coverImg1 = null;
         prof.coverImg2 = null;
         prof.userImgUrl = null;
         return prof;
-    }
-
-    /**
-     * Return the transparent field in UUID type.
-     */
-    public UUID fetchUserUuid()
-    {
-        if (m_userUuid == null) {
-            m_userUuid = UUID.fromString(userUuid);
-        }
-        return m_userUuid;
     }
 
     public String toString()
@@ -147,7 +141,6 @@ public class Profile
         sb.append("Id: ").append(userId).append(", profileItem: ")
             .append(profileItemId).append('\n')
             .append("Name: ").append(firstName).append(", transRoot: ")
-            .append(transRoot.name()).append('\n')
             .append("Uuid: ").append(userUuid).append('\n')
             .append("Connect : ").append(connectList).append('\n')
             .append("Follow  : ").append(followList).append('\n')
@@ -242,84 +235,100 @@ public class Profile
     /**
      * @return the coverImg0
      */
-    public ObjectId getCoverImg0() {
+    public String getCoverImg0() {
         return coverImg0;
+    }
+
+    public ObjectId fetchCoverImg0() {
+        return coverImg0 != null ? ObjectId.fromString(coverImg0) : null;
     }
 
     /**
      * @param coverImg0 the coverImg0 to set
      */
-    public void setCoverImg0(ObjectId coverImg0) {
+    public void setCoverImg0(String coverImg0) {
         this.coverImg0 = coverImg0;
     }
 
     /**
      * @return the coverImg1
      */
-    public ObjectId getCoverImg1() {
+    public String getCoverImg1() {
         return coverImg1;
+    }
+
+    public ObjectId fetchCoverImg1() {
+        return coverImg1 != null ? ObjectId.fromString(coverImg1) : null;
     }
 
     /**
      * @param coverImg1 the coverImg1 to set
      */
-    public void setCoverImg1(ObjectId coverImg1) {
+    public void setCoverImg1(String coverImg1) {
         this.coverImg1 = coverImg1;
     }
 
     /**
      * @return the coverImg2
      */
-    public ObjectId getCoverImg2() {
+    public String getCoverImg2() {
         return coverImg2;
+    }
+
+    public ObjectId fetchCoverImg2() {
+        return coverImg2 != null ? ObjectId.fromString(coverImg2) : null;
     }
 
     /**
      * @param coverImg2 the coverImg2 to set
      */
-    public void setCoverImg2(ObjectId coverImg2) {
+    public void setCoverImg2(String coverImg2) {
         this.coverImg2 = coverImg2;
     }
 
     /**
      * @return the transRoot
      */
-    public ObjectId getTransRoot() {
+    public String getTransRoot() {
         return transRoot;
     }
 
     /**
      * @param transRoot the transRoot to set
      */
-    public void setTransRoot(ObjectId transRoot) {
+    public void setTransRoot(String transRoot) {
         this.transRoot = transRoot;
     }
 
     /**
      * @return the mainRoot
      */
-    public ObjectId getMainRoot() {
+    public String getMainRoot() {
         return mainRoot;
     }
 
     /**
      * @param mainRoot the mainRoot to set
      */
-    public void setMainRoot(ObjectId mainRoot) {
+    public void setMainRoot(String mainRoot) {
         this.mainRoot = mainRoot;
     }
 
     /**
      * @return the userImgUrl
      */
-    public ObjectId getUserImgUrl() {
+    public String getUserImgUrl() {
         return userImgUrl;
+    }
+
+    public ObjectId fetchUserImgUrl() {
+        return userImgUrl != null ? ObjectId.fromString(userImgUrl) : null;
     }
 
     /**
      * @param userImgUrl the userImgUrl to set
      */
-    public void setUserImgUrl(ObjectId userImgUrl) {
+    public void setUserImgUrl(String userImgUrl) {
         this.userImgUrl = userImgUrl;
     }
 
@@ -330,15 +339,6 @@ public class Profile
         return userUuid;
     }
 
-    /**
-     * @param userUuid the userUuid to set
-     */
-    /*
-    public void setUserUuid(String userUuid) {
-        this.userUuid = userUuid;
-        this.m_userUuid = UUID.fromString(userUuid);
-    }
-    */
     /**
      * @return the connectList
      */

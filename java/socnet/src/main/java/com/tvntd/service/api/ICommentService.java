@@ -32,7 +32,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,16 +43,16 @@ import com.tvntd.models.CommentRank;
 
 public interface ICommentService
 {
-    public CommentDTOResponse getCommentPost(UUID articleUuid);
+    public CommentDTOResponse getCommentPost(String articleUuid);
     public CommentDTOResponse getCommentPost(String[] uuidList);
 
-    public void deleteComment(UUID articleUuid);
+    public void deleteComment(String articleUuid);
     public void saveComment(CommentDTO comment);
     public Comment saveComment(Comment comment);
 
-    public void likeComment(UUID articleUuid, UUID user);
-    public void unLikeComment(UUID articleUuid, UUID user);
-    public void setFavorite(UUID articleUuid, boolean favorite);
+    public void likeComment(String articleUuid, String user);
+    public void unLikeComment(String articleUuid, String user);
+    public void setFavorite(String articleUuid, boolean favorite);
 
     public static class CommentDTOResponse extends GenericResponse
     {
@@ -171,7 +170,7 @@ public interface ICommentService
             return rank != null ? rank.getLikes() : null;
         }
 
-        public List<UUID> getUserLiked() {
+        public List<String> getUserLiked() {
             return rank != null ? rank.getUserLiked() : null;
         }
 

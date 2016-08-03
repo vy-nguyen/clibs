@@ -109,13 +109,13 @@ public interface IProfileService
             profile = prof;
 
             ObjStore objStore = ObjStore.getInstance();
-            coverImg0 = objStore.imgObjUri(prof.getCoverImg0(), s_baseUri);
-            coverImg1 = objStore.imgObjUri(prof.getCoverImg1(), s_baseUri);
-            coverImg2 = objStore.imgObjUri(prof.getCoverImg2(), s_baseUri);
-            userImgUrl = objStore.imgObjUri(prof.getUserImgUrl(), s_baseUri);
+            coverImg0 = objStore.imgObjUri(prof.fetchCoverImg0(), s_baseUri);
+            coverImg1 = objStore.imgObjUri(prof.fetchCoverImg1(), s_baseUri);
+            coverImg2 = objStore.imgObjUri(prof.fetchCoverImg2(), s_baseUri);
+            userImgUrl = objStore.imgObjUri(prof.fetchUserImgUrl(), s_baseUri);
 
-            transRoot = prof.getTransRoot().name();
-            mainRoot = prof.getTransRoot().name();
+            transRoot = prof.getTransRoot();
+            mainRoot = prof.getTransRoot();
             userUrl = "/user/id/" + profile.getUserUuid();
             role = Role.User;
             roleMask = Constants.Role_User;

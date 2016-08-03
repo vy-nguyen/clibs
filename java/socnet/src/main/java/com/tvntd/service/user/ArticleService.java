@@ -28,7 +28,6 @@ package com.tvntd.service.user;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -84,11 +83,12 @@ public class ArticleService implements IArticleService
         } else {
             art.markPending();
         }
-        art.setCreatedDate(new Date());
         try {
             art.setTopic(form.getTopic().getBytes("UTF-8"));
             art.setContent(form.getContent().getBytes("UTF-8"));
-
+            if (form.getContentBrief() != null) {
+                art.setContentBrief(form.getContentBrief().getBytes("UTF-8"));
+            }
         } catch(UnsupportedEncodingException e) {
             s_log.info(e.getMessage());
         }

@@ -179,7 +179,7 @@ public class ProfileService implements IProfileService
     {
         Profile prof = profile.toProfile();
         if (prof != null) {
-            prof.setUserImgUrl(oid);
+            prof.setUserImgUrl(oid.name());
             profile.updateImgUrl(oid);
             saveProfile(profile);
         }

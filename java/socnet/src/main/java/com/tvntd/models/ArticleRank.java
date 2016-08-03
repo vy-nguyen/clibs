@@ -28,7 +28,6 @@ package com.tvntd.models;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -116,9 +115,9 @@ public class ArticleRank
         this.favorite = tag.isFavorite();
         this.rank = tag.getRank();
         this.artTitle = article.getTopic();
-        this.contentBrief = Arrays.copyOfRange(article.getContent(), 0, 200);
         this.tag = tag.fetchTag();
         this.tagHash = HashKey.toSha1Key(this.tag, authorUuid);
+        this.contentBrief = article.getContentBrief();
     }
 
     public void updateFromUser(ArticleForm form)

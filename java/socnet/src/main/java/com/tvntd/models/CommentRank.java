@@ -27,9 +27,9 @@
 package com.tvntd.models;
 
 import java.util.List;
-import java.util.UUID;
 
 import javax.persistence.CollectionTable;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -42,10 +42,11 @@ public class CommentRank
     @Id
     private Long commentId;
 
+    @Column(length = 64)
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "CommentLiked",
             joinColumns = @JoinColumn(name = "commentId"))
-    private List<UUID> userLiked;
+    private List<String> userLiked;
 
     /**
      * @return the commentId
@@ -71,14 +72,14 @@ public class CommentRank
     /**
      * @return the userLiked
      */
-    public List<UUID> getUserLiked() {
+    public List<String> getUserLiked() {
         return userLiked;
     }
 
     /**
      * @param userLiked the userLiked to set
      */
-    public void setUserLiked(List<UUID> userLiked) {
+    public void setUserLiked(List<String> userLiked) {
         this.userLiked = userLiked;
     }
 }

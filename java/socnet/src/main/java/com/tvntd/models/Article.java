@@ -44,7 +44,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
 
 import com.tvntd.lib.ObjectId;
 
@@ -81,21 +80,16 @@ public class Article
     @Column(length = 64)
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "ArtPics",
-            uniqueConstraints = @UniqueConstraint(columnNames = {"pictures"}),
             joinColumns = @JoinColumn(name = "articleId"))
     private List<String> pictures;
 
     @Transient
-    private UUID m_authorUuid;
-    
-    @Transient
-    private UUID m_articleUuid;
+    private byte[] contentBrief;
 
     public Article()
     {
         super();
-        m_articleUuid = UUID.randomUUID();
-        articleUuid = m_articleUuid.toString();
+        articleUuid = UUID.randomUUID().toString();
         createdDate = new Date();
     }
 
@@ -143,46 +137,28 @@ public class Article
     /**
      * @return the authorUuid
      */
-    public String getAuthorUuid()
-    {
-        if (authorUuid == null) {
-            authorUuid = m_authorUuid.toString();
-        }
+    public String getAuthorUuid() {
         return authorUuid;
     }
 
     /**
      * @param authorUuid the authorUuid to set
      */
-    public void setAuthorUuid(String authorUuid)
-    {
-        this.m_authorUuid = UUID.fromString(authorUuid);
+    public void setAuthorUuid(String authorUuid) {
         this.authorUuid = authorUuid;
-    }
-
-    public void setAuthorUuid(UUID authorUuid)
-    {
-        this.m_authorUuid = authorUuid;
-        this.authorUuid = authorUuid.toString();
     }
 
     /**
      * @return the articleUuid
      */
-    public String getArticleUuid()
-    {
-        if (articleUuid == null) {
-            articleUuid = m_articleUuid.toString();
-        }
+    public String getArticleUuid() {
         return articleUuid;
     }
 
     /**
      * @param articleUuid the articleUuid to set
      */
-    public void setArticleUuid(String articleUuid)
-    {
-        this.m_articleUuid = UUID.fromString(articleUuid);
+    public void setArticleUuid(String articleUuid) {
         this.articleUuid = articleUuid;
     }
 
@@ -254,5 +230,19 @@ public class Article
      */
     public void setPictures(List<String> pictures) {
         this.pictures = pictures;
+    }
+
+    /**
+     * @return the contentBrief
+     */
+    public byte[] getContentBrief() {
+        return contentBrief;
+    }
+
+    /**
+     * @param contentBrief the contentBrief to set
+     */
+    public void setContentBrief(byte[] contentBrief) {
+        this.contentBrief = contentBrief;
     }
 }

@@ -28,7 +28,6 @@ package com.tvntd.service.user;
 
 import java.nio.charset.Charset;
 import java.util.List;
-import java.util.UUID;
 
 import javax.transaction.Transactional;
 
@@ -56,7 +55,7 @@ public class CommentService implements ICommentService
     CommentRankRepo rankRepo;
 
     @Override
-    public CommentDTOResponse getCommentPost(UUID articleUuid)
+    public CommentDTOResponse getCommentPost(String articleUuid)
     {
         return null;
     }
@@ -94,22 +93,22 @@ public class CommentService implements ICommentService
     }
 
     @Override
-    public void deleteComment(UUID articleUuid)
+    public void deleteComment(String articleUuid)
     {
     }
 
     @Override
-    public void likeComment(UUID articleUuid, UUID user)
+    public void likeComment(String articleUuid, String user)
     {
     }
 
     @Override
-    public void unLikeComment(UUID articleUuid, UUID user)
+    public void unLikeComment(String articleUuid, String user)
     {
     }
 
     @Override
-    public void setFavorite(UUID articleUuid, boolean favorite)
+    public void setFavorite(String articleUuid, boolean favorite)
     {
     }
 

@@ -40,12 +40,13 @@ public class PostForm
     private String topic;
 
     @NotNull
-    @Size(max = 32000)
+    @Size(max = 1 << 16)
     private String content;
 
     private String tags;
     private String authorUuid;
     private String articleUuid;
+    private String contentBrief;
 
     public boolean cleanInput()
     {
@@ -64,6 +65,7 @@ public class PostForm
         tags = Jsoup.clean(tags, wlist);
         authorUuid = Jsoup.clean(authorUuid, wlist);
         articleUuid = Jsoup.clean(articleUuid, wlist);
+        contentBrief = Jsoup.parse(content.substring(0, 200)).text();
         return true;
     }
 
@@ -121,5 +123,12 @@ public class PostForm
      */
     public String getArticleUuid() {
         return articleUuid;
+    }
+
+    /**
+     * @return the contentBrief
+     */
+    public String getContentBrief() {
+        return contentBrief;
     }
 }

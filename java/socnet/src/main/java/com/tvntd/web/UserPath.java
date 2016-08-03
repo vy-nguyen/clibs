@@ -214,12 +214,6 @@ public class UserPath
         if (form.cleanInput() == false) {
             return s_noProfile;
         }
-        if (form.getTopic() == null) {
-            form.setTopic("");
-        }
-        if (form.getContent() == null) {
-            form.setContent("");
-        }
         ArticleDTO art = genPendPost(profile, true, form.getArticleUuid());
         Article article = art.fetchArticle();
         ArticleService.applyPostForm(form, article, publish);
