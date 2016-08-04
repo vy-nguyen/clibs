@@ -206,7 +206,7 @@ public class ProfileService implements IProfileService
             Profile profile = Profile.createProfile(user);
 
             profileRepo.save(profile);
-            authorSvc.saveAuthor(Author.fromUserUuid(profile.getUserUuid()), false);
+            authorSvc.saveAuthor(Author.fromUserUuid(profile.getUserUuid()));
         }
     }
 

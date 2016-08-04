@@ -30,14 +30,23 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Transient;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
-@Embeddable
+import com.tvntd.key.HashKey;
+
+@Entity
 public class AuthorTag
 {
+    @Id
     @Column(length = 64)
-    private byte[] tag;
+    private String tagOid;
+
+    @Column(length = 64)
+    private String authorUuid;
+
+    @Column(length = 64)
+    private byte[] tagName;
 
     @Column(length = 40)
     private String headNotif;
@@ -47,20 +56,19 @@ public class AuthorTag
     private Long     notifCount;
     private String   headChain;
 
-    @Transient
-    private String   tagName;
-
     public AuthorTag() {}
-    public AuthorTag(String name, Long rank, boolean fav)
+    public AuthorTag(String name, Author author, Long rank, boolean fav)
     {
-        this.tag = name.getBytes(Charset.forName("UTF-8"));
+        this.authorUuid = author.getAuthorUuid();
+        this.tagName = name.getBytes(Charset.forName("UTF-8"));
+        this.tagOid = HashKey.toSha1Key(this.tagName, author.getAuthorUuid());
         this.favorite = fav;
         this.rank = rank;
         this.notifCount = 0L;
     }
 
     public byte[] fetchTag() {
-        return tag;
+        return tagName;
     }
 
     /**
@@ -68,13 +76,8 @@ public class AuthorTag
      */
     public String getTag()
     {
-        if (tagName != null) {
-            return tagName;
-        }
         try {
-            tagName = new String(tag, "UTF-8");
-            return tagName;
-
+            return new String(tagName, "UTF-8");
         } catch(UnsupportedEncodingException e) {
         }
         return null;
@@ -85,8 +88,8 @@ public class AuthorTag
      */
     public void setTag(String tag)
     {
-        this.tagName = tag;
-        this.tag = tag.getBytes(Charset.forName("UTF-8"));
+        this.tagName = tag.getBytes(Charset.forName("UTF-8"));
+        this.tagOid = HashKey.toSha1Key(this.tagName, authorUuid);
     }
 
     /**
@@ -122,6 +125,13 @@ public class AuthorTag
      */
     public void setNotifCount(Long notifCount) {
         this.notifCount = notifCount;
+    }
+
+    /**
+     * @return the authorUuid
+     */
+    public String getAuthorUuid() {
+        return authorUuid;
     }
 
     /**

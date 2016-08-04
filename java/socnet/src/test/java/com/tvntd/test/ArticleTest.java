@@ -155,7 +155,7 @@ public class ArticleTest
     void doAuthorTest(ProfileDTO profile, List<Article> articles)
     {
         Article art = articles.get(0);
-        Author author = Author.fromProfile(profile, art.getArticleUuid().toString());
+        Author author = Author.fromProfile(profile, art.getArticleUuid());
 
         s_log.info("Do author test " +
                 profile.getUserUuid() + " art size " + articles.size());
@@ -165,7 +165,8 @@ public class ArticleTest
             art = articles.get(i);
             author.addFavoriteArticle(art.getArticleUuid());
         }
-        authorSvc.saveAuthor(author, true);
+        authorSvc.saveAuthor(author);
+        authorSvc.deleteAuthor(profile.getUserUuid());
 
         /*
         // Save and retrieve again may not work!  Need to understand the model more.

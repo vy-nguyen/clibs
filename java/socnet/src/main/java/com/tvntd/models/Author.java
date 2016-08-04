@@ -77,12 +77,7 @@ public class Author
             joinColumns = @JoinColumn(name = "authorUuid"))
     private List<String> timeLineArticles;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "AuthorTags",
-            uniqueConstraints = @UniqueConstraint(columnNames = {
-                "authorUuid", "tag"
-            }),
-            joinColumns = @JoinColumn(name = "authorUuid"))
+    @Transient
     private List<AuthorTag> authorTags;
 
     @Column(length = 64)
@@ -93,16 +88,17 @@ public class Author
 
     public Author() {
         needSave = false;
+        this.authorTags = new ArrayList<>();
+        this.favArticles = new ArrayList<>();
+        this.timeLineArticles = new ArrayList<>();
     }
 
     public Author(String authorUuid, String artUuid)
     {
+        this();
         needSave = true;
         this.authorUuid = authorUuid;
         this.frontArtUuid = artUuid;
-        this.favArticles = new ArrayList<>();
-        this.timeLineArticles = new ArrayList<>();
-        this.authorTags = new ArrayList<>();
     }
 
     public static Author fromUserUuid(String userUuid)
@@ -173,7 +169,7 @@ public class Author
                 return t;
             }
         }
-        AuthorTag t = new AuthorTag(tagName, rank, isFav);
+        AuthorTag t = new AuthorTag(tagName, this, rank, isFav);
         authorTags.add(t);
         needSave = true;
         s_log.debug("Create new tag " + tagName);

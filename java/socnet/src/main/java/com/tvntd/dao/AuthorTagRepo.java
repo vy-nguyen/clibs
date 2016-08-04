@@ -26,17 +26,17 @@
  */
 package com.tvntd.dao;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.tvntd.models.Author;
+import com.tvntd.models.AuthorTag;
 
-public interface AuthorRepo extends JpaRepository<Author, String>
+public interface AuthorTagRepo extends JpaRepository<AuthorTag, String>
 {
-    Author findByAuthorUuid(String authorUuid);
+    AuthorTag findByTagOid(String tagOid);
+    List<AuthorTag> findByAuthorUuid(String authorUuid);
     
     @Override
-    void delete(Author rank);
-
-    @Override
-    void delete(String uuid);
+    void delete(String tagOid);
 }

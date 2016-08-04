@@ -227,7 +227,7 @@ public class UserPath
             profile.assignPendPost(null);
             profile.pushPublishArticle(art);
 
-            byte[] brief = Arrays.copyOfRange(article.getContent(), 0, 200);
+            byte[] brief = article.getContentBrief();
             timeLineSvc.saveTimeLine(profile.getUserUuid(),
                     art.getArticleUuid(), null, brief);
 

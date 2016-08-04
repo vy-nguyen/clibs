@@ -333,7 +333,12 @@ public class ArticleService implements IArticleService
     }
 
     @Override
-    public void deleteArticle(Article art) {
+    public void deleteArticle(Article art)
+    {
+        ArticleRank rank = artRankRepo.findByArticleUuid((art.getArticleUuid()));
+        if (rank != null) {
+            artRankRepo.delete(rank);
+        }
         articleRepo.delete(art.getArticleUuid());
     }
 
@@ -342,7 +347,12 @@ public class ArticleService implements IArticleService
     {
         ArticleDTO art = getArticleDTO(uuid);
         if (art != null) {
-            articleRepo.delete(art.fetchArticle());
+            Article article = art.fetchArticle();
+            ArticleRank rank = artRankRepo.findByArticleUuid(article.getArticleUuid());
+            if (rank != null) {
+                artRankRepo.delete(rank);
+            }
+            articleRepo.delete(article);
         }
     }
 

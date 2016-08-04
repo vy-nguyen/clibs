@@ -40,6 +40,7 @@ import org.springframework.stereotype.Service;
 import com.tvntd.dao.ArticleRankRepo;
 import com.tvntd.dao.ArticleRepository;
 import com.tvntd.dao.AuthorRepo;
+import com.tvntd.dao.AuthorTagRepo;
 import com.tvntd.forms.ArticleForm;
 import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
@@ -60,6 +61,9 @@ public class AuthorService implements IAuthorService
     protected AuthorRepo authorRepo;
 
     @Autowired
+    protected AuthorTagRepo authorTagRepo;
+
+    @Autowired
     protected ArticleRankRepo rankRepo;
 
     @Autowired
@@ -68,7 +72,9 @@ public class AuthorService implements IAuthorService
     @Override
     public Author getAuthor(String uuid)
     {
-        return authorRepo.findByAuthorUuid(uuid);
+        Author author = authorRepo.findByAuthorUuid(uuid);
+        author.setAuthorTags(authorTagRepo.findByAuthorUuid(uuid));
+        return author;
     }
 
     @Override
@@ -99,7 +105,7 @@ public class AuthorService implements IAuthorService
         List<Author> result = new LinkedList<>();
 
         for (String uid : uuids) {
-            Author author = authorRepo.findByAuthorUuid(uid);
+            Author author = getAuthor(uid);
             if (author != null) {
                 result.add(author);
             }
@@ -116,12 +122,12 @@ public class AuthorService implements IAuthorService
         List<AuthorDTO> result = new LinkedList<>();
         List<String> uuids = profile.fetchNewsFeed();
 
-        Author author = authorRepo.findByAuthorUuid(profile.getUserUuid().toString());
+        Author author = getAuthor(profile.getUserUuid());
         if (author != null) {
             result.add(new AuthorDTO(author));
         }
         for (String uid : uuids) {
-            author = authorRepo.findByAuthorUuid(uid.toString());
+            author = getAuthor(uid.toString());
             if (author != null) {
                 result.add(new AuthorDTO(author));
             }
@@ -136,19 +142,25 @@ public class AuthorService implements IAuthorService
     }
 
     @Override
-    public void saveAuthor(Author author, boolean flush)
+    public void saveAuthor(Author author)
     {
-        if (flush == false) {
-            authorRepo.save(author);
-        } else {
-            authorRepo.saveAndFlush(author);
+        List<AuthorTag> tags = author.getAuthorTags();
+        for (AuthorTag t : tags) {
+            authorTagRepo.save(t);
         }
+        authorRepo.save(author);
     }
 
     @Override
     public void deleteAuthor(String uuid)
     {
-        authorRepo.delete(uuid);
+        Author author = getAuthor(uuid);
+        List<AuthorTag> tags = author.getAuthorTags();
+
+        for (AuthorTag t : tags) {
+            authorTagRepo.delete(t);
+        }
+        authorRepo.delete(author);
     }
 
     @Override
@@ -156,7 +168,7 @@ public class AuthorService implements IAuthorService
     {
         String artUuid = form.getArticleUuid();
         String authorUuid = me.getUserUuid().toString();
-        Author author = authorRepo.findByAuthorUuid(authorUuid);
+        Author author = getAuthor(authorUuid);
 
         if (author == null || artUuid == null || artUuid.isEmpty()) {
             return null;
@@ -185,7 +197,7 @@ public class AuthorService implements IAuthorService
     {
         AuthorTag tag = author.addTag(tagName, order, isFav);
         if (author.isNeedSave() == true) {
-            authorRepo.save(author);
+            saveAuthor(author);
         }
         s_log.debug("Save author tag " + author.isNeedSave());
         return tag;
