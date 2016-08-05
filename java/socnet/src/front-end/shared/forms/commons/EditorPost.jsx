@@ -51,7 +51,6 @@ let EditorPost = React.createClass({
 
     _resetData: function() {
         this.refs.topic.value = this.initValues.topic;
-        this.refs.tags.value  = this.initValues.tags;
         this.setState(this.initValues.state);
         this.initValues.dropzone.removeAllFiles();
     },
@@ -238,7 +237,6 @@ let EditorPost = React.createClass({
             init    : function(dz) { this.initValues.dropzone = dz }.bind(this)
         };
         this.initValues.autoTags = AuthorStore.getTagsByAuthorUuid(null);
-        console.log(this.initValues.autoTags);
         let form = (
             <form encType="multipart/form-data" acceptCharset="utf-8" className="form-horizontal">
                 <div className="inbox-info-bar no-padding">
@@ -261,7 +259,6 @@ let EditorPost = React.createClass({
                                     placeholder={this.initValues.tags}
                                     customClasses={{input: "form-control"}}
                                     onBlur={this._onBlurTag} onOptionSelected={this._onTagOptSelected}/>
-                                <input ref="tags" className="form-control" placeholder={this.initValues.tags} type="text"/>
                             </div>
                         </div>
                     </div>
