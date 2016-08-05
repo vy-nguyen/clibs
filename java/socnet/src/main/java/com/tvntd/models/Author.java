@@ -171,8 +171,6 @@ public class Author
         }
         AuthorTag t = new AuthorTag(tagName, this, rank, isFav);
         authorTags.add(t);
-        needSave = true;
-        s_log.debug("Create new tag " + tagName);
         return t;
     }
 

@@ -32,6 +32,7 @@ import java.nio.charset.Charset;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 import com.tvntd.key.HashKey;
 
@@ -56,15 +57,22 @@ public class AuthorTag
     private Long     notifCount;
     private String   headChain;
 
-    public AuthorTag() {}
+    @Transient
+    boolean needSave;
+
+    public AuthorTag()
+    {
+        this.notifCount = 0L;
+        this.needSave = true;
+    }
     public AuthorTag(String name, Author author, Long rank, boolean fav)
     {
+        this();
         this.authorUuid = author.getAuthorUuid();
         this.tagName = name.getBytes(Charset.forName("UTF-8"));
         this.tagOid = HashKey.toSha1Key(this.tagName, author.getAuthorUuid());
         this.favorite = fav;
         this.rank = rank;
-        this.notifCount = 0L;
     }
 
     public byte[] fetchTag() {
@@ -160,5 +168,19 @@ public class AuthorTag
      */
     public void setHeadChain(String headChain) {
         this.headChain = headChain;
+    }
+
+    /**
+     * @return the needSave
+     */
+    public boolean isNeedSave() {
+        return needSave;
+    }
+
+    /**
+     * @param needSave the needSave to set
+     */
+    public void setNeedSave(boolean needSave) {
+        this.needSave = needSave;
     }
 }

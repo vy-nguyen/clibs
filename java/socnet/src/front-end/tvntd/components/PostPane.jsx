@@ -4,8 +4,9 @@
  */
 'use strict';
 
-import React        from 'react-mod';
 import _            from 'lodash';
+import React        from 'react-mod';
+import Reflux       from 'reflux';
 import TA           from 'react-typeahead';
 
 import Actions      from 'vntd-root/actions/Actions.jsx';
@@ -21,6 +22,10 @@ import Panel            from 'vntd-shared/widgets/Panel.jsx';
 import { toDateString } from 'vntd-shared/utils/Enum.jsx';
 
 let TagPost = React.createClass({
+
+    mixins: [
+        Reflux.connect(AuthorStore)
+    ],
 
     _onOptionSelected: function(val) {
         this.setState({
@@ -50,49 +55,58 @@ let TagPost = React.createClass({
         let tagInfo = {
             tagName    : this.state.tagName,
             favorite   : this.state.favorite,
-            userUuid   : UserStore.getSelf().userUuid,
+            userUuid   : this.state.myUuid,
             title      : this.props.postTitle,
-            tagRank    : 50,
+            tagRank    : this.state.authorTag.rank,
             articleRank: rank,
             likeInc    : 0,
             shareInc   : 0,
-            artRank    : this.props.artRank,
             articleUuid: this.props.articleUuid
         };
-        AuthorStore.updateAuthorTag(tagInfo);
+        AuthorStore.updateAuthorTag(tagInfo, this.state.artRank);
         Actions.updateArtRank(tagInfo);
+    },
+
+    _updateState: function() {
+        let myUuid = UserStore.getSelf().userUuid;
+        let artRank = AuthorStore.getArticleTag(myUuid, this.props.articleUuid);
+
         this.setState({
-            rankVal : rank,
+            myUuid : myUuid,
+            artRank: artRank,
+            tagName: artRank.tagName,
+            favorite : artRank.favorite,
+            authorTag: AuthorStore.getAuthorTag(myUuid, artRank.tagName)
         });
     },
 
     getInitialState: function() {
-        let rank = this.props.artRank;
         return {
             tagText: "Tag your article",
-            tagName: rank.tagName,
-            rankVal: rank.rank,
-            favorite: rank.favorite
+            tagName: "My Post",
+            favorite: false
         }
     },
 
+    componentWillMount: function() {
+        this._updateState();
+    },
+
     render: function() {
-        let myUuid = UserStore.getSelf().userUuid;
-        let tags = AuthorStore.getTagsByAuthorUuid(myUuid);
+        let allTags = AuthorStore.getTagsByAuthorUuid(this.state.myUuid);
 
         return (
             <form enclType="form-data" acceptCharset="utf-8" className="form-horizontal">
                 <div className="row">
                     <div className="col-xs-5 col-sm-5 col-md-5">
-                        <TA.Typeahead options={tags} maxVisible={4}
-                            placeholder={this.state.tagName ? this.state.tagName : this.state.tagText}
-                            value={this.state.tagName}
+                        <TA.Typeahead options={allTags} maxVisible={4}
+                            placeholder={this.state.tagName} value={this.state.tagName}
                             customClasses={{input: "form-control input-sm"}}
                             onBlur={this._onBlur}
                             onOptionSelected={this._onOptionSelected}/>
                     </div>
                     <div className="col-xs-3 col-sm-3 col-md-3">
-                        <input className="form-control input-sm" ref="rank" placeholder={this.state.rankVal}/>
+                        <input className="form-control input-sm" ref="rank" placeholder={this.state.authorTag.rank}/>
                     </div>
                     <div className="col-xs-2 col-sm-2 col-md-2">
                         <section>
@@ -175,16 +189,7 @@ let PostPane = React.createClass({
         let tagPost = null;
         let article = this.props.data;
         if (UserStore.isUserMe(article.authorUuid)) {
-            let rank = this.props.artRank;
-            if (rank == null) {
-                let tagMgr = AuthorStore.getAuthorTagMgr(article.authorUuid);
-                if (tagMgr != null) {
-                    rank = tagMgr.getArticleRankByUuid(article.articleUuid, true);
-                }
-            }
-            if (rank != null) {
-                tagPost = <TagPost articleUuid={article.articleUuid} artRank={rank} title={article.topic}/>
-            }
+            tagPost = <TagPost articleUuid={article.articleUuid} postTitle={article.topic}/>;
         }
         return (
             <Panel className="well no-padding" context={panelData}>

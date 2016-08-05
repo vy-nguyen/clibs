@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import com.tvntd.dao.AuthorTagRepo.AuthorTagDTO;
 import com.tvntd.forms.ArticleForm;
 import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
@@ -42,6 +43,7 @@ import com.tvntd.service.api.IProfileService.ProfileDTO;
 public interface IAuthorService
 {
     public Author getAuthor(String uuid);
+    public List<AuthorTagDTO> getAuthorTag(String uuid);
 
     public Author updateAuthor(ProfileDTO me, ArticleForm form, ArticleRankDTO rank);
     public void addFavoriteArticle(Author author, String articleUuid);
@@ -137,42 +139,6 @@ public interface IAuthorService
                 ret.add(new AuthorDTO(author));
             }
             return ret;
-        }
-    }
-
-    /**
-     * Tags organized by the author.
-     */
-    public static class AuthorTagDTO
-    {
-        private AuthorTag tag;
-
-        public AuthorTagDTO(AuthorTag tag) {
-            this.tag = tag;
-        }
-
-        public String getTagName() {
-            return tag.getTag();
-        }
-
-        public String getHeadNotif() {
-            return tag.getHeadNotif();
-        }
-
-        public boolean isFavorite() {
-            return tag.isFavorite();
-        }
-
-        public Long getRank() {
-            return tag.getRank();
-        }
-
-        public Long getNotifCount() {
-            return tag.getNotifCount();
-        }
-
-        public String getHeadChain() {
-            return tag.getHeadChain();
         }
     }
 }

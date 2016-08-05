@@ -187,6 +187,7 @@ public class ApiPath
     fillLoginResponse(LoginResponse resp, ProfileDTO profile, IAuthorService authorSvc)
     {
         resp.setAuthors(authorSvc.getAuthorList(profile));
+        resp.setMyTags(authorSvc.getAuthorTag(profile.getUserUuid()));
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})

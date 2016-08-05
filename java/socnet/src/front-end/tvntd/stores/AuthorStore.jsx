@@ -76,6 +76,7 @@ class ArticleRank {
 
     attachTag(authorTag) {
         this.authorTag = authorTag;
+        this.tagName = authorTag.tagName;
         authorTag.addArticleRankObj(this);
     }
 }
@@ -304,8 +305,14 @@ let AuthorStore = Reflux.createStore({
     /**
      * @return string tags used for autocomplete.
      */
-    getTagsByAuthorUuid: function(uuid) {
-        return this.getAuthorTagMgr(uuid).getStringTags();
+     getTagsByAuthorUuid: function(uuid) {
+         if (uuid == null && UserStore.getSelf() != null) {
+             uuid = UserStore.getSelf().userUuid;
+         }
+         if (uuid != null) {
+            return this.getAuthorTagMgr(uuid).getStringTags();
+         }
+        return null;
     },
 
     /**
@@ -321,6 +328,14 @@ let AuthorStore = Reflux.createStore({
     },
 
     /**
+     * @return authorTag for the user matching with the name.
+     */
+    getAuthorTag: function(uuid, tagName) {
+        let tagMgr = this.getAuthorTagMgr(uuid);
+        return tagMgr.getAuthorTag(tagName, 50, false);
+    },
+
+    /**
      * @return artRank matching with author uuid and article uuid.
      */
     getArticleTag: function(authorUuid, articleUuid) {
@@ -328,10 +343,9 @@ let AuthorStore = Reflux.createStore({
         return tagMgr.getArticleRankByUuid(articleUuid, true);
     },
 
-    updateAuthorTag: function(tagInfo) {
+    updateAuthorTag: function(tagInfo, artRank) {
         let authorTagMgr = this.getAuthorTagMgr(tagInfo.userUuid);
         let authorTag = authorTagMgr.getAuthorTag(tagInfo.tagName, tagInfo.tagRank, tagInfo.favorite);
-        let artRank = tagInfo.artRank;
 
         if (artRank == null) {
             let article = ArticleStore.getArticleByUuid(tagInfo.articleUuid);
@@ -431,12 +445,20 @@ let AuthorStore = Reflux.createStore({
     },
 
     onStartupCompleted: function(data) {
-        if (data.userDTO && data.userDTO.authors) {
-            this._addAuthorList(data.userDTO.authors);
-            Actions.getArticleRank({
-                uuids: this.getAuthorUuidList()
-            });
+        if (data.userDTO) {
+            let self = data.userDTO;
+            if (self.authors) {
+                this._addAuthorList(self.authors);
+                Actions.getArticleRank({
+                    uuids: this.getAuthorUuidList()
+                });
+            }
+            if (self.myTags) {
+                let tagMgr = this.getAuthorTagMgr(self.userSelf.userUuid);
+                tagMgr.addAuthorTagList(self.myTags);
+            }
         }
+        console.log(this);
     },
 
     statics: {

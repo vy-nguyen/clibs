@@ -39,4 +39,37 @@ public interface AuthorTagRepo extends JpaRepository<AuthorTag, String>
     
     @Override
     void delete(String tagOid);
+
+    public static class AuthorTagDTO
+    {
+        protected AuthorTag authorTag;
+
+        public AuthorTagDTO(AuthorTag tag) {
+            authorTag = tag;
+        }
+
+        public String getTagName() {
+            return authorTag.getTag();
+        }
+
+        public String getHeadNotifOid() {
+            return authorTag.getHeadNotif();
+        }
+
+        public String getHeadChainOid() {
+            return authorTag.getHeadChain();
+        }
+
+        public boolean isFavorite() {
+            return authorTag.isFavorite();
+        }
+
+        public Long getRank() {
+            return authorTag.getRank();
+        }
+
+        public Long getNotifCount() {
+            return authorTag.getNotifCount();
+        }
+    }
 }

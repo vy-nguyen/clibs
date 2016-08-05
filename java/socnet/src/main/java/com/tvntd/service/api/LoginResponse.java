@@ -34,18 +34,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.web.csrf.CsrfToken;
 
+import com.tvntd.dao.AuthorTagRepo.AuthorTagDTO;
 import com.tvntd.service.api.IAuthorService.AuthorDTO;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 public class LoginResponse extends GenericResponse
 {
-    static private Logger s_log = LoggerFactory.getLogger(LoginResponse.class);
-
     private String authVerifToken;
     private String authToken;
     private String csrfToken;
     private String csrfHeader;
     private ProfileDTO userSelf;
+    private List<AuthorTagDTO> myTags;
     private List<AuthorDTO> authors;
 
     public LoginResponse(String type, String message, String error, String token)
@@ -119,6 +119,20 @@ public class LoginResponse extends GenericResponse
      */
     public ProfileDTO getUserSelf() {
         return userSelf;
+    }
+
+    /**
+     * @return the myTags
+     */
+    public List<AuthorTagDTO> getMyTags() {
+        return myTags;
+    }
+
+    /**
+     * @param myTags the myTags to set
+     */
+    public void setMyTags(List<AuthorTagDTO> myTags) {
+        this.myTags = myTags;
     }
 
     /**

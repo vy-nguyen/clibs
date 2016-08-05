@@ -41,6 +41,7 @@ import com.tvntd.dao.ArticleRankRepo;
 import com.tvntd.dao.ArticleRepository;
 import com.tvntd.dao.AuthorRepo;
 import com.tvntd.dao.AuthorTagRepo;
+import com.tvntd.dao.AuthorTagRepo.AuthorTagDTO;
 import com.tvntd.forms.ArticleForm;
 import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
@@ -75,6 +76,19 @@ public class AuthorService implements IAuthorService
         Author author = authorRepo.findByAuthorUuid(uuid);
         author.setAuthorTags(authorTagRepo.findByAuthorUuid(uuid));
         return author;
+    }
+
+    @Override
+    public List<AuthorTagDTO> getAuthorTag(String uuid)
+    {
+        List<AuthorTag> raw = authorTagRepo.findByAuthorUuid(uuid);
+        if (raw != null) {
+            List<AuthorTagDTO> result = new LinkedList<>();
+            for (AuthorTag t : raw) {
+                result.add(new AuthorTagDTO(t));
+            }
+        }
+        return null;
     }
 
     @Override
@@ -146,9 +160,17 @@ public class AuthorService implements IAuthorService
     {
         List<AuthorTag> tags = author.getAuthorTags();
         for (AuthorTag t : tags) {
-            authorTagRepo.save(t);
+            saveAuthorTag(t);
         }
         authorRepo.save(author);
+    }
+
+    protected void saveAuthorTag(AuthorTag tag)
+    {
+        if (tag.isNeedSave()) {
+            authorTagRepo.save(tag);
+            tag.setNeedSave(false);
+        }
     }
 
     @Override
@@ -167,15 +189,17 @@ public class AuthorService implements IAuthorService
     public Author updateAuthor(ProfileDTO me, ArticleForm form, ArticleRankDTO rankDto)
     {
         String artUuid = form.getArticleUuid();
-        String authorUuid = me.getUserUuid().toString();
+        String authorUuid = me.getUserUuid();
         Author author = getAuthor(authorUuid);
 
         if (author == null || artUuid == null || artUuid.isEmpty()) {
             return null;
         }
-        AuthorTag tag = updateAuthorTag(author, form.getTagName(),
-                            form.getTagRank(), form.isFavorite());
+        Long order = form.getTagRank();
+        boolean isFav = form.isFavorite();
+        AuthorTag tag = updateAuthorTag(author, form.getTagName(), order, isFav);
         ArticleRank rank = rankRepo.findByArticleUuid(artUuid);
+
         if (rank == null) {
             form.setUserUuid(authorUuid);
             Article article = articleRepo.findByArticleUuid(artUuid);
@@ -196,10 +220,10 @@ public class AuthorService implements IAuthorService
     updateAuthorTag(Author author, String tagName, Long order, boolean isFav)
     {
         AuthorTag tag = author.addTag(tagName, order, isFav);
-        if (author.isNeedSave() == true) {
-            saveAuthor(author);
+        if (tag.isNeedSave() == true) {
+            s_log.debug("Save author tag " + tag.getTag());
+            saveAuthorTag(tag);
         }
-        s_log.debug("Save author tag " + author.isNeedSave());
         return tag;
     }
 

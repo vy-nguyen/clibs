@@ -4,15 +4,17 @@
  */
 'use strict';
 
+import _      from 'lodash';
 import React  from 'react-mod';
 import Reflux from 'reflux';
-import _      from 'lodash';
+import TA     from 'react-typeahead';
 
 import {OverlayTrigger, Tooltip} from 'react-bootstrap';
 import DropzoneComponent from 'react-dropzone-component';
 
 import ArticleStore    from 'vntd-root/stores/ArticleStore.jsx';
 import Actions         from 'vntd-root/actions/Actions.jsx';
+import AuthorStore     from 'vntd-root/stores/AuthorStore.jsx';
 import UserStore       from 'vntd-shared/stores/UserStore.jsx';
 import Select2         from 'vntd-shared/forms/inputs/Select2.jsx';
 import Editor          from 'vntd-shared/forms/editors/Editor.jsx';
@@ -23,6 +25,7 @@ let EditorPost = React.createClass({
 
     mixins: [
         Reflux.connect(ArticleStore),
+        Reflux.connect(AuthorStore),
         Reflux.listenTo(ArticleStore, "_onPublishResult")
     ],
 
@@ -53,10 +56,13 @@ let EditorPost = React.createClass({
         this.initValues.dropzone.removeAllFiles();
     },
 
+    /**
+     * Get data to submit to the server to change tag.
+     */
     _getData: function() {
         return {
             topic  : safeStringify(this.refs.topic.value),
-            tags   : safeStringify(this.refs.tags.value),
+            tags   : safeStringify(this.state.tagName),
             content: safeStringify(this.state.content),
             authorUuid: UserStore.getSelf().userUuid,
             articleUuid: this.state.articleUuid
@@ -193,6 +199,17 @@ let EditorPost = React.createClass({
         console.log(file.xhr);
     },
 
+    /**
+     * Select tag for this article post.
+     */
+    _onBlurTag: function(val) {
+        this.setState({ tagName: val.target.value });
+    },
+
+    _onTagOptSelected: function(val) {
+        this.setState({ tagName: val });
+    },
+
     getInitialState: function() {
         return this.initValues.state;
     },
@@ -220,7 +237,8 @@ let EditorPost = React.createClass({
             error   : this._error,
             init    : function(dz) { this.initValues.dropzone = dz }.bind(this)
         };
-
+        this.initValues.autoTags = AuthorStore.getTagsByAuthorUuid(null);
+        console.log(this.initValues.autoTags);
         let form = (
             <form encType="multipart/form-data" acceptCharset="utf-8" className="form-horizontal">
                 <div className="inbox-info-bar no-padding">
@@ -239,6 +257,10 @@ let EditorPost = React.createClass({
                         <div className="form-group">
                             <label className="control-label col-md-1"><strong>Tags</strong></label>
                             <div className="col-md-10">
+                                <TA.Typeahead options={this.initValues.autoTags} maxVisible={4}
+                                    placeholder={this.initValues.tags}
+                                    customClasses={{input: "form-control"}}
+                                    onBlur={this._onBlurTag} onOptionSelected={this._onTagOptSelected}/>
                                 <input ref="tags" className="form-control" placeholder={this.initValues.tags} type="text"/>
                             </div>
                         </div>
