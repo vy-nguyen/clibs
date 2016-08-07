@@ -32,11 +32,17 @@ import java.nio.charset.Charset;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.tvntd.key.HashKey;
 
 @Entity
+@Table(indexes = {
+    @Index(columnList = "tagName", unique = false),
+    @Index(columnList = "authorUuid", unique = false)
+})
 public class AuthorTag
 {
     @Id

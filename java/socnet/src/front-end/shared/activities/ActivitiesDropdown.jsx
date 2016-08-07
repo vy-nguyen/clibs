@@ -138,19 +138,7 @@ let ActivitiesDropdown = React.createClass({
             lastUpdated : data.lastUpdated
         });
         this.forceUpdate();
-    },
-    /*
-    _fetch: function() {
-        return $.getJSON(this.props.url).then(function(result) {
-            console.log(result);
-            this.setState({
-                activities: [result.message, result.notify, result.task],
-                activity: result.message,
-                lastUpdate: new Date()
-            })
-        }.bind(this))
     }
-    */
 });
 
 export default ActivitiesDropdown

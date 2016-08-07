@@ -27,6 +27,7 @@
 package com.tvntd.models;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.CollectionTable;
@@ -41,6 +42,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import com.tvntd.key.HashKey;
+import com.tvntd.util.Util;
 
 @Entity
 @Table(indexes = {
@@ -77,16 +79,31 @@ public class ArtTag
     private List<String> tagArtRanks;
 
     @Column(length = 64)
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "SubTags",
-            uniqueConstraints = @UniqueConstraint(columnNames = {
-                "tagOid", "subTags"
-            }),
-            joinColumns = @JoinColumn(name = "tagOid"))
-    private List<String> subTags;;
+    private byte[] parentTag;
 
-    public void makeTagOid() {
+    public ArtTag()
+    {
+        this.lastUpdate = new Date();
+        this.rankScore = 0L;
+    }
+
+    protected void makeTagOid() {
         tagOid = HashKey.toSha1Key(tagName, userUuid);
+    }
+
+    public void addArtRank(String rankKey)
+    {
+        if (tagArtRanks == null) {
+            tagArtRanks = new LinkedList<>();
+        }
+        Util.<String> addUnique(tagArtRanks, rankKey);
+    }
+
+    public void removeArtRank(String rankKey)
+    {
+        if (tagArtRanks != null) {
+            Util.<String> removeFrom(tagArtRanks, rankKey);
+        }
     }
 
     /**
@@ -113,8 +130,10 @@ public class ArtTag
     /**
      * @param userUuid the userUuid to set
      */
-    public void setUserUuid(String userUuid) {
+    public void setUserUuid(String userUuid)
+    {
         this.userUuid = userUuid;
+        makeTagOid();
     }
 
     /**
@@ -174,16 +193,16 @@ public class ArtTag
     }
 
     /**
-     * @return the subTags
+     * @return the parentTag
      */
-    public List<String> getSubTags() {
-        return subTags;
+    public byte[] getParentTag() {
+        return parentTag;
     }
 
     /**
-     * @param subTags the subTags to set
+     * @param parentTag the parentTag to set
      */
-    public void setSubTags(List<String> subTags) {
-        this.subTags = subTags;
+    public void setParentTag(byte[] parentTag) {
+        this.parentTag = parentTag;
     }
 }

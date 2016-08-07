@@ -13,6 +13,7 @@ import AuthorStore      from 'vntd-root/stores/AuthorStore.jsx';
 import CommentStore     from 'vntd-root/stores/CommentStore.jsx';
 import RenderStore      from 'vntd-root/stores/RenderStore.jsx';
 import AdminStore       from 'vntd-root/stores/AdminStore.jsx';
+import ArtTagStore      from 'vntd-root/stores/AdminStore.jsx';
 
 let Debug = React.createClass({
 
@@ -48,6 +49,10 @@ let Debug = React.createClass({
         AdminStore.dumpData("Admin Store Content");
     },
 
+    debugArtTagstore: function() {
+        ArtTagStore.dumpData("Article Tag Content");
+    },
+
     render: function() {
         return (
             <div className="row">
@@ -69,6 +74,8 @@ let Debug = React.createClass({
                     <a onClick={this.debugRenderStore}>Debug Render Store</a>
                     <br/>
                     <a onClick={this.debugAdminStore}>Debug Admin Store</a>
+                    <br/>
+                    <a onClick={this.debugArtTagstore}>Debug ArticleTag Store</a>
                 </div>
                 <br/>
                 <hr/>

@@ -90,13 +90,12 @@ let ArticleBox = React.createClass({
     },
 
     statics: {
-        article: function(articleUuid, clickCb) {
+        article: function(articleUuid, clickCb, cbArg) {
             let article = ArticleStore.getArticleByUuid(articleUuid);
             if (article == null) {
                 console.log("No matching uuid " + articleUuid);
                 return null;
             }
-            console.log(article);
             let author = UserStore.getUserByUuid(article.authorUuid);
             let artTag = AuthorStore.getArticleTag(article.authorUuid, articleUuid);
             let arg = {
@@ -104,16 +103,16 @@ let ArticleBox = React.createClass({
                 image      : article.pictureUrl[0],
                 dateInfo   : article.dateString,
                 artTitle   : article.topic,
-                artCategory: 'Blog',
+                artCategory: artTag.tagName,
                 artPrice   : author.getUserName(),
-                clickCbFn  : clickCb,
+                clickCbFn  : clickCb.bind(cbArg, articleUuid, artTag),
                 likeStat   : {
                     dateMoment  : article.createdDate,
                     commentCount: 0,
                     likesCount  : 0,
                     sharesCount : 0
                 },
-                selectButton: 'Read more...'
+                selectButton: 'Add Article'
             };
             if (artTag != null) {
 

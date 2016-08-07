@@ -58,6 +58,7 @@ import com.tvntd.lib.ObjectId;
 import com.tvntd.models.User;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.GenericResponse;
+import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleService.ArticleDTOResponse;
@@ -90,6 +91,9 @@ public class ApiPath
 
     @Autowired
     protected IAuthorService authorSvc;
+
+    @Autowired
+    protected IArtTagService artTagSvc;
 
     @Autowired
     protected Mongo mongo;

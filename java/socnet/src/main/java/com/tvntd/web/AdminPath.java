@@ -26,6 +26,7 @@
  */
 package com.tvntd.web;
 
+import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,6 +52,8 @@ import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.LoginResponse;
+import com.tvntd.service.user.ArtTagService;
+import com.tvntd.util.Constants;
 
 @Controller
 public class AdminPath
@@ -111,20 +114,11 @@ public class AdminPath
             return UserPath.s_noProfile;
         }
         s_log.info("Got set tags requests");
-        for (ArtTagDTO tag : tagList.getTagList()) {
-            tag.setUserUuid(profile.getUserUuid().toString());
-            tag.makeTagOid();
-            artTagSvc.saveTag(tag);
+        List<ArtTagDTO> fixup =
+            ArtTagService.makeSubTags(tagList.getTagList(), Constants.PublicUuid);
 
-            System.out.println("Tag " + tag.getTagName());
-            System.out.println("Uuid " + tag.getUserUuid());
-
-        }
-        for (ArtTagDTO tag : tagList.getTagList()) {
-            ArtTagDTO check = artTagSvc.getTag(tag.getTagName(), tag.getUserUuid());
-            if (check != null) {
-                System.out.println("Check " + check.getTagName());
-            }
+        for (ArtTagDTO tag : fixup) {
+            artTagSvc.saveTag(tag);       
         }
         return UserPath.s_genOkResp;
     }

@@ -4,6 +4,7 @@
  */
 'use strict';
 
+import _           from 'lodash';
 import React       from 'react-mod';
 
 /*
@@ -31,24 +32,34 @@ import React       from 'react-mod';
  * }
  */
 let GenericForm = React.createClass({
+
+    _btnClick: function(button, event) {
+        let dataRefs = {};
+        let entries = this.props.form.formEntries;
+
+        event.preventDefault();
+        _.forEach(entries, function(section) {
+            _.forEach(section.entries, function(item) {
+                console.log(item.inpName);
+                console.log(this.refs[item.inpName]);
+                dataRefs[item.inpName] = this.refs[item.inpName].value;
+            }.bind(this));
+        }.bind(this));
+        button.onClick(dataRefs);
+    },
+
     render: function() {
         let form = this.props.form;
+        let formButtons = null;
 
-        if (form.hiddenHead == null) {
-            form.hiddenHead = <div></div>;
-        }
-        if (form.hiddenTail == null) {
-            form.hiddenTail = <div></div>;
-        }
-        let form_buttons = <div></div>;
         if (form.buttons != null) {
             let buttons = form.buttons.map(function(item, idx) {
                 return (
-                    <button key={idx} className={item.btnFormat} onClick={item.onClick}>{item.btnText}</button>
+                    <a key={idx} className={item.btnFormat} onClick={this._btnClick.bind(this, item)}>{item.btnText}</a>
                 );
-            });
-            form_buttons = (
-                <fieldset>
+            }.bind(this));
+            formButtons = (
+                <footer>
                     <div className="row form-group">
                         <div className="col-sm-offset-2 col-sm-10">
                             <div className="pull-right">
@@ -56,10 +67,10 @@ let GenericForm = React.createClass({
                             </div>
                         </div>
                     </div>
-                </fieldset>
+                </footer>
             );
         }
-        let form_entries = form.formEntries.map(function(item, idx) {
+        let formEntries = form.formEntries.map(function(item, idx) {
             let entries = item.entries.map(function(entry, index) {
                 return (
                     <div className="row form-group" key={index}>
@@ -74,7 +85,7 @@ let GenericForm = React.createClass({
             });
             return (
                 <div key={idx}>
-                    <legend>{item.legend}</legend>
+                    {item.legend != null ? <legend>{item.legend}</legend> : null}
                     <fieldset>
                         {entries}
                     </fieldset>
@@ -85,8 +96,8 @@ let GenericForm = React.createClass({
         return (
             <form className={form.formFmt}>
                 {form.hiddenHead}
-                {form_entries}
-                {form_buttons}
+                {formEntries}
+                {formButtons}
             </form>
         );
     }

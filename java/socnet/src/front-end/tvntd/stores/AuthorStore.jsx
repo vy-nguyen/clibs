@@ -435,8 +435,6 @@ let AuthorStore = Reflux.createStore({
     },
 
     onGetArticleRankCompleted: function(data) {
-        console.log("------");
-        console.log(data);
         this._updateArticleRank(data);
     },
 
@@ -458,7 +456,6 @@ let AuthorStore = Reflux.createStore({
                 tagMgr.addAuthorTagList(self.myTags);
             }
         }
-        console.log(this);
     },
 
     statics: {

@@ -26,15 +26,11 @@
  */
 package com.tvntd.web;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -54,6 +50,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.tvntd.lib.Constants;
 import com.tvntd.lib.FileResources;
+import com.tvntd.service.api.IArtTagService;
+import com.tvntd.service.api.IArtTagService.ArtTagDTO;
+import com.tvntd.service.api.IArtTagService.ArtTagList;
 import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IMenuItemService;
@@ -74,10 +73,13 @@ public class PublicPath
     private IAuthorService authorSvc;
 
     @Autowired
-    IMenuItemService menuItemSvc;
+    private IMenuItemService menuItemSvc;
 
     @Autowired
-    IArticleService articleSvc;
+    private IArticleService articleSvc;
+
+    @Autowired
+    private IArtTagService artTagSvc;
 
     /**
      * Handle public pages.
@@ -144,5 +146,31 @@ public class PublicPath
     public String getHtml(Map<String, Object> model,
             @PathVariable(value = "html") String html, HttpSession session) {
         return html;
+    }
+
+    /**
+     * Get public tags and sub tags.
+     */
+    @RequestMapping(value = "/public/get-tags/{userUuid}", method = RequestMethod.GET)
+    @ResponseBody
+    public ArtTagList getTagsUser(Locale locale, HttpSession session,
+            @PathVariable(value = "userUuid") String uuid) {
+        return getUserTags(locale, session, uuid);
+    }
+
+    @RequestMapping(value = "/public/get-tags", method = RequestMethod.GET)
+    @ResponseBody
+    public ArtTagList getPublicTags(Locale locale, HttpSession session) {
+        return getUserTags(locale, session, null);
+    }
+
+    protected ArtTagList getUserTags(Locale locale, HttpSession session, String uuid)
+    {
+        if (uuid == null) {
+            uuid = com.tvntd.util.Constants.PublicUuid;
+        }
+        List<ArtTagDTO> result = artTagSvc.getUserTags(uuid);
+        System.out.println("Result tag list " + result);
+        return new ArtTagList(result);
     }
 }

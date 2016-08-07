@@ -27,9 +27,9 @@
 
 package com.tvntd.util;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -53,6 +53,24 @@ public final class Util
         } catch(Exception e) {
             return null;
         }
+    }
+
+    static public String fromRawByte(byte[] input)
+    {
+        try {
+            return new String(input, "UTF-8");
+        } catch(UnsupportedEncodingException e) {
+        }
+        return "";
+    }
+
+    static public byte[] toRawByte(String str)
+    {
+        try {
+            return str.getBytes("UTF-8");
+        } catch(UnsupportedEncodingException e) {
+        }
+        return null;
     }
 
     static public <T> T isInList(List<T> list, T item)

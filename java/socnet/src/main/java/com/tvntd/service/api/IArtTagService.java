@@ -30,20 +30,32 @@ import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.tvntd.key.HashKey;
 import com.tvntd.models.ArtTag;
+import com.tvntd.util.Util;
 
 public interface IArtTagService
 {
     void saveTag(ArtTagDTO tag);
-    ArtTagDTO getTag(String tag, String uuid);
-    List<ArtTagDTO> getUserTag(String uuid);
 
-    public static class ArtTagList
+    ArtTagDTO getTag(String tag, String uuid);
+    List<ArtTagDTO> getUserTags(String uuid);
+
+    public static class ArtTagList extends GenericResponse
     {
         private List<ArtTagDTO> tagList;
+
+        public ArtTagList() {
+            super(GenericResponse.USER_HOME, null, null);
+        }
+
+        public ArtTagList(List<ArtTagDTO> list) {
+            this();
+            this.tagList = list;
+        }
 
         /**
          * @return the tagList
@@ -63,6 +75,7 @@ public interface IArtTagService
     public static class ArtTagDTO
     {
         private ArtTag artTag;
+        private List<ArtTagDTO> subTags;
 
         public ArtTagDTO() {
             artTag = new ArtTag();
@@ -77,15 +90,26 @@ public interface IArtTagService
             artTag = new ArtTag();
             setTagName(tagName);
             artTag.setUserUuid(userUuid);
-            artTag.makeTagOid();
         }
 
         public ArtTag fetchArtTag() {
             return artTag;
         }
 
-        public void makeTagOid() {
-            artTag.makeTagOid();
+        public void addSubTag(ArtTagDTO sub)
+        {
+            if (subTags == null) {
+                subTags = new LinkedList<>();
+            }
+            subTags.add(sub);
+        }
+
+        public void addArtRank(String rankKey) {
+            artTag.addArtRank(rankKey);
+        }
+
+        public void removeArtRank(String artKey) {
+            artTag.removeArtRank(artKey);
         }
 
         public static String makeTagOidKey(String tagName, String userUuid) {
@@ -99,21 +123,23 @@ public interface IArtTagService
         /**
          * Get/set tagName.
          */
-        public String getTagName()
-        {
-            try {
-                return new String(artTag.getTagName(), "UTF-8");
-            } catch(UnsupportedEncodingException e) {
-            }
-            return "";
+        public String getTagName() {
+            return Util.fromRawByte(artTag.getTagName());
         }
 
-        public void setTagName(String tagName)
-        {
-            try {
-                artTag.setTagName(tagName.getBytes("UTF-8"));
-            } catch(UnsupportedEncodingException e) {
-            }
+        public void setTagName(String tagName) {
+            artTag.setTagName(Util.toRawByte(tagName));
+        }
+
+        /**
+         * Get/set parent tagName.
+         */
+        public String getParentTag() {
+            return Util.fromRawByte(artTag.getParentTag());
+        }
+
+        public void setParentTag(String parent) {
+            artTag.setParentTag(Util.toRawByte(parent));
         }
 
         /**
@@ -165,14 +191,17 @@ public interface IArtTagService
         }
 
         /**
-         * Get/set subTags.
+         * @return the subTags
          */
-        public List<String> getSubTags() {
-            return artTag.getSubTags();
+        public List<ArtTagDTO> getSubTags() {
+            return subTags;
         }
 
-        public void setSubTags(List<String> list) {
-            artTag.setSubTags(list);
+        /**
+         * @param subTags the subTags to set
+         */
+        public void setSubTags(List<ArtTagDTO> subTags) {
+            this.subTags = subTags;
         }
     }
 }

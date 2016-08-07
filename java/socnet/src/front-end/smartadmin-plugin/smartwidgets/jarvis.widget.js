@@ -394,7 +394,6 @@
                      * Set a style(if present).
                      **/
                     if (jsonSettings.widget[key].style) {
-                        //console.log("test");
                         widgetId.removeClassPrefix('jarviswidget-color-')
                             .addClass(jsonSettings.widget[key].style)
                             .attr('data-widget-attstyle', '' + jsonSettings.widget[key].style + '');
@@ -1237,7 +1236,6 @@
 	                    content: self.o.deleteMsg,
 	                    buttons: '[No][Yes]'
 	                }, function (ButtonPressed) {
-	                    //console.log(ButtonPressed);
 	                    if (ButtonPressed == "Yes") {
 	                        /**
 	                         * Run function for the indicator image.

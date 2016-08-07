@@ -7,13 +7,13 @@
 import _            from 'lodash';
 import React        from 'react-mod';
 import Reflux       from 'reflux';
-import TA           from 'react-typeahead';
 
 import Actions      from 'vntd-root/actions/Actions.jsx';
 import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
 import AdminStore   from 'vntd-root/stores/AdminStore.jsx';
 import PostItem     from 'vntd-root/components/PostItem.jsx';
 import PostComment  from 'vntd-root/components/PostComment.jsx';
+import TypeAhead    from 'vntd-root/components/TypeAhead.jsx';
 import WidgetGrid   from 'vntd-shared/widgets/WidgetGrid.jsx';
 import JarvisWidget from 'vntd-shared/widgets/JarvisWidget.jsx';
 import UserStore    from 'vntd-shared/stores/UserStore.jsx';
@@ -27,15 +27,16 @@ let TagPost = React.createClass({
         Reflux.connect(AuthorStore)
     ],
 
-    _onOptionSelected: function(val) {
-        this.setState({
-            tagName: val
-        });
+    _taSelectValue: function(val) {
+        console.log("select val " + val);
+        this.setState({ tagName: val });
     },
 
-    _onBlur: function(val) {
+    _saveArticleRank: function(artRank, authorTag) {
         this.setState({
-            tagName: val.target.value
+            artRank  : artRank,
+            authorTag: authorTag,
+            tagRank  : authorTag.rank
         });
     },
 
@@ -57,7 +58,7 @@ let TagPost = React.createClass({
             favorite   : this.state.favorite,
             userUuid   : this.state.myUuid,
             title      : this.props.postTitle,
-            tagRank    : this.state.authorTag.rank,
+            tagRank    : this.state.tagRank,
             articleRank: rank,
             likeInc    : 0,
             shareInc   : 0,
@@ -67,46 +68,26 @@ let TagPost = React.createClass({
         Actions.updateArtRank(tagInfo);
     },
 
-    _updateState: function() {
-        let myUuid = UserStore.getSelf().userUuid;
-        let artRank = AuthorStore.getArticleTag(myUuid, this.props.articleUuid);
-
-        this.setState({
-            myUuid : myUuid,
-            artRank: artRank,
-            tagName: artRank.tagName,
-            favorite : artRank.favorite,
-            authorTag: AuthorStore.getAuthorTag(myUuid, artRank.tagName)
-        });
-    },
-
     getInitialState: function() {
         return {
             tagText: "Tag your article",
             tagName: "My Post",
+            tagRank: 50,
             favorite: false
         }
     },
 
-    componentWillMount: function() {
-        this._updateState();
-    },
-
     render: function() {
-        let allTags = AuthorStore.getTagsByAuthorUuid(this.state.myUuid);
-
         return (
             <form enclType="form-data" acceptCharset="utf-8" className="form-horizontal">
                 <div className="row">
                     <div className="col-xs-5 col-sm-5 col-md-5">
-                        <TA.Typeahead options={allTags} maxVisible={4}
-                            placeholder={this.state.tagName} value={this.state.tagName}
-                            customClasses={{input: "form-control input-sm"}}
-                            onBlur={this._onBlur}
-                            onOptionSelected={this._onOptionSelected}/>
+                        <TypeAhead articleUuid={this.props.articleUuid}
+                            artRankSave={this._saveArticleRank}
+                            selectValue={this._taSelectValue} />
                     </div>
                     <div className="col-xs-3 col-sm-3 col-md-3">
-                        <input className="form-control input-sm" ref="rank" placeholder={this.state.authorTag.rank}/>
+                        <input className="form-control input-sm" ref="rank" placeholder={this.state.tagRank}/>
                     </div>
                     <div className="col-xs-2 col-sm-2 col-md-2">
                         <section>

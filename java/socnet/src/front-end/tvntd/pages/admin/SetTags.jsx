@@ -9,10 +9,15 @@ import Reflux         from 'reflux';
 import ErrorView          from 'vntd-shared/layout/ErrorView.jsx';
 import Actions            from 'vntd-root/actions/Actions.jsx';
 import AdminStore         from 'vntd-root/stores/AdminStore.jsx';
+import ArticleTagStore    from 'vntd-root/stores/ArticleTagStore.jsx';
 import ArticleBox         from 'vntd-root/components/ArticleBox.jsx';
+import TagInfo            from 'vntd-root/components/TagInfo.jsx';
 
 let SetTags = React.createClass({
-    mixins: [Reflux.connect(AdminStore)],
+    mixins: [
+        Reflux.connect(AdminStore),
+        Reflux.connect(ArticleTagStore)
+    ],
 
     _submitSetTag: function(event) {
         event.preventDefault();
@@ -25,9 +30,9 @@ let SetTags = React.createClass({
         Actions.setTags(data);
     },
 
-    _deleteArticle: function(uuid) {
-        console.log("delete article uuid " + uuid);
-        console.log(this);
+    _tagArticle: function(uuid, artTag, parentName) {
+        console.log("add article uuid " + uuid);
+        ArticleTagStore.addPublicTag(artTag.tagName, artTag.rank, null);
     },
 
     render: function() {
@@ -36,11 +41,21 @@ let SetTags = React.createClass({
         _.forOwn(publicArts, function(v, artUuid) {
             selected.push(
                 <div className="col-sm-6 col-md-6 col-lg-4" key={_.uniqueId("pub-art-selected-")}>
-                    {ArticleBox.article(artUuid, this._deleteArticle.bind(this, artUuid))}
+                    {ArticleBox.article(artUuid, this._tagArticle, this)}
                 </div> 
             )
         }.bind(this));
 
+        let pubTagRender = [];
+        let pubTagList = ArticleTagStore.getAllPublicTags();
+
+        _.forOwn(pubTagList, function(item) {
+            pubTagRender.push(
+                <div className="col-sm-4 col-md-4 col-lg-4" key={_.uniqueId('pub-tag-')}>
+                    <TagInfo artTag={item}/>
+                </div>
+            );
+        });
         return (
             <div id="content">
                 <section id="widget-grid" className="">
@@ -48,6 +63,13 @@ let SetTags = React.createClass({
                         {selected}
                     </div>
                 </section>
+                <div className="row">
+                    <div className="col-sm-4 col-md-4 col-lg-4">
+                        <TagInfo artTag={null}/>
+                    </div>
+                    {!_.isEmpty(pubTagRender) ? pubTagRender : null}
+                </div>
+
                 <form className="smart-form client-form">
                     <header>Admin Set Tags</header>
                     <fieldset>

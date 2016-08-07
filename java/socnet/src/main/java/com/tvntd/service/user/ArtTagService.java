@@ -26,7 +26,10 @@
  */
 package com.tvntd.service.user;
 
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,10 +58,53 @@ public class ArtTagService implements IArtTagService
     @Autowired
     protected IAuthorService authorSvc;
 
+    public static List<ArtTagDTO> makeSubTags(List<ArtTagDTO> children, String userUuid)
+    {
+        List<ArtTagDTO> result = new LinkedList<>();
+        Map<String, ArtTagDTO> map = new HashMap<>();
+
+        for (ArtTagDTO tag : children) {
+            map.put(tag.getTagName(), tag);
+            if (tag.getParentTag().isEmpty()) {
+                tag.setParentTag(null);
+            }
+            if (userUuid != null) {
+                tag.setUserUuid(userUuid);
+            }
+        }
+        for (ArtTagDTO tag : children) {
+            ArtTagDTO parent = map.get(tag.getParentTag());
+
+            if (parent != null) {
+                parent.addSubTag(tag);
+            }
+        }
+        for (ArtTagDTO tag : children) {
+            String key = tag.getParentTag();
+            if (map.get(key) != null) {
+                map.remove(key);
+            }
+        }
+        for (Map.Entry<String, ArtTagDTO> entry : map.entrySet()) {
+            result.add(entry.getValue());
+        }
+        map.clear();
+        return result;
+    }
+
     @Override
     public void saveTag(ArtTagDTO tag)
     {
         artTagRepo.save(tag.fetchArtTag());
+        List<ArtTagDTO> sub = tag.getSubTags();
+
+        System.out.println("Save tag " + tag.getTagName());
+        if (sub != null) {
+            for (ArtTagDTO t : sub) {
+                System.out.println("Save sub tag " + t.getTagName());
+                saveTag(t);
+            }
+        }
     }
 
     @Override
@@ -75,8 +121,17 @@ public class ArtTagService implements IArtTagService
     }
 
     @Override
-    public List<ArtTagDTO> getUserTag(String uuid)
+    public List<ArtTagDTO> getUserTags(String uuid)
     {
+        List<ArtTag> all = artTagRepo.findAllByUserUuid(uuid);
+        System.out.println("Return tag " + all);
+        if (all != null) {
+            List<ArtTagDTO> flat = new LinkedList<>();
+            for (ArtTag art : all) {
+                flat.add(new ArtTagDTO(art));
+            }
+            return makeSubTags(flat, null);
+        }
         return null;
     }
 }

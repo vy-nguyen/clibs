@@ -37,7 +37,6 @@ let NavigationStore = Reflux.createStore({
     },
 
     onTranslateCompleted: function() {
-        console.log("Do translate");
         this._translate(this.data.items);
     },
 

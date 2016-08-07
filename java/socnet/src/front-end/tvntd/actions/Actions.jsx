@@ -305,7 +305,6 @@ Actions.listUsers.listen(function() {
 });
 
 Actions.setTags.listen(function(data) {
-    console.log("Request set tags");
     postRestCall(data, "/admin/set-tags", true, this);
 });
 

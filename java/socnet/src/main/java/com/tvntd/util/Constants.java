@@ -28,13 +28,9 @@ package com.tvntd.util;
 
 public interface Constants
 {
-	String REQUEST_TYPE    = "requestType";
-	String REGISTRATION    = "registration";
-	String IMPORT_CONTACTS = "importContacts";
-
-	String SHARE        = "share";
     String DefaultTag   = "My Post";
     String DefaultTopic = "Post";
+    String PublicUuid   = "00000000-ffff-0000-ffff-00ff00ff00ff";
 
     Long Role_Public   = 0x0000L;
     Long Role_Circle1  = 0x0001L;
