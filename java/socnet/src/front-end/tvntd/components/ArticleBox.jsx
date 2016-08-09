@@ -6,10 +6,11 @@
 import _         from 'lodash';
 import React     from 'react-mod';
 
-import UserStore     from 'vntd-shared/stores/UserStore.jsx';
-import ArticleStore  from 'vntd-root/stores/ArticleStore.jsx';
-import AuthorStore   from 'vntd-root/stores/AuthorStore.jsx';
-import LikeStat      from 'vntd-root/components/LikeStat.jsx';
+import UserStore       from 'vntd-shared/stores/UserStore.jsx';
+import ArticleStore    from 'vntd-root/stores/ArticleStore.jsx';
+import AuthorStore     from 'vntd-root/stores/AuthorStore.jsx';
+import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
+import LikeStat        from 'vntd-root/components/LikeStat.jsx';
 
 let ArticleBox = React.createClass({
 
@@ -62,7 +63,7 @@ let ArticleBox = React.createClass({
                         <div className="product-info smart-form">
                             <div className="row">
                                 <div className="col-md-6 col-sm-6 col-xs-6">
-                                    <a className="btn btn-success" onClick={data.clickCbFn}>{data.selectButton}</a>
+                                    <a className={data.clickBtn.btnClass} onClick={data.clickCbFn}>{data.clickBtn.btnText}</a>
                                 </div>
                                 <div className="col-md-6 col-sm-6 col-xs-6">
                                     <div className="rating">
@@ -90,31 +91,34 @@ let ArticleBox = React.createClass({
     },
 
     statics: {
-        article: function(articleUuid, clickCb, cbArg) {
+        article: function(articleUuid, clickCb, btnActive, btnDisabled, cbArg) {
             let article = ArticleStore.getArticleByUuid(articleUuid);
             if (article == null) {
-                console.log("No matching uuid " + articleUuid);
                 return null;
             }
             let author = UserStore.getUserByUuid(article.authorUuid);
-            let artTag = AuthorStore.getArticleTag(article.authorUuid, articleUuid);
+            let artRank = AuthorStore.getArticleRank(article.authorUuid, articleUuid);
+            let clickBtn = btnActive;
+            if (ArticleTagStore.getPublicTag(artRank.tagName) != null) {
+                clickBtn = btnDisabled;
+            }
             let arg = {
                 logo       : author.userImgUrl,
                 image      : article.pictureUrl[0],
                 dateInfo   : article.dateString,
                 artTitle   : article.topic,
-                artCategory: artTag.tagName,
+                artCategory: artRank.tagName,
                 artPrice   : author.getUserName(),
-                clickCbFn  : clickCb.bind(cbArg, articleUuid, artTag),
+                clickCbFn  : clickCb.bind(cbArg, articleUuid, artRank),
+                clickBtn   : clickBtn,
                 likeStat   : {
                     dateMoment  : article.createdDate,
                     commentCount: 0,
                     likesCount  : 0,
                     sharesCount : 0
-                },
-                selectButton: 'Add Article'
+                }
             };
-            if (artTag != null) {
+            if (artRank != null) {
 
             } else {
                 console.log(article);

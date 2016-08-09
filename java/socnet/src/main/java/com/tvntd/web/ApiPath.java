@@ -156,14 +156,15 @@ public class ApiPath
         }
         StartupResponse result = new StartupResponse(profile, reqt);
         fillStartupResponse(result, profile,
-                profileSvc, authorSvc, menuItemSvc, articleSvc);
+                profileSvc, authorSvc, menuItemSvc, articleSvc, artTagSvc);
         return result;
     }
 
     public static void
     fillStartupResponse(StartupResponse resp, ProfileDTO profile,
             IProfileService profileSvc, IAuthorService authorSvc,
-            IMenuItemService menuItemSvc, IArticleService articleSvc)
+            IMenuItemService menuItemSvc, IArticleService articleSvc,
+            IArtTagService artTagSvc)
     {
         if (menuItemSvc != null) {
             Long mask = profile.getRoleMask();
@@ -185,6 +186,7 @@ public class ApiPath
             List<String> uuids = resp.getAllUserUuids();
             resp.setArticles(articleSvc.getArticlesByUser(uuids));
         }
+        resp.setPublicTags(artTagSvc.getUserTagsDTO(Constants.PublicUuid));
     }
 
     public static void

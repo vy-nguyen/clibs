@@ -57,18 +57,22 @@ public final class Util
 
     static public String fromRawByte(byte[] input)
     {
-        try {
-            return new String(input, "UTF-8");
-        } catch(UnsupportedEncodingException e) {
+        if (input != null) {
+            try {
+                return new String(input, "UTF-8");
+            } catch(UnsupportedEncodingException e) {
+            }
         }
         return "";
     }
 
     static public byte[] toRawByte(String str)
     {
-        try {
-            return str.getBytes("UTF-8");
-        } catch(UnsupportedEncodingException e) {
+        if (str != null) {
+            try {
+                return str.getBytes("UTF-8");
+            } catch(UnsupportedEncodingException e) {
+            }
         }
         return null;
     }
@@ -101,6 +105,14 @@ public final class Util
         if (isInList(list, item) == null) {
             list.add(item);
         }
+    }
+
+    static public StringBuilder printIndent(StringBuilder sb, int indent)
+    {
+        for (int i = 0; i < indent; i++) {
+            sb.append(" ");
+        }
+        return sb;
     }
 
     private Util() {}

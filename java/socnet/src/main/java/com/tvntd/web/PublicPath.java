@@ -94,8 +94,8 @@ public class PublicPath
         StartupResponse result = new StartupResponse(profile, reqt);
 
         if (profile != null) {
-            ApiPath.fillStartupResponse(result,
-                    profile, profileSvc, authorSvc, menuItemSvc, articleSvc);
+            ApiPath.fillStartupResponse(result, profile,
+                    profileSvc, authorSvc, menuItemSvc, articleSvc, artTagSvc);
             return result;
         }
         Long userId = menuItemSvc.getPublicId();
@@ -171,6 +171,6 @@ public class PublicPath
         }
         List<ArtTagDTO> result = artTagSvc.getUserTags(uuid);
         System.out.println("Result tag list " + result);
-        return new ArtTagList(result);
+        return new ArtTagList(result, null);
     }
 }

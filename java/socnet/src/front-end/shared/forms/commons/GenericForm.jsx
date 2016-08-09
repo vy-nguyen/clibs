@@ -40,8 +40,6 @@ let GenericForm = React.createClass({
         event.preventDefault();
         _.forEach(entries, function(section) {
             _.forEach(section.entries, function(item) {
-                console.log(item.inpName);
-                console.log(this.refs[item.inpName]);
                 dataRefs[item.inpName] = this.refs[item.inpName].value;
             }.bind(this));
         }.bind(this));

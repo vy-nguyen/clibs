@@ -65,7 +65,8 @@ public class ArtTagService implements IArtTagService
 
         for (ArtTagDTO tag : children) {
             map.put(tag.getTagName(), tag);
-            if (tag.getParentTag().isEmpty()) {
+            String parent = tag.getParentTag();
+            if (parent != null && parent.isEmpty()) {
                 tag.setParentTag(null);
             }
             if (userUuid != null) {
@@ -82,7 +83,7 @@ public class ArtTagService implements IArtTagService
         for (ArtTagDTO tag : children) {
             String key = tag.getParentTag();
             if (map.get(key) != null) {
-                map.remove(key);
+                map.remove(tag.getTagName());
             }
         }
         for (Map.Entry<String, ArtTagDTO> entry : map.entrySet()) {
@@ -98,10 +99,8 @@ public class ArtTagService implements IArtTagService
         artTagRepo.save(tag.fetchArtTag());
         List<ArtTagDTO> sub = tag.getSubTags();
 
-        System.out.println("Save tag " + tag.getTagName());
         if (sub != null) {
             for (ArtTagDTO t : sub) {
-                System.out.println("Save sub tag " + t.getTagName());
                 saveTag(t);
             }
         }
@@ -133,5 +132,17 @@ public class ArtTagService implements IArtTagService
             return makeSubTags(flat, null);
         }
         return null;
+    }
+
+    @Override
+    public ArtTagList getUserTagsDTO(String uuid)
+    {
+        List<ArtTagDTO> tags = new LinkedList<>();
+        List<ArtTag> all = artTagRepo.findAllByUserUuid(uuid);
+
+        for (ArtTag t : all) {
+            tags.add(new ArtTagDTO(t));
+        }
+        return new ArtTagList(tags, null);
     }
 }

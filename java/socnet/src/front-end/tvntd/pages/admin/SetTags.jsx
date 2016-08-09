@@ -21,27 +21,29 @@ let SetTags = React.createClass({
 
     _submitSetTag: function(event) {
         event.preventDefault();
-        let data = {
-            tagList: [ {
-                tagName: this.refs.tagName.value,
-                artTagUuids: this.refs.artTag.value
-            } ]
-        };
-        Actions.setTags(data);
+        Actions.setTags(ArticleTagStore.getSubmitTags());
+        console.log(ArticleTagStore.getSubmitTags());
     },
 
-    _tagArticle: function(uuid, artTag, parentName) {
-        console.log("add article uuid " + uuid);
-        ArticleTagStore.addPublicTag(artTag.tagName, artTag.rank, null);
+    _tagArticle: function(uuid, artRank) {
+        ArticleTagStore.addPublicTag(artRank.tagName, artRank.rank, null, uuid);
     },
 
     render: function() {
         let publicArts = AdminStore.getPublicArticle();
         let selected = [];
+        let btnActive = {
+            btnClass: "btn btn-success",
+            btnText : "Add Article"
+        };
+        let btnDisabled = {
+            btnClass: "btn btn-success disabled",
+            btnText : "Article Added"
+        };
         _.forOwn(publicArts, function(v, artUuid) {
             selected.push(
                 <div className="col-sm-6 col-md-6 col-lg-4" key={_.uniqueId("pub-art-selected-")}>
-                    {ArticleBox.article(artUuid, this._tagArticle, this)}
+                    {ArticleBox.article(artUuid, this._tagArticle, btnActive, btnDisabled, this)}
                 </div> 
             )
         }.bind(this));
@@ -64,37 +66,16 @@ let SetTags = React.createClass({
                     </div>
                 </section>
                 <div className="row">
+                    {!_.isEmpty(pubTagRender) ? pubTagRender : null}
+                </div>
+                <div className="row">
                     <div className="col-sm-4 col-md-4 col-lg-4">
                         <TagInfo artTag={null}/>
                     </div>
-                    {!_.isEmpty(pubTagRender) ? pubTagRender : null}
-                </div>
-
-                <form className="smart-form client-form">
-                    <header>Admin Set Tags</header>
-                    <fieldset>
-                        <section>
-                            <ErrorView className="form-group alert-danger"/>
-                        </section>
-                    </fieldset>
-                    <fieldset>
-                        <section>
-                            <label className="label">Tag Name</label>
-                            <label className="input">
-                                <input name="tagName" ref="tagName"/>
-                            </label>
-                        </section>
-                        <section>
-                            <label className="label">ArticleTag Uuid</label>
-                            <label className="input">
-                                <input name="artTag" ref="artTag"/>
-                            </label>
-                        </section>
-                    </fieldset>
                     <footer>
-                        <button className="btn btn-primary" onClick={this._submitSetTag}>Submit</button>
+                        <button className="btn btn-primary" onClick={this._submitSetTag}>Save Tags</button>
                     </footer>
-                </form>
+                </div>
             </div>
         );
     }

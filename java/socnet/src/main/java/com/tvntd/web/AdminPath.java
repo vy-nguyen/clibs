@@ -113,9 +113,9 @@ public class AdminPath
         if (profile == null) {
             return UserPath.s_noProfile;
         }
-        s_log.info("Got set tags requests");
+        s_log.debug("Got set tags requests");
         List<ArtTagDTO> fixup =
-            ArtTagService.makeSubTags(tagList.getTagList(), Constants.PublicUuid);
+            ArtTagService.makeSubTags(tagList.getPublicTags(), Constants.PublicUuid);
 
         for (ArtTagDTO tag : fixup) {
             artTagSvc.saveTag(tag);       

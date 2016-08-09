@@ -20,7 +20,7 @@ let TypeAhead = React.createClass({
         let myUuid = UserStore.getSelf().userUuid;
 
         if (this.props.articleUuid != null) {
-            let artRank = AuthorStore.getArticleTag(myUuid, this.props.articleUuid);
+            let artRank = AuthorStore.getArticleRank(myUuid, this.props.articleUuid);
             let authorTag = AuthorStore.getAuthorTag(myUuid, artRank.tagName)
 
             this.setState({

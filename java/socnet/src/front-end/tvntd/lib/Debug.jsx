@@ -13,7 +13,7 @@ import AuthorStore      from 'vntd-root/stores/AuthorStore.jsx';
 import CommentStore     from 'vntd-root/stores/CommentStore.jsx';
 import RenderStore      from 'vntd-root/stores/RenderStore.jsx';
 import AdminStore       from 'vntd-root/stores/AdminStore.jsx';
-import ArtTagStore      from 'vntd-root/stores/AdminStore.jsx';
+import ArtTagStore      from 'vntd-root/stores/ArticleTagStore.jsx';
 
 let Debug = React.createClass({
 

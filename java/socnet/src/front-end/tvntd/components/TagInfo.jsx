@@ -6,6 +6,7 @@
 import _               from 'lodash';
 import React           from 'react-mod';
 import Reflux          from 'reflux';
+import Select          from 'react-select';
 
 import GenericForm     from 'vntd-shared/forms/commons/GenericForm.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
@@ -22,6 +23,10 @@ let TagInfo = React.createClass({
 
     _addNewTag: function(data) {
         ArticleTagStore.addTagInput(data);
+    },
+
+    _selectParent: function(select) {
+        ArticleTagStore.changeParent(this.props.artTag.tagName, select);
     },
 
     render: function() {
@@ -81,8 +86,14 @@ let TagInfo = React.createClass({
             );
         }.bind(this));
 
+        let parentTags = [];
+        _.forOwn(ArticleTagStore.getAllPublicTags(), function(tag) {
+            parentTags.push({ value: tag.tagName, label: tag.tagName });
+        });
         return (
             <div className="well well-sm">
+                <Select name="form-sel-parent" options={parentTags} onChange={this._selectParent}/>
+                <hr/>
                 <span><h4><a onClick={this._removeSelf}> x </a>{artTag.tagName}</h4></span>
                 <ul className="list-inline padding-10">
                     {subTags}

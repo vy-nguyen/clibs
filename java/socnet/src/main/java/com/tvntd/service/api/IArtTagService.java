@@ -43,32 +43,50 @@ public interface IArtTagService
 
     ArtTagDTO getTag(String tag, String uuid);
     List<ArtTagDTO> getUserTags(String uuid);
+    ArtTagList getUserTagsDTO(String uuid);
 
     public static class ArtTagList extends GenericResponse
     {
-        private List<ArtTagDTO> tagList;
+        private List<ArtTagDTO> publicTags;
+        private List<ArtTagDTO> deletedTags;
 
         public ArtTagList() {
             super(GenericResponse.USER_HOME, null, null);
         }
 
-        public ArtTagList(List<ArtTagDTO> list) {
+        public ArtTagList(List<ArtTagDTO> pubList, List<ArtTagDTO> delList)
+        {
             this();
-            this.tagList = list;
+            this.publicTags = pubList;
+            this.deletedTags = delList;
         }
 
         /**
-         * @return the tagList
+         * @return the publicTags
          */
-        public List<ArtTagDTO> getTagList() {
-            return tagList;
+        public List<ArtTagDTO> getPublicTags() {
+            return publicTags;
         }
 
         /**
-         * @param tagList the tagList to set
+         * @param publicTags the publicTags to set
          */
-        public void setTagList(List<ArtTagDTO> tagList) {
-            this.tagList = tagList;
+        public void setPublicTags(List<ArtTagDTO> publicTags) {
+            this.publicTags = publicTags;
+        }
+
+        /**
+         * @return the deletedTags
+         */
+        public List<ArtTagDTO> getDeletedTags() {
+            return deletedTags;
+        }
+
+        /**
+         * @param deletedTags the deletedTags to set
+         */
+        public void setDeletedTags(List<ArtTagDTO> deletedTags) {
+            this.deletedTags = deletedTags;
         }
     }
 
@@ -102,6 +120,30 @@ public interface IArtTagService
                 subTags = new LinkedList<>();
             }
             subTags.add(sub);
+        }
+
+        public String toString()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            toString(sb, 0);
+            return sb.toString();
+        }
+
+        protected void toString(StringBuilder sb, int indent)
+        {
+            Util.printIndent(sb, indent);
+            sb.append("Tag ").append(getTagName()).append("\n");
+
+            List<ArtTagDTO> subTags = getSubTags();
+            if (subTags != null) {
+                indent += 2;
+                Util.printIndent(sb, indent);
+                sb.append("[Sub Tags ").append(subTags.size()).append("]\n");
+                for (ArtTagDTO sub : subTags) {
+                    sub.toString(sb, indent);
+                }
+            }
         }
 
         public void addArtRank(String rankKey) {
@@ -184,10 +226,14 @@ public interface IArtTagService
         }
 
         /**
-         * Get articleRank.
+         * Get/set articleRank.
          */
         public List<String> getArticleRank() {
             return artTag.getTagArtRanks();
+        }
+
+        public void setArticleRank(List<String> ranks) {
+            artTag.setTagArtRanks(ranks);
         }
 
         /**

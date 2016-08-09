@@ -40,22 +40,42 @@ class ArtTag {
         }
     }
 
-    removeSelf(tagMgr) {
-        _.forEach(this.subTags, function(t) {
-            t.parentTag = null;
-            tagMgr.publicTags[t.tagName] = t;
-        }.bind(this));
+    changeParent(parentName, tagMgr) {
+        this.detachParent(tagMgr);
+        if (parentName == null || _.isEmpty(parentName)) {
+            parentName = null;
+        }
+        this.parentTag = parentName;
+        if (parentName != null) {
+            parent = tagMgr.publicTags[parentName];
+            if (parent != null) {
+                parent.addSubTag(this);
+            }
+        } else {
+            tagMgr.publicTags[this.tagName] = this;
+        }
+    }
 
+    detachParent(tagMgr) {
         if (this.parentTag != null) {
-            let parent = tagMgr.pubTagIndex[this.parentTag];
+            let parent = tagMgr.publicTags(this.parentTag);
             if (parent != null) {
                 parent.removeSubTag(this);
             }
+            this.parentTag = null;
+        } else {
+            delete tagMgr.publicTags[this.tagName];
         }
-        this.parentTag = null;
+    }
+
+    removeSelf(tagMgr) {
+        _.forEach(this.subTags, function(t) {
+            delete tagMgr.pubTagIndex[t.tagName];
+        }.bind(this));
+
+        this.detachParent(tagMgr);
         delete tagMgr.pubTagIndex[this.tagName];
-        delete tagMgr.publicTags[this.tagName];
-        delete this.subTags;
+        tagMgr.deletedTags[this.tagName] = this;
     }
 
     removeSubTag(sub) {
@@ -77,10 +97,26 @@ let ArticleTagStore = Reflux.createStore({
             publicTags : {},
             pubTagIndex: {},
             deletedTags: {}
-        }
+        };
     },
 
     /* Admin actions to list users. */
+    onStartupCompleted: function(data) {
+        let tagData = data.publicTags; 
+        if (tagData != null) {
+            let tagObjs = [];
+            _.forEach(tagData.publicTags, function(tag) {
+                let obj = new ArtTag(tag);
+                this.data.pubTagIndex[tag.tagName] = obj;
+                tagObjs.push(obj);
+            }.bind(this));
+
+            _.forEach(tagObjs, function(obj) {
+                obj.addSelf(this.data);
+            }.bind(this));
+            this.trigger(this.data);
+        }
+    },
 
     /* Public methods. */
     addTagInput: function(tag) {
@@ -89,15 +125,33 @@ let ArticleTagStore = Reflux.createStore({
         this.trigger(this.data);
     },
 
-    addPublicTag: function(tagName, rank, parentName) {
-        let tag = new ArtTag({
-            tagName  : tagName,
-            rankScore: rank,
-            parentTag: parentName,
-            subTags  : []
-        });
-        tag.addSelf(this.data);
-        this.trigger(this.data);
+    addPublicTag: function(tagName, rank, parentName, articleUuid) {
+        let tag = this.data.pubTagIndex[tagName];
+        if (tag == null) {
+            tag = new ArtTag({
+                tagName  : tagName,
+                rankScore: rank,
+                parentTag: parentName,
+                subTags  : [],
+                articleRank: [ articleUuid ]
+            });
+            tag.addSelf(this.data);
+            this.trigger(this.data);
+
+        } else if (tag.articleRank != null) {
+            let artRank = tag.articleRank;
+            if (artRank.indexOf(articleUuid) < 0) {
+                artRank.push(articleUuid);
+            }
+        }
+    },
+
+    changeParent(tagName, parentName) {
+        let self = this.data.pubTagIndex[tagName];
+        if (self != null) {
+            self.changeParent(parentName, this.data);
+            this.trigger(this.data);
+        }
     },
 
     removePublicTag: function(tagName) {
@@ -117,6 +171,39 @@ let ArticleTagStore = Reflux.createStore({
 
     getAllPublicTags: function() {
         return this.data.publicTags;
+    },
+
+    getSubmitTags: function() {
+        let pubTags = [], delTags = [];
+
+        this._toTagArray(pubTags, this.data.publicTags);
+        this._toTagArray(delTags, this.data.deletedTags);
+        return {
+            publicTags : pubTags,
+            deletedTags: delTags
+        }
+    },
+
+    _toTagArray: function(array, tagMgr) {
+        _.forOwn(tagMgr, function(tag) {
+            this._flatTagArray(array, tag);
+        }.bind(this));
+        return array;
+    },
+
+    _flatTagArray: function(array, tag) {
+        if (tag.subTags != null) {
+            _.forEach(tag.subTags, function(sub) {
+                this._flatTagArray(array, sub);
+            }.bind(this));
+        }
+        array.push({
+            tagName  : tag.tagName,
+            rankScore: tag.rankScore != null ? tag.rankScore : 50,
+            parentTag: tag.parentTag,
+            subTags  : [],
+            articleRank: tag.articleRank != null ? tag.articleRank : []
+        });
     },
 
     getPublicTag: function(tagName) {

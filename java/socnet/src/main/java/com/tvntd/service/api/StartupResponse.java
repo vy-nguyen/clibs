@@ -34,6 +34,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.tvntd.service.api.IArtTagService.ArtTagList;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IAuthorService.AuthorDTO;
 import com.tvntd.service.api.IMenuItemService.MenuItemResp;
@@ -46,6 +47,7 @@ public class StartupResponse
     private List<MenuItemResp> menuItems;
     private List<ArticleDTO>   articles;
     private List<Language>     languages;
+    private ArtTagList         publicTags;
 
     public StartupResponse(ProfileDTO profile, HttpServletRequest reqt)
     {
@@ -154,6 +156,20 @@ public class StartupResponse
      */
     public List<Language> getLanguages() {
         return languages;
+    }
+
+    /**
+     * @return the publicTags
+     */
+    public ArtTagList getPublicTags() {
+        return publicTags;
+    }
+
+    /**
+     * @param publicTags the publicTags to set
+     */
+    public void setPublicTags(ArtTagList publicTags) {
+        this.publicTags = publicTags;
     }
 
     public static class Language
