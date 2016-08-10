@@ -45,7 +45,21 @@ let ArticleBox = React.createClass({
                             <img src={data.image} className="img-responsive"/>
                         </div>
                         {data.tagImage ? <span className="tag2 hot">{data.tagImage}</span> : null}
-                        {data.dateInfo ? <span><i className="fa fa-calendar"/> {data.dateInfo}</span> : null}
+                        <LikeStat data={data.likeStat} split={true}/>
+                        <div className="smart-form">
+                            <div className="rating">
+                                <input type="radio" name="stars-rating" id="stars-rating-5"/>
+                                <label for="stars-rating-5"><i className="fa fa-star"></i></label>
+                                <input type="radio" name="stars-rating" id="stars-rating-4"/>
+                                <label for="stars-rating-4"><i className="fa fa-star"></i></label>
+                                <input type="radio" name="stars-rating" id="stars-rating-3"/>
+                                <label for="stars-rating-3"><i className="fa fa-star text-primary"></i></label>
+                                <input type="radio" name="stars-rating" id="stars-rating-2"/>
+                                <label for="stars-rating-2"><i className="fa fa-star text-primary"></i></label>
+                                <input type="radio" name="stars-rating" id="stars-rating-1"/>
+                                <label for="stars-rating-1"><i className="fa fa-star text-primary"></i></label>
+                            </div>
+                        </div>
                     </div>
                     <div className="col-md-8 col-sm-12 col-xs-12">
                         <div className="product-deatil">
@@ -57,7 +71,7 @@ let ArticleBox = React.createClass({
                             <p className="price-container">
                                 <span>{data.artPrice}</span>
                             </p>
-                            <span className="tag1"></span>
+                            {data.dateInfo ? <span><i className="fa fa-calendar"/> {data.dateInfo}</span> : null}
                         </div>
                         {data.description}
                         <div className="product-info smart-form">
@@ -66,23 +80,10 @@ let ArticleBox = React.createClass({
                                     <a className={data.clickBtn.btnClass} onClick={data.clickCbFn}>{data.clickBtn.btnText}</a>
                                 </div>
                                 <div className="col-md-6 col-sm-6 col-xs-6">
-                                    <div className="rating">
-                                        <input type="radio" name="stars-rating" id="stars-rating-5"/>
-                                        <label for="stars-rating-5"><i className="fa fa-star"></i></label>
-                                        <input type="radio" name="stars-rating" id="stars-rating-4"/>
-                                        <label for="stars-rating-4"><i className="fa fa-star"></i></label>
-                                        <input type="radio" name="stars-rating" id="stars-rating-3"/>
-                                        <label for="stars-rating-3"><i className="fa fa-star text-primary"></i></label>
-                                        <input type="radio" name="stars-rating" id="stars-rating-2"/>
-                                        <label for="stars-rating-2"><i className="fa fa-star text-primary"></i></label>
-                                        <input type="radio" name="stars-rating" id="stars-rating-1"/>
-                                        <label for="stars-rating-1"><i className="fa fa-star text-primary"></i></label>
-                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div className="product-info">
-                            <LikeStat data={data.likeStat}/>
                         </div>
                     </div>
                 </div>
@@ -102,28 +103,30 @@ let ArticleBox = React.createClass({
             if (ArticleTagStore.getPublicTag(artRank.tagName) != null) {
                 clickBtn = btnDisabled;
             }
+            if (artRank != null) {
+            } else {
+                arg.artBrief = article.content.substring(0, 100);
+            }
+            if (artRank.contentBrief == null) {
+                artRank.contentBrief = article.content.substring(0, 100);
+            }
             let arg = {
                 logo       : author.userImgUrl,
                 image      : article.pictureUrl[0],
                 dateInfo   : article.dateString,
                 artTitle   : article.topic,
                 artCategory: artRank.tagName,
+                artBrief   : artRank.contentBrief,
                 artPrice   : author.getUserName(),
                 clickCbFn  : clickCb.bind(cbArg, articleUuid, artRank),
                 clickBtn   : clickBtn,
                 likeStat   : {
                     dateMoment  : article.createdDate,
-                    commentCount: 0,
-                    likesCount  : 0,
-                    sharesCount : 0
+                    commentCount: artRank.notifCount ? artRank.notifCount : 0,
+                    likesCount  : artRank.likes,
+                    sharesCount : artRank.shares 
                 }
             };
-            if (artRank != null) {
-
-            } else {
-                console.log(article);
-                arg.artBrief = article.content.substring(0, 100);
-            }
             return (<ArticleBox data = {arg}/>);
         }
     }

@@ -21,16 +21,17 @@
 
     <link rel="shortcut icon" href="/rs/img/favicon.ico" type="image/x-icon">
 
-    <link rel="apple-touch-icon" href="/rs/images/splash/sptouch-icon-iphone.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/rs/images/splash/touch-icon-ipad.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/rs/images/splash/touch-icon-iphone-retina.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/rs/images/splash/touch-icon-ipad-retina.png">
-
     <!-- iOS web-app metas : hides Safari UI Components and Changes Status Bar Appearance -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
 </head>
 <body>
+  <span id="mq-detector" style="visibility:hidden">
+      <span class="visible-xs"></span>
+      <span class="visible-sm"></span>
+      <span class="visible-md"></span>
+      <span class="visible-lg"></span>
+  </span>
   <div id="tvntd-root"></div>
   <script src="/rs/client/tvntd-vendor-bundle.js"></script>
   <script src="/rs/client/tvntd-bundle.js"></script>

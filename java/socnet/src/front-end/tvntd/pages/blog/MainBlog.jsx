@@ -4,43 +4,41 @@
  */
 'use strict';
 
-import React         from 'react-mod'
-import Reflux        from 'reflux';
-import TabPanel      from 'vntd-shared/layout/TabPanel.jsx';
+import _               from 'lodash';
+import React           from 'react-mod'
+import Reflux          from 'reflux';
+import TabPanel        from 'vntd-shared/layout/TabPanel.jsx';
+import AdminStore      from 'vntd-root/stores/AdminStore.jsx';
+import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
+import ArticleTagBrief from 'vntd-root/components/ArticleTagBrief.jsx';
 
 let MainBlog = React.createClass({
 
-    getBlogTab: function() {
-        return {
-            getActivePane: this._getActivePane,
-            setActivePane: this._setActivePane,
+    mixins: [
+        Reflux.connect(ArticleTagStore)
+    ],
 
-            tabItems: [ {
-                domId  : 'politics',
-                tabText: 'Chinh Tri',
-                tabIdx : 0
-            }, {
-                domId  : 'economics',
-                tabText: 'Kinh Te',
-                tabIdx : 1
-            }, {
-                domId  : 'market',
-                tabText: 'Thi Truong',
-                tabIdx : 2
-            }, {
-                domId  : 'education',
-                tabText: 'Giao Duc',
-                tabIdx : 3
-            }, {
-                domId  : 'tech',
-                tabText: 'Ky Thuat',
-                tabIdx : 4
-            }, {
-                domId  : 'community',
-                tabText: 'Cong Dong',
-                tabIdx : 5
-            } ]
-        }
+    getBlogTab: function() {
+        let idx = 0;
+        let out = {
+            tabItems: [],
+            tabContents: []
+        };
+        let pubTags = ArticleTagStore.getAllPublicTags();
+        _.forOwn(pubTags, function(tag) {
+            out.tabItems.push({
+                domId  : _.uniqueId('tag-'),
+                tabText: tag.tagName,
+                tabIdx : idx++
+            });
+            console.log(tag);
+            out.tabContents.push(
+                <div key={_.uniqueId('tab-content-')} className="no-padding">
+                    <ArticleTagBrief key={_.uniqueId('tag-brief-')} tag={tag}/>
+                </div>
+            );
+        });
+        return out;
     },
 
     _getActivePane: function() {
@@ -51,20 +49,16 @@ let MainBlog = React.createClass({
     },
 
     render: function() {
+        let tabData = this.getBlogTab();
         return (
             <div id="content">
                 <div className="row">
-                        <div className="col-sm-12 col-md-12 col-lg-12">
-                            <TabPanel className="padding-top-10" context={this.getBlogTab()}>
-                                <h1>Chinh Tri</h1>
-                                <h1>Kinh Te</h1>
-                                <h1>Thi Truong</h1>
-                                <h1>Giao Duc</h1>
-                                <h1>Ky Thuat</h1>
-                                <h1>Cong Dong</h1>
-                            </TabPanel>
-                        </div>
+                    <div className="col-sm-12 col-md-12 col-lg-12">
+                        <TabPanel className="padding-top-10" context={tabData}>
+                            {tabData.tabContents}
+                        </TabPanel>
                     </div>
+                </div>
             </div>
         )
     }

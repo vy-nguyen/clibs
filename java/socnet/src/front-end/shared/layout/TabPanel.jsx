@@ -32,12 +32,12 @@ let TabPanel = React.createClass({
 
     render: function() {
         let tab = this.props.context;
-        if (tab === null || tab === undefined) {
+        if (tab == null) {
             return null;
         }
         if (tab.getActivePane == null) {
-            tab.getActivePane = this._getActivePane.bind(this);
-            tab.setActivePane = this._setActivePane.bind(this);
+            tab.getActivePane = this._getActivePane;
+            tab.setActivePane = this._setActivePane;
         }
         let activeIdx = tab.getActivePane();
         let tabHeader = tab.tabItems.map(function(item, idx) {

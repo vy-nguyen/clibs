@@ -3,8 +3,9 @@
  */
 'use strict';
 
-import Reflux from 'reflux';
 import _      from 'lodash';
+import $      from 'jquery';
+import Reflux from 'reflux';
 
 import NavigationActions from 'vntd-shared/actions/NavigationActions.jsx';
 import History           from 'vntd-shared/utils/History.jsx';
@@ -20,8 +21,28 @@ let NavigationStore = Reflux.createStore({
     init: function() {
         this.data = {
             item: undefined,
-            items: []
+            items: [],
+            currMqIdx : undefined,
+            currMqMode: 'xs'
         }
+        this._checkForResize();
+        $(window).on('resize', this._checkForResize);
+    },
+
+    _checkForResize: function() {
+        let data = this.data;
+        data.currMqIdx = $('#mq-detector span').index($('#mq-detector span:visible'));
+        switch(data.currMqIdx) {
+            case 0: data.currMqMode = 'xs'; break;
+            case 1: data.currMqMode = 'sm'; break;
+            case 2: data.currMqMode = 'md'; break;
+            case 3: data.currMqMode = 'lg'; break;
+            default: data.currMqMode = 'xs';
+        }
+    },
+
+    getViewMode: function() {
+        return this.data.currMqMode;
     },
 
     replaceMenuItems: function(json) {

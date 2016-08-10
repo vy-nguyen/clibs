@@ -4,17 +4,17 @@
  */
 'use strict';
 
-window.jQuery = window.$ = require("jquery");
-window._                 = require("lodash");
-window.GlobalConfigs     = require('./config/config');
+window.jQuery = require('jquery');
+window.GlobalConfigs = require('./config/config');
+$ = window.jQuery;
 
-require("jquery-ui");
+//require("jquery-ui");
 require("bootstrap");
-require("fastclick");
-require("moment");
-require("moment-timezone");
-require("fullcalendar");
-require("notification");
+//require("fastclick");
+//require("moment");
+//require("moment-timezone");
+//require("fullcalendar");
+//require("notification");
 require("smartwidgets");
 require("sparkline");
 
