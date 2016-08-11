@@ -9,6 +9,7 @@ import Reflux   from 'reflux';
 
 import NavigationStore from 'vntd-shared/stores/NavigationStore.jsx';
 import ArticleBox      from 'vntd-root/components/ArticleBox.jsx';
+import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 
 let ArticleTagBrief = React.createClass({
 
@@ -72,18 +73,10 @@ let ArticleTagBrief = React.createClass({
         )
     },
 
-    _renderArtBox: function(output, allTags) {
+    _renderArtBox: function(output, tag) {
         let articles = [];
-        _.forEach(allTags, function(tag) {
-            if (tag.articleRank != null) {
-                _.forEach(tag.articleRank, function(uuid) {
-                    articles.push({
-                        artUuid: uuid,
-                        artTag : tag
-                    });
-                });
-            }
-        });
+        ArticleTagStore.getPublishedArticles(tag.tagName, articles);
+
         let mode = NavigationStore.getViewMode();
         let length = articles.length;
 
@@ -128,17 +121,32 @@ let ArticleTagBrief = React.createClass({
     },
 
     render: function() {
-        let allTags = [];
-        this._getSubTagObjs(allTags, this.props.tag);
-
         let output = [];
-        this._renderArtBox(output, allTags);
+        this._renderArtBox(output, this.props.tag);
 
         return (
             <div>
                 {output}
             </div>
         );
+    },
+
+    statics: {
+        renderPublicTags: function() {
+            let output = [];
+            let tags = ArticleTagStore.getAllPublicTags();
+            if (tags != null) {
+                _.forOwn(tags, function(tag) {
+                    output.push(
+                        <div className="row">
+                            <h1>{tag.tagName}</h1>
+                            <ArticleTagBrief key={_.uniqueId('art-pub-tag-')} tag={tag}/>
+                        </div>
+                    );
+                });
+            }
+            return output;
+        }
     }
 });
 

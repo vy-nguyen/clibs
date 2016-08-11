@@ -142,6 +142,7 @@ let ArticleTagStore = Reflux.createStore({
             let artRank = tag.articleRank;
             if (artRank.indexOf(articleUuid) < 0) {
                 artRank.push(articleUuid);
+                this.trigger(this.data);
             }
         }
     },
@@ -208,6 +209,47 @@ let ArticleTagStore = Reflux.createStore({
 
     getPublicTag: function(tagName) {
         return this.data.pubTagIndex[tagName];
+    },
+
+    /*
+     * @return list of article uuids under the given tag.
+     */
+    getPublishedArticles: function(tagName, artUuids) {
+        let tag = this.data.pubTagIndex[tagName];
+        if (tag != null) {
+            _.forOwn(tag.articleRank, function(uuid) {
+                artUuids.push({
+                    artUuid: uuid,
+                    artTag : tag
+                });
+            });
+            if (tag.subTags != null) {
+                _.forOwn(tag.subTags, function(sub) {
+                    this.getPublishedArticles(sub.tagName, artUuids);
+                }.bind(this));
+            }
+        }
+        return artUuids;
+    },
+
+    /*
+     * @return true if the given uuid is listed in this store.
+     */
+    hasPublishedArticle: function(artUuid) {
+        let ret = false;
+        let tags = this.data.pubTagIndex;
+        _.forOwn(tags, function(t) {
+            _.forOwn(t.articleRank, function(uuid) {
+                if (uuid === artUuid) {
+                    ret = true;
+                    return false; // bail out early.
+                }
+            });
+            if (ret == true) {
+                return false;
+            }
+        });
+        return ret;
     },
 
     dumpData: function(header) {

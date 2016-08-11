@@ -3,8 +3,8 @@
  */
 'use strict';
 
-import React          from 'react-mod';
-import Reflux         from 'reflux';
+import React              from 'react-mod';
+import Reflux             from 'reflux';
 
 import ErrorView          from 'vntd-shared/layout/ErrorView.jsx';
 import Actions            from 'vntd-root/actions/Actions.jsx';
@@ -12,6 +12,7 @@ import AdminStore         from 'vntd-root/stores/AdminStore.jsx';
 import ArticleTagStore    from 'vntd-root/stores/ArticleTagStore.jsx';
 import ArticleBox         from 'vntd-root/components/ArticleBox.jsx';
 import TagInfo            from 'vntd-root/components/TagInfo.jsx';
+import ArticleTagBrief    from 'vntd-root/components/ArticleTagBrief.jsx';
 
 let SetTags = React.createClass({
     mixins: [
@@ -76,6 +77,7 @@ let SetTags = React.createClass({
                         <button className="btn btn-primary" onClick={this._submitSetTag}>Save Tags</button>
                     </footer>
                 </div>
+                {ArticleTagBrief.renderPublicTags()}
             </div>
         );
     }

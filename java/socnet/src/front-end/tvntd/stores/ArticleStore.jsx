@@ -22,7 +22,7 @@ class Article {
         this._id          = _.uniqueId('id-article-');
         this.author       = UserStore.getUserByUuid(data.authorUuid);
         this.createdDate  = Date.parse(data.createdDate);
-        this.dateString   = moment(this.currentDate).format("DD/MM/YYYY - HH:mm");
+        this.dateString   = moment(this.createdDate).format("DD/MM/YYYY - HH:mm");
 
         if (data.rank != null) {
             CommentStore.addArtAttr(data.rank);
@@ -36,8 +36,7 @@ class AuthorShelf {
         this.articles = {};
         this.sortedArticles = [];
         if (article != null) {
-            this.sortedArticles.push(article);
-            this.articles[article.articleUuid] = article;
+            this.addSortedArticle(article);
         } else {
             Actions.refreshArticles(authorUuid);
         }
@@ -52,7 +51,19 @@ class AuthorShelf {
     }
 
     addSortedArticle(article) {
-        this.sortedArticles.push(article);
+        this.articles[article.articleUuid] = article;
+        _.forEach(this.sortedArticles, function(it) {
+            console.log(it);
+        });
+        insertSorted(article, this.sortedArticles, function(anchor, elm) {
+            if (anchor.createdDate == elm.createdDate) {
+                return 0;
+            }
+            if (anchor.createdDate > elm.createdDate) {
+                return -1;
+            }
+            return 1;
+        });
         this.articles[article.articleUuid] = article;
     }
 

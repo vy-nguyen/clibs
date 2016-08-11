@@ -100,7 +100,8 @@ let ArticleBox = React.createClass({
             let author = UserStore.getUserByUuid(article.authorUuid);
             let artRank = AuthorStore.getArticleRank(article.authorUuid, articleUuid);
             let clickBtn = btnActive;
-            if (ArticleTagStore.getPublicTag(artRank.tagName) != null) {
+            //if (ArticleTagStore.getPublicTag(artRank.tagName) != null) {
+            if (ArticleTagStore.hasPublishedArticle(articleUuid) == true) {
                 clickBtn = btnDisabled;
             }
             if (artRank != null) {

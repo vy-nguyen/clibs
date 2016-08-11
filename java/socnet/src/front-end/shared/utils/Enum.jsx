@@ -59,41 +59,48 @@ function getRandomInt(min, max) {
 }
 
 /*
- * http://stackoverflow.com/questions/1344500/efficient-way-to-insert-a-number-into-a-sorted-array-of-numbers
+ * return the index to insert into the sorted array.
  */
-function _locationOf(elm, array, compareFn, start, end) {
-    start = start || 0;
-    end = end || array.length;
-
+function _locationOf(elm, array, compareFn) {
     let cmp = 0;
-    let pivot = parseInt(start + (end - start) / 2, 10);
+    let minIdx = 0;
+    let curIdx = 0;
+    let maxIdx = array.length - 1;
 
-    if (compareFn) {
-        cmp = compareFn(array[pivot], elm);
-    } else {
-        if (array[pivot] === elm) {
-            cmp = 0;
-        } else if (array[pivot] < elm) {
-            cmp = -1;
+    while (minIdx <= maxIdx) {
+        curIdx = (minIdx + maxIdx) / 2 | 0;
+        let pivot = array[curIdx];
+
+        if (compareFn) {
+            cmp = compareFn(pivot, elm);
         } else {
-            cmp = 1;
+            if (pivot == elm) {
+                cmp = 0;
+            } else if (pivot < elm) {
+                cmp = -1;
+            } else {
+                cmp = 1;
+            }
+        }
+        if (cmp <= -1) {
+            minIdx = curIdx + 1;
+        } else if (cmp >= 1) {
+            maxIdx = curIdx - 1;
+        } else {
+            return curIdx;
         }
     }
-    if ((end - start) <= 1 || cmp === 0) {
-        return pivot;
+    if (cmp >= 1) {
+        return (curIdx > 1 ? curIdx - 1 : 0);
     }
-    if (cmp === -1) {
-        return _locationOf(elm, array, compareFn, pivot, end);
-    } else {
-        return _locationOf(elm, array, compareFn, start, pivot);
-    }
+    return curIdx + 1;
 }
 
 function insertSorted(elm, array, compareFn) {
     if (array.length === 0) {
         return array.splice(0, 0, elm);
     }
-    return array.splice(_locationOf(elm, array, compareFn) + 1, 0, elm);
+    return array.splice(_locationOf(elm, array, compareFn), 0, elm);
 }
 
 function toDateString(milli) {
