@@ -52,9 +52,6 @@ class AuthorShelf {
 
     addSortedArticle(article) {
         this.articles[article.articleUuid] = article;
-        _.forEach(this.sortedArticles, function(it) {
-            console.log(it);
-        });
         insertSorted(article, this.sortedArticles, function(anchor, elm) {
             if (anchor.createdDate == elm.createdDate) {
                 return 0;

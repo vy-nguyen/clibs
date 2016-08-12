@@ -15,7 +15,6 @@ import LikeStat        from 'vntd-root/components/LikeStat.jsx';
 let ArticleBox = React.createClass({
 
     _clickSelect: function() {
-        console.log("Select artBox");
     },
 
     render: function() {
@@ -99,11 +98,8 @@ let ArticleBox = React.createClass({
             }
             let author = UserStore.getUserByUuid(article.authorUuid);
             let artRank = AuthorStore.getArticleRank(article.authorUuid, articleUuid);
-            let clickBtn = btnActive;
-            //if (ArticleTagStore.getPublicTag(artRank.tagName) != null) {
-            if (ArticleTagStore.hasPublishedArticle(articleUuid) == true) {
-                clickBtn = btnDisabled;
-            }
+            let clickBtn = clickCb.getBtnFormat();
+
             if (artRank != null) {
             } else {
                 arg.artBrief = article.content.substring(0, 100);
@@ -119,7 +115,7 @@ let ArticleBox = React.createClass({
                 artCategory: artRank.tagName,
                 artBrief   : artRank.contentBrief,
                 artPrice   : author.getUserName(),
-                clickCbFn  : clickCb.bind(cbArg, articleUuid, artRank),
+                clickCbFn  : clickCb.clickHandler.bind(clickCb.callbackArg, articleUuid, artRank),
                 clickBtn   : clickBtn,
                 likeStat   : {
                     dateMoment  : article.createdDate,
@@ -128,7 +124,7 @@ let ArticleBox = React.createClass({
                     sharesCount : artRank.shares 
                 }
             };
-            return (<ArticleBox data = {arg}/>);
+            return (<ArticleBox data={arg}/>);
         }
     }
 });

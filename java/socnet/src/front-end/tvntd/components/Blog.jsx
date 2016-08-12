@@ -41,7 +41,7 @@ let BlogItem = React.createClass({
         let article = this.props.article;
         const artInfo = [ {
             format: "fa fa-calendar",
-            info  : article.createDate
+            info  : article.createdDate
         }, {
             format: "fa fa-comments",
             info  : "20" // this.props.article.comments

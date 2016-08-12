@@ -62,41 +62,47 @@ let AuthorFeed = React.createClass({
     },
 
     _getActivePane: function() {
-        let author = this.props.user;
-        if (author.tabPanelIdx == null) {
-            author.tabPanelIdx = 0;
+        let author = AuthorStore.getAuthorByUuid(this.props.authorUuid);
+        if (author != null) {
+            if (author.tabPanelIdx == null) {
+                author.tabPanelIdx = 0;
+            }
+            return author.tabPanelIdx;
         }
-        return author.tabPanelIdx;
+        return 0;
     },
 
     _setActivePane: function(index) {
-        this.props.user.tabPanelIdx = index;
-    },
-
-    getInitialState: function() {
-        return {
-            articles: ArticleStore.getSortedArticlesByAuthor(this.props.user.userUuid)
+        let author = AuthorStore.getAuthorByUuid(this.props.authorUuid);
+        if (author != null) {
+            author.tabPanelIdx = index;
         }
     },
 
-    componentWillReceiveProps: function(nextProps) {
-        let articles = ArticleStore.getSortedArticlesByAuthor(this.props.user.userUuid)
-        if (this.state.articles.length != articles.length) {
-            this.setState({
-                articles: articles
-            });
+    _defaultPlugin: {
+        render: function(plugin, img) {
+            return null;
+        },
+        clickHandler: function(plugin, event) {
+            event.stopPropagation();
         }
     },
 
     render: function() {
-        let author = this.props.user;
+        let userUuid = this.props.authorUuid;
+        let author = AuthorStore.getAuthorByUuid(userUuid);
         if (author == null) {
             return null;
         }
-        let user = this._getUser();
-        let articles = [];
-        if (this.state.articles != null) {
-            articles = this.state.articles.slice(0, 2);
+        let user = UserStore.getUserByUuid(userUuid);
+        let articles = this.props.articles;
+
+        if (articles == null) {
+            articles = ArticleStore.getSortedArticlesByAuthor(user.userUuid).slice(0, 2);
+        }
+        let plugin = this.props.plugin;
+        if (plugin == null) {
+            plugin = this._defaultPlugin;
         }
         return (
             <div className="row">
@@ -105,6 +111,7 @@ let AuthorFeed = React.createClass({
                         <div className="row">
                             <div className="col-sm-3 col-md-3 col-lg-3">
                                 <Author user={author}/>
+                                {plugin.render.bind(this, plugin)(author.coverImg)}
                             </div>
                             <div className="col-sm-9 col-md-9 col-lg-9">
                                 <TabPanel className="padding-top-10" context={this.getAuthorTab(author.userUuid)}>
@@ -123,9 +130,41 @@ let AuthorFeed = React.createClass({
         )
     },
 
-    _getUser: function() {
-        let userUuid = this.props.userUuid;
-        return userUuid ? UserStore.getUserByUuid(userUuid) : this.props.user;
+    statics: {
+        renderToggleView: function(authorUuid, article, toggleClick, cbArg) {
+            let togglePlugin = {
+                txtStyle: {
+                    textAlign: "center",
+                    color: "#ffffff"
+                },
+                upCallArg : cbArg,
+                upCallback: toggleClick,
+                authorUuid: authorUuid,
+                articleUuid: article.articleUuid,
+                content: "Click to hide",
+
+                render: function(plugin, img) {
+                    let divStyle = {
+                        backgroundImage: "url(" + img + ")"
+                    }
+                    return (
+                        <div className="row" style={divStyle} onClick={plugin.clickHandler.bind(this, plugin)}>
+                            <br/>
+                            <h3 style={plugin.txtStyle}>{plugin.content}</h3>
+                            <br/>
+                        </div>
+                    );
+                },
+                clickHandler: function(plugin, event) {
+                    event.stopPropagation();
+                    plugin.upCallback(plugin.articleUuid, plugin.upCallArg);
+                }
+            };
+            let articles = [ article ];
+            return (
+                <AuthorFeed authorUuid={authorUuid} articles={articles} plugin={togglePlugin}/>
+            )
+        }
     }
 });
 /*<PostTimeline data={this.author.activities}/> */

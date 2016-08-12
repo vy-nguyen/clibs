@@ -32,19 +32,29 @@ let SetTags = React.createClass({
 
     render: function() {
         let publicArts = AdminStore.getPublicArticle();
+        let clickCb = {
+            getBtnFormat: function() {
+                if (ArticleTagStore.hasPublishedArticle(this.articleUuid) == true) {
+                    return {
+                        btnClass: "btn btn-success disabled",
+                        btnText : "Article Added"
+                    }
+                }
+                return {
+                    btnClass: "btn btn-success",
+                    btnText : "Add Article"
+                }
+            },
+            callbackArg : this,
+            clickHandler: this._tagArticle
+        };
         let selected = [];
-        let btnActive = {
-            btnClass: "btn btn-success",
-            btnText : "Add Article"
-        };
-        let btnDisabled = {
-            btnClass: "btn btn-success disabled",
-            btnText : "Article Added"
-        };
+
         _.forOwn(publicArts, function(v, artUuid) {
+            clickCb.articleUuid = artUuid;
             selected.push(
                 <div className="col-sm-6 col-md-6 col-lg-4" key={_.uniqueId("pub-art-selected-")}>
-                    {ArticleBox.article(artUuid, this._tagArticle, btnActive, btnDisabled, this)}
+                    {ArticleBox.article(artUuid, clickCb)}
                 </div> 
             )
         }.bind(this));

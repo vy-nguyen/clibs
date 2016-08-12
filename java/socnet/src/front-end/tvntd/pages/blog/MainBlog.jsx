@@ -31,7 +31,6 @@ let MainBlog = React.createClass({
                 tabText: tag.tagName,
                 tabIdx : idx++
             });
-            console.log(tag);
             out.tabContents.push(
                 <div key={_.uniqueId('tab-content-')} className="no-padding">
                     <ArticleTagBrief key={_.uniqueId('tag-brief-')} tag={tag}/>

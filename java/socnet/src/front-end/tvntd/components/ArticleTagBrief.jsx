@@ -9,21 +9,26 @@ import Reflux   from 'reflux';
 
 import NavigationStore from 'vntd-shared/stores/NavigationStore.jsx';
 import ArticleBox      from 'vntd-root/components/ArticleBox.jsx';
+import AuthorFeed      from 'vntd-root/components/AuthorFeed.jsx';
+import ArticleStore    from 'vntd-root/stores/ArticleStore.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 
 let ArticleTagBrief = React.createClass({
 
-    _btnActive: {
-        btnClass: "btn btn-success",
-        btnText : "Read More..."
-    },
-
-    _btnDisabled: {
-        btnClass: "btn btn-success disabled",
-        btnText : "Read More..."
+    initState: {
+        articleUuid: null,
+        articleRank: null 
     },
 
     _readArticle: function(uuid, artRank) {
+        if (uuid === this.state.articleUuid) {
+            this.setState(this.initState);
+        } else {
+            this.setState({
+                articleUuid: uuid,
+                articleRank: artRank
+            });
+        }
     },
 
     _getSubTag: function(subTags, tag) {
@@ -56,19 +61,41 @@ let ArticleTagBrief = React.createClass({
     _renderArtBrief: function(art) {
         let artUuid = art.artUuid;
         let artTag = art.artTag;
+        let clickCb = {
+            getBtnFormat: function() {
+                if (this.state.articleUuid == null || this.state.articleUuid !== artUuid) {
+                    return {
+                        btnClass: "btn btn-success",
+                        btnText : "Read More..."
+                    }
+                }
+                return {
+                    btnClass: "btn btn-success",
+                    btnText : "Hide Post"
+                }
+            }.bind(this),
+
+            callbackArg : this,
+            clickHandler: this._readArticle
+        };
         return (
-            <div className="col-xs-6 col-sm-6 col-md-6 col-lg-4" id={"art-tag-" + artUuid}>
-                {ArticleBox.article(artUuid, this._readArticle, this._btnActive, this._btnDisabled, this)}
+            <div className="col-xs-6 col-sm-6 col-md-6 col-lg-4">
+                {ArticleBox.article(artUuid, clickCb)}
             </div>
         )
     },
 
     _renderArtFull: function(art) {
+        if (this.state.articleUuid == null || this.state.articleUuid !== art.artUuid) {
+            return null;
+        }
         let artUuid = art.artUuid;
         let artTag = art.artTag;
+        let article = ArticleStore.getArticleByUuid(artUuid);
+
         return (
-            <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12" id={"art-tag-full-" + artUuid}>
-                <h1>{artUuid}</h1>
+            <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                {AuthorFeed.renderToggleView(article.authorUuid, article, this._readArticle, artTag)}
             </div>
         )
     },
@@ -80,7 +107,6 @@ let ArticleTagBrief = React.createClass({
         let mode = NavigationStore.getViewMode();
         let length = articles.length;
 
-        console.log("length " + length);
         for (let i = 0; i < length; i++) {
             let oneBrief = this._renderArtBrief(articles[i]);
             let oneFull  = this._renderArtFull(articles[i]);
@@ -99,10 +125,6 @@ let ArticleTagBrief = React.createClass({
                 threeBrief = this._renderArtBrief(articles[i]);
                 threeFull  = this._renderArtFull(articles[i]);
             }
-            console.log(oneBrief);
-            console.log(twoBrief);
-            console.log(threeBrief);
-
             output.push(
                 <div className="row" key={_.uniqueId("art-brief-")}>
                     {oneBrief}
@@ -118,6 +140,10 @@ let ArticleTagBrief = React.createClass({
                 </div>
             );
         }
+    },
+
+    getInitialState: function() {
+        return this.initState;
     },
 
     render: function() {
