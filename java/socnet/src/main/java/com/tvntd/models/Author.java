@@ -101,6 +101,10 @@ public class Author
         this.frontArtUuid = artUuid;
     }
 
+    public boolean equals(Author that) {
+        return authorUuid.equals(that.authorUuid);
+    }
+
     public static Author fromUserUuid(String userUuid)
     {
         Author author = new Author();

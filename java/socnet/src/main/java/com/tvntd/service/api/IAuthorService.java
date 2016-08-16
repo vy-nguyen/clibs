@@ -82,6 +82,20 @@ public interface IAuthorService
             this.authorUuid = userUuid;
         }
 
+        public boolean equals(AuthorDTO that) {
+            return getAuthorUuid().equals(that.getAuthorUuid());
+        }
+
+        public static boolean isInList(List<AuthorDTO> list, String authorUuid)
+        {
+            for (AuthorDTO it : list) {
+                if (authorUuid.equals(it.getAuthorUuid())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         /**
          * JSON getters.
          */

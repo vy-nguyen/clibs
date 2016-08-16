@@ -42,6 +42,7 @@ import com.tvntd.exports.LibModule;
 import com.tvntd.models.NewsFeed;
 import com.tvntd.service.api.INewsFeedService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
+import com.tvntd.util.Util;
 
 @Service
 @Transactional
@@ -110,13 +111,13 @@ public class NewsFeedService implements INewsFeedService
             List<String> follower = profile.getFollowerList();
 
             for (String uuid : connect) {
-                authors.add(uuid);
+                Util.<String> addUnique(authors, uuid);
             }
             for (String uuid : follow) {
-                authors.add(uuid);
+                Util.<String> addUnique(authors, uuid);
             }
             for (String uuid : follower) {
-                authors.add(uuid);
+                Util.<String> addUnique(authors, uuid);
             }
             profile.assignNewsFeed(authors);
 

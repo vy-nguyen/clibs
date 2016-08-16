@@ -4,87 +4,83 @@
  */
 'use strict';
 
-import React        from 'react-mod';
 import _            from 'lodash';
+import React        from 'react-mod';
+import Reflux       from 'reflux';
+import UserStore    from 'vntd-shared/stores/UserStore.jsx';
 import ArticleStore from 'vntd-root/stores/ArticleStore.jsx';
+import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
 import PostPane     from 'vntd-root/components/PostPane.jsx';
+import LikeStat     from 'vntd-root/components/LikeStat.jsx';
 
 import {getRandomInt, safeStringify} from 'vntd-shared/utils/Enum.jsx';
 
 let BlogItem = React.createClass({
 
-    getInitialState: function() {
-        return {
-            fullArticle: false,
-            buttonText : "Read more..."
-        }
-    },
-
-    _selectFullArticle: function() {
-        let fullArt = !this.state.fullArticle;
-        if (fullArt == true) {
-            this.setState({
-                fullArticle: true,
-                buttonText : "Hide article..."
-            });
-            $('#' + this.props.article._id).show();
-        } else {
-            this.setState({
-                fullArticle: false,
-                buttonText : "Read more..."
-            });
-            $('#' + this.props.article._id).hide();
-        }
-    },
-
     render: function() {
-        let article = this.props.article;
-        const artInfo = [ {
-            format: "fa fa-calendar",
-            info  : article.createdDate
-        }, {
-            format: "fa fa-comments",
-            info  : "20" // this.props.article.comments
-        }, {
-            format: "fa fa-thumbs-up",
-            info  : article.likeCount
-        } ];
-        let artInfoBlock = artInfo.map(function(it) {
-            return (
-                <li key={_.uniqueId("blog-item-")}>
-                    <i className={it.format}></i>
-                    <a href-void="#"> {it.info}</a>
-                </li>
-            );
-        });
-        let imgUrl = article.pictureUrl;
-        if (imgUrl != null && !_.isEmpty(imgUrl)) {
-            imgUrl = imgUrl[getRandomInt(0, imgUrl.length - 1)];
+        let ctx = this.props.context;
+        let authorUuid = this.props.authorUuid;
+        let articleUuid = this.props.articleUuid;
+        let artRank = null;
+
+        let arg = {
+            imgUrl: null,
+            title : null,
+            brief : null
+        };
+        let article = ArticleStore.getArticleByUuid(articleUuid);
+        if (article == null) {
+            artRank = AuthorStore.getArticleRank(authorUuid, articleUuid);
+            if (artRank == null) {
+                console.log("no rank info for  " + this.props.articleUuid);
+                return null;
+            }
+            arg.imgUrl = artRank.imgUrl;
+            arg.title  = artRank.topic;
         } else {
-            imgUrl = this.props.user.userImgUrl;
+            let imgUrl = article.pictureUrl;
+            if (imgUrl != null && !_.isEmpty(imgUrl)) {
+                imgUrl = imgUrl[getRandomInt(0, imgUrl.length - 1)];
+            } else {
+                let user = UserStore.getUserByUuid(authorUuid);
+                if (user == null) {
+                    console.log("No matching user uuid " + authorUuid);
+                    return null;
+                }
+                imgUrl = user.userImgUrl;
+            }
+            artRank    = article.rank;
+            arg.imgUrl = imgUrl;
+            arg.title  = article.topic;
         }
-        let content = safeStringify(article.content);
-        let artStyle = this.state.fullArticle == false ? { display: "none" } : { height: "auto" };
+        if (artRank != null) {
+            arg.brief  = artRank.contentBrief;
+            arg.likeStat = {
+                dateMoment  : artRank.timeStamp,
+                likesCount  : artRank.userLiked.length,
+                sharesCount : artRank.userShared.length,
+                commentCount: article != null ? article.commentList.length : 0
+            }
+        } else {
+            return null;
+        }
+        let btnFmt = ctx.getBtnFormat();
         return (
             <div className="content">
                 <div className="row">
                     <div className="col-md-4">
-                        <img src={imgUrl} className="img-responsive"/>
-                        <ul className="list-inline padding-10">
-                            {artInfoBlock}
-                        </ul>
+                        <img src={arg.imgUrl} className="img-responsive"/>
+                        <LikeStat data={arg.likeStat} className="padding-10"/>
                     </div>
                     <div className="col-md-8 padding-left-0">
                         <h3 className="margin-top-0">
-                            <a href-void="#">{article.topic}</a>
+                            <a href-void="#">{arg.title}</a>
                             <br/>
                         </h3>
-                        <p>{content.slice(0, 600)} ...</p>
-                        <a className="btn btn-primary" onClick={this._selectFullArticle}>{this.state.buttonText}</a>
+                        {arg.brief}
+                        <hr/>
+                        <a className={btnFmt.className} onClick={ctx.clickHandler}>{btnFmt.buttonText}</a>
                     </div>
-                </div>
-                <div className="row" style={artStyle} id={article._id}>
-                    <PostPane data={article}/>
                 </div>
             </div>
         );
@@ -92,59 +88,77 @@ let BlogItem = React.createClass({
 });
 
 let Blog = React.createClass({
-    getInitialState: function() {
-        return {
-            articles: ArticleStore.getSortedArticlesByAuthor(this._getUserUuid())
-        }
+
+    mixins: [
+        Reflux.connect(AuthorStore),
+        Reflux.connect(ArticleStore)
+    ],
+
+    initState: {
+        articleUuid: null,
+        articleRank: null
     },
 
-    componentWillReceiveProps: function(nextProps) {
-        let articles = ArticleStore.getSortedArticlesByAuthor(this._getUserUuid());
-        if (this.state.articles.length != articles.length) {
+    _readArticle: function(articleUuid) {
+        if (this.state.articleUuid === articleUuid) {
             this.setState({
-                articles: articles
+                articleUuid: null
+            });
+        } else {
+            this.setState({
+                articleUuid: articleUuid
             });
         }
     },
 
-    render: function() {
-        let user = this.props.user;
-        if (user == null) {
-            return null;
-        }
-        let articles = [];
-        if (this.state.articles != null) {
-            articles = this.state.articles.slice(0, this.state.articles.length);
-        }
-        let items = null;
-        if (articles && !_.isEmpty(articles)) {
-            items = [];
-            _.forOwn(articles, function(art, idx) {
-                items.push(
-                    <BlogItem key={_.uniqueId("blog-article-")}
-                        article={art} author={this.props.author} user={this.props.user}/>
-                );
-            }.bind(this));
-        } else {
-            items = (
-                <div>
-                    <h2>{user.firstName} doesn't have any articles</h2>
-                </div>
-            );
-        }
-        return (
-            <div>
-                {items}
-            </div>
-        );
+    _renderSummarized: function(authorUuid, articleUuid) {
+        let clickCb = {
+            getBtnFormat: function() {
+                if (this.state.articleUuid == null || this.state.articleUuid !== articleUuid) {
+                    return {
+                        className : "btn btn-primary",
+                        buttonText: "Read more..."
+                    }
+                }
+                return {
+                    className : "btn btn-primary",
+                    buttonText: "Hide article"
+                }
+            }.bind(this),
+
+            clickHandler: this._readArticle.bind(this, articleUuid)
+        };
+        return <BlogItem authorUuid={authorUuid} articleUuid={articleUuid} context={clickCb}/>
     },
 
-    _getUserUuid: function() {
-        let userUuid = this.props.user.userUuid;
-        if (userUuid == null) {
-            userUuid = this.props.author.userUuid;
+    _renderFull: function(articleUuid, article, artRank) {
+        if (this.state.articleUuid == null || this.state.articleUuid !== articleUuid) {
+            return null;
         }
-        return userUuid;
+        if (article != null) {
+            return <PostPane data={article}/>;
+        }
+        return PostPane.renderArticleRank(artRank);
+    },
+
+    render: function() {
+        let authorUuid = this.props.authorUuid;
+        let articles = ArticleStore.getSortedArticlesByAuthor(authorUuid);
+        let items = [];
+
+        if (articles == null) {
+            items.push(<h3>No post</h3>);
+        } else {
+            _.forEach(articles, function(art) {
+                items.push(
+                    <div className="row" key={_.uniqueId('blog-row-')}>
+                        {this._renderSummarized(art.authorUuid, art.articleUuid)}
+                        {this._renderFull(art.articleUuid, art, null)}
+                    </div>
+                );
+            }.bind(this));
+        }
+        return <div>{items}</div>;
     }
 });
 

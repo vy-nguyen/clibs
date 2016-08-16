@@ -116,7 +116,7 @@ let AuthorFeed = React.createClass({
                             <div className="col-sm-9 col-md-9 col-lg-9">
                                 <TabPanel className="padding-top-10" context={this.getAuthorTab(author.userUuid)}>
                                     <PostArticles data={articles} user={user}/>
-                                    <Blog author={author} user={user}/>
+                                    <Blog authorUuid={userUuid} user={user}/>
                                     <UserPostView userUuid={author.userUuid}/>
                                     <Timeline/>
                                     <ProductView/>

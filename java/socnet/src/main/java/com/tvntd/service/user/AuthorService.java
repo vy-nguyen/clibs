@@ -50,6 +50,7 @@ import com.tvntd.models.AuthorTag;
 import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
+import com.tvntd.util.Util;
 
 @Service
 @Transactional
@@ -141,16 +142,23 @@ public class AuthorService implements IAuthorService
             result.add(new AuthorDTO(author));
         }
         for (String uid : uuids) {
-            author = getAuthor(uid.toString());
+            if (AuthorDTO.isInList(result, uid) == true) {
+                continue;
+            }
+            author = getAuthor(uid);
             if (author != null) {
                 result.add(new AuthorDTO(author));
             }
         }
         for (String uid : profile.getConnectList()) {
-            result.add(new AuthorDTO(uid.toString()));
+            if (!AuthorDTO.isInList(result, uid)) {
+                result.add(new AuthorDTO(uid.toString()));
+            }
         }
         for (String uid : profile.getFollowList()) {
-            result.add(new AuthorDTO(uid.toString()));
+            if (!AuthorDTO.isInList(result, uid)) {
+                result.add(new AuthorDTO(uid.toString()));
+            }
         }
         return result;
     }
