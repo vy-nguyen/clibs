@@ -82,7 +82,7 @@ public class AdminPath
             return null;
         }
         LoginResponse resp = new LoginResponse(profile, reqt);
-        ApiPath.fillLoginResponse(resp, profile, authorSvc);
+        ApiPath.fillLoginResponse(resp, profile);
         return resp;
     }
 

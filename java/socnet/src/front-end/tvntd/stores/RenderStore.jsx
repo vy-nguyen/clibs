@@ -59,6 +59,7 @@ let RenderStore = Reflux.createStore({
     },
 
     onRefreshNotifyFailed: function(error) {
+        console.log(error);
         error.dispatch();
     },
 

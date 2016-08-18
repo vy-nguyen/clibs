@@ -275,7 +275,7 @@ let UserStore = Reflux.createStore({
     },
 
     _updateLogin: function(user) {
-        if (user !== null && user !== undefined) {
+        if (user != null) {
             this.data.csrfHeader = user.csrfHeader;
             this.data.csrfToken = user.csrfToken;
 
@@ -287,14 +287,14 @@ let UserStore = Reflux.createStore({
     },
 
     _changedData: function(resp) {
-        if (resp !== null && resp !== undefined) {
+        if (resp != null) {
             this.data.authCode  = resp.type;
             this.data.authMesg  = resp.message;
             this.data.authError = resp.error;
             this.data.authToken = resp.authToken;
             this.data.authVerifToken = resp.authVerifToken;
 
-            if (resp.userSelf) {
+            if (resp.userSelf != null) {
                 let self = new User(resp.userSelf);
                 this.data.userSelf = self;
                 this.data.userActive = self;

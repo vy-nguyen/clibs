@@ -255,8 +255,8 @@ public interface IArticleService
         /**
          * @return the rank
          */
-        public ArticleRank getRank() {
-            return rank;
+        public ArticleRankDTO getRank() {
+            return new ArticleRankDTO(rank);
         }
 
         /**

@@ -98,11 +98,9 @@ let ArticleBox = React.createClass({
             }
             let author = UserStore.getUserByUuid(article.authorUuid);
             let artRank = AuthorStore.getArticleRank(article.authorUuid, articleUuid);
-            let clickBtn = clickCb.getBtnFormat();
 
-            if (artRank != null) {
-            } else {
-                arg.artBrief = article.content.substring(0, 100);
+            if (artRank == null) {
+                return null;
             }
             if (artRank.contentBrief == null) {
                 artRank.contentBrief = article.content.substring(0, 100);
@@ -116,7 +114,7 @@ let ArticleBox = React.createClass({
                 artBrief   : artRank.contentBrief,
                 artPrice   : author.getUserName(),
                 clickCbFn  : clickCb.clickHandler.bind(clickCb.callbackArg, articleUuid, artRank),
-                clickBtn   : clickBtn,
+                clickBtn   : clickCb.getBtnFormat(),
                 likeStat   : {
                     dateMoment  : article.createdDate,
                     commentCount: artRank.notifCount ? artRank.notifCount : 0,

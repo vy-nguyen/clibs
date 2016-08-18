@@ -36,25 +36,27 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.tvntd.service.api.IArtTagService.ArtTagList;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
+import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.IAuthorService.AuthorDTO;
 import com.tvntd.service.api.IMenuItemService.MenuItemResp;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 public class StartupResponse
 {
-    private LoginResponse      userDTO;
-    private List<ProfileDTO>   linkedUsers;
-    private List<MenuItemResp> menuItems;
-    private List<ArticleDTO>   articles;
-    private List<Language>     languages;
-    private ArtTagList         publicTags;
+    private LoginResponse          userDTO;
+    private List<ProfileDTO>       linkedUsers;
+    private List<MenuItemResp>     menuItems;
+    private List<ArticleDTO>       articles;
+    private List<ArticleRankDTO>   artRanks;
+    private List<AuthorDTO>        authors;
+
+    private List<Language>         languages;
+    private ArtTagList             publicTags;
 
     public StartupResponse(ProfileDTO profile, HttpServletRequest reqt)
     {
         initLanguages();
-        if (profile != null) {
-            userDTO = new LoginResponse(profile, reqt);
-        }
+        userDTO = new LoginResponse(profile, reqt);
     }
 
     protected void initLanguages()
@@ -75,8 +77,7 @@ public class StartupResponse
                 }
             }
         }
-        if (userDTO != null) {
-            List<AuthorDTO> authors = userDTO.getAuthors();
+        if (authors != null) {
             for (AuthorDTO author : authors) {
                 String uuid = author.getAuthorUuid();
                 if (users.get(uuid) == null) {
@@ -149,6 +150,34 @@ public class StartupResponse
      */
     public void setArticles(List<ArticleDTO> articles) {
         this.articles = articles;
+    }
+
+    /**
+     * @return the artRanks
+     */
+    public List<ArticleRankDTO> getArtRanks() {
+        return artRanks;
+    }
+
+    /**
+     * @param artRanks the artRanks to set
+     */
+    public void setArtRanks(List<ArticleRankDTO> artRanks) {
+        this.artRanks = artRanks;
+    }
+
+    /**
+     * @return the authors
+     */
+    public List<AuthorDTO> getAuthors() {
+        return authors;
+    }
+
+    /**
+     * @param authors the authors to set
+     */
+    public void setAuthors(List<AuthorDTO> authors) {
+        this.authors = authors;
     }
 
     /**

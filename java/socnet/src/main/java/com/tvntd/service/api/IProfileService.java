@@ -75,25 +75,10 @@ public interface IProfileService
         private static Logger s_log = LoggerFactory.getLogger(ProfileDTO.class);
         private static String s_baseUri = "/rs/upload";
         private Profile profile;
+        private ObjStore objStore;
 
-        private String coverImg0;
-        private String coverImg1;
-        private String coverImg2;
-        private String userImgUrl;
-        private String transRoot;
-        private String mainRoot;
-        private String userUrl;
         private String role;
-
         private Long roleMask;
-        private Long connections;
-        private Long follows;
-        private Long followers;
-        private Long chainCount;
-        private Long creditEarned;
-        private Long creditIssued;
-        private Long moneyEarned;
-        private Long moneyIssued;
 
         private ArticleDTO pendPost;
         private LinkedList<ArticleDTO> publishedArts;
@@ -107,37 +92,10 @@ public interface IProfileService
         public ProfileDTO(Profile prof)
         {
             profile = prof;
+            objStore = ObjStore.getInstance();
 
-            ObjStore objStore = ObjStore.getInstance();
-            coverImg0 = objStore.imgObjUri(prof.fetchCoverImg0(), s_baseUri);
-            coverImg1 = objStore.imgObjUri(prof.fetchCoverImg1(), s_baseUri);
-            coverImg2 = objStore.imgObjUri(prof.fetchCoverImg2(), s_baseUri);
-            userImgUrl = objStore.imgObjUri(prof.fetchUserImgUrl(), s_baseUri);
-
-            transRoot = prof.getTransRoot();
-            mainRoot = prof.getTransRoot();
-            userUrl = "/user/id/" + profile.getUserUuid();
             role = Role.User;
             roleMask = Constants.Role_User;
-
-            creditEarned = 200L;
-            creditIssued = 300L;
-            moneyEarned = 500L;
-            moneyIssued = 400L;
-
-            connections = Long.valueOf(prof.getConnectList().size());
-            follows = Long.valueOf(prof.getFollowList().size());
-            followers = Long.valueOf(prof.getFollowerList().size());
-            chainCount = Long.valueOf(prof.getChainLinks().size());
-
-            if (coverImg0 == null) {
-                coverImg0 = "/rs/img/demo/s1.jpg";
-                coverImg1 = "/rs/img/demo/s2.jpg";
-                coverImg2 = "/rs/img/demo/s3.jpg";
-            }
-            if (userImgUrl == null) {
-                userImgUrl = "/rs/img/avatars/male.png";
-            }
         }
 
         public ProfileDTO(Profile prof, User user)
@@ -202,12 +160,10 @@ public interface IProfileService
         }
 
         /**
-         * Update image URL with new obj id.
+         * Update image URL with the new obj id.
          */
-        public void updateImgUrl(ObjectId id)
-        {
-            ObjStore objStore = ObjStore.getInstance();
-            userImgUrl = objStore.imgObjUri(id, s_baseUri);
+        public void updateImgUrl(ObjectId id) {
+            profile.setUserImgUrl(objStore.imgObjUri(id, s_baseUri));
         }
 
         public String toString()
@@ -450,63 +406,57 @@ public interface IProfileService
          * @return the userUrl
          */
         public String getUserUrl() {
-            return userUrl;
+            return "/usr/id/" + profile.getUserUuid();
         }
 
         /**
          * @return the coverImg0
          */
-        public String getCoverImg0() {
-            return coverImg0;
-        }
-
-        /**
-         * @param coverImg0 the coverImg0 to set
-         */
-        public void setCoverImg0(String coverImg0) {
-            this.coverImg0 = coverImg0;
+        public String getCoverImg0()
+        {
+            String coverImg = objStore.imgObjUri(profile.fetchCoverImg0(), s_baseUri);
+            if (coverImg == null) {
+                coverImg = "/rs/img/demo/s1.jpg";
+            }
+            return coverImg;
         }
 
         /**
          * @return the coverImg1
          */
-        public String getCoverImg1() {
-            return coverImg1;
-        }
-
-        /**
-         * @param coverImg1 the coverImg1 to set
-         */
-        public void setCoverImg1(String coverImg1) {
-            this.coverImg1 = coverImg1;
+        public String getCoverImg1()
+        {
+            String coverImg = objStore.imgObjUri(profile.fetchCoverImg1(), s_baseUri);
+            if (coverImg == null) {
+                coverImg = "/rs/img/demo/s2.jpg";
+            }
+            return coverImg;
         }
 
         /**
          * @return the coverImg2
          */
-        public String getCoverImg2() {
-            return coverImg2;
-        }
-
-        /**
-         * @param coverImg2 the coverImg2 to set
-         */
-        public void setCoverImg2(String coverImg2) {
-            this.coverImg2 = coverImg2;
+        public String getCoverImg2()
+        {
+            String coverImg = objStore.imgObjUri(profile.fetchCoverImg2(), s_baseUri);
+            if (coverImg == null) {
+                coverImg = "/rs/img/demo/s3.jpg";
+            }
+            return coverImg;
         }
 
         /**
          * @return the transRoot
          */
         public String getTransRoot() {
-            return transRoot;
+            return profile.getTransRoot();
         }
 
         /**
          * @return the mainRoot
          */
         public String getMainRoot() {
-            return mainRoot;
+            return profile.getMainRoot();
         }
 
         /**
@@ -519,15 +469,13 @@ public interface IProfileService
         /**
          * @return the userImgUrl
          */
-        public String getUserImgUrl() {
-            return userImgUrl;
-        }
-
-        /**
-         * @param userImgUrl the userImgUrl to set
-         */
-        public void setUserImgUrl(String userImgUrl) {
-            this.userImgUrl = userImgUrl;
+        public String getUserImgUrl()
+        {
+            String imgUrl = objStore.imgObjUri(profile.fetchUserImgUrl(), s_baseUri);
+            if (imgUrl == null) {
+                imgUrl = "/rs/img/avatars/male.png";
+            }
+            return imgUrl;
         }
 
         /**
@@ -575,58 +523,65 @@ public interface IProfileService
         /**
          * @return the connections
          */
-        public Long getConnections() {
-            return connections;
+        public Long getConnections()
+        {
+            List<String> con = profile.getConnectList();
+            return (con != null) ? Long.valueOf(con.size()) : 0L;
         }
 
         /**
          * @return the follows
          */
-        public Long getFollows() {
-            return follows;
+        public Long getFollows()
+        {
+            List<String> fl = profile.getFollowList();
+            return (fl != null) ? Long.valueOf(fl.size()) : 0L;
         }
 
         /**
          * @return the followers
          */
-        public Long getFollowers() {
-            return followers;
+        public Long getFollowers()
+        {
+            List<String> fl = profile.getFollowerList();
+            return (fl != null) ? Long.valueOf(fl.size()) : 0L;
         }
 
         /**
          * @return the chainCount
          */
-        public Long getChainCount() {
-            return chainCount;
+        public Long getChainCount()
+        {
+            List<Long> chain = profile.getChainLinks();
+            return (chain != null) ? Long.valueOf(chain.size()) : 0L;
         }
 
         /**
          * @return the creditEarned
          */
         public Long getCreditEarned() {
-            return creditEarned;
+            return 0L;
         }
 
         /**
          * @return the creditIssued
          */
         public Long getCreditIssued() {
-            return creditIssued;
+            return 0L;
         }
 
         /**
          * @return the moneyEarned
          */
         public Long getMoneyEarned() {
-            return moneyEarned;
+            return 0L;
         }
 
         /**
          * @return the moneyIssued
          */
         public Long getMoneyIssued() {
-            return moneyIssued;
+            return 0L;
         }
-
     }
 }

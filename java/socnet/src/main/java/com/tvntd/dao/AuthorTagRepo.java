@@ -40,6 +40,46 @@ public interface AuthorTagRepo extends JpaRepository<AuthorTag, String>
     @Override
     void delete(String tagOid);
 
+    public static class AuthorTagRespDTO
+    {
+        protected String authorUuid;
+        protected List<AuthorTagDTO> authorTags;
+
+        public AuthorTagRespDTO(String uuid, List<AuthorTagDTO> tags)
+        {
+            authorUuid = uuid;
+            authorTags = tags;
+        }
+
+        /**
+         * @return the authorUuid
+         */
+        public String getAuthorUuid() {
+            return authorUuid;
+        }
+
+        /**
+         * @param authorUuid the authorUuid to set
+         */
+        public void setAuthorUuid(String authorUuid) {
+            this.authorUuid = authorUuid;
+        }
+
+        /**
+         * @return the authorTags
+         */
+        public List<AuthorTagDTO> getAuthorTags() {
+            return authorTags;
+        }
+
+        /**
+         * @param authorTags the authorTags to set
+         */
+        public void setAuthorTags(List<AuthorTagDTO> authorTags) {
+            this.authorTags = authorTags;
+        }
+    }
+
     public static class AuthorTagDTO
     {
         protected AuthorTag authorTag;

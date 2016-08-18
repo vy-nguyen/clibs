@@ -29,9 +29,6 @@ let ActivitiesDropdown = React.createClass({
         Notification: Notification
     },
 
-    componentWillMount: function() {
-    },
-
     getInitialState: function() {
         this.setState({
             lastUpdated: new Date()
@@ -43,7 +40,7 @@ let ActivitiesDropdown = React.createClass({
         let activities = this.state.notifyItems;
         let activity = this.state.activeNotify;
 
-        if (activity == undefined || activity.items == undefined) {
+        if (activity == null || activity.items == null) {
             return null;
         }
         let count = _.sumBy(activities, function(a) {

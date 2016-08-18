@@ -26,6 +26,7 @@
  */
 package com.tvntd.models;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,9 +39,11 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 import com.tvntd.lib.ObjectId;
+import com.tvntd.util.Constants;
 
 @Entity
 @Table(indexes = {@Index(columnList = "userUuid", unique = true)})
@@ -112,8 +115,28 @@ public class Profile
             joinColumns = @JoinColumn(name="userId"))
     private List<Long> chainLinks;
 
-    public Profile() {
+    @Transient
+    private String authToken;
+
+    public Profile()
+    {
         super();
+        authToken = "abc123";
+    }
+
+    public static Profile publicProfile()
+    {
+        Profile prof = new Profile();
+
+        prof.userUuid = Constants.PublicUuid;
+        prof.firstName = "Guest";
+        prof.lastName = "Guest";
+        prof.connectList = new LinkedList<>();
+        prof.followList = new LinkedList<>();
+        prof.followerList = new LinkedList<>();
+        prof.chainLinks = new LinkedList<>();
+        prof.authToken = null;
+        return prof;
     }
 
     public static Profile createProfile(User user)
@@ -393,5 +416,19 @@ public class Profile
      */
     public void setChainLinks(List<Long> chainLinks) {
         this.chainLinks = chainLinks;
+    }
+
+    /**
+     * @return the authToken
+     */
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    /**
+     * @param authToken the authToken to set
+     */
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
     }
 }

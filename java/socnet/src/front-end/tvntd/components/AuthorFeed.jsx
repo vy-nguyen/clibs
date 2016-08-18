@@ -92,6 +92,7 @@ let AuthorFeed = React.createClass({
         let userUuid = this.props.authorUuid;
         let author = AuthorStore.getAuthorByUuid(userUuid);
         if (author == null) {
+            console.log("No author matching " + userUuid);
             return null;
         }
         let user = UserStore.getUserByUuid(userUuid);

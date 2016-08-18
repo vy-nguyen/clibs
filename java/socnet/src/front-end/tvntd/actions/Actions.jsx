@@ -155,8 +155,6 @@ Actions.startup.listen(function(url) {
         if (this.translate != null) {
             this.translate(data);
         }
-        console.log("----");
-        console.log(data);
         this.completed(data);
     }.bind(this), this.failed);
 });

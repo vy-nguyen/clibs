@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.tvntd.dao.AuthorTagRepo.AuthorTagDTO;
+import com.tvntd.dao.AuthorTagRepo.AuthorTagRespDTO;
 import com.tvntd.forms.ArticleForm;
 import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
@@ -42,23 +43,24 @@ import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 public interface IAuthorService
 {
-    public Author getAuthor(String uuid);
-    public List<AuthorTagDTO> getAuthorTag(String uuid);
+    Author getAuthor(String uuid);
+    AuthorDTO getAuthorDTO(String uuid);
+    AuthorTagRespDTO getAuthorTag(String uuid);
 
-    public Author updateAuthor(ProfileDTO me, ArticleForm form, ArticleRankDTO rank);
-    public void addFavoriteArticle(Author author, String articleUuid);
-    public void removeFavoriteArticle(Author author, String articleUuid);
+    Author updateAuthor(ProfileDTO me, ArticleForm form, ArticleRankDTO rank);
+    void addFavoriteArticle(Author author, String articleUuid);
+    void removeFavoriteArticle(Author author, String articleUuid);
 
-    public void addTimeLineArticle(Author author, String articleUuid);
-    public void removeTimeLineArticle(Author author, String articleUuid);
+    void addTimeLineArticle(Author author, String articleUuid);
+    void removeTimeLineArticle(Author author, String articleUuid);
 
-    public List<Author> getAuthors(List<String> uuids);
-    public List<AuthorDTO> getAuthorList(ProfileDTO profile);
+    List<Author> getAuthors(List<String> uuids);
+    List<AuthorDTO> getAuthorList(ProfileDTO profile);
 
-    public void saveAuthor(Author author);
-    public void deleteAuthor(String uuid);
+    void saveAuthor(Author author);
+    void deleteAuthor(String uuid);
 
-    public ArticleRank createArticleRank(Article article, String tagName);
+    ArticleRank createArticleRank(Article article, String tagName);
 
     /**
      *

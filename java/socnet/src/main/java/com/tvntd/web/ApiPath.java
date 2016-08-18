@@ -29,6 +29,7 @@ package com.tvntd.web;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -53,8 +54,11 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.mongodb.Mongo;
+import com.tvntd.dao.AuthorTagRepo.AuthorTagDTO;
+import com.tvntd.dao.AuthorTagRepo.AuthorTagRespDTO;
 import com.tvntd.forms.UserConnectionForm;
 import com.tvntd.lib.ObjectId;
+import com.tvntd.models.Author;
 import com.tvntd.models.User;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.GenericResponse;
@@ -63,6 +67,7 @@ import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleService.ArticleDTOResponse;
 import com.tvntd.service.api.IAuthorService;
+import com.tvntd.service.api.IAuthorService.AuthorDTO;
 import com.tvntd.service.api.IMenuItemService;
 import com.tvntd.service.api.IMenuItemService.MenuItemResp;
 import com.tvntd.service.api.IProfileService;
@@ -160,6 +165,9 @@ public class ApiPath
         return result;
     }
 
+    /**
+     * Common methods shared by admin and regular user startup response.
+     */
     public static void
     fillStartupResponse(StartupResponse resp, ProfileDTO profile,
             IProfileService profileSvc, IAuthorService authorSvc,
@@ -180,7 +188,8 @@ public class ApiPath
             resp.setLinkedUsers(profileSvc.getProfileFromRaw(null));
         }
         if (authorSvc != null) {
-            fillLoginResponse(resp.getUserDTO(), profile, authorSvc);
+            fillLoginResponse(resp.getUserDTO(), profile);
+            fillAuthorTags(resp, profile, null, authorSvc);
         }
         if (articleSvc != null) {
             List<String> uuids = resp.getAllUserUuids();
@@ -190,10 +199,35 @@ public class ApiPath
     }
 
     public static void
-    fillLoginResponse(LoginResponse resp, ProfileDTO profile, IAuthorService authorSvc)
+    fillAuthorTags(StartupResponse resp, ProfileDTO profile,
+            List<String> userUuids, IAuthorService authorSvc)
     {
-        resp.setAuthors(authorSvc.getAuthorList(profile));
-        resp.setMyTags(authorSvc.getAuthorTag(profile.getUserUuid()));
+        String myUuid = profile.getUserUuid();
+        List<AuthorDTO> authorList = new LinkedList<>();
+
+        AuthorDTO author = authorSvc.getAuthorDTO(myUuid);
+        if (author != null) {
+            authorList.add(author);
+        }
+        if (userUuids == null) {
+            userUuids = resp.getAllUserUuids();
+        }
+        if (userUuids != null) {
+            for (String uuid : userUuids) {
+                if (!myUuid.equals(uuid)) {
+                    author = authorSvc.getAuthorDTO(uuid);
+                    if (author != null) {
+                        authorList.add(author);
+                    }
+                }
+            }
+        }
+        resp.setAuthors(authorList);
+    }
+
+    public static void
+    fillLoginResponse(LoginResponse resp, ProfileDTO profile)
+    {
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})

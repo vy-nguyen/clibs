@@ -42,6 +42,7 @@ import com.tvntd.dao.ArticleRepository;
 import com.tvntd.dao.AuthorRepo;
 import com.tvntd.dao.AuthorTagRepo;
 import com.tvntd.dao.AuthorTagRepo.AuthorTagDTO;
+import com.tvntd.dao.AuthorTagRepo.AuthorTagRespDTO;
 import com.tvntd.forms.ArticleForm;
 import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
@@ -50,7 +51,6 @@ import com.tvntd.models.AuthorTag;
 import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
-import com.tvntd.util.Util;
 
 @Service
 @Transactional
@@ -75,19 +75,33 @@ public class AuthorService implements IAuthorService
     public Author getAuthor(String uuid)
     {
         Author author = authorRepo.findByAuthorUuid(uuid);
-        author.setAuthorTags(authorTagRepo.findByAuthorUuid(uuid));
+        if (author != null) {
+            author.setAuthorTags(authorTagRepo.findByAuthorUuid(uuid));
+        }
         return author;
     }
 
     @Override
-    public List<AuthorTagDTO> getAuthorTag(String uuid)
+    public AuthorDTO getAuthorDTO(String uuid)
+    {
+        Author author = getAuthor(uuid);
+        if (author != null) {
+            return new AuthorDTO(author);
+        }
+        return null;
+    }
+
+    @Override
+    public AuthorTagRespDTO getAuthorTag(String uuid)
     {
         List<AuthorTag> raw = authorTagRepo.findByAuthorUuid(uuid);
         if (raw != null) {
-            List<AuthorTagDTO> result = new LinkedList<>();
+            List<AuthorTagDTO> tags = new LinkedList<>();
+
             for (AuthorTag t : raw) {
-                result.add(new AuthorTagDTO(t));
+                tags.add(new AuthorTagDTO(t));
             }
+            return new AuthorTagRespDTO(uuid, tags);
         }
         return null;
     }
@@ -141,23 +155,31 @@ public class AuthorService implements IAuthorService
         if (author != null) {
             result.add(new AuthorDTO(author));
         }
-        for (String uid : uuids) {
-            if (AuthorDTO.isInList(result, uid) == true) {
-                continue;
-            }
-            author = getAuthor(uid);
-            if (author != null) {
-                result.add(new AuthorDTO(author));
-            }
-        }
-        for (String uid : profile.getConnectList()) {
-            if (!AuthorDTO.isInList(result, uid)) {
-                result.add(new AuthorDTO(uid.toString()));
+        if (uuids != null) {
+            for (String uid : uuids) {
+                if (AuthorDTO.isInList(result, uid) == true) {
+                    continue;
+                }
+                author = getAuthor(uid);
+                if (author != null) {
+                    result.add(new AuthorDTO(author));
+                }
             }
         }
-        for (String uid : profile.getFollowList()) {
-            if (!AuthorDTO.isInList(result, uid)) {
-                result.add(new AuthorDTO(uid.toString()));
+        List<String> list = profile.getConnectList();
+        if (list != null) {
+            for (String uid : list) {
+                if (!AuthorDTO.isInList(result, uid)) {
+                    result.add(new AuthorDTO(uid.toString()));
+                }
+            }
+        }
+        list = profile.getFollowList();
+        if (list != null) {
+            for (String uid : profile.getFollowList()) {
+                if (!AuthorDTO.isInList(result, uid)) {
+                    result.add(new AuthorDTO(uid.toString()));
+                }
             }
         }
         return result;
