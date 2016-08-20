@@ -297,26 +297,7 @@ public interface IArticleService
 
     public static class ArticleRankDTO extends GenericResponse
     {
-        private String  articleUuid;
-        private String  authorUuid;
-        private String  tagName;
-        private String  artTitle;
-        private String  contentBrief;
-
-        private String  timeStamp;
-        private String  notifHead;
-        private Long    creditEarned;
-        private Long    moneyEarned;
-        private Long    likes;
-        private Long    shares;
-        private Long    rank;
-        private Long    score;
-        private Long    notifCount;
-        private Long    tagRank;
-        private boolean favorite;
-
-        private List<String> userLiked;
-        private List<String> userShared;
+        private ArticleRank artRank;
 
         public ArticleRankDTO() {
             super(GenericResponse.USER_HOME, null, null);
@@ -325,164 +306,128 @@ public interface IArticleService
         public ArticleRankDTO(ArticleRank rank)
         {
             super(GenericResponse.USER_HOME, null, null);
-            setRank(rank);
+            artRank = rank;
         }
 
-        public void setRank(ArticleRank rank, AuthorTag tag)
-        {
-            setRank(rank);
-            tagName = tag.getTag();
-            tagRank = tag.getRank();
-            notifHead = tag.getHeadNotif();
-            notifCount = tag.getNotifCount();
-        }
-
-        protected void setRank(ArticleRank rank)
-        {
-            articleUuid = rank.getArticleUuid();
-            authorUuid = rank.getAuthorUuid();
-            creditEarned = rank.getCreditEarned();
-            moneyEarned = rank.getMoneyEarned();
-            likes = rank.getLikes();
-            shares = rank.getShared();
-            this.rank = rank.getRank();
-            favorite = rank.isFavorite();
-            score = rank.getScore();
-            userLiked = rank.getUserLiked();
-            userShared = rank.getUserShared();
-
-            artTitle = rank.getArtTitle();
-            tagName = rank.getTag();
-            contentBrief = rank.getContentBrief();
-
-            DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm");
-            timeStamp = df.format(rank.getTimeStamp());
+        public void setRank(ArticleRank rank, AuthorTag tag) {
+            artRank = rank;
         }
 
         /**
          * @return the articleUuid
          */
         public String getArticleUuid() {
-            return articleUuid;
+            return artRank.getArticleUuid();
         }
 
         /**
          * @return the authorUuid
          */
         public String getAuthorUuid() {
-            return authorUuid;
+            return artRank.getAuthorUuid();
         }
 
         /**
          * @return the tagName
          */
         public String getTagName() {
-            return tagName;
+            return artRank.getTag();
         }
 
         /**
          * @return the artTitle
          */
         public String getArtTitle() {
-            return artTitle;
+            return artRank.getArtTitle();
         }
 
         /**
          * @return the contentBrief
          */
         public String getContentBrief() {
-            return contentBrief;
+            return artRank.getContentBrief();
         }
 
         /**
          * @return the timeStamp
          */
-        public String getTimeStamp() {
-            return timeStamp;
-        }
-
-        /**
-         * @return the notifHead
-         */
-        public String getNotifHead() {
-            return notifHead;
+        public String getTimeStamp()
+        {
+            DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm");
+            return df.format(artRank.getTimeStamp());
         }
 
         /**
          * @return the creditEarned
          */
         public Long getCreditEarned() {
-            return creditEarned;
+            return artRank.getCreditEarned();
         }
 
         /**
          * @return the moneyEarned
          */
         public Long getMoneyEarned() {
-            return moneyEarned;
+            return artRank.getMoneyEarned();
         }
 
         /**
          * @return the likes
          */
         public Long getLikes() {
-            return likes;
+            return artRank.getLikes();
         }
 
         /**
          * @return the shares
          */
         public Long getShares() {
-            return shares;
+            return artRank.getShared();
         }
 
         /**
          * @return the rank
          */
         public Long getRank() {
-            return rank;
+            return artRank.getRank();
         }
 
         /**
          * @return the score
          */
         public Long getScore() {
-            return score;
-        }
-
-        /**
-         * @return the notifCount
-         */
-        public Long getNotifCount() {
-            return notifCount;
-        }
-
-        /**
-         * @return the tagRank
-         */
-        public Long getTagRank() {
-            return tagRank;
+            return artRank.getScore();
         }
 
         /**
          * @return the favorite
          */
         public boolean isFavorite() {
-            return favorite;
+            return artRank.isFavorite();
         }
 
         /**
          * @return the userLiked
          */
-        public List<String> getUserLiked() {
-            return userLiked;
+        public List<String> getUserLiked()
+        {
+            List<String> liked = artRank.getUserLiked();
+            if (liked == null) {
+                return new LinkedList<String>();
+            }
+            return liked;
         }
 
         /**
          * @return the userShared
          */
-        public List<String> getUserShared() {
-            return userShared;
+        public List<String> getUserShared()
+        {
+            List<String> shared = artRank.getUserShared();
+            if (shared == null) {
+                return new LinkedList<String>();
+            }
+            return shared;
         }
     }
 }

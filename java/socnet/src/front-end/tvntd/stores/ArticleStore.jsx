@@ -9,6 +9,7 @@ import _            from 'lodash';
 import moment       from 'moment';
 import Actions      from 'vntd-root/actions/Actions.jsx';
 import CommentStore from 'vntd-root/stores/CommentStore.jsx';
+import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
 import UserStore    from 'vntd-shared/stores/UserStore.jsx';
 
 import {insertSorted, preend} from 'vntd-shared/utils/Enum.jsx';
@@ -259,6 +260,10 @@ let ArticleStore = Reflux.createStore({
         if (this.data.articlesByUuid[article.articleUuid] == null) {
             this.data.articlesByUuid[article.articleUuid] = article;
             anchor.addArticle(article);
+        }
+        if (article.rank != null) {
+            let authorTagMgr = AuthorStore.getAuthorTagMgr(article.authorUuid);
+            authorTagMgr.addArticleRank(article.rank);
         }
     },
 

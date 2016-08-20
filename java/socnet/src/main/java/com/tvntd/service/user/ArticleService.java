@@ -148,7 +148,7 @@ public class ArticleService implements IArticleService
             if (article != null) {
                 return null;
             }
-            rank = createArticleRank(article);
+            rank = authorSvc.createArticleRank(article, "Comment");
             if (rank == null) {
                 return null;
             }
@@ -318,17 +318,11 @@ public class ArticleService implements IArticleService
 
     @Override
     public void saveArticle(ArticleDTO article) {
-        saveArticle(article.fetchArticle());
-    }
-
-    protected ArticleRank createArticleRank(Article article) {
-        return authorSvc.createArticleRank(article, Constants.DefaultTag);
+        articleRepo.save(article.fetchArticle());
     }
 
     @Override
-    public void saveArticle(Article article)
-    {
-        createArticleRank(article);
+    public void saveArticle(Article article) {
         articleRepo.save(article);
     }
 

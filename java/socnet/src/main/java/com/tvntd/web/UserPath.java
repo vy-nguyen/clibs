@@ -227,15 +227,14 @@ public class UserPath
             profile.assignPendPost(null);
             profile.pushPublishArticle(art);
 
-            byte[] brief = article.getContentBrief();
             timeLineSvc.saveTimeLine(profile.getUserUuid(),
-                    art.getArticleUuid(), null, brief);
-
-            authorSvc.createArticleRank(article, form.getTags());
+                    art.getArticleUuid(), null, article.getContentBrief());
         } else {
             articleSvc.saveArticle(art);
             profile.pushSavedArticle(art);
         }
+        ArticleRank artRank = authorSvc.createArticleRank(article, form.getTags());
+        art.setRank(artRank);
         return art;
     }
 

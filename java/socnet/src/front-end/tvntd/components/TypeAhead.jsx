@@ -21,8 +21,10 @@ let TypeAhead = React.createClass({
 
         if (this.props.articleUuid != null) {
             let artRank = AuthorStore.getArticleRank(myUuid, this.props.articleUuid);
+            if (artRank == null) {
+                return;
+            }
             let authorTag = AuthorStore.getAuthorTag(myUuid, artRank.tagName)
-
             this.setState({
                 myUuid : myUuid,
                 artRank: artRank,
@@ -30,7 +32,6 @@ let TypeAhead = React.createClass({
                 favorite : artRank.favorite,
                 authorTag: authorTag
             });
-
             if (this.props.artRankSave != null) {
                 this.props.artRankSave(artRank, authorTag);
             }
