@@ -25,8 +25,7 @@ proj_exes     := \
 #
 proj_tests     := \
 	modtest \
-	hash-json \
-	pagelock-json
+	hash-json 
 
 proj_sys_libs  := util
 proj_foss_libs :=
