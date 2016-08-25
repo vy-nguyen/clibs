@@ -229,7 +229,7 @@ class ModuleMixin : public Module
     template <class... Args>
     ModuleMixin(const char *name, Args... args) : mod_name(name), mod_mixin(args...) {}
 
-    const char *obj_keystr() const {
+    const char *obj_keystr() const override {
         return mod_name;
     }
     /*

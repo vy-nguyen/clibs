@@ -24,15 +24,9 @@ foss_pkgs   := \
 	libdb-dev \
 	libevent-dev \
 	libssl-dev \
-	mysql-server \
 	g++ \
-	clang-3.4 \
+	clang-3.8 \
 	sysstat \
-	gradle-2.9 \
-	CMake \
-	nodejs-legacy \
-	npm \
-	oracle-java8-installer \
 	mongodb-server
 
 foss_incl       := \
