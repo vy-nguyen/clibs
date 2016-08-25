@@ -4,9 +4,10 @@
  */
 'use strict';
 
-import React          from 'react-mod'
-import UserStore      from 'vntd-shared/stores/UserStore.jsx'
-import ToggleShortcut from './ToggleShortcut.jsx'
+import React          from 'react-mod';
+import UserStore      from 'vntd-shared/stores/UserStore.jsx';
+import LanguageStore  from 'vntd-root/stores/LanguageStore.jsx';
+import ToggleShortcut from './ToggleShortcut.jsx';
 
 let LoginInfo = React.createClass({
     getInitialState: function () {
@@ -32,7 +33,7 @@ let LoginInfo = React.createClass({
 	            </span>
             </div>
 		)
-	}
+    }
 });
 
 export default LoginInfo

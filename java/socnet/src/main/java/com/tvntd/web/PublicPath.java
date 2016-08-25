@@ -46,14 +46,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.Constants;
 import com.tvntd.lib.FileResources;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Profile;
+import com.tvntd.service.api.GenericResponse;
 import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArtTagService.ArtTagDTO;
 import com.tvntd.service.api.IArtTagService.ArtTagList;
@@ -61,6 +65,7 @@ import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.IAuthorService;
+import com.tvntd.service.api.ICommentService;
 import com.tvntd.service.api.IMenuItemService;
 import com.tvntd.service.api.IMenuItemService.MenuItemResp;
 import com.tvntd.service.api.IProfileService;
@@ -88,6 +93,9 @@ public class PublicPath
 
     @Autowired
     private IArtTagService artTagSvc;
+
+    @Autowired
+    private ICommentService commentSvc;
 
     /**
      * Handle public pages.
@@ -213,6 +221,22 @@ public class PublicPath
         }
     }
 
+    /**
+     * Get comments for articles.
+     */
+    @RequestMapping(value = "/public/get-comments",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    getComments(@RequestBody UuidForm uuids, HttpSession session)
+    {
+        return commentSvc.getCommentPost(uuids.getUuids());
+    }
+
+    /**
+     * Get public html files.
+     */
     @RequestMapping(value = "/public/get-html/{html}",
             method = RequestMethod.GET, produces = "text/html; charset=utf-8")
     public String getHtml(Map<String, Object> model,

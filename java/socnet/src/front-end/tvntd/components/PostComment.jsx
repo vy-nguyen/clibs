@@ -11,10 +11,15 @@ import Reflux   from 'reflux';
 import UserStore       from 'vntd-shared/stores/UserStore.jsx';
 import Actions         from 'vntd-root/actions/Actions.jsx';
 import UserIcon        from 'vntd-root/components/UserIcon.jsx';
+import LanguageStore   from 'vntd-root/stores/LanguageStore.jsx';
 import CommentStore    from 'vntd-root/stores/CommentStore.jsx';
 import {safeStringify} from 'vntd-shared/utils/Enum.jsx'; 
 
 let CommentBox = React.createClass({
+
+    mixins: [
+        Reflux.connect(CommentStore)
+    ],
 
     _submitComment: function(e) {
         e.preventDefault();
@@ -22,7 +27,6 @@ let CommentBox = React.createClass({
             comment: safeStringify(this.refs.comment.value),
             articleUuid: this.props.articleUuid,
         });
-        console.log(safeStringify(this.refs.comment.value));
         console.log(this.refs.comment.value);
         this.setState({
             sendDisable: " disabled",
@@ -97,13 +101,23 @@ let CommentBox = React.createClass({
     },
 
     getInitialState: function() {
+        let clickMuted = false;
+        let likeFmt  = "text-info";
+        let shareFmt = "text-info";
+
+        if (!UserStore.isLogin()) {
+            clickMuted = true;
+            likeFmt  = "text-muted";
+            shareFmt = "text-muted";
+        }
         return {
+            clickMuted : clickMuted,
             sendDisable: "",
             submiting  : false,
             like       : true,
             share      : true,
-            likeFmt    : "text-info",
-            shareFmt   : "text-info",
+            likeFmt    : likeFmt,
+            shareFmt   : shareFmt,
             commentShow: this.props.cmtShow,
             cmtBoxId   : _.uniqueId('comment-box-')
         }
@@ -152,24 +166,34 @@ let CommentBox = React.createClass({
                 );
             }
         }
+        let error = this.state.error;
+        let placeHolder = (error != null) ? this.state.error.text : LanguageStore.tooltip("Place your comments here...");
         return (
             <div className="row no-margin no-padding">
                 <hr/>
                 <div className="btn-group inline">
-                    <button onClick={this._submitSelect.bind(this, "like")} className={this.state.likeFmt}
-                        rel="tooltip" title="like or unlike">
+                    <button onClick={this._submitSelect.bind(this, "like")}
+                        disabled={this.state.clickMuted} className={this.state.likeFmt}
+                        rel="tooltip" title={LanguageStore.tooltip("like or unlike")}>
                         <i className="fa fa-thumbs-up"></i>{"Like (" + likeCount + ")"}
                     </button>
-                    <button onClick={this._toggleComment} className="text-info">
+                    <button onClick={this._toggleComment} className="text-info"
+                        rel="tooltip" title={LanguageStore.tip("toggle to hide/show comments")}>
                         <i className="fa fa-comment"></i>{"Comments (" + this.props.cmtCount + ")"}
                     </button>
-                    <button onClick={this._submitSelect.bind(this, "share")} className={this.state.shareFmt}>
+                    <button onClick={this._submitSelect.bind(this, "share")}
+                        disabled={this.state.clickMuted} className={this.state.shareFmt}
+                        rel="tooltip" title={LanguageStore.tip("Not yet available")}>
                         <i className="fa fa-share"></i>{"Share (" + shareCount + ")"}
                     </button>
-                    <button onClick={this._submitSelect.bind(this, "save")} className="text-info">
+                    <button onClick={this._submitSelect.bind(this, "save")}
+                        disabled={this.state.clickMuted} className="text-info"
+                        rel="tooltip" title={LanguageStore.tip("Not yet available")}>
                         <i className="fa fa-book"></i>Save
                     </button>
-                    <button onClick={this._submitSelect.bind(this, "pay")} className="text-info">
+                    <button onClick={this._submitSelect.bind(this, "pay")}
+                        disabled={this.state.clickMuted} className="text-info"
+                        rel="tooltip" title={LanguageStore.tip("Not yet available")}>
                         <i className="fa fa-money"></i>Micropay
                     </button>
                 </div>
@@ -178,7 +202,7 @@ let CommentBox = React.createClass({
                     <div className="row">
                         <div className="col-sm-12">
                             <textarea rows="2" ref="comment" className="form-control input-sm"
-                                id={this.state.cmtBoxId} placeholder="Place your comments here..."/>
+                                id={this.state.cmtBoxId} placeholder={placeHolder}/>
 
                             <div className="margin-top-10">
                                 <button className={"btn btn-danger btn-primary pull-right " + this.state.sendDisable}

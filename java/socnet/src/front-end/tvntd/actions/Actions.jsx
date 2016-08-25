@@ -5,7 +5,7 @@
 'use strict';
 
 import Reflux           from 'reflux';
-import moment           from 'moment';
+import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import ErrorDispatch    from 'vntd-shared/actions/ErrorDispatch.jsx';
 
 const completedFn = {
@@ -21,6 +21,7 @@ const completedFailedAlwaysFn = {
 const Actions = Reflux.createActions({
 
     clickMenuItem:   completedFn,
+    authRequired:    completedFn,
 
     // User actions
     logout:          completedFailedFn,
@@ -73,11 +74,15 @@ const Actions = Reflux.createActions({
     setTags:         completedFailedFn
 });
 
-function postRestCall(formData, url, json, cbObj) {
+function postRestCall(formData, url, json, cbObj, authReq) {
     let type = undefined;
     let data = formData;
     let content = undefined;
 
+    if ((authReq === true) && !UserStore.isLogin()) {
+        Actions.authRequired(cbObj);
+        return;
+    }
     if (json === true) {
         type = "JSON";
         data = JSON.stringify(formData);
@@ -139,11 +144,23 @@ function uploadFiles(url, progId, formData, complete, failure) {
     }
 };
 
+function authRequired()
+{
+    if (!UserStore.isLogin()) {
+        return true;
+    }
+    Actions.authRequired();
+};
+
 /**
  * UI click actions.
  */
 Actions.clickMenuItem.listen(function(item) {
     this.completed(item);
+});
+
+Actions.authRequired.listen(function(cbObj) {
+    this.completed(cbObj);
 });
 
 /**
@@ -187,7 +204,12 @@ Actions.getArticles.listen(function(artUuids) {
 });
 
 Actions.getComments.listen(function(artUuids) {
-    postRestCall(artUuids, "/user/get-comments", true, this);
+    let url = "/user/get-comments";
+
+    if (!UserStore.isLogin()) {
+        url = "/public/get-comments";
+    }
+    postRestCall(artUuids, url, true, this);
 });
 
 Actions.uploadAvataDone.listen(function(data) {
@@ -234,20 +256,20 @@ Actions.preload.listen(function() {
  * User activities.
  */
 Actions.changeUsers.listen(function(data) {
-    postRestCall(data, "/api/user-connections", true, this);
+    postRestCall(data, "/api/user-connections", true, this, true);
 });
 
 Actions.saveUserPost.listen(function(data) {
-    postRestCall(data, "/user/save-post", true, this);
+    postRestCall(data, "/user/save-post", true, this, true);
     Actions.pendingPost(data);
 });
 
 Actions.deleteUserPost.listen(function(data) {
-    postRestCall(data, "/user/delete-post", true, this);
+    postRestCall(data, "/user/delete-post", true, this, true);
 });
 
 Actions.publishUserPost.listen(function(data) {
-    postRestCall(data, "/user/publish-post", true, this);
+    postRestCall(data, "/user/publish-post", true, this, true);
     Actions.pendingPost(data);
 });
 
@@ -263,22 +285,22 @@ Actions.switchComment.listen(function(data) {
 });
 
 Actions.postComment.listen(function(data) {
-    postRestCall(data, "/user/publish-comment", true, this);
+    postRestCall(data, "/user/publish-comment", true, this, true);
 });
 
 Actions.postCmtSelect.listen(function(data) {
-    postRestCall(data, "/user/change-comment", true, this);
+    postRestCall(data, "/user/change-comment", true, this, true);
 });
 
 /**
  * Rank article actions.
  */
 Actions.updateArtRank.listen(function(data) {
-    postRestCall(data, "/user/update-art-rank", true, this);
+    postRestCall(data, "/user/update-art-rank", true, this, true);
 });
 
 Actions.postArtSelect.listen(function(data) {
-    postRestCall(data, "/user/update-art-rank", true, this);
+    postRestCall(data, "/user/update-art-rank", true, this, true);
 });
 
 Actions.getArticleRank.listen(function(data) {
@@ -305,7 +327,7 @@ Actions.listUsers.listen(function() {
 });
 
 Actions.setTags.listen(function(data) {
-    postRestCall(data, "/admin/set-tags", true, this);
+    postRestCall(data, "/admin/set-tags", true, this, true);
 });
 
 /**

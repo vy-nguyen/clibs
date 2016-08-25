@@ -3,9 +3,10 @@
  */
 'use strict;'
 
-import _       from 'lodash';
-import Reflux  from 'reflux';
-import Actions from 'vntd-root/actions/Actions.jsx';
+import _         from 'lodash';
+import Reflux    from 'reflux';
+import UserStore from 'vntd-shared/stores/UserStore.jsx';
+import Actions   from 'vntd-root/actions/Actions.jsx';
 
 let LanguageStore = Reflux.createStore({
     data: {
@@ -24,6 +25,20 @@ let LanguageStore = Reflux.createStore({
 
     getData: function() {
         return this.data
+    },
+
+    tooltip: function(mesg, alt) {
+        if (UserStore.isLogin()) {
+            return this.translate(mesg);
+        }
+        if (alt == null) {
+            return this.translate("Please login first");
+        }
+        return this.translate(alt);
+    },
+
+    tip: function(mesg) {
+        return this.data.phrases[mesg] || mesg;
     },
 
     translate: function(text) {

@@ -199,12 +199,14 @@ class ArticleComment {
 }
 
 let CommentStore = Reflux.createStore({
-    data: {
-        commentByArticleUuid: {}
-    },
+    data: {},
     listenables: [Actions],
 
     init: function() {
+        this.data = {
+            commentByArticleUuid: {},
+            error: null
+        }
     },
 
     onPreloadCompleted: function(raw) {
@@ -225,12 +227,19 @@ let CommentStore = Reflux.createStore({
     },
 
     onGetCommentsCompleted: function(data) {
+        console.log("get comments");
+        console.log(data);
         this._updateComments(data.comments, true);
         this.trigger(this.data);
     },
 
     onPostCommentCompleted: function(data) {
         this._updateComments(data.comments, true);
+        this.trigger(this.data);
+    },
+
+    onPostCommentFailed: function(data) {
+        this.data.error = data;
         this.trigger(this.data);
     },
 

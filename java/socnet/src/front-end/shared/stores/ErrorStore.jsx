@@ -6,11 +6,15 @@
 
 import Reflux        from 'reflux';
 import _             from 'lodash';
+import Actions       from 'vntd-root/actions/Actions.jsx';
 import {ErrorAction} from 'vntd-shared/actions/ErrorDispatch.jsx';
 
 let ErrorStore = Reflux.createStore({
     data: {},
-    listenables: [ErrorAction],
+    listenables: [
+        Actions,
+        ErrorAction
+    ],
 
     _commonStore: function(error) {
         let data = this.data;
@@ -30,12 +34,29 @@ let ErrorStore = Reflux.createStore({
             respText  : "",
             respJSON  : {},
             errorCode : 0,
-            serverText: ""
+            serverText: "",
+            userReport: {}
         }
     },
 
     getErrorData: function() {
         return this.data;
+    },
+
+    getUserReport: function() {
+        return this.data.userReport;
+    },
+
+    onAuthRequiredCompleted: function(cbObj) {
+        this.data.userReport = {
+            text: "You need to register or login",
+            help: "Please register or login to post or comment"
+        };
+        console.log("trigger store");
+        console.log(this.data.userReport);
+        console.log(this.data);
+        cbObj.failed(this.data.userReport);
+        this.trigger(this.data.userReport);
     },
 
     onError300Failed: function(error) {
