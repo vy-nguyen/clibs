@@ -163,7 +163,7 @@ public interface IProfileService
          * Update image URL with the new obj id.
          */
         public void updateImgUrl(ObjectId id) {
-            profile.setUserImgUrl(objStore.imgObjUri(id, s_baseUri));
+            profile.setUserImgUrl(id.name());
         }
 
         public String toString()
