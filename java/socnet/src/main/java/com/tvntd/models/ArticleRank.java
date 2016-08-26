@@ -68,7 +68,7 @@ public class ArticleRank
     @Column(length = 128)
     private byte[] artTitle;
 
-    @Column(length = 128)
+    @Column(length = 256)
     private byte[] contentBrief;
 
     private Date timeStamp;

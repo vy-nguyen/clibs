@@ -48,8 +48,10 @@ public class TimeLine
     @Column(length = 64)
     private String eventUuid;
 
-    private Date timeStamp;
+    @Column(length = 256)
     byte[] summarized;
+
+    private Date timeStamp;
 
     public TimeLine() {}
     public TimeLine(String user, String article)
