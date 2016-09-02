@@ -6,7 +6,6 @@
 import _               from 'lodash';
 import React           from 'react-mod';
 import Reflux          from 'reflux';
-import Select          from 'react-select';
 
 import GenericForm     from 'vntd-shared/forms/commons/GenericForm.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
@@ -27,6 +26,13 @@ let TagInfo = React.createClass({
 
     _selectParent: function(select) {
         ArticleTagStore.changeParent(this.props.artTag.tagName, select);
+    },
+
+    _submitChange: function(data) {
+        console.log("Submit change tag info");
+        console.log(data);
+        let name = ArticleTagStore.changeTagValue(data.curTag, data.tagName, data.rank);
+        console.log(ArticleTagStore.getPublicTag(name));
     },
 
     render: function() {
@@ -86,13 +92,54 @@ let TagInfo = React.createClass({
             );
         }.bind(this));
 
+        let taTags = [];
         let parentTags = [];
         _.forOwn(ArticleTagStore.getAllPublicTags(), function(tag) {
+            taTags.push(tag.tagName);
             parentTags.push({ value: tag.tagName, label: tag.tagName });
         });
+
+        let labelFmt = "col-sm-3 col-md-3 col-lg-3 control-label";
+        let inputFmt = "col-sm-9 col-md-9 col-lg-9 control-label";
+        let tagValForm = {
+            formFmt  : "smart-form client-form",
+            formEntries: [ {
+                legend : "Modify tag values",
+                entries: [ {
+                    labelFmt: labelFmt,
+                    labelTxt: "Parent",
+                    inpName : "parent",
+                    inputFmt: inputFmt,
+                    select   : true,
+                    selectOpt: parentTags
+                }, {
+                    labelFmt: labelFmt,
+                    labelTxt: "Rank",
+                    inpName : "rank",
+                    inputFmt: inputFmt,
+                    inpHolder: artTag.rankScore
+                }, {
+                    labelFmt: labelFmt,
+                    labelTxt: "Name",
+                    inpName : "tagName",
+                    inputFmt: "col-sm-8 col-md-8 col-lg-8 control-label",
+                    inpHolder: artTag.tagName,
+                    typeAhead: true,
+                    taOptions: taTags
+                } ]
+            } ],
+            buttons: [ {
+                btnFmt : "btn btn-primary",
+                btnText: "Submit",
+                onClick: function(data) {
+                    data.curTag = artTag.tagName;
+                    this._submitChange(data);
+                }.bind(this)
+            } ]
+        };
         return (
             <div className="well well-sm">
-                <Select name="form-sel-parent" options={parentTags} onChange={this._selectParent}/>
+                <GenericForm form={tagValForm}/>
                 <hr/>
                 <span><h4><a onClick={this._removeSelf}> x </a>{artTag.tagName}</h4></span>
                 <ul className="list-inline padding-10">

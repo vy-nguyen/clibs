@@ -6,6 +6,8 @@
 
 import _           from 'lodash';
 import React       from 'react-mod';
+import TA          from 'react-typeahead';
+import Select      from 'react-select';
 
 /*
  * Form format:
@@ -40,10 +42,22 @@ let GenericForm = React.createClass({
         event.preventDefault();
         _.forEach(entries, function(section) {
             _.forEach(section.entries, function(item) {
-                dataRefs[item.inpName] = this.refs[item.inpName].value;
+                if (item.typeAhead === true || item.select === true) {
+                    dataRefs[item.inpName] = item.taValue;
+                } else {
+                    dataRefs[item.inpName] = this.refs[item.inpName].value;
+                }
             }.bind(this));
         }.bind(this));
         button.onClick(dataRefs);
+    },
+
+    _onBlur: function(entry, val) {
+        entry.taValue = val.target.value;
+    },
+
+    _onSelectChange: function(entry, val) {
+        entry.taValue = val;
     },
 
     render: function() {
@@ -70,17 +84,36 @@ let GenericForm = React.createClass({
         }
         let formEntries = form.formEntries.map(function(item, idx) {
             let entries = item.entries.map(function(entry, index) {
+                let label = <label className={entry.labelFmt} for="textinput">{entry.labelTxt}</label>;
+                let input = (
+                    <input type="text" className="form-control"
+                        name={entry.inpName} ref={entry.inpName} placeholder={entry.inpHolder}/>
+                );
+                if (entry.typeAhead === true) {
+                    input = (
+                        <TA.Typeahead options={entry.taOptions} maxVisible={6}
+                            placeholder={entry.inpHolder} value={entry.inpHolder}
+                            customClasses={{input: "form-control input-sm"}}
+                            onBlur={this._onBlur.bind(this, entry)}
+                            onOptionSelected={this._onSelectChange.bind(this, entry)}/>
+                    );
+                }
+                if (entry.select == true) {
+                    input = (
+                        <Select options={entry.selectOpt} name={entry.inpName}
+                            onChange={this._onSelectChange.bind(this, entry)}/>
+                    );
+                }
                 return (
                     <div className="row form-group" key={index}>
-                        <label className={entry.labelFmt} for="textinput">{entry.labelTxt}</label>
+                        {label}
                         <div className={entry.inputFmt}>
-                            <input type="text" className="form-control"
-                                name={entry.inpName} ref={entry.inpName} placeholder={entry.inpHolder}
-                            />
+                            {input}
                         </div>
                     </div>
                 );
-            });
+            }.bind(this));
+
             return (
                 <div key={idx}>
                     {item.legend != null ? <legend>{item.legend}</legend> : null}
@@ -89,7 +122,7 @@ let GenericForm = React.createClass({
                     </fieldset>
                 </div>
             );
-        });
+        }.bind(this));
 
         return (
             <form className={form.formFmt}>

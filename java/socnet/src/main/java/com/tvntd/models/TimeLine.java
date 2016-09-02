@@ -49,6 +49,8 @@ public class TimeLine
     private String eventUuid;
 
     private Date timeStamp;
+
+    @Column(length = 256)
     byte[] summarized;
 
     public TimeLine() {}

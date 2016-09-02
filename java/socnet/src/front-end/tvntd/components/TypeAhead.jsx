@@ -39,7 +39,6 @@ let TypeAhead = React.createClass({
     },
 
     _onBlur: function(val) {
-        console.log("on blur call " + val.target.value);
         this.props.selectValue(val.target.value);
     },
 

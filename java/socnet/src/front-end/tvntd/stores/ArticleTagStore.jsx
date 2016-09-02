@@ -155,6 +155,25 @@ let ArticleTagStore = Reflux.createStore({
         }
     },
 
+    changeTagValue(curName, newName, rank) {
+        let tagMgr = this.data;
+        let self = this.data.pubTagIndex[curName];
+
+        if (self != null) {
+            if (rank != null && !_.isEmpty(rank)) {
+                self.rankScore = rank;
+            }
+            if (newName != null && !_.isEmpty(newName)) {
+                self.removeSelf(tagMgr);
+                self.tagName = newName;
+                self.addSelf(tagMgr);
+                this.trigger(tagMgr);
+            }
+            return self.tagName;
+        }
+        return curName;
+    },
+
     removePublicTag: function(tagName) {
         let tagMgr = this.data;
         let tag = tagMgr.pubTagIndex[tagName];
