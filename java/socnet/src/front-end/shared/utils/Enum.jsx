@@ -117,4 +117,31 @@ function preend(elm, array) {
     return newArr;
 }
 
-export { Enum, safeStringify, insertSorted, toDateString, preend, getRandomInt }
+function removeArray(array, elm, fromIdx, cmp) {
+    if (array == null) {
+        return -1;
+    }
+    let o = Object(array);
+    let len = o.length >>> 0;
+    if (len === 0) {
+        return -1;
+    }
+    let n = +fromIdx || 0;
+    if (Math.abs(n) === Infinity) {
+        n = 0;
+    }
+    if (n >= len) {
+        return -1;
+    }
+    let k = Math.max(n >= 0 ? n : len - Math.abs(n), 0);
+    while (k < len) {
+        if (k in o && cmp(o[k], elm) === 0) {
+            array.splice(k, 1);
+            return k;
+        }
+        k++;
+    }
+    return -1;
+}
+
+export { Enum, safeStringify, insertSorted, toDateString, preend, getRandomInt, removeArray }

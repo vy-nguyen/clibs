@@ -23,11 +23,18 @@ let SetTags = React.createClass({
     _submitSetTag: function(event) {
         event.preventDefault();
         Actions.setTags(ArticleTagStore.getSubmitTags());
-        console.log(ArticleTagStore.getSubmitTags());
     },
 
     _tagArticle: function(uuid, artRank) {
         ArticleTagStore.addPublicTag(artRank.tagName, artRank.rank, null, uuid);
+    },
+
+    _renderTagInfo: function(artTag) {
+        return (
+            <div className="col-sm-4 col-md-4 col-lg-4" key={_.uniqueId('pub-tag-')}>
+                <TagInfo artTag={artTag}/>
+            </div>
+        );
     },
 
     render: function() {
@@ -60,15 +67,30 @@ let SetTags = React.createClass({
         }.bind(this));
 
         let pubTagRender = [];
-        let pubTagList = ArticleTagStore.getAllPublicTags();
+        let pubTagList = ArticleTagStore.getAllPublicTags(false);
+        let length = pubTagList.length;
 
-        _.forOwn(pubTagList, function(item) {
+        for (let i = 0; i < length; i++) {
+            let oneTag = this._renderTagInfo(pubTagList[i]);
+            let twoTag = null;
+            let threeTag = null;
+
+            if ((i + 1) < length) {
+                i++;
+                twoTag = this._renderTagInfo(pubTagList[i]);
+            }
+            if ((i + 1) < length) {
+                i++;
+                threeTag = this._renderTagInfo(pubTagList[i]);
+            }
             pubTagRender.push(
-                <div className="col-sm-4 col-md-4 col-lg-4" key={_.uniqueId('pub-tag-')}>
-                    <TagInfo artTag={item}/>
+                <div className="row" key={_.uniqueId('pub-tag-')}>
+                    {oneTag}
+                    {twoTag}
+                    {threeTag}
                 </div>
             );
-        });
+        }
         return (
             <div id="content">
                 <section id="widget-grid" className="">
@@ -84,7 +106,7 @@ let SetTags = React.createClass({
                         <TagInfo artTag={null}/>
                     </div>
                     <footer>
-                        <button className="btn btn-primary" onClick={this._submitSetTag}>Save Tags</button>
+                        <button className="btn btn-primary" onClick={this._submitSetTag}>Save Changes</button>
                     </footer>
                 </div>
                 {ArticleTagBrief.renderPublicTags()}

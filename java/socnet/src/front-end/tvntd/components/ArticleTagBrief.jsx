@@ -160,11 +160,11 @@ let ArticleTagBrief = React.createClass({
     statics: {
         renderPublicTags: function() {
             let output = [];
-            let tags = ArticleTagStore.getAllPublicTags();
+            let tags = ArticleTagStore.getAllPublicTags(true);
             if (tags != null) {
                 _.forOwn(tags, function(tag) {
                     output.push(
-                        <div className="row">
+                        <div className="row" key={_.uniqueId('art-tag-brief-')}>
                             <h1>{tag.tagName}</h1>
                             <ArticleTagBrief key={_.uniqueId('art-pub-tag-')} tag={tag}/>
                         </div>

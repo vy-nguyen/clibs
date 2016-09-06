@@ -31,7 +31,7 @@ let TagInfo = React.createClass({
     _submitChange: function(data) {
         console.log("Submit change tag info");
         console.log(data);
-        let name = ArticleTagStore.changeTagValue(data.curTag, data.tagName, data.rank);
+        let name = ArticleTagStore.changeTagValue(data);
         console.log(ArticleTagStore.getPublicTag(name));
     },
 
@@ -94,7 +94,7 @@ let TagInfo = React.createClass({
 
         let taTags = [];
         let parentTags = [];
-        _.forOwn(ArticleTagStore.getAllPublicTags(), function(tag) {
+        _.forOwn(ArticleTagStore.getAllPublicTags(false), function(tag) {
             taTags.push(tag.tagName);
             parentTags.push({ value: tag.tagName, label: tag.tagName });
         });
@@ -110,6 +110,7 @@ let TagInfo = React.createClass({
                     labelTxt: "Parent",
                     inpName : "parent",
                     inputFmt: inputFmt,
+                    inpHolder: artTag.parentTag,
                     select   : true,
                     selectOpt: parentTags
                 }, {

@@ -120,6 +120,9 @@ public class AdminPath
         for (ArtTagDTO tag : fixup) {
             artTagSvc.saveTag(tag);       
         }
+        for (ArtTagDTO tag : tagList.getDeletedTags()) {
+            artTagSvc.deleteTag(tag.getTagName(), Constants.PublicUuid);
+        }
         return UserPath.s_genOkResp;
     }
 }

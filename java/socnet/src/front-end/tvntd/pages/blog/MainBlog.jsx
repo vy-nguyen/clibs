@@ -24,7 +24,7 @@ let MainBlog = React.createClass({
             tabItems: [],
             tabContents: []
         };
-        let pubTags = ArticleTagStore.getAllPublicTags();
+        let pubTags = ArticleTagStore.getAllPublicTags(true);
         _.forOwn(pubTags, function(tag) {
             out.tabItems.push({
                 domId  : _.uniqueId('tag-'),

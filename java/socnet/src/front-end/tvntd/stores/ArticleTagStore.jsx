@@ -8,6 +8,8 @@ import _         from 'lodash';
 import Reflux    from 'reflux';
 import Actions   from 'vntd-root/actions/Actions.jsx';
 
+import {insertSorted, removeArray} from 'vntd-shared/utils/Enum.jsx';
+
 class ArtTag {
     constructor(data) {
         this._id  = _.uniqueId('id-art-tag-');
@@ -25,65 +27,29 @@ class ArtTag {
         if (this.subTags == null) {
             this.subTags = [];
         }
+        this.removeSubTag(sub);
         this.subTags.push(sub);
-    }
-
-    addSelf(tagMgr) {
-        tagMgr.pubTagIndex[this.tagName] = this;
-        if (this.parentTag != null) {
-            let t = tagMgr.pubTagIndex[this.parentTag];
-            if (t != null) {
-                t.addSubTag(this);
-            }
-        } else {
-            tagMgr.publicTags[this.tagName] = this;
-        }
-    }
-
-    changeParent(parentName, tagMgr) {
-        this.detachParent(tagMgr);
-        if (parentName == null || _.isEmpty(parentName)) {
-            parentName = null;
-        }
-        this.parentTag = parentName;
-        if (parentName != null) {
-            parent = tagMgr.publicTags[parentName];
-            if (parent != null) {
-                parent.addSubTag(this);
-            }
-        } else {
-            tagMgr.publicTags[this.tagName] = this;
-        }
-    }
-
-    detachParent(tagMgr) {
-        if (this.parentTag != null) {
-            let parent = tagMgr.publicTags(this.parentTag);
-            if (parent != null) {
-                parent.removeSubTag(this);
-            }
-            this.parentTag = null;
-        } else {
-            delete tagMgr.publicTags[this.tagName];
-        }
-    }
-
-    removeSelf(tagMgr) {
-        _.forEach(this.subTags, function(t) {
-            delete tagMgr.pubTagIndex[t.tagName];
-        }.bind(this));
-
-        this.detachParent(tagMgr);
-        delete tagMgr.pubTagIndex[this.tagName];
-        tagMgr.deletedTags[this.tagName] = this;
     }
 
     removeSubTag(sub) {
         if (this.subTags != null) {
-            let idx = this.subTags.indexOf(sub);
-            if (idx >= 0) {
-                this.subTags.splice(idx, 1);
-            }
+            removeArray(this.subTags, sub, 0, function(a, b) {
+                return (a.tagName === b.tagName) ? 0 : 1;
+            });
+        }
+    }
+
+    attachParent(parentObj) {
+        if (parentObj != null) {
+            parentObj.addSubTag(this);
+            this.parentTag = parentObj.tagName;
+        }
+    }
+
+    detachParent(parentObj) {
+        if (parentObj != null) {
+            parentObj.removeSubTag(this);
+            this.parentTag = null;
         }
     }
 }
@@ -96,6 +62,8 @@ let ArticleTagStore = Reflux.createStore({
         this.data = {
             publicTags : {},
             pubTagIndex: {},
+            sortedPubTags: [],
+            sortedIdxTags: [],
             deletedTags: {}
         };
     },
@@ -104,24 +72,17 @@ let ArticleTagStore = Reflux.createStore({
     onStartupCompleted: function(data) {
         let tagData = data.publicTags; 
         if (tagData != null) {
-            let tagObjs = [];
             _.forEach(tagData.publicTags, function(tag) {
-                let obj = new ArtTag(tag);
-                this.data.pubTagIndex[tag.tagName] = obj;
-                tagObjs.push(obj);
+                this._addTag(new ArtTag(tag));
             }.bind(this));
-
-            _.forEach(tagObjs, function(obj) {
-                obj.addSelf(this.data);
-            }.bind(this));
+            this._updateParents();
             this.trigger(this.data);
         }
     },
 
     /* Public methods. */
     addTagInput: function(tag) {
-        let obj = new ArtTag(tag);
-        obj.addSelf(this.data);
+        this._addTag(new ArtTag(tag));
         this.trigger(this.data);
     },
 
@@ -135,7 +96,7 @@ let ArticleTagStore = Reflux.createStore({
                 subTags  : [],
                 articleRank: [ articleUuid ]
             });
-            tag.addSelf(this.data);
+            this._addTag(tag);
             this.trigger(this.data);
 
         } else if (tag.articleRank != null) {
@@ -148,26 +109,57 @@ let ArticleTagStore = Reflux.createStore({
     },
 
     changeParent(tagName, parentName) {
-        let self = this.data.pubTagIndex[tagName];
+        let tagIndex = this.data.pubTagIndex;
+        let self = tagIndex[tagName];
         if (self != null) {
-            self.changeParent(parentName, this.data);
+            if (parentName == null || _.isEmpty(parentName)) {
+                parentName = null;
+            }
+            if (self.parentTag != null) {
+                self.detachParent(tagIndex[self.parentTag]);
+            }
+            self.parentTag = parentName;
+            if (parentName != null) {
+                self.attachParent(tagIndex[self.parentTag]);
+            }
             this.trigger(this.data);
         }
     },
 
-    changeTagValue(curName, newName, rank) {
-        let tagMgr = this.data;
-        let self = this.data.pubTagIndex[curName];
+    /**
+     * data = { curTag, parent, rank, tagName }
+     */
+    changeTagValue(data) {
+        let pubTagIndex = this.data.pubTagIndex;
+        let self = pubTagIndex[data.curTag];
 
         if (self != null) {
-            if (rank != null && !_.isEmpty(rank)) {
+            let trigger = false;
+            let rank = parseInt(data.rank);
+            if (data.rank != null && !_.isEmpty(data.rank) && Number.isInteger(rank)) {
                 self.rankScore = rank;
+                this._resortTags();
+                trigger = true;
             }
-            if (newName != null && !_.isEmpty(newName)) {
-                self.removeSelf(tagMgr);
-                self.tagName = newName;
-                self.addSelf(tagMgr);
-                this.trigger(tagMgr);
+            if (data.tagName != null && !_.isEmpty(data.tagName)) {
+                this._removeTag(self);
+                self.tagName = data.tagName;
+
+                this._addTag(self);
+                trigger = true;
+            }
+            if (data.parent != null && !_.isEmpty(data.parent)) {
+                if (self.parentTag != null) {
+                    self.detachParent(pubTagIndex[self.parentTag]);
+                }
+                let parent = pubTagIndex[data.parent];
+                if (parent != null) {
+                    self.attachParent(parent);
+                }
+                trigger = true;
+            }
+            if (trigger === true) {
+                this.trigger(this.data);
             }
             return self.tagName;
         }
@@ -175,11 +167,9 @@ let ArticleTagStore = Reflux.createStore({
     },
 
     removePublicTag: function(tagName) {
-        let tagMgr = this.data;
-        let tag = tagMgr.pubTagIndex[tagName];
-
-        if (tag != null) {
-            tag.removeSelf(tagMgr);
+        let self = this.data.pubTagIndex[tagName];
+        if (self != null) {
+            this._removeTag(self);
             this.trigger(this.data);
         }
     },
@@ -189,8 +179,21 @@ let ArticleTagStore = Reflux.createStore({
         this.trigger(this.data);
     },
 
-    getAllPublicTags: function() {
-        return this.data.publicTags;
+    getAllPublicTags: function(topLevel) {
+        if (topLevel == null || topLevel === true) {
+            return this.data.sortedPubTags;
+        }
+        return this.data.sortedIdxTags;
+    },
+
+    getAllPublicTagsString: function(topLevel) {
+        let tagStrings = [];
+        let tags = this.getAllPublicTags(topLevel);
+
+        _.forOwn(tags, function(it) {
+            tagStrings.push(it.tagName);
+        });
+        return tagStrings;
     },
 
     getSubmitTags: function() {
@@ -224,6 +227,87 @@ let ArticleTagStore = Reflux.createStore({
             subTags  : [],
             articleRank: tag.articleRank != null ? tag.articleRank : []
         });
+    },
+
+    /**
+     * Compare function between tag a and b.
+     */
+    _computeRank: function(tag) {
+        let rank = parseInt(tag.rankScore);
+        let tagIndex = this.data.pubTagIndex;
+
+        for (let count = 0; tag != null && tag.parentTag != null && count < 20; count++) {
+            rank = rank + 100;
+            tag = tagIndex[tag.parentTag];
+        }
+        return rank;
+    },
+
+    _compareTags: function(a, b) {
+        let aRank = this._computeRank(a);
+        let bRank = this._computeRank(b);
+        return aRank - bRank; 
+    },
+
+    _addTag: function(tagObj) {
+        let tagIndex = this.data.pubTagIndex;
+
+        if (tagIndex[tagObj.tagName] == null) {
+            tagIndex[tagObj.tagName] = tagObj;
+            insertSorted(tagObj, this.data.sortedIdxTags, this._compareTags);
+        }
+        if (tagObj.parentTag != null) {
+            let t = tagIndex[tagObj.parentTag];
+            if (t != null) {
+                t.addSubTag(tagObj);
+            }
+        } else if (this.data.publicTags[tagObj.tagName] == null) {
+            this.data.publicTags[tagObj.tagName] = tagObj;
+            insertSorted(tagObj, this.data.sortedPubTags, this._compareTags);
+        }
+    },
+
+    _updateParents: function() {
+        let tagIndex = this.data.pubTagIndex;
+        _.forEach(tagIndex, function(tagObj) {
+            if (tagObj.parentTag != null) {
+                let t = tagIndex[tagObj.parentTag];
+                if (t != null) {
+                    t.addSubTag(tagObj);
+                }
+            }
+        });
+    },
+
+    _compareTagName: function(a, b) {
+        return (a.tagName === b.tagName) ? 0 : 1;
+    },
+
+    _removeTag: function(tagObj) {
+        let tagIndex = this.data.pubTagIndex;
+        let sortedIdxTags = this.data.sortedIdxTags;
+
+        _.forEach(tagObj.subTags, function(t) {
+            delete tagIndex[t.tagName];
+            removeArray(sortedIdxTags, t, 0, this._compareTagName);
+        }.bind(this));
+
+        if (tagObj.parentTag != null) {
+            tagObj.detachParent(tagIndex[tagObj.parentTag]);
+        }
+        delete tagIndex[tagObj.tagName];
+        removeArray(sortedIdxTags, tagObj, 0, this._compareTagName);
+
+        if (this.data.publicTags[tagObj.tagName] != null) {
+            delete this.data.publicTags[tagObj.tagName];
+            removeArray(this.data.sortedPubTags, tagObj, 0, this._compareTagName);
+        }
+        this.data.deletedTags[tagObj.tagName] = tagObj;
+    },
+
+    _resortTags: function() {
+        this.data.sortedIdxTags.sort(this._compareTags);
+        this.data.sortedPubTags.sort(this._compareTags);
     },
 
     getPublicTag: function(tagName) {

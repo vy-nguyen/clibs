@@ -460,7 +460,6 @@ let AuthorStore = Reflux.createStore({
     },
 
     onStartupCompleted: function(data) {
-        console.log(data);
         let authors = data.authors;
         if (authors != null) {
             this._addAuthorList(authors);

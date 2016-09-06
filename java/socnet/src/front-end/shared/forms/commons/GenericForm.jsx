@@ -100,7 +100,7 @@ let GenericForm = React.createClass({
                 }
                 if (entry.select == true) {
                     input = (
-                        <Select options={entry.selectOpt} name={entry.inpName}
+                        <Select options={entry.selectOpt} name={entry.inpName} value={entry.inpHolder}
                             onChange={this._onSelectChange.bind(this, entry)}/>
                     );
                 }

@@ -145,4 +145,13 @@ public class ArtTagService implements IArtTagService
         }
         return new ArtTagList(tags, null);
     }
+
+    @Override
+    public void deleteTag(String tag, String uuid)
+    {
+        String key = ArtTagDTO.makeTagOidKey(tag, uuid);
+        if (key != null) {
+            artTagRepo.delete(key);
+        }
+    }
 }
