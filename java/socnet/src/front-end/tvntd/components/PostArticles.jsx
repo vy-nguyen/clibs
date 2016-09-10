@@ -16,15 +16,13 @@ let PostArticles = React.createClass({
     render: function() {
         let panes = null;
         
-        if (this.props.data) {
+        if (this.props.data && !_.isEmpty(this.props.data)) {
             panes = [];
             _.forOwn(this.props.data, function(article, idx) {
                 panes.push(<PostPane data={article} key={_.uniqueId('post-pane-')}/>);
             });
         } else {
-            let user = this.props.user;
-            let name = user ? user.firstName : "";
-            panes = <div><h2>{name} doesn't have any articles</h2></div>
+            panes = <div><h2>No articles</h2></div>
         }
         return (
             <WidgetGrid className={this.props.className} style={{ height: 'auto' }}>

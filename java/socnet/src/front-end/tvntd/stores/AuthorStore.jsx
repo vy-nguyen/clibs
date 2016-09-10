@@ -267,7 +267,23 @@ class AuthorTagMgr {
                 break;
             }
         }
-        Actions.reRankTags(this);
+        Actions.reRankTag(this);
+    }
+
+    commitTagRanks() {
+        let tagRanks = [];
+        let len = this.sortedTags.length;
+
+        for (let i = 0; i < len; i++) {
+            let tag = this.sortedTags[i];
+
+            tag.rank = i + 1;
+            tagRanks.push({
+                tagName: tag.tagName,
+                rank   : tag.rank
+            });
+        }
+        Actions.commitTagRanks(this, tagRanks);
     }
 
     /**
@@ -455,7 +471,13 @@ let AuthorStore = Reflux.createStore({
         this._updateArticleRank(data);
     },
 
-    onReRankTagsCompleted: function(tagMgr) {
+    onReRankTag: function(tagMgr) {
+        this.trigger(this.data);
+    },
+
+    onCommitTagRanksCompleted: function(tagMgr) {
+        console.log("commit tag rank done");
+        console.log(tagMgr);
         this.trigger(this.data);
     },
 

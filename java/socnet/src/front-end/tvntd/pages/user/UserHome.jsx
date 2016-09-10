@@ -8,6 +8,7 @@ import React               from 'react-mod';
 import Reflux              from 'reflux';
 import {Link}              from 'react-router';
 
+import History             from 'vntd-shared/utils/History.jsx';
 import UserStore           from 'vntd-shared/stores/UserStore.jsx';
 import TabPanel            from 'vntd-shared/layout/TabPanel.jsx';
 import EditorPost          from 'vntd-shared/forms/commons/EditorPost.jsx';
@@ -20,10 +21,6 @@ import UserAvatar          from './UserAvatar.jsx';
 import Friends             from './Friends.jsx';
 
 let UserHome = React.createClass({
-    mixins: [
-        Reflux.connect(ArticleStore),
-        Reflux.listenTo(ArticleStore, "_onArticleUpdate")
-    ],
 
     getUserTab: function() {
         return {
@@ -92,52 +89,31 @@ let UserHome = React.createClass({
         }
     },
 
-    getInitialState: function() {
-        return ArticleStore.getArticleStore()
-    },
-
-    componentWillMount: function() {
-        this._updateArticle();
-    },
-
-    componentWillUpdate: function() {
-        this._updateArticle();
-    },
-
-    _updateArticle: function() {
-        let owner = this._getOwner();
-        if (owner !== null) {
-            ArticleStore.getSortedArticlesByAuthor(owner.userUuid);
-        }
-    },
-
     render: function() {
         let me = true;
         let self = this._getOwner();
 
-        if (self === null) {
-            return (
-                <div className="row">
-                    <h1>
-                        Invalid user page
-                        <Link to="/"><button>Go back to home</button></Link>
-                    </h1>
-                </div>
-            );
+        if (self == null) {
+            History.pushState(null, "/");
+            return;
         }
         let articles = null;
+        let postView = null;
+        let saveArticles = null;
         let tabCtx = this.getUserTab();
         let { userUuid } = this.props.params;
 
-        if (userUuid !== null && userUuid !== undefined) {
+        if (userUuid != null) {
             me = false;
             articles = ArticleStore.getSortedArticlesByAuthor(userUuid);
         } else {
             tabCtx = this.getMyUserTab();
-            articles = {};
-            if (this.state.myArticles !== null) {
-                articles = this.state.myArticles.sortedArticles;
+            articles = ArticleStore.getMyArticles();
+            if (articles == null) {
+                articles = {};
             }
+            postView = <UserPostView userUuid={self.userUuid}/>;
+            saveArticles = <PostArticles userUuid={self.userUuid} data={ArticleStore.getMySavedArticles()}/>
         }
         let editorFmt = "";
         if (me === true) {
@@ -153,8 +129,8 @@ let UserHome = React.createClass({
                     <article className="col-sm-12 col-md-12 col-lg-10">
                         <TabPanel context={tabCtx}>
                             <PostArticles userUuid={self.userUuid} data={articles}/>
-                            {me === true ? <PostArticles userUuid={self.userUuid} data={this.state.mySavedArticles}/> : null}
-                            {me === true ? <UserPostView userUuid={self.userUuid}/> : null}
+                            {saveArticles}
+                            {postView}
                             <Friends userUuid={self.userUuid}/>
                             <div><h1>Nothing yet</h1></div>
                         </TabPanel>
@@ -167,9 +143,6 @@ let UserHome = React.createClass({
     _getOwner: function() {
         let { userUuid } = this.props.params;
         return UserStore.getUserByUuid(userUuid);
-    },
-
-    _onArticleUpdate: function() {
     }
 });
 

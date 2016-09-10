@@ -73,33 +73,23 @@ class AuthorShelf {
 }
 
 let ArticleStore = Reflux.createStore({
-    data: {
-        articlesByUuid: {},
-        articlesByAuthor: {},
-        mySavedArticles: {},
-        myArticles: null,
-        myPostResult: null,
-
-        artUuidByDate: [],
-        artUuidByScore: [],
-
-        errorText: "",
-        errorResp: null
-    },
+    data: {},
     listenables: Actions,
 
     _resetStore: function() {
-        this.data.articlesByUuid = {};
-        this.data.articlesByAuthor = {};
-        this.data.mySavedArticles = {};
-        this.data.myArticles = null;
-        this.data.myPostResult = null;
+        this.data = {
+            articlesByUuid  : {},
+            articlesByAuthor: {},
+            mySavedArticles : {},
 
-        this.data.artUuidByDate = [];
-        this.data.artUuidByScore = [];
+            myArticles    : null,
+            myPostResult  : null,
+            artUuidByDate : [],
+            artUuidByScore: [],
 
-        this.data.errorText = "";
-        this.data.errorResp = null;
+            errorText : "",
+            errorResp : null
+        }
     },
 
     /**
@@ -142,6 +132,10 @@ let ArticleStore = Reflux.createStore({
             return this.data.myArticles.sortedArticles;
         }
         return null;
+    },
+
+    getMySavedArticles: function() {
+        return this.data.mySavedArticles;
     },
 
     getArticleByUuid: function(artUuid) {
@@ -271,38 +265,44 @@ let ArticleStore = Reflux.createStore({
     },
 
     _indexAuthors: function(artList) {
+        let articlesByUuid = this.data.articlesByUuid;
+        let articlesByAuthor = this.data.articlesByAuthor;
+
         artList && _.forOwn(artList, function(jsonArt, key) {
-            let article = this.data.articlesByUuid[jsonArt.articleUuid];
+            let article = articlesByUuid[jsonArt.articleUuid];
             if (article == null) {
                 return;
             }
             if (article.author == null) {
                 article.author = UserStore.getUserByUuid(article.authorUuid);
             }
-            let anchor = this.data.articlesByAuthor[article.authorUuid];
+            let anchor = articlesByAuthor[article.authorUuid];
             if (anchor == null) {
                 anchor = this._createArtAnchor(article.authorUuid, article);
 
             } else if (anchor.articles[article.articleUuid] == null) {
                 anchor.addSortedArticle(article);
             }
+            if (UserStore.isUserMe(article.authorUuid)) {
+                this.data.myArticles = anchor;
+            }
         }.bind(this));
     },
 
     _addFromJson: function(items) {
+        let articlesByUuid = this.data.articlesByUuid;
         items && _.forOwn(items, function(it, key) {
-            if (this.data.articlesByUuid[it.articleUuid] == null) {
+            if (articlesByUuid[it.articleUuid] == null) {
                 let article = new Article(it);
-                this.data.articlesByUuid[it.articleUuid] = article;
+                articlesByUuid[it.articleUuid] = article;
             }
-        }.bind(this));
-
+        });
         this._indexAuthors(items);
     },
 
     _addSavedJson: function(items) {
         items && _.forOwn(items, function(it, key) {
-            if (this.data.mySavedArticles[it.articleUuid] === undefined) {
+            if (this.data.mySavedArticles[it.articleUuid] == null) {
                 this.data.mySavedArticles[it.articleUuid] = new Article(it);
             }
         }.bind(this));

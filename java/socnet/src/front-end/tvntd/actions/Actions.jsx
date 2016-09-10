@@ -56,7 +56,8 @@ const Actions = Reflux.createActions({
     getArticleRank:  completedFailedFn,
     updateArtRank:   completedFailedFn,
     postArtSelect:   completedFailedFn,
-    reRankTags:      completedFn,
+    commitTagRanks:  completedFailedFn,
+    reRankTag:       completedFn,
 
     // Get public JSON objs.
     getPublicJson:   completedFailedFn,
@@ -307,7 +308,11 @@ Actions.getArticleRank.listen(function(data) {
     postRestCall(data, "/user/get-art-rank", true, this);
 });
 
-Actions.reRankTags.listen(function(tagMgr) {
+Actions.commitTagRanks.listen(function(tagMgr, tags) {
+    this.completed(tagMgr);
+});
+
+Actions.reRankTag.listen(function(tagMgr) {
     this.completed(tagMgr);
 });
 
