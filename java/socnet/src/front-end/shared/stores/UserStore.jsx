@@ -269,7 +269,7 @@ let UserStore = Reflux.createStore({
         console.log(xhdr);
         this._changedData({
             type   : "failure",
-            error  : ErrorStore.reportFailure("login", xhdr, text, error),
+            error  : ErrorStore.hasError(),
             message: text,
             authToken: null,
             authVerifToken: null

@@ -81,7 +81,7 @@ function postRestCall(formData, url, json, cbObj, authReq, id, context) {
     let content = undefined;
 
     if ((authReq === true) && !UserStore.isLogin()) {
-        Actions.authRequired(cbObj);
+        Actions.authRequired(id, context);
         return;
     }
     if (json === true) {
@@ -116,13 +116,29 @@ function postRestCall(formData, url, json, cbObj, authReq, id, context) {
     });
 };
 
-function authRequired()
+function getJSON(url, cbObj, authReq, id, context)
 {
-    if (!UserStore.isLogin()) {
-        return true;
+    if ((authReq === true) && !UserStore.isLogin()) {
+        Actions.authRequired(id, context);
+        return;
     }
-    Actions.authRequired();
-};
+    $.getJSON(url).done(function(data) {
+        if (cbObj.translate != null) {
+            cbObj.translate(data);
+        }
+        cbObj.completed(data);
+
+    }).fail(function(resp, text, error) {
+        resp.cbContext = context;
+        cbObj.failed(ErrorStore.reportFailure(id, resp, text, error));
+
+    }).always(function(resp, text, error) {
+        resp.cbContext = context;
+        if (cbObj.always != null) {
+            cbObj.always(resp, text, error);
+        }
+    });
+}
 
 /**
  * UI click actions.
@@ -131,8 +147,8 @@ Actions.clickMenuItem.listen(function(item) {
     this.completed(item);
 });
 
-Actions.authRequired.listen(function(cbObj) {
-    this.completed(cbObj);
+Actions.authRequired.listen(function(id, context) {
+    this.completed(id, context);
 });
 
 /**
@@ -140,21 +156,16 @@ Actions.authRequired.listen(function(cbObj) {
  */
 Actions.startup.listen(function(url) {
     $('[data-toggle="tooltip"]').tooltip();
-    $.getJSON(url).then(function(data) {
-        if (this.translate != null) {
-            this.translate(data);
-        }
-        this.completed(data);
-    }.bind(this), this.failed);
+    getJSON(url, this, false, "startup");
 });
 
 Actions.refreshNotify.listen(function() {
-    $.getJSON("/api/user-notification").then(this.completed, this.failed);
+    getJSON("/api/user-notification", this, true, "refreshNotify");
 });
 
 Actions.getAuthors.listen(function(data, url) {
     if (url) {
-        $.getJSON(url).then(this.completed, this.failed);
+        getJSON(url, this, true, "getAuthors");
     } else {
         this.completed(data);
     }
@@ -164,11 +175,11 @@ Actions.getAuthors.listen(function(data, url) {
  * Posts and comments.
  */
 Actions.refreshArticles.listen(function(authorUuid) {
-    $.getJSON("/user/get-posts/" + authorUuid).then(this.completed, this.failed);
+    getJSON("/user/get-posts/" + authorUuid, this, true, "refreshArticles");
 });
 
 Actions.getOneArticle.listen(function(artUuid) {
-    $.getJSON("/user/get-article/" + artUuid).then(this.completed, this.failed);
+    getJSON("/user/get-article/" + artUuid, this, true, "getOneArticle");
 });
 
 Actions.getArticles.listen(function(artUuids) {
@@ -176,11 +187,7 @@ Actions.getArticles.listen(function(artUuids) {
 });
 
 Actions.getComments.listen(function(artUuids) {
-    let url = "/user/get-comments";
-
-    if (!UserStore.isLogin()) {
-        url = "/public/get-comments";
-    }
+    let url = UserStore.isLogin() ? "/user/get-comments" : "/public/get-comments";
     postRestCall(artUuids, url, true, this);
 });
 
@@ -228,20 +235,20 @@ Actions.preload.listen(function() {
  * User activities.
  */
 Actions.changeUsers.listen(function(data) {
-    postRestCall(data, "/api/user-connections", true, this, true);
+    postRestCall(data, "/api/user-connections", true, this, true, "changeUsers");
 });
 
 Actions.saveUserPost.listen(function(data) {
-    postRestCall(data, "/user/save-post", true, this, true);
+    postRestCall(data, "/user/save-post", true, this, true, "saveUserPost");
     Actions.pendingPost(data);
 });
 
 Actions.deleteUserPost.listen(function(data) {
-    postRestCall(data, "/user/delete-post", true, this, true);
+    postRestCall(data, "/user/delete-post", true, this, true, "deleteUserPost");
 });
 
 Actions.publishUserPost.listen(function(data) {
-    postRestCall(data, "/user/publish-post", true, this, true);
+    postRestCall(data, "/user/publish-post", true, this, true, "publishUserPost");
     Actions.pendingPost(data);
 });
 
@@ -257,26 +264,26 @@ Actions.switchComment.listen(function(data) {
 });
 
 Actions.postComment.listen(function(data) {
-    postRestCall(data, "/user/publish-comment", true, this, true);
+    postRestCall(data, "/user/publish-comment", true, this, true, "postComment");
 });
 
 Actions.postCmtSelect.listen(function(data) {
-    postRestCall(data, "/user/change-comment", true, this, true);
+    postRestCall(data, "/user/change-comment", true, this, true, "postCmtSelect");
 });
 
 /**
  * Rank article actions.
  */
 Actions.updateArtRank.listen(function(data) {
-    postRestCall(data, "/user/update-art-rank", true, this, true);
+    postRestCall(data, "/user/update-art-rank", true, this, true, "updateArtRank");
 });
 
 Actions.postArtSelect.listen(function(data) {
-    postRestCall(data, "/user/update-art-rank", true, this, true);
+    postRestCall(data, "/user/update-art-rank", true, this, true, "postArtSelect");
 });
 
 Actions.getArticleRank.listen(function(data) {
-    postRestCall(data, "/user/get-art-rank", true, this);
+    postRestCall(data, "/user/get-art-rank", true, this, "getArticleRank");
 });
 
 Actions.commitTagRanks.listen(function(tagMgr, userTags) {
@@ -291,7 +298,7 @@ Actions.reRankTag.listen(function(tagMgr) {
  * Get public json objs.
  */
 Actions.getPublicJson.listen(function(url) {
-    $.getJSON(url).then(this.completed, this.failed);
+    getJSON(url, this, false, "getPublicJson");
 });
 
 /**
@@ -299,19 +306,18 @@ Actions.getPublicJson.listen(function(url) {
  */
 Actions.listUsers.listen(function() {
     console.log("Request admin get users");
-    $.getJSON("/admin/list-users").then(this.completed, this.failed);
+    getJSON("/admin/list-users", this, true, "listUsers");
 });
 
 Actions.setTags.listen(function(data) {
-    postRestCall(data, "/admin/set-tags", true, this, true);
+    postRestCall(data, "/admin/set-tags", true, this, true, "setTags");
 });
 
 /**
  * Language choices.
  */
 Actions.getLangJson.listen(function(lang) {
-    $.getJSON('/public/get-json/langs/' + lang)
-        .then(this.completed.bind(this, lang), this.failed.bind(this, lang));
+    getJSON('/public/get-json/langs/' + lang, this, false, "getLangJson");
 });
 
 Actions.translate.listen(function() {

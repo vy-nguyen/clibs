@@ -5,9 +5,7 @@
 'use strict';
 
 import Reflux        from 'reflux';
-import _             from 'lodash';
 import Actions       from 'vntd-root/actions/Actions.jsx';
-import {ErrorAction} from 'vntd-shared/actions/ErrorDispatch.jsx';
 
 class Error {
     constructor(resp, text, error) {
@@ -94,8 +92,7 @@ class Error {
 let ErrorStore = Reflux.createStore({
     data: {},
     listenables: [
-        Actions,
-        ErrorAction
+        Actions
     ],
 
     init: function() {
@@ -160,11 +157,8 @@ let ErrorStore = Reflux.createStore({
         return null;
     },
 
-    onAuthRequiredCompleted: function(cbObj) {
-        this.reportInfo("You need to register or login", "Please register or login to post or comment");
-        console.log("trigger store");
-        console.log(this.data);
-        cbObj.failed(this.data);
+    onAuthRequiredCompleted: function(id, context) {
+        this.reportInfo(id, "You need to register or login", "Please register or login to post or comment");
         this.trigger(this.data);
     },
 
