@@ -4,9 +4,9 @@
  */
 'use strict';
 
-import Reflux           from 'reflux';
-import UserStore        from 'vntd-shared/stores/UserStore.jsx';
-import ErrorDispatch    from 'vntd-shared/actions/ErrorDispatch.jsx';
+import Reflux        from 'reflux';
+import UserStore     from 'vntd-shared/stores/UserStore.jsx';
+import ErrorStore    from 'vntd-shared/stores/ErrorStore.jsx';
 
 const completedFn = {
     children: ['completed']
@@ -75,7 +75,7 @@ const Actions = Reflux.createActions({
     setTags:         completedFailedFn
 });
 
-function postRestCall(formData, url, json, cbObj, authReq) {
+function postRestCall(formData, url, json, cbObj, authReq, id, context) {
     let type = undefined;
     let data = formData;
     let content = undefined;
@@ -101,48 +101,19 @@ function postRestCall(formData, url, json, cbObj, authReq) {
             xhdr.setRequestHeader(header, token);
         }
     }).done(function(resp, text, error) {
+        resp.cbContext = context;
         cbObj.completed(resp, text);
 
     }).fail(function(resp, text, error) {
-        cbObj.failed(new ErrorDispatch(resp, text, error));
+        resp.cbContext = context;
+        cbObj.failed(ErrorStore.reportFailure(id, resp, text, error));
 
     }).always(function(resp, text, error) {
+        resp.cbContext = context;
         if (cbObj.always != null) {
             cbObj.always(resp, text, error);
         }
     });
-};
-
-function uploadFiles(url, progId, formData, complete, failure) {
-    $.ajax({
-        type: "POST",
-        url: url,
-        data: formData,
-        cache: false,
-        xhr: function() {
-            var req = $.ajaxSettings.xhr();
-            if (req.upload) {
-                req.upload.addEventListener('progress', progress, false);
-            }
-            return req;
-        },
-        beforeSend: function(xhdr) {
-            let token  = $("meta[name='_csrf']").attr("content");
-            let header = $("meta[name='_csrf_header']").attr("content");
-            xhdr.setRequestHeader(header, token);
-        }
-    }).done(function(resp, text, error) {
-        complete(resp, text);
-
-    }).fail(function(resp, text, error) {
-        failure(new ErrorDispatch(resp, text, error));
-    });
-
-    function progress(e) {
-        if (e.lengthComputable) {
-            $('#' + progId).attr({value: e.loaded, max: e.total});
-        }
-    }
 };
 
 function authRequired()
@@ -308,8 +279,8 @@ Actions.getArticleRank.listen(function(data) {
     postRestCall(data, "/user/get-art-rank", true, this);
 });
 
-Actions.commitTagRanks.listen(function(tagMgr, tags) {
-    this.completed(tagMgr);
+Actions.commitTagRanks.listen(function(tagMgr, userTags) {
+    postRestCall(userTags, "/user/update-tag-rank", true, this, true, tagMgr.btnId, tagMgr);
 });
 
 Actions.reRankTag.listen(function(tagMgr) {
@@ -352,3 +323,37 @@ Actions.selectLanguage.listen(function(lang) {
 });
 
 export default Actions;
+
+/*
+function uploadFiles(url, progId, formData, complete, failure) {
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: formData,
+        cache: false,
+        xhr: function() {
+            var req = $.ajaxSettings.xhr();
+            if (req.upload) {
+                req.upload.addEventListener('progress', progress, false);
+            }
+            return req;
+        },
+        beforeSend: function(xhdr) {
+            let token  = $("meta[name='_csrf']").attr("content");
+            let header = $("meta[name='_csrf_header']").attr("content");
+            xhdr.setRequestHeader(header, token);
+        }
+    }).done(function(resp, text, error) {
+        complete(resp, text);
+
+    }).fail(function(resp, text, error) {
+        failure(new ErrorDispatch(resp, text, error));
+    });
+
+    function progress(e) {
+        if (e.lengthComputable) {
+            $('#' + progId).attr({value: e.loaded, max: e.total});
+        }
+    }
+};
+*/

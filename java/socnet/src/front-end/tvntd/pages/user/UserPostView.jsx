@@ -13,12 +13,14 @@ import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
 import StateButton      from 'vntd-shared/utils/StateButton.jsx';
 import TreeView         from 'vntd-shared/layout/TreeView.jsx';
 import AccordionView    from 'vntd-shared/layout/AccordionView.jsx';
+import ErrorView        from 'vntd-shared/layout/ErrorView.jsx';
 import AuthorStore      from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleRank      from 'vntd-root/components/ArticleRank.jsx';
 
 let UserPostView = React.createClass({
     mixins: [
-        Reflux.connect(AuthorStore)
+        Reflux.connect(AuthorStore),
+        Reflux.connect(StateButtonStore)
     ],
 
     getSaveBtnId: function() {
@@ -93,7 +95,7 @@ let UserPostView = React.createClass({
     _saveState: function(btnId) {
         StateButtonStore.changeButton(btnId, true, "Saving Order");
         let tagMgr = AuthorStore.getAuthorTagMgr(this.props.userUuid);
-        tagMgr.commitTagRanks();
+        tagMgr.commitTagRanks(btnId);
     },
 
     render: function() {
@@ -106,8 +108,12 @@ let UserPostView = React.createClass({
             StateButtonStore.saveButtonState(btnId, function() {
                 return StateButtonStore.makeSimpleBtn("Order Saved", true);
             });
-            commitBtn =
-                <StateButton btnId={btnId} className="btn btn-default" onClick={this._saveState.bind(this, btnId)}/>
+            commitBtn = (
+                <div>
+                    <ErrorView className="alert alert-success" errorId={btnId}/>
+                    <StateButton btnId={btnId} className="btn btn-default" onClick={this._saveState.bind(this, btnId)}/>
+                </div>
+            );
         }
         tagMgr.getTreeViewJson(this.renderElement, json);
         return (

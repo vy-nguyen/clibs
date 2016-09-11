@@ -14,7 +14,6 @@ import AboutUsStore  from 'vntd-root/stores/AboutUsStore.jsx';
 import UserStore     from 'vntd-shared/stores/UserStore.jsx';
 import UiValidate    from 'vntd-shared/forms/validation/UiValidate.jsx';
 import History       from 'vntd-shared/utils/History.jsx';
-import ErrorDispatch from 'vntd-shared/actions/ErrorDispatch.jsx';
 import ErrorView     from 'vntd-shared/layout/ErrorView.jsx';
 
 let LoginHeader = React.createClass({
@@ -114,10 +113,6 @@ let LoginForm = React.createClass({
             History.pushState(null, "/public/vietnam");
             return;
         }
-        if (data.authError) {
-            console.log("handle error ");
-            data.authError.handle();
-        }
     },
 
     _clearRefs: function() {
@@ -128,11 +123,6 @@ let LoginForm = React.createClass({
 
     _onFocus: function() {
         $('#id-login-error').hide();
-    },
-
-    _loginFailed: function(error) {
-        this._clearRefs();
-        this.authError = error.getXHDR().responseJSON.message;
     },
 
     _submitLogin: function(event) {
@@ -156,11 +146,7 @@ let LoginForm = React.createClass({
         <UiValidate>
         <form id="login-form" className="smart-form client-form">
             <header> Sign In </header>
-            <fieldset>
-                <section>
-                    <ErrorView className="form-group alert-danger"/>
-                </section>
-            </fieldset>
+            <ErrorView className="alert alert-danger"/>
             <fieldset>
                 <section>
                     <label className="label">E-mail</label>

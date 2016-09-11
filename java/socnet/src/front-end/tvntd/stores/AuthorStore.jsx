@@ -8,10 +8,11 @@ import Reflux from 'reflux';
 import React  from 'react-mod';
 import _      from 'lodash';
 
-import Actions        from 'vntd-root/actions/Actions.jsx';
-import UserStore      from 'vntd-shared/stores/UserStore.jsx';
-import ArticleStore   from 'vntd-root/stores/ArticleStore.jsx';
-import {insertSorted} from 'vntd-shared/utils/Enum.jsx';
+import Actions          from 'vntd-root/actions/Actions.jsx';
+import UserStore        from 'vntd-shared/stores/UserStore.jsx';
+import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
+import ArticleStore     from 'vntd-root/stores/ArticleStore.jsx';
+import {insertSorted}   from 'vntd-shared/utils/Enum.jsx';
 
 class Author {
     constructor(data) {
@@ -270,10 +271,11 @@ class AuthorTagMgr {
         Actions.reRankTag(this);
     }
 
-    commitTagRanks() {
+    commitTagRanks(btnId) {
         let tagRanks = [];
         let len = this.sortedTags.length;
 
+        this.btnId = btnId;
         for (let i = 0; i < len; i++) {
             let tag = this.sortedTags[i];
 
@@ -283,7 +285,10 @@ class AuthorTagMgr {
                 rank   : tag.rank
             });
         }
-        Actions.commitTagRanks(this, tagRanks);
+        Actions.commitTagRanks(this, {
+            userUuid: this.authorUuid,
+            tagRanks: tagRanks
+        });
     }
 
     /**
@@ -475,9 +480,16 @@ let AuthorStore = Reflux.createStore({
         this.trigger(this.data);
     },
 
-    onCommitTagRanksCompleted: function(tagMgr) {
-        console.log("commit tag rank done");
+    onCommitTagRanksCompleted: function(data) {
+        let tagMgr = data.cbContext;
         console.log(tagMgr);
+        this.trigger(this.data);
+    },
+
+    onCommitTagRanksFailed: function(err) {
+        let tagMgr = err.getContext();
+        console.log(err);
+        StateButtonStore.onButtonChangeFailed(tagMgr.btnId, false, "Save Failed");
         this.trigger(this.data);
     },
 

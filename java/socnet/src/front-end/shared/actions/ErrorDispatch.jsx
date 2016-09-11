@@ -72,6 +72,10 @@ class ErrorDispatch
         return this.text;
     }
 
+    getContext() {
+        return this.xhdr.cbContext;
+    }
+
     handle() {
         let status = this.xhdr.status;
         if (status === 0) {

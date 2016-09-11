@@ -1,37 +1,55 @@
-
+/*
+ * Written by Vy Nguyen (2016)
+ */
 'use strict';
 
 import React         from 'react-mod';
 import Reflux        from 'reflux';
-import _             from 'lodash';
 import ErrorStore    from 'vntd-shared/stores/ErrorStore.jsx';
 
 let ErrorView = React.createClass({
 
     mixins: [Reflux.connect(ErrorStore)],
 
-    getInitialState: function() {
-        return ErrorStore.getErrorData();
-    },
-
     closeError: function(event) {
         event.stopPropagation();
-        this.setState({
-            errorCode: 0
-        });
+        ErrorStore.clearError(this.props.errorId);
     },
 
     render: function() {
-        if (this.state.errorCode === 0) {
+        let error = ErrorStore.hasError(this.props.errorId);
+        if (error == null) {
             return null;
         }
+        let codeText = error.getErrorCodeText();
+        if (codeText != null) {
+            codeText = (
+                <div>
+                    <span>Status {error.getErrorCode()}: {codeText}</span>
+                    <hr/>
+                </div>
+            );
+        }
+        let userText = error.getUserText();
+        if (userText != null) {
+            userText = <p>Reason: {userText}</p>;
+        }
+        let userHelp = error.getUserHelp();
+        if (userHelp != null) {
+            userHelp = <p>Action: {userHelp}</p>;
+        }
         return (
-            <div className={this.props.className + " alert"}>
-                <a className="close" onClick={this.closeError}>
-                    <i className="fa fa-times"/>
-                </a>
-                <span>Status {this.state.errorCode}: {this.state.serverText}</span>
-                <p>{this.state.respText}</p>
+            <div className={this.props.className}>
+                <div className="row">
+                    <div className="col-sm-1 col-md-1 col-lg-1">
+                        <a className="close pull-left" onClick={this.closeError}><i className="fa fa-times"/></a>
+                    </div>
+                    <div className="col-sm-11 col-md-11 col-lg-11">
+                        {codeText}
+                        {userText}
+                        {userHelp}
+                    </div>
+                </div>
                 {this.props.children}
             </div>
         );

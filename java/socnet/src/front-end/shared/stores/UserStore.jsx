@@ -4,9 +4,11 @@
  */
 'use strict';
 
-import Reflux   from 'reflux';
 import _        from 'lodash';
-import Actions  from 'vntd-root/actions/Actions.jsx';
+import Reflux   from 'reflux';
+
+import ErrorStore from 'vntd-shared/stores/ErrorStore.jsx';
+import Actions    from 'vntd-root/actions/Actions.jsx';
 
 let OnlineEnum = ["online", "offline", "busy"];
 let ConnetEnum = ["self", "connected", "followed", "follower", "stranger"];
@@ -266,8 +268,8 @@ let UserStore = Reflux.createStore({
         console.log("Post action UserStore failed");
         console.log(xhdr);
         this._changedData({
-            type: "failure",
-            error: xhdr,
+            type   : "failure",
+            error  : ErrorStore.reportFailure("login", xhdr, text, error),
             message: text,
             authToken: null,
             authVerifToken: null
