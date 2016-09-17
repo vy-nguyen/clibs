@@ -23,13 +23,13 @@ let Layout = React.createClass({
 
     render: function() {
         return (
-            <div>
+            <div className="minified fixed-navigation fixed-header">
                 <Header/>
                 <Navigation/>
-                <div id="main" role="main">
+                <Shortcut/>
+                <div className="container" id="main" role="main">
                     {this.props.children}
                 </div>
-                <Shortcut/>
                 <Footer/>
             </div>
         )

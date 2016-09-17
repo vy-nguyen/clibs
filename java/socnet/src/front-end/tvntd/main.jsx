@@ -17,6 +17,7 @@ require("bootstrap");
 //require("notification");
 require("smartwidgets");
 require("sparkline");
+require("jquery-nestable");
 
 import React    from 'react-mod';
 import {render} from 'react-dom';

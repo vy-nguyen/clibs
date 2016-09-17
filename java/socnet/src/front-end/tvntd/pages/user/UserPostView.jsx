@@ -14,6 +14,7 @@ import StateButton      from 'vntd-shared/utils/StateButton.jsx';
 import TreeView         from 'vntd-shared/layout/TreeView.jsx';
 import AccordionView    from 'vntd-shared/layout/AccordionView.jsx';
 import ErrorView        from 'vntd-shared/layout/ErrorView.jsx';
+import Nestable         from 'vntd-shared/widgets/Nestable.jsx';
 import AuthorStore      from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleRank      from 'vntd-root/components/ArticleRank.jsx';
 
@@ -43,7 +44,7 @@ let UserPostView = React.createClass({
         tagMgr.reRankTag(tag, false);
     },
 
-    renderTag: function(tag) {
+    renderTag: function(tag, refName, expanded) {
         let upRank = null;
         let downRank = null;
 
@@ -64,6 +65,10 @@ let UserPostView = React.createClass({
         );
     },
 
+    _onChangeArt: function(output, parent, children) {
+        console.log(output);
+    },
+
     renderElement: function(parent, children, output) {
         if (children == null) {
             output.push({
@@ -74,13 +79,35 @@ let UserPostView = React.createClass({
                 iconClose: "fa fa-lg fa-folder"
             });
         } else {
-            let sub = [];
+            let sub = []; 
             _.forOwn(children, function(rank) {
                 sub.push({
+                        /*
+                        function(arg) {
+                        return (
+                            <li className="dd-item" data-id={arg.articleUuid}>
+                                <div className="dd-handle">
+                                    {ArticleRank.render(arg)}
+                                </div>
+                            </li>
+                        );
+                        },
+                         */
                     renderFn : ArticleRank.render,
                     renderArg: rank
                 })
             });
+            /*
+            let childSub = (
+                <Nestable group={parent._id} onChange={this._onChangeArt.bind(this, parent, children)}>
+                    <div className="dd">
+                        <ol className="dd-list">
+                            {sub}
+                        </ol>
+                    </div>
+                </Nestable>
+                );
+             */
             output.push({
                 renderFn : this.renderTag,
                 renderArg: parent,
@@ -96,6 +123,12 @@ let UserPostView = React.createClass({
         StateButtonStore.changeButton(btnId, true, "Saving Order");
         let tagMgr = AuthorStore.getAuthorTagMgr(this.props.userUuid);
         tagMgr.commitTagRanks(btnId);
+    },
+
+    _onChangeNest: function(output) {
+        this.setState({
+            order: output
+        });
     },
 
     render: function() {
@@ -120,6 +153,38 @@ let UserPostView = React.createClass({
             <div>
                 {commitBtn}
                 <AccordionView className="no-padding" items={json}/>
+                {/*
+                <Nestable group="1" onChange={this._onChangeNest}>
+                    <div className="dd">
+                        <ol className="dd-list">
+                            <li className="dd-item" data-id="1">
+                                <div className="dd-handle">
+                                    Item 1
+                                    <h4>This is item 1</h4>
+                                </div>
+                            </li>
+                            <li className="dd-item" data-id="2">
+                                <div className="dd-handle">
+                                    Item 2
+                                    <h4>This is item 2</h4>
+                                </div>
+                            </li>
+                            <li className="dd-item" data-id="3">
+                                <div className="dd-handle">
+                                    Item 3
+                                    <h4>This is item 3</h4>
+                                </div>
+                            </li>
+                            <li className="dd-item" data-id="4">
+                                <div className="dd-handle">
+                                    Item 4
+                                    <h4>This is item 4</h4>
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+                </Nestable>
+                  */}
             </div>
         );
     }

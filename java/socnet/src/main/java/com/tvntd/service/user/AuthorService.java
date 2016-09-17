@@ -204,6 +204,14 @@ public class AuthorService implements IAuthorService
     }
 
     @Override
+    public void saveAuthorTag(AuthorTagDTO tag)
+    {
+        AuthorTag t = tag.fetchAuthorTag();
+        authorTagRepo.save(t);
+        t.setNeedSave(false);
+    }
+
+    @Override
     public void deleteAuthor(String uuid)
     {
         Author author = getAuthor(uuid);
@@ -213,6 +221,12 @@ public class AuthorService implements IAuthorService
             authorTagRepo.delete(t);
         }
         authorRepo.delete(author);
+    }
+
+    @Override
+    public void deleteAuthorTag(AuthorTagDTO tag)
+    {
+        authorTagRepo.delete(tag.fetchAuthorTag());
     }
 
     @Override

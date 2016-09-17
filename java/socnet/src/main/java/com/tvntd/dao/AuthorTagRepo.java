@@ -88,6 +88,10 @@ public interface AuthorTagRepo extends JpaRepository<AuthorTag, String>
             authorTag = tag;
         }
 
+        public AuthorTag fetchAuthorTag() {
+            return authorTag;
+        }
+
         public String getTagName() {
             return authorTag.getTag();
         }
@@ -106,6 +110,10 @@ public interface AuthorTagRepo extends JpaRepository<AuthorTag, String>
 
         public Long getRank() {
             return authorTag.getRank();
+        }
+
+        public void setRank(Long rank) {
+            authorTag.setRank(rank);
         }
 
         public Long getNotifCount() {

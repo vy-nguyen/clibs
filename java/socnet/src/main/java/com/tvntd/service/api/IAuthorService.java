@@ -57,6 +57,9 @@ public interface IAuthorService
     List<Author> getAuthors(List<String> uuids);
     List<AuthorDTO> getAuthorList(ProfileDTO profile);
 
+    void saveAuthorTag(AuthorTagDTO tag);
+    void deleteAuthorTag(AuthorTagDTO tag);
+
     void saveAuthor(Author author);
     void deleteAuthor(String uuid);
 

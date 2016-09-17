@@ -109,8 +109,8 @@ let ArticleRank = React.createClass({
     },
 
     statics: {
-        render: function(rank, refName) {
-            return <ArticleRank rank={rank} articleUuid={rank.articleUuid} ref={refName}/>
+        render: function(rank, refName, expanded) {
+            return <ArticleRank rank={rank} articleUuid={rank.articleUuid}/>
         }
     }
 });

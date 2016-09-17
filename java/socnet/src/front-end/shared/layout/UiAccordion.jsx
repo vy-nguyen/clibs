@@ -8,11 +8,11 @@ let UiAccordion = React.createClass({
     componentDidMount: function() {
         $(ReactDOM.findDOMNode(this)).accordion({
             autoHeight : false,
-            heightStyle : "content",
-            collapsible : true,
-            animate : 300,
+            heightStyle: "content",
+            collapsible: true,
+            animate    : 300,
             icons: {
-                header: "fa fa-plus",    // custom icon class
+                header      : "fa fa-plus", // custom icon class
                 activeHeader: "fa fa-minus" // custom icon class
             },
             header : "h4"

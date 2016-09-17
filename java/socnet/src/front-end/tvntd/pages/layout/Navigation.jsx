@@ -12,8 +12,6 @@ import SmartMenu   from 'vntd-shared/layout/SmartMenu.jsx';
 import MinifyMenu  from 'vntd-shared/layout/MinifyMenu.jsx';
 import RenderStore from 'vntd-root/stores/RenderStore.jsx';
 
-// import AsideChat from '../../components/chat/components/AsideChat.jsx'
-
 let Navigation = React.createClass({
 
     mixins: [

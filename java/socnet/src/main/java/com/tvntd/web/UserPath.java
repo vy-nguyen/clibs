@@ -28,10 +28,11 @@ package com.tvntd.web;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -52,10 +53,14 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.tvntd.dao.AuthorTagRepo.AuthorTagDTO;
+import com.tvntd.dao.AuthorTagRepo.AuthorTagRespDTO;
 import com.tvntd.forms.ArticleForm;
 import com.tvntd.forms.CommentChangeForm;
 import com.tvntd.forms.CommentForm;
 import com.tvntd.forms.PostForm;
+import com.tvntd.forms.TagForm;
+import com.tvntd.forms.TagForm.TagRank;
 import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.ObjectId;
 import com.tvntd.models.Article;
@@ -64,6 +69,8 @@ import com.tvntd.models.Author;
 import com.tvntd.models.Comment;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.GenericResponse;
+import com.tvntd.service.api.IArtTagService;
+import com.tvntd.service.api.IArtTagService.ArtTagDTO;
 import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleService.ArticleDTOResponse;
@@ -107,6 +114,9 @@ public class UserPath
 
     @Autowired
     private ICommentService commentSvc;
+
+    @Autowired
+    private IArtTagService artTagSvc;
 
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     @ResponseBody
@@ -439,4 +449,49 @@ public class UserPath
         }
         return s_invalidArticle;
     }
- }
+
+    /**
+     * Update tag ranking.
+     */
+    @RequestMapping(value = "/user/update-tag-rank",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    updateTagRanking(@RequestBody TagForm form, HttpSession session)
+    {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
+
+        String uuid = form.getUserUuid();
+        if (!profile.getUserUuid().equals(uuid)) {
+            s_log.info("Not author " + profile.getUserUuid() + " request " + uuid);
+            return s_noProfile;
+        }
+
+        Map<String, TagRank> req = new HashMap<>();
+        for (TagRank r : form.getTagRanks()) {
+            req.put(r.getTagName(), r);
+        }
+
+        System.out.println("User " + uuid);
+        AuthorTagRespDTO ownerTags = authorSvc.getAuthorTag(uuid);
+        if (ownerTags == null) {
+            return s_genOkResp;
+        }
+        List<AuthorTagDTO> tags = ownerTags.getAuthorTags();
+        for (AuthorTagDTO t : tags) {
+            TagRank rank = req.get(t.getTagName());
+            System.out.println("Tag " + t.getTagName() + " rank " + rank);
+            if (rank != null) {
+                t.setRank(rank.getRank());
+                authorSvc.saveAuthorTag(t);
+                System.out.println("Update " + t.getTagName() +
+                        " score " + t.getRank());
+            }
+        }
+        return s_genOkResp;
+    }
+}

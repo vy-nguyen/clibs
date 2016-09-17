@@ -18,7 +18,7 @@ let AccordionView = React.createClass({
             }
             let header = TreeView.renderTreeItem(item, true, null);
             let content = item.children.map(function(it) {
-                return <span key={_.uniqueId('accordion-item-')}>{TreeView.renderTreeItem(it, false, null)}</span>;
+                return <div key={_.uniqueId('accordion-item-')}>{TreeView.renderTreeItem(it, false, null)}</div>;
             });
             elmView.push(
                 <div key={_.uniqueId('accordion-')}>
