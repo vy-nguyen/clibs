@@ -7,22 +7,31 @@
 import React  from 'react-mod';
 import Reflux from 'reflux';
 
+import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
+import StateButton      from 'vntd-shared/utils/StateButton.jsx';
+
 import Actions      from 'vntd-root/actions/Actions.jsx';
 import PostPane     from 'vntd-root/components/PostPane.jsx';
 import LikeStat     from 'vntd-root/components/LikeStat.jsx';
 import ArticleStore from 'vntd-root/stores/ArticleStore.jsx';
 
 let ArticleRank = React.createClass({
-    mixins: [Reflux.connect(ArticleStore)],
-
+    mixins: [
+        Reflux.connect(ArticleStore),
+    ],
+        /*
     getInitialState: function() {
-        return {
-            article    : null,
-            fullArticle: false,
-            buttonText : "Read more..."
-        }
+        let btnId = "art-rank-btn-" + this.props.articleUuid;
+        console.log("get initial state " + btnId);
+        return StateButtonStore.saveButtonState(btnId, function() {
+            return StateButtonStore.makeSimpleBtn("Read more...", false, {
+                "article"    : null,
+                "fullArticle": false,
+                "readBtnId"  : btnId
+            });
+        });
     },
-
+         */
     _getArticleResult: function() {
     },
 
@@ -30,52 +39,51 @@ let ArticleRank = React.createClass({
         this.listenTo(ArticleStore, this._getArticleResult);
     },
 
-    handleClick: function(event) {
-        _toggleFullArticle(event);
+    handleClick: function() {
+        _toggleFullArticle();
     },
 
-    _toggleFullArticle: function(event) {
-        event.stopPropagation();
-        if (this.state.article == null) {
-            let article = ArticleStore.getArticleByUuid(this.props.articleUuid);
-            if (article != null) {
-                this.setState({
-                    article: article
-                });
-            } else {
-                Actions.getOneArticle(this.props.articleUuid);
-            }
-        }
-        if (this.state.fullArticle == true) {
-            if (this.state.article != null) {
-                $('#' + this.state.article._id).hide();
-            }
-            this.setState({
-                fullArticle: false,
-                buttonText : "Read more..."
-            });
+    _toggleFullArticle: function() {
+        let btnId = "art-rank-btn-" + this.props.articleUuid;
+        let btnState = StateButtonStore.getButtonState(btnId);
+        let article = btnState.article;
+        if (article == null) {
+            article = ArticleStore.getArticleByUuid(this.props.articleUuid);
+            console.log("Toggle article " + article);
         } else {
-            if (this.state.article != null) {
-                $('#' + this.state.article._id).show();
-            }
-            this.setState({
-                fullArticle: true,
-                buttonText : "Hide article..."
-            });
+            Actions.getOneArticle(this.props.articleUuid);
         }
+        console.log(btnState);
+        let curFullArt = btnState.fullArticle;
+        console.log("Tottle Button " + btnId + " state " + curFullArt);
+
+        let btnText = (curFullArt == false) ? "Hide article..." : "Read more...";
+        StateButtonStore.changeButton(btnId, false, btnText, {
+            "article"    : article,
+            "fullArticle": !curFullArt
+        });
     },
 
     render: function() {
         let artPane = null;
         let rank = this.props.rank;
-        if (this.state.article != null) {
-            let artStyle = this.state.fullArticle == false ? { display: "none" } : { height: "auto" };
+        let btnId = "art-rank-btn-" + this.props.articleUuid;
+        let btnState = StateButtonStore.saveButtonState(btnId, function() {
+            return StateButtonStore.makeSimpleBtn("Read more...", false, {
+                "article"    : null,
+                "fullArticle": false,
+                "readBtnId"  : btnId
+            });
+        });
+        let readBtn = (
+            <StateButton btnId={btnId} className="btn btn-success" onClick={this._toggleFullArticle}/>
+        );
+        // console.log("Button " + btnId + " fullArt " + btnState.fullArticle + " art " + btnState.article);
+        if (btnState.article != null && btnState.fullArticle === true) {
             artPane = (
-                <div className="row" style={artStyle} id={this.state.article._id}>
-                    <PostPane data={this.state.article} artRank={rank}/>
-                    <a className="btn btn-primary" onClick={this._toggleFullArticle}>
-                        {this.state.buttonText}
-                    </a>
+                <div className="row">
+                    <PostPane data={btnState.article} artRank={rank}/>
+                    {readBtn}
                 </div>
             );
         }
@@ -96,10 +104,7 @@ let ArticleRank = React.createClass({
                         </div>
                         <div className="col-xs-7 col-sm-7 col-md-7">
                             <p>{rank.contentBrief}</p>
-                            <a className="btn btn-primary"
-                                id={"art-rank-full-" + this.props.articleUuid} onClick={this._toggleFullArticle}>
-                                {this.state.buttonText}
-                            </a>
+                            {readBtn}
                         </div>
                     </div>
                 </div>
@@ -111,7 +116,12 @@ let ArticleRank = React.createClass({
     statics: {
         render: function(rank, refName, expanded) {
             return <ArticleRank rank={rank} articleUuid={rank.articleUuid}/>
+        },
+
+        renderNoButton: function(rank, relName, expanded) {
+            return <ArticleRank rank={rank} articleUuid={rank.articleUuid} noBtn={true}/>
         }
+
     }
 });
 

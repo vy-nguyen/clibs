@@ -4,56 +4,58 @@
  */
 'use strict';
 
-import Reflux        from 'reflux';
 import _             from 'lodash';
+import Reflux        from 'reflux';
 import Actions       from 'vntd-root/actions/Actions.jsx';
 
 let StateButtonStore = Reflux.createStore({
-    data: {},
+    button: {},
     listenables: [
         Actions
     ],
 
     init: function() {
-        this.data = {
-            button: {}
-        }
+        this.button = {}
     },
 
     getButtonState: function(id) {
-        return this.data.button[id];
+        return this.button[id];
     },
 
-    changeButton: function(id, disable, text) {
-        let state = this.data.button[id];
+    changeButton: function(id, disable, text, kval) {
+        let state = this.button[id];
         if (state != null) {
             state.disabled = disable;
             state.buttonText = text;
-            this.trigger(state);
+            if (kval != null) {
+                _.merge(state, kval);
+            }
+            this.trigger(this.button);
         }
     },
 
     toggleButton: function(id) {
-        let state = this.data.button[id];
+        let state = this.button[id];
         if (state != null) {
             state.disabled = !state.disabled;
         }
     },
 
     saveButtonState: function(id, stateFn) {
-        if (this.data.button[id] == null) {
-            this.data.button[id] = stateFn();
+        if (this.button[id] == null) {
+            this.button[id] = stateFn();
         }
+        return this.button[id];
     },
 
     onButtonChangeCompleted: function(id, state) {
         this.saveButtonState(id, state);
         state.success = true;
-        this.trigger(state);
+        this.trigger(this.button);
     },
 
     onButtonChangeFailed: function(id, disable, text) {
-        let state = this.data.button[id];
+        let state = this.button[id];
         if (state != null) {
             state.success = false;
             state.disabled = disable;
@@ -61,12 +63,20 @@ let StateButtonStore = Reflux.createStore({
         }
     },
 
-    makeSimpleBtn: function(text, disable) {
-        return {
+    makeSimpleBtn: function(text, disable, kval) {
+        let ret = {
             success   : true,
             disabled  : disable,
             buttonText: text
+        };
+        if (kval != null) {
+            _.merge(ret, kval);
         }
+        return ret;
+    },
+
+    dumpData: function() {
+        console.log(this.button);
     }
 });
 

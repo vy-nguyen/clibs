@@ -65,8 +65,11 @@ let UserPostView = React.createClass({
         );
     },
 
-    _onChangeArt: function(output, parent, children) {
+    _onChangeArt: function(parent, children, output) {
+        console.log("On change order");
         console.log(output);
+        console.log(parent);
+        console.log(children);
     },
 
     renderElement: function(parent, children, output) {
@@ -82,22 +85,19 @@ let UserPostView = React.createClass({
             let sub = []; 
             _.forOwn(children, function(rank) {
                 sub.push({
-                        /*
-                        function(arg) {
-                        return (
-                            <li className="dd-item" data-id={arg.articleUuid}>
-                                <div className="dd-handle">
-                                    {ArticleRank.render(arg)}
-                                </div>
-                            </li>
-                        );
-                        },
-                         */
-                    renderFn : ArticleRank.render,
+                    renderFn: ArticleRank.render,
                     renderArg: rank
-                })
+                });
+                /*
+                sub.push(
+                    <li className="dd-item" data-id={rank.articleUuid}>
+                        <div className="dd-handle">
+                            {ArticleRank.render(rank)}
+                        </div>
+                    </li>
+                );
+                 */
             });
-            /*
             let childSub = (
                 <Nestable group={parent._id} onChange={this._onChangeArt.bind(this, parent, children)}>
                     <div className="dd">
@@ -106,13 +106,20 @@ let UserPostView = React.createClass({
                         </ol>
                     </div>
                 </Nestable>
-                );
-             */
+            );
             output.push({
                 renderFn : this.renderTag,
                 renderArg: parent,
                 defLabel : true,
                 children : sub,
+                    /*
+                children : [ {
+                    renderArg: null,
+                    renderFn : function() {
+                        return childSub;
+                    }
+                    } ],
+                     */
                 iconOpen : "fa fa-lg fa-folder-open",
                 iconClose: "fa fa-lg fa-folder"
             });

@@ -7,6 +7,7 @@
 import React            from 'react-mod';
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import NavigationStore  from 'vntd-shared/stores/NavigationStore.jsx';
+import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
 import AboutUsStore     from 'vntd-root/stores/AboutUsStore.jsx';
 import ArticleStore     from 'vntd-root/stores/ArticleStore.jsx';
 import AuthorStore      from 'vntd-root/stores/AuthorStore.jsx';
@@ -53,6 +54,10 @@ let Debug = React.createClass({
         ArtTagStore.dumpData("Article Tag Content");
     },
 
+    debugStateButtonStore: function() {
+        StateButtonStore.dumpData("State Button Content");
+    },
+
     render: function() {
         return (
             <div className="row">
@@ -76,6 +81,8 @@ let Debug = React.createClass({
                     <a onClick={this.debugAdminStore}>Debug Admin Store</a>
                     <br/>
                     <a onClick={this.debugArtTagstore}>Debug ArticleTag Store</a>
+                    <br/>
+                    <a onClick={this.debugStateButtonStore}>Debug State Button Store</a>
                 </div>
                 <br/>
                 <hr/>
