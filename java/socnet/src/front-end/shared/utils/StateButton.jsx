@@ -16,16 +16,11 @@ let StateButton = React.createClass({
 
     _btnClick: function(event) {
         event.preventDefault();
-        this.setState({
-            changeId: this.props.btnId
-        });
-        console.log("handle btn click " + this.props.btnId);
         this.props.onClick();
     },
 
     render: function() {
         let newState = StateButtonStore.getButtonState(this.props.btnId);
-        console.log(this.state);
         let className = this.props.className;
         if (newState.success === false) {
             className = "btn btn-danger";

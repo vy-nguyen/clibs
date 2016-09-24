@@ -66,6 +66,7 @@ class ArticleRank {
             this[k] = v;
         }.bind(this));
 
+        this._id = _.uniqueId('id-art-rank-');
         return this;
     }
 

@@ -15,7 +15,7 @@ let StateButtonStore = Reflux.createStore({
     ],
 
     init: function() {
-        this.button = {}
+        this.button = {};
     },
 
     getButtonState: function(id) {

@@ -75,6 +75,7 @@ let UserPostView = React.createClass({
     renderElement: function(parent, children, output) {
         if (children == null) {
             output.push({
+                keyId    : parent._id,
                 renderFn : this.renderTag,
                 renderArg: parent,
                 defLabel : true,
@@ -85,7 +86,7 @@ let UserPostView = React.createClass({
             let sub = []; 
             _.forOwn(children, function(rank) {
                 sub.push({
-                    renderFn: ArticleRank.render,
+                    renderFn : ArticleRank.render,
                     renderArg: rank
                 });
                 /*
@@ -108,6 +109,7 @@ let UserPostView = React.createClass({
                 </Nestable>
             );
             output.push({
+                keyId    : parent._id,
                 renderFn : this.renderTag,
                 renderArg: parent,
                 defLabel : true,
