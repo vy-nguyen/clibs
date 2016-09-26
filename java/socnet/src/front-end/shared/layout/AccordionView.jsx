@@ -19,8 +19,6 @@ let AccordionView = React.createClass({
     },
 
     _onChange: function(activeKey) {
-        console.log("on change active " + activeKey);
-        console.log(this.props.items);
         this.setState({
             activeKey: activeKey
         });
@@ -30,8 +28,6 @@ let AccordionView = React.createClass({
         let activeKey = this.state.activeKey;
         let elmView = [];
 
-        console.log("Items-------------");
-        console.log(activeKey);
         _.forOwn(this.props.items, function(item) {
             if (!item.children || !item.children.length) {
                 return;
@@ -49,7 +45,6 @@ let AccordionView = React.createClass({
                 </Panel>
             );
         }.bind(this));
-        console.log(activeKey);
 
         return (
             <Collapse accordion={true} onChange={this._onChange} activeKey={activeKey}>

@@ -19,19 +19,7 @@ let ArticleRank = React.createClass({
     mixins: [
         Reflux.connect(ArticleStore),
     ],
-        /*
-    getInitialState: function() {
-        let btnId = "art-rank-btn-" + this.props.articleUuid;
-        console.log("get initial state " + btnId);
-        return StateButtonStore.saveButtonState(btnId, function() {
-            return StateButtonStore.makeSimpleBtn("Read more...", false, {
-                "article"    : null,
-                "fullArticle": false,
-                "readBtnId"  : btnId
-            });
-        });
-    },
-         */
+
     _getArticleResult: function() {
     },
 
@@ -49,15 +37,12 @@ let ArticleRank = React.createClass({
         let article = btnState.article;
         if (article == null) {
             article = ArticleStore.getArticleByUuid(this.props.articleUuid);
-            console.log("Toggle article " + article);
         } else {
             Actions.getOneArticle(this.props.articleUuid);
         }
-        console.log(btnState);
         let curFullArt = btnState.fullArticle;
-        console.log("Tottle Button " + btnId + " state " + curFullArt);
-
         let btnText = (curFullArt == false) ? "Hide article..." : "Read more...";
+
         StateButtonStore.changeButton(btnId, false, btnText, {
             "article"    : article,
             "fullArticle": !curFullArt
@@ -75,15 +60,16 @@ let ArticleRank = React.createClass({
                 "readBtnId"  : btnId
             });
         });
-        let readBtn = (
-            <StateButton btnId={btnId} className="btn btn-success" onClick={this._toggleFullArticle}/>
-        );
-        // console.log("Button " + btnId + " fullArt " + btnState.fullArticle + " art " + btnState.article);
+        let readBtn = null;
+        if (this.props.noBtn == null) {
+            readBtn = (
+                <StateButton btnId={btnId} className="btn btn-success" onClick={this._toggleFullArticle}/>
+            );
+        }
         if (btnState.article != null && btnState.fullArticle === true) {
             artPane = (
                 <div className="row">
                     <PostPane data={btnState.article} artRank={rank}/>
-                    {readBtn}
                 </div>
             );
         }

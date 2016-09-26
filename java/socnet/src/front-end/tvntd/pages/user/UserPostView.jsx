@@ -28,6 +28,10 @@ let UserPostView = React.createClass({
         return "my-post-order-" + this.props.userUuid;
     },
 
+    getArrangeBtnId: function() {
+        return "arrange-btn-" + this.props.userUuid;
+    },
+
     moveUp: function(tag, e) {
         e.stopPropagation();
         StateButtonStore.changeButton(this.getSaveBtnId(), false, "Save Order");
@@ -66,13 +70,14 @@ let UserPostView = React.createClass({
     },
 
     _onChangeArt: function(parent, children, output) {
-        console.log("On change order");
-        console.log(output);
-        console.log(parent);
-        console.log(children);
     },
 
     renderElement: function(parent, children, output) {
+        let reorder = false;
+        if (UserStore.isUserMe(this.props.userUuid) === true) {
+            let btnId = this.getArrangeBtnId();
+            reorder = StateButtonStore.getButtonState(btnId, "arrange");
+        }
         if (children == null) {
             output.push({
                 keyId    : parent._id,
@@ -85,43 +90,44 @@ let UserPostView = React.createClass({
         } else {
             let sub = []; 
             _.forOwn(children, function(rank) {
-                sub.push({
-                    renderFn : ArticleRank.render,
-                    renderArg: rank
-                });
-                /*
-                sub.push(
-                    <li className="dd-item" data-id={rank.articleUuid}>
-                        <div className="dd-handle">
-                            {ArticleRank.render(rank)}
-                        </div>
-                    </li>
-                );
-                 */
+                if (reorder === false) {
+                    sub.push({
+                        renderFn : ArticleRank.render,
+                        renderArg: rank
+                    });
+                } else {
+                    sub.push(
+                        <li className="dd-item" data-id={rank.articleUuid}>
+                            <div className="dd-handle">
+                                {ArticleRank.renderNoButton(rank)}
+                            </div>
+                        </li>
+                    );
+                }
             });
-            let childSub = (
-                <Nestable group={parent._id} onChange={this._onChangeArt.bind(this, parent, children)}>
-                    <div className="dd">
-                        <ol className="dd-list">
-                            {sub}
-                        </ol>
-                    </div>
-                </Nestable>
-            );
+            let orderSub = null;
+            if (reorder === true) {
+                orderSub = [ {
+                    renderArg: null,
+                    renderFn : function() {
+                        return (
+                            <Nestable group={parent._id} onChange={this._onChangeArt.bind(this, parent, children)}>
+                                <div className="dd">
+                                    <ol className="dd-list">
+                                        {sub}
+                                    </ol>
+                                </div>
+                            </Nestable>
+                        );
+                    }.bind(this)
+                } ];
+            }
             output.push({
                 keyId    : parent._id,
                 renderFn : this.renderTag,
                 renderArg: parent,
                 defLabel : true,
-                children : sub,
-                    /*
-                children : [ {
-                    renderArg: null,
-                    renderFn : function() {
-                        return childSub;
-                    }
-                    } ],
-                     */
+                children : reorder === true ? orderSub : sub,
                 iconOpen : "fa fa-lg fa-folder-open",
                 iconClose: "fa fa-lg fa-folder"
             });
@@ -134,6 +140,16 @@ let UserPostView = React.createClass({
         tagMgr.commitTagRanks(btnId);
     },
 
+    _arrangeMode: function(btnId) {
+        let reorder = StateButtonStore.getButtonState(btnId, "arrange");
+        if (reorder === true) {
+            StateButtonStore.changeButton(btnId, false, "Arrange Mode", { "arrange": false });
+        } else {
+            StateButtonStore.changeButton(btnId, false, "In Arrange Mode", { "arrange": true });
+            StateButtonStore.changeButton(this.getSaveBtnId(), false, "Save Order");
+        }
+    },
+
     _onChangeNest: function(output) {
         this.setState({
             order: output
@@ -143,57 +159,32 @@ let UserPostView = React.createClass({
     render: function() {
         let tagMgr = AuthorStore.getAuthorTagMgr(this.props.userUuid);
         let json = [];
-        let commitBtn = null;
+        let btnCmds = null;
 
         if (UserStore.isUserMe(this.props.userUuid) === true) {
             let btnId = this.getSaveBtnId();
             StateButtonStore.saveButtonState(btnId, function() {
                 return StateButtonStore.makeSimpleBtn("Order Saved", true);
             });
-            commitBtn = (
+            let arBtnId = this.getArrangeBtnId();
+            StateButtonStore.saveButtonState(arBtnId, function() {
+                return StateButtonStore.makeSimpleBtn("Arrange Posts", false, { "arrange": false });
+            });
+            btnCmds = (
                 <div>
                     <ErrorView className="alert alert-success" errorId={btnId}/>
-                    <StateButton btnId={btnId} className="btn btn-default" onClick={this._saveState.bind(this, btnId)}/>
+                    <div className="btn-group" role="group">
+                        <StateButton btnId={btnId} className="btn btn-default" onClick={this._saveState.bind(this, btnId)}/>
+                        <StateButton btnId={arBtnId} className="btn btn-default" onClick={this._arrangeMode.bind(this, arBtnId)}/>
+                    </div>
                 </div>
             );
         }
         tagMgr.getTreeViewJson(this.renderElement, json);
         return (
             <div>
-                {commitBtn}
+                {btnCmds}
                 <AccordionView className="no-padding" items={json}/>
-                {/*
-                <Nestable group="1" onChange={this._onChangeNest}>
-                    <div className="dd">
-                        <ol className="dd-list">
-                            <li className="dd-item" data-id="1">
-                                <div className="dd-handle">
-                                    Item 1
-                                    <h4>This is item 1</h4>
-                                </div>
-                            </li>
-                            <li className="dd-item" data-id="2">
-                                <div className="dd-handle">
-                                    Item 2
-                                    <h4>This is item 2</h4>
-                                </div>
-                            </li>
-                            <li className="dd-item" data-id="3">
-                                <div className="dd-handle">
-                                    Item 3
-                                    <h4>This is item 3</h4>
-                                </div>
-                            </li>
-                            <li className="dd-item" data-id="4">
-                                <div className="dd-handle">
-                                    Item 4
-                                    <h4>This is item 4</h4>
-                                </div>
-                            </li>
-                        </ol>
-                    </div>
-                </Nestable>
-                  */}
             </div>
         );
     }
