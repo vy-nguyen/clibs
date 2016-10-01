@@ -31,42 +31,50 @@ let ArticleRank = React.createClass({
         _toggleFullArticle();
     },
 
+    _createReadButton: function() {
+        return {
+            article: ArticleStore.getArticleByUuid(this.props.articleUuid),
+            success: {
+                text: "Read more...",
+                disabled : false,
+                nextState: "fullArt",
+                className: "btn btn-success"
+            },
+            failure: {
+                text: "Read more...",
+                disabled : false,
+                nextState: "success",
+                className: "btn btn-info"
+            },
+            fullArt: {
+                text: "Done reading...",
+                disabled : false,
+                nextState: "success",
+                className: "btn btn-info"
+            }
+        };
+    },
+
     _toggleFullArticle: function() {
         let btnId = "art-rank-btn-" + this.props.articleUuid;
-        let btnState = StateButtonStore.getButtonState(btnId);
-        let article = btnState.article;
-        if (article == null) {
-            article = ArticleStore.getArticleByUuid(this.props.articleUuid);
-        } else {
-            Actions.getOneArticle(this.props.articleUuid);
-        }
-        let curFullArt = btnState.fullArticle;
-        let btnText = (curFullArt == false) ? "Hide article..." : "Read more...";
-
-        StateButtonStore.changeButton(btnId, false, btnText, {
-            "article"    : article,
-            "fullArticle": !curFullArt
-        });
+        StateButtonStore.goNextState(btnId);
     },
 
     render: function() {
         let artPane = null;
         let rank = this.props.rank;
         let btnId = "art-rank-btn-" + this.props.articleUuid;
-        let btnState = StateButtonStore.saveButtonState(btnId, function() {
-            return StateButtonStore.makeSimpleBtn("Read more...", false, {
-                "article"    : null,
-                "fullArticle": false,
-                "readBtnId"  : btnId
-            });
-        });
+        let btnState = StateButtonStore.createButton(btnId, function() {
+            return this._createReadButton();
+        }.bind(this));
+
         let readBtn = null;
         if (this.props.noBtn == null) {
             readBtn = (
                 <StateButton btnId={btnId} className="btn btn-success" onClick={this._toggleFullArticle}/>
             );
         }
-        if (btnState.article != null && btnState.fullArticle === true) {
+        if (btnState.article != null && btnState.getStateCode() === "fullArt") {
             artPane = (
                 <div className="row">
                     <PostPane data={btnState.article} artRank={rank}/>

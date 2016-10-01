@@ -20,17 +20,11 @@ let StateButton = React.createClass({
     },
 
     render: function() {
-        let newState = StateButtonStore.getButtonState(this.props.btnId);
-        let className = this.props.className;
-        if (newState.success === false) {
-            className = "btn btn-danger";
-        }
-        if (newState.disabled === true) {
-            className += " disabled";
-        }
+        let btnState = StateButtonStore.getButtonState(this.props.btnId);
+        let className = btnState.getClassFmt();
         return (
-            <button className={className} onClick={this._btnClick} disabled={newState.disabled}>
-                {newState.buttonText}
+            <button className={className} onClick={this._btnClick} disabled={btnState.isDisabled()}>
+                {btnState.getText()}
             </button>
         );
     }

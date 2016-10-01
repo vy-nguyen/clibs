@@ -34,7 +34,7 @@ let UserPostView = React.createClass({
 
     moveUp: function(tag, e) {
         e.stopPropagation();
-        StateButtonStore.changeButton(this.getSaveBtnId(), false, "Save Order");
+        StateButtonStore.setButtonState(this.getSaveBtnId(), "needSave");
 
         let tagMgr = AuthorStore.getAuthorTagMgr(this.props.userUuid);
         tagMgr.reRankTag(tag, true);
@@ -42,7 +42,7 @@ let UserPostView = React.createClass({
 
     moveDown: function(tag, e) {
         e.stopPropagation();
-        StateButtonStore.changeButton(this.getSaveBtnId(), false, "Save Order");
+        StateButtonStore.setButtonState(this.getSaveBtnId(), "needSave");
 
         let tagMgr = AuthorStore.getAuthorTagMgr(this.props.userUuid);
         tagMgr.reRankTag(tag, false);
@@ -70,13 +70,18 @@ let UserPostView = React.createClass({
     },
 
     _onChangeArt: function(parent, children, output) {
+        this.setState({
+            order: output
+        });
+        console.log("on change nest");
+        console.log(output);
     },
 
     renderElement: function(parent, children, output) {
         let reorder = false;
         if (UserStore.isUserMe(this.props.userUuid) === true) {
             let btnId = this.getArrangeBtnId();
-            reorder = StateButtonStore.getButtonState(btnId, "arrange");
+            reorder = StateButtonStore.isButtonInState(btnId, "arrange");
         }
         if (children == null) {
             output.push({
@@ -135,25 +140,78 @@ let UserPostView = React.createClass({
     },
 
     _saveState: function(btnId) {
-        StateButtonStore.changeButton(btnId, true, "Saving Order");
-        let tagMgr = AuthorStore.getAuthorTagMgr(this.props.userUuid);
-        tagMgr.commitTagRanks(btnId);
+        StateButtonStore.goNextState(btnId);
+        AuthorStore.getAuthorTagMgr(this.props.userUuid).commitTagRanks(btnId);
+        console.log("save state........");
+        console.log(this.state);
+    },
+
+    _saveStateSuccess: function(btnId, prev, curr) {
+        StateButtonStore.setButtonState(this.getArrangeBtnId(), "success");
     },
 
     _arrangeMode: function(btnId) {
-        let reorder = StateButtonStore.getButtonState(btnId, "arrange");
-        if (reorder === true) {
-            StateButtonStore.changeButton(btnId, false, "Arrange Mode", { "arrange": false });
-        } else {
-            StateButtonStore.changeButton(btnId, false, "In Arrange Mode", { "arrange": true });
-            StateButtonStore.changeButton(this.getSaveBtnId(), false, "Save Order");
+        let btnState = StateButtonStore.getButtonState(btnId);
+        if (btnState.getStateCode() === "success") {
+            let savState = StateButtonStore.getButtonState(this.getSaveBtnId());
+            if (savState.getStateCode() === "success") {
+                StateButtonStore.setNextButtonState(savState);
+            }
         }
+        StateButtonStore.setNextButtonState(btnState);
     },
 
-    _onChangeNest: function(output) {
-        this.setState({
-            order: output
-        });
+    _createSaveBtn: function() {
+        return {
+            success: {
+                text: "Order Saved",
+                disabled : true,
+                nextState: "needSave",
+                className: "btn btn-default",
+                triggerFn: this._saveStateSuccess
+            },
+            failure: {
+                text: "Save order failed",
+                disabled : false,
+                nextState: "needSave",
+                className: "btn btn-default"
+            },
+            saving: {
+                text: "Saving...",
+                disabled : true,
+                nextState: "success",
+                className: "btn btn-danger"
+            },
+            needSave: {
+                text: "Save Order",
+                disabled : false,
+                nextState: "saving",
+                className: "btn btn-success"
+            }
+        };
+    },
+
+    _createArrangeBtn: function() {
+        return {
+            success: {
+                text: "Arrange Posts",
+                disabled : false,
+                nextState: "arrange",
+                className: "btn btn-default"
+            },
+            failure: {
+                text: "Arrange Posts",
+                disabled : false,
+                nextState: "success",
+                className: "btn btn-default"
+            },
+            arrange: {
+                text: "Move Posts To Arrange",
+                disabled : false,
+                nextState: "success",
+                className: "btn btn-success"
+            }
+        };
     },
 
     render: function() {
@@ -163,19 +221,21 @@ let UserPostView = React.createClass({
 
         if (UserStore.isUserMe(this.props.userUuid) === true) {
             let btnId = this.getSaveBtnId();
-            StateButtonStore.saveButtonState(btnId, function() {
-                return StateButtonStore.makeSimpleBtn("Order Saved", true);
-            });
+            StateButtonStore.createButton(btnId, function() {
+                return this._createSaveBtn();
+            }.bind(this));
+
             let arBtnId = this.getArrangeBtnId();
-            StateButtonStore.saveButtonState(arBtnId, function() {
-                return StateButtonStore.makeSimpleBtn("Arrange Posts", false, { "arrange": false });
-            });
+            StateButtonStore.createButton(arBtnId, function() {
+                return this._createArrangeBtn();
+            }.bind(this));
+
             btnCmds = (
                 <div>
                     <ErrorView className="alert alert-success" errorId={btnId}/>
                     <div className="btn-group" role="group">
-                        <StateButton btnId={btnId} className="btn btn-default" onClick={this._saveState.bind(this, btnId)}/>
-                        <StateButton btnId={arBtnId} className="btn btn-default" onClick={this._arrangeMode.bind(this, arBtnId)}/>
+                        <StateButton btnId={btnId} onClick={this._saveState.bind(this, btnId)}/>
+                        <StateButton btnId={arBtnId} onClick={this._arrangeMode.bind(this, arBtnId)}/>
                     </div>
                 </div>
             );

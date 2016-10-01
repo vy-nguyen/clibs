@@ -472,8 +472,6 @@ let AuthorStore = Reflux.createStore({
     },
 
     onGetArticleRankCompleted: function(data) {
-        console.log("get article rank completed");
-        console.log(data);
         this._updateArticleRank(data);
     },
 
@@ -483,15 +481,12 @@ let AuthorStore = Reflux.createStore({
 
     onCommitTagRanksCompleted: function(data) {
         let tagMgr = data.cbContext;
-        console.log(tagMgr);
-        this.trigger(this.data);
+        StateButtonStore.onButtonChangeCompleted(tagMgr.btnId);
     },
 
     onCommitTagRanksFailed: function(err) {
         let tagMgr = err.getContext();
-        console.log(err);
-        StateButtonStore.onButtonChangeFailed(tagMgr.btnId, false, "Save Failed");
-        this.trigger(this.data);
+        StateButtonStore.onButtonChangeFailed(tagMgr.btnId);
     },
 
     onStartupCompleted: function(data) {
