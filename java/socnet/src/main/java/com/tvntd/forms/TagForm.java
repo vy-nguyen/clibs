@@ -30,6 +30,7 @@ public class TagForm
 {
     private String userUuid;
     private TagRank[] tagRanks;
+    private TagArtRank[] artList;
 
     /**
      * @return the userUuid
@@ -59,6 +60,13 @@ public class TagForm
         this.tagRanks = tagRanks;
     }
 
+    /**
+     * @return the artList
+     */
+    public TagArtRank[] getArtList() {
+        return artList;
+    }
+
     public static class TagRank
     {
         private String tagName;
@@ -72,24 +80,30 @@ public class TagForm
         }
 
         /**
-         * @param tagName the tagName to set
-         */
-        public void setTagName(String tagName) {
-            this.tagName = tagName;
-        }
-
-        /**
          * @return the rank
          */
         public Long getRank() {
             return rank;
         }
+    }
+
+    public static class TagArtRank
+    {
+        private String tagName;
+        private String[] artUuid;
 
         /**
-         * @param rank the rank to set
+         * @return the tagName
          */
-        public void setRank(Long rank) {
-            this.rank = rank;
+        public String getTagName() {
+            return tagName;
+        }
+
+        /**
+         * @return the artUuid
+         */
+        public String[] getArtUuid() {
+            return artUuid;
         }
     }
 }

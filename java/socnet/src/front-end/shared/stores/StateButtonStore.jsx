@@ -83,7 +83,6 @@ class ButtonState {
 
     setNextState() {
         let state = this[this.currState];
-        console.log(this);
         if (state.nextState != null) {
             this.setState(state.nextState);
         }

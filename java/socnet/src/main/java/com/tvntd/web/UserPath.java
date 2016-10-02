@@ -60,6 +60,7 @@ import com.tvntd.forms.CommentChangeForm;
 import com.tvntd.forms.CommentForm;
 import com.tvntd.forms.PostForm;
 import com.tvntd.forms.TagForm;
+import com.tvntd.forms.TagForm.TagArtRank;
 import com.tvntd.forms.TagForm.TagRank;
 import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.ObjectId;
@@ -70,7 +71,6 @@ import com.tvntd.models.Comment;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.GenericResponse;
 import com.tvntd.service.api.IArtTagService;
-import com.tvntd.service.api.IArtTagService.ArtTagDTO;
 import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleService.ArticleDTOResponse;
@@ -476,7 +476,6 @@ public class UserPath
             req.put(r.getTagName(), r);
         }
 
-        System.out.println("User " + uuid);
         AuthorTagRespDTO ownerTags = authorSvc.getAuthorTag(uuid);
         if (ownerTags == null) {
             return s_genOkResp;
@@ -484,13 +483,22 @@ public class UserPath
         List<AuthorTagDTO> tags = ownerTags.getAuthorTags();
         for (AuthorTagDTO t : tags) {
             TagRank rank = req.get(t.getTagName());
-            System.out.println("Tag " + t.getTagName() + " rank " + rank);
             if (rank != null) {
                 t.setRank(rank.getRank());
                 authorSvc.saveAuthorTag(t);
-                System.out.println("Update " + t.getTagName() +
-                        " score " + t.getRank());
             }
+        }
+
+        TagArtRank[] artList = form.getArtList();
+        for (TagArtRank r : artList) {
+            Long order = 0L;
+            List<ArticleRank> artRank = articleSvc.getArtRank(r.getArtUuid());
+
+            for (ArticleRank rank : artRank) {
+                rank.setRank(order);
+                order++;
+            }
+            articleSvc.saveArtRank(artRank);
         }
         return s_genOkResp;
     }

@@ -272,7 +272,7 @@ class AuthorTagMgr {
         Actions.reRankTag(this);
     }
 
-    commitTagRanks(btnId) {
+    commitTagRanks(btnId, articleOrder) {
         let tagRanks = [];
         let len = this.sortedTags.length;
 
@@ -286,9 +286,21 @@ class AuthorTagMgr {
                 rank   : tag.rank
             });
         }
+        let artList = [];
+        _.forOwn(articleOrder, function(category, key) {
+            let tagRank = {
+                tagName: key,
+                artUuid: []
+            };
+            artList.push(tagRank);
+            _.forEach(category, function(it) {
+                tagRank.artUuid.push(it.id);
+            });
+        });
         Actions.commitTagRanks(this, {
             userUuid: this.authorUuid,
-            tagRanks: tagRanks
+            tagRanks: tagRanks,
+            artList : artList
         });
     }
 

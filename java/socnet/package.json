@@ -26,7 +26,8 @@
     "clean-webpack-plugin": "^0.1.5",
     "style-loader": "^0.13.0",
     "css-loader": "^0.23.0",
-    "yargs": "^3.31.0"
+    "yargs": "^3.31.0",
+    "karma": "~0.12"
   },
   "dependencies": {
     "script-loader": "^0.6.1",

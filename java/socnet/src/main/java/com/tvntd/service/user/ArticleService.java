@@ -55,7 +55,6 @@ import com.tvntd.models.ArticleRank;
 import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
-import com.tvntd.util.Constants;
 import com.tvntd.util.Util;
 
 @Service
@@ -137,6 +136,20 @@ public class ArticleService implements IArticleService
     public ArticleRank getRank(String artUuid)
     {
         return artRankRepo.findByArticleUuid(artUuid);
+    }
+
+    @Override
+    public List<ArticleRank> getArtRank(String[] artUuids)
+    {
+        List<ArticleRank> result = new LinkedList<>();
+
+        for (String uuid : artUuids) {
+            ArticleRank rank = artRankRepo.findByArticleUuid(uuid);
+            if (rank != null) {
+                result.add(rank);
+            }
+        }
+        return result;
     }
 
     @Override
@@ -314,6 +327,14 @@ public class ArticleService implements IArticleService
 
         return new PageImpl<ArticleDTO>(
                 convert(articles), req, page.getTotalElements());
+    }
+
+    @Override
+    public void saveArtRank(List<ArticleRank> ranks)
+    {
+        for (ArticleRank r : ranks) {
+            artRankRepo.save(r);
+        }
     }
 
     @Override

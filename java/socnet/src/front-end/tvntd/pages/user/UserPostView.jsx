@@ -70,11 +70,14 @@ let UserPostView = React.createClass({
     },
 
     _onChangeArt: function(parent, children, output) {
+        let order = this.state.order;
+        if (order == null) {
+            order = {};
+        }
+        order[parent.tagName] = output;
         this.setState({
-            order: output
+            order: order
         });
-        console.log("on change nest");
-        console.log(output);
     },
 
     renderElement: function(parent, children, output) {
@@ -132,6 +135,7 @@ let UserPostView = React.createClass({
                 renderFn : this.renderTag,
                 renderArg: parent,
                 defLabel : true,
+                itemCount: reorder === true ? false : true,
                 children : reorder === true ? orderSub : sub,
                 iconOpen : "fa fa-lg fa-folder-open",
                 iconClose: "fa fa-lg fa-folder"
@@ -141,9 +145,9 @@ let UserPostView = React.createClass({
 
     _saveState: function(btnId) {
         StateButtonStore.goNextState(btnId);
-        AuthorStore.getAuthorTagMgr(this.props.userUuid).commitTagRanks(btnId);
-        console.log("save state........");
-        console.log(this.state);
+        AuthorStore
+            .getAuthorTagMgr(this.props.userUuid)
+            .commitTagRanks(btnId, this.state.order);
     },
 
     _saveStateSuccess: function(btnId, prev, curr) {

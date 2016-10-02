@@ -53,6 +53,8 @@ public interface IArticleService
     Article getArticle(String artUuid);
 
     ArticleRank getRank(String artUuid);
+    List<ArticleRank> getArtRank(String[] artUuids);
+
     ArticleRank updateRank(CommentChangeForm form, ProfileDTO user);
     List<ArticleRankDTO> getArticleRank(UuidForm uuids);
     List<ArticleRankDTO> convertRank(List<ArticleRank> ranks);
@@ -66,6 +68,7 @@ public interface IArticleService
     Page<ArticleDTO> getUserArticles(Long userId);
     Page<ArticleDTO> getUserArticles(String userUuid);
 
+    void saveArtRank(List<ArticleRank> ranks);
     void saveArticle(Article article);
     void saveArticle(ArticleDTO article);
     void saveArticles(String josnFile, String dir);

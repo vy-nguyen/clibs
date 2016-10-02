@@ -117,7 +117,8 @@ let TreeView = React.createClass({
             if (itemCntClass == null) {
                 itemCntClass = "badge alert-danger";
             }
-            if (item.children && item.children.length) {
+            if (item.children && item.children.length &&
+                (item.itemCount == null || item.itemCount === true)) {
                 itemCnt = <span className={itemCntClass}>{item.children.length}</span>;
             }
             let output = null;
