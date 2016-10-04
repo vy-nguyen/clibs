@@ -13,7 +13,6 @@ foss_pkgs   := \
 	libtool \
 	libev-dev \
 	libboost-all-dev \
-	libpcre3-dev \
 	bison \
 	flex \
 	ragel \
@@ -25,7 +24,6 @@ foss_pkgs   := \
 	libevent-dev \
 	libssl-dev \
 	g++ \
-	clang-3.8 \
 	sysstat \
 	mongodb-server
 

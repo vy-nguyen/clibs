@@ -1,21 +1,23 @@
-var _ = require('lodash');
-var path = require('path');
-var webpack = require('webpack');
-var Clean = require('clean-webpack-plugin');
+var _          = require('lodash');
+var path       = require('path');
+var webpack    = require('webpack');
+var Clean      = require('clean-webpack-plugin');
 var baseConfig = require('./tvntd.base.config')
-var scripts = require('./scripts');
+
+var scripts    = require('./scripts');
+var app_main   = {
+    "tvntd-bundle": path.resolve(__dirname, '../tvntd/main.jsx')
+};
 
 var config =  _.merge( baseConfig, {
-    entry: _.merge({
-        "tvntd-bundle": path.resolve(__dirname, '../tvntd/main.jsx')
-    }, scripts.chunks),
+    entry: _.merge(app_main, scripts.chunks),
 
     output: {
-        path: path.resolve(__dirname, '../../main/webapp/client'),
-        publicPath: 'client/',
-        filename: '[name].js',
+        path         : path.resolve(__dirname, '../../main/webapp/client'),
+        filename     : '[name].js',
+        publicPath   : 'client/',
         chunkFilename: 'chunk.[id].js',
-        pathinfo: true,
+        pathinfo     : true
     },
     devtool: 'cheap-module-source-map ',
     plugins: [
@@ -24,7 +26,7 @@ var config =  _.merge( baseConfig, {
             compress: {
                 warnings: false
             },
-            minimize: false,
+            minimize : false,
             sourceMap: false,
             exclude: [
                 /node_modules/,

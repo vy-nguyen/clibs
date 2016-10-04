@@ -1,0 +1,13 @@
+{
+    "presets": [ "react", "es2015" ],
+    "env": {
+        "test": {
+            "plugins": [ [
+                "transform-react-jsx"
+            ], [
+                "babel-plugin-webpack-alias",
+                { "config": "src/front-end/webpack/tvntd.test.config.js" }
+            ] ]
+        }
+    }
+}
