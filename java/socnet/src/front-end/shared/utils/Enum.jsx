@@ -64,10 +64,10 @@ function getRandomInt(min, max) {
 function _locationOf(elm, array, compareFn) {
     let cmp = 0;
     let minIdx = 0;
-    let curIdx = 0;
-    let maxIdx = array.length - 1;
+    let curIdx = -1;
+    let maxIdx = array.length;
 
-    while (minIdx <= maxIdx) {
+    while (minIdx < maxIdx) {
         curIdx = (minIdx + maxIdx) / 2 | 0;
         let pivot = array[curIdx];
 
@@ -83,9 +83,15 @@ function _locationOf(elm, array, compareFn) {
             }
         }
         if (cmp <= -1) {
-            minIdx = curIdx + 1;
+            if (minIdx == curIdx) {
+                break;
+            }
+            minIdx = curIdx;
         } else if (cmp >= 1) {
-            maxIdx = curIdx - 1;
+            if (maxIdx == curIdx) {
+                break;
+            }
+            maxIdx = curIdx;
         } else {
             return curIdx;
         }
@@ -101,6 +107,17 @@ function insertSorted(elm, array, compareFn) {
         return array.splice(0, 0, elm);
     }
     return array.splice(_locationOf(elm, array, compareFn), 0, elm);
+}
+
+function findSorted(elm, array, compareFn) {
+    if (array.length === 0) {
+        return -1;
+    }
+    let index = _locationOf(elm, array, compareFn);
+    if (compareFn(array[index], elm) === 0) {
+        return index;
+    }
+    return -1;
 }
 
 function toDateString(milli) {
@@ -144,4 +161,4 @@ function removeArray(array, elm, fromIdx, cmp) {
     return -1;
 }
 
-export { Enum, safeStringify, insertSorted, toDateString, preend, getRandomInt, removeArray }
+export { Enum, safeStringify, insertSorted, toDateString, preend, getRandomInt, removeArray, findSorted }

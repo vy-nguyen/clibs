@@ -105,15 +105,23 @@ class AuthorTag {
         this.addArticleRankObj(new ArticleRank(json, this, null));
     }
 
+    static compareRank(r1, r2) {
+        if (r1.rank == null) {
+            r1.rank = 0;
+        }
+        if (r2.rank == null) {
+            r2.rank = 0;
+        }
+        return r1.rank - r2.rank;
+    }
+
     addArticleRankObj(rank) {
         let artUuid = rank.articleUuid;
         let artRank = this.articles[artUuid];
 
         if (artRank == null) {
             this.articles[rank.articleUuid] = rank;
-            insertSorted(rank, this.sortedArts, function(r1, r2) {
-                return r1.rank - r2.rank;
-            });
+            insertSorted(rank, this.sortedArts, this.compareRank);
         }
     }
 
@@ -127,6 +135,10 @@ class AuthorTag {
                 return false;
             }
         }.bind(this));
+    }
+
+    resortArtRank() {
+        this.sortedArts.sort(this.compareRank);
     }
 
     getArticleRank(artUuid) {
@@ -170,12 +182,13 @@ class AuthorTagMgr {
         authorTag = new AuthorTag(tag);
         this.authorTags[tag.tagName] = authorTag;
 
-        insertSorted(authorTag, this.sortedTags, function(t1, t2) {
-            return t1.rank - t2.rank;
-        });
+        insertSorted(authorTag, this.sortedTags, AuthorTag.compareRank);
         this.stringTags = _.map(this.sortedTags, function(it) {
             return it.tagName;
         });
+        for (let i = 0; i < this.sortedTags.length; i++) {
+            let t = this.sortedTags[i];
+        }
         return authorTag;
     }
 
@@ -269,6 +282,9 @@ class AuthorTagMgr {
                 break;
             }
         }
+        for (let i = 0; i < len; i++) {
+            this.sortedTags[i].rank = i;
+        }
         Actions.reRankTag(this);
     }
 
@@ -293,10 +309,22 @@ class AuthorTagMgr {
                 artUuid: []
             };
             artList.push(tagRank);
-            _.forEach(category, function(it) {
+            let authorTag = this.authorTags[key];
+            let sortedArts = authorTag != null ? authorTag.getSortedArticleRank() : null;
+
+            _.forEach(category, function(it, idx) {
                 tagRank.artUuid.push(it.id);
+                if (sortedArts != null) {
+                    let rank = _.find(sortedArts, function(o) {
+                        return o.articleUuid === it.id;
+                    });
+                    rank.rank = idx;
+                }
             });
-        });
+            if (sortedArts != null) {
+                sortedArts.sort(AuthorTag.compareRank);
+            }
+        }.bind(this));
         Actions.commitTagRanks(this, {
             userUuid: this.authorUuid,
             tagRanks: tagRanks,
@@ -308,7 +336,7 @@ class AuthorTagMgr {
      * Invoke the renderFn to format output based on tag tree.
      */
     getTreeViewJson(renderFn, output) {
-        _.forOwn(this.sortedTags, function(tag) {
+        _.forEach(this.sortedTags, function(tag) {
             let sortedRank = tag.getSortedArticleRank();
             if (_.isEmpty(sortedRank)) {
                 renderFn(tag, null, output);

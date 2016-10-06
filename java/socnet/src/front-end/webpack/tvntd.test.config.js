@@ -1,6 +1,5 @@
 var _          = require('lodash');
 var path       = require('path');
-var webpack    = require('webpack');
 var root_dir   = path.resolve(__dirname, '../../../');
 var scripts    = require(path.resolve(__dirname + '/scripts'));
 var app_test   = {
