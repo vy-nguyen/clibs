@@ -225,14 +225,10 @@ let UserPostView = React.createClass({
 
         if (UserStore.isUserMe(this.props.userUuid) === true) {
             let btnId = this.getSaveBtnId();
-            StateButtonStore.createButton(btnId, function() {
-                return this._createSaveBtn();
-            }.bind(this));
+            StateButtonStore.createButton(btnId, this._createSaveBtn);
 
             let arBtnId = this.getArrangeBtnId();
-            StateButtonStore.createButton(arBtnId, function() {
-                return this._createArrangeBtn();
-            }.bind(this));
+            StateButtonStore.createButton(arBtnId, this._createArrangeBtn);
 
             btnCmds = (
                 <div>

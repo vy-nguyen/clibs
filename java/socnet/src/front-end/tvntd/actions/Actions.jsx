@@ -274,8 +274,8 @@ Actions.postCmtSelect.listen(function(data) {
 /**
  * Rank article actions.
  */
-Actions.updateArtRank.listen(function(data) {
-    postRestCall(data, "/user/update-art-rank", true, this, true, "updateArtRank");
+Actions.updateArtRank.listen(function(data, callback) {
+    postRestCall(data, "/user/update-art-rank", true, this, true, "updateArtRank", callback);
 });
 
 Actions.postArtSelect.listen(function(data) {

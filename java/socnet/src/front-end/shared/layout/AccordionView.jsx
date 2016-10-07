@@ -37,7 +37,7 @@ let AccordionView = React.createClass({
             }
             let header = TreeView.renderTreeItem(item, true, null);
             let content = item.children.map(function(it) {
-                return <div>{TreeView.renderTreeItem(it, false, null)}</div>;
+                return <div key={_.uniqueId('acc-content-')}>{TreeView.renderTreeItem(it, false, null)}</div>;
             });
             elmView.push(
                 <Panel header={header} key={item.keyId}>

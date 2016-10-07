@@ -420,6 +420,8 @@ let AuthorStore = Reflux.createStore({
         }
         artRank.attachTag(authorTag);
         this.trigger(this.data);
+        console.log(tagInfo);
+        Actions.updateArtRank(tagInfo, tagInfo.cbButtonId);
     },
 
     iterAuthor: function(uuidList, func) {
@@ -527,6 +529,11 @@ let AuthorStore = Reflux.createStore({
     onCommitTagRanksFailed: function(err) {
         let tagMgr = err.getContext();
         StateButtonStore.onButtonChangeFailed(tagMgr.btnId);
+    },
+
+    onUpdateArtRankCompleted: function(data) {
+        let btnId = data.cbContext;
+        StateButtonStore.onButtonChangeCompleted(btnId);
     },
 
     onStartupCompleted: function(data) {

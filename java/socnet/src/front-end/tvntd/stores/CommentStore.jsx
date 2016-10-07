@@ -227,8 +227,6 @@ let CommentStore = Reflux.createStore({
     },
 
     onGetCommentsCompleted: function(data) {
-        console.log("get comments");
-        console.log(data);
         this._updateComments(data.comments, true);
         this.trigger(this.data);
     },

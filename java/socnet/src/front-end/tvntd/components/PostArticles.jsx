@@ -15,7 +15,7 @@ let PostArticles = React.createClass({
 
     render: function() {
         let panes = null;
-        
+
         if (this.props.data && !_.isEmpty(this.props.data)) {
             panes = [];
             _.forOwn(this.props.data, function(article, idx) {

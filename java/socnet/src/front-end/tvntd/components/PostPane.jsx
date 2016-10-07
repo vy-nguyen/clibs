@@ -7,36 +7,38 @@
 import _            from 'lodash';
 import React        from 'react-mod';
 import Reflux       from 'reflux';
+import TA           from 'react-typeahead';
 
 import Actions      from 'vntd-root/actions/Actions.jsx';
 import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
 import AdminStore   from 'vntd-root/stores/AdminStore.jsx';
 import PostItem     from 'vntd-root/components/PostItem.jsx';
 import PostComment  from 'vntd-root/components/PostComment.jsx';
-import TypeAhead    from 'vntd-root/components/TypeAhead.jsx';
 import WidgetGrid   from 'vntd-shared/widgets/WidgetGrid.jsx';
 import JarvisWidget from 'vntd-shared/widgets/JarvisWidget.jsx';
 import UserStore    from 'vntd-shared/stores/UserStore.jsx';
+
+import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
+import StateButton      from 'vntd-shared/utils/StateButton.jsx';
 
 import Panel            from 'vntd-shared/widgets/Panel.jsx'; 
 import { toDateString } from 'vntd-shared/utils/Enum.jsx';
 
 let TagPost = React.createClass({
 
-    mixins: [
-        Reflux.connect(AuthorStore)
-    ],
+    //mixins: [
+    //    Reflux.connect(AuthorStore)
+    //],
 
-    _taSelectValue: function(val) {
-        console.log("select val " + val);
-        this.setState({ tagName: val });
+    _onBlur: function(val) {
+        this.setState({
+            tagName: val.target.value
+        });
     },
 
-    _saveArticleRank: function(artRank, authorTag) {
+    _onOptionSelected: function(val) {
         this.setState({
-            artRank  : artRank,
-            authorTag: authorTag,
-            tagRank  : authorTag.rank
+            tagName: val
         });
     },
 
@@ -46,60 +48,89 @@ let TagPost = React.createClass({
         });
     },
 
-    _submitUpdate: function(e) {
-        e.preventDefault();
-        let rank = parseInt(this.refs.rank.value, 10);
-        if (rank === NaN || rank < 0 || rank > 100) {
-            rank = 50;
-            this.refs.rank.value = rank;
-        }
+    _submitUpdate: function(btnId) {
         let tagInfo = {
             tagName    : this.state.tagName,
             favorite   : this.state.favorite,
-            userUuid   : this.state.myUuid,
-            title      : this.props.postTitle,
-            tagRank    : this.state.tagRank,
-            articleRank: rank,
+            userUuid   : this.props.authorUuid,
+            title      : this.refs.title.value,
             likeInc    : 0,
             shareInc   : 0,
-            articleUuid: this.props.articleUuid
+            articleUuid: this.props.articleUuid,
+            cbButtonId : btnId
         };
-        AuthorStore.updateAuthorTag(tagInfo, this.state.artRank);
-        Actions.updateArtRank(tagInfo);
+        if (!_.isEmpty(this.refs.title.value)) {
+            this.setState({
+                artTitle: this.refs.title.value
+            });
+        }
+        StateButtonStore.getButtonState(btnId).setNextState();
+        let artRank = AuthorStore.getArticleRank(this.props.authorUuid, this.props.articleUuid);
+        AuthorStore.updateAuthorTag(tagInfo, artRank);
+    },
+
+    _updateSuccess: function(btnId, prev, curr) {
     },
 
     getInitialState: function() {
+        let artRank = AuthorStore.getArticleRank(this.props.authorUuid, this.props.articleUuid);
+        let tagName = artRank != null ? artRank.tagName : "My Post";
+
         return {
-            tagText: "Tag your article",
-            tagName: "My Post",
-            tagRank: 50,
-            favorite: false
-        }
+            tagText : "Tag your article",
+            artRank : artRank,
+            tagName : tagName,
+            buttonId: "chg-tag-" + this.props.articleUuid
+        };
+    },
+
+    _createUpdateBtn: function() {
+        return {
+            success: {
+                text     : "Update",
+                disabled : false,
+                nextState: "updating",
+                className: "btn btn-primary",
+                triggerFn: this._updateSuccess
+            },
+            failure: {
+                text     : "Update Failed",
+                disabled : false,
+                nextState: "updating",
+                className: "btn btn-danger"
+            },
+            updating: {
+                text     : "Updating",
+                disabled : true,
+                nextState: "success",
+                className: "btn btn-default"
+            }
+        };
     },
 
     render: function() {
+        let btnId = this.state.buttonId;
+        let allTags = AuthorStore.getTagsByAuthorUuid(this.props.authorUuid);
+        let artTitle = this.state.artTitle == null ? this.props.artTitle : this.state.artTitle;
+
+        StateButtonStore.createButton(btnId, this._createUpdateBtn);
         return (
             <form enclType="form-data" acceptCharset="utf-8" className="form-horizontal">
                 <div className="row">
-                    <div className="col-xs-5 col-sm-5 col-md-5">
-                        <TypeAhead articleUuid={this.props.articleUuid}
-                            artRankSave={this._saveArticleRank}
-                            selectValue={this._taSelectValue} />
+                    <div className="col-xs-10 col-sm-10 col-md-10 col-lg-10">
+                        <TA.Typeahead options={allTags} maxVisible={6}
+                            placeholder={this.state.tagName} value={this.state.tagName}
+                            customClasses={{input: "form-control input-sm"}}
+                            onBlur={this._onBlur} onOptionSelected={this._onOptionSelected}/>
                     </div>
-                    <div className="col-xs-3 col-sm-3 col-md-3">
-                        <input className="form-control input-sm" ref="rank" placeholder={this.state.tagRank}/>
-                    </div>
-                    <div className="col-xs-2 col-sm-2 col-md-2">
-                        <section>
-                            <label className="checkbox">
-                                <input type="checkbox" checked={this.state.favorite} onChange={this._onChangeFav}/>
-                                <i/>Mark Favorite
-                            </label>
-                        </section>
-                    </div>
-                    <button onClick={this._submitUpdate} className="btn btn-primary">Update</button>
+                    <StateButton btnId={btnId} onClick={this._submitUpdate.bind(this, btnId)}/>
                 </div>
-            </form>
+                <div className="row">
+                    <div className="col-xs-10 col-sm-10 col-md-10 col-lg-10">
+                        <input className="form-control input-lg" ref="title" placeholder={artTitle}/>
+                    </div>
+                </div>
+                </form>
         );
     }
 });
@@ -122,7 +153,7 @@ let PostPane = React.createClass({
                 }.bind(this)
             };
         }
-        let ownerPostMenu = {
+        const ownerPostMenu = {
             iconFmt  : 'btn-xs btn-success',
             titleText: 'Options',
             itemFmt  : 'pull-right js-status-update',
@@ -151,7 +182,7 @@ let PostPane = React.createClass({
         if (adminItem != null) {
             ownerPostMenu.menuItems.push(adminItem);
         }
-        let panelData = {
+        const panelData = {
             icon   : 'fa fa-book',
             header : toDateString(this.props.data.createdDate),
             headerMenus: [ownerPostMenu],
@@ -163,19 +194,23 @@ let PostPane = React.createClass({
                 labelText: this.props.data.creditEarned
             } ]
         };
-        let divStyle = {
+        const divStyle = {
             margin: "10px 10px 10px 10px",
             fontSize: "130%"
         };
         let tagPost = null;
         let article = this.props.data;
         if (UserStore.isUserMe(article.authorUuid)) {
-            tagPost = <TagPost articleUuid={article.articleUuid} postTitle={article.topic}/>;
+            tagPost = (
+                <TagPost articleUuid={article.articleUuid} artTitle={article.topic} authorUuid={article.authorUuid}
+                    id={_.uniqueId('tag-post-')} />
+            );
+        } else {
+            tagPost = <h2>{article.topic ? article.topic : "Post"}</h2>
         }
         return (
             <Panel className="well no-padding" context={panelData}>
                 {tagPost}
-                <h2>{article.topic ? article.topic : "Post"}</h2>
                 <PostItem data={article.pictureUrl}/>
                 <div style={divStyle} dangerouslySetInnerHTML={this._rawMarkup()}/>
                 <PostComment articleUuid={article.articleUuid}/>
