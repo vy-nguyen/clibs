@@ -16,8 +16,9 @@ import PostItem     from 'vntd-root/components/PostItem.jsx';
 import PostComment  from 'vntd-root/components/PostComment.jsx';
 import WidgetGrid   from 'vntd-shared/widgets/WidgetGrid.jsx';
 import JarvisWidget from 'vntd-shared/widgets/JarvisWidget.jsx';
-import UserStore    from 'vntd-shared/stores/UserStore.jsx';
+import ModalConfirm from 'vntd-shared/forms/commons/ModalConfirm.jsx';
 
+import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
 import StateButton      from 'vntd-shared/utils/StateButton.jsx';
 
@@ -26,20 +27,13 @@ import { toDateString } from 'vntd-shared/utils/Enum.jsx';
 
 let TagPost = React.createClass({
 
-    //mixins: [
-    //    Reflux.connect(AuthorStore)
-    //],
-
     _onBlur: function(val) {
-        this.setState({
-            tagName: val.target.value
-        });
+        this._onOptionSelected(val.target.value);
     },
 
     _onOptionSelected: function(val) {
-        this.setState({
-            tagName: val
-        });
+        let postInfo = this._getSavedInfo();
+        postInfo.tagName = val;
     },
 
     _onChangeFav: function() {
@@ -49,8 +43,9 @@ let TagPost = React.createClass({
     },
 
     _submitUpdate: function(btnId) {
+        let postInfo = this._getSavedInfo();
         let tagInfo = {
-            tagName    : this.state.tagName,
+            tagName    : postInfo.tagName,
             favorite   : this.state.favorite,
             userUuid   : this.props.authorUuid,
             title      : this.refs.title.value,
@@ -60,9 +55,7 @@ let TagPost = React.createClass({
             cbButtonId : btnId
         };
         if (!_.isEmpty(this.refs.title.value)) {
-            this.setState({
-                artTitle: this.refs.title.value
-            });
+            postInfo.title = this.refs.title.value;
         }
         StateButtonStore.getButtonState(btnId).setNextState();
         let artRank = AuthorStore.getArticleRank(this.props.authorUuid, this.props.articleUuid);
@@ -73,18 +66,15 @@ let TagPost = React.createClass({
     },
 
     getInitialState: function() {
-        let artRank = AuthorStore.getArticleRank(this.props.authorUuid, this.props.articleUuid);
-        let tagName = artRank != null ? artRank.tagName : "My Post";
-
+        let btnId = "chg-tag-" + this.props.articleUuid;
+        StateButtonStore.createButton(btnId, this._createUpdateBtn);
         return {
-            tagText : "Tag your article",
-            artRank : artRank,
-            tagName : tagName,
-            buttonId: "chg-tag-" + this.props.articleUuid
+            buttonId: btnId
         };
     },
 
     _createUpdateBtn: function() {
+        let artRank = AuthorStore.getArticleRank(this.props.authorUuid, this.props.articleUuid);
         return {
             success: {
                 text     : "Update",
@@ -104,22 +94,30 @@ let TagPost = React.createClass({
                 disabled : true,
                 nextState: "success",
                 className: "btn btn-default"
+            },
+            savedInfo: {
+                artRank  : artRank,
+                tagName  : artRank != null ? artRank.tagName : "My Post",
+                title    : this.props.artTitle
             }
         };
     },
 
+    _getSavedInfo: function() {
+        return StateButtonStore.getButtonStateKey(this.state.buttonId, "savedInfo");
+    },
+
     render: function() {
         let btnId = this.state.buttonId;
+        let postInfo = this._getSavedInfo();
         let allTags = AuthorStore.getTagsByAuthorUuid(this.props.authorUuid);
-        let artTitle = this.state.artTitle == null ? this.props.artTitle : this.state.artTitle;
 
-        StateButtonStore.createButton(btnId, this._createUpdateBtn);
         return (
             <form enclType="form-data" acceptCharset="utf-8" className="form-horizontal">
                 <div className="row">
                     <div className="col-xs-10 col-sm-10 col-md-10 col-lg-10">
                         <TA.Typeahead options={allTags} maxVisible={6}
-                            placeholder={this.state.tagName} value={this.state.tagName}
+                            placeholder={postInfo.tagName} value={postInfo.tagName}
                             customClasses={{input: "form-control input-sm"}}
                             onBlur={this._onBlur} onOptionSelected={this._onOptionSelected}/>
                     </div>
@@ -127,10 +125,10 @@ let TagPost = React.createClass({
                 </div>
                 <div className="row">
                     <div className="col-xs-10 col-sm-10 col-md-10 col-lg-10">
-                        <input className="form-control input-lg" ref="title" placeholder={artTitle}/>
+                        <input className="form-control input-lg" ref="title" placeholder={postInfo.title}/>
                     </div>
                 </div>
-                </form>
+            </form>
         );
     }
 });
@@ -139,6 +137,16 @@ let PostPane = React.createClass({
 
     _rawMarkup: function() {
         return { __html: this.props.data.content };
+    },
+
+    _deletePost: function() {
+        Actions.deleteUserPost(this.props.data.articleUuid);
+        this.refs.modal.closeModal();
+        console.log("Delete uuid " + this.props.data.articleUuid);
+    },
+
+    _cancelDel: function() {
+        this.refs.modal.closeModal();
     },
 
     render: function() {
@@ -153,6 +161,14 @@ let PostPane = React.createClass({
                 }.bind(this)
             };
         }
+        let modal = (
+            <ModalConfirm ref={"modal"} modalTitle={"Are you sure to delete this post?"}>
+                <div className="modal-footer">
+                    <button className="btn btn-primary pull-right" onClick={this._deletePost}>Delete</button>
+                    <button className="btn btn-default pull-right" onClick={this._cancelDel}>Cancel</button>
+                </div>
+            </ModalConfirm>
+        );
         const ownerPostMenu = {
             iconFmt  : 'btn-xs btn-success',
             titleText: 'Options',
@@ -166,11 +182,8 @@ let PostPane = React.createClass({
                 itemFmt : 'fa fa-circle txt-color-red',
                 itemText: 'Delete Post',
                 itemHandler: function(e, pane) {
-                    e.preventDefault();
-                    Actions.deleteUserPost(this.props.data.articleUuid);
-                    console.log(this);
-                    console.log("Delete uuid " + this.props.data.articleUuid);
-                    console.log("----------");
+                    e.stopPropagation();
+                    this.refs.modal.openModal();
                 }.bind(this)
             }, {
                 itemFmt : 'fa fa-circle txt-color-blue',
@@ -211,6 +224,7 @@ let PostPane = React.createClass({
         return (
             <Panel className="well no-padding" context={panelData}>
                 {tagPost}
+                {modal}
                 <PostItem data={article.pictureUrl}/>
                 <div style={divStyle} dangerouslySetInnerHTML={this._rawMarkup()}/>
                 <PostComment articleUuid={article.articleUuid}/>
