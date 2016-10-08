@@ -135,31 +135,66 @@ class TagPost extends React.Component
     }
 };
 
-let PostPane = React.createClass({
+class PostPane extends React.Component {
 
-    _rawMarkup: function() {
+    constructor(props) {
+        super(props);
+        let artRank = AuthorStore.getArticleRank(props.data.authorUuid, props.data.articleUuid);
+        if (artRank != null) {
+            if (artRank.publishPost == null) {
+                artRank.publishPost = false;
+            }
+            this.state = {
+                artRank : artRank,
+                favorite: artRank.favorite,
+                publish : artRank.publishPost
+            }
+        } else {
+            this.state = {
+                artRank : {},
+                favorite: false,
+                publish : false
+            }
+        }
+        this._rawMarkup = this._rawMarkup.bind(this);
+        this._deletePost = this._deletePost.bind(this);
+        this._cancelDel = this._cancelDel.bind(this);
+        this._toggleFavorite = this._toggleFavorite.bind(this);
+    }
+
+    _rawMarkup() {
         return { __html: this.props.data.content };
-    },
+    }
 
-    _deletePost: function() {
+    _deletePost() {
         Actions.deleteUserPost(this.props.data.articleUuid);
         this.refs.modal.closeModal();
         console.log("Delete uuid " + this.props.data.articleUuid);
-    },
+    }
 
-    _cancelDel: function() {
+    _cancelDel() {
         this.refs.modal.closeModal();
-    },
+    }
 
-    render: function() {
+    _toggleFavorite() {
+        let artRank = this.state.artRank;
+        artRank.favorite = !this.state.favorite;
+        this.setState({
+            favorite: artRank.favorite
+        });
+    }
+
+    render() {
         let adminItem = null;
+        let article = this.props.data;
+
         if (UserStore.amIAdmin() == true) {
             adminItem = {
                 itemFmt : 'fa fa-circle txt-color-blue',
                 itemText: 'Publish Post',
                 itemHandler: function(e, pane) {
                     e.preventDefault();
-                    AdminStore.addPublicArticle(this.props.data.articleUuid);
+                    AdminStore.addPublicArticle(article.articleUuid);
                 }.bind(this)
             };
         }
@@ -177,9 +212,10 @@ let PostPane = React.createClass({
             itemFmt  : 'pull-right js-status-update',
             menuItems: [ {
                 itemFmt : 'fa fa-circle txt-color-green',
-                itemText: 'Mark Favorite',
+                itemText: this.state.favorite ? "Not Favorite" : "Mark Favorite",
                 itemHandler: function() {
-                }
+                    this._toggleFavorite();
+                }.bind(this)
             }, {
                 itemFmt : 'fa fa-circle txt-color-red',
                 itemText: 'Delete Post',
@@ -197,24 +233,30 @@ let PostPane = React.createClass({
         if (adminItem != null) {
             ownerPostMenu.menuItems.push(adminItem);
         }
+        let panelLabel = [ {
+            labelIcon: 'label label-success',
+            labelText: article.moneyEarned
+        }, {
+            labelIcon: 'label label-warning',
+            labelText: article.creditEarned
+        } ];
+        if (this.state.favorite == true) {
+            panelLabel.push({
+                labelIcon: 'label label-info',
+                labelText: 'Favorite'
+            });
+        }
         const panelData = {
             icon   : 'fa fa-book',
-            header : toDateString(this.props.data.createdDate),
+            header : toDateString(article.createdDate),
             headerMenus: [ownerPostMenu],
-            panelLabel: [ {
-                labelIcon: 'label label-success',
-                labelText: this.props.data.moneyEarned
-            }, {
-                labelIcon: 'label label-warning',
-                labelText: this.props.data.creditEarned
-            } ]
+            panelLabel : panelLabel
         };
         const divStyle = {
             margin: "10px 10px 10px 10px",
             fontSize: "130%"
         };
         let tagPost = null;
-        let article = this.props.data;
         if (UserStore.isUserMe(article.authorUuid)) {
             tagPost = (
                 <TagPost articleUuid={article.articleUuid} artTitle={article.topic} authorUuid={article.authorUuid}/>
@@ -232,6 +274,6 @@ let PostPane = React.createClass({
             </Panel>
         )
     }
-});
+}
 
 export default PostPane;

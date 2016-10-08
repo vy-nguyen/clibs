@@ -23,6 +23,15 @@ const modalStyle = {
 
 class ModalConfirm extends React.Component
 {
+    static propTypes() {
+        return {
+            openCb    : React.PropTypes.func,
+            closeCb   : React.PropTypes.func,
+            modalTitle: React.PropTypes.string.isRequired,
+            any       : React.PropTypes.any
+        }
+    }
+
     constructor() {
         super();
         this.state = {
