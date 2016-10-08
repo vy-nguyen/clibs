@@ -25,24 +25,34 @@ import StateButton      from 'vntd-shared/utils/StateButton.jsx';
 import Panel            from 'vntd-shared/widgets/Panel.jsx'; 
 import { toDateString } from 'vntd-shared/utils/Enum.jsx';
 
-let TagPost = React.createClass({
+class TagPost extends React.Component
+{
+    constructor(props) {
+        super(props);
+        let btnId = "chg-tag-" + props.articleUuid;
+        this.state = {
+            buttonId: btnId
+        };
+        this._onBlur = this._onBlur.bind(this);
+        this._submitUpdate = this._submitUpdate.bind(this);
+        this._getSavedInfo = this._getSavedInfo.bind(this);
+        this._updateSuccess = this._updateSuccess.bind(this);
+        this._createUpdateBtn = this._createUpdateBtn.bind(this);
+        this._onOptionSelected = this._onOptionSelected.bind(this);
 
-    _onBlur: function(val) {
+        StateButtonStore.createButton(btnId, this._createUpdateBtn);
+    }
+
+    _onBlur(val) {
         this._onOptionSelected(val.target.value);
-    },
+    }
 
-    _onOptionSelected: function(val) {
+    _onOptionSelected(val) {
         let postInfo = this._getSavedInfo();
         postInfo.tagName = val;
-    },
+    }
 
-    _onChangeFav: function() {
-        this.setState({
-            favorite: !this.state.favorite
-        });
-    },
-
-    _submitUpdate: function(btnId) {
+    _submitUpdate(btnId) {
         let postInfo = this._getSavedInfo();
         let tagInfo = {
             tagName    : postInfo.tagName,
@@ -60,20 +70,12 @@ let TagPost = React.createClass({
         StateButtonStore.getButtonState(btnId).setNextState();
         let artRank = AuthorStore.getArticleRank(this.props.authorUuid, this.props.articleUuid);
         AuthorStore.updateAuthorTag(tagInfo, artRank);
-    },
+    }
 
-    _updateSuccess: function(btnId, prev, curr) {
-    },
+    _updateSuccess(btnId, prev, curr) {
+    }
 
-    getInitialState: function() {
-        let btnId = "chg-tag-" + this.props.articleUuid;
-        StateButtonStore.createButton(btnId, this._createUpdateBtn);
-        return {
-            buttonId: btnId
-        };
-    },
-
-    _createUpdateBtn: function() {
+    _createUpdateBtn() {
         let artRank = AuthorStore.getArticleRank(this.props.authorUuid, this.props.articleUuid);
         return {
             success: {
@@ -101,13 +103,13 @@ let TagPost = React.createClass({
                 title    : this.props.artTitle
             }
         };
-    },
+    }
 
-    _getSavedInfo: function() {
+    _getSavedInfo() {
         return StateButtonStore.getButtonStateKey(this.state.buttonId, "savedInfo");
-    },
+    }
 
-    render: function() {
+    render() {
         let btnId = this.state.buttonId;
         let postInfo = this._getSavedInfo();
         let allTags = AuthorStore.getTagsByAuthorUuid(this.props.authorUuid);
@@ -131,7 +133,7 @@ let TagPost = React.createClass({
             </form>
         );
     }
-});
+};
 
 let PostPane = React.createClass({
 
@@ -215,8 +217,7 @@ let PostPane = React.createClass({
         let article = this.props.data;
         if (UserStore.isUserMe(article.authorUuid)) {
             tagPost = (
-                <TagPost articleUuid={article.articleUuid} artTitle={article.topic} authorUuid={article.authorUuid}
-                    id={_.uniqueId('tag-post-')} />
+                <TagPost articleUuid={article.articleUuid} artTitle={article.topic} authorUuid={article.authorUuid}/>
             );
         } else {
             tagPost = <h2>{article.topic ? article.topic : "Post"}</h2>
