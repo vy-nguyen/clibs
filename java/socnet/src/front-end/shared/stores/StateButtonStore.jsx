@@ -45,6 +45,14 @@ class ButtonState {
         return this[key];
     }
 
+    setKeyValue(key, value) {
+        if (this[key] != null) {
+            _.merge(this[key], value);
+        } else {
+            this[key] = value;
+        }
+    }
+
     getStateCode() {
         return this.currState;
     }
@@ -72,6 +80,9 @@ class ButtonState {
     }
 
     setState(state) {
+        if (state === this.currState) {
+            return;
+        }
         this.prevState = this.currState;
         this.currState = state;
 
@@ -116,6 +127,14 @@ let StateButtonStore = Reflux.createStore({
         if (state != null && btnState != null) {
             btnState.setState(state);
             this.trigger(this.button);
+        }
+        return btnState;
+    },
+
+    setStateKeyVal: function(id, key, value) {
+        let btnState = this.button[id];
+        if (btnState != null) {
+            btnState.setKeyValue(key, value);
         }
         return btnState;
     },

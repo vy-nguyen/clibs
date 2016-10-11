@@ -15,50 +15,59 @@ import CommentStore     from 'vntd-root/stores/CommentStore.jsx';
 import RenderStore      from 'vntd-root/stores/RenderStore.jsx';
 import AdminStore       from 'vntd-root/stores/AdminStore.jsx';
 import ArtTagStore      from 'vntd-root/stores/ArticleTagStore.jsx';
+import LanguageStore    from 'vntd-root/stores/LanguageStore.jsx';
 
-let Debug = React.createClass({
+class Debug extends React.Component {
 
-    debugUserStore: function() {
+    constructor(props) {
+        super(props);
+    }
+
+    debugUserStore() {
         UserStore.dumpData("User Store Content");
-    },
+    }
 
-    debugNavStore: function() {
+    debugNavStore() {
         NavigationStore.dumpData("NavStore Content");
-    },
+    }
 
-    debugAboutUsStore: function() {
+    debugAboutUsStore() {
         AboutUsStore.dumpData("About Us Content");
-    },
+    }
 
-    debugArticleStore: function() {
+    debugArticleStore() {
         ArticleStore.dumpData("Article Store Content");
-    },
+    }
 
-    debugAuthorStore: function() {
+    debugAuthorStore() {
         AuthorStore.dumpData("Author Store Content");
-    },
+    }
 
-    debugCommentStore: function() {
+    debugCommentStore() {
         CommentStore.dumpData("Comment Store Content");
-    },
+    }
 
-    debugRenderStore: function() {
+    debugRenderStore() {
         RenderStore.dumpData("Render Store Content");
-    },
+    }
 
-    debugAdminStore: function() {
+    debugAdminStore() {
         AdminStore.dumpData("Admin Store Content");
-    },
+    }
 
-    debugArtTagstore: function() {
+    debugArtTagstore() {
         ArtTagStore.dumpData("Article Tag Content");
-    },
+    }
 
-    debugStateButtonStore: function() {
+    debugStateButtonStore() {
         StateButtonStore.dumpData("State Button Content");
-    },
+    }
 
-    render: function() {
+    debugLanguageStore() {
+        LanguageStore.dumpData("Language Store");
+    }
+
+    render() {
         return (
             <div className="row">
                 <div className="col-md-6">
@@ -72,6 +81,7 @@ let Debug = React.createClass({
                     <br/>
                     <a onClick={this.debugCommentStore}>Debug Comment Store</a>
                     <br/>
+                    <a onClick={this.debugLanguageStore}>Debug Language Store</a>
                 </div>
                 <div className="col-md-6">
                     <a onClick={this.debugNavStore}>Debug Nav Store</a>
@@ -89,6 +99,6 @@ let Debug = React.createClass({
             </div>
         );
     }
-});
+}
 
 export default Debug;

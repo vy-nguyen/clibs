@@ -70,13 +70,11 @@ let UserPostView = React.createClass({
     },
 
     _onChangeArt: function(parent, children, output) {
-        let order = this.state.order;
-        if (order == null) {
-            order = {};
-        }
-        order[parent.tagName] = output;
-        this.setState({
-            order: order
+        let tagName = parent.tagName;
+        StateButtonStore.setStateKeyVal(this.getArrangeBtnId(), {
+            order: {
+                tagName: output
+            }
         });
     },
 
@@ -144,10 +142,11 @@ let UserPostView = React.createClass({
     },
 
     _saveState: function(btnId) {
+        let order = StateButtonStore.getButtonStateKey("order");
         StateButtonStore.goNextState(btnId);
         AuthorStore
             .getAuthorTagMgr(this.props.userUuid)
-            .commitTagRanks(btnId, this.state.order);
+            .commitTagRanks(btnId, order);
     },
 
     _saveStateSuccess: function(btnId, prev, curr) {

@@ -80,7 +80,7 @@ let NavigationStore = Reflux.createStore({
 
     _translate: function(items) {
         items.forEach(function(item) {
-            item.title = LanguageStore.translate(item.title);
+            item.title = LanguageStore.translate(item.titleKey);
             if (item.items != null) {
                 this._translate(item.items);
             }

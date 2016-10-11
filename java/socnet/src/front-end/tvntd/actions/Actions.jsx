@@ -123,9 +123,7 @@ function getJSON(url, cbObj, authReq, id, context)
         return;
     }
     $.getJSON(url).done(function(data) {
-        if (cbObj.translate != null) {
-            cbObj.translate(data);
-        }
+        data.cbContext = context;
         cbObj.completed(data);
 
     }).fail(function(resp, text, error) {
@@ -317,7 +315,7 @@ Actions.setTags.listen(function(data) {
  * Language choices.
  */
 Actions.getLangJson.listen(function(lang) {
-    getJSON('/public/get-json/langs/' + lang, this, false, "getLangJson");
+    getJSON('/public/get-json/langs/' + lang, this, false, "getLang", lang);
 });
 
 Actions.translate.listen(function() {

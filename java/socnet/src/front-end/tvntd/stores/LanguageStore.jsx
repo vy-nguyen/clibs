@@ -9,19 +9,25 @@ import UserStore from 'vntd-shared/stores/UserStore.jsx';
 import Actions   from 'vntd-root/actions/Actions.jsx';
 
 let LanguageStore = Reflux.createStore({
-    data: {
-        langInUse: {
-            key  : "us",
-            alt  : "USA",
-            title: "English"
-        },
-        languages: [],
-        langIndex: {},
-        translate: {},
-        phrases: {}
-    },
-
+    data: {},
     listenables: Actions,
+
+    init: function() {
+        this.data = {
+            langInUse: {
+                key  : "us",
+                alt  : "USA",
+                title: "English"
+            },
+            languages: [],
+            langIndex: {},
+            retry    : {},
+            translate: {
+                "us" : {}
+            }
+        };
+        this.data.phrases = this.data.translate;
+    },
 
     getData: function() {
         return this.data
@@ -45,9 +51,8 @@ let LanguageStore = Reflux.createStore({
         return this.data.phrases[text] || text;
     },
 
-    onGetLangJsonCompleted: function(key, json) {
-        this._setLangTranslation(key, json);
-        Actions.translate();
+    onGetLangJsonCompleted: function(json) {
+        this._setLangTranslation(json.cbContext, json);
     },
 
     onSelectCompleted: function(key, json) {
@@ -80,11 +85,21 @@ let LanguageStore = Reflux.createStore({
 
     setLanguage: function(key) {
         if (this.data.translate[key] != null) {
+            this.data.retry[key] = 0;
             this.data.langInUse = this.data.langIndex[key];
             this.data.phrases = this.data.translate[key];
+
+            // Notify all listeners to trigger the translation.
+            Actions.translate();
             this.trigger(this.data);
         } else {
-            Actions.getLangJson(key);
+            if (this.data.retry[key] == null) {
+                this.data.retry[key] = 0;
+            }
+            this.data.retry[key]++;
+            if (this.data.retry[key] < 4) {
+                Actions.getLangJson(key);
+            }
         }
     },
 
@@ -94,8 +109,16 @@ let LanguageStore = Reflux.createStore({
             data.translate[key] = json;
             data.phrases = json;
             data.langInUse = data.langIndex[key];
+
+            // Notify all listeners to trigger the translation.
+            Actions.translate();
             this.trigger(data);
         }
+    },
+
+    dumpData: function(text) {
+        console.log(text);
+        console.log(this.data);
     }
 });
 

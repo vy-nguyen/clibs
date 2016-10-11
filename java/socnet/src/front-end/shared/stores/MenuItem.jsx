@@ -7,12 +7,13 @@ export default class MenuItem {
     constructor(data, parent) {
         this._id = _.uniqueId('nav-store-');
 
-        this.title   = data.title;
-        this.route   = data.route;
-        this.icon    = data.icon;
-        this.badge   = data.badge;
-        this.counter = data.counter;
-        this.parent  = parent;
+        this.titleKey = data.title;
+        this.title    = data.title;
+        this.route    = data.route;
+        this.icon     = data.icon;
+        this.badge    = data.badge;
+        this.counter  = data.counter;
+        this.parent   = parent;
 
         if (data.items) {
             this.items = _.map(data.items, function(child) {
