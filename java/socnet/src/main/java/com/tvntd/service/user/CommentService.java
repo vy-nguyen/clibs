@@ -38,9 +38,13 @@ import org.springframework.stereotype.Service;
 
 import com.tvntd.dao.CommentRankRepo;
 import com.tvntd.dao.CommentRepo;
+import com.tvntd.forms.CommentChangeForm;
 import com.tvntd.forms.CommentForm;
+import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Comment;
+import com.tvntd.models.CommentRank;
 import com.tvntd.service.api.ICommentService;
+import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 @Service
 @Transactional
@@ -77,7 +81,11 @@ public class CommentService implements ICommentService
 
         if (out != null && !out.isEmpty()) {
             for (Comment c : out) {
-                resp.addComment(c, null);
+                CommentRank r = null;
+                if (c.isHashRank() == true) {
+                    r = rankRepo.findByCommentId(c.getId());
+                }
+                resp.addComment(c, r);
             }
         }
     }
@@ -108,8 +116,39 @@ public class CommentService implements ICommentService
     }
 
     @Override
-    public void setFavorite(String articleUuid, boolean favorite)
+    public void setFavorite(Long id, String articleUuid, boolean favorite)
     {
+        Comment co = commentRepo.findById(id);
+        if (co != null) {
+            co.setFavorite(favorite);
+            commentRepo.save(co);
+        }
+    }
+
+    @Override
+    public ArticleRank updateComment(CommentChangeForm form, ProfileDTO me)
+    {
+        String artUuid = form.getArticleUuid();
+        String kind = form.getKind();
+        Long id = form.getCommentId();
+
+        if (kind.equals("fav")) {
+            setFavorite(id, artUuid, form.isFavorite());
+
+        } else if (kind.equals("like")) {
+            CommentRank rank = rankRepo.findByCommentId(id);
+            if (rank == null) {
+                Comment co = commentRepo.findById(id);
+                if (co != null) {
+                    co.setHashRank(true);
+                    commentRepo.save(co);
+                }
+                rank = new CommentRank(id);
+            }
+            rank.addUserLiked(me.getUserUuid());
+            rankRepo.save(rank);
+        }
+        return new ArticleRank(form, me.getUserUuid());
     }
 
     public static void applyForm(CommentForm form, Comment comment)

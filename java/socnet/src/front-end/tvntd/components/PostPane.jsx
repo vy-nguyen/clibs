@@ -156,7 +156,6 @@ class PostPane extends React.Component {
                 publish : false
             }
         }
-        this._rawMarkup = this._rawMarkup.bind(this);
         this._deletePost = this._deletePost.bind(this);
         this._cancelDel = this._cancelDel.bind(this);
         this._toggleFavorite = this._toggleFavorite.bind(this);

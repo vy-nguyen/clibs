@@ -8,12 +8,14 @@ import _        from 'lodash';
 import React    from 'react-mod';
 import Reflux   from 'reflux';
 
-import UserStore       from 'vntd-shared/stores/UserStore.jsx';
-import Actions         from 'vntd-root/actions/Actions.jsx';
-import UserIcon        from 'vntd-root/components/UserIcon.jsx';
-import LanguageStore   from 'vntd-root/stores/LanguageStore.jsx';
-import CommentStore    from 'vntd-root/stores/CommentStore.jsx';
-import {safeStringify} from 'vntd-shared/utils/Enum.jsx'; 
+import UserStore        from 'vntd-shared/stores/UserStore.jsx';
+import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
+import Actions          from 'vntd-root/actions/Actions.jsx';
+import UserIcon         from 'vntd-root/components/UserIcon.jsx';
+import LanguageStore    from 'vntd-root/stores/LanguageStore.jsx';
+import CommentStore     from 'vntd-root/stores/CommentStore.jsx';
+import StateButton      from 'vntd-shared/utils/StateButton.jsx';
+import {safeStringify}  from 'vntd-shared/utils/Enum.jsx';
 
 let CommentBox = React.createClass({
 
@@ -27,10 +29,9 @@ let CommentBox = React.createClass({
             comment: safeStringify(this.refs.comment.value),
             articleUuid: this.props.articleUuid,
         });
-        console.log(this.refs.comment.value);
         this.setState({
             sendDisable: " disabled",
-            submiting: true
+            submiting  : true
         });
     },
 
@@ -225,9 +226,18 @@ let CommentBox = React.createClass({
     }
 });
 
-let CommentItem = React.createClass({
+class CommentItem extends React.Component {
 
-    _submitLike: function(e) {
+    constructor(props) {
+        super(props);
+        this.state = {
+            submitedLike: false
+        };
+        this._submitLike = this._submitLike.bind(this);
+        this._makeFavorite = this._makeFavorite.bind(this);
+    }
+
+    _submitLike(e) {
         e.preventDefault();
         Actions.postCmtSelect({
             kind       : "like",
@@ -238,20 +248,25 @@ let CommentItem = React.createClass({
             articleUuid: this.props.articleUuid
         });
         this.setState({ submitedLike: true });
-    },
+    }
 
-    _makeFavorite: function(e) {
+    _makeFavorite(e) {
         e.preventDefault();
-        Actions.switchComment(this.props.data);
-    },
+        CommentStore.toggleFavComment(this.props.data);
+    }
 
-    getInitialState: function() {
+    _createLikeBtn() {
         return {
-            submitedLike: false
-        }
-    },
+            success: {
+            },
+            failure: {
+            },
+            liked: {
+            }
+        };
+    }
 
-    render: function() {
+    render() {
         let user = this.props.user;
         if (user == null) {
             return null;
@@ -296,7 +311,7 @@ let CommentItem = React.createClass({
             </li>
         )
     }
-});
+};
 
 let PostComment = React.createClass({
     mixins: [

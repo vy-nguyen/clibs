@@ -48,7 +48,7 @@ const Actions = Reflux.createActions({
     uploadAvataDone: completedFn,
 
     // Comment actions
-    switchComment:   completedFn,
+    updateComment:   completedFn,
     postComment:     completedFailedFn,
     postCmtSelect:   completedFailedFn,
 
@@ -257,8 +257,9 @@ Actions.pendingPost.listen(function(data) {
 /**
  * Comment actions.
  */
-Actions.switchComment.listen(function(data) {
-    this.completed(data);
+Actions.updateComment.listen(function(data) {
+    console.log(data);
+    postRestCall(data, "/user/change-comment", true, this, true, "updateComment");
 });
 
 Actions.postComment.listen(function(data) {

@@ -42,6 +42,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
 import com.tvntd.forms.ArticleForm;
+import com.tvntd.forms.CommentChangeForm;
 import com.tvntd.key.HashKey;
 import com.tvntd.util.Constants;
 import com.tvntd.util.Util;
@@ -118,6 +119,14 @@ public class ArticleRank
         this.tag = tag.fetchTag();
         this.tagHash = HashKey.toSha1Key(this.tag, authorUuid);
         this.contentBrief = article.getContentBrief();
+    }
+
+    public ArticleRank(CommentChangeForm form, String authorUuid)
+    {
+        this();
+        this.articleUuid = form.getArticleUuid();
+        this.authorUuid = authorUuid;
+        this.favorite = form.isFavorite();
     }
 
     public void updateFromUser(ArticleForm form)

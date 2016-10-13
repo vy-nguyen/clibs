@@ -5,26 +5,29 @@
 
 import React       from 'react';
 import _           from 'lodash';
+
 import 'style!css!rc-collapse/assets/index.css';
 import Collapse, { Panel } from 'rc-collapse';
 
 import TreeView    from 'vntd-shared/layout/TreeView.jsx';
 
-let AccordionView = React.createClass({
+class AccordionView extends React.Component {
 
-    getInitialState: function() {
-        return {
+    constructor(props) {
+        super(props);
+        this.state = {
             activeKey: null
         };
-    },
+        this._onChange = this._onChange.bind(this);
+    }
 
-    _onChange: function(activeKey) {
+    _onChange(activeKey) {
         this.setState({
             activeKey: activeKey
         });
-    },
+    }
 
-    render: function() {
+    render() {
         let activeKey = this.state.activeKey;
         let elmView = [];
 
@@ -52,6 +55,6 @@ let AccordionView = React.createClass({
             </Collapse>
         );
     }
-});
+}
 
 export default AccordionView;

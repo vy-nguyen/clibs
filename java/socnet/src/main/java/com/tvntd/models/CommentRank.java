@@ -26,6 +26,7 @@
  */
 package com.tvntd.models;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.CollectionTable;
@@ -35,6 +36,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+
+import com.tvntd.util.Util;
 
 @Entity
 public class CommentRank
@@ -47,6 +50,18 @@ public class CommentRank
     @CollectionTable(name = "CommentLiked",
             joinColumns = @JoinColumn(name = "commentId"))
     private List<String> userLiked;
+
+    public CommentRank(Long id) {
+        commentId = id;
+    }
+
+    public void addUserLiked(String uuid)
+    {
+        if (userLiked == null) {
+            userLiked = new LinkedList<>();
+        }
+        Util.<String>addUnique(userLiked, uuid);
+    }
 
     /**
      * @return the commentId

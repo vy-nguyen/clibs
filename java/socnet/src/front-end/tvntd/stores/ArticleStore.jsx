@@ -262,6 +262,7 @@ let ArticleStore = Reflux.createStore({
     },
 
     _removeArticle: function(artUuid) {
+
     },
 
     _indexAuthors: function(artList) {

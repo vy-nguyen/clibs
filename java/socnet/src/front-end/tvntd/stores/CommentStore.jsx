@@ -148,18 +148,19 @@ class ArticleComment {
         }
     }
 
-    switchComment(id) {
+    toggleFavComment(id) {
         if (this.favorites[id] == null) {
             let comment = this.normals[id];
             comment.favorite = !comment.favorite;
             this.favorites[id] = comment;
             delete this.normals[id];
-        } else {
-            let comment = this.favorites[id];
-            comment.favorite = !comment.favorite;
-            this.normals[id] = comment;
-            delete this.favorites[id];
+            return comment;
         }
+        let comment = this.favorites[id];
+        comment.favorite = !comment.favorite;
+        this.normals[id] = comment;
+        delete this.favorites[id];
+        return comment;
     }
 
     iterFavComments(func) {
@@ -248,11 +249,6 @@ let CommentStore = Reflux.createStore({
     },
 
     onSwitchCommentCompleted: function(data) {
-        let cmtArt = this.getByArticleUuid(data.articleUuid);
-        if (cmtArt != null) {
-            cmtArt.switchComment(data.commentId);
-            this.trigger(cmtArt);
-        }
     },
 
     getArticleAttr: function(articleUuid) {
@@ -287,6 +283,21 @@ let CommentStore = Reflux.createStore({
             this.data.commentByArticleUuid[data.articleUuid] = cmtArt;
         }
         return cmtArt;
+    },
+
+    toggleFavComment: function(data) {
+        let cmtArt = this.getByArticleUuid(data.articleUuid);
+        if (cmtArt != null) {
+            let cmt = cmtArt.toggleFavComment(data.commentId);
+            Actions.updateComment({
+                kind       : 'fav',
+                article    : false,
+                favorite   : cmt.favorite,
+                commentId  : cmt.commentId,
+                articleUuid: cmt.articleUuid
+            });
+            this.trigger(cmtArt);
+        }
     },
 
     addArtAttr: function(attr) {

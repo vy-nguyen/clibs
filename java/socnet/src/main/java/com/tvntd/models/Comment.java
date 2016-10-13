@@ -50,6 +50,7 @@ public class Comment
     private Long id;
 
     private boolean favorite;
+    private boolean hashRank;
 
     @Column(length = 1024)
     private byte[] content;
@@ -95,6 +96,20 @@ public class Comment
      */
     public void setFavorite(boolean favorite) {
         this.favorite = favorite;
+    }
+
+    /**
+     * @return the hashRank
+     */
+    public boolean isHashRank() {
+        return hashRank;
+    }
+
+    /**
+     * @param hashRank the hashRank to set
+     */
+    public void setHashRank(boolean hashRank) {
+        this.hashRank = hashRank;
     }
 
     /**

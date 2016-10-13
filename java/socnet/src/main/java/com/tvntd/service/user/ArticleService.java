@@ -54,6 +54,7 @@ import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IAuthorService;
+import com.tvntd.service.api.ICommentService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.util.Util;
 
@@ -71,6 +72,9 @@ public class ArticleService implements IArticleService
 
     @Autowired
     protected IAuthorService authorSvc;
+
+    @Autowired
+    protected ICommentService commentSvc;
 
     /**
      * Common static methods.
@@ -155,9 +159,13 @@ public class ArticleService implements IArticleService
     @Override
     public ArticleRank updateRank(CommentChangeForm form, ProfileDTO me)
     {
-        ArticleRank rank = artRankRepo.findByArticleUuid(form.getArticleUuid());
+        String artUuid = form.getArticleUuid();
+        String myUuid = me.getUserUuid();
+        String kind = form.getKind();
+
+        ArticleRank rank = artRankRepo.findByArticleUuid(artUuid);
         if (rank == null) {
-            Article article = articleRepo.findByArticleUuid(form.getArticleUuid());
+            Article article = articleRepo.findByArticleUuid(artUuid);
             if (article != null) {
                 return null;
             }
@@ -167,8 +175,6 @@ public class ArticleService implements IArticleService
             }
         }
         boolean save = false;
-        String myUuid = me.getUserUuid().toString();
-        String kind = form.getKind();
         
         if (kind.equals("like")) {
             Long val = rank.getLikes();
@@ -207,6 +213,8 @@ public class ArticleService implements IArticleService
             }
             rank.setShared(val);
             form.setAmount(val);
+
+        } else if (kind.equals("fav")) {
         }
         if (save == true) {
             artRankRepo.save(rank);

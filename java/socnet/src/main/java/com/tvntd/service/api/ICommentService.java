@@ -40,6 +40,7 @@ import com.tvntd.forms.CommentChangeForm;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Comment;
 import com.tvntd.models.CommentRank;
+import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 public interface ICommentService
 {
@@ -50,9 +51,10 @@ public interface ICommentService
     public void saveComment(CommentDTO comment);
     public Comment saveComment(Comment comment);
 
+    public ArticleRank updateComment(CommentChangeForm form, ProfileDTO me);
     public void likeComment(String articleUuid, String user);
     public void unLikeComment(String articleUuid, String user);
-    public void setFavorite(String articleUuid, boolean favorite);
+    public void setFavorite(Long id, String articleUuid, boolean favorite);
 
     public static class CommentDTOResponse extends GenericResponse
     {

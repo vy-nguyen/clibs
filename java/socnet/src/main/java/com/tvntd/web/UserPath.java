@@ -116,7 +116,7 @@ public class UserPath
     private ICommentService commentSvc;
 
     @Autowired
-    private IArtTagService artTagSvc;
+    protected IArtTagService artTagSvc;
 
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     @ResponseBody
@@ -381,16 +381,18 @@ public class UserPath
         if (profile == null) {
             return s_noProfile;
         }
+        ArticleRank rank = null;
         CommentRespDTO resp = new CommentRespDTO(form);
 
         if (form.isArticle() == true) {
-            ArticleRank rank = articleSvc.updateRank(form, profile);
+            rank = articleSvc.updateRank(form, profile);
             if (rank == null) {
                 return s_invalidArticle;
             }
-            resp.updateArticleRank(rank);
+        } else {
+            rank = commentSvc.updateComment(form, profile);
         }
-        s_log.info("Got comment change " + form.toString());
+        resp.updateArticleRank(rank);
         return resp;
     }
 
@@ -442,7 +444,6 @@ public class UserPath
         if (profile == null) {
             return s_noProfile;
         }
-        System.out.println("Change title to " + form.getTitle());
         if (!form.getTitle().isEmpty()) {
             System.out.println("Change title to " + form.getTitle());
         }
