@@ -127,6 +127,7 @@ public class ArticleRank
         this.articleUuid = form.getArticleUuid();
         this.authorUuid = authorUuid;
         this.favorite = form.isFavorite();
+        this.creditEarned = form.getCommentId();
     }
 
     public void updateFromUser(ArticleForm form)

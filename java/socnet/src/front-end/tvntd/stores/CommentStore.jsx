@@ -9,22 +9,6 @@ import moment       from 'moment';
 import Actions      from 'vntd-root/actions/Actions.jsx';
 import UserStore    from 'vntd-shared/stores/UserStore.jsx';
 
-class CommentText {
-    constructor(data) {
-        this._id          = _.uniqueId('id-comment-');
-        this.articleUuid  = data.articleUuid;
-        this.commentId    = data.commentId;
-        this.commentDate  = data.commentDate;
-        this.comment      = data.comment;
-        this.userUuid     = data.userUuid;
-        this.likes        = data.likes;
-        this.favorite     = data.favorite;
-        this.moment       = moment(data.commentDate, "MM/DD/YY h:mm").fromNow();
-        this.userLiked    = data.userLiked;
-        return this;
-    }
-}
-
 class CommentAttr {
     constructor(data) {
         this.articleUuid  = data.articleUuid;
@@ -48,6 +32,20 @@ class CommentAttr {
         } else if (data.kind == 'share') {
             this.shareCount = data.amount;
         }
+    }
+
+    updateAttr(attr) {
+        if (attr.userLiked != null) {
+            this.userLiked = attr.userLiked;
+            this.likeCount = attr.userLiked.length;
+        }
+        if (attr.userShared != null) {
+            this.userShared = attr.userShared;
+            this.shareCount = attr.userShared.length;
+        }
+        this.score       = attr.score;
+        this.favorite    = attr.favorite;
+        this.moneyEarned = attr.moneyEarned;
     }
 
     getUsersLiked() {
@@ -88,6 +86,38 @@ class CommentAttr {
     }
 }
 
+class CommentText {
+    constructor(data) {
+        this._id          = _.uniqueId('id-comment-');
+        this.commentDate  = data.commentDate;
+        this.comment      = data.comment;
+        this.userUuid     = data.userUuid;
+        this.moment       = moment(data.commentDate, "MM/DD/YY h:mm").fromNow();
+        this.commentAttr  = new CommentAttr(data);
+        return this;
+    }
+
+    updateAttr(data) {
+        this.commentAttr.updateAttr(data);
+    }
+
+    getFavorites() {
+        return this.commentAttr.favorite;
+    }
+
+    getUserLiked() {
+        return this.commentAttr.userLiked;
+    }
+
+    getCommentId() {
+        return this.commentAttr.commentId;
+    }
+
+    getArticleUuid() {
+        return this.commentAttr.articleUuid;
+    }
+}
+
 class ArticleComment {
     constructor(data) {
         this.articleUuid = data.articleUuid;
@@ -98,7 +128,6 @@ class ArticleComment {
         this.favoriteSorted = [];
 
         this.articleAttr = null;
-        this.commentAttr = {};
         return this;
     }
 
@@ -110,14 +139,15 @@ class ArticleComment {
         }
     }
 
-    updateCommentAttr(data) {
-    }
-
     updateAttr(data) {
         if (data.article === true) {
             this.updateArtAttr(data);
         } else {
-            this.updateCommentAttr(data);
+            let cmt = this.getComment(data.creditEarned);
+            if (cmt != null) {
+                console.log(data);
+                cmt.updateAttr(data);
+            }
         }
     }
 
@@ -129,8 +159,12 @@ class ArticleComment {
         return this.articleAttr;
     }
 
-    getCommentAttr(id) {
-        return this.commentAttr[id];
+    getComment(id) {
+        let cmtAttr = this.favorites[id];
+        if (cmtAttr != null) {
+            return cmtAttr;
+        }
+        return this.normals[id];
     }
 
     addComment(data) {
@@ -246,9 +280,6 @@ let CommentStore = Reflux.createStore({
         let cmtArt = this.addArtComment(data);
         cmtArt.updateAttr(data);
         this.trigger(this.data);
-    },
-
-    onSwitchCommentCompleted: function(data) {
     },
 
     getArticleAttr: function(articleUuid) {

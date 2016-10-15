@@ -3,6 +3,8 @@
  */
 'use strict';
 
+import _ from 'lodash';
+
 export function Enum() {
     let args = arguments;
     let kv = {
@@ -161,4 +163,16 @@ function removeArray(array, elm, fromIdx, cmp) {
     return -1;
 }
 
-export { Enum, safeStringify, insertSorted, toDateString, preend, getRandomInt, removeArray, findSorted }
+function findUuid(array, field, uuid) {
+    if (array != null) {
+        return _.findIndex(array, function(e) {
+            if (field != null) {
+                return e[field] === uuid;
+            }
+            return e === uuid;
+        });
+    }
+    return -1;
+}
+
+export { Enum, safeStringify, insertSorted, toDateString, preend, getRandomInt, removeArray, findSorted, findUuid }

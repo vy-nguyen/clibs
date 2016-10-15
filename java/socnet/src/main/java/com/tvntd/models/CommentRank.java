@@ -51,16 +51,19 @@ public class CommentRank
             joinColumns = @JoinColumn(name = "commentId"))
     private List<String> userLiked;
 
-    public CommentRank(Long id) {
-        commentId = id;
-    }
-
     public void addUserLiked(String uuid)
     {
         if (userLiked == null) {
             userLiked = new LinkedList<>();
         }
         Util.<String>addUnique(userLiked, uuid);
+    }
+
+    public void removeUserLiked(String uuid)
+    {
+        if (userLiked != null) {
+            Util.<String>removeFrom(userLiked, uuid);
+        }
     }
 
     /**

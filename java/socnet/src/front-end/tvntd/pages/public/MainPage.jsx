@@ -8,7 +8,6 @@ import _                from 'lodash';
 import React            from 'react-mod';
 import Reflux           from 'reflux';
 import {Link}           from 'react-router';
-import {renderToString} from 'react-dom-server';
 import ReactSpinner     from 'react-spinjs';
 
 import Gallery          from 'vntd-shared/layout/Gallery.jsx';

@@ -7,6 +7,7 @@
 import _        from 'lodash';
 import React    from 'react-mod';
 import Reflux   from 'reflux';
+import {renderToString} from 'react-dom-server';
 
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
@@ -15,7 +16,7 @@ import UserIcon         from 'vntd-root/components/UserIcon.jsx';
 import LanguageStore    from 'vntd-root/stores/LanguageStore.jsx';
 import CommentStore     from 'vntd-root/stores/CommentStore.jsx';
 import StateButton      from 'vntd-shared/utils/StateButton.jsx';
-import {safeStringify}  from 'vntd-shared/utils/Enum.jsx';
+import {safeStringify, findUuid}  from 'vntd-shared/utils/Enum.jsx';
 
 let CommentBox = React.createClass({
 
@@ -231,23 +232,29 @@ class CommentItem extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            submitedLike: false
+            likeFmtStr  : <span><i className="fa fa-thumbs-up"></i> Like</span>,
+            unlikeFmtStr: <span><i className="fa fa-thumbs-up"></i> Unlike</span>
         };
         this._submitLike = this._submitLike.bind(this);
         this._makeFavorite = this._makeFavorite.bind(this);
+        StateButtonStore.createButton(this._getLikeBtnId(), this._createBtn.bind(this));
     }
 
-    _submitLike(e) {
-        e.preventDefault();
+    _submitLike(btnId) {
+        let btnState = StateButtonStore.goNextState(btnId);
+        let amount = (btnState.getState() === "likes") ? 1 : -1;
+        let data = this.props.data;
+        console.log("submit btn like " + btnId + " inc " + amount);
+        console.log(data);
+
         Actions.postCmtSelect({
             kind       : "like",
-            amount     : 1,
+            amount     : amount,
             article    : false,
-            favorite   : false,
-            commentId  : this.props.data.commentId,
-            articleUuid: this.props.articleUuid
+            favorite   : data.getFavorites(),
+            commentId  : data.getCommentId(),
+            articleUuid: data.getArticleUuid()
         });
-        this.setState({ submitedLike: true });
     }
 
     _makeFavorite(e) {
@@ -255,15 +262,40 @@ class CommentItem extends React.Component {
         CommentStore.toggleFavComment(this.props.data);
     }
 
-    _createLikeBtn() {
+    _getLikeBtnId() {
+        let data = this.props.data;
+        return "co-like-" + data.getCommentId() + "-" + data.getArticleUuid();
+    }
+
+    _createBtn() {
+        let likeFmt = this.state.likeFmtStr;
         return {
             success: {
+                text     : likeFmt,
+                disabled : false,
+                nextState: "liked",
+                className: "text-info"
             },
             failure: {
+                text     : likeFmt,
+                disabled : false,
+                nextState: "liked",
+                className: "text-info"
             },
             liked: {
+                text     : this.state.unlikeFmtStr,
+                disabled : false,
+                nextState: "success",
+                className: "text-muteed"
             }
         };
+    }
+
+    componentWillMount() {
+        let likeBtnId = this._getLikeBtnId();
+        if (findUuid(this.props.data.getUserLiked(), null, this.props.user.userUuid) != -1) {
+            StateButtonStore.setButtonState(likeBtnId, "liked");
+        }
     }
 
     render() {
@@ -274,37 +306,39 @@ class CommentItem extends React.Component {
         let favBtn = null;
         let favBtnText = "Mark Favorite";
         let favClassName = "fa fa-bookmark";
+        let likeBtnId = this._getLikeBtnId();
+        let comment = this.props.data;
+        let userLiked = comment.getUserLiked();
 
-        if (this.props.data.favorite === true) {
+        if (comment.getFavorites() === true) {
             favBtnText = "Not Favorite";
             favClassName = "fa fa-thumbs-down";
         }
         favBtn = (
-            <li>
-                <button onClick={this._makeFavorite} className="text-warning"> 
-                    <i className={favClassName}></i>{favBtnText}
-                </button>
-            </li>
+            <button onClick={this._makeFavorite} className="text-warning"> 
+                <i className={favClassName}></i>{favBtnText}
+            </button>
         );
+
         return (
             <li className="message">
                 <UserIcon className="username" userUuid={user.userUuid} width="40" height="40"/>
                 <span className="message-text">
-                    <a href-void className="username">  {user.lastName + ' ' + user.firstName}
-                        <small className="text-muted pull-right ultra-light">{this.props.data.moment}</small>
+                    <a href-void className="username">{user.lastName + ' ' + user.firstName}
+                        <small className="pull-right text-info">  {comment.moment}</small>
                     </a>
-                    {this.props.data.comment}
+                    {comment.comment}
                 </span>
                 <ul className="list-inline">
                     <li>
-                        <button onClick={this._submitLike} disabled={this.state.submitedLike} className="text-info">
-                            <i className="fa fa-thumbs-up"></i>Like
-                        </button>
+                        <StateButton btnId={likeBtnId} onClick={this._submitLike.bind(this, likeBtnId)}/>
                     </li>
-                    {favBtn}
+                    <li>
+                        {favBtn}
+                    </li>
                     <li>
                         <span className="text-danger">
-                            <i className="fa fa-thumbs-up"></i>  {this.props.data.likes ? this.props.data.likes : "(0)" } Likes
+                            <i className="fa fa-thumbs-up"></i>  {userLiked ? userLiked.length : "(0)" } Likes
                         </span>
                     </li>
                 </ul>

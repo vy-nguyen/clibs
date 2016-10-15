@@ -143,10 +143,15 @@ public class CommentService implements ICommentService
                     co.setHashRank(true);
                     commentRepo.save(co);
                 }
-                rank = new CommentRank(id);
+                rank = new CommentRank();
+                rank.setCommentId(id);
             }
             rank.addUserLiked(me.getUserUuid());
             rankRepo.save(rank);
+
+            ArticleRank result = new ArticleRank(form, me.getUserUuid());
+            result.setUserLiked(rank.getUserLiked());
+            return result;
         }
         return new ArticleRank(form, me.getUserUuid());
     }

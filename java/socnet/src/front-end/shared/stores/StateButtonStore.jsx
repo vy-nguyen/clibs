@@ -12,13 +12,18 @@ class ButtonState {
     /*
      * Mandatory formats:
      * kval = {
+     *    "startState": "success", // optional to specify the start state.
      *    "success": { "text": "...", "disabled": true|false, "nextState": "xx" },
      *    "failure": { "text": "...", "disabled": true|false, "nextState": "xx" }
      * }
      */
     constructor(kval, btnId, startState) {
         _.forEach(kval, function(v, k) {
-            this[k] = v;
+            if (k === "startState" && typeof v === "string") {
+                startState = v;
+            } else {
+                this[k] = v;
+            }
         }.bind(this));
 
         this._id       = _.uniqueId('button-state-');
@@ -140,8 +145,9 @@ let StateButtonStore = Reflux.createStore({
     },
 
     setNextButtonState: function(btnState) {
-        btnState.setNextState();
+        let state = btnState.setNextState();
         this.trigger(this.button);
+        return state;
     },
 
     goNextState: function(id, input) {
@@ -150,6 +156,7 @@ let StateButtonStore = Reflux.createStore({
             btnState.setNextState();
             this.trigger(this.button);
         }
+        return btnState;
     },
 
     isButtonInState: function(id, state) {
