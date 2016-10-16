@@ -242,16 +242,13 @@ class CommentItem extends React.Component {
 
     _submitLike(btnId) {
         let btnState = StateButtonStore.goNextState(btnId);
-        let amount = (btnState.getState() === "likes") ? 1 : -1;
+        let amount = (btnState.getStateCode() === "liked") ? 1 : -1;
         let data = this.props.data;
-        console.log("submit btn like " + btnId + " inc " + amount);
-        console.log(data);
-
         Actions.postCmtSelect({
             kind       : "like",
             amount     : amount,
             article    : false,
-            favorite   : data.getFavorites(),
+            favorite   : data.isFavorite(),
             commentId  : data.getCommentId(),
             articleUuid: data.getArticleUuid()
         });
@@ -259,7 +256,17 @@ class CommentItem extends React.Component {
 
     _makeFavorite(e) {
         e.preventDefault();
-        CommentStore.toggleFavComment(this.props.data);
+        let cmt = this.props.data;
+        let cmtArt = CommentStore.getByArticleUuid(cmt.getArticleUuid());
+        if (cmtArt != null) {
+            Actions.updateComment({
+                kind       : 'fav',
+                article    : false,
+                favorite   : !cmt.isFavorite(),
+                commentId  : cmt.getCommentId(),
+                articleUuid: cmt.getArticleUuid()
+            }, cmtArt);
+        }
     }
 
     _getLikeBtnId() {
@@ -293,7 +300,7 @@ class CommentItem extends React.Component {
 
     componentWillMount() {
         let likeBtnId = this._getLikeBtnId();
-        if (findUuid(this.props.data.getUserLiked(), null, this.props.user.userUuid) != -1) {
+        if (findUuid(this.props.data.getUserLiked(), null, UserStore.getSelfUuid()) != -1) {
             StateButtonStore.setButtonState(likeBtnId, "liked");
         }
     }
@@ -303,23 +310,41 @@ class CommentItem extends React.Component {
         if (user == null) {
             return null;
         }
-        let favBtn = null;
-        let favBtnText = "Mark Favorite";
-        let favClassName = "fa fa-bookmark";
+        let favBtn    = null;
         let likeBtnId = this._getLikeBtnId();
-        let comment = this.props.data;
+        let comment   = this.props.data;
         let userLiked = comment.getUserLiked();
 
-        if (comment.getFavorites() === true) {
-            favBtnText = "Not Favorite";
-            favClassName = "fa fa-thumbs-down";
+        if (comment.amIArticleAuthor()) {
+            let favBtnText   = "Mark Favorite";
+            let favClassName = "fa fa-bookmark";
+            if (comment.isFavorite() === true) {
+                favBtnText = "Not Favorite";
+                favClassName = "fa fa-thumbs-down";
+            }
+            favBtn = (
+                <li>
+                    <button onClick={this._makeFavorite} className="text-warning"> 
+                        <i className={favClassName}></i>{favBtnText}
+                    </button>
+                </li>
+            );
         }
-        favBtn = (
-            <button onClick={this._makeFavorite} className="text-warning"> 
-                <i className={favClassName}></i>{favBtnText}
-            </button>
-        );
-
+        if (userLiked == null || userLiked.length == 0) {
+            var likeList = (
+                <span className="text-info">
+                    <i className="fa fa-thumbs-up"></i>(0) Likes
+                </span>
+            );
+        } else {
+            var likeList = (
+                <span className="text-info">
+                    <a href-void rel="tooltip" title={comment.getUserLikedList()}>
+                        <i className="fa fa-thumbs-up"></i>({userLiked.length}) Likes
+                    </a>
+                </span>
+            );
+        }
         return (
             <li className="message">
                 <UserIcon className="username" userUuid={user.userUuid} width="40" height="40"/>
@@ -333,14 +358,8 @@ class CommentItem extends React.Component {
                     <li>
                         <StateButton btnId={likeBtnId} onClick={this._submitLike.bind(this, likeBtnId)}/>
                     </li>
-                    <li>
-                        {favBtn}
-                    </li>
-                    <li>
-                        <span className="text-danger">
-                            <i className="fa fa-thumbs-up"></i>  {userLiked ? userLiked.length : "(0)" } Likes
-                        </span>
-                    </li>
+                    {favBtn}
+                    <li>{likeList}</li>
                 </ul>
             </li>
         )

@@ -102,7 +102,7 @@ function postRestCall(formData, url, json, cbObj, authReq, id, context) {
         }
     }).done(function(resp, text, error) {
         resp.cbContext = context;
-        cbObj.completed(resp, text);
+        cbObj.completed(resp, context);
 
     }).fail(function(resp, text, error) {
         resp.cbContext = context;
@@ -257,9 +257,8 @@ Actions.pendingPost.listen(function(data) {
 /**
  * Comment actions.
  */
-Actions.updateComment.listen(function(data) {
-    console.log(data);
-    postRestCall(data, "/user/change-comment", true, this, true, "updateComment");
+Actions.updateComment.listen(function(data, callback) {
+    postRestCall(data, "/user/change-comment", true, this, true, "updateComment", callback);
 });
 
 Actions.postComment.listen(function(data) {

@@ -7,6 +7,7 @@ import Reflux       from 'reflux';
 import _            from 'lodash';
 import moment       from 'moment';
 import Actions      from 'vntd-root/actions/Actions.jsx';
+import ArticleStore from 'vntd-root/stores/ArticleStore.jsx';
 import UserStore    from 'vntd-shared/stores/UserStore.jsx';
 
 class CommentAttr {
@@ -59,6 +60,10 @@ class CommentAttr {
     getUserLiked() {
     }
 
+    toggleFavorite() {
+        this.favorite = !this.favorite;
+    }
+
     didILikeIt() {
         let ret = false;
         let myUuid = UserStore.getSelf().userUuid;
@@ -87,12 +92,13 @@ class CommentAttr {
 }
 
 class CommentText {
-    constructor(data) {
+    constructor(data, artOwner) {
         this._id          = _.uniqueId('id-comment-');
         this.commentDate  = data.commentDate;
         this.comment      = data.comment;
         this.userUuid     = data.userUuid;
         this.moment       = moment(data.commentDate, "MM/DD/YY h:mm").fromNow();
+        this.artOwner     = artOwner;
         this.commentAttr  = new CommentAttr(data);
         return this;
     }
@@ -101,7 +107,7 @@ class CommentText {
         this.commentAttr.updateAttr(data);
     }
 
-    getFavorites() {
+    isFavorite() {
         return this.commentAttr.favorite;
     }
 
@@ -115,6 +121,18 @@ class CommentText {
 
     getArticleUuid() {
         return this.commentAttr.articleUuid;
+    }
+
+    toggleFavorite() {
+        return this.commentAttr.toggleFavorite();
+    }
+
+    amIArticleAuthor() {
+        return UserStore.isUserMe(this.artOwner.getAuthorUuid());
+    }
+
+    getUserLikedList() {
+        return this.commentAttr.getUserLiked();
     }
 }
 
@@ -131,6 +149,13 @@ class ArticleComment {
         return this;
     }
 
+    getAuthorUuid() {
+        if (this.authorUuid == null) {
+            this.authorUuid = ArticleStore.getAuthorUuid(this.articleUuid);
+        }
+        return this.authorUuid;
+    }
+
     updateArtAttr(data) {
         if (this.articleAttr == null) {
             this.articleAttr = new CommentAttr(data);
@@ -145,7 +170,6 @@ class ArticleComment {
         } else {
             let cmt = this.getComment(data.creditEarned);
             if (cmt != null) {
-                console.log(data);
                 cmt.updateAttr(data);
             }
         }
@@ -160,9 +184,9 @@ class ArticleComment {
     }
 
     getComment(id) {
-        let cmtAttr = this.favorites[id];
-        if (cmtAttr != null) {
-            return cmtAttr;
+        let cmt = this.favorites[id];
+        if (cmt != null) {
+            return cmt;
         }
         return this.normals[id];
     }
@@ -173,11 +197,11 @@ class ArticleComment {
         }
         if (data.favorite === true) {
             if (this.favorites[data.commentId] == null) {
-                this.favorites[data.commentId] = new CommentText(data);
+                this.favorites[data.commentId] = new CommentText(data, this);
             }
         } else {
             if (this.favorites[data.commentId] == null) {
-                this.normals[data.commentId] = new CommentText(data);
+                this.normals[data.commentId] = new CommentText(data, this);
             }
         }
     }
@@ -185,13 +209,13 @@ class ArticleComment {
     toggleFavComment(id) {
         if (this.favorites[id] == null) {
             let comment = this.normals[id];
-            comment.favorite = !comment.favorite;
+            comment.toggleFavorite();
             this.favorites[id] = comment;
             delete this.normals[id];
             return comment;
         }
         let comment = this.favorites[id];
-        comment.favorite = !comment.favorite;
+        comment.toggleFavorite();
         this.normals[id] = comment;
         delete this.favorites[id];
         return comment;
@@ -276,6 +300,11 @@ let CommentStore = Reflux.createStore({
         this.trigger(this.data);
     },
 
+    onUpdateCommentCompleted: function(data, cmtArt) {
+        cmtArt.toggleFavComment(data.commentId);
+        this.trigger(this.data);
+    },
+
     postCmtSelectCompleted: function(data) {
         let cmtArt = this.addArtComment(data);
         cmtArt.updateAttr(data);
@@ -314,21 +343,6 @@ let CommentStore = Reflux.createStore({
             this.data.commentByArticleUuid[data.articleUuid] = cmtArt;
         }
         return cmtArt;
-    },
-
-    toggleFavComment: function(data) {
-        let cmtArt = this.getByArticleUuid(data.articleUuid);
-        if (cmtArt != null) {
-            let cmt = cmtArt.toggleFavComment(data.commentId);
-            Actions.updateComment({
-                kind       : 'fav',
-                article    : false,
-                favorite   : cmt.favorite,
-                commentId  : cmt.commentId,
-                articleUuid: cmt.articleUuid
-            });
-            this.trigger(cmtArt);
-        }
     },
 
     addArtAttr: function(attr) {

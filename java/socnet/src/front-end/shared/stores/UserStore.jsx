@@ -117,6 +117,10 @@ let UserStore = Reflux.createStore({
         return this.data.userSelf;
     },
 
+    getSelfUuid: function() {
+        return this.data.userSelf.userUuid;
+    },
+
     getActiveUser: function() {
         return this.data.userActive;
     },

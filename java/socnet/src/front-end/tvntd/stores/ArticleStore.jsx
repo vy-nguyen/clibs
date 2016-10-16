@@ -119,6 +119,14 @@ let ArticleStore = Reflux.createStore({
         return this.data.articlesByAuthor[uuid].sortedArticles;
     },
 
+    getAuthorUuid: function(articleUuid) {
+        let article = this.data.articlesByUuid[articleUuid];
+        if (article != null) {
+            return article.authorUuid;
+        }
+        return null;
+    },
+
     iterAuthorArticles: function(uuid, func, arg) {
         let shelf = this.data.articlesByAuthor[uuid];
         if (shelf) {
