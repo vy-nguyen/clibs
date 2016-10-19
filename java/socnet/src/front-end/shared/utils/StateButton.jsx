@@ -9,11 +9,11 @@ import Reflux           from 'reflux';
 import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
 
 let StateButton = React.createClass({
-
+    /*
     mixins: [
         Reflux.connect(StateButtonStore)
     ],
-
+     */
     _btnClick: function(event) {
         event.preventDefault();
         this.props.onClick();

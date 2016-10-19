@@ -5,7 +5,7 @@
 
 import _ from 'lodash';
 
-export function Enum() {
+function Enum() {
     let args = arguments;
     let kv = {
         keys: args
