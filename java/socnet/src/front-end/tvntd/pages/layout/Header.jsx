@@ -62,15 +62,13 @@ class HeaderBtn extends React.Component
     }
 };
 
-let Header = React.createClass({
+class Header extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
 
-    mixins: [
-        Reflux.connect(UserStore),
-        Reflux.connect(AboutUsStore),
-        Reflux.connect(LanguageStore)
-    ],
-
-    render: function() {
+    render() {
         let loginMenu, logoutMenu = null;
         let logoText = AboutUsStore.getData().login;
         let titleText = logoText ? logoText.headerBar : "Vietnam Tu Do";
@@ -124,6 +122,6 @@ let Header = React.createClass({
             </header>
         );
     }
-});
+}
 
-export default Header
+export default Header;

@@ -16,8 +16,13 @@ import UiValidate    from 'vntd-shared/forms/validation/UiValidate.jsx';
 import History       from 'vntd-shared/utils/History.jsx';
 import ErrorView     from 'vntd-shared/layout/ErrorView.jsx';
 
-let LoginHeader = React.createClass({
-    render: function() {
+class LoginHeader extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
         return (
             <header id="header" className="animated fadeInDown">
                 <div id="logo-group">
@@ -30,16 +35,42 @@ let LoginHeader = React.createClass({
             </header>
         );
     }
-});
+}
 
-let LoginAbout = React.createClass({
+class LoginAbout extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this.state = {
+            login: AboutUsStore.getData().login
+        }
+        this._updateState = this._updateState.bind(this);
+    }
 
-    mixins: [Reflux.connect(AboutUsStore)],
+    componentDidMount() {
+        this.unsub = AboutUsStore.listen(this._updateState);
+    }
 
-    render: function() {
-        let login = AboutUsStore.getData().login;
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    _updateState(data) {
+        this.setState({
+            login: AboutUsStore.getData().login
+        });
+    }
+
+    render() {
+        let login = this.state.login;
         let loginBox = login || { header: "Viet Nam Tu Do" };
 
+        if (login == null) {
+            return null;
+        }
         return (
             <div>
                 <h1 className="txt-color-red login-header-big">{loginBox.headerBar}</h1>
@@ -67,10 +98,15 @@ let LoginAbout = React.createClass({
             </div>
         );
     }
-});
+}
 
-let LoginSocial = React.createClass({
-    render: function() {
+class LoginSocial extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
         return (
             <ul className="list-inline text-center">
                 <li>
@@ -85,25 +121,37 @@ let LoginSocial = React.createClass({
             </ul>
         );
     }
-});
+}
 
-let LoginForm = React.createClass({
-    mixins: [
-        Reflux.connect(UserStore)
-    ],
+class LoginForm extends React.Component
+{
+    constructor(props) {
+        super(props);
 
-    componentWillMount: function() {
+        this._onFocus = this._onFocus.bind(this);
+        this._onAuthChange = this._onAuthChange.bind(this);
+        this._submitLogin = this._submitLogin.bind(this);
+    }
+
+    componentWillMount() {
         if (UserStore.isLogin()) {
             this._clearRefs();
             History.pushState(null, "/public/vietnam");
         }
-    },
+    }
 
-    componentDidMount: function() {
-        this.listenTo(UserStore, this._onAuthChange);
-    },
+    componentDidMount() {
+        this.unsub = UserStore.listen(this._onAuthChange);
+    }
 
-    _onAuthChange: function(data) {
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    _onAuthChange(data) {
         let form = $('#login-form');
         form.find('input').prop('disabled', false);
 
@@ -113,19 +161,21 @@ let LoginForm = React.createClass({
             History.pushState(null, "/public/vietnam");
             return;
         }
-    },
+    }
 
-    _clearRefs: function() {
-        this.refs.email.value = '';
-        this.refs.password.value = '';
-        this.refs.remember.value = '';
-    },
+    _clearRefs() {
+        if (this.refs != null) {
+            this.refs.email.value = '';
+            this.refs.password.value = '';
+            this.refs.remember.value = '';
+        }
+    }
 
-    _onFocus: function() {
+    _onFocus() {
         $('#id-login-error').hide();
-    },
+    }
 
-    _submitLogin: function(event) {
+    _submitLogin(event) {
         let form = $('#login-form');
         let formData = form.serialize();
         $('#id-login-error').hide();
@@ -137,68 +187,74 @@ let LoginForm = React.createClass({
             password: this.refs.password.value,
             remember: this.refs.remember.value
         }, formData);
-    },
+    }
 
-    render: function() {
+    render() {
         return (
-<div>
-    <div className="well no-padding">
-        <UiValidate>
-        <form id="login-form" className="smart-form client-form">
-            <header> Sign In </header>
-            <ErrorView className="alert alert-danger"/>
-            <fieldset>
-                <section>
-                    <label className="label">E-mail</label>
-                    <label className="input"> <i className="icon-append fa fa-user"/>
-                        <input type="email" name="email" ref="email"
-                            onFocus={this._onFocus} 
-                            data-smart-validate-input=""
-                            data-required="" data-email=""
-                            data-message-required="Please enter your email address"
-                            data-message-email="Account is your email address"/>
-                        <b className="tooltip tooltip-top-right">
-                            <i className="fa fa-user txt-color-teal"/>Please enter email address/username
-                        </b>
-                    </label>
-                </section>
-                <section>
-                    <label className="label">Password</label>
-                    <label className="input"> <i className="icon-append fa fa-lock"/>
-                        <input type="password" name="password" ref="password"
-                            onFocus={this._onFocus} 
-                            data-smart-validate-input="" data-required=""
-                            data-minlength="3" data-maxnlength="20"
-                            data-message="Please enter your account password"/>
-                        <b className="tooltip tooltip-top-right">
-                            <i className="fa fa-lock txt-color-teal"/> Enter your password
-                        </b>
-                    </label>
-                    <div className="note">
-                        <Link to="/register/recover">Forgot password?</Link>
-                    </div>
-                </section>
-                <section>
-                    <label className="checkbox">
-                        <input type="checkbox" ref="remember" name="remember" defaultChecked={true}/>
-                        <i/>Stay signed in
-                    </label>
-                </section>
-            </fieldset>
-            <footer>
-                <button className="btn btn-primary" onClick={this._submitLogin}>Sign in</button>
-            </footer>
-        </form></UiValidate>
-    </div>
-    <h5 className="text-center"> - Or sign in using -</h5>
-    <LoginSocial />    
-</div>
+            <div>
+                <div className="well no-padding">
+                    <UiValidate>
+                        <form id="login-form" className="smart-form client-form">
+                            <header> Sign In </header>
+                            <ErrorView className="alert alert-danger"/>
+                            <fieldset>
+                                <section>
+                                    <label className="label">E-mail</label>
+                                    <label className="input"> <i className="icon-append fa fa-user"/>
+                                    <input type="email" name="email" ref="email"
+                                        onFocus={this._onFocus} 
+                                        data-smart-validate-input=""
+                                        data-required="" data-email=""
+                                        data-message-required="Please enter your email address"
+                                        data-message-email="Account is your email address"/>
+                                        <b className="tooltip tooltip-top-right">
+                                            <i className="fa fa-user txt-color-teal"/>Please enter email address/username
+                                        </b>
+                                    </label>
+                                </section>
+                                <section>
+                                    <label className="label">Password</label>
+                                    <label className="input"> <i className="icon-append fa fa-lock"/>
+                                    <input type="password" name="password" ref="password"
+                                        onFocus={this._onFocus} 
+                                        data-smart-validate-input="" data-required=""
+                                        data-minlength="3" data-maxnlength="20"
+                                        data-message="Please enter your account password"/>
+                                        <b className="tooltip tooltip-top-right">
+                                            <i className="fa fa-lock txt-color-teal"/> Enter your password
+                                        </b>
+                                    </label>
+                                    <div className="note">
+                                        <Link to="/register/recover">Forgot password?</Link>
+                                    </div>
+                                </section>
+                                <section>
+                                    <label className="checkbox">
+                                        <input type="checkbox" ref="remember" name="remember" defaultChecked={true}/>
+                                        <i/>Stay signed in
+                                    </label>
+                                </section>
+                            </fieldset>
+                            <footer>
+                                <button className="btn btn-primary" onClick={this._submitLogin}>Sign in</button>
+                            </footer>
+                        </form>
+                    </UiValidate>
+                </div>
+                <h5 className="text-center"> - Or sign in using -</h5>
+                    <LoginSocial />    
+            </div>
         );
     }
-});
+}
 
-let Login = React.createClass({
-    render: function () {
+class Login extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
         return (
             <div id="extr-page" >
                 <LoginHeader/>
@@ -217,10 +273,6 @@ let Login = React.createClass({
             </div>
         )
     }
-});
+}
 
-export { Login }
-export { LoginForm }
-export { LoginAbout }
-export { LoginHeader }
-export { LoginSocial }
+export { Login, LoginForm, LoginAbout, LoginHeader, LoginSocial }
