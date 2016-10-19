@@ -1,52 +1,51 @@
 /**
- * Created by griga on 11/24/15.
  * Modified Vy Nguyen (2016)
  */
 'use strict';
 
-import React       from 'react-mod';
-import Reflux      from 'reflux';
+import React          from 'react-mod';
+import Reflux         from 'reflux';
 
-import LoginInfo   from 'vntd-shared/layout/LoginInfo.jsx';
-import SmartMenu   from 'vntd-shared/layout/SmartMenu.jsx';
-import MinifyMenu  from 'vntd-shared/layout/MinifyMenu.jsx';
-import RenderStore from 'vntd-root/stores/RenderStore.jsx';
+import LoginInfo       from 'vntd-shared/layout/LoginInfo.jsx';
+import SmartMenuList   from 'vntd-shared/layout/SmartMenuList.jsx';
+import MinifyMenu      from 'vntd-shared/layout/MinifyMenu.jsx';
+import NavigationStore from 'vntd-shared/stores/NavigationStore.jsx';
 
-let Navigation = React.createClass({
-
-    mixins: [
-        Reflux.connect(RenderStore)
-    ],
-
-    getInitialState: function() {
-        return {
-            menuItems: {
-                items: []
-            }
+class Navigation extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this.state = {
+            items: []
         };
-    },
+        this._updateMenu = this._updateMenu.bind(this);
+    }
 
-    componentDidMount: function() {
-        this.listenTo(RenderStore, this._updateMenu);
-    },
+    componentDidMount() {
+        this.unSub = NavigationStore.listen(this._updateMenu);
+    }
 
-    _updateMenu: function(json) {
+    componentWillUnmount() {
+        this.unSub();
+    }
+
+    _updateMenu(data) {
         this.setState({
-            menuItems: json
+            items: data.items
         });
-    },
+    }
 
-    render: function() {
+    render() {
         return (
             <aside id="left-panel">
                 <LoginInfo />
                 <nav>
-                    <SmartMenu rawItems={this.state.menuItems} />
+                    <SmartMenuList items={this.state.items} />
                 </nav>
                 <MinifyMenu />
             </aside>
         )
     }
-});
+}
 
-export default Navigation
+export default Navigation;

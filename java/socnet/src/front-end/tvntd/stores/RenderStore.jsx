@@ -10,17 +10,18 @@ import NavigationActions from 'vntd-shared/actions/NavigationActions.jsx';
 import NavigationStore   from 'vntd-shared/stores/NavigationStore.jsx';
 
 let RenderStore = Reflux.createStore({
-    data: {
-        menuItems: [],
-        notifyItems: [],
-        activeNotify: {
-            items: []
-        },
-        lastUpdated: new Date()
-    },
+    data: {},
     listenables: [Actions, NavigationActions],
 
     init: function() {
+        this.data = {
+            menuItems: [],
+            notifyItems: [],
+            activeNotify: {
+                items: []
+            },
+            lastUpdated: new Date()
+        }
     },
 
     getMenuItems: function() {
@@ -46,7 +47,7 @@ let RenderStore = Reflux.createStore({
     onStartupCompleted: function(json) {
         this.data.menuItems = json.menuItems;
 
-        NavigationStore.replaceMenuItems(this.data.menuItems);
+        NavigationStore.replaceMenuItems(json.menuItems);
         this.trigger(this.data);
     },
 
