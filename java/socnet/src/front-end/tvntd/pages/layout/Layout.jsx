@@ -14,14 +14,18 @@ import UserStore   from 'vntd-shared/stores/UserStore.jsx';
 
 require('vntd-shared/less/layout.less');
 
-let Layout = React.createClass({
+class Layout extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
 
-    componentWillMount: function() {
+    componentWillMount() {
         Actions.startup(UserStore.isLogin() ? "/api/user" : this.props.route.url);
         Actions.preload();
-    },
+    }
 
-    render: function() {
+    render() {
         return (
             <div className="minified fixed-navigation fixed-header">
                 <Header/>
@@ -34,6 +38,6 @@ let Layout = React.createClass({
             </div>
         )
     }
-});
+};
 
-export default Layout
+export default Layout;

@@ -42,9 +42,13 @@ let BlogMenu = React.createClass({
 });
 */
 
-let HeaderBtn = React.createClass({
+class HeaderBtn extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
 
-    render: function() {
+    render() {
         return (
             <div id="logo-group">
                 <span id="activity" className="activity-dropdown"
@@ -56,7 +60,7 @@ let HeaderBtn = React.createClass({
             </div>
         )
     }
-});
+};
 
 let Header = React.createClass({
 
