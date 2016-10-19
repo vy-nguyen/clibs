@@ -22,11 +22,14 @@ class Navigation extends React.Component
     }
 
     componentDidMount() {
-        this.unSub = NavigationStore.listen(this._updateMenu);
+        this.unsub = NavigationStore.listen(this._updateMenu);
     }
 
     componentWillUnmount() {
-        this.unSub();
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
     }
 
     _updateMenu(data) {
