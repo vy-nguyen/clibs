@@ -6,7 +6,6 @@
 
 import React         from 'react-mod';
 import { Link }      from 'react-router';
-import Reflux        from 'reflux';
 
 import {htmlCodes}   from 'vntd-root/config/constants.js';
 import Actions       from 'vntd-root/actions/Actions.jsx';
@@ -129,6 +128,7 @@ class LoginForm extends React.Component
         super(props);
 
         this._onFocus = this._onFocus.bind(this);
+        this._clearRefs = this._clearRefs.bind(this);
         this._onAuthChange = this._onAuthChange.bind(this);
         this._submitLogin = this._submitLogin.bind(this);
     }
@@ -164,7 +164,7 @@ class LoginForm extends React.Component
     }
 
     _clearRefs() {
-        if (this.refs != null) {
+        if (this.refs != null && this.refs.email != null) {
             this.refs.email.value = '';
             this.refs.password.value = '';
             this.refs.remember.value = '';

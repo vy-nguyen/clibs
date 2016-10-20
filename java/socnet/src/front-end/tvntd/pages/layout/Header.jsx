@@ -66,6 +66,29 @@ class Header extends React.Component
 {
     constructor(props) {
         super(props);
+        this.state = {
+            login: false
+        };
+        this._updateState = this._updateState.bind(this);
+    }
+
+    componentDidMount() {
+        this.unsub = UserStore.listen(this._updateState);
+    }
+
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    _updateState(data) {
+        if (this.state.login === false && UserStore.isLogin()) {
+            this.setState({
+                login: true
+            });
+        }
     }
 
     render() {
@@ -73,7 +96,7 @@ class Header extends React.Component
         let logoText = AboutUsStore.getData().login;
         let titleText = logoText ? logoText.headerBar : "Vietnam Tu Do";
 
-        if (UserStore.isLogin()) {
+        if (this.state.login === true) {
             loginMenu = <ActivitiesDropdown url={'api/user-notification'}/>;
             logoutMenu = (
                 <div id="logout" className="btn-header transparent pull-right">

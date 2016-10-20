@@ -1,7 +1,13 @@
 import React from 'react-mod'
 
-let ToggleMenu = React.createClass({
-    toggleMenu: function(e) {
+class ToggleMenu extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this.toggleMenu = this.toggleMenu.bind(this);
+    }
+
+    toggleMenu(e) {
         var $ = require('jquery');
 		var $body = $('body'), $html = $('html');
 
@@ -15,8 +21,9 @@ let ToggleMenu = React.createClass({
             $body.removeClass("minified");
         }
         e.preventDefault();
-	},
-	render: function() {
+    }
+
+	render() {
 		return (
             <div id="hide-menu" className={this.props.className}>
                 <span>
@@ -25,6 +32,6 @@ let ToggleMenu = React.createClass({
             </div>
 		)
 	}
-});
+}
 
 export default ToggleMenu

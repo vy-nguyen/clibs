@@ -9,24 +9,42 @@ import classnames    from 'classnames';
 import Actions       from 'vntd-root/actions/Actions.jsx';
 import LanguageStore from 'vntd-root/stores/LanguageStore.jsx';
 
-let LangMenu = React.createClass({
+class LangMenu extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this.state = LanguageStore.getData();
+        this._onLangChange = this._onLangChange.bind(this);
+    }
 
-    mixins: [Reflux.connect(LanguageStore)],
+    componentDidMount() {
+        this.unsub = LanguageStore.listen(this._onLangChange);
+    }
 
-    getInitialState: function() {
-        return LanguageStore.getData()
-    },
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
 
-    _selectLanguage: function(lang) {
+    _onLangChange(lang) {
+        let state = this.state;
+        if ((state.langInUse.key != lang.key) || (state.languages != lang.languages)) {
+            this.setState(LanguageStore.getData());
+        }
+    }
+
+    _selectLanguage(lang) {
         LanguageStore.setLanguage(lang.key);
         Actions.translate();
-    },
+    }
 
-    _getFlagIcon: function(lang) {
+    _getFlagIcon(lang) {
         return "/rs/img/flags/" + lang.key + ".gif";
-    },
+    }
 
-    render: function() {
+    render() {
         let langInUse = this.state.langInUse;
         let flagIcon  = "/rs/img/flags/" + langInUse.key + ".gif";
         let languages = this.state.languages;
@@ -56,6 +74,6 @@ let LangMenu = React.createClass({
             </ul>
         );
     }
-});
+}
 
 export default LangMenu;
