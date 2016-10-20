@@ -3,9 +3,7 @@
  */
 'use strict';
 
-import React          from 'react-mod';
-import Reflux         from 'reflux';
-
+import React           from 'react-mod';
 import LoginInfo       from 'vntd-shared/layout/LoginInfo.jsx';
 import SmartMenuList   from 'vntd-shared/layout/SmartMenuList.jsx';
 import MinifyMenu      from 'vntd-shared/layout/MinifyMenu.jsx';
