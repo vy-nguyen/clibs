@@ -4,7 +4,6 @@
 'use strict';
 
 import React         from 'react-mod';
-import Reflux        from 'reflux';
 import classnames    from 'classnames';
 import Actions       from 'vntd-root/actions/Actions.jsx';
 import LanguageStore from 'vntd-root/stores/LanguageStore.jsx';

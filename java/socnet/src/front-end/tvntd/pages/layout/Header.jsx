@@ -67,28 +67,40 @@ class Header extends React.Component
     constructor(props) {
         super(props);
         this.state = {
-            login: false
+            login: false,
+            searchText: "Search"
         };
+        this._updateLang = this._updateLang.bind(this);
         this._updateState = this._updateState.bind(this);
     }
 
     componentDidMount() {
         this.unsub = UserStore.listen(this._updateState);
+        this.unsubLang = LanguageStore.listen(this._updateLang);
     }
 
     componentWillUnmount() {
         if (this.unsub != null) {
             this.unsub();
+            this.unsubLang();
             this.unsub = null;
+            this.unsubLang = null;
         }
     }
 
     _updateState(data) {
         if (this.state.login === false && UserStore.isLogin()) {
             this.setState({
-                login: true
+                login: true,
+                searchText: LanguageStore.translate("Search")
             });
         }
+    }
+
+    _updateLang(data) {
+        this.setState({
+            searchText: LanguageStore.translate("Search")
+        });
     }
 
     render() {
@@ -122,7 +134,6 @@ class Header extends React.Component
                 {loginMenu}
             </div>
         );
-        let searchText = LanguageStore.translate("Search");
         return (
             <header id="header">
                 {logoBlock}
@@ -137,7 +148,7 @@ class Header extends React.Component
                     <SearchMobile className="btn-header transparent pull-right"/>
 
                     <form action="#/misc/search.html" className="header-search pull-right">
-                        <input id="search-fld" type="text" name="param" placeholder={searchText} data-autocomplete='[]' />
+                        <input id="search-fld" type="text" name="param" placeholder={this.state.searchText} data-autocomplete='[]' />
                         <button type="submit"><i className="fa fa-search"/></button>
                         <a href="$" id="cancel-search-js" title="Cancel Search"><i className="fa fa-times"/></a>
                     </form>

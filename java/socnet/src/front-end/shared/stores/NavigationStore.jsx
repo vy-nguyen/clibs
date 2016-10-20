@@ -66,9 +66,7 @@ let NavigationStore = Reflux.createStore({
         if (item.route) {
             History.pushState(null, item.route)
         }
-        this.trigger({
-            item: item
-        });
+        this.trigger(this.data);
     },
 
     addRawItems: function(rawItems) {
