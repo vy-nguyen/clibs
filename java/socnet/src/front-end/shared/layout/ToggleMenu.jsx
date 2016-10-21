@@ -1,3 +1,8 @@
+/**
+ * Modified by Vy Nguyen (2016)
+ */
+'use strict'
+
 import React from 'react-mod'
 
 class ToggleMenu extends React.Component

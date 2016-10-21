@@ -4,33 +4,37 @@
  */
 'use strict';
 
-import React            from 'react-mod';
 import _                from 'lodash';
+import React            from 'react-mod';
 import classnames       from 'classnames';
 
-let TabPanel = React.createClass({
+class TabPanel extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this.state = {
+            activePane: 0
+        };
+        this._selectTab = this._selectTab.bind(this);
+        this._getActivePane = this._getActivePane.bind(this);
+        this._setActivePane = this._setActivePane.bind(this);
+    }
 
-    _selectTab: function(index) {
+    _selectTab(index) {
         this.props.context.setActivePane(index);
-    },
+    }
 
-    _getActivePane: function() {
+    _getActivePane() {
         return this.state.activePane;
-    },
+    }
 
-    _setActivePane: function(index) {
+    _setActivePane(index) {
         this.setState({
             activePane: index
         });
-    },
+    }
 
-    getInitialState: function() {
-        return {
-            activePane: 0
-        }
-    },
-
-    render: function() {
+    render() {
         let tab = this.props.context;
         if (tab == null) {
             return null;
@@ -77,6 +81,6 @@ let TabPanel = React.createClass({
             </div>
         );
     }
-});
+}
 
 export default TabPanel;

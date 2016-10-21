@@ -20,45 +20,55 @@ const modalStyle = {
     }
 };
 
-let ModalButton = React.createClass({
+class ModalButton extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this.state = {
+            modalIsOpen: false
+        };
+        this._openModal = this._openModal.bind(this);
+        this._closeModal = this._closeModal.bind(this);
+        this._afterOpenModal = this._afterOpenModal.bind(this);
+    }
 
-    getInitialState: function() {
-        return { modalIsOpen: false };
-    },
-
-    openModal: function() {
-        this.setState({modalIsOpen: true});
+    _openModal() {
+        this.setState({
+            modalIsOpen: true
+        });
         $("body").css("overflow", "hidden");
         if (this.props.openCb != null) {
             this.props.openCb();
         }
-    },
+    }
 
-    afterOpenModal: function() {
+    _afterOpenModal() {
         // references are now sync'd and can be accessed.
         // this.refs.subtitle.style.color = '#f00';
-    },
+    }
 
-    closeModal: function() {
-        this.setState({modalIsOpen: false});
+    _closeModal() {
+        this.setState({
+            modalIsOpen: false
+        });
         $("body").css("overflow", "auto");
         if (this.props.closeCb != null) {
             this.props.closeCb();
         }
-    },
+    }
 
-    render: function() {
+    render() {
         return (
             <div className={this.props.divClass || ""}>
-                <a className={this.props.className} onClick={this.openModal}>{this.props.buttonText}</a>
+                <a className={this.props.className} onClick={this._openModal}>{this.props.buttonText}</a>
                 <Modal style={modalStyle}
                     isOpen={this.state.modalIsOpen}
-                    onAfterOpen={this.afterOpenModal}
-                    onRequestClose={this.closeModal}>
+                    onAfterOpen={this._afterOpenModal}
+                    onRequestClose={this._closeModal}>
                     <div className="container">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <button type="button" aria-label="close" className="close" onClick={this.closeModal}>
+                                <button type="button" aria-label="close" className="close" onClick={this._closeModal}>
                                     <i className="fa fa-times"/>
                                 </button>
                                 {
@@ -76,6 +86,6 @@ let ModalButton = React.createClass({
             </div>
         );
     }
-});
+}
 
 export default ModalButton;

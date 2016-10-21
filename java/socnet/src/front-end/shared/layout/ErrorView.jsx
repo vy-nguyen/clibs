@@ -4,7 +4,6 @@
 'use strict';
 
 import React         from 'react-mod';
-import Reflux        from 'reflux';
 import ErrorStore    from 'vntd-shared/stores/ErrorStore.jsx';
 
 class ErrorView extends React.Component

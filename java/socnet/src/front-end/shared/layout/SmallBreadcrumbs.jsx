@@ -3,47 +3,61 @@
  */
 'use strict';
 
-import React   from 'react-mod';
-import Reflux  from 'reflux';
-import _       from 'lodash';
+import _               from 'lodash';
+import React           from 'react-mod';
+import NavigationStore from 'vntd-shared/stores/NavigationStore';
 
-import NavigationStore from '../stores/NavigationStore';
-
-let SmallBreadcrumbs = React.createClass({
-
-    mixins: [Reflux.listenTo(NavigationStore, 'onNavigationChange')],
-
-    getInitialState: function() {
-        return {
+class SmallBreadcrumbs extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this.state = {
             items: this.props.items || []
-        }
-    },
+        };
+        this._addCrumb = this._addCrumb.bind(this);
+        this._onNavigationChange = this._onNavigationChange.bind(this);
+    }
 
-    componentWillMount: function() {
-        if (!this.props.items && NavigationStore.getData().item) {
-            this.onNavigationChange({
-                item: NavigationStore.getData().item
+    componentWillMount() {
+        let item = NavigationStore.getData().item;
+        if (!this.props.items && item) {
+            this._onNavigationChange({
+                item: item
             })
         }
-    },
+    }
 
-    onNavigationChange: function(data) {
+    componentDidMount() {
+        this.unsub = NavigationStore.listen(this._onNavigationChange);
+    }
+
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    _onNavigationChange(data) {
         let item = data.item;
+        let result = [];
+
         if (item.route) {
-            this.state.items = [];
-            this._addCrumb(item);
-            this.forceUpdate()
+            this._addCrumb(item, result);
+            this.setState({
+                items: result
+            });
         }
-    },
+    }
 
-    _addCrumb: function(item) {
-        this.state.items.unshift(item.title)
+    _addCrumb(item, result) {
+        result.unshift(item.title)
         if (item.parent) {
-            this._addCrumb(item.parent)
+            this._addCrumb(item.parent, result)
         }
-    },
+    }
 
-    render: function() {
+    render() {
         return (
             <ol className="breadcrumb">
                 <li>Home</li>
@@ -53,6 +67,6 @@ let SmallBreadcrumbs = React.createClass({
             </ol>
         )
     }
-});
+}
 
-export default SmallBreadcrumbs
+export default SmallBreadcrumbs;

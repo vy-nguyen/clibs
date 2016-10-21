@@ -8,9 +8,9 @@ import React       from 'react-mod';
 import LoadHtml    from 'vntd-shared/utils/LoadHtml.jsx';
 import ModalButton from 'vntd-shared/layout/ModalButton.jsx';
 
-let ModalHtml = React.createClass({
-
-    render: function() {
+class ModalHtml extends React.Component
+{
+    render() {
         let { url, ...other } = this.props;
         return (
             <ModalButton {...other}>
@@ -18,6 +18,6 @@ let ModalHtml = React.createClass({
             </ModalButton>
         );
     }
-});
+}
 
 export default ModalHtml;

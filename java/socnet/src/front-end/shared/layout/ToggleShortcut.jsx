@@ -1,12 +1,23 @@
+/**
+ * Modified by Vy Nguyen (2016)
+ */
+'use strict';
+
 import React from 'react'
 
-let ToggleShortcut = React.createClass({
-	toggleShortcut: function(e){		
+class ToggleShortcut extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this._toggleShortcut = this._toggleShortcut.bind(this);
+    }
+
+	_toggleShortcut(e) {		
         e.preventDefault();
         let $ = require('jquery');
+        let shortcut = $('#shortcut');		
 
-		var $shortcut = $('#shortcut');		
-		if ($shortcut.is(":visible")) {
+		if (shortcut.is(":visible")) {
 			shortcutButtonsHide();
 		} else {
 			shortcutButtonsShow();
@@ -14,37 +25,38 @@ let ToggleShortcut = React.createClass({
 		
 		// SHORTCUT ANIMATE HIDE
 		function shortcutButtonsHide() {
-			$shortcut.animate({
+			shortcut.animate({
 				height : "hide"
 			}, 300, "easeOutCirc");
 			$('body').removeClass('shortcut-on');
 			$(document).off('mouseup.smartShortcut');
-			$shortcut.off('click.smartShortcut', 'a');
+			shortcut.off('click.smartShortcut', 'a');
 		}
 
 		// SHORTCUT ANIMATE SHOW
 		function shortcutButtonsShow() {
-			$shortcut.animate({
+			shortcut.animate({
 				height : "show"
 			}, 200, "easeOutCirc");
 			$('body').addClass('shortcut-on');
 
 			// SHORTCUT buttons goes away if mouse is clicked outside of the area
 			$(document).on('mouseup.smartShortcut', function(mue) {
-				if ($shortcut && !$shortcut.is(mue.target) && $shortcut.has(mue.target).length === 0) {
+				if (shortcut && !shortcut.is(mue.target) && shortcut.has(mue.target).length === 0) {
 					shortcutButtonsHide();
 				}
 			});
-			$shortcut.on('click.smartShortcut', 'a', function(ce) {
+			shortcut.on('click.smartShortcut', 'a', function(ce) {
 				setTimeout(shortcutButtonsHide, 300);
 			});
 		}
-	},
-	render: function() {
+    }
+
+	render() {
 		return (
-			<a href-void onClick={this.toggleShortcut}>{this.props.children}</a>
+			<a href-void onClick={this._toggleShortcut}>{this.props.children}</a>
 		)
 	}
-});
+}
 
-export default ToggleShortcut
+export default ToggleShortcut;
