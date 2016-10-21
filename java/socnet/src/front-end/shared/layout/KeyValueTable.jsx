@@ -7,8 +7,9 @@
 import _      from 'lodash';
 import React  from 'react-mod';
 
-let KeyValueTable = React.createClass({
-    render: function() {
+class KeyValueTable extends React.Component
+{
+    render() {
         let oddRowFmt     = this.props.oddRowFmt || "success";
         let oddRowKeyFmt  = this.props.oddRowKeyFmt || "label label-danger";
         let oddRowValFmt  = this.props.oddRowValFmt || "";
@@ -62,6 +63,6 @@ let KeyValueTable = React.createClass({
             </table>
         );
     }
-});
+}
 
 export default KeyValueTable;

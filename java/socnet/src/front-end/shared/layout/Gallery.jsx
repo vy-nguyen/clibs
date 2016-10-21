@@ -19,35 +19,43 @@ const modalStyle = {
     }
 };
 
-let Gallery = React.createClass({
+class Gallery extends React.Component
+{
+    static propTypes() {
+        return {
+            isLoading: React.PropTypes.bool
+        }
+    }
 
-    propTypes: {
-        isLoading: React.PropTypes.bool
-    },
+    constructor(props) {
+        super(props);
+        this.state = {
+            imageSelected: "0",
+            modalIsOpen  : false
+        };
+        this._openModal = this._openModal.bind(this);
+        this._closeModal = this._closeModal.bind(this);
+        this._afterOpenModal = this._afterOpenModal.bind(this);
+    }
 
-    _openModal: function(idx, e) {
+    _openModal(idx, e) {
         e.preventDefault();
         this.setState({
             imageSelected: idx ? idx : "0",
             modalIsOpen  : true
         });
-    },
+    }
 
-    _afterOpenModal: function() {
-    },
+    _afterOpenModal() {
+    }
 
-    _closeModal: function() {
-        this.setState({modalIsOpen: false});
-    },
+    _closeModal() {
+        this.setState({
+            modalIsOpen: false
+        });
+    }
 
-    getInitialState: function() {
-        return {
-            imageSelected: "0",
-            modalIsOpen  : false
-        }
-    },
-
-    render: function() {
+    render() {
         const {
             props: {
                 isLoading
@@ -89,6 +97,6 @@ let Gallery = React.createClass({
             </div>
         );
     }
-});
+}
 
 export default Gallery;

@@ -5,9 +5,9 @@
 import _     from 'lodash';
 import React from 'react';
 
-let ImageCarousel = React.createClass({
-
-    render: function() {
+class ImageCarousel extends React.Component
+{
+    render() {
         let carouselId = _.uniqueId('img-list-');
         let imgHdr = this.props.imageList.map(function(item, idx) {
             let index = idx.toString();
@@ -52,6 +52,6 @@ let ImageCarousel = React.createClass({
             </div>
         );
     }
-});
+}
 
 export default ImageCarousel;
