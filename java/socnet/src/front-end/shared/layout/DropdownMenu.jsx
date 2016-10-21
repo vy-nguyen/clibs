@@ -4,13 +4,13 @@
  */
 'use strict';
 
-import React                from 'react-mod';
 import _                    from 'lodash';
+import React                from 'react-mod';
 import {Dropdown, MenuItem} from 'react-bootstrap';
 
-let DropdownMenu = React.createClass({
-
-    render: function() {
+class DropdownMenu extends React.Component
+{
+    render() {
         let menu = this.props.context;
         if (menu == null) {
             return null;
@@ -32,6 +32,6 @@ let DropdownMenu = React.createClass({
             </Dropdown>
         );
     }
-});
+}
 
 export default DropdownMenu;

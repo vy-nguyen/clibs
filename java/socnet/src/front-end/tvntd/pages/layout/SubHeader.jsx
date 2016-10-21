@@ -7,8 +7,9 @@ import React              from 'react-mod';
 import { htmlCodes }      from 'vntd-root/config/constants';
 import SparklineContainer from 'vntd-shared/graphs/SparklineContainer.jsx';
 
-let SubHeader = React.createClass({
-    render: function () {
+class SubHeader extends React.Component
+{
+    render() {
         let {className, ...props} = this.props
         return (
             <SparklineContainer className="col-xs-12 col-sm-5 col-md-5 col-lg-8">
@@ -31,6 +32,6 @@ let SubHeader = React.createClass({
             </SparklineContainer>
         )
     }
-});
+}
 
-export default SubHeader
+export default SubHeader;

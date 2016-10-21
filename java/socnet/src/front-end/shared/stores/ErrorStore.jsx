@@ -114,7 +114,7 @@ let ErrorStore = Reflux.createStore({
             } else {
                 this.data[id].updateError(resp, null, null);
             }
-            console.log(this.data);
+            this.trigger(this.data);
             return this.data[id];
         }
         if (this.data.error == null) {
@@ -122,6 +122,7 @@ let ErrorStore = Reflux.createStore({
         } else {
             this.data.error.updateError(resp, null, null);
         }
+        this.trigger(this.data);
         return this.data.error;
     },
 

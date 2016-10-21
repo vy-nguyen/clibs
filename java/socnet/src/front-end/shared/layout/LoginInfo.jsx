@@ -9,20 +9,32 @@ import UserStore      from 'vntd-shared/stores/UserStore.jsx';
 import LanguageStore  from 'vntd-root/stores/LanguageStore.jsx';
 import ToggleShortcut from './ToggleShortcut.jsx';
 
-let LoginInfo = React.createClass({
-    getInitialState: function () {
-        return {}
-    },
+class LoginInfo extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this.state = {};
+        this._changeState = this._changeState.bind(this);
+    }
 
-    componentWillMount: function() {
-        UserStore.listen(function(data) {
-            if (data.authError == null && data.userSelf) {
-                this.setState(data.userSelf);
-            }
-        }.bind(this));
-    },
+    componentWillMount() {
+        this.unsub = UserStore.listen(this._changeState);
+    }
 
-	render: function() {
+    componentWillMount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    _changeState(data) {
+        if (data.authError == null && data.userSelf) {
+            this.setState(data.userSelf);
+        }
+    }
+
+	render() {
 		return (
             <div className="login-info">
 	            <span>
@@ -34,6 +46,6 @@ let LoginInfo = React.createClass({
             </div>
 		)
     }
-});
+}
 
 export default LoginInfo

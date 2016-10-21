@@ -7,17 +7,44 @@ import React         from 'react-mod';
 import Reflux        from 'reflux';
 import ErrorStore    from 'vntd-shared/stores/ErrorStore.jsx';
 
-let ErrorView = React.createClass({
+class ErrorView extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this.state = {
+            error: ErrorStore.hasError(props.errorId)
+        };
+        this._changeState = this._changeState.bind(this);
+        this._onCloseError = this._onCloseError.bind(this);
+    }
 
-    mixins: [Reflux.connect(ErrorStore)],
+    componentDidMount() {
+        this.unsub = ErrorStore.listen(this._changeState);
+    }
 
-    closeError: function(event) {
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    _onCloseError(event) {
         event.stopPropagation();
         ErrorStore.clearError(this.props.errorId);
-    },
+    }
 
-    render: function() {
+    _changeState(data) {
         let error = ErrorStore.hasError(this.props.errorId);
+        if (this.state.error != error) {
+            this.setState({
+                error: error
+            });
+        }
+    }
+
+    render() {
+        let error = this.state.error;
         if (error == null) {
             return null;
         }
@@ -42,7 +69,7 @@ let ErrorView = React.createClass({
             <div className={this.props.className}>
                 <div className="row">
                     <div className="col-sm-1 col-md-1 col-lg-1">
-                        <a className="close pull-left" onClick={this.closeError}><i className="fa fa-times"/></a>
+                        <a className="close pull-left" onClick={this._onCloseError}><i className="fa fa-times"/></a>
                     </div>
                     <div className="col-sm-11 col-md-11 col-lg-11">
                         {codeText}
@@ -54,6 +81,6 @@ let ErrorView = React.createClass({
             </div>
         );
     }
-});
+}
 
 export default ErrorView;

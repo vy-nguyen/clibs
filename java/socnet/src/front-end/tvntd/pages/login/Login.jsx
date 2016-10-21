@@ -159,13 +159,12 @@ class LoginForm extends React.Component
         if (data.authError == null) {
             Actions.startup("/api/user");
             History.pushState(null, "/public/vietnam");
-            return;
         }
     }
 
     _clearRefs() {
         if (this.refs != null && this.refs.email != null) {
-            this.refs.email.value = '';
+            this.refs.email.value    = '';
             this.refs.password.value = '';
             this.refs.remember.value = '';
         }
@@ -183,7 +182,7 @@ class LoginForm extends React.Component
         event.preventDefault();
 
         Actions.login({
-            email: this.refs.email.value,
+            email   : this.refs.email.value,
             password: this.refs.password.value,
             remember: this.refs.remember.value
         }, formData);
