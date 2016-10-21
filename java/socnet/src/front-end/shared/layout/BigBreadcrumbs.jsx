@@ -3,67 +3,83 @@
  */
 'use strict';
 
-import React from 'react-mod';
-import Reflux from 'reflux';
-
+import React           from 'react-mod';
 import NavigationStore from 'vntd-shared/stores/NavigationStore.jsx';
 
-let BigBreadcrumbs = React.createClass({
-    mixins: [Reflux.listenTo(NavigationStore, 'onNavigationChange')],
+class BigBreadcrumbs extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this.state = {
+            items: props.items || [],
+            icon : props.icon || "fa fa-fw fa-home"
+        };
+        this._addCrumb = this._addCrumb.bind(this);
+        this._onNavigationChange = this._onNavigationChange.bind(this);
+    }
 
-    getInitialState: function() {
-        return {
-            items: this.props.items || [],
-            icon: this.props.icon || 'fa fa-fw fa-home'
-        }
-    },
-
-    componentWillMount: function() {
-        if (!this.props.items && NavigationStore.getData().item) {
-            this.onNavigationChange({
-                item: NavigationStore.getData().item
+    componentWillMount() {
+        let item = NavigationStore.getData().item;
+        if (!this.props.items && item) {
+            this._onNavigationChange({
+                item: item
             })
         }
-    },
+    }
 
-    onNavigationChange: function(data) {
-        let item = data.item;
-        if (item.route) {
-            this.state.items = [];
-            this.state.icon = '';
-            this._addCrumb(item);
-            this.forceUpdate()
+    componentDidMount() {
+        this.unsub = NavigationStore.listen(this._onNavigationChange);
+    }
+
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
         }
-    },
+    }
 
-    _addCrumb: function(item) {
-        this.state.items.unshift(item.title);
-        if (!this.state.icon && item.icon) {
-            this.state.icon = item.icon;
+    _onNavigationChange(data) {
+        let item = data.item;
+        let result = {
+            icon    : '',
+            itemList: []
+        };
+        this._addCrumb(item, result);
+        this.setState({
+            icon : result.icon,
+            items: result.itemList
+        });
+    }
+
+    _addCrumb(item, result) {
+        result.itemList.unshift(item.title);
+        if (result.icon != null && item.icon) {
+            result.icon = item.icon;
         }
         if (item.parent) {
-            this._addCrumb(item.parent);
+            this._addCrumb(item.parent, result);
         }
-    },
+    }
 
-    render: function () {
-        var first = _.head(this.state.items);
+    render() {
+        let first = _.head(this.state.items);
+        let child = _.tail(this.state.items).map(function(item) {
+            return
+                <span key={_.uniqueId('big-breadcrumb-')}>
+                    <span className="page-title-separator">&gt;</span>
+                    {item}
+                </span>
+            });
 
         return (
             <div className={this.props.className + ' big-breadcrumbs'}>
-                <h1 className="page-title txt-color-blueDark">
+                <h2 className="page-title txt-color-blueDark">
                     <i className={this.state.icon}/>{' ' + first}
-                    {_.tail(this.state.items).map(function(item) {
-                        return (
-                            <span key={_.uniqueId('big-breadcrumb-')}>
-                                <span className="page-title-separator">&gt;</span>{item}
-                            </span>
-                        )
-                    })}
-                </h1>
+                    {child}
+                </h2>
             </div>
         )
     }
-});
+}
 
-export default BigBreadcrumbs
+export default BigBreadcrumbs;
