@@ -1,12 +1,12 @@
 /**
- *
+ * Written by Vy Nguyen (2016)
  */
 'use strict';
 
 import React from 'react-mod';
 import Reflux from 'reflux';
 
-import NavigationStore from '../stores/NavigationStore.jsx';
+import NavigationStore from 'vntd-shared/stores/NavigationStore.jsx';
 
 let BigBreadcrumbs = React.createClass({
     mixins: [Reflux.listenTo(NavigationStore, 'onNavigationChange')],

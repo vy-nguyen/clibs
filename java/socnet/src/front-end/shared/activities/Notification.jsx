@@ -1,8 +1,14 @@
-import React from 'react-mod'
+/**
+ * Modified by Vy Nguyen (2016)
+ */
+'use strict';
+
+import React      from 'react-mod'
 import classnames from 'classnames'
 
-let Notification = React.createClass({
-    render: function () {
+class Notification extends React.Component
+{
+    render() {
         let item = this.props.item;
         return (
             <span className="padding-10">
@@ -15,6 +21,6 @@ let Notification = React.createClass({
 		    </span>
         )
     }
-});
+}
 
-export default Notification
+export default Notification;

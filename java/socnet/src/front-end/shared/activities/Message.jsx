@@ -1,13 +1,17 @@
+/*
+ * Modified by Vy Nguyen (2016)
+ */
+'use strict';
 import React from 'react-mod'
 
-let Message = React.createClass({
-    render: function () {
+class Message extends React.Component
+{
+    render() {
         let item = this.props.item;
         return (
             <span className={item.status}>
                 <a className="msg">
-                    <img src={item.image} alt="" className="air air-top-left margin-top-5" width="40"
-                         height="40"/>
+                    <img src={item.image} alt="" className="air air-top-left margin-top-5" width="40" height="40"/>
                     <span className="from">{item.title}</span>
                     <time>{item.time}</time>
                     <span className="subject">{item.subject}</span>
@@ -16,6 +20,6 @@ let Message = React.createClass({
             </span>
         )
     }
-});
+}
 
-export default Message
+export default Message;

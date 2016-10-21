@@ -1,41 +1,93 @@
 /*
- * Modified by Vy Nguyen (2016)
+ * Vy Nguyen (2016)
  */
 'use strict';
 
-import React        from 'react-mod';
 import _            from 'lodash';
-import Reflux       from 'reflux';
+import React        from 'react-mod';
 import classnames   from 'classnames';
-import Moment       from '../utils/Moment.jsx';
+import Moment       from 'vntd-shared/utils/Moment.jsx';
 
-import Message      from './Message.jsx';
-import Notification from './Notification.jsx';
-import Task         from './Task.jsx';
+import Message      from 'vntd-shared/activities/Message.jsx';
+import Notification from 'vntd-shared/activities/Notification.jsx';
+import Task         from 'vntd-shared/activities/Task.jsx';
 import Actions      from 'vntd-root/actions/Actions.jsx';
 import RenderStore  from 'vntd-root/stores/RenderStore.jsx';
 
-let ActivitiesDropdown = React.createClass({
+let Components = {
+    Task        : Task,
+    Message     : Message,
+    Notification: Notification
+};
 
-    mixins: [
-        Reflux.connect(RenderStore),
-        Reflux.listenTo(RenderStore, "_onRefreshNotify")
-    ],
-
-    _active: false,
-    components: {
-        Task:         Task,
-        Message:      Message,
-        Notification: Notification
-    },
-
-    getInitialState: function() {
-        this.setState({
+class ActivitiesDropdown extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this.state = {
             lastUpdated: new Date()
-        });
-    },
+        };
+        this.active = false;
+        this._update = this._update.bind(this);
+        this._setActivity = this._setActivity.bind(this);
+        this._toggleDropdown = this._toggleDropdown.bind(this);
+        this._onRefreshNotify = this._onRefreshNotify.bind(this);
+    }
 
-    render: function () {
+    componentWillMount() {
+        this._update();
+    }
+
+    componentDidMount() {
+        this.unsub = RenderStore.listen(this._onRefreshNotify);
+    }
+
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    _setActivity(active) {
+        this.setState({
+            activeNotify: active
+        });
+        RenderStore.setActiveNotify(active);
+    }
+
+    _toggleDropdown(e) {
+        e.preventDefault();
+        let dropdown = $(this.refs.dropdown);
+        let dropdownToggle = $(this.refs.dropdownToggle);
+
+        if (this.active) {
+            dropdown.fadeOut(150)
+        } else {
+            dropdown.fadeIn(150)
+        }
+        dropdownToggle.toggleClass('active', !this.active)
+        this.active = !this.active;
+    }
+
+    _update() {
+        $(this.refs.loadingText).html('Loading...');
+        $(this.refs.loadingSpin).addClass('fa-spin');
+        Actions.refreshNotify();
+    }
+
+    _onRefreshNotify(data) {
+        $(this.refs.loadingText).html("");
+        $(this.refs.loadingSpin).removeClass("fa-spin");
+
+        this.setState({
+            notifyItems : data.notifyItems,
+            activeNotify: data.activeNotify,
+            lastUpdated : data.lastUpdated
+        });
+    }
+
+    render() {
         /* This state is the same as RenderStore data */
         let activities = this.state.notifyItems;
         let activity = this.state.activeNotify;
@@ -56,8 +108,8 @@ let ActivitiesDropdown = React.createClass({
         }.bind(this));
 
         let menu_body = activity.items.map(function(item, idx) {
-            let component = this.components[item.type];
-            let element = React.createElement(this.components[item.type], {
+            let component = Components[item.type];
+            let element = React.createElement(Components[item.type], {
                 item: item,
                 lastUpdated: this.state.lastUpdated
             });
@@ -92,50 +144,7 @@ let ActivitiesDropdown = React.createClass({
                 </div>
             </div>
         )
-    },
-
-    _setActivity: function(active) {
-        this.setState({
-            activeNotify: active
-        });
-        RenderStore.setActiveNotify(active);
-        this.forceUpdate();
-    },
-
-    _toggleDropdown: function(e) {
-        e.preventDefault();
-        let $dropdown = $(this.refs.dropdown);
-        let $dropdownToggle = $(this.refs.dropdownToggle);
-
-        if (this._active) {
-            $dropdown.fadeOut(150)
-        } else {
-            $dropdown.fadeIn(150)
-        }
-        this._active = !this._active;
-        $dropdownToggle.toggleClass('active', this._active)
-    },
-
-    componentWillMount: function() {
-        this._update();
-    },
-
-    _update: function() {
-        $(this.refs.loadingText).html('Loading...');
-        $(this.refs.loadingSpin).addClass('fa-spin');
-        Actions.refreshNotify();
-    },
-
-    _onRefreshNotify: function(data) {
-        $(this.refs.loadingText).html("");
-        $(this.refs.loadingSpin).removeClass("fa-spin");
-        this.setState({
-            notifyItems : data.notifyItems,
-            activeNotify: data.activeNotify,
-            lastUpdated : data.lastUpdated
-        });
-        this.forceUpdate();
     }
-});
+}
 
 export default ActivitiesDropdown
