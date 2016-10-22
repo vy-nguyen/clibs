@@ -98,7 +98,7 @@ let UserPostView = React.createClass({
             _.forOwn(children, function(rank) {
                 if (reorder === false) {
                     sub.push({
-                        renderFn : ArticleRank.render,
+                        renderFn : ArticleRank.renderArtRank,
                         renderArg: rank
                     });
                 } else {

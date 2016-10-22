@@ -1,45 +1,51 @@
 
 'use strict';
 
-import React         from 'react';
 import _             from 'lodash';
+import React         from 'react';
 import classnames    from 'classnames';
 import HtmlRender    from 'vntd-shared/utils/HtmlRender.jsx';
 import ArticleRank   from 'vntd-root/components/ArticleRank.jsx';
 
-let TreeViewItem = React.createClass({
+class TreeViewItem extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this.state = {
+            expanded: this.props.item.expanded != null ? this.props.item.expanded : false
+        };
+        this._handleExpand = this._handleExpand.bind(this);
+        this._handleDrag = this._handleDrag.bind(this);
+        this._handleDrop = this._handleDrop.bind(this);
+        this._handleDragOver = this._handleDragOver.bind(this);
+    }
 
-    _handleExpand: function(e, data) {
+    _handleExpand(e, data) {
         e.stopPropagation();
         let item = this.props.item
+
         if (item.children && item.children.length) {
             this.setState({
                 expanded: !this.state.expanded
             });
         }
-    },
+    }
 
-    getInitialState: function() {
-        return {
-            expanded: this.props.item.expanded != null ? this.props.item.expanded : false
-        }
-    },
-
-    _handleDrag: function(entry, event) {
+    _handleDrag(entry, event) {
         console.log("Handle drag child");
         console.log(entry);
-    },
+    }
 
-    _handleDrop: function(entry, event) {
+    _handleDrop(entry, event) {
         console.log("Handle drop child");
         console.log(entry);
-    },
+    }
 
-    _handleDragOver: function(event) {
+    _handleDragOver(event) {
         event.preventDefault();
-    },
+    }
 
-    render: function() {
+    render() {
         let item = this.props.item;
         let children = null;
 
@@ -60,40 +66,45 @@ let TreeViewItem = React.createClass({
                 {children}
             </li>
         )
-    },
-
-    statics: {
-        formatLabel: function(item, label, itemCnt, expanded) {
-            let fontSize = item.fontSize || "14";
-            let textStyle = item.textStyle || "label label-primary";
-            return (
-                <span className={textStyle} style={{fontSize: fontSize}}>
-                    {expanded ? <i className={item.iconOpen}/> : <i className={item.iconClose}/>}
-                    {label}
-                    {itemCnt}
-                </span>
-            );
-        }
     }
-});
 
-let TreeView = React.createClass({
+    static formatLabel(item, label, itemCnt, expanded) {
+        let fontSize = item.fontSize || "14";
+        let textStyle = item.textStyle || "label label-primary";
+        return (
+            <span className={textStyle} style={{fontSize: fontSize}}>
+                {expanded ? <i className={item.iconOpen}/> : <i className={item.iconClose}/>}
+                {label}
+                {itemCnt}
+            </span>
+        );
+    }
+}
 
-    _handleDrag: function(entry, event) {
+class TreeView extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this._handleDrag = this._handleDrag.bind(this);
+        this._handleDrop = this._handleDrop.bind(this);
+        this._handleDragOver = this._handleDragOver.bind(this);
+    }
+
+    _handleDrag(entry, event) {
         console.log("Handle drag");
         console.log(entry);
-    },
+    }
 
-    _handleDrop: function(entry, event) {
+    _handleDrop(entry, event) {
         console.log("Handle drop");
         console.log(entry);
-    },
+    }
 
-    _handleDragOver: function(event) {
+    _handleDragOver(event) {
         event.preventDefault();
-    },
+    }
 
-    render: function () {
+    render() {
         let items = this.props.items;
         //_.forOwn(items, function(it) {
         //    it.expanded = true;
@@ -109,42 +120,40 @@ let TreeView = React.createClass({
                 {views}
             </ul>
         )
-    },
-
-    statics: {
-        renderTreeItem: function(item, expanded, itemCntClass) {
-            let itemCnt = null;
-            if (itemCntClass == null) {
-                itemCntClass = "badge alert-danger";
-            }
-            if (item.children && item.children.length &&
-                (item.itemCount == null || item.itemCount === true)) {
-                itemCnt = <span className={itemCntClass}>{item.children.length}</span>;
-            }
-            let output = null;
-            let fmtLabel = null;
-
-            if (item.renderFn == null) {
-                if (item.defLabel == null) {
-                    output = <HtmlRender html={item.content}/>;
-                } else {
-                    fmtLabel = item.content;
-                }
-            } else {
-                output = item.renderFn(item.renderArg, "content", expanded);
-                if (item.defLabel != null) {
-                    fmtLabel = output;
-                }
-            }
-            if (fmtLabel != null) {
-                if (item.formatLabel == null) {
-                    item.formatLabel = TreeViewItem.formatLabel;
-                }
-                output = item.formatLabel(item, fmtLabel, itemCnt, expanded);
-            }
-            return output;
-        }
     }
-});
 
-export default TreeView
+    static renderTreeItem(item, expanded, itemCntClass) {
+        let itemCnt = null;
+        if (itemCntClass == null) {
+            itemCntClass = "badge alert-danger";
+        }
+        if (item.children && item.children.length &&
+            (item.itemCount == null || item.itemCount === true)) {
+            itemCnt = <span className={itemCntClass}>{item.children.length}</span>;
+        }
+        let output = null;
+        let fmtLabel = null;
+
+        if (item.renderFn == null) {
+            if (item.defLabel == null) {
+                output = <HtmlRender html={item.content}/>;
+            } else {
+                fmtLabel = item.content;
+            }
+        } else {
+            output = item.renderFn(item.renderArg, "content", expanded);
+            if (item.defLabel != null) {
+                fmtLabel = output;
+            }
+        }
+        if (fmtLabel != null) {
+            if (item.formatLabel == null) {
+                item.formatLabel = TreeViewItem.formatLabel;
+            }
+            output = item.formatLabel(item, fmtLabel, itemCnt, expanded);
+        }
+        return output;
+    }
+}
+
+export default TreeView;

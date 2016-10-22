@@ -5,7 +5,6 @@
 'use strict';
 
 import React  from 'react-mod';
-import Reflux from 'reflux';
 
 import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
 import StateButton      from 'vntd-shared/utils/StateButton.jsx';
@@ -15,25 +14,38 @@ import PostPane     from 'vntd-root/components/PostPane.jsx';
 import LikeStat     from 'vntd-root/components/LikeStat.jsx';
 import ArticleStore from 'vntd-root/stores/ArticleStore.jsx';
 
-let ArticleRank = React.createClass({
-    mixins: [
-        Reflux.connect(ArticleStore),
-    ],
+class ArticleRank extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this.artBtnId = "art-rank-btn-" + props.articleUuid;
+        this._getArticleResult = this._getArticleResult.bind(this);
+        this._toggleFullArticle = this._toggleFullArticle.bind(this);
+        this._createReadButton = this._createReadButton.bind(this);
 
-    _getArticleResult: function() {
-    },
+        let artBtn = StateButtonStore.createButton(this.artBtnId, this._createReadButton);
+        this.state = {
+            fullArt: artBtn.getStateCode(),
+            article: ArticleStore.getArticleByUuid(props.articleUuid)
+        };
+    }
 
-    componentDidMount: function() {
-        this.listenTo(ArticleStore, this._getArticleResult);
-    },
+    componentDidMount() {
+        this.unsub = ArticleStore.listen(this._getArticleResult);
+    }
 
-    handleClick: function() {
-        _toggleFullArticle();
-    },
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
 
-    _createReadButton: function() {
+    _getArticleResult() {
+    }
+
+    _createReadButton() {
         return {
-            article: ArticleStore.getArticleByUuid(this.props.articleUuid),
             success: {
                 text: "Read more...",
                 disabled : false,
@@ -53,31 +65,33 @@ let ArticleRank = React.createClass({
                 className: "btn btn-info"
             }
         };
-    },
+    }
 
-    _toggleFullArticle: function() {
-        let btnId = "art-rank-btn-" + this.props.articleUuid;
-        StateButtonStore.goNextState(btnId);
-    },
+    _toggleFullArticle() {
+        let artBtn = StateButtonStore.goNextState(this.artBtnId);
+        let newState = artBtn.getStateCode();
+        if (newState !== this.state.fullArt) {
+            this.setState({
+                fullArt: newState,
+                article: ArticleStore.getArticleByUuid(this.props.articleUuid)
+            });
+        }
+    }
 
-    render: function() {
+    render() {
         let artPane = null;
-        let rank = this.props.rank;
-        let btnId = "art-rank-btn-" + this.props.articleUuid;
-        let btnState = StateButtonStore.createButton(btnId, function() {
-            return this._createReadButton();
-        }.bind(this));
-
         let readBtn = null;
+        let rank = this.props.rank;
+
         if (this.props.noBtn == null) {
             readBtn = (
-                <StateButton btnId={btnId} className="btn btn-success" onClick={this._toggleFullArticle}/>
+                <StateButton btnId={this.artBtnId} className="btn btn-success" onClick={this._toggleFullArticle}/>
             );
         }
-        if (btnState.article != null && btnState.getStateCode() === "fullArt") {
+        if (this.state.article != null && this.state.fullArt === "fullArt") {
             artPane = (
                 <div className="row">
-                    <PostPane data={btnState.article} artRank={rank}/>
+                    <PostPane data={this.state.article} artRank={rank}/>
                 </div>
             );
         }
@@ -105,18 +119,15 @@ let ArticleRank = React.createClass({
                 {artPane}
             </div>
         )
-    },
-
-    statics: {
-        render: function(rank, refName, expanded) {
-            return <ArticleRank rank={rank} articleUuid={rank.articleUuid}/>
-        },
-
-        renderNoButton: function(rank, relName, expanded) {
-            return <ArticleRank rank={rank} articleUuid={rank.articleUuid} noBtn={true}/>
-        }
-
     }
-});
+
+    static renderArtRank(rank, refName, expanded) {
+        return <ArticleRank rank={rank} articleUuid={rank.articleUuid}/>
+    }
+
+    static renderNoButton(rank, relName, expanded) {
+        return <ArticleRank rank={rank} articleUuid={rank.articleUuid} noBtn={true}/>
+    }
+}
 
 export default ArticleRank;

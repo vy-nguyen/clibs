@@ -7,8 +7,9 @@ import {Dropdown, MenuItem} from 'react-bootstrap'
 
 import Debug from 'vntd-root/lib/Debug.jsx';
 
-let Footer = React.createClass({
-    render: function() {
+class Footer extends React.Component
+{
+    render() {
         return (
             <div className="page-footer">
                 <div className="row">
@@ -17,7 +18,9 @@ let Footer = React.createClass({
                     </div>
                     <div className="col-xs-6 col-sm-6 text-right hidden-xs">
                         <div className="txt-color-white inline-block">
-                            <i className="txt-color-blueLight hidden-mobile">User online <i className="fa fa-clock-o" /> <strong>100</strong>  </i>
+                            <i className="txt-color-blueLight hidden-mobile">
+                                User online <i className="fa fa-clock-o" /> <strong>100</strong>
+                            </i>
 
                             <Dropdown className="btn-group dropup" id="footer-progress-dropdown">
                                 <Dropdown.Toggle className="btn btn-xs dropdown-toggle bg-color-blue txt-color-white">
@@ -44,7 +47,8 @@ let Footer = React.createClass({
                                     <MenuItem divider />
                                     <MenuItem>
                                         <div className="padding-5">
-                                            <p className="txt-color-darken font-sm no-margin">Memory Load <span className="text-danger">*critical*</span>
+                                            <p className="txt-color-darken font-sm no-margin">
+                                                Memory Load <span className="text-danger">*critical*</span>
                                             </p>
                                             <div className="progress progress-micro no-margin">
                                                 <div className="progress-bar progress-bar-danger" style={{width: 70 + '%'}}></div>
@@ -66,6 +70,6 @@ let Footer = React.createClass({
             </div>
         )
     }
-});
+}
 
-export default Footer
+export default Footer;

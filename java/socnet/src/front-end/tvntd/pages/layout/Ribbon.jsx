@@ -5,11 +5,16 @@
 import React from 'react-mod'
 import {OverlayTrigger, Tooltip} from 'react-bootstrap'
 
-import ResetWidgets     from '../../../shared/actions/ResetWidgets.jsx'
-import SmallBreadcrumbs from '../../../shared/layout/SmallBreadcrumbs.jsx'
+import ResetWidgets     from 'vntd-shared/actions/ResetWidgets.jsx';
+import SmallBreadcrumbs from 'vntd-shared/layout/SmallBreadcrumbs.jsx';
 
-let Ribbon = React.createClass({
-    render: function() {
+class Ribbon extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
         var tooltip = (
             <Tooltip id="reset-widgets-suggestion">
                 <i className='text-warning fa fa-warning' /> Warning! This will reset all your widget settings.
@@ -26,6 +31,6 @@ let Ribbon = React.createClass({
             </div>
         )
     }
-});
+}
 
-export default Ribbon
+export default Ribbon;

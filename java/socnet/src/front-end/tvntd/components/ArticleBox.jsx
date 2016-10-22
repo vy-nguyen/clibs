@@ -12,12 +12,17 @@ import AuthorStore     from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 import LikeStat        from 'vntd-root/components/LikeStat.jsx';
 
-let ArticleBox = React.createClass({
+class ArticleBox extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this._clickSelect = this._clickSelect.bind(this);
+    }
 
-    _clickSelect: function() {
-    },
+    _clickSelect() {
+    }
 
-    render: function() {
+    render() {
         let data = this.props.data;
         if (data.logoWidth == null) {
             data.logoWidth = 40;
@@ -88,43 +93,41 @@ let ArticleBox = React.createClass({
                 </div>
             </div>
         )
-    },
-
-    statics: {
-        article: function(articleUuid, clickCb, btnActive, btnDisabled, cbArg) {
-            let article = ArticleStore.getArticleByUuid(articleUuid);
-            if (article == null) {
-                return null;
-            }
-            let author = UserStore.getUserByUuid(article.authorUuid);
-            let artRank = AuthorStore.getArticleRank(article.authorUuid, articleUuid);
-
-            if (artRank == null) {
-                return null;
-            }
-            if (artRank.contentBrief == null) {
-                artRank.contentBrief = article.content.substring(0, 100);
-            }
-            let arg = {
-                logo       : author.userImgUrl,
-                image      : article.pictureUrl[0],
-                dateInfo   : article.dateString,
-                artTitle   : article.topic,
-                artCategory: artRank.tagName,
-                artBrief   : artRank.contentBrief,
-                artPrice   : author.getUserName(),
-                clickCbFn  : clickCb.clickHandler.bind(clickCb.callbackArg, articleUuid, artRank),
-                clickBtn   : clickCb.getBtnFormat(),
-                likeStat   : {
-                    dateMoment  : article.createdDate,
-                    commentCount: artRank.notifCount ? artRank.notifCount : 0,
-                    likesCount  : artRank.likes,
-                    sharesCount : artRank.shares 
-                }
-            };
-            return (<ArticleBox data={arg}/>);
-        }
     }
-});
+
+    static article(articleUuid, clickCb, btnActive, btnDisabled, cbArg) {
+        let article = ArticleStore.getArticleByUuid(articleUuid);
+        if (article == null) {
+            return null;
+        }
+        let author = UserStore.getUserByUuid(article.authorUuid);
+        let artRank = AuthorStore.getArticleRank(article.authorUuid, articleUuid);
+
+        if (artRank == null) {
+            return null;
+        }
+        if (artRank.contentBrief == null) {
+            artRank.contentBrief = article.content.substring(0, 100);
+        }
+        let arg = {
+            logo       : author.userImgUrl,
+            image      : article.pictureUrl[0],
+            dateInfo   : article.dateString,
+            artTitle   : article.topic,
+            artCategory: artRank.tagName,
+            artBrief   : artRank.contentBrief,
+            artPrice   : author.getUserName(),
+            clickCbFn  : clickCb.clickHandler.bind(clickCb.callbackArg, articleUuid, artRank),
+            clickBtn   : clickCb.getBtnFormat(),
+            likeStat   : {
+                dateMoment  : article.createdDate,
+                commentCount: artRank.notifCount ? artRank.notifCount : 0,
+                likesCount  : artRank.likes,
+                sharesCount : artRank.shares 
+            }
+        };
+        return (<ArticleBox data={arg}/>);
+    }
+}
 
 export default ArticleBox;
