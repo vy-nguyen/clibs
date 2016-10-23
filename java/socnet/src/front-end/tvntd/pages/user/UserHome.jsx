@@ -20,9 +20,17 @@ import Actions             from 'vntd-root/actions/Actions.jsx';
 import UserAvatar          from './UserAvatar.jsx';
 import Friends             from './Friends.jsx';
 
-let UserHome = React.createClass({
+class UserHome extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this.getUserTab = this.getUserTab.bind(this);
+        this.getMyUserTab = this.getMyUserTab.bind(this);
+        this._getActivePane = this._getActivePane.bind(this);
+        this._setActivePane = this._setActivePane.bind(this);
+    }
 
-    getUserTab: function() {
+    getUserTab() {
         return {
             getActivePane: this._getActivePane,
             setActivePane: this._setActivePane,
@@ -41,8 +49,9 @@ let UserHome = React.createClass({
                 tabIdx : 4
             } ]
         }
-    },
-    getMyUserTab: function() {
+    }
+
+    getMyUserTab() {
         return {
             getActivePane: this._getActivePane,
             setActivePane: this._setActivePane,
@@ -69,9 +78,14 @@ let UserHome = React.createClass({
                 tabIdx : 4
             } ]
         }
-    },
+    }
 
-    _getActivePane: function() {
+    _getOwner() {
+        let { userUuid } = this.props.params;
+        return UserStore.getUserByUuid(userUuid);
+    }
+
+    _getActivePane() {
         let owner = this._getOwner();
         if (owner != null) {
             if (owner.tabPanelIdx == null) {
@@ -80,16 +94,16 @@ let UserHome = React.createClass({
             return owner.tabPanelIdx;
         }
         return 0;
-    },
+    }
 
-    _setActivePane: function(index) {
+    _setActivePane(index) {
         let owner = this._getOwner();
         if (owner != null) {
             owner.tabPanelIdx = index;
         }
-    },
+    }
 
-    render: function() {
+    render() {
         let me = true;
         let self = this._getOwner();
 
@@ -138,12 +152,7 @@ let UserHome = React.createClass({
                 </div>
             </div>
         )
-    },
-
-    _getOwner: function() {
-        let { userUuid } = this.props.params;
-        return UserStore.getUserByUuid(userUuid);
     }
-});
+}
 
 export default UserHome;

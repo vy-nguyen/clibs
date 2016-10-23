@@ -203,8 +203,7 @@ let ArticleStore = Reflux.createStore({
     },
 
     onSaveUserPostFailed: function(err) {
-        err.dispatch(this._errorHandler, this._errorHandler, null);
-        this.trigger(this.data);
+        this._errorHandler(err);
     },
 
     onSaveUserPostCompleted: function(post) {
@@ -213,8 +212,7 @@ let ArticleStore = Reflux.createStore({
     },
 
     onPublishUserPostFailed: function(err) {
-        err.dispatch(this._errorHandler, this._errorHandler, null);
-        this.trigger(this.data);
+        this._errorHandler(err);
     },
 
     onPublishUserPostCompleted: function(post) {
@@ -227,8 +225,9 @@ let ArticleStore = Reflux.createStore({
      * Internal methods.
      */
     _errorHandler: function(error) {
-        this.data.errorText = error.getText();
-        this.data.errorResp = error.getXHDR();
+        this.data.errorText = error.getErrorCodeText();
+        this.data.errorResp = error.getUserText();
+        this.trigger(this.data);
     },
 
     _createArtAnchor: function(authorUuid, article) {

@@ -21,66 +21,178 @@ import Editor          from 'vntd-shared/forms/editors/Editor.jsx';
 import JarvisWidget    from 'vntd-shared/widgets/JarvisWidget.jsx';
 import {safeStringify} from 'vntd-shared/utils/Enum.jsx';
 
-let EditorPost = React.createClass({
+const InitState = {
+    topic: 'Topic',
+    tags : 'My Post',
+    state: {
+        content    : '',
+        errorText  : '',
+        errorResp  : null,
+        imgUuidList: [],
+        articleUuid: '',
 
-    mixins: [
-        Reflux.connect(ArticleStore),
-        Reflux.connect(AuthorStore),
-        Reflux.listenTo(ArticleStore, "_onPublishResult")
-    ],
+        saveDis    : true,
+        saveTxt    : 'Save',
+        saveBtn    : 'btn btn-info disabled',
+        publishDis : true,
+        publishTxt : 'Publish',
+        publishBtn : 'btn btn-info disabled'
+    }
+};
 
-    initValues: {
-        topic: 'Topic',
-        tags : 'My Post',
-        state: {
-            content    : '',
-            errorText  : '',
-            errorResp  : null,
-            imgUuidList: [],
-            articleUuid: '',
+class EditorPost extends React.Component
+{
+    constructor(props) {
+        super(props);
 
-            saveDis: true,
-            saveTxt: 'Save',
-            saveBtn: 'btn btn-info disabled',
-            publishDis: true,
-            publishTxt: 'Publish',
-            publishBtn: 'btn btn-info disabled'
-        },
-        dropzone: null
-    },
+        this.dropzone = null;
+        this.state = InitState.state;
+        this.state.autoTags = AuthorStore.getTagsByAuthorUuid(null);
 
-    _resetData: function() {
-        this.refs.topic.value = this.initValues.topic;
-        this.setState(this.initValues.state);
-        this.initValues.dropzone.removeAllFiles();
-    },
+        this._resetData = this._resetData.bind(this);
+        this._getData = this._getData.bind(this);
+        this._savePost = this._savePost.bind(this);
+        this._publishPost = this._publishPost.bind(this);
+        this._nextStatus = this._nextStatus.bind(this);
+        this._handleContentChange = this._handleContentChange.bind(this);
+
+        this._onPublishResult = this._onPublishResult.bind(this);
+        this._updateAuthorTags = this._updateAuthorTags.bind(this);
+
+        this._onSend = this._onSend.bind(this);
+        this._onComplete = this._onComplete.bind(this);
+        this._onSuccess = this._onSuccess.bind(this);
+        this._onError = this._onError.bind(this);
+        this._onBlurTag = this._onBlurTag.bind(this);
+        this._onTagOptSelected = this._onTagOptSelected.bind(this);
+    }
+
+    componentWillMount() {
+        this.setState({
+            autoTags: AuthorStore.getTagsByAuthorUuid(null)
+        });
+    }
+
+    componentDidMount() {
+        this.unsub = ArticleStore.listen(this._onPublishResult);
+        this.unsubAuthor = AuthorStore.listen(this._updateAuthorTags);
+    }
+
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsubAuthor();
+            this.unsub = null;
+            this.unsubAuthor = null;
+        }
+    }
+
+    _onPublishResult(data) {
+        if (data.errorResp !== null) {
+            this.setState(this._nextStatus("Failed"));
+        } else {
+            let state = null;
+            if (this.state.saveTxt === "Saving...") {
+                state = this._nextStatus("Saved");
+            } else {
+                state = this._nextStatus("Published");
+            }
+            if (data.myPostResult) {
+                state.articleUuid = data.myPostResult.articleUuid;
+            }
+            this.setState(state);
+
+            if (this.state.content !== '') {
+                setTimeout(function() {
+                    this._resetData();
+                }.bind(this), 1000);
+            }
+        }
+    }
+
+    _updateAuthorTags() {
+        this.setState({
+            autoTags: AuthorStore.getTagsByAuthorUuid(null)
+        });
+    }
+
+    _handleContentChange(e) {
+        let state = this._nextStatus("Draft");
+        state.content = e.value;
+        this.setState(state);
+    }
+
+    _onSend(files, xhr, form) {
+        form.append('name', files.name);
+        form.append('authorUuid', UserStore.getSelf().userUuid);
+        form.append('articleUuid', this.state.articleUuid);
+    }
+
+    _onComplete(file, a) {
+        console.log(file.xhr);
+    }
+
+    _onSuccess(files) {
+    }
+
+    _onError(file) {
+        console.log("Error upload");
+        console.log(file.xhr);
+    }
+
+    /**
+     * Select tag for this article post.
+     */
+    _onBlurTag(val) {
+        this.setState({
+            tagName: val.target.value
+        });
+    }
+
+    _onTagOptSelected(val) {
+        this.setState({
+            tagName: val
+        });
+    }
+
+    _resetData() {
+        if (this.refs != null) {
+            if (this.refs.topic != null) {
+                this.refs.topic.value = InitState.topic;
+            }
+        }
+        if (this.dropzone != null) {
+            this.dropzone.removeAllFiles();
+        }
+        this.setState(InitState.state);
+    }
 
     /**
      * Get data to submit to the server to change tag.
      */
-    _getData: function() {
+    _getData() {
         return {
-            topic  : safeStringify(this.refs.topic.value),
-            tags   : safeStringify(this.state.tagName),
-            content: safeStringify(this.state.content),
-            authorUuid: UserStore.getSelf().userUuid,
+            topic      : safeStringify(this.refs.topic.value),
+            tags       : safeStringify(this.state.tagName),
+            content    : safeStringify(this.state.content),
+            authorUuid : UserStore.getSelf().userUuid,
             articleUuid: this.state.articleUuid
         }
-    },
+    }
 
-    _savePost: function(e) {
+    _savePost(e) {
         e.preventDefault();
         this.setState(this._nextStatus("Saving"));
         Actions.saveUserPost(this._getData());
-    },
+    }
 
-    _publishPost: function(e) {
+    _publishPost(e) {
         e.preventDefault();
         this.setState(this._nextStatus("Publishing"));
         Actions.publishUserPost(this._getData());
-    },
+    }
 
-    _nextStatus: function(event) {
+    _nextStatus(event) {
         if (event === "Draft") {
             return {
                 saveDis: false,
@@ -149,94 +261,31 @@ let EditorPost = React.createClass({
             publishTxt: 'Publish',
             publishBtn: 'btn btn-primary'
         }
-    },
+    }
 
-    _onPublishResult: function() {
-        if (this.state.errorResp !== null) {
-            this.setState(this._nextStatus("Failed"));
-        } else {
-            let state = {};
-            if (this.state.saveTxt === "Saving...") {
-                state = this._nextStatus("Saved");
-            } else {
-                state = this._nextStatus("Published");
-            }
-            if (this.state.myPostResult) {
-                state.articleUuid = this.state.myPostResult.articleUuid;
-            }
-            this.setState(state);
-
-            if (this.state.content !== '') {
-                setTimeout(function() {
-                    this._resetData();
-                }.bind(this), 1000);
-            }
-        }
-    },
-
-    _handleContentChange: function(e) {
-        let state = this._nextStatus("Draft");
-        state.content = e.value;
-        this.setState(state);
-    },
-
-    _onSend: function(files, xhr, form) {
-        form.append('name', files.name);
-        form.append('authorUuid', UserStore.getSelf().userUuid);
-        form.append('articleUuid', this.state.articleUuid);
-    },
-
-    _onComplete: function(file, a) {
-        console.log(file.xhr);
-    },
-
-    _onSuccess: function(files) {
-    },
-
-    _onError: function(file) {
-        console.log("Error upload");
-        console.log(file.xhr);
-    },
-
-    /**
-     * Select tag for this article post.
-     */
-    _onBlurTag: function(val) {
-        this.setState({ tagName: val.target.value });
-    },
-
-    _onTagOptSelected: function(val) {
-        this.setState({ tagName: val });
-    },
-
-    getInitialState: function() {
-        return this.initValues.state;
-    },
-
-    render: function() {
+    render() {
         let djsConfig = {
             addRemoveLinks: true,
-            acceptedFiles: "image/*",
-            params: {},
-            headers: {}
+            acceptedFiles : "image/*",
+            params        : {},
+            headers       : {}
         };
         let token  = $("meta[name='_csrf']").attr("content");
         let header = $("meta[name='_csrf_header']").attr("content");
         djsConfig.headers[header] = token;
 
         const componentConfig = {
-            iconFiletypes: ['.jpg', '.png', '.gif'],
+            iconFiletypes   : ['.jpg', '.png', '.gif'],
             showFiletypeIcon: true,
-            postUrl: '/user/upload-img'
+            postUrl         : '/user/upload-img'
         };
         const eventHandlers = {
             sending : this._onSend,
             complete: this._onComplete,
             success : this._onSuccess,
             error   : this._error,
-            init    : function(dz) { this.initValues.dropzone = dz }.bind(this)
+            init    : function(dz) { this.dropzone = dz }.bind(this)
         };
-        this.initValues.autoTags = AuthorStore.getTagsByAuthorUuid(null);
         let form = (
             <form encType="multipart/form-data" acceptCharset="utf-8" className="form-horizontal">
                 <div className="inbox-info-bar no-padding">
@@ -244,7 +293,7 @@ let EditorPost = React.createClass({
                         <div className="form-group">
                             <label className="control-label col-md-1"><strong>Topic</strong></label>
                             <div className="col-md-10">
-                                <input ref="topic" className="form-control" placeholder={this.initValues.topic} type="text"/>
+                                <input ref="topic" className="form-control" placeholder={InitState.topic} type="text"/>
                             </div>
                         </div>
                     </div>
@@ -255,8 +304,8 @@ let EditorPost = React.createClass({
                         <div className="form-group">
                             <label className="control-label col-md-1"><strong>Tags</strong></label>
                             <div className="col-md-10">
-                                <TA.Typeahead options={this.initValues.autoTags} maxVisible={4}
-                                    placeholder={this.initValues.tags}
+                                <TA.Typeahead options={this.state.autoTags} maxVisible={4}
+                                    placeholder={InitState.tags}
                                     customClasses={{input: "form-control"}}
                                     onBlur={this._onBlurTag} onOptionSelected={this._onTagOptSelected}/>
                             </div>
@@ -281,10 +330,7 @@ let EditorPost = React.createClass({
                 </div>
 
                 <div className="inbox-message no-padding">
-                    <Editor id="main-post"
-                        content={this.state.content}
-                        onChange={this._handleContentChange}
-                    />
+                    <Editor id="main-post" content={this.state.content} onChange={this._handleContentChange}/>
                 </div>
         
                 <div className="inbox-compose-footer">
@@ -314,6 +360,6 @@ let EditorPost = React.createClass({
             </div>
         )
     }
-});
+}
 
 export default EditorPost
