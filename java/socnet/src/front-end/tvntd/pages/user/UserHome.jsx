@@ -28,6 +28,39 @@ class UserHome extends React.Component
         this.getMyUserTab = this.getMyUserTab.bind(this);
         this._getActivePane = this._getActivePane.bind(this);
         this._setActivePane = this._setActivePane.bind(this);
+        this._updateStore = this._updateStore.bind(this);
+
+        this.state = this._getArticles(props);
+    }
+
+    componentDidMount() {
+        this.unsub = ArticleStore.listen(this._updateStore);
+    }
+
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    _updateStore() {
+        let articles = this._getArticles();
+        if (this.state.articles.length != articles.length) {
+            this.setState(articles);
+        }
+    }
+
+    _getArticles(props) {
+        let { userUuid } = this.props.params;
+        if (userUuid != null) {
+            return {
+                articles: ArticleStore.getSortedArticlesByAuthor(userUuid)
+            };
+        }
+        return {
+            articles: ArticleStore.getMyArticles()
+        }
     }
 
     getUserTab() {
@@ -111,21 +144,19 @@ class UserHome extends React.Component
             History.pushState(null, "/");
             return;
         }
-        let articles = null;
         let postView = null;
         let saveArticles = null;
         let tabCtx = this.getUserTab();
+        let articles = this.state.articles;
         let { userUuid } = this.props.params;
 
+        if (articles == null) {
+            articles = {};
+        }
         if (userUuid != null) {
             me = false;
-            articles = ArticleStore.getSortedArticlesByAuthor(userUuid);
         } else {
             tabCtx = this.getMyUserTab();
-            articles = ArticleStore.getMyArticles();
-            if (articles == null) {
-                articles = {};
-            }
             postView = <UserPostView userUuid={self.userUuid}/>;
             saveArticles = <PostArticles userUuid={self.userUuid} data={ArticleStore.getMySavedArticles()}/>
         }
