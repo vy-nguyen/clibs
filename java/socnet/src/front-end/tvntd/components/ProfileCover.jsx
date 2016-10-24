@@ -4,13 +4,14 @@
  */
 'use strict';
 
-import React          from 'react-mod';
 import _              from 'lodash';
+import React          from 'react-mod';
 import { htmlCodes }  from 'vntd-root/config/constants';
 import UserStore      from 'vntd-shared/stores/UserStore.jsx';
 
-let ProfileCover = React.createClass({
-    render: function() {
+class ProfileCover extends React.Component
+{
+    render() {
         let self = UserStore.getUserByUuid(this.props.userUuid);
         if (self === null) {
             return <h1>Invalid user id</h1>
@@ -90,6 +91,6 @@ let ProfileCover = React.createClass({
             </div>
         )
     }
-});
+}
 
 export default ProfileCover;

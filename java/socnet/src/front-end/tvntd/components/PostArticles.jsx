@@ -4,16 +4,16 @@
  */
 'use strict';
 
-import React from 'react-mod';
 import _     from 'lodash';
+import React from 'react-mod';
 
 import ArticleStore from 'vntd-root/stores/ArticleStore.jsx';
 import PostPane     from 'vntd-root/components/PostPane.jsx';
 import WidgetGrid   from 'vntd-shared/widgets/WidgetGrid.jsx';
 
-let PostArticles = React.createClass({
-
-    render: function() {
+class PostArticles extends React.Component
+{
+    render() {
         let panes = null;
 
         if (this.props.data && !_.isEmpty(this.props.data)) {
@@ -30,6 +30,6 @@ let PostArticles = React.createClass({
             </WidgetGrid>
         )
     }
-});
+}
 
 export default PostArticles;

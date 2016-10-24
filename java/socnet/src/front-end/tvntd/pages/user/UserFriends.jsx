@@ -3,24 +3,51 @@
  */
 'use strict';
 
-import React          from 'react-mod';
-import Reflux         from 'reflux';
 import _              from 'lodash';
+import React          from 'react-mod';
 
 import UserStore      from 'vntd-shared/stores/UserStore.jsx';
 import Actions        from 'vntd-root/actions/Actions.jsx';
 import UserTable      from 'vntd-root/components/UserTable.jsx';
 import UserSelect     from 'vntd-root/components/UserSelect.jsx';
 
-let UserFriends = React.createClass({
-    mixins: [Reflux.connect(UserStore)],
+class UserFriends extends React.Component
+{
+    constructor(props) {
+        super(props);
 
-    _submitChanges: function(event) {
+        this._submitChanges = this._submitChanges.bind(this);
+        this._getUserTable = this._getUserTable.bind(this);
+        this._getTabHeader = this._getTabHeader.bind(this);
+        this._updateState = this._updateState.bind(this);
+        this.state = {
+            self: UserStore.getSelf()
+        };
+    }
+
+    componentDidMount() {
+        this.unsub = UserStore.listen(this._updateState);
+    }
+
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unusb = null;
+        }
+    }
+
+    _updateState() {
+        this.setState({
+            self: UserStore.getSelf()
+        });
+    }
+
+    _submitChanges(event) {
         event.preventDefault();
         UserSelect.submitChanges(this.props.userList);
-    },
+    }
 
-    _getUserTable: function() {
+    _getUserTable() {
         let data = {
             tabOwner  : this.props.owned,
             tabHeader : this._getTabHeader(),
@@ -39,9 +66,9 @@ let UserFriends = React.createClass({
             tabHeader: data.tabHeader,
             hasInput : data.hasInput
         };
-    },
+    }
 
-    _getTabHeader: function() {
+    _getTabHeader() {
         const connectTab = [ {
             key   : "image",
             format: "",
@@ -149,9 +176,9 @@ let UserFriends = React.createClass({
             }
         }
         return fullTab;
-    },
+    }
 
-    render: function() {
+    render() {
         let footer = null;
         let data = this._getUserTable();
 
@@ -167,6 +194,6 @@ let UserFriends = React.createClass({
                 tableData={data.tabdata} tableTitle={this.props.tableTitle} tableFooter={footer}/>
         );
     }
-});
+}
 
-export default UserFriends
+export default UserFriends;

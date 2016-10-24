@@ -3,16 +3,20 @@
  */
 'use strict';
 
-import React          from 'react-mod';
 import _              from 'lodash';
+import React          from 'react-mod';
 
 import UserFriends    from './UserFriends.jsx';
 import Panel          from 'vntd-shared/widgets/Panel.jsx';
 import UserStore      from 'vntd-shared/stores/UserStore.jsx';
 
-let Friends = React.createClass({
+class Friends extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
 
-    render: function() {
+    render() {
         let filterMenu = {
             iconFmt  : 'btn-xs btn-warning',
             titleText: 'Filter',
@@ -77,6 +81,6 @@ let Friends = React.createClass({
             </div>
         )
     }
-});
+}
 
 export default Friends;

@@ -5,61 +5,80 @@
 'use strict';
 
 import React             from 'react-mod';
-import Reflux            from 'reflux';
 import DropzoneComponent from 'react-dropzone-component';
 
-import SubHeader         from '../layout/SubHeader.jsx';
-import Actions           from 'vntd-root/actions/Actions.jsx';
 import UserStore         from 'vntd-shared/stores/UserStore.jsx';
+import SubHeader         from 'vntd-root/pages/layout/SubHeader.jsx';
+import Actions           from 'vntd-root/actions/Actions.jsx';
 
-let UserAvatar = React.createClass({
-    mixins: [
-        Reflux.connect(UserStore)
-    ],
+class UserAvatar extends React.Component
+{
+    constructor(props) {
+        super(props);
 
-    initValues: {
-        dropzone: null
-    },
+        this.dropzone = null;
+        this._updateUser = this._updateUser.bind(this);
+        this._onSending = this._onSending.bind(this);
+        this._onSuccess = this._onSuccess.bind(this);
+        this._onError = this._onError.bind(this);
+        this.state = {
+            self: UserStore.getUserByUuid(props.userUuid)
+        };
+    }
 
-    _onSending: function(files, xhr, form) {
+    componentDidMount() {
+        this.unsub = UserStore.listen(this._updateUser);
+    }
+
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    _updateUser(data) {
+        this.setState({
+            self: UserStore.getUserByUuid(this.props.userUuid)
+        });
+    }
+
+    _onSending(files, xhr, form) {
         form.append('name', files.name);
-    },
+    }
 
-    _onSuccess: function(files) {
+    _onSuccess(files) {
         Actions.uploadAvataDone(JSON.parse(files.xhr.response));
-    },
+    }
 
-    _onError: function(file) {
-    },
+    _onError(file) {
+    }
 
-    getInitialState: function() {
-        return UserStore.getUserByUuid(this.props.userUuid);
-    },
-
-    render: function() {
+    render() {
         let djsConfig = {
             addRemoveLinks: false,
-            acceptedFiles: "image/*",
-            params: {},
-            headers: {}
+            acceptedFiles : "image/*",
+            params        : {},
+            headers       : {}
         };
         let token  = $("meta[name='_csrf']").attr("content");
         let header = $("meta[name='_csrf_header']").attr("content");
         djsConfig.headers[header] = token;
 
         let componentConfig = {
-            iconFiletypes: ['.jpg', '.png', '.gif'],
+            iconFiletypes   : ['.jpg', '.png', '.gif'],
             showFiletypeIcon: true,
-            postUrl: '/user/upload-avatar'
+            postUrl         : '/user/upload-avatar'
         };
         const eventHandlers = {
             sending: this._onSending,
             success: this._onSuccess,
             error  : this._onError,
-            init   : function(dz) { this.initValues.dropzone = dz }.bind(this)
+            init   : function(dz) { this.dropzone = dz }.bind(this)
         };
-        let self = UserStore.getUserByUuid(this.props.userUuid);
+        let self = this.state.self;
         if (self === null) {
+            console.log(this.state);
             return null;
         }
         let file_drop;
@@ -123,7 +142,7 @@ let UserAvatar = React.createClass({
             </div>
         );
     }
-});
+}
 
 export default UserAvatar;
 

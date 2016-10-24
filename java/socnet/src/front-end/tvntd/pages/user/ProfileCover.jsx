@@ -7,26 +7,32 @@
 import React             from 'react-mod';
 import DropzoneComponent from 'react-dropzone-component';
 
-let ProfileCover = React.createClass({
-    onSending: function(files, xhr, form) {
-        form.append('name', files.name);
-    },
+class ProfileCover extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this.onSending = this.onSending.bind(this);
+    }
 
-    render: function() {
+    onSending(files, xhr, form) {
+        form.append('name', files.name);
+    }
+
+    render() {
         let djsConfig = {
             addRemoveLinks: true,
-            acceptedFiles: "image/jpeg,image/png,image/gif",
-            params: {},
-            headers: {}
+            acceptedFiles : "image/jpeg,image/png,image/gif",
+            params        : {},
+            headers       : {}
         };
         let token  = $("meta[name='_csrf']").attr("content");
         let header = $("meta[name='_csrf_header']").attr("content");
         djsConfig.headers[header] = token;
 
         let componentConfig = {
-            iconFiletypes: ['.jpg', '.png', '.gif'],
+            iconFiletypes   : ['.jpg', '.png', '.gif'],
             showFiletypeIcon: true,
-            postUrl: '/api/upload-img'
+            postUrl         : '/api/upload-img'
         };
         let eventHandlers = {
             sending: this.onSending,
@@ -75,7 +81,7 @@ let ProfileCover = React.createClass({
             </div>
         );
     }
-});
+}
 
 export default ProfileCover;
 
