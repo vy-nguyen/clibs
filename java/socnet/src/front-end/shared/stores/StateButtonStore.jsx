@@ -7,6 +7,7 @@
 import _             from 'lodash';
 import Reflux        from 'reflux';
 import Actions       from 'vntd-root/actions/Actions.jsx';
+import NavActions    from 'vntd-shared/actions/NavigationActions.jsx';
 
 class ButtonState {
     /*
@@ -26,10 +27,17 @@ class ButtonState {
             }
         }.bind(this));
 
+        this.callTrigger = this.callTrigger.bind(this);
+
         this._id       = _.uniqueId('button-state-');
         this.btnId     = btnId;
+        this.trigger   = false;
         this.currState = startState == null ? "success" : startState;
         this.prevState = null;
+    }
+
+    getBtnId() {
+        return this.btnId;
     }
 
     getState() {
@@ -88,12 +96,22 @@ class ButtonState {
         if (state === this.currState) {
             return;
         }
+        this.trigger   = false;
         this.prevState = this.currState;
         this.currState = state;
 
-        let btnState = this[this.currState];
-        if (btnState != null && btnState.triggerFn != null) {
-            btnState.triggerFn(this.btnId, this.prevState, state);
+        if (this[state] != null && this[state].triggerFn != null) {
+            this.trigger = true;
+        }
+    }
+
+    callTrigger(callback) {
+        if (this.trigger === true) {
+            this.trigger = false;
+            let state = this[this.currState];
+            if (state != null && state.triggerFn != null) {
+                state.triggerFn(callback, this.btnId, this.prevState, state);
+            }
         }
     }
 
@@ -108,7 +126,8 @@ class ButtonState {
 let StateButtonStore = Reflux.createStore({
     button: {},
     listenables: [
-        Actions
+        Actions,
+        NavActions
     ],
 
     init: function() {
@@ -129,9 +148,16 @@ let StateButtonStore = Reflux.createStore({
 
     setButtonState: function(id, state) {
         let btnState = this.button[id];
-        if (state != null && btnState != null) {
+        if (btnState != null) {
+            return this.setButtonStateObj(btnState, state);
+        }
+        return null;
+    },
+
+    setButtonStateObj: function(btnState, state) {
+        if (state != null) {
             btnState.setState(state);
-            this.trigger(this.button);
+            this.trigger(btnState);
         }
         return btnState;
     },
@@ -146,7 +172,7 @@ let StateButtonStore = Reflux.createStore({
 
     setNextButtonState: function(btnState) {
         let state = btnState.setNextState();
-        this.trigger(this.button);
+        this.trigger(btnState);
         return state;
     },
 
@@ -154,7 +180,7 @@ let StateButtonStore = Reflux.createStore({
         let btnState = this.button[id];
         if (btnState != null) {
             btnState.setNextState();
-            this.trigger(this.button);
+            this.trigger(btnState);
         }
         return btnState;
     },
@@ -175,11 +201,15 @@ let StateButtonStore = Reflux.createStore({
     },
 
     onButtonChangeCompleted: function(id) {
-        return this.setButtonState(id, "success");
+        let btnState = this.setButtonState(id, "success");
+        this.trigger(btnState);
+        return btnState;
     },
 
     onButtonChangeFailed: function(id, disable, text) {
-        return this.setButtonState(id, "failure");
+        let btnState = this.setButtonState(id, "failure");
+        this.trigger(btnState);
+        return btnState;
     },
 
     dumpData: function() {

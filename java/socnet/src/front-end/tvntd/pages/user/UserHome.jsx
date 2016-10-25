@@ -24,11 +24,11 @@ class UserHome extends React.Component
 {
     constructor(props) {
         super(props);
-        this.getUserTab = this.getUserTab.bind(this);
-        this.getMyUserTab = this.getMyUserTab.bind(this);
+        this.getUserTab     = this.getUserTab.bind(this);
+        this.getMyUserTab   = this.getMyUserTab.bind(this);
         this._getActivePane = this._getActivePane.bind(this);
         this._setActivePane = this._setActivePane.bind(this);
-        this._updateStore = this._updateStore.bind(this);
+        this._updateStore   = this._updateStore.bind(this);
 
         this.state = this._getArticles(props);
     }

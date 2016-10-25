@@ -12,12 +12,13 @@ class StateButton extends React.Component
 {
     constructor(props) {
         super(props);
-        this.state = {
-            stateCode: "success"
-        };
         this.mount = 0;
         this._btnClick = this._btnClick.bind(this);
         this._updateState = this._updateState.bind(this);
+        this.state = {
+            stateCode: "success",
+            btnState : StateButtonStore.getButtonState(props.btnId)
+        };
     }
 
     componentDidMount() {
@@ -31,13 +32,14 @@ class StateButton extends React.Component
         }
     }
 
-    _updateState(data) {
-        let btnState = StateButtonStore.getButtonState(this.props.btnId);
-        let curState = btnState.getStateCode();
-        if (curState !== this.state.stateCode) {
-            this.setState({
-                stateCode: curState
-            });
+    _updateState(btnState) {
+        if (btnState === this.state.btnState) {
+            let curState = btnState.getStateCode();
+            if (curState !== this.state.stateCode) {
+                this.setState({
+                    stateCode: curState
+                });
+            }
         }
     }
 
@@ -47,7 +49,7 @@ class StateButton extends React.Component
     }
 
     render() {
-        let btnState = StateButtonStore.getButtonState(this.props.btnId);
+        let btnState = this.state.btnState;
         let className = btnState.getClassFmt();
         return (
             <button className={className} onClick={this._btnClick} disabled={btnState.isDisabled()}>

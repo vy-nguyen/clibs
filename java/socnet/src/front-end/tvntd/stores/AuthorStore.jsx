@@ -4,13 +4,13 @@
  */
 'use strict';
 
+import _      from 'lodash';
 import Reflux from 'reflux';
 import React  from 'react-mod';
-import _      from 'lodash';
 
 import Actions          from 'vntd-root/actions/Actions.jsx';
+import NavActions       from 'vntd-shared/actions/NavigationActions.jsx';
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
-import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
 import ArticleStore     from 'vntd-root/stores/ArticleStore.jsx';
 import {insertSorted}   from 'vntd-shared/utils/Enum.jsx';
 
@@ -325,6 +325,8 @@ class AuthorTagMgr {
                 sortedArts.sort(AuthorTag.compareRank);
             }
         }.bind(this));
+        console.log(artList);
+
         Actions.commitTagRanks(this, {
             userUuid: this.authorUuid,
             tagRanks: tagRanks,
@@ -523,17 +525,17 @@ let AuthorStore = Reflux.createStore({
 
     onCommitTagRanksCompleted: function(data) {
         let tagMgr = data.cbContext;
-        StateButtonStore.onButtonChangeCompleted(tagMgr.btnId);
+        NavActions.buttonChange(tagMgr.btnId);
     },
 
     onCommitTagRanksFailed: function(err) {
         let tagMgr = err.getContext();
-        StateButtonStore.onButtonChangeFailed(tagMgr.btnId);
+        NavActions.onButtonChangeFailed(tagMgr.btnId);
     },
 
     onUpdateArtRankCompleted: function(data) {
         let btnId = data.cbContext;
-        StateButtonStore.onButtonChangeCompleted(btnId);
+        NavActions.buttonChange(tagMgr.btnId);
     },
 
     onStartupCompleted: function(data) {

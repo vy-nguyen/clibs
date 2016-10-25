@@ -4,9 +4,8 @@
  */
 'use strict';
 
-import React        from 'react';
 import _            from 'lodash';
-import Reflux       from 'reflux';
+import React        from 'react';
 
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
@@ -18,37 +17,64 @@ import Nestable         from 'vntd-shared/widgets/Nestable.jsx';
 import AuthorStore      from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleRank      from 'vntd-root/components/ArticleRank.jsx';
 
-let UserPostView = React.createClass({
-    mixins: [
-        Reflux.connect(AuthorStore),
-        Reflux.connect(StateButtonStore)
-    ],
+class UserPostView extends React.Component
+{
+    constructor(props) {
+        super(props);
 
-    getSaveBtnId: function() {
-        return "my-post-order-" + this.props.userUuid;
-    },
+        this.moveUp          = this.moveUp.bind(this);
+        this.moveDown        = this.moveDown.bind(this);
+        this.renderTag       = this.renderTag.bind(this);
+        this.renderElement   = this.renderElement.bind(this);
 
-    getArrangeBtnId: function() {
-        return "arrange-btn-" + this.props.userUuid;
-    },
+        this._saveUpdate       = this._saveUpdate.bind(this);
+        this._updateState      = this._updateState.bind(this);
+        this._createSaveBtn    = this._createSaveBtn.bind(this);
+        this._createArrangeBtn = this._createArrangeBtn.bind(this);
 
-    moveUp: function(tag, e) {
+        let myUuid      = props.userUuid;
+        this.saveBtn    = StateButtonStore.createButton("my-post-order-" + myUuid, this._createSaveBtn);
+        this.arrangeBtn = StateButtonStore.createButton("arrange-btn-" + myUuid, this._createArrangeBtn);
+        this.state = {
+            status: "init",
+            tagMgr: AuthorStore.getAuthorTagMgr(props.userUuid)
+        };
+    }
+
+    componentDidMount() {
+        this.unsub = AuthorStore.listen(this._updateState);
+        this.unsubBtn = StateButtonStore.listen(this._saveUpdate);
+    }
+
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsubBtn();
+            this.unsub = null;
+            this.unsubBtn = null;
+        }
+    }
+
+    _updateState(data) {
+        this.setState({
+            status: "store changed",
+            tagMgr: AuthorStore.getAuthorTagMgr(this.props.userUuid)
+        });
+    }
+
+    moveUp(tag, e) {
         e.stopPropagation();
-        StateButtonStore.setButtonState(this.getSaveBtnId(), "needSave");
+        StateButtonStore.setButtonStateObj(this.saveBtn, "needSave");
+        this.state.tagMgr.reRankTag(tag, true);
+    }
 
-        let tagMgr = AuthorStore.getAuthorTagMgr(this.props.userUuid);
-        tagMgr.reRankTag(tag, true);
-    },
-
-    moveDown: function(tag, e) {
+    moveDown(tag, e) {
         e.stopPropagation();
-        StateButtonStore.setButtonState(this.getSaveBtnId(), "needSave");
+        StateButtonStore.setButtonStateObj(this.saveBtn, "needSave");
+        this.state.tagMgr.reRankTag(tag, false);
+    }
 
-        let tagMgr = AuthorStore.getAuthorTagMgr(this.props.userUuid);
-        tagMgr.reRankTag(tag, false);
-    },
-
-    renderTag: function(tag, refName, expanded) {
+    renderTag(tag, refName, expanded) {
         let upRank = null;
         let downRank = null;
 
@@ -67,22 +93,52 @@ let UserPostView = React.createClass({
         return (
             <span>{tag.tagName} {upRank} {downRank}</span>
         );
-    },
+    }
 
-    _onChangeArt: function(parent, children, output) {
-        let tagName = parent.tagName;
-        StateButtonStore.setStateKeyVal(this.getArrangeBtnId(), {
-            order: {
-                tagName: output
-            }
+    _onChangeArt(parent, children, output) {
+        let tagVal = {};
+        tagVal[parent.tagName] = output;
+        this.arrangeBtn.setKeyValue('order', tagVal);
+    }
+
+    _saveState(btnId) {
+        let order = this.arrangeBtn.getValue("order");
+        StateButtonStore.goNextState(btnId);
+        AuthorStore
+            .getAuthorTagMgr(this.props.userUuid)
+            .commitTagRanks(btnId, order);
+    }
+
+    _saveUpdate(btnState) {
+        if (btnState === this.saveBtn) {
+            btnState.callTrigger(this);
+        }
+    }
+
+    static _saveStateSuccess(me, btnId, prev, curr) {
+        StateButtonStore.setButtonStateObj(me.arrangeBtn, "success");
+        me.setState({
+            status: "save ok",
+            tagMgr: AuthorStore.getAuthorTagMgr(me.props.userUuid)
         });
-    },
+    }
 
-    renderElement: function(parent, children, output) {
+    _arrangeMode(btnId) {
+        if ((this.arrangeBtn.getStateCode() === "success") &&
+            (this.saveBtn.getStateCode() === "success")) {
+            StateButtonStore.setNextButtonState(this.saveBtn);
+        }
+        StateButtonStore.setNextButtonState(this.arrangeBtn);
+        this.setState({
+            status: "arrange",
+            tagMgr: AuthorStore.getAuthorTagMgr(this.props.userUuid)
+        });
+    }
+
+    renderElement(parent, children, output) {
         let reorder = false;
         if (UserStore.isUserMe(this.props.userUuid) === true) {
-            let btnId = this.getArrangeBtnId();
-            reorder = StateButtonStore.isButtonInState(btnId, "arrange");
+            reorder = this.arrangeBtn.isInState("arrange");
         }
         if (children == null) {
             output.push({
@@ -139,39 +195,16 @@ let UserPostView = React.createClass({
                 iconClose: "fa fa-lg fa-folder"
             });
         }
-    },
+    }
 
-    _saveState: function(btnId) {
-        let order = StateButtonStore.getButtonStateKey("order");
-        StateButtonStore.goNextState(btnId);
-        AuthorStore
-            .getAuthorTagMgr(this.props.userUuid)
-            .commitTagRanks(btnId, order);
-    },
-
-    _saveStateSuccess: function(btnId, prev, curr) {
-        StateButtonStore.setButtonState(this.getArrangeBtnId(), "success");
-    },
-
-    _arrangeMode: function(btnId) {
-        let btnState = StateButtonStore.getButtonState(btnId);
-        if (btnState.getStateCode() === "success") {
-            let savState = StateButtonStore.getButtonState(this.getSaveBtnId());
-            if (savState.getStateCode() === "success") {
-                StateButtonStore.setNextButtonState(savState);
-            }
-        }
-        StateButtonStore.setNextButtonState(btnState);
-    },
-
-    _createSaveBtn: function() {
+    _createSaveBtn() {
         return {
             success: {
                 text: "Order Saved",
                 disabled : true,
                 nextState: "needSave",
                 className: "btn btn-default",
-                triggerFn: this._saveStateSuccess
+                triggerFn: UserPostView._saveStateSuccess
             },
             failure: {
                 text: "Save order failed",
@@ -192,9 +225,9 @@ let UserPostView = React.createClass({
                 className: "btn btn-success"
             }
         };
-    },
+    }
 
-    _createArrangeBtn: function() {
+    _createArrangeBtn() {
         return {
             success: {
                 text: "Arrange Posts",
@@ -215,20 +248,16 @@ let UserPostView = React.createClass({
                 className: "btn btn-success"
             }
         };
-    },
+    }
 
-    render: function() {
+    render() {
         let tagMgr = AuthorStore.getAuthorTagMgr(this.props.userUuid);
         let json = [];
         let btnCmds = null;
 
         if (UserStore.isUserMe(this.props.userUuid) === true) {
-            let btnId = this.getSaveBtnId();
-            StateButtonStore.createButton(btnId, this._createSaveBtn);
-
-            let arBtnId = this.getArrangeBtnId();
-            StateButtonStore.createButton(arBtnId, this._createArrangeBtn);
-
+            let btnId = this.saveBtn.getBtnId();
+            let arBtnId = this.arrangeBtn.getBtnId();
             btnCmds = (
                 <div>
                     <ErrorView className="alert alert-success" errorId={btnId}/>
@@ -247,6 +276,6 @@ let UserPostView = React.createClass({
             </div>
         );
     }
-});
+}
 
 export default UserPostView;
