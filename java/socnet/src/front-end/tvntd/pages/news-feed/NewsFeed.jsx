@@ -14,22 +14,43 @@ import BigBreadcrumbs     from 'vntd-shared/layout/BigBreadcrumbs.jsx';
 import AuthorStore        from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleStore       from 'vntd-root/stores/ArticleStore.jsx';
 
-let NewsFeed = React.createClass({
-    mixins: [
-        Reflux.connect(AuthorStore),
-        Reflux.connect(ArticleStore)
-    ],
+class NewsFeed extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this._updateState = this._updateState.bind(this);
+        this.state = {
+            authorList: AuthorStore.getAuthorUuidList()
+        }
+    }
 
-    renderAuthors: function() {
+    componentDidMount() {
+        this.unsub = AuthorStore.listen(this._updateState);
+    }
+
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    _updateState() {
+        this.setState({
+            authorList: AuthorStore.getAuthorUuidList()
+        });
+    }
+
+    renderAuthors() {
         let output = [];
-        let authorList = AuthorStore.getAuthorUuidList();
+        let authorList = this.state.authorList;
         _.forEach(authorList, function(uuid) {
             output.push(<AuthorFeed key={_.uniqueId("author-feed-")} authorUuid={uuid}/>);
         });
         return output;
-    },
+    }
 
-    render: function() {
+    render() {
         return (
             <div id="author-content">
                 <div className="row">
@@ -40,6 +61,6 @@ let NewsFeed = React.createClass({
             </div>
         )
     }
-});
+}
 
 export default NewsFeed;

@@ -6,8 +6,9 @@ import React from 'react-mod'
 
 let rawItems = require('json!../../mock-json/news-feed-author.json');
 
-let Timeline = React.createClass({
-    render: function() {
+class Timeline extends React.Component
+{
+    render() {
         return (
     <div className="row">
         <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -121,6 +122,6 @@ let Timeline = React.createClass({
     </div>
         )
     }
-});
+}
 
 export default Timeline;

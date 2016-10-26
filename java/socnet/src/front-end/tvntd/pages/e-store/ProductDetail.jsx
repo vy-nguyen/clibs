@@ -6,8 +6,9 @@ import React from 'react-mod'
 
 let rawItems = require('json!../../mock-json/e-store-pdetail.json');
 
-let ProductDetail = React.createClass({
-    render: function() {
+class ProductDetail extends React.Component
+{
+    render() {
         return (
 <div id="content">
     <div className="row">
@@ -405,6 +406,6 @@ let ProductDetail = React.createClass({
 </div>
         )
     }
-});
+}
 
 export default ProductDetail;

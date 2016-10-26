@@ -4,15 +4,14 @@
  */
 import React from 'react-mod'
 
-let rawItems = require('json!../../mock-json/news-feed-author.json');
-
-let AuthorTimeLine = React.createClass({
-    render: function() {
+class AuthorTimeLine extends React.Component
+{
+    render() {
         return (
             <div>
             </div>
         )
     }
-});
+}
 
 export default AuthorTimeLine;

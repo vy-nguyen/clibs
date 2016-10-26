@@ -6,8 +6,9 @@ import React from 'react-mod'
 
 let rawItems = require('json!../../mock-json/e-store-pview.json');
 
-let ProductView = React.createClass({
-    render: function() {
+class ProductView extends React.Component
+{
+    render() {
         return (
 
 <div id="content">
@@ -342,6 +343,6 @@ let ProductView = React.createClass({
 </div>
         )
     }
-});
+}
 
 export default ProductView;

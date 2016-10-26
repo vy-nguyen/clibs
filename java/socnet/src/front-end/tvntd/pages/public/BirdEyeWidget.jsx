@@ -9,13 +9,14 @@ import JarvisWidget       from 'vntd-shared/widgets/JarvisWidget.jsx';
 import VectorMap          from 'vntd-shared//graphs/VectorMap.jsx';
 import SparklineContainer from 'vntd-shared/graphs/SparklineContainer.jsx';
 
-let BirdEyeWidget = React.createClass({
-    render: function() {
+class BirdEyeWidget extends React.Component
+{
+    render() {
         return (
             <h1>BirdEyeWidget</h1>
         )
     }
-});
+}
 
 export default BirdEyeWidget;
 /*
