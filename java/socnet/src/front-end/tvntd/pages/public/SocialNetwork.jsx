@@ -4,7 +4,6 @@
 'use strict';
 
 import React from 'react-mod';
-// import FlotChart from 'vntd-shared/graphs/FlotChart.jsx'
 
 let statsData = [
     {
@@ -116,49 +115,40 @@ let statsChartOptions = {
     }
 };
 
-let SocialNetwork = React.createClass({
-    render: function () {
+class SocialNetwork extends React.Component
+{
+    render() {
         return (
             <div className={this.props.className} id={this.props.id}>
                 <div className="widget-body-toolbar bg-color-white">
-
                     <form className="form-inline" role="form">
-
                         <div className="form-group">
                             <label className="sr-only" htmlFor="s123">Show From</label>
-                            <input type="email" className="form-control input-sm" id="s123"
-                                   placeholder="Show From"/>
+                            <input type="email" className="form-control input-sm" id="s123" placeholder="Show From"/>
                         </div>
                         <div className="form-group">
-                            <input type="email" className="form-control input-sm" id="s124"
-                                   placeholder="To"/>
+                            <input type="email" className="form-control input-sm" id="s124" placeholder="To"/>
                         </div>
-
                         <div className="btn-group hidden-phone pull-right">
-                            <a className="btn dropdown-toggle btn-xs btn-default"
-                               data-toggle="dropdown"><i
-                                className="fa fa-cog" /> More <span className="caret"> </span> </a><ul className="dropdown-menu pull-right">
-                            <li>
-                                <a href-void><i className="fa fa-file-text-alt" /> Export to
-                                    PDF</a>
-                            </li>
-                            <li>
-                                <a href-void><i className="fa fa-question-sign" /> Help</a>
-                            </li>
-                        </ul>
+                            <a className="btn dropdown-toggle btn-xs btn-default" data-toggle="dropdown">
+                                <i className="fa fa-cog" /> More <span className="caret"> </span>
+                            </a>
+                            <ul className="dropdown-menu pull-right">
+                                <li>
+                                    <a href-void><i className="fa fa-file-text-alt" /> Export to PDF</a>
+                                </li>
+                                <li>
+                                    <a href-void><i className="fa fa-question-sign" /> Help</a>
+                                </li>
+                            </ul>
                         </div>
-
                     </form>
-
                 </div>
-                <div className="padding-10">
-                </div>
-
+                <div className="padding-10"> </div>
             </div>
-
-        )
+        );
     }
-});
+}
 //<FlotChart className="chart-large has-legend-unique" data={statsData} options={statsChartOptions} />
 
-export default SocialNetwork
+export default SocialNetwork;

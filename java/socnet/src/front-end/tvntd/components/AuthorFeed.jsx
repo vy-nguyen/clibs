@@ -15,20 +15,67 @@ import Author         from 'vntd-root/components/Author.jsx';
 import ProfileCover   from 'vntd-root/components/ProfileCover.jsx';
 import AuthorStore    from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleStore   from 'vntd-root/stores/ArticleStore.jsx';
-import UserPostView   from '../pages/user/UserPostView.jsx';
-import ProductView    from '../pages/e-store/ProductView.jsx';
-import ProductDetail  from '../pages/e-store/ProductDetail.jsx';
-import Timeline       from '../pages/blog/Timeline.jsx';
+import UserPostView   from 'vntd-root/pages/user/UserPostView.jsx';
+import ProductView    from 'vntd-root/pages/e-store/ProductView.jsx';
+import ProductDetail  from 'vntd-root/pages/e-store/ProductDetail.jsx';
+import Timeline       from 'vntd-root/pages/blog/Timeline.jsx';
 import PostArticles   from './PostArticles.jsx';
 import PostTimeline   from './PostTimeline.jsx';
 
-let AuthorFeed = React.createClass({
-    mixins: [
-        Reflux.connect(ArticleStore),
-        Reflux.connect(AuthorStore)
-    ],
+const DefaultPlugin = {
+    render: function(plugin, img) {
+        return null;
+    },
 
-    getAuthorTab: function(uuid) {
+    clickHandler: function(plugin, event) {
+        event.stopPropagation();
+    }
+};
+
+class AuthorFeed extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this._updateState   = this._updateState.bind(this);
+        this._getAuthorTab  = this._getAuthorTab.bind(this);
+        this._getActivePane = this._getActivePane.bind(this);
+        this._setActivePane = this._setActivePane.bind(this);
+
+        let tabIdx = 0;
+        let author = AuthorStore.getAuthorByUuid(props.authorUuid);
+
+        if (author != null) {
+            if (author.tabPanelIdx == null) {
+                author.tabPanelIdx = 0;
+            } else {
+                tabIdx = author.tabPanelIdx;
+            }
+        }
+        this.state = {
+            author  : author,
+            tabIdx  : tabIdx,
+            articles: ArticleStore.getSortedArticlesByAuthor(props.authorUuid).slice(0, 2)
+        }
+    }
+
+    componentDidUpdate() {
+        this.unsub = ArticleStore.listen(this._updateState);
+    }
+
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    _updateState() {
+        this.setState({
+            articles: ArticleStore.getSortedArticlesByAuthor(props.authorUuid).slice(0, 2)
+        });
+    }
+
+    _getAuthorTab(uuid) {
         return {
             getActivePane: this._getActivePane,
             setActivePane: this._setActivePane,
@@ -59,36 +106,23 @@ let AuthorFeed = React.createClass({
                 tabIdx : 5
             } ]
         };
-    },
+    }
 
-    _getActivePane: function() {
-        let author = AuthorStore.getAuthorByUuid(this.props.authorUuid);
-        if (author != null) {
-            if (author.tabPanelIdx == null) {
-                author.tabPanelIdx = 0;
-            }
-            return author.tabPanelIdx;
-        }
-        return 0;
-    },
+    _getActivePane() {
+        return this.state.tabIdx;
+    }
 
-    _setActivePane: function(index) {
-        let author = AuthorStore.getAuthorByUuid(this.props.authorUuid);
+    _setActivePane(index) {
+        let author = this.state.author;
         if (author != null) {
             author.tabPanelIdx = index;
+            this.setState({
+                tabIdx: index
+            });
         }
-    },
+    }
 
-    _defaultPlugin: {
-        render: function(plugin, img) {
-            return null;
-        },
-        clickHandler: function(plugin, event) {
-            event.stopPropagation();
-        }
-    },
-
-    render: function() {
+    render() {
         let userUuid = this.props.authorUuid;
         let author = AuthorStore.getAuthorByUuid(userUuid);
         if (author == null) {
@@ -103,7 +137,7 @@ let AuthorFeed = React.createClass({
         }
         let plugin = this.props.plugin;
         if (plugin == null) {
-            plugin = this._defaultPlugin;
+            plugin = DefaultPlugin;
         }
         return (
             <div className="row">
@@ -115,7 +149,7 @@ let AuthorFeed = React.createClass({
                                 {plugin.render.bind(this, plugin)(author.coverImg)}
                             </div>
                             <div className="col-sm-9 col-md-9 col-lg-9">
-                                <TabPanel className="padding-top-10" context={this.getAuthorTab(author.userUuid)}>
+                                <TabPanel className="padding-top-10" context={this._getAuthorTab(author.userUuid)}>
                                     <PostArticles data={articles} user={user}/>
                                     <Blog authorUuid={userUuid} user={user}/>
                                     <UserPostView userUuid={author.userUuid}/>
@@ -129,45 +163,43 @@ let AuthorFeed = React.createClass({
                 </SparklineContainer>
             </div>
         )
-    },
-
-    statics: {
-        renderToggleView: function(authorUuid, article, toggleClick, cbArg) {
-            let togglePlugin = {
-                txtStyle: {
-                    textAlign: "center",
-                    color: "#ffffff"
-                },
-                upCallArg : cbArg,
-                upCallback: toggleClick,
-                authorUuid: authorUuid,
-                articleUuid: article.articleUuid,
-                content: "Click to hide",
-
-                render: function(plugin, img) {
-                    let divStyle = {
-                        backgroundImage: "url(" + img + ")"
-                    }
-                    return (
-                        <div className="row" style={divStyle} onClick={plugin.clickHandler.bind(this, plugin)}>
-                            <br/>
-                            <h3 style={plugin.txtStyle}>{plugin.content}</h3>
-                            <br/>
-                        </div>
-                    );
-                },
-                clickHandler: function(plugin, event) {
-                    event.stopPropagation();
-                    plugin.upCallback(plugin.articleUuid, plugin.upCallArg);
-                }
-            };
-            let articles = [ article ];
-            return (
-                <AuthorFeed authorUuid={authorUuid} articles={articles} plugin={togglePlugin}/>
-            )
-        }
     }
-});
+
+    static renderToggleView(authorUuid, article, toggleClick, cbArg) {
+        let togglePlugin = {
+            txtStyle: {
+                textAlign: "center",
+                color    : "#ffffff"
+            },
+            upCallArg  : cbArg,
+            upCallback : toggleClick,
+            authorUuid : authorUuid,
+            articleUuid: article.articleUuid,
+            content    : "Click to hide",
+
+            render: function(plugin, img) {
+                let divStyle = {
+                    backgroundImage: "url(" + img + ")"
+                }
+                return (
+                    <div className="row" style={divStyle} onClick={plugin.clickHandler.bind(this, plugin)}>
+                        <br/>
+                        <h3 style={plugin.txtStyle}>{plugin.content}</h3>
+                        <br/>
+                    </div>
+                );
+            },
+            clickHandler: function(plugin, event) {
+                event.stopPropagation();
+                plugin.upCallback(plugin.articleUuid, plugin.upCallArg);
+            }
+        };
+        let articles = [ article ];
+        return (
+            <AuthorFeed authorUuid={authorUuid} articles={articles} plugin={togglePlugin}/>
+        )
+    }
+}
 /*<PostTimeline data={this.author.activities}/> */
 
 export default AuthorFeed;

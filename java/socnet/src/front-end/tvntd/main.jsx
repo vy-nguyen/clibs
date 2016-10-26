@@ -4,20 +4,21 @@
  */
 'use strict';
 
-window.jQuery = require('jquery');
 window.GlobalConfigs = require('./config/config');
-$ = window.jQuery;
+window.jQuery = require('jquery');
+window.$ = window.jQuery;
+
+require("bootstrap");
+require("smartwidgets");
+require("sparkline");
+require("jquery-nestable");
 
 //require("jquery-ui");
-require("bootstrap");
 //require("fastclick");
 //require("moment");
 //require("moment-timezone");
 //require("fullcalendar");
 //require("notification");
-require("smartwidgets");
-require("sparkline");
-require("jquery-nestable");
 
 import React    from 'react-mod';
 import {render} from 'react-dom';

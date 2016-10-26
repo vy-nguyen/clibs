@@ -16,9 +16,9 @@ import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import AboutUsStore     from 'vntd-root/stores/AboutUsStore.jsx';
 import NewsFeed         from '../news-feed/NewsFeed.jsx';
 
-let PriceBox = React.createClass({
-
-    render: function() {
+class PriceBox extends React.Component
+{
+    render() {
         let textList = [];
         _.forOwn(this.props.textList, function(it, idx) {
             textList.push(
@@ -48,11 +48,11 @@ let PriceBox = React.createClass({
             </div>
         );
     }
-});
+}
 
-let TeamBio = React.createClass({
-
-    render: function() {
+class TeamBio extends React.Component
+{
+    render() {
         return (
             <div className="col-xs-12 col-sm-3 col-md-3">
                 <div className="team boxed-grey">
@@ -68,11 +68,11 @@ let TeamBio = React.createClass({
             </div>
         );
     }
-});
+}
 
-let FeatureBox = React.createClass({
-
-    render: function() {
+class FeatureBox extends React.Component
+{
+    render() {
         return (
             <div className="col-sm-3 col-md-3">
                 <div className="service-box">
@@ -87,11 +87,11 @@ let FeatureBox = React.createClass({
             </div>
         );
     }
-});
+}
 
-let FeatureSection = React.createClass({
-
-    render: function() {
+class FeatureSection extends React.Component
+{
+    render() {
         return (
             <section className={"home-section text-center " + this.props.format}>
                 <div className="heading-about marginbot-50">
@@ -120,11 +120,11 @@ let FeatureSection = React.createClass({
             </section>
         );
     }
-});
+}
 
-let TimeLineCenter = React.createClass({
-
-    render: function() {
+class TimeLineCenter extends React.Component
+{
+    render() {
         let entries = [];
         _.forEach(this.props.timeEvents, function(event) {
             entries.push(
@@ -152,11 +152,11 @@ let TimeLineCenter = React.createClass({
             </div>
         );
     }
-});
+}
 
-let TimeLineDev = React.createClass({
-
-    render: function() {
+class TimeLineDev extends React.Component
+{
+    render() {
         let entries = [];
         _.forEach(this.props.timeEvents, function(event) {
             entries.push(
@@ -191,21 +191,32 @@ let TimeLineDev = React.createClass({
             </div>
         );
     }
-});
+}
 
-let MainPage = React.createClass({
+class MainPage extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this._updateState = this._updateState.bind(this);
+        this.state = AboutUsStore.getData();
+    }
 
-    mixins: [Reflux.connect(AboutUsStore)],
+    componentDidMount() {
+        this.unsub = AboutUsStore.listen(this._updateState);
+    }
 
-    getInitialState: function() {
-        return AboutUsStore.getData();
-    },
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
 
-    componentWillReceiveProps: function(nextProps) {
+    _updateState(data) {
         this.setState(AboutUsStore.getData());
-    },
+    }
 
-    render: function() {
+    render() {
         if (UserStore.isLogin()) {
             return <NewsFeed/>;
         }
@@ -287,6 +298,6 @@ let MainPage = React.createClass({
             </div>
         );
     }
-});
+}
 
 export default MainPage;

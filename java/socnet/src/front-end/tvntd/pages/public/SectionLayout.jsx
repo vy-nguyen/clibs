@@ -9,8 +9,9 @@ import React from 'react-mod';
 import NewsFeed   from '../news-feed/NewsFeed.jsx';
 import UserStore  from 'vntd-shared/stores/UserStore.jsx';
 
-let MainPage = React.createClass({
-    render: function() {
+class MainPage extends React.Component
+{
+    render() {
         if (UserStore.isLogin()) {
             return <NewsFeed/>;
         }
@@ -149,6 +150,6 @@ let MainPage = React.createClass({
             </div>
         )
     }
-});
+}
 
 export default MainPage;

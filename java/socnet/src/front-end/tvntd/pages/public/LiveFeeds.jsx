@@ -31,16 +31,19 @@ class LiveFeeds extends React.Component
                     <h2>Live Feeds </h2>
                     <ul className="nav nav-tabs pull-right in" id="myTab">
                         <li className="active">
-                            <a data-toggle="tab" href="#s1"><i className="fa fa-clock-o" /> <span
-                                className="hidden-mobile hidden-tablet">Live Stats</span></a>
+                            <a data-toggle="tab" href="#s1"><i className="fa fa-clock-o" />
+                                <span className="hidden-mobile hidden-tablet">Live Stats</span>
+                            </a>
                         </li>
                         <li>
-                            <a data-toggle="tab" href="#s2"><i className="fa fa-facebook" /> <span
-                                className="hidden-mobile hidden-tablet">Social Network</span></a>
+                            <a data-toggle="tab" href="#s2"><i className="fa fa-facebook" />
+                                <span className="hidden-mobile hidden-tablet">Social Network</span>
+                            </a>
                         </li>
                         <li>
-                            <a data-toggle="tab" href="#s3"><i className="fa fa-dollar" /> <span
-                                className="hidden-mobile hidden-tablet">Revenue</span></a>
+                            <a data-toggle="tab" href="#s3"><i className="fa fa-dollar" />
+                                <span className="hidden-mobile hidden-tablet">Revenue</span>
+                            </a>
                         </li>
                     </ul>
                 </header>

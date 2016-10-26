@@ -8,8 +8,9 @@ import React from 'react-mod';
 
 let rawItems = require('json!../../mock-json/social-wall.json');
 
-let SocialWall = React.createClass({
-    render: function() {
+class SocialWall extends React.Component
+{
+    render() {
         return (
 <div id="content">
     <div className="row">
@@ -322,6 +323,6 @@ let SocialWall = React.createClass({
 </div>
         )
     }
-});
+}
 
 export default SocialWall;

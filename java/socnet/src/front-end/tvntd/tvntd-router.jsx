@@ -8,7 +8,6 @@ import React from 'react-mod';
 import {Route, Redirect, IndexRoute, DefaultRoute} from 'react-router';
 
 import Layout        from './pages/layout/Layout.jsx';
-import Public        from './pages/public/Public.jsx';
 import MainPage      from './pages/public/MainPage.jsx';
 import {Login}       from './pages/login/Login.jsx';
 import Logout        from './pages/login/Logout.jsx';
