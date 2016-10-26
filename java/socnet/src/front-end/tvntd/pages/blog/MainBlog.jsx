@@ -12,19 +12,42 @@ import AdminStore      from 'vntd-root/stores/AdminStore.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 import ArticleTagBrief from 'vntd-root/components/ArticleTagBrief.jsx';
 
-let MainBlog = React.createClass({
+class MainBlog extends React.Component
+{
+    constructor(props) {
+        super(props);
 
-    mixins: [
-        Reflux.connect(ArticleTagStore)
-    ],
+        this.state = {
+            pubTags: ArticleTagStore.getAllPublicTags(true)
+        };
+        this._updateState = this._updateState.bind(this);
+        this._getBlogTab = this._getBlogTab.bind(this);
+    }
 
-    getBlogTab: function() {
+    componentDidMount() {
+        this.unsub = ArticleTagStore.listen(this._updateState);
+    }
+
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    _updateState(data) {
+        this.setState({
+            pubTags: ArticleTagStore.getAllPublicTags(true)
+        });
+    }
+
+    _getBlogTab() {
         let idx = 0;
         let out = {
             tabItems: [],
             tabContents: []
         };
-        let pubTags = ArticleTagStore.getAllPublicTags(true);
+        let pubTags = this.state.pubTags;
         _.forOwn(pubTags, function(tag) {
             out.tabItems.push({
                 domId  : _.uniqueId('tag-'),
@@ -38,17 +61,10 @@ let MainBlog = React.createClass({
             );
         });
         return out;
-    },
+    }
 
-    _getActivePane: function() {
-        return 0;
-    },
-
-    _setActivePane: function(idx) {
-    },
-
-    render: function() {
-        let tabData = this.getBlogTab();
+    render() {
+        let tabData = this._getBlogTab();
         return (
             <div id="content">
                 <div className="row">
@@ -61,6 +77,6 @@ let MainBlog = React.createClass({
             </div>
         )
     }
-});
+}
 
 export default MainBlog;

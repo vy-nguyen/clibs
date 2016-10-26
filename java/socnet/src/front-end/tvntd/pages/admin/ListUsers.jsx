@@ -4,14 +4,12 @@
 'use strict';
 
 import React          from 'react-mod';
-import Reflux         from 'reflux';
 import Actions        from 'vntd-root/actions/Actions.jsx';
 import AdminStore     from 'vntd-root/stores/AdminStore.jsx';
 
-let ListUsers = React.createClass({
-    mixins: [Reflux.connect(AdminStore)],
-
-    render: function() {
+class ListUsers extends React.Component
+{
+    render() {
         Actions.listUsers(); 
         return (
             <div>
@@ -19,6 +17,6 @@ let ListUsers = React.createClass({
             </div>
         );
     }
-});
+}
 
 export default ListUsers;

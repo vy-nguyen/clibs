@@ -6,8 +6,9 @@ import React from 'react-mod'
 
 let rawItems = require('json!../../mock-json/blog.json');
 
-let Blog = React.createClass({
-    render: function() {
+class Blog extends React.Component
+{
+    render() {
         return (
 <div id="content" className="fadeInUp">
     <div className="row">
@@ -234,6 +235,6 @@ let Blog = React.createClass({
 </div>
         )
     }
-});
+}
 
 export default Blog;

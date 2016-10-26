@@ -33,9 +33,13 @@ import Select      from 'react-select';
  *     } ]
  * }
  */
-let GenericForm = React.createClass({
+class GenericForm extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
 
-    _btnClick: function(button, event) {
+    _btnClick(button, event) {
         let dataRefs = {};
         let entries = this.props.form.formEntries;
 
@@ -49,37 +53,38 @@ let GenericForm = React.createClass({
                 }
             }.bind(this));
         }.bind(this));
-        button.onClick(dataRefs);
-    },
+        button.onClick(dataRefs, button);
+    }
 
-    _onBlur: function(entry, val) {
+    _onBlur(entry, val) {
         entry.taValue = val.target.value;
-    },
+    }
 
-    _onSelectChange: function(entry, val) {
+    _onSelectChange(entry, val) {
         entry.taValue = val;
-    },
+    }
 
-    render: function() {
+    render() {
         let form = this.props.form;
         let formButtons = null;
 
         if (form.buttons != null) {
             let buttons = form.buttons.map(function(item, idx) {
                 return (
-                    <a key={idx} className={item.btnFormat} onClick={this._btnClick.bind(this, item)}>{item.btnText}</a>
+                    <button key={_.uniqueId('form-btn-')} type={"button"}
+                        className={item.btnFormat} onClick={this._btnClick.bind(this, item)}>
+                        {item.btnText}
+                    </button>
                 );
             }.bind(this));
             formButtons = (
-                <footer>
-                    <div className="row form-group">
-                        <div className="col-sm-offset-2 col-sm-10">
-                            <div className="pull-right">
-                                {buttons}
-                            </div>
+                <div className="row">
+                    <div className="col-sm-offset-2 col-sm-10">
+                        <div className="btn-group pull-right" role="group">
+                            {buttons}
                         </div>
                     </div>
-                </footer>
+                </div>
             );
         }
         let formEntries = form.formEntries.map(function(item, idx) {
@@ -115,7 +120,7 @@ let GenericForm = React.createClass({
             }.bind(this));
 
             return (
-                <div key={idx}>
+                <div key={_.uniqueId('form-fields')}>
                     {item.legend != null ? <legend>{item.legend}</legend> : null}
                     <fieldset>
                         {entries}
@@ -125,13 +130,15 @@ let GenericForm = React.createClass({
         }.bind(this));
 
         return (
-            <form className={form.formFmt}>
-                {form.hiddenHead}
-                {formEntries}
-                {formButtons}
-            </form>
+            <div>
+                <form className={form.formFmt}>
+                    {form.hiddenHead}
+                    {formEntries}
+                    {formButtons}
+                </form>
+            </div>
         );
     }
-});
+}
 
 export default GenericForm;

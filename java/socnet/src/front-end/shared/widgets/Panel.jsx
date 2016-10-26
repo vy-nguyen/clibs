@@ -4,16 +4,20 @@
  */
 'use strict';
 
-import React            from 'react-mod';
 import _                from 'lodash';
+import React            from 'react-mod';
 import DropdownMenu     from 'vntd-shared/layout/DropdownMenu.jsx';
 import JarvisWidget     from 'vntd-shared/widgets/JarvisWidget.jsx';
 
-let Panel = React.createClass({
+class Panel extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
 
-    render: function() {
+    render() {
         let panel = this.props.context;
-        if (panel === null || panel === undefined) {
+        if (panel == null) {
             return null;
         }
         let dropdownMenu = panel.headerMenus.map(function(item, idx) {
@@ -48,6 +52,6 @@ let Panel = React.createClass({
             </JarvisWidget>
         );
     }
-});
+}
 
 export default Panel;

@@ -17,46 +17,39 @@ import TaskTimeline       from './TaskTimeline.jsx';
 import ProfileCover       from './ProfileCover.jsx';
 import UserAvatar         from './UserAvatar.jsx';
 
-let UserInfo = React.createClass({
-    mixins: [Reflux.connect(UserStore)],
+class UserInfo extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this._updateState   = this._updateState.bind(this);
+        this._onLineStatus  = this._onLineStatus.bind(this);
+        this._offLineStatus = this._offLineStatus.bind(this);
+        this._saveProfile   = this._saveProfile.bind(this);
+        this._cancelSave    = this._cancelSave.bind(this);
 
-    render: function() {
-        let self = UserStore.getSelf();
-        if (self === undefined || self === null) {
-            console.log(this.state);
-            return null;
-        }
-        let profileMenu = {
+        this.state = {
+            self: UserStore.getSelf()
+        };
+        this._profileMenu = {
             iconFmt  : 'btn-xs btn-success',
-            titleText: 'Miann',
+            titleText: 'Status',
             itemFmt  : 'pull-right js-status-update',
             menuItems: [ {
                 itemFmt : 'fa fa-circle txt-color-green',
                 itemText: 'Online',
-                itemHandler: function() {
-                    console.log("Online is clicked");
-                }.bind(this)
-            }, {
-                itemFmt : 'fa fa-circle txt-color-yellow',
-                itemText: 'Go to sleep',
-                itemHandler: function() {
-                    console.log("Offline is clicked");
-                }.bind(this)
+                itemHandler: this._onLineStatus
             }, {
                 itemFmt : 'fa fa-circle txt-color-red',
                 itemText: 'Offline',
-                itemHandler: function() {
-                    console.log("Offline is clicked");
-                }.bind(this)
+                itemHandler: this._offLineStatus
             } ]
         };
-        let panelData = {
+        this._panelData = {
             icon   : 'fa fa-book',
             header : 'My Basic Information',
-            headerMenus: [profileMenu]
+            headerMenus: [this._profileMenu]
         };
-
-        let profile_form = {
+        this._profileForm = {
             formFmt: "client-form",
             hiddenHead: null,
             hiddenTail: null,
@@ -116,57 +109,96 @@ let UserInfo = React.createClass({
                 } ]
             } ],
             buttons: [ {
-                btnFmt : "btn btn-default",
+                btnFmt : "btn btn-lg btn-default",
                 btnText: "Cancel",
-                onClick: function(e, w) {
-                    console.log("Cancel click: ");
-                    console.log(e);
-                    console.log(w);
-                    e.preventDefault();
-                }.bind(this)
+                onClick: this._cancelSave
             }, {
-                btnFmt : "btn btn-primary",
+                btnFmt : "btn btn-lg btn-primary",
                 btnText: "Save",
-                onClick: function(e, w) {
-                    console.log("Save click: ");
-                    console.log(e);
-                    console.log(w);
-                    e.preventDefault();
-                }.bind(this)
+                onClick: this._saveProfile
             } ]
         };
+
+    }
+
+    componentDidMount() {
+        this.unsub = UserStore.listen(this._updateState);
+    }
+
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    _updateState(data) {
+        this.setState({
+            self: UserStore.getSelf()
+        });
+    }
+
+    _onLineStatus() {
+        console.log("onLine status");
+        console.log(this);
+    }
+
+    _offLineStatus() {
+        console.log("offline status");
+        console.log(this);
+    }
+
+    _saveProfile(a, b) {
+        console.log("Save profile");
+        console.log(this);
+        console.log(a);
+        console.log(b);
+    }
+
+    _cancelSave(a, b) {
+        console.log("Cancel Save");
+        console.log(this);
+        console.log(a);
+        console.log(b);
+    }
+
+    render() {
+        let self = this.state.self;
+        if (self == null) {
+            return null;
+        }
         return (
-            <Panel context={panelData} className="well no-padding">
-                <GenericForm form={profile_form}/>
+            <Panel context={this._panelData} className="well no-padding">
+                <GenericForm form={this._profileForm}/>
             </Panel>
         );
     }
-});
+}
 
-let UserProfile = React.createClass({
+const ProfileTab = {
+    reactId : 'user-profile',
+    tabItems: [ {
+        domId  : 'profile-tab',
+        tabText: 'About Me',
+        tabIdx : 0
+    }, {
+        domId  : 'connection-tab',
+        tabText: 'Connections',
+        tabIdx : 1
+    }, {
+        domId  : 'message',
+        tabText: 'Secure Messages',
+        tabIdx : 2
+    }, {
+        domId  : 'pending-task',
+        tabText: 'Pending Tasks',
+        tabIdx : 3
+    } ]
+};
 
-    profileTab: {
-        reactId : 'user-profile',
-        tabItems: [ {
-            domId  : 'profile-tab',
-            tabText: 'About Me',
-            tabIdx : 0
-        }, {
-            domId  : 'connection-tab',
-            tabText: 'Connections',
-            tabIdx : 1
-        }, {
-            domId  : 'message',
-            tabText: 'Secure Messages',
-            tabIdx : 2
-        }, {
-            domId  : 'pending-task',
-            tabText: 'Pending Tasks',
-            tabIdx : 3
-        } ]
-    },
-
-    render: function() {
+class UserProfile extends React.Component
+{
+    render() {
         let self = UserStore.getSelf();
         if (self === undefined || self === null) {
             return <h1>Something's wrong, try logout and login again</h1>;
@@ -176,7 +208,7 @@ let UserProfile = React.createClass({
                 <ProfileCover/>
                 <UserAvatar data={{doFileDrop: true}}/>
                 <div className="row">
-                    <TabPanel context={this.profileTab}>
+                    <TabPanel context={ProfileTab}>
                         <UserInfo/>
                         <Friends/>
                         <Messages/>
@@ -186,6 +218,6 @@ let UserProfile = React.createClass({
             </div>
         )
     }
-});
+}
 
 export default UserProfile;

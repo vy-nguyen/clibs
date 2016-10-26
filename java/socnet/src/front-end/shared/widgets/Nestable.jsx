@@ -6,11 +6,16 @@
 import React         from 'react-mod'
 import {findDOMNode} from 'react-dom'
 
-let Nestable = React.createClass({
+class Nestable extends React.createClass
+{
+    constructor(props) {
+        super(props);
+    }
 
-    componentDidMount: function () {
+    componentDidMount() {
         let element = $(findDOMNode(this));
         let options = {};
+
         if (this.props.group){
             options.group = this.props.group;
         }
@@ -22,13 +27,10 @@ let Nestable = React.createClass({
             }.bind(this));
             this.props.onChange(element.nestable('serialize'))
         }
-    },
-
-    render: function() {
-        return (
-            this.props.children
-        )
     }
-});
+    render() {
+        return this.props.children;
+    }
+}
 
 export default Nestable

@@ -6,9 +6,11 @@
 import React          from 'react-mod';
 import Panel          from 'vntd-shared/widgets/Panel.jsx';
 
-let TaskTimeline = React.createClass({
-    render: function() {
-        let filterMenu = {
+class TaskTimeline extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this._filterMenu = {
             reactId  : 'filter-friend',
             iconFmt  : 'btn-xs btn-warning',
             titleText: 'Filter',
@@ -17,28 +19,31 @@ let TaskTimeline = React.createClass({
                 itemFmt : 'fa fa-circle txt-color-green',
                 itemText: 'Most promissing',
                 itemHandler: function() {
-                }.bind(this)
+                }
             }, {
                 itemFmt : 'fa fa-circle txt-color-green',
                 itemText: 'Give me most credit',
                 itemHandler: function() {
-                }.bind(this)
+                }
             } ]
         };
-        let panelDef = {
+        this._panelDef = {
             init   : false,
             reactId: 'task-info',
             icon   : 'fa fa-user',
             header : 'My Task Timeline',
-            headerMenus: [filterMenu]
+            headerMenus: [ this._filterMenu ]
         };
 
+    }
+
+    render() {
         return (
-            <Panel context={panelDef}>
+            <Panel context={this._panelDef}>
                 <h1>You don't have any pending tasks yet!</h1>
             </Panel>
         )
     }
-});
+}
 
 export default TaskTimeline;
