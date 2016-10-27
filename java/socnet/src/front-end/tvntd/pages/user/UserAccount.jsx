@@ -5,25 +5,48 @@
 'use strict';
 
 import React              from 'react-mod';
-import Reflux             from 'reflux';
-
 import UserStore          from 'vntd-shared/stores/UserStore.jsx';
 import ProfileCover       from 'vntd-root/components/ProfileCover.jsx';
 
-let UserAccount = React.createClass({
-    mixins: [Reflux.connect(UserStore)],
+class UserAccount extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this._updateState = this._updateState.bind(this);
 
-    render: function() {
         let { userUuid } = this.props.params;
-        let self = UserStore.getUserByUuid(userUuid);
+        this.state = {
+            myUuid: userUuid,
+            self  : UserStore.getUserByUuid(userUuid)
+        };
+    }
 
-        if (self === null) {
+    componentDidMount() {
+        this.unsub = UserStore.listen(this._updateState);
+    }
+
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    _updateState() {
+        this.setState({
+            self: UserStore.getUserByUuid(this.state.myUuid)
+        });
+    }
+
+    render() {
+        let self = this.state.self;
+        if (self == null) {
             return null;
         }
         return (
             <ProfileCover userUuid={self.userUuid}/>
         )
     }
-});
+}
 
 export default UserAccount;

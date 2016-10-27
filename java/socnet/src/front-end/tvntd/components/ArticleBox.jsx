@@ -95,7 +95,7 @@ class ArticleBox extends React.Component
         )
     }
 
-    static article(articleUuid, clickCb, btnActive, btnDisabled, cbArg) {
+    static article(articleUuid, clickCb) {
         let article = ArticleStore.getArticleByUuid(articleUuid);
         if (article == null) {
             return null;
@@ -118,7 +118,7 @@ class ArticleBox extends React.Component
             artBrief   : artRank.contentBrief,
             artPrice   : author.getUserName(),
             clickCbFn  : clickCb.clickHandler.bind(clickCb.callbackArg, articleUuid, artRank),
-            clickBtn   : clickCb.getBtnFormat(),
+            clickBtn   : clickCb.getBtnFormat(clickCb.articleUuid),
             likeStat   : {
                 dateMoment  : article.createdDate,
                 commentCount: artRank.notifCount ? artRank.notifCount : 0,

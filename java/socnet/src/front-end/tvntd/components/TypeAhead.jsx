@@ -11,20 +11,32 @@ import TA            from 'react-typeahead';
 import AuthorStore   from 'vntd-root/stores/AuthorStore.jsx';
 import UserStore     from 'vntd-shared/stores/UserStore.jsx';
 
-let TypeAhead = React.createClass({
-    mixins: [
-        Reflux.connect(AuthorStore)
-    ],
+class TypeAhead extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this._onBlur = this._onBlur.bind(this);
+        this._updateState = this._updateState.bind(this);
+        this._onOptionSelected = this._onOptionSelected.bind(this);
 
-    componentWillMount: function() {
-        let myUuid = UserStore.getSelf().userUuid;
+        let myUuid  = UserStore.getSelf().userUuid;
+        let artRank = AuthorStore.getArticleRank(myUuid, props.articleUuid);
+        this.state = {
+            myUuid   : myUuid,
+            artRank  : artRank,
+            allTags  : AuthorStore.getTagsByAuthorUuid(myUuid),
+            authorTag: AuthorStore.getAuthorTag(myUuid, artRank.tagName)
+        };
+    }
 
+    componentWillMount() {
+        let myUuid = this.state.myUuid;
         if (this.props.articleUuid != null) {
-            let artRank = AuthorStore.getArticleRank(myUuid, this.props.articleUuid);
+            let artRank = this.state.artRank;
             if (artRank == null) {
                 return;
             }
-            let authorTag = AuthorStore.getAuthorTag(myUuid, artRank.tagName)
+            let authorTag = this.state.authorTag;
             this.setState({
                 myUuid : myUuid,
                 artRank: artRank,
@@ -36,26 +48,46 @@ let TypeAhead = React.createClass({
                 this.props.artRankSave(artRank, authorTag);
             }
         }
-    },
+    }
 
-    _onBlur: function(val) {
+    componentDidMount() {
+        this.unsub = AuthorStore.listen(this._updateState);
+    }
+
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    _updateState(data) {
+        let artRank = AuthorStore.getArticleRank(this.state.myUuid, this.props.articleUuid);
+        this.setState({
+            artRank  : artRank,
+            authorTag: AuthorStore.getAuthorTag(myUuid, artRank.tagName)
+        });
+    }
+
+    _onBlur(val) {
         this.props.selectValue(val.target.value);
-    },
+    }
 
-    _onOptionSelected: function(val) {
+    _onOptionSelected(val) {
         this.props.selectValue(val);
-    },
+    }
 
-    render: function() {
-        let allTags = AuthorStore.getTagsByAuthorUuid(this.state.myUuid);
+    render() {
+        let allTags = this.state.allTags;
+        let tagName = this.state.artRank.tagName;
         return (
             <TA.Typeahead options={allTags} maxVisible={6}
-                placeholder={this.state.tagName} value={this.state.tagName}
+                placeholder={tagName} value={tagName}
                 customClasses={{input: "form-control input-sm"}}
                 onBlur={this._onBlur}
                 onOptionSelected={this._onOptionSelected}/>
         );
     }
-});
+}
 
 export default TypeAhead;
