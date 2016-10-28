@@ -87,19 +87,40 @@ class BlogItem extends React.Component
     }
 }
 
-let Blog = React.createClass({
+class Blog extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this._updateState = this._updateState.bind(this);
 
-    mixins: [
-        Reflux.connect(AuthorStore),
-        Reflux.connect(ArticleStore)
-    ],
+        this.state = {
+            articleUuid: null,
+            articles   : ArticleStore.getSortedArticlesByAuthor(props.authorUuid)
+        };
+    }
 
-    initState: {
-        articleUuid: null,
-        articleRank: null
-    },
+    componentDidMount() {
+        this.unsub = ArticleStore.listen(this._updateState);
+    }
 
-    _readArticle: function(articleUuid) {
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    _updateState(data) {
+        let articles = ArticleStore.getSortedArticlesByAuthor(props.authorUuid);
+        if ((this.state.articles == null) ||
+            (this.state.articles.length !== articles.length)) {
+            this.setState({
+                articles: ArticleStore.getSortedArticlesByAuthor(props.authorUuid)
+            });
+        }
+    }
+
+    _readArticle(articleUuid) {
         if (this.state.articleUuid === articleUuid) {
             this.setState({
                 articleUuid: null
@@ -109,41 +130,44 @@ let Blog = React.createClass({
                 articleUuid: articleUuid
             });
         }
-    },
+    }
 
-    _renderSummarized: function(authorUuid, articleUuid) {
+    _getBtnFormat(articleUuid) {
+        if ((this.state.articleUuid == null) || (this.state.articleUuid !== articleUuid)) {
+            return {
+                className : "btn btn-primary",
+                buttonText: "Read more..."
+            }
+        }
+        return {
+            className : "btn btn-primary",
+            buttonText: "Hide article"
+        }
+    }
+
+    _renderSummarized(authorUuid, articleUuid) {
         let clickCb = {
-            getBtnFormat: function() {
-                if (this.state.articleUuid == null || this.state.articleUuid !== articleUuid) {
-                    return {
-                        className : "btn btn-primary",
-                        buttonText: "Read more..."
-                    }
-                }
-                return {
-                    className : "btn btn-primary",
-                    buttonText: "Hide article"
-                }
-            }.bind(this),
-
+            getBtnFormat: this._getBtnFormat.bind(this, articleUuid),
             clickHandler: this._readArticle.bind(this, articleUuid)
         };
-        return <BlogItem authorUuid={authorUuid} articleUuid={articleUuid} context={clickCb}/>
-    },
+        return <BlogItem authorUuid={authorUuid} articleUuid={articleUuid} context={clickCb}/>;
+    }
 
-    _renderFull: function(articleUuid, article, artRank) {
-        if (this.state.articleUuid == null || this.state.articleUuid !== articleUuid) {
+    _renderFull(articleUuid, article, artRank) {
+        if ((this.state.articleUuid == null) || (this.state.articleUuid !== articleUuid)) {
             return null;
         }
         if (article != null) {
             return <PostPane data={article}/>;
         }
-        return PostPane.renderArticleRank(artRank);
-    },
+        if (artRank != null) {
+            return PostPane.renderArticleRank(artRank);
+        }
+        return null;
+    }
 
-    render: function() {
-        let authorUuid = this.props.authorUuid;
-        let articles = ArticleStore.getSortedArticlesByAuthor(authorUuid);
+    render() {
+        let articles = this.state.articles;
         let items = [];
 
         if (articles == null) {
@@ -160,6 +184,6 @@ let Blog = React.createClass({
         }
         return <div>{items}</div>;
     }
-});
+}
 
 export default Blog;

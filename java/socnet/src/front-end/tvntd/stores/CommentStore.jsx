@@ -291,8 +291,7 @@ let CommentStore = Reflux.createStore({
     },
 
     onPostCommentCompleted: function(data) {
-        this._updateComments(data.comments, true);
-        this.trigger(this.data, data);
+        this.trigger(this.data);
     },
 
     onPostCommentFailed: function(data) {

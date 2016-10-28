@@ -6,7 +6,6 @@
 
 import _        from 'lodash';
 import React    from 'react-mod';
-import Reflux   from 'reflux';
 import {renderToString} from 'react-dom-server';
 
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';

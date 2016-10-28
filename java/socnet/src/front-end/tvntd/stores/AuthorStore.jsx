@@ -174,6 +174,10 @@ class AuthorTagMgr {
         });
     }
 
+    getAuthorTagList() {
+        return this.authorTags;
+    }
+
     addAuthorTag(tag) {
         let authorTag = this.authorTags[tag.tagName];
         if (authorTag != null) {
