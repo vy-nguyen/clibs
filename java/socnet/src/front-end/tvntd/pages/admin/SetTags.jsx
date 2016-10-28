@@ -4,7 +4,6 @@
 'use strict';
 
 import React              from 'react-mod';
-import Reflux             from 'reflux';
 
 import ErrorView          from 'vntd-shared/layout/ErrorView.jsx';
 import Actions            from 'vntd-root/actions/Actions.jsx';

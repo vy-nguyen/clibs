@@ -5,7 +5,6 @@
 'use strict';
 
 import React              from 'react-mod';
-import Reflux             from 'reflux';
 
 import TabPanel           from 'vntd-shared/layout/TabPanel.jsx';
 import UserStore          from 'vntd-shared/stores/UserStore.jsx';

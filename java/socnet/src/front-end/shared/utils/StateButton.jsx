@@ -5,7 +5,6 @@
 'use strict';
 
 import React            from 'react-mod';
-import Reflux           from 'reflux';
 import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
 
 class StateButton extends React.Component

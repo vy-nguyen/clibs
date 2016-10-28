@@ -5,7 +5,6 @@
 'use strict';
 
 import React              from 'react-mod';
-import Reflux             from 'reflux';
 import SparklineContainer from 'vntd-shared/graphs/SparklineContainer.jsx';
 
 import TabPanel       from 'vntd-shared/layout/TabPanel.jsx';

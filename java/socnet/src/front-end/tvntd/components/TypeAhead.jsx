@@ -5,7 +5,6 @@
 'use strict';
 
 import React         from 'react-mod';
-import Reflux        from 'reflux';
 import TA            from 'react-typeahead';
 
 import AuthorStore   from 'vntd-root/stores/AuthorStore.jsx';

@@ -5,7 +5,6 @@
 'use strict';
 
 import React        from 'react-mod';
-import Reflux       from 'reflux';
 import {Link}       from 'react-router';
 
 import UiValidate   from 'vntd-shared/forms/validation/UiValidate.jsx';

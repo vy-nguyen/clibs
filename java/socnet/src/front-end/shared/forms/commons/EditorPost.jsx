@@ -6,7 +6,6 @@
 
 import _      from 'lodash';
 import React  from 'react-mod';
-import Reflux from 'reflux';
 import TA     from 'react-typeahead';
 
 import {OverlayTrigger, Tooltip} from 'react-bootstrap';

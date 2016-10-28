@@ -5,7 +5,6 @@
 'use strict';
 
 import React               from 'react-mod';
-import Reflux              from 'reflux';
 import {Link}              from 'react-router';
 
 import History             from 'vntd-shared/utils/History.jsx';

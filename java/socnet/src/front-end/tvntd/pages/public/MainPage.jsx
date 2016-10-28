@@ -6,7 +6,6 @@
 
 import _                from 'lodash';
 import React            from 'react-mod';
-import Reflux           from 'reflux';
 import {Link}           from 'react-router';
 import ReactSpinner     from 'react-spinjs';
 

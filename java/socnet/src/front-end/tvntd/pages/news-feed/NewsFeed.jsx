@@ -6,7 +6,6 @@
 
 import _                  from 'lodash';
 import React              from 'react-mod';
-import Reflux             from 'reflux';
 import AuthorFeed         from 'vntd-root/components/AuthorFeed.jsx';
 
 import SubHeader          from '../layout/SubHeader.jsx';

@@ -5,7 +5,6 @@
 
 import _               from 'lodash';
 import React           from 'react-mod';
-import Reflux          from 'reflux';
 
 import GenericForm     from 'vntd-shared/forms/commons/GenericForm.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';

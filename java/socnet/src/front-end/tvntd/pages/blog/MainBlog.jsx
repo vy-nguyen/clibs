@@ -6,7 +6,6 @@
 
 import _               from 'lodash';
 import React           from 'react-mod'
-import Reflux          from 'reflux';
 import TabPanel        from 'vntd-shared/layout/TabPanel.jsx';
 import AdminStore      from 'vntd-root/stores/AdminStore.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';

@@ -1,16 +1,19 @@
-import React from 'react-mod'
-import Reflux from 'reflux'
-import {Dropdown, MenuItem} from 'react-bootstrap'
+'use strict';
 
-import Chat         from './Chat.jsx'
-import ChatActions  from '../actions/ChatActions.jsx'
-import JarvisWidget from '../widgets/JarvisWidget.jsx'
+import React from 'react-mod';
+import {Dropdown, MenuItem} from 'react-bootstrap';
 
-let ChatWidget = React.createClass({
-    componentWillMount: function() {
+import Chat         from './Chat.jsx';
+import ChatActions  from '../actions/ChatActions.jsx';
+import JarvisWidget from '../widgets/JarvisWidget.jsx';
+
+class ChatWidget extends React.Component
+{
+    componentWillMount() {
         ChatActions.init();
-    },
-    render: function () {
+    }
+
+    render() {
         return (
             <JarvisWidget editbutton={false} fullscreenbutton={false} color="blueDark">
                 <header>
@@ -34,13 +37,12 @@ let ChatWidget = React.createClass({
                         </Dropdown>
                     </div>
                 </header>
-
                 <div>
                     <Chat className="widget-body widget-hide-overflow no-padding" />
                 </div>
             </JarvisWidget>
         )
     }
-});
+}
 
-export default ChatWidget
+export default ChatWidget;

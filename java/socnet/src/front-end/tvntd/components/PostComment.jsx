@@ -18,25 +18,86 @@ import CommentStore     from 'vntd-root/stores/CommentStore.jsx';
 import StateButton      from 'vntd-shared/utils/StateButton.jsx';
 import {safeStringify, findUuid}  from 'vntd-shared/utils/Enum.jsx';
 
-let CommentBox = React.createClass({
+class CommentBox extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this._updateState   = this._updateState.bind(this);
+        this._selectButton  = this._selectButton.bind(this);
+        this._submitComment = this._submitComment.bind(this);
+        this._toggleComment = this._toggleComment.bind(this);
 
-    mixins: [
-        Reflux.connect(CommentStore)
-    ],
+        let clickMuted = false;
+        let likeFmt    = "text-info";
+        let shareFmt   = "text-info";
 
-    _submitComment: function(e) {
+        if (!UserStore.isLogin()) {
+            clickMuted = true;
+            likeFmt    = "text-muted";
+            shareFmt   = "text-muted";
+        }
+        this.state = {
+            clickMuted : clickMuted,
+            sendDisable: "",
+            submiting  : false,
+            like       : true,
+            share      : true,
+            likeFmt    : likeFmt,
+            shareFmt   : shareFmt,
+            commentShow: props.cmtShow,
+            artAttr    : CommentStore.getArticleAttr(props.articleUuid),
+            cmtBoxId   : _.uniqueId('comment-box-')
+        }
+    }
+
+    componentDidMount() {
+        this.unsub = CommentStore.listen(this._updateState);
+        $('#' + this.state.cmtBoxId).on('input', function() {
+            $(this).css({'height': 'auto', 'overflow-y': 'hidden'}).height(this.scrollHeight);
+        });
+    }
+
+    componentWillUmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    _updateState(data) {
+        if (this.state.submiting !== true) {
+            return;
+        }
+        let newState = {}
+        let artAttr  = CommentStore.getArticleAttr(this.props.articleUuid);
+
+        if (artAttr != null) {
+            if (artAttr.didILikeIt() === true) {
+                newState = this._selectButton('like', true, false);
+            }
+            newState.artAttr = artAttr;
+        }
+        if (this.refs.comment != null) {
+            this.refs.comment.value = "";
+        }
+        newState.sendDisable = "";
+        newState.submiting = false;
+        this.setState(newState);
+    }
+
+    _submitComment(e) {
         e.preventDefault();
         Actions.postComment({
-            comment: safeStringify(this.refs.comment.value),
+            comment    : safeStringify(this.refs.comment.value),
             articleUuid: this.props.articleUuid,
         });
         this.setState({
             sendDisable: " disabled",
             submiting  : true
         });
-    },
+    }
 
-    _selectButton: function(type, likeState, shareState) {
+    _selectButton(type, likeState, shareState) {
         const likes = [ {
             like    : false,
             value   : -1,
@@ -70,9 +131,9 @@ let CommentBox = React.createClass({
             return shares[0];
         }
         return null;
-    },
+    }
 
-    _submitSelect: function(type, e) {
+    _submitSelect(type, e) {
         e.preventDefault();
         let newState = this._selectButton(type, this.state.like, this.state.share);
 
@@ -87,11 +148,11 @@ let CommentBox = React.createClass({
             commentId  : 0,
             articleUuid: this.props.articleUuid
         });
-    },
+    }
 
-    _toggleComment: function(e) {
+    _toggleComment(e) {
         e.preventDefault();
-        let show = !this.state.commentShow;
+        let show  = !this.state.commentShow;
         let boxId = "#comment-" + this.props.articleUuid;
 
         this.setState({commentShow: show});
@@ -100,63 +161,11 @@ let CommentBox = React.createClass({
         } else {
             $(boxId).hide();
         }
-    },
+    }
 
-    getInitialState: function() {
-        let clickMuted = false;
-        let likeFmt  = "text-info";
-        let shareFmt = "text-info";
-
-        if (!UserStore.isLogin()) {
-            clickMuted = true;
-            likeFmt  = "text-muted";
-            shareFmt = "text-muted";
-        }
-        return {
-            clickMuted : clickMuted,
-            sendDisable: "",
-            submiting  : false,
-            like       : true,
-            share      : true,
-            likeFmt    : likeFmt,
-            shareFmt   : shareFmt,
-            commentShow: this.props.cmtShow,
-            cmtBoxId   : _.uniqueId('comment-box-')
-        }
-    },
-
-    componentDidMount: function() {
-        $('#' + this.state.cmtBoxId).on('input', function() {
-            $(this).css({'height': 'auto', 'overflow-y': 'hidden'}).height(this.scrollHeight);
-        });
-    },
-
-    componentWillMount: function() {
-        let artAttr = CommentStore.getArticleAttr(this.props.articleUuid);
-        if (artAttr != null) {
-            let newState = {};
-            if (artAttr.didILikeIt() === true) {
-                newState = this._selectButton('like', true, false);
-            }
-            this.setState(newState);
-        }
-    },
-
-    componentWillReceiveProps: function(nextProps) {
-        let nextState = {
-            commentShow: nextProps.cmtShow
-        };
-        if (this.state.submiting === true) {
-            this.refs.comment.value = "";
-            nextState.sendDisable = "";
-            nextState.submiting = false;
-        }
-        this.setState(nextState);
-    },
-
-    render: function() {
+    render() {
         let likeCount = 0, shareCount = 0, userLiked = <p><br/></p>;
-        let artAttr = CommentStore.getArticleAttr(this.props.articleUuid);
+        let artAttr = this.state.artAttr;
         if (artAttr != null) {
             likeCount = artAttr.likeCount;
             shareCount = artAttr.shareCount;
@@ -225,7 +234,7 @@ let CommentBox = React.createClass({
             </div>
         );
     }
-});
+}
 
 class CommentItem extends React.Component {
 
@@ -366,24 +375,51 @@ class CommentItem extends React.Component {
     }
 };
 
-let PostComment = React.createClass({
-    mixins: [
-        Reflux.listenTo(CommentStore, "_onNewComment"),
-    ],
+class PostComment extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this._updateState = this._updateState.bind(this);
+        this._componentDidUpdate = this._componentDidUpdate.bind(this);
 
-    getInitialState: function() {
-        return {
-            comment: CommentStore.getByArticleUuid(this.props.articleUuid)
+        this.state = {
+            comment: CommentStore.getByArticleUuid(props.articleUuid)
         }
-    },
+    }
 
-    _onNewComment: function() {
+    componentDidMount() {
+        this.unsub = CommentStore.listen(this._updateState);
+        this._componentDidUpdate();
+    }
+
+    componentWillUmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    _updateState() {
         this.setState({
             comment: CommentStore.getByArticleUuid(this.props.articleUuid)
         });
-    },
+    }
 
-    render: function() {
+    _componentDidUpdate() {
+        [
+            '#nor-comment-' + this.props.articleUuid,
+            '#fav-comment-' + this.props.articleUuid
+        ].forEach(function(id) {
+            let dom = $(id);
+            if (dom[0] != null) {
+                dom.stop().animate({
+                    scrollTop: dom[0].scrollHeight
+                }, 800);
+            }
+        });
+    }
+
+    render() {
         let normals = [];
         let favorites = [];
         let showComment = false;
@@ -450,25 +486,7 @@ let PostComment = React.createClass({
                 </div>
             </div>
         );
-    },
-
-    componentDidMount: function() {
-        this.componentDidUpdate();
-    },
-
-    componentDidUpdate: function() {
-        [
-            '#nor-comment-' + this.props.articleUuid,
-            '#fav-comment-' + this.props.articleUuid
-        ].forEach(function(id) {
-            let dom = $(id);
-            if (dom[0] != null) {
-                dom.stop().animate({
-                    scrollTop: dom[0].scrollHeight
-                }, 800);
-            }
-        });
     }
-});
+}
 
 export default PostComment;

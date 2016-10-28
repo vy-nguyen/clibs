@@ -15,9 +15,9 @@ import LikeStat     from 'vntd-root/components/LikeStat.jsx';
 
 import {getRandomInt, safeStringify} from 'vntd-shared/utils/Enum.jsx';
 
-let BlogItem = React.createClass({
-
-    render: function() {
+class BlogItem extends React.Component
+{
+    render() {
         let ctx = this.props.context;
         let authorUuid = this.props.authorUuid;
         let articleUuid = this.props.articleUuid;
@@ -85,7 +85,7 @@ let BlogItem = React.createClass({
             </div>
         );
     }
-});
+}
 
 let Blog = React.createClass({
 
