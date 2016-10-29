@@ -9,32 +9,41 @@ import React           from 'react-mod';
 import GenericForm     from 'vntd-shared/forms/commons/GenericForm.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 
-let TagInfo = React.createClass({
+class TagInfo extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this._removeSelf   = this._removeSelf.bind(this);
+        this._removeSub    = this._removeSub.bind(this);
+        this._addNewTag    = this._addNewTag.bind(this);
+        this._selectParent = this._selectParent.bind(this);
+        this._submitChange = this._submitChange.bind(this);
+    }
 
-    _removeSelf: function() {
+    _removeSelf() {
         ArticleTagStore.removePublicTag(this.props.artTag.tagName);
-    },
+    }
 
-    _removeSub: function(tag, sub) {
+    _removeSub(tag, sub) {
         ArticleTagStore.removePublicTag(sub.tagName);
-    },
+    }
 
-    _addNewTag: function(data) {
+    _addNewTag(data) {
         ArticleTagStore.addTagInput(data);
-    },
+    }
 
-    _selectParent: function(select) {
+    _selectParent(select) {
         ArticleTagStore.changeParent(this.props.artTag.tagName, select);
-    },
+    }
 
-    _submitChange: function(data) {
+    _submitChange(data) {
         console.log("Submit change tag info");
         console.log(data);
         let name = ArticleTagStore.changeTagValue(data);
         console.log(ArticleTagStore.getPublicTag(name));
-    },
+    }
 
-    render: function() {
+    render() {
         let artTag = this.props.artTag;
 
         if (artTag == null) {
@@ -95,7 +104,10 @@ let TagInfo = React.createClass({
         let parentTags = [];
         _.forOwn(ArticleTagStore.getAllPublicTags(false), function(tag) {
             taTags.push(tag.tagName);
-            parentTags.push({ value: tag.tagName, label: tag.tagName });
+            parentTags.push({
+                value: tag.tagName,
+                label: tag.tagName
+            });
         });
 
         let labelFmt = "col-sm-3 col-md-3 col-lg-3 control-label";
@@ -148,6 +160,6 @@ let TagInfo = React.createClass({
             </div>
         );
     }
-});
+}
 
 export default TagInfo;

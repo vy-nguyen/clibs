@@ -7,19 +7,18 @@ import React       from 'react-mod';
 import Router      from 'react-router';
 import UserStore   from '../stores/UserStore.jsx';
 
-let LoginRequired = React.createClass({
-    statics: {
-        willTransitionTo: function(transition, params, query, callback) {
-            if (!UserStore.isLogin()) {
-                transition.redirect("/login", null, {redirect: transition.path});
-            }
-            callback();
+class LoginRequired extends React.Component
+{
+    static willTransitionTo(transition, params, query, callback) {
+        if (!UserStore.isLogin()) {
+            transition.redirect("/login", null, {redirect: transition.path});
         }
-    },
+        callback();
+    }
 
-    render: function() {
+    render() {
         return <Router.RouterHandler/>;
     }
-});
+}
 
-export default LoginRequired
+export default LoginRequired;

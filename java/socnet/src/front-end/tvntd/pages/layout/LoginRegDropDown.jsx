@@ -27,7 +27,7 @@ const MenuInfo = [ {
     name : "Recover"
 } ];
 
-class LoginRegDropDown extends React.createClass
+class LoginRegDropDown extends React.Component
 {
     constructor(props) {
         super(props);

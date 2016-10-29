@@ -3,15 +3,16 @@
  */
 'use strict';
 
-import React          from 'react-mod';
 import _              from 'lodash';
+import React          from 'react-mod';
 
 import WidgetGrid     from 'vntd-shared/widgets/WidgetGrid.jsx';
 import JarvisWidget   from 'vntd-shared/widgets/JarvisWidget.jsx';
 import Datatable      from 'vntd-shared/tables/Datatable.jsx';
 
-let UserTable = React.createClass({
-    render: function() {
+class UserTable extends React.Component
+{
+    render() {
         let columns = [];
         let tableFmt = [];
 
@@ -54,6 +55,6 @@ let UserTable = React.createClass({
             </WidgetGrid>
         )
     }
-});
+}
 
-export default UserTable
+export default UserTable;

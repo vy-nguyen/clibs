@@ -6,13 +6,14 @@
 
 import React from 'react-mod';
 
-let PostTimeline = React.createClass({
-    render: function() {
+class PostTimeline extends React.Component
+{
+    render() {
         return (
-<div>
-</div>
+            <div>
+            </div>
         )
     }
-});
+}
 
 export default PostTimeline;

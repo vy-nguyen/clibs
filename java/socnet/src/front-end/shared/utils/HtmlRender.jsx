@@ -2,15 +2,22 @@
 
 import React from 'react-mod'
 
-let HtmlRender = React.createClass({
-    rawMarkup: function() {
+class HtmlRender extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this.rawMarkup = this.rawMarkup.bind(this);
+    }
+
+    rawMarkup() {
         return { __html: this.props.html }
-    },
-    render: function() {
+    }
+
+    render() {
         return (
             this.props.html ? <div {...this.props} dangerouslySetInnerHTML={this.rawMarkup()}></div> : null
         )
     }
-});
+}
 
-export default HtmlRender
+export default HtmlRender;

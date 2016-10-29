@@ -1,10 +1,11 @@
 'use strict';
 
-import React from 'react-mod';
 import _     from 'lodash';
+import React from 'react-mod';
 
-let OnOffSwitch = React.createClass({
-    render: function() {
+class OnOffSwitch extends React.Component
+{
+    render() {
         let props = this.props;
         let id = props.id || _.uniqueId('on-off-switch');
         let title = props.title ? <span className="onoffswitch-title">{props.title}</span> : null;
@@ -16,14 +17,13 @@ let OnOffSwitch = React.createClass({
                 <span className="onoffswitch">
                     <input type="checkbox" className="onoffswitch-checkbox" id={id} {...props}/>
                     <label className="onoffswitch-label" htmlFor={id} >
-                        <span className="onoffswitch-inner" data-swchon-text={onText}
-                              data-swchoff-text={offText}/>
+                        <span className="onoffswitch-inner" data-swchon-text={onText} data-swchoff-text={offText}/>
                         <span className="onoffswitch-switch"/>
                     </label>
                 </span>
             </div>
         )
     }
-});
+}
 
-export default OnOffSwitch
+export default OnOffSwitch;

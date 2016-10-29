@@ -6,41 +6,44 @@
 import React     from 'react-mod';
 import Sidebar   from 'react-sidebar';
 
-let FeedSideBar = React.createClass({
-
-    getInitialState() {
-        return {
-            sidebarOpen: false,
+class FeedSideBar extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this.state = {
+            sidebarOpen  : false,
             sidebarDocked: false
         };
-    },
+        this.onSetSidebarOpen = this.onSetSidebarOpen.bind(this);
+        this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
+    }
 
-    onSetSidebarOpen: function(open) {
+    onSetSidebarOpen(open) {
         this.setState({
             sidebarOpen: open
         });
-    },
+    }
 
-    componentWillMount: function() {
+    componentWillMount() {
         var mql = window.matchMedia(`(min-width: 800px)`);
         mql.addListener(this.mediaQueryChanged);
         this.setState({
             mql: mql,
             sidebarDocked: mql.matches
         });
-    },
+    }
 
-    componentWillUnmount: function() {
+    componentWillUnmount() {
         this.state.mql.removeListener(this.mediaQueryChanged);
-    },
+    }
 
-    mediaQueryChanged: function() {
+    mediaQueryChanged() {
         this.setState({
             sidebarDocked: this.state.mql.matches
         });
-    },
+    }
 
-    render: function() {
+    render() {
         var sidebarContent = <b>Sidebar content</b>;
 
         return (
@@ -52,6 +55,6 @@ let FeedSideBar = React.createClass({
             </Sidebar>
         );
     }
-});
+}
 
 export default FeedSideBar;

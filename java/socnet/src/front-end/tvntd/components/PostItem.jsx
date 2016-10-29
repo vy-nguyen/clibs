@@ -21,31 +21,36 @@ const modalStyle = {
     }
 };
 
-let PostItem = React.createClass({
+class PostItem extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this._openModal      = this._openModal.bind(this);
+        this._closeModal     = this._closeModal.bind(this);
+        this._afterOpenModal = this._afterOpenModal.bind(this);
 
-    getInitialState: function() {
-        return {
+        this.state = {
             imageSelected: "0",
             modalIsOpen  : false
         }
-    },
+    }
 
-    _openModal: function(idx, e) {
+    _openModal(idx, e) {
         e.preventDefault();
         this.setState({
             imageSelected: idx ? idx : "0",
             modalIsOpen  : true
         });
-    },
+    }
 
-    _afterOpenModal: function() {
-    },
+    _afterOpenModal() {
+    }
 
-    _closeModal: function() {
+    _closeModal() {
         this.setState({modalIsOpen: false});
-    },
+    }
 
-    render: function() {
+    render() {
         let picList = this.props.data;
         if (!picList) {
             return null;
@@ -116,6 +121,6 @@ let PostItem = React.createClass({
             </div>
         )
     }
-});
+}
 
 export default PostItem;

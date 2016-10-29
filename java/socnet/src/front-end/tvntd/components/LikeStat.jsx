@@ -7,9 +7,9 @@
 import React        from 'react-mod';
 import moment       from 'moment';
 
-let LikeStat = React.createClass({
-
-    render: function() {
+class LikeStat extends React.Component
+{
+    render() {
         let data = this.props.data;
         let dateSplit = this.props.split ? <br/> : null;
         let className = this.props.className ? "list-inline " + this.props.className : "list-inline";
@@ -24,6 +24,6 @@ let LikeStat = React.createClass({
             </ul>
         );
     }
-});
+}
 
 export default LikeStat;

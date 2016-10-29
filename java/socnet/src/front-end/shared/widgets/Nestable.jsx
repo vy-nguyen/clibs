@@ -6,7 +6,7 @@
 import React         from 'react-mod'
 import {findDOMNode} from 'react-dom'
 
-class Nestable extends React.createClass
+class Nestable extends React.Component
 {
     constructor(props) {
         super(props);

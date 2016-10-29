@@ -5,54 +5,65 @@
 
 import React from 'react';
 
-let Editor = React.createClass({
-    propTypes: {
-        content: React.PropTypes.string.isRequired,
-        onChange: React.PropTypes.func.isRequired
-    },
+class Editor extends React.Component
+{
+    static propTypes() {
+        return {
+            content : React.PropTypes.string.isRequired,
+            onChange: React.PropTypes.func.isRequired
+        }
+    }
 
-    getInitialState: function() {
-        // this is anti-pattern but we treat this.props.content as initial content
-        return {html: this.props.content};
-    },
+    constructor(props) {
+        super(props);
+        this._emitChange = this._emitChange.bind(this);
+        this.execCommand = this.execCommand.bind(this);
 
-    _emitChange: function(e) {
-        let editor = this.refs.editor;
+        this.state = {
+            // this is anti-pattern but we treat this.props.content as initial content
+            html: this.props.content
+        };
+    }
+
+    _emitChange(e) {
+        let editor  = this.refs.editor;
         let newHtml = editor.innerHTML;
 
-        this.setState({html: newHtml}, function() {
+        this.setState({
+            html: newHtml
+        }, function() {
             this.props.onChange({
                 value: newHtml
             });
         }.bind(this));
-    },
+    }
 
-    componentWillReceiveProps: function(nextProps) {
+    componentWillReceiveProps(nextProps) {
         this.setState({
             html: nextProps.content
         });
-    },
+    }
 
-    shouldComponentUpdate: function(nextProps) {
+    shouldComponentUpdate(nextProps) {
         return nextProps.content !== this.state.html || this.state.html === '';
-    },
+    }
 
-    execCommand: function(command, arg) {
+    execCommand(command, arg) {
         document.execCommand(command, false, arg);
-    },
+    }
 
-    render: function() {
+    render() {
         // customize css rules here
         var buttonSpacing = {marginRight: 2},
             toolbarStyle = {marginBottom: 3};
 
+        /**
+          * For list of supported commands
+          * https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand
+          */
         return (
             <div>
                 <div style={toolbarStyle}>
-                    {/**
-                      * For list of supported commands
-                      * https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand
-                      */}
                     <div className="btn-group" style={buttonSpacing}>
                         <button 
                             className="btn btn-default btn-xs dropdown-toggle" 
@@ -188,6 +199,6 @@ let Editor = React.createClass({
             </div>
         );
     }
-});
+}
 
-export default Editor
+export default Editor;

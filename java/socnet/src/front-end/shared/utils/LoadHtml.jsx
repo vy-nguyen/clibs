@@ -2,22 +2,28 @@
 
 import React from 'react-mod'
 
-let LoadHtml = React.createClass({
-    componentDidMount: function() {
-        this._process(this.props.url);
-    },
+class LoadHtml extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this._process = this._process.bind(this);
+    }
 
-    render: function() {
+    componentDidMount() {
+        this._process(this.props.url);
+    }
+
+    render() {
         return (
             <div ref="viewport" />
         )
-    },
+    }
 
-    _process: function(url) {
+    _process(url) {
         $.get(url).then(function(res) {
             $(this.refs.viewport).html(res);
-        }.bind(this))
+        }.bind(this));
     }
-});
+}
 
-export default LoadHtml
+export default LoadHtml;

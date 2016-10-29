@@ -18,29 +18,6 @@ import LangMenu           from 'vntd-root/components/LangMenu.jsx';
 import Mesg               from 'vntd-root/components/Mesg.jsx';
 import LoginRegDropDown   from './LoginRegDropDown.jsx';
 
-/*
-let BlogMenu = React.createClass({
-
-    render: function() {
-        return (
-            <Dropdown className="dropdown" id="header-blog">
-                <Dropdown.Toggle className="dropdown-toggle bg-color-blue txt-color-white">
-                    <span className="activity-dropdown">
-                        <i className="fa fa-lg fa-fw fa-book"/><b className="badge">Blog</b>
-                    </span>
-                </Dropdown.Toggle>
-                <Dropdown.Menu className="dropdown-menu pull-right text-left">
-                    <MenuItem><p className="txt-color-darken no-margin">Chinh Tri</p></MenuItem>
-                    <MenuItem><p className="txt-color-darken no-margin">Kinh Te</p></MenuItem>
-                    <MenuItem><p className="txt-color-darken no-margin">Giao Duc</p></MenuItem>
-                    <MenuItem><p className="txt-color-darken no-margin">Ky Thuat</p></MenuItem>
-                </Dropdown.Menu>
-            </Dropdown>
-        );
-    }
-});
-*/
-
 class HeaderBtn extends React.Component
 {
     constructor(props) {

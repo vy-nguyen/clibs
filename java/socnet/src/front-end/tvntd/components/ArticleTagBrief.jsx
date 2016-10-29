@@ -13,14 +13,24 @@ import AuthorFeed      from 'vntd-root/components/AuthorFeed.jsx';
 import ArticleStore    from 'vntd-root/stores/ArticleStore.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 
-let ArticleTagBrief = React.createClass({
+class ArticleTagBrief extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this._readArticle    = this._readArticle.bind(this);
+        this._getSubTag      = this._getSubTag.bind(this);
+        this._getSubTagObjs  = this._getSubTagObjs.bind(this);
+        this._renderArtBrief = this._renderArtBrief.bind(this);
+        this._renderArtFull  = this._renderArtFull.bind(this);
+        this._renderArtBox   = this._renderArtBox.bind(this);
 
-    initState: {
-        articleUuid: null,
-        articleRank: null 
-    },
+        this.state = {
+            articleUuid: null,
+            articleRank: null 
+        };
+    }
 
-    _readArticle: function(uuid, artRank) {
+    _readArticle(uuid, artRank) {
         if (uuid === this.state.articleUuid) {
             this.setState(this.initState);
         } else {
@@ -29,9 +39,9 @@ let ArticleTagBrief = React.createClass({
                 articleRank: artRank
             });
         }
-    },
+    }
 
-    _getSubTag: function(subTags, tag) {
+    _getSubTag(subTags, tag) {
         if (tag.subTags == null) {
             return;
         }
@@ -41,9 +51,9 @@ let ArticleTagBrief = React.createClass({
                 this._getSubTag(subTags, sub);
             }
         }.bind(this));
-    },
+    }
 
-    _getSubTagObjs: function(out, tag) {
+    _getSubTagObjs(out, tag) {
         out.push(tag);
         if (tag.subTags == null) {
             return;
@@ -56,9 +66,9 @@ let ArticleTagBrief = React.createClass({
                 this._getSubTagObjs(out, sub);
             }
         }.bind(this));
-    },
+    }
 
-    _renderArtBrief: function(art) {
+    _renderArtBrief(art) {
         let artUuid = art.artUuid;
         let artTag = art.artTag;
         let clickCb = {
@@ -83,9 +93,9 @@ let ArticleTagBrief = React.createClass({
                 {ArticleBox.article(artUuid, clickCb)}
             </div>
         )
-    },
+    }
 
-    _renderArtFull: function(art) {
+    _renderArtFull(art) {
         if (this.state.articleUuid == null || this.state.articleUuid !== art.artUuid) {
             return null;
         }
@@ -98,9 +108,9 @@ let ArticleTagBrief = React.createClass({
                 {AuthorFeed.renderToggleView(article.authorUuid, article, this._readArticle, artTag)}
             </div>
         )
-    },
+    }
 
-    _renderArtBox: function(output, tag) {
+    _renderArtBox(output, tag) {
         let articles = [];
         ArticleTagStore.getPublishedArticles(tag.tagName, articles);
 
@@ -140,13 +150,9 @@ let ArticleTagBrief = React.createClass({
                 </div>
             );
         }
-    },
+    }
 
-    getInitialState: function() {
-        return this.initState;
-    },
-
-    render: function() {
+    render() {
         let output = [];
         this._renderArtBox(output, this.props.tag);
 
@@ -155,25 +161,23 @@ let ArticleTagBrief = React.createClass({
                 {output}
             </div>
         );
-    },
-
-    statics: {
-        renderPublicTags: function() {
-            let output = [];
-            let tags = ArticleTagStore.getAllPublicTags(true);
-            if (tags != null) {
-                _.forOwn(tags, function(tag) {
-                    output.push(
-                        <div className="row" key={_.uniqueId('art-tag-brief-')}>
-                            <h1>{tag.tagName}</h1>
-                            <ArticleTagBrief key={_.uniqueId('art-pub-tag-')} tag={tag}/>
-                        </div>
-                    );
-                });
-            }
-            return output;
-        }
     }
-});
+
+    static renderPublicTags() {
+        let output = [];
+        let tags = ArticleTagStore.getAllPublicTags(true);
+        if (tags != null) {
+            _.forOwn(tags, function(tag) {
+                output.push(
+                    <div className="row" key={_.uniqueId('art-tag-brief-')}>
+                        <h1>{tag.tagName}</h1>
+                        <ArticleTagBrief key={_.uniqueId('art-pub-tag-')} tag={tag}/>
+                        </div>
+                );
+            });
+        }
+        return output;
+    }
+}
 
 export default ArticleTagBrief;

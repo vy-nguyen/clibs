@@ -1,9 +1,17 @@
+'use strict';
+
 import React from 'react-mod'
 
-let ResetWidgets = React.createClass({
-    resetWidgets: function() {
+class ResetWidgets extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this.resetWidgets = this.resetWidgets.bind(this);
+    }
+
+    resetWidgets() {
         this.$.SmartMessageBox({
-            title : "<i class='fa fa-refresh' style='color:green'></i> Clear Local Storage",
+            title   : "<i class='fa fa-refresh' style='color:green'></i> Clear Local Storage",
             content : "Would you like to RESET all your saved widgets and clear LocalStorage?",
             buttons : '[No][Yes]'
         }, function(ButtonPressed) {
@@ -12,14 +20,15 @@ let ResetWidgets = React.createClass({
                 location.reload()
             }
         });
-    },
-    render: function () {
+    }
+
+    render() {
         return (
             <span id="refresh" className="btn btn-ribbon" onClick={this.resetWidgets}>
                 <i className="fa fa-refresh" />
             </span>
         )
     }
-});
+}
 
-export default ResetWidgets
+export default ResetWidgets;

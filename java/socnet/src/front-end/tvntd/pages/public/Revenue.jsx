@@ -10,14 +10,15 @@ class Revenue extends React.Component
     constructor(props) {
         super(props);
         this._getData = this._getData.bind(this);
+        this._toggleProp = this._toggleProp.bind(this);
+        this._getTargetsData = this._getTargetsData.bind(this);
+        this._getActualsData = this._getActualsData.bind(this);
+        this._getSignupsData = this._getSignupsData.bind(this);
 
         this.state = {
             data: this._getData()
         };
-    }
-
-    getDefaultProps() {
-        return {
+        this.defaultProps = {
             targetsShow: true,
             actualsShow: true,
             signupsShow: true
@@ -26,21 +27,27 @@ class Revenue extends React.Component
 
     _getData() {
         let data = [];
-        if(this.props.targetsShow) data.push(this._getTargetsData());
-        if(this.props.actualsShow) data.push(this._getActualsData());
-        if(this.props.signupsShow) data.push(this._getSignupsData());
+        if (this.props.targetsShow) {
+            data.push(this._getTargetsData());
+        }
+        if (this.props.actualsShow) {
+            data.push(this._getActualsData());
+        }
+        if (this.props.signupsShow) {
+            data.push(this._getSignupsData());
+        }
         return data
     }
 
     _getChartOptions() {
         return {
             grid: {
-                show: true,
-                hoverable: true,
-                clickable: true,
+                show       : true,
+                hoverable  : true,
+                clickable  : true,
                 borderWidth: 0
             },
-            tooltip: true,
+            tooltip    : true,
             tooltipOpts: {
                 defaultTheme: false
             },

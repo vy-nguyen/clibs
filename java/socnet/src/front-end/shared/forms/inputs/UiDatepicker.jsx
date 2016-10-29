@@ -3,8 +3,9 @@
 import React         from 'react-mod';
 import {findDOMNode} from 'react-dom';
 
-let UiDatepicker = React.createClass({
-    componentDidMount: function() {
+class UiDatepicker extends React.Component
+{
+    componentDidMount() {
         let onSelectCallbacks = [];
         let props = this.props;
         let element = $(findDOMNode(this));
@@ -58,12 +59,13 @@ let UiDatepicker = React.createClass({
             options.changeMonth = props.changeMonth;
         }
         element.datepicker(options);
-    },
-    render: function() {
+    }
+
+    render() {
         return (
-            <input type="text" {...this.props} />
+            <input type="text" {...this.props}/>
         )
     }
-});
+}
 
-export default UiDatepicker
+export default UiDatepicker;

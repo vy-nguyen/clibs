@@ -1,8 +1,9 @@
 import React    from 'react-mod'
 import ReactDOM from 'react-dom'
 
-let UiSpinner = React.createClass({
-    componentDidMount: function() {
+class UiSpinner extends React.Component
+{
+    componentDidMount() {
         let options = {};
         let props = this.props;
 
@@ -21,12 +22,11 @@ let UiSpinner = React.createClass({
             };
         }
         $(ReactDOM.findDOMNode(this)).spinner(options);
+    }
 
-    },
-
-    render: function() {
+    render() {
         return <input type="text" {...this.props} />
     }
-});
+}
 
-export default UiSpinner
+export default UiSpinner;

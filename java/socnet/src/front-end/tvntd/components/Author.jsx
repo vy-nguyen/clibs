@@ -11,9 +11,14 @@ import UserIcon         from 'vntd-root/components/UserIcon.jsx';
 import AuthorLinks      from 'vntd-root/components/AuthorLinks.jsx';
 import KeyValueTable    from 'vntd-shared/layout/KeyValueTable.jsx';
 
-let Author = React.createClass({
+class Author extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this.renderAboutMe = this.renderAboutMe.bind(this);
+    }
 
-    renderAboutMe: function(aboutList) {
+    renderAboutMe(aboutList) {
         if (aboutList == null || _.isEmpty(aboutList)) {
             return null;
         }
@@ -34,9 +39,9 @@ let Author = React.createClass({
                 </div>
             );
         }.bind(this));
-    },
+    }
 
-    render: function() {
+    render() {
         if (!this.props.user) {
             return null;
         }
@@ -99,6 +104,6 @@ let Author = React.createClass({
             </div>
         )
     }
-});
+}
 
 export default Author;
