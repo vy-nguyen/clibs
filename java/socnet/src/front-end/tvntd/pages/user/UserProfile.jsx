@@ -15,6 +15,7 @@ import Messages           from './Messages.jsx';
 import TaskTimeline       from './TaskTimeline.jsx';
 import ProfileCover       from './ProfileCover.jsx';
 import UserAvatar         from './UserAvatar.jsx';
+import UserTags           from './UserTags.jsx';
 
 class UserInfo extends React.Component
 {
@@ -185,13 +186,17 @@ const ProfileTab = {
         tabText: 'Connections',
         tabIdx : 1
     }, {
+        domId  : 'user-tags',
+        tabText: 'Post Categories',
+        tabIdx : 2
+    }, {
         domId  : 'message',
         tabText: 'Secure Messages',
-        tabIdx : 2
+        tabIdx : 3
     }, {
         domId  : 'pending-task',
         tabText: 'Pending Tasks',
-        tabIdx : 3
+        tabIdx : 4
     } ]
 };
 
@@ -199,9 +204,10 @@ class UserProfile extends React.Component
 {
     render() {
         let self = UserStore.getSelf();
-        if (self === undefined || self === null) {
+        if (self == null) {
             return <h1>Something's wrong, try logout and login again</h1>;
         }
+        console.log(self);
         return (
             <div className="content">
                 <ProfileCover/>
@@ -210,6 +216,7 @@ class UserProfile extends React.Component
                     <TabPanel context={ProfileTab}>
                         <UserInfo/>
                         <Friends/>
+                        <UserTags userUuid={self.userUuid}/>
                         <Messages/>
                         <TaskTimeline/>
                     </TabPanel>

@@ -352,6 +352,10 @@ class AuthorTagMgr {
         });
         return output;
     }
+
+    getUserTags() {
+        return this.sortedTags;
+    }
 }
 
 let AuthorStore = Reflux.createStore({
