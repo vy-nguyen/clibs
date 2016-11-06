@@ -31,14 +31,12 @@ class NestItem
         this.children = _.isEmpty(children) ? null : children;
     }
 
-    moveUnder(parent) {
-        if (this.parent != null && this.parent.children != null) {
-            let idx = NestItem.findItem(this.parent.children, this.itemId);
-            if (idx != -1) {
-                this.parent.children.splice(idx, 1);
-            }
-        }
-        this.parent = parent;
+    moveUnder(turtle) {
+        this.detachParent(turtle);
+        this.attachParent(turtle);
+    }
+
+    attachParent(parent) {
         if (parent != null) {
             if (parent.children == null) {
                 parent.children = [];
@@ -50,6 +48,19 @@ class NestItem
             }
             parent.children.push(this);
         }
+        this.oldParent = this.parent;
+        this.parent = parent;
+    }
+
+    detachParent(parent) {
+        if (this.parent != null && this.parent.children != null) {
+            let idx = NestItem.findItem(this.parent.children, this.itemId);
+            if (idx != -1) {
+                this.parent.children.splice(idx, 1);
+            }
+        }
+        this.oldParent = this.parent;
+        this.parent = parent;
     }
 }
 
@@ -61,6 +72,25 @@ class NestableItem extends React.Component
 
     constructor(props) {
         super(props);
+        this._addItem = this._addItem.bind(this);
+        this._rmItem = this._rmItem.bind(this);
+    }
+
+    _addItem(item) {
+        let input = _.cloneDeep(item.itemRef);
+        input.itemId = _.uniqueId('nest-item-');
+        input.itemInput = true;
+        input.itemContent = (
+            <input type='text' id={input.itemId} placeholder="Enter new tag"/>
+        );
+        let newItem = new NestItem(input, item);
+        newItem.attachParent(item);
+        this.props.onAdd(item);
+    }
+
+    _rmItem(item) {
+        item.detachParent(null);
+        this.props.onRm(item);
     }
 
     render() {
@@ -68,20 +98,21 @@ class NestableItem extends React.Component
         let content = null;
         let buttons = null;
         let childrenItem = null;
-        let item = this.props.item.itemRef;
-        let children = this.props.item.children;
+        let elm = this.props.item;
+        let item = elm.itemRef;
+        let children = elm.children;
 
         if (children != null) {
             childrenItem = children.map(function(item) {
-                return <NestableItem key={_.uniqueId('nest-item-')} item={item}/>
-            });
-            buttons = (
-                <span className='pull-right'>
-                    <button className='btn btn-primary btn-xs'>Add +</button>
-                    <button className='btn btn-danger btn-xs'>Remove x</button>
-                </span>
-            );
+                return <NestableItem key={_.uniqueId('nest-item-')} item={item} onAdd={this.props.onAdd} onRm={this.props.onRm}/>
+            }.bind(this));
         }
+        buttons = (
+            <span className='pull-right'>
+                <button className='btn btn-primary btn-xs' onClick={this._addItem.bind(this, elm)}>Add +</button>
+                <button className='btn btn-danger btn-xs' onClick={this._rmItem.bind(this, elm)}>Remove x</button>
+            </span>
+        );
         output.push(
             <li key={_.uniqueId('nest-item-')} className={"dd-item " + item.itemFmt} data-id={item.itemId}>
                 <div className='dd-handle dd3-handle'></div>
@@ -104,21 +135,32 @@ class NestableSelect extends React.Component
 {
     constructor(props) {
         super(props);
+        this._initState        = this._initState.bind(this);
+        this._rmTag            = this._rmTag.bind(this);
+        this._addTag           = this._addTag.bind(this);
+        this._undoRmTag        = this._undoRmTag.bind(this);
+        this._cancelItems      = this._cancelItems.bind(this);
+        this._saveItems        = this._saveItems.bind(this);
         this._indexTree        = this._indexTree.bind(this);
         this._toRenderTab      = this._toRenderTab.bind(this);
         this._onChangeItem     = this._onChangeItem.bind(this);
         this._applyChangedItem = this._applyChangedItem.bind(this);
 
+        this.state = this._initState(props, false);
+    }
+
+    _initState(props, store) {
         let indexTab  = {};
         let renderTab = [];
         _.forEach(props.items, function(it) {
             this._indexTree(it, null, indexTab, renderTab);
         }.bind(this));
 
-        this.state = {
+        NestableStore.storeItemIndex(props.id, indexTab, store);
+        return {
+            delTags  : null,
             renderTab: renderTab
-        }
-        NestableStore.storeItemIndex(props.id, indexTab);
+        };
     }
 
     _indexTree(item, parent, indexTree, renderTree) {
@@ -172,20 +214,114 @@ class NestableSelect extends React.Component
         });
     }
 
+    _undoRmTag(item) {
+        let indexTab = NestableStore.getItemIndex(this.props.id);
+        let delTags  = this.state.delTags;
+
+        delete delTags[item.itemId];
+        item.attachParent(item.oldParent);
+
+        this.setState({
+            delTags  : delTags,
+            renderTab: this._toRenderTab(indexTab)
+        });
+    }
+
+    _addTag(item) {
+        let indexTab = NestableStore.getItemIndex(this.props.id);
+        this.setState({
+            renderTab: this._toRenderTab(indexTab)
+        });
+    }
+
+    _rmTag(item) {
+        let indexTab = NestableStore.getItemIndex(this.props.id);
+        if (item.itemRef.itemInput == true) {
+            this.setState({
+                renderTab: this._toRenderTab(indexTab)
+            });
+            return;
+        }
+        let delTags = this.state.delTags;
+        if (delTags == null) {
+            delTags = {};
+        }
+        item.parent = delTags;
+        delTags[item.itemId] = item;
+
+        this.setState({
+            delTags  : delTags,
+            renderTab: this._toRenderTab(indexTab)
+        });
+    }
+
+    _saveItems() {
+        let delTags = this.state.delTags;
+        let indexTab = NestableStore.getItemIndex(this.props.id);
+        _.forOwn(indexTab, function(it) {
+            console.log(it);
+            if (it.parent === delTags) {
+                return;
+            }
+            let item = it.itemRef;
+            if (item.itemInput == true) {
+                let inp = $(item.itemId);
+                console.log(inp);
+            }
+        }.bind(this));
+    }
+
+    _cancelItems() {
+        this.setState(this._initState(this.props, true));
+    }
+
     render() {
         let items = this.state.renderTab;
         if (items == null) {
             return;
         }
+        let deletedTags = null;
+        if (this.state.delTags != null) {
+            let delTags = [];
+            _.forOwn(this.state.delTags, function(it) {
+                delTags.push(
+                    <li key={_.uniqueId('nest-del-tag-')}>
+                        <a onClick={this._undoRmTag.bind(this, it)}>
+                            <span className='label label-info'> x {it.itemRef.itemContent}</span>
+                        </a>
+                    </li>
+                );
+            }.bind(this));
+
+            deletedTags = (
+                <ul className='list-inline padding-10'>
+                    {delTags}
+                </ul>
+            );
+        }
         let renderItems = items.map(function(it) {
-            return <NestableItem item={it} key={_.uniqueId('nest-item-')}/>
-        });
+            return <NestableItem item={it} key={_.uniqueId('nest-item-')} onAdd={this._addTag} onRm={this._rmTag}/>
+        }.bind(this));
+
         return (
-            <Nestable onChange={this._onChangeItem}>
-                <div className="dd">
-                    {renderItems}
+            <div>
+                <div className='row'>
+                    <div className='btn-group' role='group'>
+                        <button type='button' className='btn btn-danger' onClick={this._cancelItems}>Cancel</button>
+                        <button type='button' className='btn btn-info' onClick={this._saveItems}>Save Order</button>
+                    </div>
                 </div>
-            </Nestable>
+                <div className='row'>
+                    {deletedTags}
+                </div>
+                <div className='row'>
+                    <Nestable onChange={this._onChangeItem}>
+                        <div className="dd">
+                            {renderItems}
+                        </div>
+                    </Nestable>
+                </div>
+            </div>
         );
     }
 }

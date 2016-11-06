@@ -12,8 +12,8 @@ let NestableStore = Reflux.createStore({
         this.data = {}
     },
 
-    storeItemIndex: function(id, indexTab) {
-        if (this.data[id] == null) {
+    storeItemIndex: function(id, indexTab, force) {
+        if (this.data[id] == null || force == true) {
             this.data[id] = indexTab;
         }
     },
