@@ -65,7 +65,12 @@ public class PostForm
         tags = Jsoup.clean(tags, wlist);
         authorUuid = Jsoup.clean(authorUuid, wlist);
         articleUuid = Jsoup.clean(articleUuid, wlist);
-        contentBrief = Jsoup.parse(content.substring(0, 200)).text();
+
+        int len = content.length();
+        if (len > 200) {
+            len = 200;
+        }
+        contentBrief = Jsoup.parse(content.substring(0, len)).text();
         return true;
     }
 

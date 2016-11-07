@@ -5,6 +5,7 @@
 
 import _             from 'lodash';
 import React         from 'react-mod';
+import ReactDOM      from 'react-dom';
 import {findDOMNode} from 'react-dom';
 import NestableStore from 'vntd-shared/stores/NestableStore.jsx';
 
@@ -72,25 +73,46 @@ class NestableItem extends React.Component
 
     constructor(props) {
         super(props);
-        this._addItem = this._addItem.bind(this);
-        this._rmItem = this._rmItem.bind(this);
+        this._addItem  = this._addItem.bind(this);
+        this._rmItem   = this._rmItem.bind(this);
+
+        let input = props.item.itemRef;
+        if (input.itemInput == true) {
+            this.state = {
+                inpValue: input.itemValue
+            };
+        }
+    }
+
+    _onChange(input, event) {
+        input.itemValue = event.currentTarget.value;
+        this.setState({
+            inpValue: event.currentTarget.value
+        });
     }
 
     _addItem(item) {
         let input = _.cloneDeep(item.itemRef);
         input.itemId = _.uniqueId('nest-item-');
         input.itemInput = true;
-        input.itemContent = (
-            <input type='text' id={input.itemId} placeholder="Enter new tag"/>
-        );
+        input.itemValue = '';
+        input.itemContent = null;
+
         let newItem = new NestItem(input, item);
         newItem.attachParent(item);
-        this.props.onAdd(item);
+        this.props.onAdd(newItem);
     }
 
     _rmItem(item) {
         item.detachParent(null);
         this.props.onRm(item);
+    }
+
+    componentDidMount() {
+        let itemId = this.props.item.itemId;
+        if (this.refs[itemId] != null) {
+            ReactDOM.findDOMNode(this.refs[itemId]).focus();
+        }
     }
 
     render() {
@@ -113,11 +135,18 @@ class NestableItem extends React.Component
                 <button className='btn btn-danger btn-xs' onClick={this._rmItem.bind(this, elm)}>Remove x</button>
             </span>
         );
+        let itemContent = item.itemContent;
+        if (item.itemInput == true) {
+            itemContent = (
+                <input type='text' placeholder='Enter new tag' key={item.itemId} ref={item.itemId}
+                    value={this.state.inpValue} onChange={this._onChange.bind(this, item)} />
+            );
+        }
         output.push(
             <li key={_.uniqueId('nest-item-')} className={"dd-item " + item.itemFmt} data-id={item.itemId}>
                 <div className='dd-handle dd3-handle'></div>
                 <div className={item.contentFmt}>
-                    {item.itemContent}
+                    {itemContent}
                     {buttons}
                 </div>
                 {childrenItem}
@@ -229,6 +258,9 @@ class NestableSelect extends React.Component
 
     _addTag(item) {
         let indexTab = NestableStore.getItemIndex(this.props.id);
+        if (item.itemRef.itemInput == true) {
+            indexTab[item.itemId] = item;
+        }
         this.setState({
             renderTab: this._toRenderTab(indexTab)
         });
@@ -259,7 +291,6 @@ class NestableSelect extends React.Component
         let delTags = this.state.delTags;
         let indexTab = NestableStore.getItemIndex(this.props.id);
         _.forOwn(indexTab, function(it) {
-            console.log(it);
             if (it.parent === delTags) {
                 return;
             }
@@ -267,6 +298,7 @@ class NestableSelect extends React.Component
             if (item.itemInput == true) {
                 let inp = $(item.itemId);
                 console.log(inp);
+                console.log(inp.val());
             }
         }.bind(this));
     }
