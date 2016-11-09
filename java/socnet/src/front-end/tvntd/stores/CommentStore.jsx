@@ -144,7 +144,6 @@ class ArticleComment {
         this.normals = {};
         this.normalSorted = [];
         this.favoriteSorted = [];
-
         this.articleAttr = null;
         return this;
     }
@@ -269,7 +268,7 @@ let CommentStore = Reflux.createStore({
     },
 
     onPreloadCompleted: function(raw) {
-        this._updateComments(raw.comments, false);
+        this._updateComments(raw.comments, false, false);
         this.trigger(this.data);
     },
 
@@ -286,28 +285,32 @@ let CommentStore = Reflux.createStore({
     },
 
     onGetCommentsCompleted: function(data) {
-        this._updateComments(data.comments, true);
-        this.trigger(this.data);
+        this._updateComments(data.comments, true, false);
+        this.trigger(this.data, null);
     },
 
     onPostCommentCompleted: function(data) {
-        this.trigger(this.data);
+        let comments = data.comments;
+        if (comments != null && comments[0] != null) {
+            this._updateComments(comments, true, true);
+            this.trigger(this.data, this.getByArticleUuid(comments[0].articleUuid));
+        }
     },
 
     onPostCommentFailed: function(data) {
         this.data.error = data;
-        this.trigger(this.data);
+        this.trigger(this.data, null);
     },
 
     onUpdateCommentCompleted: function(data, cmtArt) {
         cmtArt.toggleFavComment(data.commentId);
-        this.trigger(this.data);
+        this.trigger(this.data, cmtArt);
     },
 
     postCmtSelectCompleted: function(data) {
         let cmtArt = this.addArtComment(data);
         cmtArt.updateAttr(data);
-        this.trigger(this.data);
+        this.trigger(this.data, cmtArt);
     },
 
     getArticleAttr: function(articleUuid) {
@@ -352,16 +355,16 @@ let CommentStore = Reflux.createStore({
         cmtArt.updateArtAttr(attr);
     },
 
-    _addComment: function(it, show) {
+    _addComment: function(it, show, newCmt) {
         let cmtArt = this.addArtComment(it);
         cmtArt.showComment = show;
         cmtArt.addComment(it);
         return cmtArt;
     },
 
-    _updateComments: function(commentList, show) {
+    _updateComments: function(commentList, show, newCmt) {
         _.forOwn(commentList, function(it, key) {
-            this._addComment(it, show);
+            this._addComment(it, show, newCmt);
         }.bind(this));
     }
 });

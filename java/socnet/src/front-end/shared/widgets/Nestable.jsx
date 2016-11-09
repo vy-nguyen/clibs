@@ -37,6 +37,15 @@ class NestItem
         this.attachParent(turtle);
     }
 
+    hasAncestor(ancestor) {
+        for (let curr = this.parent; curr != null; curr = curr.parent) {
+            if (curr === ancestor) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     attachParent(parent) {
         if (parent != null) {
             if (parent.children == null) {
@@ -258,7 +267,7 @@ class NestableSelect extends React.Component
 
     _addTag(item) {
         let indexTab = NestableStore.getItemIndex(this.props.id);
-        if (item.itemRef.itemInput == true) {
+        if (item.itemRef.itemInput === true) {
             indexTab[item.itemId] = item;
         }
         this.setState({
@@ -268,7 +277,8 @@ class NestableSelect extends React.Component
 
     _rmTag(item) {
         let indexTab = NestableStore.getItemIndex(this.props.id);
-        if (item.itemRef.itemInput == true) {
+        if (item.itemRef.itemInput === true) {
+            delete indexTab[item.itemId];
             this.setState({
                 renderTab: this._toRenderTab(indexTab)
             });
@@ -290,17 +300,29 @@ class NestableSelect extends React.Component
     _saveItems() {
         let delTags = this.state.delTags;
         let indexTab = NestableStore.getItemIndex(this.props.id);
+        let result = [];
+
         _.forOwn(indexTab, function(it) {
-            if (it.parent === delTags) {
+            if (it.hasAncestor(delTags) === true) {
                 return;
             }
             let item = it.itemRef;
+            let parent = it.parent == null ? null : it.parent.itemId;
             if (item.itemInput == true) {
-                let inp = $(item.itemId);
-                console.log(inp);
-                console.log(inp.val());
+                result.push({
+                    itemId     : item.itemId,
+                    parentId   : parent,
+                    itemContent: item.itemValue
+                });
+            } else {
+                result.push({
+                    itemId     : item.itemId,
+                    parentId   : parent,
+                    itemContent: item.itemContent
+                });
             }
         }.bind(this));
+        console.log(result);
     }
 
     _cancelItems() {
