@@ -310,19 +310,21 @@ class NestableSelect extends React.Component
             let parent = it.parent == null ? null : it.parent.itemId;
             if (item.itemInput == true) {
                 result.push({
-                    itemId     : item.itemId,
-                    parentId   : parent,
-                    itemContent: item.itemValue
+                    itemId  : item.itemId,
+                    parentId: parent,
+                    pubTag  : false,
+                    tagName : item.itemValue
                 });
             } else {
                 result.push({
-                    itemId     : item.itemId,
-                    parentId   : parent,
-                    itemContent: item.itemContent
+                    itemId  : item.itemId,
+                    parentId: parent,
+                    pubTag  : item.itemSave.pubTag,
+                    tagName : item.itemSave.tagName
                 });
             }
         }.bind(this));
-        console.log(result);
+        this.props.onSave(result);
     }
 
     _cancelItems() {

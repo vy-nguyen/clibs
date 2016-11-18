@@ -329,7 +329,6 @@ class AuthorTagMgr {
                 sortedArts.sort(AuthorTag.compareRank);
             }
         }.bind(this));
-        console.log(artList);
 
         Actions.commitTagRanks(this, {
             userUuid: this.authorUuid,
@@ -430,7 +429,6 @@ let AuthorStore = Reflux.createStore({
         }
         artRank.attachTag(authorTag);
         this.trigger(this.data);
-        console.log(tagInfo);
         Actions.updateArtRank(tagInfo, tagInfo.cbButtonId);
     },
 

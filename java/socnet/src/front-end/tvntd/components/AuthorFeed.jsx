@@ -70,7 +70,7 @@ class AuthorFeed extends React.Component
 
     _updateState() {
         this.setState({
-            articles: ArticleStore.getSortedArticlesByAuthor(props.authorUuid).slice(0, 2)
+            articles: ArticleStore.getSortedArticlesByAuthor(this.props.authorUuid).slice(0, 2)
         });
     }
 
