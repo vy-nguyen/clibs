@@ -303,6 +303,8 @@ class AuthorTagMgr {
             tag.rank = i + 1;
             tagRanks.push({
                 tagName: tag.tagName,
+                parent : null,
+                pubTag : false,
                 rank   : tag.rank
             });
         }

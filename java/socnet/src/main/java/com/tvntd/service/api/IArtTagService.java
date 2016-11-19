@@ -40,6 +40,7 @@ import com.tvntd.util.Util;
 public interface IArtTagService
 {
     void saveTag(ArtTagDTO tag);
+    void saveTag(String uuid, String tag, String parent, Long rank);
 
     ArtTagDTO getTag(String tag, String uuid);
     List<ArtTagDTO> getUserTags(String uuid);

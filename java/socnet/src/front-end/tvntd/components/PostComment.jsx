@@ -400,7 +400,7 @@ class PostComment extends React.Component
 
     _updateState(data, cmtArt) {
         let commentArt = CommentStore.getByArticleUuid(this.props.articleUuid);
-        if (commentArt == null || commentArt.articleUuid !== cmtArt.articleUuid || cmtArt === null) {
+        if (commentArt == null || cmtArt == null || commentArt.articleUuid !== cmtArt.articleUuid) {
             return;
         }
         this.setState({

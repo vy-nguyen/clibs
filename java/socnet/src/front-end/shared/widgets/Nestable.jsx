@@ -135,7 +135,8 @@ class NestableItem extends React.Component
 
         if (children != null) {
             childrenItem = children.map(function(item) {
-                return <NestableItem key={_.uniqueId('nest-item-')} item={item} onAdd={this.props.onAdd} onRm={this.props.onRm}/>
+                return <NestableItem key={_.uniqueId('nest-item-')} item={item}
+                            onAdd={this.props.onAdd} onRm={this.props.onRm}/>
             }.bind(this));
         }
         buttons = (
@@ -313,14 +314,16 @@ class NestableSelect extends React.Component
                     itemId  : item.itemId,
                     parentId: parent,
                     pubTag  : false,
-                    tagName : item.itemValue
+                    tagName : item.itemValue,
+                    article : false
                 });
             } else {
                 result.push({
                     itemId  : item.itemId,
                     parentId: parent,
                     pubTag  : item.itemSave.pubTag,
-                    tagName : item.itemSave.tagName
+                    tagName : item.itemSave.tagName,
+                    article : item.itemSave.article
                 });
             }
         }.bind(this));

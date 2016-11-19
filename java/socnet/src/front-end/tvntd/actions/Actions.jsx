@@ -284,6 +284,21 @@ Actions.getArticleRank.listen(function(data) {
     postRestCall(data, "/user/get-art-rank", true, this, "getArticleRank");
 });
 
+/*
+ * userTags: {
+ *     userUuid:
+ *     tagRanks: [ {
+ *         tagName:
+ *         parent :
+ *         pubTag : true | false
+ *         rank   :
+ *     } ],
+ *     artList: [ {
+ *         tagName:
+ *         artUuid: []
+ *     } ]
+ * }
+ */
 Actions.commitTagRanks.listen(function(tagMgr, userTags) {
     postRestCall(userTags, "/user/update-tag-rank", true, this, true, tagMgr.btnId, tagMgr);
 });

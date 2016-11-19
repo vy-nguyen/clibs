@@ -107,6 +107,12 @@ public class ArtTagService implements IArtTagService
     }
 
     @Override
+    public void saveTag(String uuid, String tag, String parent, Long rank)
+    {
+        artTagRepo.save(new ArtTag(uuid, tag, parent, rank));
+    }
+
+    @Override
     public ArtTagDTO getTag(String tag, String uuid)
     {
         String key = ArtTagDTO.makeTagOidKey(tag, uuid);

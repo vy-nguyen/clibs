@@ -119,6 +119,10 @@ public interface IProfileService
             role = sb.toString();
         }
 
+        public boolean isAdmin() {
+            return (roleMask & Constants.Role_Admin) != 0;
+        }
+
         public Profile toProfile() {
             return profile;
         }

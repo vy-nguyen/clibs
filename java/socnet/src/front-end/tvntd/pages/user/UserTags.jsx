@@ -82,7 +82,8 @@ class UserTags extends React.Component
                 itemContent: <b>{pub.tagName}</b>,
                 itemSave   : {
                     pubTag : true,
-                    tagName: pub.tagName
+                    tagName: pub.tagName,
+                    article: false
                 }
             };
             if (!_.isEmpty(pub.subTags)) {
@@ -108,7 +109,8 @@ class UserTags extends React.Component
             itemContent: tag.tagName,
             itemSave   : {
                 pubTag : false,
-                tagName: tag.tagName
+                tagName: tag.tagName,
+                article: false
             }
         };
         let sortedRank = tag.getSortedArticleRank();
@@ -122,7 +124,8 @@ class UserTags extends React.Component
                     itemContent: <i>{art.artTitle}</i>,
                     itemSave   : {
                         pubTag : false,
-                        tagName: art.artTitle
+                        tagName: art.artTitle,
+                        article: true
                     }
                 });
             });
@@ -152,9 +155,47 @@ class UserTags extends React.Component
         return outTag;
     }
 
-    _onSaveTags(arg) {
-        console.log("on change tags");
-        console.log(arg);
+    _onSaveTags(tags) {
+        let index = {};
+        let tagRank = {
+            userUuid: 0,
+            tagRanks: [],
+            artList : []
+        };
+        _.forEach(tags, function(t) {
+            index[t.itemId] = t;
+        });
+        let artTag  = {};
+        let artList = tagRank.artList;
+        let ranks   = tagRank.tagRanks;
+
+        _.forEach(tags, function(t) {
+            let parent = index[t.parentId];
+            ranks.push({
+                tagName: t.tagName,
+                parent : parent != null ? parent.tagName : null,
+                pubTag : t.pubTag,
+                rank   : 0
+            });
+            if (t.article === true && parent != null) {
+                if (artTag[parent.tagName] == null) {
+                    artTag[parent.tagName] = {};
+                }
+                artTag[parent.tagName][t.itemId] = t.tagName;
+            }
+        });
+        _.forOwn(artTag, function(val, key) {
+            let artUuid = [];
+            _.forOwn(val, function(v, k) {
+                artUuid.push(k);
+            });
+            artList.push({
+                tagName: key,
+                artUuid: artUuid
+            });
+        });
+        console.log(tagRank);
+        console.log(artTag);
     }
 
     render() {

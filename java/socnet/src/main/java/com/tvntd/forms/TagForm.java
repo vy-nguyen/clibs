@@ -70,7 +70,9 @@ public class TagForm
     public static class TagRank
     {
         private String tagName;
+        private String parent;
         private Long rank;
+        private boolean pubTag;
 
         /**
          * @return the tagName
@@ -80,10 +82,24 @@ public class TagForm
         }
 
         /**
+         * @return the parent
+         */
+        public String getParent() {
+            return parent;
+        }
+
+        /**
          * @return the rank
          */
         public Long getRank() {
             return rank;
+        }
+
+        /**
+         * @return the pubTag
+         */
+        public boolean isPubTag() {
+            return pubTag;
         }
     }
 

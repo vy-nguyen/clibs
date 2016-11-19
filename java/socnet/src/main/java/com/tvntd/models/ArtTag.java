@@ -26,6 +26,7 @@
  */
 package com.tvntd.models;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -85,6 +86,25 @@ public class ArtTag
     {
         this.lastUpdate = new Date();
         this.rankScore = 0L;
+    }
+
+    public ArtTag(String uuid, String tag, String parent, Long rank)
+    {
+        lastUpdate = new Date();
+        rankScore = rank;
+        userUuid = uuid;
+        try {
+            tagName = tag.getBytes("UTF-8");
+
+            if (parent != null && !parent.isEmpty()) {
+                parentTag = parent.getBytes("UTF-8");
+            } else {
+                parentTag = null;
+            }
+        } catch(UnsupportedEncodingException e) {
+            tagName = null;
+            parentTag = null;
+        }
     }
 
     protected void makeTagOid() {

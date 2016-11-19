@@ -479,6 +479,11 @@ public class UserPath
         Map<String, TagRank> req = new HashMap<>();
         for (TagRank r : form.getTagRanks()) {
             req.put(r.getTagName(), r);
+            System.out.println("User admin " + profile.isAdmin());
+            if (r.isPubTag() == false) {
+                System.out.println("Save tag " + r.getTagName() + ", parent " + r.getParent());
+                artTagSvc.saveTag(uuid, r.getTagName(), r.getParent(), r.getRank());
+            }
         }
 
         AuthorTagRespDTO ownerTags = authorSvc.getAuthorTag(uuid);
