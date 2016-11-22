@@ -21,7 +21,6 @@ class UserTags extends React.Component
     constructor(props) {
         super(props);
         this._onSaveTags    = this._onSaveTags.bind(this);
-        this._renderElement = this._renderElement.bind(this);
         this._updateState   = this._updateState.bind(this);
         this._updateArtTags = this._updateArtTags.bind(this);
         this._buildTagData  = this._buildTagData.bind(this);
@@ -55,28 +54,13 @@ class UserTags extends React.Component
         this.setState(this._buildTagData(this.state.tagMgr));
     }
 
-    _renderTag(tag) {
-        return <span>{tag.tagName}</span>
-    }
-
-    _renderElement(parent, children, output) {
-        if (children == null) {
-            output.push({
-                keyId    : parent._id,
-                renderFn : this._renderTag,
-                renderArg: parent,
-                defLabel : true,
-                iconOpen : "fa fa-lg fa-folder-open",
-                iconClose: "fa fa-lg fa-folder"
-            }.bind(this));
-        } else {
-        }
-    }
-
     _pubTags2Nestable(tagArray, tagTree, tagIndex) {
+        let admin = UserStore.amIAdmin();
         _.forEach(tagArray, function(pub) {
             let tagItem = {
                 itemId     : pub._id,
+                itemSub    : admin,
+                canRemove  : false,
                 itemFmt    : 'dd3-item',
                 contentFmt : 'dd3-content',
                 itemContent: <b>{pub.tagName}</b>,
@@ -104,6 +88,8 @@ class UserTags extends React.Component
         }
         let tagItem = {
             itemId     : tag._id,
+            itemSub    : true,
+            canRemove  : true,
             itemFmt    : 'dd3-item',
             contentFmt : 'dd3-content',
             itemContent: tag.tagName,
@@ -119,6 +105,8 @@ class UserTags extends React.Component
             _.forEach(sortedRank, function(art) {
                 tagItem.children.push({
                     itemId     : art.articleUuid,
+                    itemSub    : false,
+                    canRemove  : true,
                     itemFmt    : 'dd3-item',
                     contentFmt : 'dd3-content',
                     itemContent: <i>{art.artTitle}</i>,
@@ -175,7 +163,7 @@ class UserTags extends React.Component
                 tagName: t.tagName,
                 parent : parent != null ? parent.tagName : null,
                 pubTag : t.pubTag,
-                rank   : 0
+                rank   : t.order
             });
             if (t.article === true && parent != null) {
                 if (artTag[parent.tagName] == null) {

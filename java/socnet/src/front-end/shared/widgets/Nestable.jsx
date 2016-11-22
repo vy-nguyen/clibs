@@ -8,13 +8,15 @@ import React         from 'react-mod';
 import ReactDOM      from 'react-dom';
 import {findDOMNode} from 'react-dom';
 import NestableStore from 'vntd-shared/stores/NestableStore.jsx';
+import ModalConfirm  from 'vntd-shared/forms/commons/ModalConfirm.jsx';
 
 class NestItem
 {
-    constructor(data, parent) {
+    constructor(data, parent, order) {
         this.parent   = parent;
         this.itemId   = data.itemId;
         this.itemRef  = data;
+        this.order    = order;
     }
 
     static findItem(items, id) {
@@ -74,6 +76,40 @@ class NestItem
     }
 }
 
+class EnterTag extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this.openModal = this.openModal.bind(this);
+        this._submitInput = this._submitInput.bind(this);
+    }
+
+    _submitInput(e) {
+        e.preventDefault();
+        console.log("On change input");
+        let value = this.refs.input.value;
+        console.log(value);
+        this.props.onInputValue(value);
+        this.refs.modal.closeModal();
+    }
+
+    openModal() {
+        this.refs.modal.openModal();
+    }
+
+    render() {
+        return (
+            <ModalConfirm ref={"modal"} modalTitle={"Enter New Tag"}>
+                <form className='smart-form' onSubmit={this._submitInput}>
+                    <label className='input'>
+                        <input type='text' placeholder='Tag Category' ref='input'/>
+                    </label>
+                </form>
+            </ModalConfirm>
+        );
+    }
+}
+
 class NestableItem extends React.Component
 {
     static propTypes() {
@@ -82,34 +118,35 @@ class NestableItem extends React.Component
 
     constructor(props) {
         super(props);
-        this._addItem  = this._addItem.bind(this);
-        this._rmItem   = this._rmItem.bind(this);
-
-        let input = props.item.itemRef;
-        if (input.itemInput == true) {
-            this.state = {
-                inpValue: input.itemValue
-            };
-        }
+        this._addItem   = this._addItem.bind(this);
+        this._rmItem    = this._rmItem.bind(this);
+        this._onAddItem = this._onAddItem.bind(this);
     }
 
-    _onChange(input, event) {
-        input.itemValue = event.currentTarget.value;
-        this.setState({
-            inpValue: event.currentTarget.value
-        });
-    }
-
-    _addItem(item) {
-        let input = _.cloneDeep(item.itemRef);
-        input.itemId = _.uniqueId('nest-item-');
-        input.itemInput = true;
-        input.itemValue = '';
-        input.itemContent = null;
-
-        let newItem = new NestItem(input, item);
+    _onAddItem(item, value) {
+        let input = {
+            itemId     : _.uniqueId('nest-item-'),
+            itemInput  : true,
+            itemValue  : value,
+            itemContent: value,
+            itemSub    : false,
+            itemFmt    : item.itemRef.itemFmt,
+            contentFmt : item.itemRef.contentFmt,
+            canRemove  : true,
+            itemSub    : true,
+            itemSave   : {
+                pubTag : false,
+                tagName: value,
+                article: false
+            }
+        };
+        let newItem = new NestItem(input, item, 1);
         newItem.attachParent(item);
         this.props.onAdd(newItem);
+    }
+
+    _addItem() {
+        this.refs.modal.openModal();
     }
 
     _rmItem(item) {
@@ -139,24 +176,30 @@ class NestableItem extends React.Component
                             onAdd={this.props.onAdd} onRm={this.props.onRm}/>
             }.bind(this));
         }
-        buttons = (
-            <span className='pull-right'>
-                <button className='btn btn-primary btn-xs' onClick={this._addItem.bind(this, elm)}>Add +</button>
+        let removeBtn = null;
+        if (item.canRemove === true) {
+            removeBtn = (
                 <button className='btn btn-danger btn-xs' onClick={this._rmItem.bind(this, elm)}>Remove x</button>
-            </span>
-        );
-        let itemContent = item.itemContent;
-        if (item.itemInput == true) {
-            itemContent = (
-                <input type='text' placeholder='Enter new tag' key={item.itemId} ref={item.itemId}
-                    value={this.state.inpValue} onChange={this._onChange.bind(this, item)} />
             );
         }
+        let addSubBtn = null;
+        if (item.itemSub === true) {
+            addSubBtn = (
+                <button className='btn btn-primary btn-xs' onClick={this._addItem}>Add +</button>
+            );
+        }
+        buttons = (
+            <span className='pull-right'>
+                {addSubBtn}
+                {removeBtn}
+                <EnterTag ref={"modal"} onInputValue={this._onAddItem.bind(this, elm)}/>
+            </span>
+        );
         output.push(
             <li key={_.uniqueId('nest-item-')} className={"dd-item " + item.itemFmt} data-id={item.itemId}>
                 <div className='dd-handle dd3-handle'></div>
                 <div className={item.contentFmt}>
-                    {itemContent}
+                    {item.itemContent}
                     {buttons}
                 </div>
                 {childrenItem}
@@ -189,10 +232,12 @@ class NestableSelect extends React.Component
     }
 
     _initState(props, store) {
+        let order = 0;
         let indexTab  = {};
         let renderTab = [];
+
         _.forEach(props.items, function(it) {
-            this._indexTree(it, null, indexTab, renderTab);
+            this._indexTree(it, null, indexTab, renderTab, ++order);
         }.bind(this));
 
         NestableStore.storeItemIndex(props.id, indexTab, store);
@@ -202,14 +247,16 @@ class NestableSelect extends React.Component
         };
     }
 
-    _indexTree(item, parent, indexTree, renderTree) {
-        let nestItem = new NestItem(item, parent);
+    _indexTree(item, parent, indexTree, renderTree, order) {
+        let nestItem = new NestItem(item, parent, order);
         indexTree[item.itemId] = nestItem;
 
         if (item.children != null) {
+            let subOrder = 0;
             let subItems = [];
+
             _.forEach(item.children, function(child) {
-                this._indexTree(child, nestItem, indexTree, subItems);
+                this._indexTree(child, nestItem, indexTree, subItems, ++subOrder);
             }.bind(this));
 
             nestItem.setChildren(subItems);
@@ -218,15 +265,16 @@ class NestableSelect extends React.Component
         return indexTree;
     }
     
-    _applyChangedItem(data, parent, indexTab) {
+    _applyChangedItem(data, parent, indexTab, order) {
         _.forEach(data, function(elm) {
             let ref = indexTab[elm.id];
             if (ref == null) {
                 return;
             }
+            ref.order = ++order;
             ref.moveUnder(parent);
             if (elm.children != null) {
-                this._applyChangedItem(elm.children, ref, indexTab);
+                this._applyChangedItem(elm.children, ref, indexTab, 0);
             }
         }.bind(this));
     }
@@ -244,9 +292,9 @@ class NestableSelect extends React.Component
     _onChangeItem(data) {
         let indexTab = NestableStore.getItemIndex(this.props.id);
         if (Array.isArray(data)) {
-            this._applyChangedItem(data, null, indexTab);
+            this._applyChangedItem(data, null, indexTab, 0);
         } else {
-            this._applyChangedItem([data], null, indexTab);
+            this._applyChangedItem([data], null, indexTab, 0);
         }
         this.setState({
             renderTab: this._toRenderTab(indexTab)
@@ -309,13 +357,14 @@ class NestableSelect extends React.Component
             }
             let item = it.itemRef;
             let parent = it.parent == null ? null : it.parent.itemId;
-            if (item.itemInput == true) {
+            if (item.itemInput === true) {
                 result.push({
                     itemId  : item.itemId,
                     parentId: parent,
                     pubTag  : false,
                     tagName : item.itemValue,
-                    article : false
+                    article : false,
+                    order   : it.order
                 });
             } else {
                 result.push({
@@ -323,7 +372,8 @@ class NestableSelect extends React.Component
                     parentId: parent,
                     pubTag  : item.itemSave.pubTag,
                     tagName : item.itemSave.tagName,
-                    article : item.itemSave.article
+                    article : item.itemSave.article,
+                    order   : it.order
                 });
             }
         }.bind(this));

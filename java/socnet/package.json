@@ -64,6 +64,7 @@
     "react-sidebar": "2.2",
     "react-list-select": "0.3.0",
     "react-select": "1.0.0-rc.2",
+    "react-input": "4.1.
     "reflux": "0.4.1",
     "redux": "^3.x.x",
     "marked": "0.3.5",
