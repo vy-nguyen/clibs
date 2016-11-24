@@ -534,6 +534,8 @@ let AuthorStore = Reflux.createStore({
     onCommitTagRanksCompleted: function(data) {
         let tagMgr = data.cbContext;
         NavActions.buttonChange(tagMgr.btnId);
+        console.log("commit rank done");
+        console.log(data);
     },
 
     onCommitTagRanksFailed: function(err) {

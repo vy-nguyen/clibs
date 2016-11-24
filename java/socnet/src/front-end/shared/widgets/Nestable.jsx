@@ -7,8 +7,11 @@ import _             from 'lodash';
 import React         from 'react-mod';
 import ReactDOM      from 'react-dom';
 import {findDOMNode} from 'react-dom';
-import NestableStore from 'vntd-shared/stores/NestableStore.jsx';
-import ModalConfirm  from 'vntd-shared/forms/commons/ModalConfirm.jsx';
+
+import NestableStore    from 'vntd-shared/stores/NestableStore.jsx';
+import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
+import StateButton      from 'vntd-shared/utils/StateButton.jsx';
+import ModalConfirm     from 'vntd-shared/forms/commons/ModalConfirm.jsx';
 
 class NestItem
 {
@@ -140,7 +143,7 @@ class NestableItem extends React.Component
                 article: false
             }
         };
-        let newItem = new NestItem(input, item, 1);
+        let newItem = new NestItem(input, item, 100000);
         newItem.attachParent(item);
         this.props.onAdd(newItem);
     }
@@ -226,21 +229,56 @@ class NestableSelect extends React.Component
         this._indexTree        = this._indexTree.bind(this);
         this._toRenderTab      = this._toRenderTab.bind(this);
         this._onChangeItem     = this._onChangeItem.bind(this);
+        this._createSaveBtn    = this._createSaveBtn.bind(this);
         this._applyChangedItem = this._applyChangedItem.bind(this);
 
         this.state = this._initState(props, false);
+        this.saveBtn = StateButtonStore.createButton('save-tag-' + props.id, this._createSaveBtn);
+    }
+
+    _createSaveBtn() {
+        return {
+            success: {
+                text     : 'Saved Tags',
+                disabled : true,
+                nextState: 'needSave',
+                className: 'btn btn-default'
+            },
+            failure: {
+                text     : 'Save Failed',
+                disabled : false,
+                nextState: 'needSave',
+                className: 'btn btn-default'
+            },
+            saving: {
+                text     : 'Saving...',
+                disabled : true,
+                nextState: 'success',
+                className: 'btn btn-danger'
+            },
+            needSave: {
+                text     : 'Save Order',
+                disabled : false,
+                nextState: 'saving',
+                className: 'btn btn-success'
+            }
+        };
     }
 
     _initState(props, store) {
-        let order = 0;
-        let indexTab  = {};
         let renderTab = [];
+        let indexTab = NestableStore.getItemIndex(props.id);
+        if (indexTab == null) {
+            let order = 0;
+            indexTab = {};
+            _.forEach(props.items, function(it) {
+                this._indexTree(it, null, indexTab, renderTab, ++order);
+            }.bind(this));
 
-        _.forEach(props.items, function(it) {
-            this._indexTree(it, null, indexTab, renderTab, ++order);
-        }.bind(this));
-
-        NestableStore.storeItemIndex(props.id, indexTab, store);
+            NestableStore.storeItemIndex(props.id, indexTab, store);
+        } else {
+            renderTab = this._toRenderTab(indexTab);
+        }
         return {
             delTags  : null,
             renderTab: renderTab
@@ -265,7 +303,7 @@ class NestableSelect extends React.Component
         return indexTree;
     }
     
-    _applyChangedItem(data, parent, indexTab, order) {
+    _applyChangedItem(data, parent, indexTab, order, visited) {
         _.forEach(data, function(elm) {
             let ref = indexTab[elm.id];
             if (ref == null) {
@@ -274,8 +312,9 @@ class NestableSelect extends React.Component
             ref.order = ++order;
             ref.moveUnder(parent);
             if (elm.children != null) {
-                this._applyChangedItem(elm.children, ref, indexTab, 0);
+                this._applyChangedItem(elm.children, ref, indexTab, 0, visited);
             }
+            visited[ref.itemId] = ref;
         }.bind(this));
     }
 
@@ -290,15 +329,32 @@ class NestableSelect extends React.Component
     }
 
     _onChangeItem(data) {
+        let visited = {};
         let indexTab = NestableStore.getItemIndex(this.props.id);
         if (Array.isArray(data)) {
-            this._applyChangedItem(data, null, indexTab, 0);
+            this._applyChangedItem(data, null, indexTab, 0, visited);
         } else {
-            this._applyChangedItem([data], null, indexTab, 0);
+            this._applyChangedItem([data], null, indexTab, 0, visited);
         }
+        _.forEach(indexTab, function(elm) {
+            if (visited[elm.itemId] != null) {
+                return;
+            }
+            if (elm.parent != null && elm.parent.children != null) {
+                let order = 0;
+                _.forEach(elm.parent.children, function(child) {
+                    order++;
+                    if (visited[child.itemId] == null) {
+                        child.order = order;
+                        visited[child.itemId] = child;
+                    }
+                });
+            }
+        });
         this.setState({
             renderTab: this._toRenderTab(indexTab)
         });
+        StateButtonStore.setButtonStateObj(this.saveBtn, "needSave");
     }
 
     _undoRmTag(item) {
@@ -312,6 +368,7 @@ class NestableSelect extends React.Component
             delTags  : delTags,
             renderTab: this._toRenderTab(indexTab)
         });
+        StateButtonStore.setButtonStateObj(this.saveBtn, "needSave");
     }
 
     _addTag(item) {
@@ -322,6 +379,7 @@ class NestableSelect extends React.Component
         this.setState({
             renderTab: this._toRenderTab(indexTab)
         });
+        StateButtonStore.setButtonStateObj(this.saveBtn, "needSave");
     }
 
     _rmTag(item) {
@@ -346,7 +404,7 @@ class NestableSelect extends React.Component
         });
     }
 
-    _saveItems() {
+    _saveItems(btnId) {
         let delTags = this.state.delTags;
         let indexTab = NestableStore.getItemIndex(this.props.id);
         let result = [];
@@ -377,7 +435,10 @@ class NestableSelect extends React.Component
                 });
             }
         }.bind(this));
-        this.props.onSave(result);
+
+        this.props.onSave(result, btnId);
+        StateButtonStore.goNextState(btnId);
+        NestableStore.clearItemIndex(this.props.id);
     }
 
     _cancelItems() {
@@ -408,6 +469,7 @@ class NestableSelect extends React.Component
                 </ul>
             );
         }
+        let saveBtnId = this.saveBtn.getBtnId();
         let renderItems = items.map(function(it) {
             return <NestableItem item={it} key={_.uniqueId('nest-item-')} onAdd={this._addTag} onRm={this._rmTag}/>
         }.bind(this));
@@ -417,7 +479,7 @@ class NestableSelect extends React.Component
                 <div className='row'>
                     <div className='btn-group' role='group'>
                         <button type='button' className='btn btn-danger' onClick={this._cancelItems}>Cancel</button>
-                        <button type='button' className='btn btn-info' onClick={this._saveItems}>Save Order</button>
+                        <StateButton btnId={saveBtnId} onClick={this._saveItems.bind(this, saveBtnId)}/>
                     </div>
                 </div>
                 <div className='row'>

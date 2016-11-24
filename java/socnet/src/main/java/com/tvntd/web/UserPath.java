@@ -61,9 +61,11 @@ import com.tvntd.forms.CommentForm;
 import com.tvntd.forms.PostForm;
 import com.tvntd.forms.TagForm;
 import com.tvntd.forms.TagForm.TagArtRank;
+import com.tvntd.forms.TagForm.TagOrderResponse;
 import com.tvntd.forms.TagForm.TagRank;
 import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.ObjectId;
+import com.tvntd.models.ArtTag;
 import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Author;
@@ -84,6 +86,7 @@ import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.ITimeLineService;
 import com.tvntd.service.api.ImageUploadResp;
 import com.tvntd.service.api.LoginResponse;
+import com.tvntd.service.user.ArtTagService;
 import com.tvntd.service.user.ArticleService;
 
 @Controller
@@ -476,23 +479,26 @@ public class UserPath
             return s_noProfile;
         }
 
-        Map<String, TagRank> req = new HashMap<>();
+        System.out.println("User admin " + profile.isAdmin());
+        Map<String, TagRank> dict = ArtTagService.fixupTagList(form.getTagRanks());
         for (TagRank r : form.getTagRanks()) {
-            req.put(r.getTagName(), r);
-            System.out.println("User admin " + profile.isAdmin());
             if (r.isPubTag() == false) {
-                System.out.println("Save tag " + r.getTagName() + ", parent " + r.getParent());
+                System.out.println("Save tag " + r.getTagName() +
+                        ", parent " + r.getParent() + ", rank " + r.getRank());
                 artTagSvc.saveTag(uuid, r.getTagName(), r.getParent(), r.getRank());
             }
         }
 
         AuthorTagRespDTO ownerTags = authorSvc.getAuthorTag(uuid);
+        TagOrderResponse resp =
+            new TagOrderResponse(form.getTagRanks(), form.getArtList());
+
         if (ownerTags == null) {
-            return s_genOkResp;
+            return resp;
         }
         List<AuthorTagDTO> tags = ownerTags.getAuthorTags();
         for (AuthorTagDTO t : tags) {
-            TagRank rank = req.get(t.getTagName());
+            TagRank rank = dict.get(t.getTagName());
             if (rank != null) {
                 t.setRank(rank.getRank());
                 authorSvc.saveAuthorTag(t);
@@ -510,6 +516,6 @@ public class UserPath
             }
             articleSvc.saveArtRank(artRank);
         }
-        return s_genOkResp;
+        return resp;
     }
 }

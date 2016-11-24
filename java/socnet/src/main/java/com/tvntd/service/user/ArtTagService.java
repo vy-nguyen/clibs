@@ -26,7 +26,10 @@
  */
 package com.tvntd.service.user;
 
+import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.tvntd.dao.ArtTagRepo;
 import com.tvntd.dao.ArticleRankRepo;
+import com.tvntd.forms.TagForm.TagRank;
 import com.tvntd.models.ArtTag;
 import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IAuthorService;
@@ -91,6 +95,40 @@ public class ArtTagService implements IArtTagService
         }
         map.clear();
         return result;
+    }
+
+    public static Map<String, TagRank> fixupTagList(TagRank[] in)
+    {
+        List<TagRank> top = new LinkedList<>();
+        Map<String, TagRank> dict = new HashMap<>();
+        Map<String, List<TagRank>> levels = new HashMap<>();
+
+        for (TagRank r : in) {
+            dict.put(r.getTagName(), r);
+            String parent = r.getParent();
+
+            if (parent == null) {
+                top.add(r);
+            } else {
+                List<TagRank> siblings = levels.get(parent);
+                if (siblings == null) {
+                    siblings = new LinkedList<>();
+                    levels.put(parent, siblings);
+                }
+                siblings.add(r);
+            }
+        }
+        levels.put("_root", top);
+        for (Map.Entry<String, List<TagRank>> entry : levels.entrySet()) {
+            List<TagRank> siblings = entry.getValue();
+            Collections.sort(siblings);
+            Long order = 0L;
+            for (TagRank r : siblings) {
+                r.setRank(++order);
+            }
+        }
+        levels.clear();
+        return dict;
     }
 
     @Override

@@ -26,6 +26,8 @@
  */
 package com.tvntd.forms;
 
+import com.tvntd.service.api.GenericResponse;
+
 public class TagForm
 {
     private String userUuid;
@@ -67,12 +69,62 @@ public class TagForm
         return artList;
     }
 
-    public static class TagRank
+    public static class TagOrderResponse extends GenericResponse
+    {
+        private TagRank[] tagRanks;
+        private TagArtRank[] artList;
+
+        public TagOrderResponse() {
+            super(GenericResponse.USER_HOME, "ok", null);
+        }
+
+        public TagOrderResponse(TagRank[] tagRanks, TagArtRank[] artList)
+        {
+            super(GenericResponse.USER_HOME, "ok", null);
+            this.tagRanks = tagRanks;
+            this.artList = artList;
+        }
+
+        /**
+         * @return the tagRanks
+         */
+        public TagRank[] getTagRanks() {
+            return tagRanks;
+        }
+
+        /**
+         * @param tagRanks the tagRanks to set
+         */
+        public void setTagRanks(TagRank[] tagRanks) {
+            this.tagRanks = tagRanks;
+        }
+
+        /**
+         * @return the artList
+         */
+        public TagArtRank[] getArtList() {
+            return artList;
+        }
+
+        /**
+         * @param artList the artList to set
+         */
+        public void setArtList(TagArtRank[] artList) {
+            this.artList = artList;
+        }
+    }
+
+    public static class TagRank implements Comparable<TagRank>
     {
         private String tagName;
         private String parent;
         private Long rank;
         private boolean pubTag;
+
+        @Override
+        public int compareTo(TagRank t2) {
+            return (int)(rank - t2.rank);
+        }
 
         /**
          * @return the tagName
@@ -93,6 +145,13 @@ public class TagForm
          */
         public Long getRank() {
             return rank;
+        }
+
+        /**
+         * @param rank the rank to set
+         */
+        public void setRank(Long rank) {
+            this.rank = rank;
         }
 
         /**

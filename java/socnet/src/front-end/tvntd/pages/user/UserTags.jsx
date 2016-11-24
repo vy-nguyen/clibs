@@ -15,6 +15,7 @@ import {NestableSelect} from 'vntd-shared/widgets/Nestable.jsx';
 import AuthorStore      from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleTagStore  from 'vntd-root/stores/ArticleTagStore.jsx';
 import ArticleRank      from 'vntd-root/components/ArticleRank.jsx';
+import Actions          from 'vntd-root/actions/Actions.jsx';
 
 class UserTags extends React.Component
 {
@@ -143,7 +144,7 @@ class UserTags extends React.Component
         return outTag;
     }
 
-    _onSaveTags(tags) {
+    _onSaveTags(tags, btnId) {
         let index = {};
         let tagRank = {
             userUuid: 0,
@@ -182,12 +183,17 @@ class UserTags extends React.Component
                 artUuid: artUuid
             });
         });
+        let tagMgr = AuthorStore.getAuthorTagMgr(this.props.userUuid);
+        if (tagMgr != null) {
+            tagMgr.btnId = btnId;
+            Actions.commitTagRanks(this, tagRank);
+        }
+        console.log(btnId);
         console.log(tagRank);
         console.log(artTag);
     }
 
     render() {
-        console.log(this.state);
         return (
             <NestableSelect items={this.state.tagTree} id={this.props.userUuid} onSave={this._onSaveTags}/>
         );
