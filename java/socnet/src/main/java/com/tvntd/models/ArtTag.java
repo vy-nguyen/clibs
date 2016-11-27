@@ -105,6 +105,7 @@ public class ArtTag
             tagName = null;
             parentTag = null;
         }
+        makeTagOid();
     }
 
     protected void makeTagOid() {

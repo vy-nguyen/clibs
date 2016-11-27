@@ -108,6 +108,10 @@ let ArticleTagStore = Reflux.createStore({
         }
     },
 
+    updatePublicTags: function(tagRanks, tagMgr) {
+        this.trigger(this.data, tagMgr);
+    },
+
     changeParent(tagName, parentName) {
         let tagIndex = this.data.pubTagIndex;
         let self = tagIndex[tagName];

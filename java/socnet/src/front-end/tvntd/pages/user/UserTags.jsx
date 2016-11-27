@@ -51,8 +51,12 @@ class UserTags extends React.Component
         });
     }
 
-    _updateArtTags() {
-        this.setState(this._buildTagData(this.state.tagMgr));
+    _updateArtTags(data, tagMgr) {
+        if (tagMgr != null && tagMgr === this.state.tagMgr) {
+            let state = this._buildTagData(this.state.tagMgr);
+            this.setState(state);
+            NestableSelect.buildIndex(this.props.userUuid, true, state.tagTree);
+        }
     }
 
     _pubTags2Nestable(tagArray, tagTree, tagIndex) {
@@ -147,7 +151,7 @@ class UserTags extends React.Component
     _onSaveTags(tags, btnId) {
         let index = {};
         let tagRank = {
-            userUuid: 0,
+            userUuid: UserStore.getSelfUuid(),
             tagRanks: [],
             artList : []
         };
@@ -164,7 +168,8 @@ class UserTags extends React.Component
                 tagName: t.tagName,
                 parent : parent != null ? parent.tagName : null,
                 pubTag : t.pubTag,
-                rank   : t.order
+                rank   : t.order,
+                article: t.article
             });
             if (t.article === true && parent != null) {
                 if (artTag[parent.tagName] == null) {
@@ -183,14 +188,11 @@ class UserTags extends React.Component
                 artUuid: artUuid
             });
         });
-        let tagMgr = AuthorStore.getAuthorTagMgr(this.props.userUuid);
+        let tagMgr = this.state.tagMgr;
         if (tagMgr != null) {
             tagMgr.btnId = btnId;
-            Actions.commitTagRanks(this, tagRank);
+            Actions.commitTagRanks(tagMgr, tagRank);
         }
-        console.log(btnId);
-        console.log(tagRank);
-        console.log(artTag);
     }
 
     render() {

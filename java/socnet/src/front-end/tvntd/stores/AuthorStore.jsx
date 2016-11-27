@@ -12,6 +12,7 @@ import Actions          from 'vntd-root/actions/Actions.jsx';
 import NavActions       from 'vntd-shared/actions/NavigationActions.jsx';
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import ArticleStore     from 'vntd-root/stores/ArticleStore.jsx';
+import ArticleTagStore  from 'vntd-root/stores/ArticleTagStore.jsx';
 import {insertSorted}   from 'vntd-shared/utils/Enum.jsx';
 
 class Author {
@@ -200,6 +201,13 @@ class AuthorTagMgr {
         _.forOwn(tagList, function(it) {
             this.addAuthorTag(it);
         }.bind(this));
+    }
+
+    updatePrivateTags(tagRanks, artRanks) {
+        console.log("Update private tags");
+        console.log(tagRanks);
+        console.log(artRanks);
+        console.log(this);
     }
 
     removeAuthorTag(tag) {
@@ -534,8 +542,9 @@ let AuthorStore = Reflux.createStore({
     onCommitTagRanksCompleted: function(data) {
         let tagMgr = data.cbContext;
         NavActions.buttonChange(tagMgr.btnId);
-        console.log("commit rank done");
-        console.log(data);
+
+        tagMgr.updatePrivateTags(data.tagRanks, data.artList);
+        ArticleTagStore.updatePublicTags(data.tagRanks, tagMgr);
     },
 
     onCommitTagRanksFailed: function(err) {

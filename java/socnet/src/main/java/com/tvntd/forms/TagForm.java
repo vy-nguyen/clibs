@@ -120,6 +120,7 @@ public class TagForm
         private String parent;
         private Long rank;
         private boolean pubTag;
+        private boolean article;
 
         @Override
         public int compareTo(TagRank t2) {
@@ -159,6 +160,13 @@ public class TagForm
          */
         public boolean isPubTag() {
             return pubTag;
+        }
+
+        /**
+         * @return the article
+         */
+        public boolean isArticle() {
+            return article;
         }
     }
 

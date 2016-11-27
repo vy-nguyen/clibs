@@ -89,9 +89,7 @@ class EnterTag extends React.Component
 
     _submitInput(e) {
         e.preventDefault();
-        console.log("On change input");
         let value = this.refs.input.value;
-        console.log(value);
         this.props.onInputValue(value);
         this.refs.modal.closeModal();
     }
@@ -226,7 +224,6 @@ class NestableSelect extends React.Component
         this._undoRmTag        = this._undoRmTag.bind(this);
         this._cancelItems      = this._cancelItems.bind(this);
         this._saveItems        = this._saveItems.bind(this);
-        this._indexTree        = this._indexTree.bind(this);
         this._toRenderTab      = this._toRenderTab.bind(this);
         this._onChangeItem     = this._onChangeItem.bind(this);
         this._createSaveBtn    = this._createSaveBtn.bind(this);
@@ -266,26 +263,35 @@ class NestableSelect extends React.Component
     }
 
     _initState(props, store) {
-        let renderTab = [];
         let indexTab = NestableStore.getItemIndex(props.id);
-        if (indexTab == null) {
-            let order = 0;
-            indexTab = {};
-            _.forEach(props.items, function(it) {
-                this._indexTree(it, null, indexTab, renderTab, ++order);
-            }.bind(this));
 
-            NestableStore.storeItemIndex(props.id, indexTab, store);
-        } else {
-            renderTab = this._toRenderTab(indexTab);
+        if (indexTab == null) {
+            let renderTab = NestableSelect.buildIndex(props.id, store, props.items);
+            return {
+                delTags  : null,
+                renderTab: renderTab
+            };
         }
+        let renderTab = this._toRenderTab(indexTab);
         return {
             delTags  : null,
             renderTab: renderTab
         };
     }
 
-    _indexTree(item, parent, indexTree, renderTree, order) {
+    static buildIndex(storeId, store, items) {
+        let order = 0;
+        let indexTab = {};
+        let renderTab = [];
+
+        _.forEach(items, function(it) {
+            NestableSelect._indexTree(it, null, indexTab, renderTab, ++order);
+        });
+        NestableStore.storeItemIndex(storeId, indexTab, store);
+        return renderTab;
+    }
+
+    static _indexTree(item, parent, indexTree, renderTree, order) {
         let nestItem = new NestItem(item, parent, order);
         indexTree[item.itemId] = nestItem;
 
@@ -294,9 +300,8 @@ class NestableSelect extends React.Component
             let subItems = [];
 
             _.forEach(item.children, function(child) {
-                this._indexTree(child, nestItem, indexTree, subItems, ++subOrder);
-            }.bind(this));
-
+                NestableSelect._indexTree(child, nestItem, indexTree, subItems, ++subOrder);
+            });
             nestItem.setChildren(subItems);
         }
         renderTree.push(nestItem);
@@ -437,8 +442,8 @@ class NestableSelect extends React.Component
         }.bind(this));
 
         this.props.onSave(result, btnId);
-        StateButtonStore.goNextState(btnId);
         NestableStore.clearItemIndex(this.props.id);
+        StateButtonStore.goNextState(btnId);
     }
 
     _cancelItems() {
