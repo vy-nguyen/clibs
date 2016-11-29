@@ -156,6 +156,10 @@ class UserFriends extends React.Component
             format: "text-color-blue",
             header: "UUID"
         }, {
+            key   : "delete",
+            format: "text-color-red",
+            header: "Delete Account"
+        }, {
             key   : "follow",
             format: "text-color-blue",
             header: "Follow"

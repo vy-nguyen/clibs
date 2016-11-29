@@ -37,6 +37,7 @@ class TabPanel extends React.Component
     render() {
         let tab = this.props.context;
         if (tab == null) {
+            console.log("no props data");console.log(this.props);
             return null;
         }
         if (tab.getActivePane == null) {
@@ -44,6 +45,10 @@ class TabPanel extends React.Component
             tab.setActivePane = this._setActivePane;
         }
         let activeIdx = tab.getActivePane();
+        let containerFmt = tab.containerFmt != null ? tab.containerFmt : "tab-container no-padding";
+        let headerFmt = tab.headerFmt != null ? tab.headerFmt : "nav nav-tabs";
+        let contentFmt = tab.contentFmt != null ? tab.contentFmt : "tab-content no-padding";
+
         let tabHeader = tab.tabItems.map(function(item, idx) {
             return (
                 <li key={_.uniqueId('tab-panel-')} className={idx == activeIdx ? "active" : ""}>
@@ -59,7 +64,8 @@ class TabPanel extends React.Component
         let tabClsn = this.props.className;
         let tabContent = tab.tabItems.map(function(item, idx) {
             let tabRef = tabList[item.tabIdx];
-            let clasname = classnames("tab-pane", {active: idx == activeIdx});
+            let paneFmt = item.paneFmt != null ? item.paneFmt : "";
+            let clasname = classnames("tab-pane " + paneFmt, {active: idx == activeIdx});
             return (
                 <div key={_.uniqueId('tab-panel-')}
                     id={item.domId} className={classnames("tab-pane", {active: idx == activeIdx})}>
@@ -71,11 +77,11 @@ class TabPanel extends React.Component
         }.bind(this));
 
         return (
-            <div className="tab-container no-padding">
-                <ul className="nav nav-tabs">
+            <div className={containerFmt}>
+                <ul className={headerFmt}>
                     {tabHeader}
                 </ul>
-                <div className="tab-content no-padding">
+                <div className={contentFmt}>
                     {tabContent}
                 </div>
             </div>

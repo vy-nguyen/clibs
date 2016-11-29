@@ -16,7 +16,6 @@ import AuthorStore    from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleStore   from 'vntd-root/stores/ArticleStore.jsx';
 import UserPostView   from 'vntd-root/pages/user/UserPostView.jsx';
 import ProductView    from 'vntd-root/pages/e-store/ProductView.jsx';
-import ProductDetail  from 'vntd-root/pages/e-store/ProductDetail.jsx';
 import Timeline       from 'vntd-root/pages/blog/Timeline.jsx';
 import PostArticles   from './PostArticles.jsx';
 import PostTimeline   from './PostTimeline.jsx';
@@ -99,10 +98,6 @@ class AuthorFeed extends React.Component
                 domId  : 'estore-' + uuid,
                 tabText: 'E-Store',
                 tabIdx : 4
-            }, {
-                domId  : 'product-' + uuid,
-                tabText: 'Product',
-                tabIdx : 5
             } ]
         };
     }
@@ -154,7 +149,6 @@ class AuthorFeed extends React.Component
                                     <UserPostView userUuid={author.userUuid}/>
                                     <Timeline/>
                                     <ProductView/>
-                                    <ProductDetail/>
                                 </TabPanel>
                             </div>
                         </div>

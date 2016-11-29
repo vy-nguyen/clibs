@@ -2,12 +2,22 @@
  * Copyright by Vy Nguyen (2016)
  * BSD License
  */
-import React from 'react-mod'
+import React       from 'react-mod'
+import ProductInfo from './ProductInfo.jsx';
 
 let rawItems = require('json!../../mock-json/e-store-pview.json');
 
 class ProductView extends React.Component
 {
+    constructor(props) {
+        super(props);
+        this._clickProduct = this._clickProduct.bind(this);
+    }
+
+    _clickProduct() {
+        this.refs.modal.openModal();
+    }
+
     render() {
         return (
 
@@ -49,10 +59,11 @@ class ProductView extends React.Component
                     <div className="row">
                         <div className="col-md-5 col-sm-12 col-xs-12">
                             <div className="product-image">
-                                <img src="/rs/img/demo/e-comm/1.png" alt="194x228" className="img-responsive"/> 
-												<span className="tag2 hot">
-													HOT
-												</span>
+                                <button onClick={this._clickProduct}>
+                                    <ProductInfo ref={"modal"} modal={true}/>
+                                    <img src="/rs/img/demo/e-comm/1.png" alt="194x228" className="img-responsive"/> 
+									<span className="tag2 hot"> HOT </span>
+                                </button>
                             </div>
                         </div>
                         <div className="col-md-7 col-sm-12 col-xs-12">

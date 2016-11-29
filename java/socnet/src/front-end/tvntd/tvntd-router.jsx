@@ -79,6 +79,8 @@ const Routes = (
                 <Redirect from="/" to="admin"/>
                 <Route path="admin">
                     <IndexRoute component={UserConnect} userList={null}/>
+                    <Route path="profile" component={UserProfile}/>
+                    <Route path="account" component={UserAccount}/>
                     <Route path="list-users" component={ListUsers} userList={null}/>
                     <Route path="set-tags" component={SetTags}/>
                 </Route>

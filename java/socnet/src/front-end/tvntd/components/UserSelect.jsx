@@ -17,6 +17,7 @@ var UserSelect = function() {
         follower: "<button>Follower</button>",
         block   : "<button>Blocked</button>",
         connect : "<button>Connected</button>",
+        delAcct : "<button>Delete</button>",
         noSelect: "<button>N/A</button",
         notOwner: "<button>Not Owner</button>",
         reqSent : "<button>Pending</button"
@@ -75,6 +76,9 @@ var UserSelect = function() {
     };
     let unBlockInput = function(key) {
         return userInput('unBlock-' + key);
+    };
+    let deleteInput = function(key) {
+        return userInput('delete-' + key);
     };
 
     let reqConnect = function(user, key, arg) {
@@ -171,6 +175,9 @@ var UserSelect = function() {
                 break;
             case 'uuid':
                 row.uuid = user.userUuid;
+                break;
+            case 'delete':
+                row.delete = deleteInput(key);
                 break;
             case 'follow':
                 row.follow = arg.followFmt;
