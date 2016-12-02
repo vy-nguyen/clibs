@@ -2,39 +2,14 @@
  * Copyright by Vy Nguyen (2016)
  * BSD License
  */
-import React from 'react-mod'
+import React, { PropTypes } from 'react-mod'
 
 import TabPanel         from 'vntd-shared/layout/TabPanel.jsx';
 import StarRating       from 'vntd-shared/layout/StarRating.jsx';
 import ModalConfirm     from 'vntd-shared/forms/commons/ModalConfirm.jsx';
+import LikeStat         from 'vntd-root/components/LikeStat.jsx';
 import PostComment      from 'vntd-root/components/PostComment.jsx';
 
-    /*
-class StarRating extends React.Component
-{
-    constructor(props) {
-        super(props);
-    }
-
-    render() {
-        return (
-            <div>
-                <span>
-                    <i className="fa fa-star fa-2x text-primary"></i>
-                    <i className="fa fa-star fa-2x text-primary"></i>
-                    <i className="fa fa-star fa-2x text-primary"></i>
-                    <i className="fa fa-star fa-2x text-primary"></i>
-                    <i className="fa fa-star fa-2x text-muted"></i>
-                </span>
-                <span className="fa fa-2x">
-                    <h5>  (109) Votes</h5>
-                </span>
-                <a href="javascript:void(0);"> 109 customer reviews</a>
-            </div>
-        );
-    }
-}
-     */
 class ProductInfo extends React.Component
 {
     constructor(props) {
@@ -56,28 +31,31 @@ class ProductInfo extends React.Component
     componentWillUnmount() {
     }
 
-    _productImages(uuid) {
-        let itemId = 'product-img-' + uuid;
-        let itemRef = '#' + itemId;
+    _productImages(uuid, images) {
+        const itemId = `product-img-${uuid}`;
+        const itemRef = `#${itemId}`;
 
+        let inner = [];
+        let indicators = [];
+        for (let i = 0; i < images.length; i++) {
+            const clsn = i === 0 ? "active" : "";
+            indicators.push(
+                <li key={_.uniqueId('prod-car-')} data-target={itemRef} data-slide-to={i.toString} className={clsn}></li>
+            );
+            inner.push(
+                <div key={_.uniqueId('prod-car-')} className={`item ${clsn}`}>
+                    <img src={images[i]}/>
+                </div>
+            );
+        }
         return (
             <div className="product-image">
                 <div id={itemId} className="carousel slide">
                     <ol className="carousel-indicators">
-                        <li data-target={itemRef} data-slide-to="0" className=""></li>
-                        <li data-target={itemRef} data-slide-to="1" className="active"></li>
-                        <li data-target={itemRef} data-slide-to="2" className=""></li>
+                        {indicators}
                     </ol>
                     <div className="carousel-inner">
-                        <div className="item active">
-                            <img src="/rs/img/demo/e-comm/detail-1.png" alt=""/>
-                        </div>
-                        <div className="item">
-                            <img src="/rs/img/demo/e-comm/detail-2.png" alt=""/>
-                        </div>
-                        <div className="item">
-                            <img src="/rs/img/demo/e-comm/detail-3.png" alt=""/>
-                        </div>
+                        {inner}
                     </div>
                     <a className="left carousel-control" href={itemRef} data-slide="prev">
                         <span className="glyphicon glyphicon-chevron-left"></span>
@@ -137,42 +115,19 @@ class ProductInfo extends React.Component
     }
 
     _renderProduct() {
-        let prodDesc = (
-            <div>
-                <strong>Product ABC</strong>
-                <p>Integer egestas, orci id condimentum eleifend, nibh nisi pulvinar eros, vitae ornare massa  neque ut orci. Nam aliquet lectus sed odio eleifend, at iaculis dolor egestas. Nunc elementum pellentesque augue sodales porta. Etiam  aliquet rutrum turpis, feugiat sodales ipsum consectetur nec.</p>
-            </div>
-        );
-        let prodSpec = (
-            <div>
-                <dl className="">
-                    <dt>Gravina</dt>
-                    <dd>Etiam porta sem malesuada magna mollis euismod.</dd>
-                    <dd>Donec id elit non mi porta gravida at eget metus.</dd>
-                    <dd>Eget lacinia odio sem nec elit.</dd>
-                    <br/>
-                    <dt>Test lists</dt>
-                    <dd>A description list is perfect for defining terms.</dd>
-                    <br/>
-                    <dt>Altra porta</dt>
-                    <dd>Vestibulum id ligula porta felis euismod semper</dd>
-                </dl>
-            </div>
-        );
-        let props = {
-            uuid   : "1234",
-            price  : "$100",
-            priceNotice : "includes tax",
-            productTitle: "Item abc",
-            productDesc : prodDesc,
-            productSpec : prodSpec,
-        };
+        const { uuid, productTitle, price, priceNotice, productTags } = this.props;
         let prodTab = this._productDesc(props);
+        let tagLength = productTags.length;
+        let prodTags = [];
+
+        for (let i = 0; i < tagLength; i++) {
+            prodTags.push(<li key={_.uniqueId('prod-info-')}>{productTags[i]}</li>);
+        }
         return (
             <div className="product-content product-wrap clearfix product-deatil">
                 <div className="row">
                     <div className="col-md-12 col-lg-12 col-sm-12 col-xs-12">
-                        {this._productImages(props.uuid)}
+                        {this._productImages(uuid)}
                     </div>
                 </div>
                 <div className="row">
@@ -180,24 +135,21 @@ class ProductInfo extends React.Component
                         <div className="row">
                             <div className="col-xs-12 col-sm-12 col-md-8 col-lg-8">
                                 <h2 className="name">
-                                    {props.productTitle}
+                                    {productTitle}
                                     <small>Product by <a href="javascript:void(0);">Adeline</a></small>
                                 </h2>
-                                <StarRating name={props.uuid} value={7} editing={false}/>
+                                <StarRating name={uuid} value={7} />
                             </div>
                             <div className="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                 <h3 className="price-container">
-                                    {props.price}
-                                    <small>{props.priceNotice}</small>
+                                    {price}
+                                    <small>{priceNotice}</small>
                                 </h3>
                             </div>
                         </div>
                         <hr/>
                         <div className="certified">
-                            <ul>
-                                <li><a href="javascript:void(0);">Delivery time<span>7 Working Days</span></a></li>
-                                <li><a href="javascript:void(0);">Certified<span>Quality Assured</span></a></li>
-                            </ul>
+                            <ul>{prodTags}</ul>
                         </div>
                     </div>
                 </div>
@@ -208,7 +160,7 @@ class ProductInfo extends React.Component
                 </div>
                 <div className="row">
                     <div className="col-sm-12 col-md-6 col-lg-6"> 
-                        <a href="javascript:void(0);" className="btn btn-success btn-lg">Add to cart {props.price}</a>
+                        <a href="javascript:void(0);" className="btn btn-success btn-lg">Add to cart {price}</a>
                     </div>
                     <div className="col-sm-12 col-md-6 col-lg-6">
                         <div className="btn-group pull-right">
@@ -226,17 +178,161 @@ class ProductInfo extends React.Component
     }
 
     render() {
-        let product = this._renderProduct();
-
         if (this.props.modal === true) {
             return (
                 <ModalConfirm ref={'modal'} modalTitle={"Product"}>
-                    {product}
+                    {this._renderProduct()}
                 </ModalConfirm>
             );
         }
-        return {product};
+        return this._renderProduct();
     }
 }
 
-export default ProductInfo;
+ProductInfo.propTypes = {
+    uuid        : PropTypes.string.isRequired,
+    price       : PropTypes.string.isRequired,
+    priceNotice : PropTypes.string,
+    productTitle: PropTypes.string.isRequired,
+    productDesc : PropTypes.object.isRequired,
+    productSpec : PropTypes.object.isRequired,
+    productImgs : PropTypes.arrayOf(PropTypes.string).isRequired,
+    productTags : PropTypes.arrayOf(PropTypes.object)
+};
+
+ProductInfo.defaultProps = {
+    uuid        : "123a",
+    price       : "$100",
+    priceNotice : "Free shipping",
+    productTitle: "Item ABC",
+    productImgs : [
+        "/rs/img/demo/e-comm/detail-1.png",
+        "/rs/img/demo/e-comm/detail-2.png",
+        "/rs/img/demo/e-comm/detail-3.png"
+    ],
+    productTags: [
+        <a>Delivery time<span>7 Working Days</span></a>,
+        <a>Certified<span>Quality Assured</span></a>
+    ],
+    productDesc: (
+        <div>
+            <strong>Product ABC</strong>
+            <p>
+                Integer egestas, orci id condimentum eleifend, nibh nisi pulvinar eros, vitae ornare massa neque ut orci. Nam      aliquet lectus sed odio eleifend, at iaculis dolor egestas. Nunc elementum pellentesque augue sodales porta. Etiam  aliquet rutrum     turpis, feugiat sodales ipsum consectetur nec.
+            </p>
+        </div>
+    ),
+    productSpec: (
+        <div>
+            <dl className="">
+                <dt>Gravina</dt>
+                <dd>Etiam porta sem malesuada magna mollis euismod.</dd>
+                <dd>Donec id elit non mi porta gravida at eget metus.</dd>
+                <dd>Eget lacinia odio sem nec elit.</dd>
+                <br/>
+                <dt>Test lists</dt>
+                <dd>A description list is perfect for defining terms.</dd>
+                <br/>
+                <dt>Altra porta</dt>
+                <dd>Vestibulum id ligula porta felis euismod semper</dd>
+            </dl>
+        </div>
+    )
+};
+
+class ProductBrief extends React.Component
+{
+    constructor(props) {
+        super(props);
+
+        this._addCart     = this._addCart.bind(this);
+        this._getDetail   = this._getDetail.bind(this);
+        this._clickSelect = this._clickSelect.bind(this);
+    }
+
+    componentDidMount() {
+    }
+
+    componentWillUnmount() {
+    }
+
+    _addCart() {
+    }
+
+    _getDetail() {
+    }
+
+    _clickSelect() {
+    }
+
+    render() {
+        let onClickCb = this.props.onClickCb;
+        const {
+            logoImg, logoWidth, logoHeight, logoTag, likeStat,
+            uuid, rating, productName, productCat, price, productDesc
+        } = this.props.product;
+
+        if (onClickCb == null) {
+            onClickCb = this._clickSelect;
+        }
+        //<img src={logoImg} width={logoWidth} height={logoHeight} className='img-responsive'/>
+        return (
+            <div className="product-content product-wrap clearfix">
+                <div className="row">
+                    <div className="col-md-5 col-sm-12 col-xs-12" onClick={this._getDetail}>
+                        <div className="product-image" style={{minHeight: "150"}}>
+                            <img src={logoImg} className='img-responsive'/>
+                        </div>
+                        {logoTag ? <span className='tag2 hot'>{logoTag}</span> : null}
+                        <LikeStat data={likeStat} split={true}/>
+                        <StarRating name={`prod-${uuid}`} value={rating}/>
+                    </div>
+                    <div className="col-md-7 col-sm-12 col-xs-12">
+                        <div className="product-deatil">
+                            <h5 className="name">
+                                <a href="#">{productName}<span>{productCat}</span></a>
+                            </h5>
+                            <p className="price-container"><span>{price}</span></p>
+                            <span className="tag1"></span>
+                        </div>
+                        <div className="description">
+                            {/*productDesc*/}
+                        </div>
+                        <div className="product-info smart-form">
+                            <div className="row">
+                                <div className="col-md-6 col-sm-6 col-xs-6">
+                                    <button className="btn btn-success" onClick={this._addCart}>Add to cart</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}
+
+ProductBrief.propTypes = {
+    product: PropTypes.shape({
+        logoImg    : PropTypes.string.isRequired,
+        logoWidth  : PropTypes.number,
+        logoHeight : PropTypes.number,
+        logoTag    : PropTypes.string,
+        likeStat   : PropTypes.object,
+        uuid       : PropTypes.string,
+        price      : PropTypes.string.isRequired,
+        rating     : PropTypes.number,
+        productName: PropTypes.string.isRequired,
+        productCat : PropTypes.string,
+        productDesc: PropTypes.string.isRequired
+    })
+};
+
+ProductBrief.defaultProps = {
+    product: {
+        logoWidth : 40,
+        logoHeight: 40
+    }
+};
+
+export { ProductBrief, ProductInfo };

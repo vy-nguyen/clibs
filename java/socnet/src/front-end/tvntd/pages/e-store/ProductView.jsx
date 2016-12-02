@@ -2,8 +2,8 @@
  * Copyright by Vy Nguyen (2016)
  * BSD License
  */
-import React       from 'react-mod'
-import ProductInfo from './ProductInfo.jsx';
+import React           from 'react-mod'
+import { ProductInfo } from './ProductInfo.jsx';
 
 let rawItems = require('json!../../mock-json/e-store-pview.json');
 

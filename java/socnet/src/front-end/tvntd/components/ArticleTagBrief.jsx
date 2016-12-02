@@ -5,7 +5,6 @@
 
 import _        from 'lodash';
 import React    from 'react-mod';
-import Reflux   from 'reflux';
 
 import NavigationStore from 'vntd-shared/stores/NavigationStore.jsx';
 import ArticleBox      from 'vntd-root/components/ArticleBox.jsx';
@@ -22,7 +21,6 @@ class ArticleTagBrief extends React.Component
         this._getSubTagObjs  = this._getSubTagObjs.bind(this);
         this._renderArtBrief = this._renderArtBrief.bind(this);
         this._renderArtFull  = this._renderArtFull.bind(this);
-        this._renderArtBox   = this._renderArtBox.bind(this);
 
         this.state = {
             articleUuid: null,
@@ -32,7 +30,10 @@ class ArticleTagBrief extends React.Component
 
     _readArticle(uuid, artRank) {
         if (uuid === this.state.articleUuid) {
-            this.setState(this.initState);
+            this.setState({
+                articleUuid: null,
+                articleRank: null 
+            });
         } else {
             this.setState({
                 articleUuid: uuid,
@@ -110,30 +111,39 @@ class ArticleTagBrief extends React.Component
         )
     }
 
-    _renderArtBox(output, tag) {
+    render() {
         let articles = [];
-        ArticleTagStore.getPublishedArticles(tag.tagName, articles);
+        ArticleTagStore.getPublishedArticles(this.props.tag.tagName, articles);
 
+        return (
+            <section id='widget-grid'>
+                {ArticleTagBrief.renderArtBox(articles, this._renderArtBrief, this._renderArtFull)}
+            </section>
+        );
+    }
+
+    static renderArtBox(articles, renderBrief, renderFull) {
+        let output = [];
         let mode = NavigationStore.getViewMode();
         let length = articles.length;
 
         for (let i = 0; i < length; i++) {
-            let oneBrief = this._renderArtBrief(articles[i]);
-            let oneFull  = this._renderArtFull(articles[i]);
+            let oneBrief = renderBrief(articles[i]);
+            let oneFull  = renderFull(articles[i]);
 
             let twoBrief = null;
             let twoFull  = null;
             if ((i + 1) < length) {
                 i++;
-                twoBrief = this._renderArtBrief(articles[i]);
-                twoFull  = this._renderArtFull(articles[i]);
+                twoBrief = renderBrief(articles[i]);
+                twoFull  = renderFull(articles[i]);
             }
             let threeBrief = null;
             let threeFull  = null;
             if ((mode === "lg") && ((i + 1) < length)) {
                 i++;
-                threeBrief = this._renderArtBrief(articles[i]);
-                threeFull  = this._renderArtFull(articles[i]);
+                threeBrief = renderBrief(articles[i]);
+                threeFull  = renderFull(articles[i]);
             }
             output.push(
                 <div className="row" key={_.uniqueId("art-brief-")}>
@@ -150,17 +160,7 @@ class ArticleTagBrief extends React.Component
                 </div>
             );
         }
-    }
-
-    render() {
-        let output = [];
-        this._renderArtBox(output, this.props.tag);
-
-        return (
-            <div>
-                {output}
-            </div>
-        );
+        return output;
     }
 
     static renderPublicTags() {
@@ -172,7 +172,7 @@ class ArticleTagBrief extends React.Component
                     <div className="row" key={_.uniqueId('art-tag-brief-')}>
                         <h1>{tag.tagName}</h1>
                         <ArticleTagBrief key={_.uniqueId('art-pub-tag-')} tag={tag}/>
-                        </div>
+                    </div>
                 );
             });
         }

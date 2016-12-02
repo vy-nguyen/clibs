@@ -15,7 +15,7 @@ import ProfileCover   from 'vntd-root/components/ProfileCover.jsx';
 import AuthorStore    from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleStore   from 'vntd-root/stores/ArticleStore.jsx';
 import UserPostView   from 'vntd-root/pages/user/UserPostView.jsx';
-import ProductView    from 'vntd-root/pages/e-store/ProductView.jsx';
+import EStore         from 'vntd-root/pages/e-store/EStore.jsx';
 import Timeline       from 'vntd-root/pages/blog/Timeline.jsx';
 import PostArticles   from './PostArticles.jsx';
 import PostTimeline   from './PostTimeline.jsx';
@@ -148,7 +148,7 @@ class AuthorFeed extends React.Component
                                     <Blog authorUuid={userUuid} user={user}/>
                                     <UserPostView userUuid={author.userUuid}/>
                                     <Timeline/>
-                                    <ProductView/>
+                                    <EStore/>
                                 </TabPanel>
                             </div>
                         </div>

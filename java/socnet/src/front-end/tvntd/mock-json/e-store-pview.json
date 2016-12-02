@@ -1,2 +1,168 @@
 {
+    "products": [ {
+        "brief": {
+            "logoImg"    : "/rs/img/demo/e-comm/1.png",
+            "logoWidth"  : 40,
+            "logoHeight" : 40,
+            "logoTag"    : "Hot",
+            "likeStat"   : {},
+            "uuid"       : "abc1234",
+            "price"      : "$100",
+            "rating"     : 3,
+            "productName": "Item ABC",
+            "productCat" : "Beauty",
+            "productDesc": ""
+        },
+        "detail": {
+            "uuid"        : "abc1234",
+            "price"       : "$100",
+            "priceNotice" : "Free shipping",
+            "productTitle": "Item ABC",
+            "productDesc" :
+"<strong>Product ABC</strong><p>Integer egestas, orci id condimentum eleifend, nibh nisi pulvinar eros, vitae ornare massa neque ut orci.  Nam aliquet lectus sed odio eleifend, at iaculis dolor egestas.  Nunc elementum pellentesque augue sodales porta.  Etiam aliquet rutrum turpis, feugiat sodales ipsum consectetur nec.</p>",
+            "productSpec" :
+"<dl className=''><dt>Gravina</dt><dd>Etiam porta sem malesuada magna mollis euismod.</dd><dd>Donec id elit non mi porta gravida at eget metus.</dd><dd>Eget lacinia odio sem nec elit.</dd><br/><dt>Test lists</dt><dd>A description list is perfect for defining terms.</dd><br/><dt>Altra porta</dt><dd>Vestibulum id ligula porta felis euismod semper</dd></dl>",
+            "productImgs" : [
+                "/rs/img/demo/e-comm/detail-1.png",
+                "/rs/img/demo/e-comm/detail-2.png",
+                "/rs/img/demo/e-comm/detail-3.png"
+            ],
+            "productTags" : [
+                "<a>Delivery time<span>7 Working Days</span></a>",
+                "<a>Certified<span>Quality Assured</span></a>"
+            ]
+        }
+    }, {
+        "brief": {
+            "logoImg"    : "/rs/img/demo/e-comm/2.png",
+            "logoWidth"  : 40,
+            "logoHeight" : 40,
+            "logoTag"    : "Sale",
+            "likeStat"   : {},
+            "uuid"       : "abc12345",
+            "price"      : "$200",
+            "rating"     : 4,
+            "productName": "Item DEF",
+            "productCat" : "Cleaning",
+            "productDesc": ""
+        },
+        "detail": {
+            "uuid"        : "abc12345",
+            "price"       : "$200",
+            "priceNotice" : "",
+            "productTitle": "Item DEF",
+            "productDesc" : 
+"<strong>Product ABC</strong><p>Integer egestas, orci id condimentum eleifend, nibh nisi pulvinar eros, vitae ornare massa neque ut orci.  Nam aliquet lectus sed odio eleifend, at iaculis dolor egestas.  Nunc elementum pellentesque augue sodales porta.  Etiam aliquet rutrum turpis, feugiat sodales ipsum consectetur nec.</p>",
+            "productSpec" :
+"<dl className=''><dt>Gravina</dt><dd>Etiam porta sem malesuada magna mollis euismod.</dd><dd>Donec id elit non mi porta gravida at eget metus.</dd><dd>Eget lacinia odio sem nec elit.</dd><br/><dt>Test lists</dt><dd>A description list is perfect for defining terms.</dd><br/><dt>Altra porta</dt><dd>Vestibulum id ligula porta felis euismod semper</dd></dl>",
+            "productImgs" : [
+                "/rs/img/demo/e-comm/detail-1.png",
+                "/rs/img/demo/e-comm/detail-2.png",
+                "/rs/img/demo/e-comm/detail-3.png"
+            ],
+            "productTags" : [
+                "<a>High Quatity</a>",
+                "<a>Certified<span>Quality Assured</span></a>"
+            ]
+        }
+    }, {
+        "brief": {
+            "logoImg"    : "/rs/img/demo/e-comm/3.png",
+            "logoWidth"  : 40,
+            "logoHeight" : 40,
+            "logoTag"    : "",
+            "likeStat"   : {},
+            "uuid"       : "abc12341",
+            "price"      : "$1000",
+            "rating"     : 2,
+            "productName": "Bottle Water",
+            "productCat" : "Beverage",
+            "productDesc": ""
+        },
+        "detail": {
+            "uuid"        : "abc12341",
+            "price"       : "$1000",
+            "priceNotice" : "on sale",
+            "productTitle": "Spring Water",
+            "productDesc" :
+"<strong>Product ABC</strong><p>Integer egestas, orci id condimentum eleifend, nibh nisi pulvinar eros, vitae ornare massa neque ut orci.  Nam aliquet lectus sed odio eleifend, at iaculis dolor egestas.  Nunc elementum pellentesque augue sodales porta.  Etiam aliquet rutrum turpis, feugiat sodales ipsum consectetur nec.</p>",
+            "productSpec" :
+"<dl className=''><dt>Gravina</dt><dd>Etiam porta sem malesuada magna mollis euismod.</dd><dd>Donec id elit non mi porta gravida at eget metus.</dd><dd>Eget lacinia odio sem nec elit.</dd><br/><dt>Test lists</dt><dd>A description list is perfect for defining terms.</dd><br/><dt>Altra porta</dt><dd>Vestibulum id ligula porta felis euismod semper</dd></dl>",
+            "productImgs" : [
+                "/rs/img/demo/e-comm/detail-1.png",
+                "/rs/img/demo/e-comm/detail-2.png",
+                "/rs/img/demo/e-comm/detail-3.png"
+            ],
+            "productTags" : [
+                "<a>Gurantee Fresh</a>",
+                "<a>Certified<span>Quality Assured</span></a>"
+            ]
+        }
+    }, {
+        "brief": {
+            "logoImg"    : "/rs/img/demo/e-comm/4.png",
+            "logoWidth"  : 40,
+            "logoHeight" : 40,
+            "logoTag"    : "",
+            "likeStat"   : {},
+            "uuid"       : "abc12343",
+            "price"      : "$343",
+            "rating"     : 5,
+            "productName": "Magic Wand",
+            "productCat" : "Entertainment",
+            "productDesc": ""
+        },
+        "detail": {
+            "uuid"        : "abc12343",
+            "price"       : "$343",
+            "priceNotice" : "recall item",
+            "productTitle": "Magic Wand",
+            "productDesc" :
+"<strong>Product ABC</strong><p>Integer egestas, orci id condimentum eleifend, nibh nisi pulvinar eros, vitae ornare massa neque ut orci.  Nam aliquet lectus sed odio eleifend, at iaculis dolor egestas.  Nunc elementum pellentesque augue sodales porta.  Etiam aliquet rutrum turpis, feugiat sodales ipsum consectetur nec.</p>",
+            "productSpec" :
+"<dl className=''><dt>Gravina</dt><dd>Etiam porta sem malesuada magna mollis euismod.</dd><dd>Donec id elit non mi porta gravida at eget metus.</dd><dd>Eget lacinia odio sem nec elit.</dd><br/><dt>Test lists</dt><dd>A description list is perfect for defining terms.</dd><br/><dt>Altra porta</dt><dd>Vestibulum id ligula porta felis euismod semper</dd></dl>",
+            "productImgs" : [
+                "/rs/img/demo/e-comm/detail-1.png",
+                "/rs/img/demo/e-comm/detail-2.png",
+                "/rs/img/demo/e-comm/detail-3.png"
+            ],
+            "productTags" : [
+                "<a>Gurantee Fresh</a>",
+                "<a>Certified<span>Quality Assured</span></a>"
+            ]
+        }
+    }, {
+        "brief": {
+            "logoImg"    : "/rs/img/demo/e-comm/5.png",
+            "logoWidth"  : 40,
+            "logoHeight" : 40,
+            "logoTag"    : "hot",
+            "likeStat"   : {},
+            "uuid"       : "abc12347",
+            "price"      : "$565",
+            "rating"     : 3,
+            "productName": "Instant Noodle",
+            "productCat" : "Food",
+            "productDesc": ""
+        },
+        "detail": {
+            "uuid"        : "abc12347",
+            "price"       : "$565",
+            "priceNotice" : "on sale",
+            "productTitle": "Instant Noodle",
+            "productDesc" :
+"<strong>Product ABC</strong><p>Integer egestas, orci id condimentum eleifend, nibh nisi pulvinar eros, vitae ornare massa neque ut orci.  Nam aliquet lectus sed odio eleifend, at iaculis dolor egestas.  Nunc elementum pellentesque augue sodales porta.  Etiam aliquet rutrum turpis, feugiat sodales ipsum consectetur nec.</p>",
+            "productSpec" :
+"<dl className=''><dt>Gravina</dt><dd>Etiam porta sem malesuada magna mollis euismod.</dd><dd>Donec id elit non mi porta gravida at eget metus.</dd><dd>Eget lacinia odio sem nec elit.</dd><br/><dt>Test lists</dt><dd>A description list is perfect for defining terms.</dd><br/><dt>Altra porta</dt><dd>Vestibulum id ligula porta felis euismod semper</dd></dl>",
+            "productImgs" : [
+                "/rs/img/demo/e-comm/detail-1.png",
+                "/rs/img/demo/e-comm/detail-2.png",
+                "/rs/img/demo/e-comm/detail-3.png"
+            ],
+            "productTags" : [
+                "<a>Gurantee Fresh</a>",
+                "<a>Certified<span>Quality Assured</span></a>"
+            ]
+        }
+    } ]
 }

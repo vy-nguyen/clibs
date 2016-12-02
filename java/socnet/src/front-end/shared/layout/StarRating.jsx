@@ -2,7 +2,7 @@
  * Copyright by Vy Nguyen (2016)
  * BSD License
  */
-import React  from 'react-mod';
+import React, { PropTypes } from 'react-mod';
 
 const _starScores = [
     { solid: 0, half: 0, hollow: 5 },  // 0
@@ -20,26 +20,6 @@ const _starScores = [
 
 class StarRating extends React.Component
 {
-    static propTypes() {
-        return {
-            name       : React.PropTypes.string.isRequired,
-            value      : React.PropTypes.number,
-            editing    : React.PropTypes.bool,
-            starFmt    : React.PropTypes.string,
-            noStarFmt  : React.PropTypes.string,
-            onStarClick: React.PropTypes.func
-        };
-    }
-
-    static defaultProps() {
-        return {
-            value    : 0,
-            editing  : false,
-            starFmt  : 'text-primary',
-            noStarFmt: 'text-muted'
-        };
-    }
-
     constructor(props) {
         super(props);
         this.state = {
@@ -48,44 +28,95 @@ class StarRating extends React.Component
     }
 
     render() {
+        let idx = 0;
         const { name, editing, noStarFmt, starFmt } = this.props;
         let rank = _starScores[this.state.value % 10];
 
         let solid = null;
         if (rank.solid > 0) {
             solid = [];
-            for (let i = 0; i < rank.solid; i++) {
-                const key = `${name}_${i}`;
-                solid.push(<i key={`so_${key}`} className={'fa fa-star fa-2x ' + starFmt}></i>);
+            for (let i = 0; i < rank.solid; i++, idx++) {
+                const key = `star-${name}-${idx}`;
+                const cls = `fa fa-star fa-2x ${starFmt}`;
+                if (editing === false) {
+                    solid.push(<i key={key} className={cls}></i>);
+                } else {
+                    solid.push(<input type='radio' name={name} id={key} key={key} ref={key}/>);
+                    solid.push(
+                        <label for={key}>
+                            <i className={cls}></i>
+                        </label>
+                    );
+                }
             }
         }
 
         let half = null;
         if (rank.half > 0) {
-            half = <i className={'fa fa-star-half-o fa-2x ' + starFmt}></i>;
+            const key = `star-${name}-${idx}`;
+            const cls = `fa fa-star-half-o fa-2x ${starFmt}`;
+            if (editing === false) {
+                half = <i className={cls}></i>;
+            } else {
+                half = [];
+                half.push(<input type='radio' name={name} id={key} key={key} ref={key}/>);
+                half.push(
+                    <label for={key}>
+                        <i className={cls}></i>
+                    </label>
+                );
+            }
+            idx++;
         }
 
         let hollow = null;
-        console.log(rank);
         if (rank.hollow > 0) {
             hollow = [];
-            if (editing === false) {
-                for (let i = 0; i < rank.hollow; i++) {
-                    const key = `${name}_${i}`;
+            for (let i = 0; i < rank.hollow; i++, idx++) {
+                const key = `star-${name}-${idx}`;
+                const cls = `fa fa-star-o fa-2x ${starFmt}`;
+                if (editing === false) {
                     hollow.push(<i key={`ho_${key}`} className={'fa fa-star-o fa-2x ' + noStarFmt}></i>);
-                    console.log("hollow star " + key);
+                } else {
+                    hollow.push(<input type='radio' name={name} id={key} key={key} ref={key}/>);
+                    hollow.push(
+                        <label for={key}>
+                            <i className={cls}></i>
+                        </label>
+                    );
                 }
             }
         }
+        let rating = (
+            <div className='rating'>
+                <span>{solid}{half}{hollow}</span>
+            </div>
+        );
         if (editing === false) {
-            return (
-                <div>
-                    <span>{solid}{half}{hollow}</span>
-                </div>
-            );
+            return rating;
         }
-        return null;
+        return (
+            <div className='smart-form'>
+                {rating};
+            </div>
+        );
     }
 }
+
+StarRating.propTypes = {
+    name       : PropTypes.string.isRequired,
+    value      : PropTypes.number,
+    editing    : PropTypes.bool,
+    starFmt    : PropTypes.string,
+    noStarFmt  : PropTypes.string,
+    onStarClick: PropTypes.func
+};
+
+StarRating.defaultProps = {
+    value    : 0,
+    editing  : false,
+    starFmt  : 'text-primary',
+    noStarFmt: 'text-muted'
+};
 
 export default StarRating;

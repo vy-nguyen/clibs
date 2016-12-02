@@ -87,8 +87,6 @@ class ArticleBox extends React.Component
                                 </div>
                             </div>
                         </div>
-                        <div className="product-info">
-                        </div>
                     </div>
                 </div>
             </div>
