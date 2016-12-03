@@ -12,6 +12,7 @@ import UserStore           from 'vntd-shared/stores/UserStore.jsx';
 import TabPanel            from 'vntd-shared/layout/TabPanel.jsx';
 import EditorPost          from 'vntd-shared/forms/commons/EditorPost.jsx';
 import UserPostView        from 'vntd-root/pages/user/UserPostView.jsx';
+import EStorePost          from 'vntd-root/pages/e-store/EStorePost.jsx';
 import ArticleStore        from 'vntd-root/stores/ArticleStore.jsx';
 import PostArticles        from 'vntd-root/components/PostArticles.jsx';
 import ProfileCover        from 'vntd-root/components/ProfileCover.jsx';
@@ -25,6 +26,7 @@ class UserHome extends React.Component
         super(props);
         this.getUserTab     = this.getUserTab.bind(this);
         this.getMyUserTab   = this.getMyUserTab.bind(this);
+        this._getEditTab    = this._getEditTab.bind(this);
         this._getActivePane = this._getActivePane.bind(this);
         this._setActivePane = this._setActivePane.bind(this);
         this._updateStore   = this._updateStore.bind(this);
@@ -109,7 +111,21 @@ class UserHome extends React.Component
                 tabText: 'Block Chains',
                 tabIdx : 4
             } ]
-        }
+        };
+    }
+
+    _getEditTab() {
+        return {
+            tabItems: [ {
+                domId  : 'post-article',
+                tabText: 'Post Article',
+                tabIdx : 0
+            }, {
+                domId  : 'post-product',
+                tabText: 'Post Product',
+                tabIdx : 1
+            } ]
+        };
     }
 
     _getOwner() {
@@ -159,16 +175,21 @@ class UserHome extends React.Component
             postView = <UserPostView userUuid={self.userUuid}/>;
             saveArticles = <PostArticles userUuid={self.userUuid} data={ArticleStore.getMySavedArticles()}/>
         }
-        let editorFmt = "";
+        let editTab = null;
         if (me === true) {
-            editorFmt = <EditorPost/>
+            editTab = (
+                <TabPanel context={this._getEditTab()}>
+                    <EditorPost/>
+                    <EStorePost/>
+                </TabPanel>
+            );
         }
+        /*<Link to={{ pathname: "/user/" + "123450", query: { editor: false } }}>User profile</Link>*/
         return (
             <div id="user-home">
                 <ProfileCover userUuid={self.userUuid}/>
                 <UserAvatar data={{doFileDrop: false}} userUuid={self.userUuid}/>
-                {editorFmt}
-                {/*<Link to={{ pathname: "/user/" + "123450", query: { editor: false } }}>User profile</Link>*/}
+                {editTab}
                 <div className="row">
                     <article className="col-sm-12 col-md-12 col-lg-10">
                         <TabPanel context={tabCtx}>

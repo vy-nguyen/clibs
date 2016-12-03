@@ -15,10 +15,8 @@ import ArticleStore    from 'vntd-root/stores/ArticleStore.jsx';
 import Actions         from 'vntd-root/actions/Actions.jsx';
 import AuthorStore     from 'vntd-root/stores/AuthorStore.jsx';
 import UserStore       from 'vntd-shared/stores/UserStore.jsx';
-import Select2         from 'vntd-shared/forms/inputs/Select2.jsx';
 import Editor          from 'vntd-shared/forms/editors/Editor.jsx';
 import JarvisWidget    from 'vntd-shared/widgets/JarvisWidget.jsx';
-import {safeStringify} from 'vntd-shared/utils/Enum.jsx';
 
 const InitState = {
     topic: 'Topic',
@@ -171,9 +169,9 @@ class EditorPost extends React.Component
      */
     _getData() {
         return {
-            topic      : safeStringify(this.refs.topic.value),
-            tags       : safeStringify(this.state.tagName),
-            content    : safeStringify(this.state.content),
+            topic      : this.refs.topic.value,
+            tags       : this.state.tagName,
+            content    : this.state.content,
             authorUuid : UserStore.getSelf().userUuid,
             articleUuid: this.state.articleUuid
         }

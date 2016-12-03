@@ -110,10 +110,12 @@ class GenericForm extends React.Component
                     );
                 }
                 return (
-                    <div className="row form-group" key={index}>
-                        {label}
-                        <div className={entry.inputFmt}>
-                            {input}
+                    <div className="row">
+                        <div className="form-group" key={index}>
+                            {label}
+                            <div className={entry.inputFmt}>
+                                {input}
+                            </div>
                         </div>
                     </div>
                 );
@@ -130,13 +132,11 @@ class GenericForm extends React.Component
         }.bind(this));
 
         return (
-            <div>
                 <form className={form.formFmt}>
                     {form.hiddenHead}
                     {formEntries}
                     {formButtons}
                 </form>
-            </div>
         );
     }
 }
