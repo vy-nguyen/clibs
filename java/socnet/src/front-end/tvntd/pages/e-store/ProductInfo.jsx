@@ -68,23 +68,23 @@ class ProductInfo extends React.Component
         );
     }
 
-    _getProductTabs(props) {
+    _getProductTabs(uuid) {
         return {
             containerFmt: 'description description-tabs',
             headerFmt   : 'nav nav-pills',
             contentFmt  : 'tab-content',
             tabItems: [ {
-                domId  : 'prod-tab-desc-' + props.uuid,
+                domId  : 'prod-tab-desc-' + uuid,
                 tabText: 'Product Description',
                 paneFmt: 'fade in',
                 tabIdx : 0
             }, {
-                domId  : 'prod-tab-spec-' + props.uuid,
+                domId  : 'prod-tab-spec-' + uuid,
                 tabText: 'Specifications',
                 paneFmt: 'fade',
                 tabIdx : 1
             }, {
-                domId  : 'prod-tab-review-' + props.uuid,
+                domId  : 'prod-tab-review-' + uuid,
                 tabText: 'Reviews',
                 paneFmt: 'fade in',
                 tabIdx : 2
@@ -92,42 +92,40 @@ class ProductInfo extends React.Component
         };
     }
 
-    _productDesc(props) {
-        let tabData = this._getProductTabs(props);
-        let prodDesc = (
-            <div>
-                <strong>{props.productTitle}</strong>
-                {props.productDesc}
-            </div>
-        );
-        let prodSpec = (
-            <div>
-                {props.productSpec}
-            </div>
-        );
+    _productDesc(uuid, productTitle, productDesc, productSpec) {
+        let tabData = this._getProductTabs(uuid);
         return (
             <TabPanel context={tabData}>
-                {prodDesc}
-                {prodSpec}
-                <PostComment articleUuid={props.uuid}/>
+                <div>
+                    <strong>{productTitle}</strong>
+                    <div dangerouslySetInnerHTML={{__html: productDesc}}/>
+                </div>
+                <div dangerouslySetInnerHTML={{__html: productSpec}}/>
+                <PostComment articleUuid={uuid}/>
             </TabPanel>
         );
     }
 
     _renderProduct() {
-        const { uuid, productTitle, price, priceNotice, productTags } = this.props;
-        let prodTab = this._productDesc(props);
+        const {
+            uuid, productTitle, price, priceNotice, productSub,
+            productTags, productDesc, productSpec, productImgs
+        } = this.props.product;
+
+        let prodTab = this._productDesc(uuid, productTitle, productDesc, productSpec);
         let tagLength = productTags.length;
         let prodTags = [];
 
         for (let i = 0; i < tagLength; i++) {
-            prodTags.push(<li key={_.uniqueId('prod-info-')}>{productTags[i]}</li>);
+            prodTags.push(
+                <li key={_.uniqueId('prod-info-')}><div dangerouslySetInnerHTML={{__html: productTags[i]}}/></li>
+            );
         }
         return (
             <div className="product-content product-wrap clearfix product-deatil">
                 <div className="row">
                     <div className="col-md-12 col-lg-12 col-sm-12 col-xs-12">
-                        {this._productImages(uuid)}
+                        {this._productImages(uuid, productImgs)}
                     </div>
                 </div>
                 <div className="row">
@@ -136,7 +134,7 @@ class ProductInfo extends React.Component
                             <div className="col-xs-12 col-sm-12 col-md-8 col-lg-8">
                                 <h2 className="name">
                                     {productTitle}
-                                    <small>Product by <a href="javascript:void(0);">Adeline</a></small>
+                                    <div dangerouslySetInnerHTML={{__html: productSub}}/>
                                 </h2>
                                 <StarRating name={uuid} value={7} />
                             </div>
@@ -190,54 +188,16 @@ class ProductInfo extends React.Component
 }
 
 ProductInfo.propTypes = {
-    uuid        : PropTypes.string.isRequired,
-    price       : PropTypes.string.isRequired,
-    priceNotice : PropTypes.string,
-    productTitle: PropTypes.string.isRequired,
-    productDesc : PropTypes.object.isRequired,
-    productSpec : PropTypes.object.isRequired,
-    productImgs : PropTypes.arrayOf(PropTypes.string).isRequired,
-    productTags : PropTypes.arrayOf(PropTypes.object)
-};
-
-ProductInfo.defaultProps = {
-    uuid        : "123a",
-    price       : "$100",
-    priceNotice : "Free shipping",
-    productTitle: "Item ABC",
-    productImgs : [
-        "/rs/img/demo/e-comm/detail-1.png",
-        "/rs/img/demo/e-comm/detail-2.png",
-        "/rs/img/demo/e-comm/detail-3.png"
-    ],
-    productTags: [
-        <a>Delivery time<span>7 Working Days</span></a>,
-        <a>Certified<span>Quality Assured</span></a>
-    ],
-    productDesc: (
-        <div>
-            <strong>Product ABC</strong>
-            <p>
-                Integer egestas, orci id condimentum eleifend, nibh nisi pulvinar eros, vitae ornare massa neque ut orci. Nam      aliquet lectus sed odio eleifend, at iaculis dolor egestas. Nunc elementum pellentesque augue sodales porta. Etiam  aliquet rutrum     turpis, feugiat sodales ipsum consectetur nec.
-            </p>
-        </div>
-    ),
-    productSpec: (
-        <div>
-            <dl className="">
-                <dt>Gravina</dt>
-                <dd>Etiam porta sem malesuada magna mollis euismod.</dd>
-                <dd>Donec id elit non mi porta gravida at eget metus.</dd>
-                <dd>Eget lacinia odio sem nec elit.</dd>
-                <br/>
-                <dt>Test lists</dt>
-                <dd>A description list is perfect for defining terms.</dd>
-                <br/>
-                <dt>Altra porta</dt>
-                <dd>Vestibulum id ligula porta felis euismod semper</dd>
-            </dl>
-        </div>
-    )
+    product: PropTypes.shape({
+        uuid        : PropTypes.string.isRequired,
+        price       : PropTypes.string.isRequired,
+        priceNotice : PropTypes.string,
+        productTitle: PropTypes.string.isRequired,
+        productDesc : PropTypes.string.isRequired,
+        productSpec : PropTypes.string.isRequired,
+        productImgs : PropTypes.arrayOf(PropTypes.string).isRequired,
+        productTags : PropTypes.arrayOf(PropTypes.string)
+    })
 };
 
 class ProductBrief extends React.Component
@@ -263,6 +223,7 @@ class ProductBrief extends React.Component
     }
 
     _clickSelect() {
+        this.refs.modal.openModal();
     }
 
     render() {
@@ -277,9 +238,10 @@ class ProductBrief extends React.Component
         }
         //<img src={logoImg} width={logoWidth} height={logoHeight} className='img-responsive'/>
         return (
-            <div className="product-content product-wrap clearfix">
+            <div className="product-content product-wrap clearfix" onClick={onClickCb}>
                 <div className="row">
-                    <div className="col-md-5 col-sm-12 col-xs-12" onClick={this._getDetail}>
+                    <ProductInfo ref={"modal"} modal={true} product={this.props.product}/>
+                    <div className="col-md-5 col-sm-12 col-xs-12">
                         <div className="product-image" style={{minHeight: "150"}}>
                             <img src={logoImg} className='img-responsive'/>
                         </div>

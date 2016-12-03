@@ -1,6 +1,5 @@
 {
     "products": [ {
-        "brief": {
             "logoImg"    : "/rs/img/demo/e-comm/1.png",
             "logoWidth"  : 40,
             "logoHeight" : 40,
@@ -11,13 +10,10 @@
             "rating"     : 3,
             "productName": "Item ABC",
             "productCat" : "Beauty",
-            "productDesc": ""
-        },
-        "detail": {
-            "uuid"        : "abc1234",
-            "price"       : "$100",
+
             "priceNotice" : "Free shipping",
             "productTitle": "Item ABC",
+            "productSub"  : "<small>Product by <a>Adeline</a></small>",
             "productDesc" :
 "<strong>Product ABC</strong><p>Integer egestas, orci id condimentum eleifend, nibh nisi pulvinar eros, vitae ornare massa neque ut orci.  Nam aliquet lectus sed odio eleifend, at iaculis dolor egestas.  Nunc elementum pellentesque augue sodales porta.  Etiam aliquet rutrum turpis, feugiat sodales ipsum consectetur nec.</p>",
             "productSpec" :
@@ -28,12 +24,10 @@
                 "/rs/img/demo/e-comm/detail-3.png"
             ],
             "productTags" : [
-                "<a>Delivery time<span>7 Working Days</span></a>",
-                "<a>Certified<span>Quality Assured</span></a>"
+                "<span><a>Gurantee Fresh</a></span>",
+                "<span>Certified<span>Quality Assured</span></span>"
             ]
-        }
     }, {
-        "brief": {
             "logoImg"    : "/rs/img/demo/e-comm/2.png",
             "logoWidth"  : 40,
             "logoHeight" : 40,
@@ -44,13 +38,10 @@
             "rating"     : 4,
             "productName": "Item DEF",
             "productCat" : "Cleaning",
-            "productDesc": ""
-        },
-        "detail": {
-            "uuid"        : "abc12345",
-            "price"       : "$200",
+
             "priceNotice" : "",
             "productTitle": "Item DEF",
+            "productSub"  : "<small>Product by <a>Adeline</a></small>",
             "productDesc" : 
 "<strong>Product ABC</strong><p>Integer egestas, orci id condimentum eleifend, nibh nisi pulvinar eros, vitae ornare massa neque ut orci.  Nam aliquet lectus sed odio eleifend, at iaculis dolor egestas.  Nunc elementum pellentesque augue sodales porta.  Etiam aliquet rutrum turpis, feugiat sodales ipsum consectetur nec.</p>",
             "productSpec" :
@@ -61,12 +52,10 @@
                 "/rs/img/demo/e-comm/detail-3.png"
             ],
             "productTags" : [
-                "<a>High Quatity</a>",
-                "<a>Certified<span>Quality Assured</span></a>"
+                "<span><a>Gurantee Fresh</a></span>",
+                "<span>Certified<span>Quality Assured</span></span>"
             ]
-        }
     }, {
-        "brief": {
             "logoImg"    : "/rs/img/demo/e-comm/3.png",
             "logoWidth"  : 40,
             "logoHeight" : 40,
@@ -77,13 +66,10 @@
             "rating"     : 2,
             "productName": "Bottle Water",
             "productCat" : "Beverage",
-            "productDesc": ""
-        },
-        "detail": {
-            "uuid"        : "abc12341",
-            "price"       : "$1000",
+
             "priceNotice" : "on sale",
             "productTitle": "Spring Water",
+            "productSub"  : "<small>Product by <a>Adeline</a></small>",
             "productDesc" :
 "<strong>Product ABC</strong><p>Integer egestas, orci id condimentum eleifend, nibh nisi pulvinar eros, vitae ornare massa neque ut orci.  Nam aliquet lectus sed odio eleifend, at iaculis dolor egestas.  Nunc elementum pellentesque augue sodales porta.  Etiam aliquet rutrum turpis, feugiat sodales ipsum consectetur nec.</p>",
             "productSpec" :
@@ -94,12 +80,10 @@
                 "/rs/img/demo/e-comm/detail-3.png"
             ],
             "productTags" : [
-                "<a>Gurantee Fresh</a>",
-                "<a>Certified<span>Quality Assured</span></a>"
+                "<span><a>Gurantee Fresh</a></span>",
+                "<span>Certified<span>Quality Assured</span></span>"
             ]
-        }
     }, {
-        "brief": {
             "logoImg"    : "/rs/img/demo/e-comm/4.png",
             "logoWidth"  : 40,
             "logoHeight" : 40,
@@ -110,13 +94,10 @@
             "rating"     : 5,
             "productName": "Magic Wand",
             "productCat" : "Entertainment",
-            "productDesc": ""
-        },
-        "detail": {
-            "uuid"        : "abc12343",
-            "price"       : "$343",
+
             "priceNotice" : "recall item",
             "productTitle": "Magic Wand",
+            "productSub"  : "<small>Product by <a>Adeline</a></small>",
             "productDesc" :
 "<strong>Product ABC</strong><p>Integer egestas, orci id condimentum eleifend, nibh nisi pulvinar eros, vitae ornare massa neque ut orci.  Nam aliquet lectus sed odio eleifend, at iaculis dolor egestas.  Nunc elementum pellentesque augue sodales porta.  Etiam aliquet rutrum turpis, feugiat sodales ipsum consectetur nec.</p>",
             "productSpec" :
@@ -127,12 +108,10 @@
                 "/rs/img/demo/e-comm/detail-3.png"
             ],
             "productTags" : [
-                "<a>Gurantee Fresh</a>",
-                "<a>Certified<span>Quality Assured</span></a>"
+                "<span><a>Gurantee Fresh</a></span>",
+                "<span>Certified<span>Quality Assured</span></span>"
             ]
-        }
     }, {
-        "brief": {
             "logoImg"    : "/rs/img/demo/e-comm/5.png",
             "logoWidth"  : 40,
             "logoHeight" : 40,
@@ -143,13 +122,10 @@
             "rating"     : 3,
             "productName": "Instant Noodle",
             "productCat" : "Food",
-            "productDesc": ""
-        },
-        "detail": {
-            "uuid"        : "abc12347",
-            "price"       : "$565",
+
             "priceNotice" : "on sale",
             "productTitle": "Instant Noodle",
+            "productSub"  : "<small>Product by <a>Adeline</a></small>",
             "productDesc" :
 "<strong>Product ABC</strong><p>Integer egestas, orci id condimentum eleifend, nibh nisi pulvinar eros, vitae ornare massa neque ut orci.  Nam aliquet lectus sed odio eleifend, at iaculis dolor egestas.  Nunc elementum pellentesque augue sodales porta.  Etiam aliquet rutrum turpis, feugiat sodales ipsum consectetur nec.</p>",
             "productSpec" :
@@ -160,9 +136,8 @@
                 "/rs/img/demo/e-comm/detail-3.png"
             ],
             "productTags" : [
-                "<a>Gurantee Fresh</a>",
-                "<a>Certified<span>Quality Assured</span></a>"
+                "<span><a>Gurantee Fresh</a></span>",
+                "<span>Certified<span>Quality Assured</span></span>"
             ]
-        }
     } ]
 }

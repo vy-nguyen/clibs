@@ -17,8 +17,6 @@ import Blog          from './pages/blog/Blog.jsx';
 import Timeline      from './pages/blog/Timeline.jsx';
 import NewsFeed      from './pages/news-feed/NewsFeed.jsx';
 import SocialWall    from './pages/wall/SocialWall.jsx';
-import ProductView   from './pages/e-store/ProductView.jsx';
-import ProductDetail from './pages/e-store/ProductDetail.jsx';
 import UserHome      from './pages/user/UserHome.jsx';
 import UserAccount   from './pages/user/UserAccount.jsx';
 import UserTrans     from './pages/user/UserTransaction.jsx';
@@ -48,14 +46,6 @@ const Routes = (
                 <Route path="blog" component={Blog} subHeader={true}/>
                 <Route path="timeline" component={Timeline} subHeader={true}/>
                 <Route path="wall" component={SocialWall} subHeader={true}/>
-                <Route path="news" component={NewsFeed} subHeader={true}/>
-            </Route>
-
-            <Redirect from="public/proto" to="public/proto/estore"/>
-            <Route path="public/proto/estore">
-                <IndexRoute component={ProductView}/>
-                <Route path="product-view" component={ProductView} subHeader={true}/>
-                <Route path="product-detail" component={ProductDetail} subHeader={true}/>
             </Route>
 
             <Redirect from="/" to="login"/>

@@ -20,11 +20,6 @@ class EStore extends React.Component
         this._renderProdBrief = this._renderProdBrief.bind(this);
         this._renderProdFull = this._renderProdFull.bind(this);
 
-        _.forEach(testItems.products, function(it) {
-            if (_.isEmpty(it.brief.productDesc)) {
-                it.brief.productDesc = it.detail.productDesc;
-            }
-        });
         this.state = testItems;
     }
 
@@ -37,7 +32,7 @@ class EStore extends React.Component
     _renderProdBrief(product) {
         return (
             <div className='col-xs-6 col-sm-6 col-md-6 col-lg-4'>
-                <ProductBrief product={product.brief}/>
+                <ProductBrief product={product}/>
             </div>
         );
     }
@@ -69,6 +64,7 @@ class EStore extends React.Component
 }
 
 EStore.propTypes = {
+    products: PropTypes.arrayOf(PropTypes.object)
 };
 
 EStore.defaultProps = {
