@@ -8,6 +8,7 @@ import React             from 'react-mod';
 import DropzoneComponent from 'react-dropzone-component';
 
 import UserStore         from 'vntd-shared/stores/UserStore.jsx';
+import GenericForm       from 'vntd-shared/forms/commons/GenericForm.jsx';
 import SubHeader         from 'vntd-root/pages/layout/SubHeader.jsx';
 import Actions           from 'vntd-root/actions/Actions.jsx';
 
@@ -55,17 +56,8 @@ class UserAvatar extends React.Component
     }
 
     render() {
-        let djsConfig = {
-            addRemoveLinks: false,
-            acceptedFiles : "image/*",
-            params        : {},
-            headers       : {}
-        };
-        let token  = $("meta[name='_csrf']").attr("content");
-        let header = $("meta[name='_csrf_header']").attr("content");
-        djsConfig.headers[header] = token;
-
-        let componentConfig = {
+        const djsConfig = GenericForm.getDjsConfig();
+        const componentConfig = {
             iconFiletypes   : ['.jpg', '.png', '.gif'],
             showFiletypeIcon: true,
             postUrl         : '/user/upload-avatar'

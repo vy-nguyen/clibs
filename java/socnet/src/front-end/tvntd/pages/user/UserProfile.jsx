@@ -56,54 +56,40 @@ class UserInfo extends React.Component
             formEntries: [ {
                 legend: "About me",
                 entries: [ {
-                    labelFmt: "col-sm-2 col-md-2 col-lg-2 control-label",
                     labelTxt: "First Name",
-                    inputFmt: "col-sm-10 col-md-10 col-lg-8 control-label",
                     inpName : "firstName",
                     inpHolder: self.firstName
                 }, {
-                    labelFmt: "col-sm-2 col-md-2 col-lg-2 control-label",
                     labelTxt: "Last Name",
-                    inputFmt: "col-sm-10 col-md-10 col-lg-8 control-label",
                     inpName : "lastName",
                     inpHolder: self.lastName
                 }, {
-                    labelFmt: "col-sm-2 col-md-2 col-lg-2 control-label",
                     labelTxt: "Home Town",
-                    inputFmt: "col-sm-10 col-md-10 col-lg-8 control-label",
                     inpName : "homeTown",
                     inpHolder: "Home Town"
                 }, {
-                    labelFmt: "col-sm-2 col-md-2 col-lg-2 control-label",
                     labelTxt: "Country",
-                    inputFmt: "col-sm-10 col-md-10 col-lg-8 control-label",
                     inpName : "lastName",
                     inpHolder: "Country"
                 } ]
             }, {
                 legend: "My interests",
                 entries: [ {
-                    labelFmt: "col-sm-2 col-md-2 col-lg-2 control-label",
                     labelTxt: "Favorite tags",
-                    inputFmt: "col-sm-10 col-md-10 col-lg-8 control-label",
                     inpName : "favTags",
                     inpHolder: "Your interest tags"
                 } ]
             }, {
                 legend: "My security preferences",
                 entries: [ {
-                    labelFmt: "col-sm-2 col-md-2 col-lg-2 control-label",
                     labelTxt: "Something here",
-                    inputFmt: "col-sm-10 col-md-10 col-lg-8 control-label",
                     inpName : "favTags",
                     inpHolder: "Something in here"
                 } ]
             }, {
                 legend: "My work",
                 entries: [ {
-                    labelFmt: "col-sm-2 col-md-2 col-lg-2 control-label",
                     labelTxt: "Something here",
-                    inputFmt: "col-sm-10 col-md-10 col-lg-8 control-label",
                     inpName : "favTags",
                     inpHolder: "Something in here"
                 } ]

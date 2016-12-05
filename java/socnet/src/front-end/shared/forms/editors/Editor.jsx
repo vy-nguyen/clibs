@@ -4,6 +4,7 @@
 'use strict';
 
 import React from 'react';
+import NestableStore from 'vntd-shared/stores/NestableStore.jsx';
 
 class Editor extends React.Component
 {
@@ -201,4 +202,30 @@ class Editor extends React.Component
     }
 }
 
+class EditorEntry extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this._onChange = this._onChange.bind(this);
+
+        this.state = {
+            content: NestableStore.allocIndexString(props.id)
+        };
+    }
+
+    _onChange(e) {
+        NestableStore.storeItemIndex(this.props.id, e.value, true);
+        this.setState({
+            content: e.value
+        });
+    }
+
+    render() {
+        return (
+            <Editor id={this.props.id} content={this.state.content} onChange={this._onChange}/>
+        );
+    }
+}
+
+export { EditorEntry, Editor };
 export default Editor;

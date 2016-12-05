@@ -47,8 +47,8 @@ class TagInfo extends React.Component
         let artTag = this.props.artTag;
 
         if (artTag == null) {
-            let labelFmt = "col-sm-4 col-md-4 col-lg-4 control-label";
-            let inputFmt = "col-sm-8 col-md-8 col-lg-8 control-label";
+            let labelFmt = "col-xs-4 col-sm-4 col-md-4 col-lg-4 control-label";
+            let inputFmt = "col-xs-8 col-sm-8 col-md-8 col-lg-8 control-label";
             let tagForm = {
                 formFmt   : "smart-form client-form",
                 hiddenHead: null,

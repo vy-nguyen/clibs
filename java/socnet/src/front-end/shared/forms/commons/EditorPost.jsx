@@ -16,6 +16,7 @@ import Actions         from 'vntd-root/actions/Actions.jsx';
 import AuthorStore     from 'vntd-root/stores/AuthorStore.jsx';
 import UserStore       from 'vntd-shared/stores/UserStore.jsx';
 import Editor          from 'vntd-shared/forms/editors/Editor.jsx';
+import GenericForm     from 'vntd-shared/forms/commons/GenericForm.jsx';
 import JarvisWidget    from 'vntd-shared/widgets/JarvisWidget.jsx';
 
 const InitState = {
@@ -261,16 +262,7 @@ class EditorPost extends React.Component
     }
 
     render() {
-        let djsConfig = {
-            addRemoveLinks: true,
-            acceptedFiles : "image/*",
-            params        : {},
-            headers       : {}
-        };
-        let token  = $("meta[name='_csrf']").attr("content");
-        let header = $("meta[name='_csrf_header']").attr("content");
-        djsConfig.headers[header] = token;
-
+        const djsConfig = GenericForm.getDjsConfig();
         const componentConfig = {
             iconFiletypes   : ['.jpg', '.png', '.gif'],
             showFiletypeIcon: true,

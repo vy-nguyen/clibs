@@ -6,6 +6,7 @@
 
 import React             from 'react-mod';
 import DropzoneComponent from 'react-dropzone-component';
+import GenericForm       from 'vntd-shared/forms/commons/GenericForm.jsx';
 
 class ProfileCover extends React.Component
 {
@@ -19,27 +20,18 @@ class ProfileCover extends React.Component
     }
 
     render() {
-        let djsConfig = {
-            addRemoveLinks: true,
-            acceptedFiles : "image/jpeg,image/png,image/gif",
-            params        : {},
-            headers       : {}
-        };
-        let token  = $("meta[name='_csrf']").attr("content");
-        let header = $("meta[name='_csrf_header']").attr("content");
-        djsConfig.headers[header] = token;
-
-        let componentConfig = {
+        const djsConfig = GenericForm.getDjsConfig();
+        const componentConfig = {
             iconFiletypes   : ['.jpg', '.png', '.gif'],
             showFiletypeIcon: true,
             postUrl         : '/api/upload-img'
         };
-        let eventHandlers = {
+        const eventHandlers = {
             sending: this.onSending,
         };
 
-        let imageId = "profile-cover";
-        let imgList = [
+        const imageId = "profile-cover";
+        const imgList = [
             "/rs/img/demo/s1.jpg",
             "/rs/img/demo/s2.jpg",
             "/rs/img/demo/s3.jpg"

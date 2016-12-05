@@ -4,10 +4,14 @@
  */
 'use strict';
 
-import _           from 'lodash';
-import React       from 'react-mod';
-import TA          from 'react-typeahead';
-import Select      from 'react-select';
+import _                 from 'lodash';
+import React             from 'react-mod';
+import TA                from 'react-typeahead';
+import Select            from 'react-select';
+import DropzoneComponent from 'react-dropzone-component';
+
+import {EditorEntry}     from 'vntd-shared/forms/editors/Editor.jsx';
+import NestableStore     from 'vntd-shared/stores/NestableStore.jsx';
 
 /*
  * Form format:
@@ -56,12 +60,131 @@ class GenericForm extends React.Component
         button.onClick(dataRefs, button);
     }
 
-    _onBlur(entry, val) {
+    static _defOnSelect(entry, val) {
+        entry.taValue = val;
+    }
+
+    static _defOnBlur(entry, val) {
         entry.taValue = val.target.value;
     }
 
-    _onSelectChange(entry, val) {
-        entry.taValue = val;
+    static renderTypeAhead(entry, onBlur, onSelected, bind) {
+        return (
+            <TA.Typeahead options={entry.taOptions} maxVisible={entry.maxVisible ? entry.maxVisible : 6}
+                placeholder={entry.inpHolder} value={entry.inpHolder}
+                customClasses={{input: 'form-control input-sm'}}
+                onBlur={onBlur != null ? onBlur.bind(bind, entry) : GenericForm._defOnBlur.bind(this, entry)}
+                onOptionSelected={onSelected != null ?
+                    onSelected.bind(bind, entry) : GenericForm._defOnSelect.bind(this, entry)}
+            />
+        );
+    }
+
+    static renderSelect(entry, onChange, bind) {
+        return (
+            <Select options={entry.selectOpt} name={entry.inpName} value={entry.inpHolder}
+                onChange={onChange != null ?
+                    onChange.bind(bind, entry) : GenericForm._defOnSelect.bind.bind(this, entry)}
+            />
+        );
+    }
+
+    static renderInput(entry) {
+        if (entry.typeAhead === true) {
+            return GenericForm.renderTypeAhead(entry);
+        }
+        if (entry.select === true) {
+            return GenericForm.renderSelect(entry);
+        }
+        if (entry.dropzone === true) {
+            const eventHandlers = {
+                complete: entry.dzComplete,
+                success : entry.dzSuccess,
+                sending : entry.dzSending,
+                error   : entry.dzError,
+                init    : function(dz) {
+                    if (entry.bind != null) {
+                        entry.bind.dropzone = dz;
+                    } else {
+                        entry.dropzone = dz;
+                    }
+                }
+            };
+            return GenericForm.renderDropzone(entry, eventHandlers);
+        }
+        if (entry.editor === true) {
+            return (
+                <EditorEntry id={entry.id}/>
+            );
+        }
+        return  (
+            <input type="text" className="form-control"
+                name={entry.inpName} ref={entry.inpName} placeholder={entry.inpHolder}/>
+        );
+    }
+
+    static getDjsConfig() {
+        const token  = $("meta[name='_csrf']").attr("content");
+        const header = $("meta[name='_csrf_header']").attr("content");
+        return {
+            addRemoveLinks: true,
+            acceptedFiles : "image/*",
+            params : {},
+            headers: {
+                [header]: token
+            }
+        };
+    }
+
+    static renderDropzone(entry, eventHandlers) {
+        const djsConfig = GenericForm.getDjsConfig();
+        const componentConfig = {
+            iconFiletypes   : ['.jpg', '.png', '.gif'],
+            showFiletypeIcon: true,
+            postUrl         : entry.url != null ? entry.url : '/user/upload-img'
+        };
+        const id = entry.djsId != null ? entry.djsId : _.uniqueId('dropzone-');
+        return (
+            <DropzoneComponent className="col-xs-12 col-sm-12 col-md-12 col-lg-12"
+                id={id} dictDefaultMessage={entry.defaultMesg}
+                config={componentConfig} eventHandlers={eventHandlers} djsConfig={djsConfig}
+            />
+        );
+    }
+
+    static renderInputBox(entry, bind) {
+        let labelFmt = entry.labelFmt != null ? entry.labelFmt : "control-label col-xs-2 col-sm-2 col-md-2 col-lg-2";
+        let inputFmt = entry.inputFmt != null ? entry.inputFmt : "control-label col-xs-10 col-sm-10 col-md-10 col-lg-8";
+        let label = <label className={labelFmt} for="textinput">{entry.labelTxt}</label>;
+
+        return (
+            <div className="row" key={_.uniqueId('gen-inp-')}>
+                <div className="form-group">
+                    {label}
+                    <div className={inputFmt}>
+                        {GenericForm.renderInput(entry)}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    static renderInputInline(entry, bind) {
+        let labelFmt = entry.labelFmt != null ? entry.labelFmt : "control-label col-xs-2 col-sm-2 col-md-2 col-lg-2";
+        let inputFmt = entry.inputFmt != null ? entry.inputFmt : "control-label col-xs-10 col-sm-10 col-md-10 col-lg-8";
+
+        return (
+            <div className="inbox-info-bar no-padding" key={_.uniqueId('gen-inp-')}>
+                <div className="row">
+                    <div className="form-group">
+                        <label className={labelFmt}><strong>{entry.labelTxt}</strong></label>
+                        <div className={inputFmt}>
+                            {GenericForm.renderInput(entry)}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     render() {
@@ -77,6 +200,7 @@ class GenericForm extends React.Component
                     </button>
                 );
             }.bind(this));
+
             formButtons = (
                 <div className="row">
                     <div className="col-sm-offset-2 col-sm-10">
@@ -87,38 +211,13 @@ class GenericForm extends React.Component
                 </div>
             );
         }
-        let formEntries = form.formEntries.map(function(item, idx) {
-            let entries = item.entries.map(function(entry, index) {
-                let label = <label className={entry.labelFmt} for="textinput">{entry.labelTxt}</label>;
-                let input = (
-                    <input type="text" className="form-control"
-                        name={entry.inpName} ref={entry.inpName} placeholder={entry.inpHolder}/>
-                );
-                if (entry.typeAhead === true) {
-                    input = (
-                        <TA.Typeahead options={entry.taOptions} maxVisible={6}
-                            placeholder={entry.inpHolder} value={entry.inpHolder}
-                            customClasses={{input: "form-control input-sm"}}
-                            onBlur={this._onBlur.bind(this, entry)}
-                            onOptionSelected={this._onSelectChange.bind(this, entry)}/>
-                    );
-                }
-                if (entry.select == true) {
-                    input = (
-                        <Select options={entry.selectOpt} name={entry.inpName} value={entry.inpHolder}
-                            onChange={this._onSelectChange.bind(this, entry)}/>
-                    );
-                }
-                return (
-                    <div className="row">
-                        <div className="form-group" key={index}>
-                            {label}
-                            <div className={entry.inputFmt}>
-                                {input}
-                            </div>
-                        </div>
-                    </div>
-                );
+        let formEntries = form.formEntries.map(function(item) {
+            let renderFn = GenericForm.renderInputBox;
+            if (item.inline === true) {
+                renderFn = GenericForm.renderInputInline;
+            }
+            let entries = item.entries.map(function(entry) {
+                return renderFn(entry);
             }.bind(this));
 
             return (
@@ -132,11 +231,11 @@ class GenericForm extends React.Component
         }.bind(this));
 
         return (
-                <form className={form.formFmt}>
-                    {form.hiddenHead}
-                    {formEntries}
-                    {formButtons}
-                </form>
+            <form className={form.formFmt} encType="multipart/form-data" acceptCharset="utf-8">
+                {form.hiddenHead}
+                {formEntries}
+                {formButtons}
+            </form>
         );
     }
 }
