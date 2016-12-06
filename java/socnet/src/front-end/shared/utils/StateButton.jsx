@@ -56,6 +56,35 @@ class StateButton extends React.Component
             </button>
         );
     }
+
+    static saveButtonFsm(success, done, fail) {
+        return {
+            success: {
+                text     : success,
+                disabled : false,
+                nextState: "saving",
+                className: "btn btn-primary"
+            },
+            failure: {
+                text     : fail != null ? fail : "Saved Failed",
+                disabled : false,
+                nextState: "success",
+                className: "btn btn-danger"
+            },
+            saving: {
+                text     : "Saving...",
+                disabled : true,
+                nextState: "saved",
+                className: "btn btn-info"
+            },
+            saved: {
+                text     : done,
+                disabled : true,
+                nextState: "success",
+                className: "btn btn-success"
+            }
+        };
+    }
 };
 
 export default StateButton;

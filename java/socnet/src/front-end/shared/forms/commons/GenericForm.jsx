@@ -154,7 +154,7 @@ class GenericForm extends React.Component
 
     static renderInputBox(entry, bind) {
         let labelFmt = entry.labelFmt != null ? entry.labelFmt : "control-label col-xs-2 col-sm-2 col-md-2 col-lg-2";
-        let inputFmt = entry.inputFmt != null ? entry.inputFmt : "control-label col-xs-10 col-sm-10 col-md-10 col-lg-8";
+        let inputFmt = entry.inputFmt != null ? entry.inputFmt : "control-label col-xs-10 col-sm-10 col-md-10 col-lg-10";
         let label = <label className={labelFmt} for="textinput">{entry.labelTxt}</label>;
 
         return (
@@ -171,7 +171,7 @@ class GenericForm extends React.Component
 
     static renderInputInline(entry, bind) {
         let labelFmt = entry.labelFmt != null ? entry.labelFmt : "control-label col-xs-2 col-sm-2 col-md-2 col-lg-2";
-        let inputFmt = entry.inputFmt != null ? entry.inputFmt : "control-label col-xs-10 col-sm-10 col-md-10 col-lg-8";
+        let inputFmt = entry.inputFmt != null ? entry.inputFmt : "control-label col-xs-10 col-sm-10 col-md-10 col-lg-10";
 
         return (
             <div className="inbox-info-bar no-padding" key={_.uniqueId('gen-inp-')}>
