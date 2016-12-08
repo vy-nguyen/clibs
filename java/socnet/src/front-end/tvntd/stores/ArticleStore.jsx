@@ -80,10 +80,14 @@ let ArticleStore = Reflux.createStore({
         this.data = {
             articlesByUuid  : {},
             articlesByAuthor: {},
+            estoresByAuthor : {},
             mySavedArticles : {},
+            mySavedProducts : {},
 
             myArticles    : null,
             myPostResult  : null,
+            myProducts    : null,
+            myProductPost : null,
             artUuidByDate : [],
             artUuidByScore: [],
 
@@ -105,6 +109,14 @@ let ArticleStore = Reflux.createStore({
             articles.push(item);
         });
         return articles;
+    },
+
+    getEStoresByAuthor: function(uuid) {
+        let products = [];
+        this.iterAuthorEStores(uuid, function(item) {
+            products.push(item);
+        });
+        return products;
     },
 
     /*
@@ -129,7 +141,15 @@ let ArticleStore = Reflux.createStore({
 
     iterAuthorArticles: function(uuid, func, arg) {
         let shelf = this.data.articlesByAuthor[uuid];
-        if (shelf) {
+        if (shelf != null) {
+            shelf.iterArticles(func, arg);
+        }
+        return shelf;
+    },
+
+    iterAuthorEStores: function(uuid, func, arg) {
+        let shelf = this.data.estoresByAuthor[uuid];
+        if (shelf != null) {
             shelf.iterArticles(func, arg);
         }
         return shelf;
@@ -185,13 +205,13 @@ let ArticleStore = Reflux.createStore({
     onRefreshArticlesCompleted: function(data) {
         this._addFromJson(data.articles);
         this._addSavedJson(data.pendPosts);
-        this.trigger(this.data);
+        this.trigger(this.data, null);
     },
 
     onStartupCompleted: function(data) {
         if (data.articles) {
             this._addFromJson(data.articles);
-            this.trigger(this.data);
+            this.trigger(this.data, null);
         }
     },
 
@@ -208,7 +228,7 @@ let ArticleStore = Reflux.createStore({
 
     onSaveUserPostCompleted: function(post) {
         this._addArticle(post, true);
-        this.trigger(this.data);
+        this.trigger(this.data, post);
     },
 
     onPublishUserPostFailed: function(err) {
@@ -218,7 +238,13 @@ let ArticleStore = Reflux.createStore({
     onPublishUserPostCompleted: function(post) {
         this._addArticle(post, false);
         this.data.myPostResult = post;
-        this.trigger(this.data);
+        this.trigger(this.data, post);
+    },
+
+    onPublishEStoreCompleted: function(product) {
+        this._addEStore(product, false);
+        this.data.myProductPost = product;
+        this.trigger(this.data, product);
     },
 
     /**
@@ -227,7 +253,7 @@ let ArticleStore = Reflux.createStore({
     _errorHandler: function(error) {
         this.data.errorText = error.getErrorCodeText();
         this.data.errorResp = error.getUserText();
-        this.trigger(this.data);
+        this.trigger(this.data, null);
     },
 
     _createArtAnchor: function(authorUuid, article) {
@@ -269,6 +295,15 @@ let ArticleStore = Reflux.createStore({
     },
 
     _removeArticle: function(artUuid) {
+
+    },
+
+    _addEStore: function(product, saved) {
+        let prod = new Article(product);
+
+        if (saved === true) {
+            this.data.mySavedProducts = preend(article, this.data.mySavedProducts);
+        }
 
     },
 

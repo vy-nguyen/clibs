@@ -11,6 +11,7 @@ import {OverlayTrigger, Tooltip} from 'react-bootstrap';
 
 import GenericForm      from 'vntd-shared/forms/commons/GenericForm.jsx';
 import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
+import NestableStore    from 'vntd-shared/stores/NestableStore.jsx';
 import StateButton      from 'vntd-shared/utils/StateButton.jsx';
 import JarvisWidget     from 'vntd-shared/widgets/JarvisWidget.jsx';
 
@@ -23,7 +24,9 @@ class EStorePost extends React.Component
         this._onSend  = this._onSend.bind(this);
         this._dzError = this._dzError.bind(this);
         this._editProduct = this._editProduct.bind(this);
+        this._getPostData = this._getPostData.bind(this);
         this._onSaveProduct = this._onSaveProduct.bind(this);
+        this._onPostProduct = this._onPostProduct.bind(this);
 
         this._prodDescId   = "prod-desc";
         this._prodSpecId   = "prod-spec";
@@ -61,9 +64,26 @@ class EStorePost extends React.Component
         form.append('authorUuid', UserStore.getSelf().userUuid);
     }
 
-    _onSaveProduct(id) {
+    _onSaveProduct() {
         console.log("Save product...");
-        console.log(id);
+        console.log(this._getPostData());
+    }
+
+    _onPostProduct() {
+        console.log("Post product...");
+        console.log(this._getPostData());
+    }
+
+    _getPostData() {
+        return {
+            prodCat: this.refs.prodCat.value,
+            prodName: this.refs.prodName.value,
+            prodPrice: this.refs.prodPrice.value,
+            prodNotice: this.refs.prodNotice.value,
+            prodDesc  : NestableStore.getIndexString(this._prodDescId),
+            prodDetail: NestableStore.getIndexString(this._prodDetailId),
+            prodSpec  : NestableStore.getIndexString(this._prodSpecId)
+        };
     }
 
     _editProduct() {
@@ -102,7 +122,7 @@ class EStorePost extends React.Component
         const prodSpec = {
             id       : this._prodSpecId,
             labelTxt : "Product Specification",
-            inpName  : "productSpec",
+            inpName  : "prodSpec",
             editor   : true
         };
         const eventHandlers = {
@@ -117,7 +137,7 @@ class EStorePost extends React.Component
             url: "/user/upload-product-img"
         };
         const detailDz = {
-            url: "/user/upload-product-detail"
+            url: "/user/upload-product-img"
         };
 
         return (
@@ -162,7 +182,7 @@ class EStorePost extends React.Component
                     <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                         <div className="btn-group pull-right" role="group">
                             <StateButton btnId={this._saveBtnId} className="btn btn-success" onClick={this._onSaveProduct}/>
-                            <StateButton btnId={this._publishBtnId} className="btn btn-success" onClick={this._onSaveProduct}/>
+                            <StateButton btnId={this._publishBtnId} className="btn btn-success" onClick={this._onPostProduct}/>
                         </div>
                     </div>
                 </div>
