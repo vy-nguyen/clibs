@@ -57,11 +57,11 @@ class StateButton extends React.Component
         );
     }
 
-    static saveButtonFsm(success, done, fail) {
+    static saveButtonFsm(success, needSave, done, fail) {
         return {
             success: {
                 text     : success,
-                disabled : false,
+                disabled : true,
                 nextState: "saving",
                 className: "btn btn-primary"
             },
@@ -69,6 +69,12 @@ class StateButton extends React.Component
                 text     : fail != null ? fail : "Saved Failed",
                 disabled : false,
                 nextState: "success",
+                className: "btn btn-danger"
+            },
+            needSave: {
+                text     : needSave,
+                disabled : false,
+                nextState: "needSave",
                 className: "btn btn-danger"
             },
             saving: {

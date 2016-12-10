@@ -68,7 +68,7 @@ class GenericForm extends React.Component
         entry.taValue = val.target.value;
     }
 
-    static renderTypeAhead(entry, onBlur, onSelected, bind) {
+    static renderTypeAhead(entry, bind, onBlur, onSelected) {
         return (
             <TA.Typeahead options={entry.taOptions} maxVisible={entry.maxVisible ? entry.maxVisible : 6}
                 placeholder={entry.inpHolder} value={entry.inpHolder}
@@ -80,21 +80,21 @@ class GenericForm extends React.Component
         );
     }
 
-    static renderSelect(entry, onChange, bind) {
+    static renderSelect(entry, bind, onSelected) {
         return (
             <Select options={entry.selectOpt} name={entry.inpName} value={entry.inpHolder}
-                onChange={onChange != null ?
-                    onChange.bind(bind, entry) : GenericForm._defOnSelect.bind.bind(this, entry)}
+                onChange={onSelected != null ?
+                    onSelected.bind(bind, entry) : GenericForm._defOnSelect.bind.bind(this, entry)}
             />
         );
     }
 
-    static renderInput(entry) {
+    static renderInput(entry, bind, onBlur, onSelected) {
         if (entry.typeAhead === true) {
-            return GenericForm.renderTypeAhead(entry);
+            return GenericForm.renderTypeAhead(entry, onBur, onSelected, bind);
         }
         if (entry.select === true) {
-            return GenericForm.renderSelect(entry);
+            return GenericForm.renderSelect(entry, onSelected, bind);
         }
         if (entry.dropzone === true) {
             const eventHandlers = {
@@ -118,7 +118,7 @@ class GenericForm extends React.Component
             );
         }
         return  (
-            <input type="text" className="form-control"
+            <input type="text" className="form-control" onBlur={onBlur || function() {}}
                 name={entry.inpName} ref={entry.inpName} placeholder={entry.inpHolder}/>
         );
     }
@@ -152,7 +152,7 @@ class GenericForm extends React.Component
         );
     }
 
-    static renderInputBox(entry, bind) {
+    static renderInputBox(entry, bind, onBlur, onSelected) {
         let labelFmt = entry.labelFmt != null ? entry.labelFmt : "control-label col-xs-2 col-sm-2 col-md-2 col-lg-2";
         let inputFmt = entry.inputFmt != null ? entry.inputFmt : "control-label col-xs-10 col-sm-10 col-md-10 col-lg-10";
         let label = <label className={labelFmt} for="textinput">{entry.labelTxt}</label>;
@@ -162,14 +162,14 @@ class GenericForm extends React.Component
                 <div className="form-group">
                     {label}
                     <div className={inputFmt}>
-                        {GenericForm.renderInput(entry)}
+                        {GenericForm.renderInput(entry, bind, onBlur, onSelected)}
                     </div>
                 </div>
             </div>
         );
     }
 
-    static renderInputInline(entry, bind) {
+    static renderInputInline(entry, bind, onBlur, onSelected) {
         let labelFmt = entry.labelFmt != null ? entry.labelFmt : "control-label col-xs-2 col-sm-2 col-md-2 col-lg-2";
         let inputFmt = entry.inputFmt != null ? entry.inputFmt : "control-label col-xs-10 col-sm-10 col-md-10 col-lg-10";
 
@@ -179,7 +179,7 @@ class GenericForm extends React.Component
                     <div className="form-group">
                         <label className={labelFmt}><strong>{entry.labelTxt}</strong></label>
                         <div className={inputFmt}>
-                            {GenericForm.renderInput(entry)}
+                            {GenericForm.renderInput(entry, bind, onBlur, onSelected)}
                         </div>
                     </div>
                 </div>

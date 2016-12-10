@@ -47,6 +47,8 @@ const Actions = Reflux.createActions({
     pendingPost:     completedFn,
     uploadAvataDone: completedFn,
 
+    publishProduct:  completedFailedFn,
+
     // Comment actions
     updateComment:   completedFn,
     postComment:     completedFailedFn,
@@ -251,6 +253,10 @@ Actions.publishUserPost.listen(function(data) {
 });
 
 Actions.pendingPost.listen(function(data) {
+    this.completed(data);
+});
+
+Actions.publishProduct.listen(function(data) {
     this.completed(data);
 });
 

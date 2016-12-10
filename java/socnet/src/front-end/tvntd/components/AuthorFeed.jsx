@@ -67,7 +67,13 @@ class AuthorFeed extends React.Component
         }
     }
 
-    _updateState() {
+    _updateState(data, post) {
+        console.log("author feed");
+        console.log(post);
+        if (post != null && post.estore === true) {
+            console.log("author feed ignore");
+            return;
+        }
         this.setState({
             articles: ArticleStore.getSortedArticlesByAuthor(this.props.authorUuid).slice(0, 2)
         });

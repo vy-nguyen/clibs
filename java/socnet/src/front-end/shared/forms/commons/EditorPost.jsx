@@ -85,7 +85,11 @@ class EditorPost extends React.Component
         }
     }
 
-    _onPublishResult(data) {
+    _onPublishResult(data, post) {
+        if (post != null && post.estore === true) {
+            console.log("Ignore post from estore");
+            return;
+        }
         if (data.errorResp !== null) {
             this.setState(this._nextStatus("Failed"));
         } else {
