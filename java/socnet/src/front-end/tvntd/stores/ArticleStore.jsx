@@ -36,6 +36,7 @@ class AuthorShelf {
     constructor(article, authorUuid) {
         this.articles = {};
         this.sortedArticles = [];
+
         if (article != null) {
             this.addSortedArticle(article);
         } else {
@@ -52,6 +53,9 @@ class AuthorShelf {
     }
 
     addSortedArticle(article) {
+        if (this.articles[article.articleUuid] === article) {
+            return;
+        }
         this.articles[article.articleUuid] = article;
         insertSorted(article, this.sortedArticles, function(anchor, elm) {
             if (anchor.createdDate == elm.createdDate) {
@@ -63,6 +67,10 @@ class AuthorShelf {
             return 1;
         });
         this.articles[article.articleUuid] = article;
+    }
+
+    getSortedArticles() {
+        return this.sortedArticles;
     }
 
     iterArticles(func, arg) {
@@ -98,11 +106,28 @@ let EProductStore = Reflux.createStore({
     },
 
     iterAuthorEStores: function(uuid, func, arg) {
-        let shelf = this.data.estoresByAuthor[uuid];
-        if (shelf != null) {
-            shelf.iterArticles(func, arg);
+        let anchor = this.data.estoresByAuthor[uuid];
+        if (anchor != null) {
+            anchor.iterArticles(func, arg);
         }
-        return shelf;
+        return anchor;
+    },
+
+    getProductOwner: function(uuid) {
+        let anchor = this.data.estoresByAuthor[uuid];
+        if (anchor == null) {
+            anchor = this._createOwnerAnchor(uuid, null);
+            this.data.estoresByAuthor[uuid] = anchor;
+        }
+        return anchor;
+    },
+
+    /*
+     * Return author's articles sorted to display.
+     */
+    getSortedProductsByAuthor: function(uuid) {
+        let anchor = this.getProductOwner(uuid);
+        return anchor.getSortedArticles();
     },
 
     init: function() {
@@ -128,7 +153,7 @@ let EProductStore = Reflux.createStore({
         this.trigger(this.data, null);
     },
 
-    _createArtAnchor: function(authorUuid, article) {
+    _createOwnerAnchor: function(authorUuid, article) {
         let anchor = new AuthorShelf(article, authorUuid);
         this.data.estoresByAuthor[authorUuid] = anchor;
         if (UserStore.isUserMe(authorUuid)) {
@@ -142,12 +167,9 @@ let EProductStore = Reflux.createStore({
 
         if (saved === true) {
             this.data.mySavedProducts = preend(prod, this.data.mySavedProducts);
-            return;
+            return prod;
         }
-        let anchor = this.data.estoresByAuthor[prod.authorUuid];
-        if (anchor == null) {
-            anchor = this._createArtAnchor(prod.authorUuid, prod);
-        }
+        let anchor = this.getProductOwner(prod.authorUuid);
         if (this.data.productsByUuid[prod.articleUuid] == null) {
             this.data.productsByUuid[prod.articleUuid] = prod;
             anchor.addArticle(prod);
@@ -194,16 +216,21 @@ let ArticleStore = Reflux.createStore({
         return articles;
     },
 
+    getArtOwner: function(uuid) {
+        let anchor = this.data.articlesByAuthor[uuid];
+        if (anchor == null) {
+            anchor = this._createArtOwner(uuid, null);
+            this.data.articlesByAuthor[uuid] = anchor;
+        }
+        return anchor;
+    },
+
     /*
      * Return author's articles sorted to display.
      */
     getSortedArticlesByAuthor: function(uuid) {
-        let anchor = this.data.articlesByAuthor[uuid];
-        if (anchor == null) {
-            anchor = this._createArtAnchor(uuid, null);
-            this.data.articlesByAuthor[uuid] = anchor;
-        }
-        return this.data.articlesByAuthor[uuid].sortedArticles;
+        let anchor = this.getArtOwner(uuid);
+        return anchor.getSortedArticles();
     },
 
     getAuthorUuid: function(articleUuid) {
@@ -317,7 +344,7 @@ let ArticleStore = Reflux.createStore({
         this.trigger(this.data, null);
     },
 
-    _createArtAnchor: function(authorUuid, article) {
+    _createArtOwner: function(authorUuid, article) {
         let anchor = new AuthorShelf(article, authorUuid);
         this.data.articlesByAuthor[authorUuid] = anchor;
         if (UserStore.isUserMe(authorUuid)) {
@@ -339,12 +366,9 @@ let ArticleStore = Reflux.createStore({
 
         if (saved === true) {
             this.data.mySavedArticles = preend(article, this.data.mySavedArticles);
-            return;
+            return article;
         }
-        let anchor = this.data.articlesByAuthor[article.authorUuid];
-        if (anchor == null) {
-            anchor = this._createArtAnchor(article.authorUuid, article);
-        }
+        let anchor = this.getArtOwner(article.authorUuid);
         if (this.data.articlesByUuid[article.articleUuid] == null) {
             this.data.articlesByUuid[article.articleUuid] = article;
             anchor.addArticle(article);
@@ -372,13 +396,9 @@ let ArticleStore = Reflux.createStore({
             if (article.author == null) {
                 article.author = UserStore.getUserByUuid(article.authorUuid);
             }
-            let anchor = articlesByAuthor[article.authorUuid];
-            if (anchor == null) {
-                anchor = this._createArtAnchor(article.authorUuid, article);
+            let anchor = this.getArtOwner(article.authorUuid);
+            anchor.addSortedArticle(article);
 
-            } else if (anchor.articles[article.articleUuid] == null) {
-                anchor.addSortedArticle(article);
-            }
             if (UserStore.isUserMe(article.authorUuid)) {
                 this.data.myArticles = anchor;
             }

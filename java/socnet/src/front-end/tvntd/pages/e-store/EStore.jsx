@@ -5,10 +5,12 @@
 import _ from 'lodash';
 import React, { PropTypes } from 'react-mod'
 
-import LikeStat        from 'vntd-root/components/LikeStat.jsx';
-import ArticleTagBrief from 'vntd-root/components/ArticleTagBrief.jsx';
 import StarRating      from 'vntd-shared/layout/StarRating.jsx';
 import NavigationStore from 'vntd-shared/stores/NavigationStore.jsx';
+import UserStore       from 'vntd-shared/stores/UserStore.jsx';
+import LikeStat        from 'vntd-root/components/LikeStat.jsx';
+import ArticleTagBrief from 'vntd-root/components/ArticleTagBrief.jsx';
+import { EProductStore } from 'vntd-root/stores/ArticleStore.jsx';
 import { ProductInfo, ProductBrief } from './ProductInfo.jsx';
 
 let testItems = require('json!../../mock-json/e-store-pview.json');
@@ -19,14 +21,36 @@ class EStore extends React.Component
         super(props);
         this._renderProdBrief = this._renderProdBrief.bind(this);
         this._renderProdFull = this._renderProdFull.bind(this);
+        this._updateState = this._updateState.bind(this);
 
-        this.state = testItems;
+        this._myUuid = UserStore.getSelfUuid();
+        this.state = {
+            products: EProductStore.getProductsByAuthor(this._myUuid)
+        }
+        this.state.products = this.state.products.concat(testItems.products);
     }
 
     componentDidMount() {
+        this.unsub = EProductStore.listen(this._updateState);
     }
 
     componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    _updateState(store, data, status) {
+        if (data.authorUuid !== this,_myUuid) {
+            return;
+        }
+        console.log("Get products");
+        console.log(this._myUuid);
+        this.setState({
+            products: EProductStore.getProductsByAuthor(this._myUuid)
+        });
+        console.log(EProductStore.getProductsByAuthor(this._myUuid) );
     }
 
     _renderProdBrief(product) {

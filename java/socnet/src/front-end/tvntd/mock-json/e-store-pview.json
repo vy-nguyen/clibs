@@ -5,25 +5,25 @@
             "logoHeight" : 40,
             "logoTag"    : "Hot",
             "likeStat"   : {},
-            "uuid"       : "abc1234",
-            "price"      : "$100",
+            "articleUuid": "abc1234",
+            "prodPrice"  : "$100",
             "rating"     : 3,
-            "productName": "Item ABC",
-            "productCat" : "Beauty",
+            "prodName"   : "Item ABC",
+            "prodCat"    : "Beauty",
 
-            "priceNotice" : "Free shipping",
-            "productTitle": "Item ABC",
-            "productSub"  : "<small>Product by <a>Adeline</a></small>",
-            "productDesc" :
+            "prodNotice"  : "Free shipping",
+            "prodTitle": "Item ABC",
+            "prodSub"  : "<small>Product by <a>Adeline</a></small>",
+            "prodDesc" :
 "<strong>Product ABC</strong><p>Integer egestas, orci id condimentum eleifend, nibh nisi pulvinar eros, vitae ornare massa neque ut orci.  Nam aliquet lectus sed odio eleifend, at iaculis dolor egestas.  Nunc elementum pellentesque augue sodales porta.  Etiam aliquet rutrum turpis, feugiat sodales ipsum consectetur nec.</p>",
-            "productSpec" :
+            "prodSpec" :
 "<dl className=''><dt>Gravina</dt><dd>Etiam porta sem malesuada magna mollis euismod.</dd><dd>Donec id elit non mi porta gravida at eget metus.</dd><dd>Eget lacinia odio sem nec elit.</dd><br/><dt>Test lists</dt><dd>A description list is perfect for defining terms.</dd><br/><dt>Altra porta</dt><dd>Vestibulum id ligula porta felis euismod semper</dd></dl>",
-            "productImgs" : [
+            "prodImgs" : [
                 "/rs/img/demo/e-comm/detail-1.png",
                 "/rs/img/demo/e-comm/detail-2.png",
                 "/rs/img/demo/e-comm/detail-3.png"
             ],
-            "productTags" : [
+            "prodTags" : [
                 "<span><a>Gurantee Fresh</a></span>",
                 "<span>Certified<span>Quality Assured</span></span>"
             ]
@@ -33,25 +33,25 @@
             "logoHeight" : 40,
             "logoTag"    : "Sale",
             "likeStat"   : {},
-            "uuid"       : "abc12345",
-            "price"      : "$200",
+            "articleUuid": "abc12345",
+            "prodPrice"  : "$200",
             "rating"     : 4,
-            "productName": "Item DEF",
-            "productCat" : "Cleaning",
+            "prodName"   : "Item DEF",
+            "prodCat"    : "Cleaning",
 
-            "priceNotice" : "",
-            "productTitle": "Item DEF",
-            "productSub"  : "<small>Product by <a>Adeline</a></small>",
-            "productDesc" : 
+            "prodNotice"  : "",
+            "prodTitle": "Item DEF",
+            "prodSub"  : "<small>Product by <a>Adeline</a></small>",
+            "prodDesc" : 
 "<strong>Product ABC</strong><p>Integer egestas, orci id condimentum eleifend, nibh nisi pulvinar eros, vitae ornare massa neque ut orci.  Nam aliquet lectus sed odio eleifend, at iaculis dolor egestas.  Nunc elementum pellentesque augue sodales porta.  Etiam aliquet rutrum turpis, feugiat sodales ipsum consectetur nec.</p>",
-            "productSpec" :
+            "prodSpec" :
 "<dl className=''><dt>Gravina</dt><dd>Etiam porta sem malesuada magna mollis euismod.</dd><dd>Donec id elit non mi porta gravida at eget metus.</dd><dd>Eget lacinia odio sem nec elit.</dd><br/><dt>Test lists</dt><dd>A description list is perfect for defining terms.</dd><br/><dt>Altra porta</dt><dd>Vestibulum id ligula porta felis euismod semper</dd></dl>",
-            "productImgs" : [
+            "prodImgs" : [
                 "/rs/img/demo/e-comm/detail-1.png",
                 "/rs/img/demo/e-comm/detail-2.png",
                 "/rs/img/demo/e-comm/detail-3.png"
             ],
-            "productTags" : [
+            "prodTags" : [
                 "<span><a>Gurantee Fresh</a></span>",
                 "<span>Certified<span>Quality Assured</span></span>"
             ]
@@ -61,25 +61,25 @@
             "logoHeight" : 40,
             "logoTag"    : "",
             "likeStat"   : {},
-            "uuid"       : "abc12341",
-            "price"      : "$1000",
+            "articleUuid": "abc12341",
+            "prodPrice"  : "$1000",
             "rating"     : 2,
-            "productName": "Bottle Water",
-            "productCat" : "Beverage",
+            "prodName"   : "Bottle Water",
+            "prodCat"    : "Beverage",
 
-            "priceNotice" : "on sale",
-            "productTitle": "Spring Water",
-            "productSub"  : "<small>Product by <a>Adeline</a></small>",
-            "productDesc" :
+            "prodNotice"  : "on sale",
+            "prodTitle": "Spring Water",
+            "prodSub"  : "<small>Product by <a>Adeline</a></small>",
+            "prodDesc" :
 "<strong>Product ABC</strong><p>Integer egestas, orci id condimentum eleifend, nibh nisi pulvinar eros, vitae ornare massa neque ut orci.  Nam aliquet lectus sed odio eleifend, at iaculis dolor egestas.  Nunc elementum pellentesque augue sodales porta.  Etiam aliquet rutrum turpis, feugiat sodales ipsum consectetur nec.</p>",
-            "productSpec" :
+            "prodSpec" :
 "<dl className=''><dt>Gravina</dt><dd>Etiam porta sem malesuada magna mollis euismod.</dd><dd>Donec id elit non mi porta gravida at eget metus.</dd><dd>Eget lacinia odio sem nec elit.</dd><br/><dt>Test lists</dt><dd>A description list is perfect for defining terms.</dd><br/><dt>Altra porta</dt><dd>Vestibulum id ligula porta felis euismod semper</dd></dl>",
-            "productImgs" : [
+            "prodImgs" : [
                 "/rs/img/demo/e-comm/detail-1.png",
                 "/rs/img/demo/e-comm/detail-2.png",
                 "/rs/img/demo/e-comm/detail-3.png"
             ],
-            "productTags" : [
+            "prodTags" : [
                 "<span><a>Gurantee Fresh</a></span>",
                 "<span>Certified<span>Quality Assured</span></span>"
             ]
@@ -89,25 +89,25 @@
             "logoHeight" : 40,
             "logoTag"    : "",
             "likeStat"   : {},
-            "uuid"       : "abc12343",
-            "price"      : "$343",
+            "articleUuid": "abc12343",
+            "prodPrice"  : "$343",
             "rating"     : 5,
-            "productName": "Magic Wand",
-            "productCat" : "Entertainment",
+            "prodName"   : "Magic Wand",
+            "prodCat"    : "Entertainment",
 
-            "priceNotice" : "recall item",
-            "productTitle": "Magic Wand",
-            "productSub"  : "<small>Product by <a>Adeline</a></small>",
-            "productDesc" :
+            "prodNotice"  : "recall item",
+            "prodTitle": "Magic Wand",
+            "prodSub"  : "<small>Product by <a>Adeline</a></small>",
+            "prodDesc" :
 "<strong>Product ABC</strong><p>Integer egestas, orci id condimentum eleifend, nibh nisi pulvinar eros, vitae ornare massa neque ut orci.  Nam aliquet lectus sed odio eleifend, at iaculis dolor egestas.  Nunc elementum pellentesque augue sodales porta.  Etiam aliquet rutrum turpis, feugiat sodales ipsum consectetur nec.</p>",
-            "productSpec" :
+            "prodSpec" :
 "<dl className=''><dt>Gravina</dt><dd>Etiam porta sem malesuada magna mollis euismod.</dd><dd>Donec id elit non mi porta gravida at eget metus.</dd><dd>Eget lacinia odio sem nec elit.</dd><br/><dt>Test lists</dt><dd>A description list is perfect for defining terms.</dd><br/><dt>Altra porta</dt><dd>Vestibulum id ligula porta felis euismod semper</dd></dl>",
-            "productImgs" : [
+            "prodImgs" : [
                 "/rs/img/demo/e-comm/detail-1.png",
                 "/rs/img/demo/e-comm/detail-2.png",
                 "/rs/img/demo/e-comm/detail-3.png"
             ],
-            "productTags" : [
+            "prodTags" : [
                 "<span><a>Gurantee Fresh</a></span>",
                 "<span>Certified<span>Quality Assured</span></span>"
             ]
@@ -117,25 +117,25 @@
             "logoHeight" : 40,
             "logoTag"    : "hot",
             "likeStat"   : {},
-            "uuid"       : "abc12347",
-            "price"      : "$565",
+            "articleUuid": "abc12347",
+            "prodPrice"  : "$565",
             "rating"     : 3,
-            "productName": "Instant Noodle",
-            "productCat" : "Food",
+            "prodName"   : "Instant Noodle",
+            "prodCat"    : "Food",
 
-            "priceNotice" : "on sale",
-            "productTitle": "Instant Noodle",
-            "productSub"  : "<small>Product by <a>Adeline</a></small>",
-            "productDesc" :
+            "prodNotice" : "on sale",
+            "prodTitle": "Instant Noodle",
+            "prodSub"  : "<small>Product by <a>Adeline</a></small>",
+            "prodDesc" :
 "<strong>Product ABC</strong><p>Integer egestas, orci id condimentum eleifend, nibh nisi pulvinar eros, vitae ornare massa neque ut orci.  Nam aliquet lectus sed odio eleifend, at iaculis dolor egestas.  Nunc elementum pellentesque augue sodales porta.  Etiam aliquet rutrum turpis, feugiat sodales ipsum consectetur nec.</p>",
-            "productSpec" :
+            "prodSpec" :
 "<dl className=''><dt>Gravina</dt><dd>Etiam porta sem malesuada magna mollis euismod.</dd><dd>Donec id elit non mi porta gravida at eget metus.</dd><dd>Eget lacinia odio sem nec elit.</dd><br/><dt>Test lists</dt><dd>A description list is perfect for defining terms.</dd><br/><dt>Altra porta</dt><dd>Vestibulum id ligula porta felis euismod semper</dd></dl>",
-            "productImgs" : [
+            "prodImgs" : [
                 "/rs/img/demo/e-comm/detail-1.png",
                 "/rs/img/demo/e-comm/detail-2.png",
                 "/rs/img/demo/e-comm/detail-3.png"
             ],
-            "productTags" : [
+            "prodTags" : [
                 "<span><a>Gurantee Fresh</a></span>",
                 "<span>Certified<span>Quality Assured</span></span>"
             ]

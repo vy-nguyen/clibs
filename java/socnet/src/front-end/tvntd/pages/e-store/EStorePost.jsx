@@ -57,7 +57,6 @@ class EStorePost extends React.Component
             this.unsub();
             this.unsub = null;
         }
-        console.log(this.unsub);
     }
 
     _dzError() {
@@ -91,11 +90,15 @@ class EStorePost extends React.Component
         return {
             prodCat   : this.refs.prodCat.value,
             prodName  : this.refs.prodName.value,
+            prodTitle : this.refs.prodName.value,
             prodPrice : this.refs.prodPrice.value,
             prodNotice: this.refs.prodNotice.value,
             prodDesc  : NestableStore.getIndexString(this._prodDescId),
             prodDetail: NestableStore.getIndexString(this._prodDetailId),
             prodSpec  : NestableStore.getIndexString(this._prodSpecId),
+            prodImgs  : [],
+            prodTags  : [],
+            logoImg   : "",
             createDate: 0
         };
     }

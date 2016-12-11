@@ -35,6 +35,9 @@ class ProductInfo extends React.Component
         const itemId = `product-img-${uuid}`;
         const itemRef = `#${itemId}`;
 
+        if (images == null) {
+            return null;
+        }
         let inner = [];
         let indicators = [];
         for (let i = 0; i < images.length; i++) {
@@ -92,15 +95,15 @@ class ProductInfo extends React.Component
         };
     }
 
-    _productDesc(uuid, productTitle, productDesc, productSpec) {
+    _productDesc(uuid, prodTitle, prodDesc, prodSpec) {
         let tabData = this._getProductTabs(uuid);
         return (
             <TabPanel context={tabData}>
                 <div>
-                    <strong>{productTitle}</strong>
-                    <div dangerouslySetInnerHTML={{__html: productDesc}}/>
+                    <strong>{prodTitle}</strong>
+                    <div dangerouslySetInnerHTML={{__html: prodDesc}}/>
                 </div>
-                <div dangerouslySetInnerHTML={{__html: productSpec}}/>
+                <div dangerouslySetInnerHTML={{__html: prodSpec}}/>
                 <PostComment articleUuid={uuid}/>
             </TabPanel>
         );
@@ -108,24 +111,26 @@ class ProductInfo extends React.Component
 
     _renderProduct() {
         const {
-            uuid, productTitle, price, priceNotice, productSub,
-            productTags, productDesc, productSpec, productImgs
+            articleUuid, prodTitle, prodPrice, priceNotice, prodSub,
+            prodTags, prodDesc, prodSpec, prodImgs
         } = this.props.product;
 
-        let prodTab = this._productDesc(uuid, productTitle, productDesc, productSpec);
-        let tagLength = productTags.length;
-        let prodTags = [];
+        let prodTab = this._productDesc(articleUuid, prodTitle, prodDesc, prodSpec);
+        let productTags = [];
 
-        for (let i = 0; i < tagLength; i++) {
-            prodTags.push(
-                <li key={_.uniqueId('prod-info-')}><div dangerouslySetInnerHTML={{__html: productTags[i]}}/></li>
-            );
+        if (prodTags != null) {
+            let tagLength = prodTags.length;
+            for (let i = 0; i < tagLength; i++) {
+                productTags.push(
+                    <li key={_.uniqueId('prod-info-')}><div dangerouslySetInnerHTML={{__html: prodTags[i]}}/></li>
+                );
+            }
         }
         return (
             <div className="product-content product-wrap clearfix product-deatil">
                 <div className="row">
                     <div className="col-md-12 col-lg-12 col-sm-12 col-xs-12">
-                        {this._productImages(uuid, productImgs)}
+                        {this._productImages(articleUuid, prodImgs)}
                     </div>
                 </div>
                 <div className="row">
@@ -133,21 +138,21 @@ class ProductInfo extends React.Component
                         <div className="row">
                             <div className="col-xs-12 col-sm-12 col-md-8 col-lg-8">
                                 <h2 className="name">
-                                    {productTitle}
-                                    <div dangerouslySetInnerHTML={{__html: productSub}}/>
+                                    {prodTitle}
+                                    <div dangerouslySetInnerHTML={{__html: prodSub}}/>
                                 </h2>
-                                <StarRating name={uuid} value={7} />
+                                <StarRating name={articleUuid} value={7} />
                             </div>
                             <div className="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                 <h3 className="price-container">
-                                    {price}
+                                    {prodPrice}
                                     <small>{priceNotice}</small>
                                 </h3>
                             </div>
                         </div>
                         <hr/>
                         <div className="certified">
-                            <ul>{prodTags}</ul>
+                            <ul>{productTags}</ul>
                         </div>
                     </div>
                 </div>
@@ -158,7 +163,7 @@ class ProductInfo extends React.Component
                 </div>
                 <div className="row">
                     <div className="col-sm-12 col-md-6 col-lg-6"> 
-                        <a href="javascript:void(0);" className="btn btn-success btn-lg">Add to cart {price}</a>
+                        <a href="javascript:void(0);" className="btn btn-success btn-lg">Add to cart {prodPrice}</a>
                     </div>
                     <div className="col-sm-12 col-md-6 col-lg-6">
                         <div className="btn-group pull-right">
@@ -189,14 +194,14 @@ class ProductInfo extends React.Component
 
 ProductInfo.propTypes = {
     product: PropTypes.shape({
-        uuid        : PropTypes.string.isRequired,
-        price       : PropTypes.string.isRequired,
-        priceNotice : PropTypes.string,
-        productTitle: PropTypes.string.isRequired,
-        productDesc : PropTypes.string.isRequired,
-        productSpec : PropTypes.string.isRequired,
-        productImgs : PropTypes.arrayOf(PropTypes.string).isRequired,
-        productTags : PropTypes.arrayOf(PropTypes.string)
+        articleUuid: PropTypes.string.isRequired,
+        prodPrice  : PropTypes.string.isRequired,
+        priceNotice: PropTypes.string,
+        prodTitle  : PropTypes.string.isRequired,
+        prodDesc   : PropTypes.string.isRequired,
+        prodSpec   : PropTypes.string.isRequired,
+        prodImgs   : PropTypes.arrayOf(PropTypes.string).isRequired,
+        prodTags   : PropTypes.arrayOf(PropTypes.string)
     })
 };
 
@@ -230,7 +235,7 @@ class ProductBrief extends React.Component
         let onClickCb = this.props.onClickCb;
         const {
             logoImg, logoWidth, logoHeight, logoTag, likeStat,
-            uuid, rating, productName, productCat, price, productDesc
+            articleUuid, rating, prodName, prodCat, prodPrice, prodDesc
         } = this.props.product;
 
         if (onClickCb == null) {
@@ -247,18 +252,19 @@ class ProductBrief extends React.Component
                         </div>
                         {logoTag ? <span className='tag2 hot'>{logoTag}</span> : null}
                         <LikeStat data={likeStat} split={true}/>
-                        <StarRating name={`prod-${uuid}`} value={rating}/>
+                        {/*
+                            <StarRating name={`prod-${articleUuid}`} value={rating}/>*/}
                     </div>
                     <div className="col-md-7 col-sm-12 col-xs-12">
                         <div className="product-deatil">
                             <h5 className="name">
-                                <a href="#">{productName}<span>{productCat}</span></a>
+                                <a href="#">{prodName}<span>{prodCat}</span></a>
                             </h5>
-                            <p className="price-container"><span>{price}</span></p>
+                            <p className="price-container"><span>{prodPrice}</span></p>
                             <span className="tag1"></span>
                         </div>
                         <div className="description">
-                            {/*productDesc*/}
+                            {/*prodDesc*/}
                         </div>
                         <div className="product-info smart-form">
                             <div className="row">
@@ -281,12 +287,12 @@ ProductBrief.propTypes = {
         logoHeight : PropTypes.number,
         logoTag    : PropTypes.string,
         likeStat   : PropTypes.object,
-        uuid       : PropTypes.string,
-        price      : PropTypes.string.isRequired,
+        articleUuid: PropTypes.string,
+        prodPrice  : PropTypes.string.isRequired,
         rating     : PropTypes.number,
-        productName: PropTypes.string.isRequired,
-        productCat : PropTypes.string,
-        productDesc: PropTypes.string.isRequired
+        prodName   : PropTypes.string.isRequired,
+        prodCat    : PropTypes.string,
+        prodDesc   : PropTypes.string.isRequired
     })
 };
 

@@ -4,6 +4,7 @@
  */
 'use strict';
 
+import _            from 'lodash';
 import React        from 'react-mod';
 import moment       from 'moment';
 
@@ -11,6 +12,9 @@ class LikeStat extends React.Component
 {
     render() {
         let data = this.props.data;
+        if (data == null || _.isEmpty(data)) {
+            return null;
+        }
         let dateSplit = this.props.split ? <br/> : null;
         let className = this.props.className ? "list-inline " + this.props.className : "list-inline";
         return (
