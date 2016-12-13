@@ -11,9 +11,10 @@ import React  from 'react-mod';
 import Actions          from 'vntd-root/actions/Actions.jsx';
 import NavActions       from 'vntd-shared/actions/NavigationActions.jsx';
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
-import ArticleStore     from 'vntd-root/stores/ArticleStore.jsx';
 import ArticleTagStore  from 'vntd-root/stores/ArticleTagStore.jsx';
-import {insertSorted}   from 'vntd-shared/utils/Enum.jsx';
+
+import {ArticleStore, EProductStore} from 'vntd-root/stores/ArticleStore.jsx';
+import {insertSorted, insertUnique, compareUuid} from 'vntd-shared/utils/Enum.jsx';
 
 class Author {
     constructor(data) {
@@ -371,6 +372,15 @@ let AuthorStore = Reflux.createStore({
     data: {},
     listenables: Actions,
 
+    reset: function() {
+        this.data = {
+            authorMap: {},
+            authorTagMgr: {},
+            authorEStoreMgr: {},
+            authorUuids: []
+        };
+    },
+
     getAuthorList: function() {
         return this.data.authorMap;
     },
@@ -408,6 +418,15 @@ let AuthorStore = Reflux.createStore({
         return authorTagMgr;
     },
 
+    getAuthorEStoreMgr: function(uuid) {
+        let estoreMgr = this.data.authorEStoreMgr[uuid];
+        if (estoreMgr == null) {
+            this.data.authorEStoreMgr[uuid] = new AuthorTagMgr(uuid);
+            return this.data.authorEStoreMgr[uuid];
+        }
+        return estoreMgr;
+    },
+
     /**
      * @return authorTag for the user matching with the name.
      */
@@ -438,8 +457,26 @@ let AuthorStore = Reflux.createStore({
             artRank.detachTag();
         }
         artRank.attachTag(authorTag);
-        this.trigger(this.data);
+        this.trigger(this.data, artRank);
+
         Actions.updateArtRank(tagInfo, tagInfo.cbButtonId);
+    },
+
+    updateAuthorEStoreTag: function(tagInfo, artRank) {
+        let estoreMgr = this.getAuthorEStoreMgr(tagInfo.userUuid);
+        let estoreTag = estoreMgr.getAuthorTag(tagInfo.tagName, tagInfo.tagRank, tagInfo.favorite);
+
+        if (artRank == null) {
+            let prod = EProductStore.getProductByUuid(tagInfo.articleUuid);
+            if (prod == null) {
+                return;
+            }
+            artRank = new ArticleRank(null, estoreTag, prod);
+        } else {
+            artRank.detachTag();
+        }
+        artRank.attachTag(estoreTag);
+        this.trigger(this.data, artRank);
     },
 
     iterAuthor: function(uuidList, func) {
@@ -464,7 +501,7 @@ let AuthorStore = Reflux.createStore({
             let uuid = author.authorUuid;
             if (this.data.authorMap[uuid] == null) {
                 this.data.authorMap[uuid] = new Author(author);
-                this.data.authorUuids.push(uuid);
+                insertUnique(uuid, this.data.authorUuids, compareUuid);
             }
             this.getAuthorTagMgr(uuid).addAuthorTagList(author.authorTags);
         }.bind(this));
@@ -493,14 +530,6 @@ let AuthorStore = Reflux.createStore({
                 this.getAuthorTagMgr(rank.authorUuid).addArticleRank(rank);
             }
         }.bind(this));
-    },
-
-    reset: function() {
-        this.data = {
-            authorMap: {},
-            authorTagMgr: {},
-            authorUuids: []
-        };
     },
 
     dumpData: function(header) {

@@ -87,7 +87,7 @@ let EProductStore = Reflux.createStore({
     _resetStore: function() {
         this.data = {
             estoresByAuthor : {},
-            productsByUuid  : {},
+            productByUuid   : {},
             mySavedProducts : {},
 
             myProducts    : null,
@@ -130,6 +130,10 @@ let EProductStore = Reflux.createStore({
         return anchor.getSortedArticles();
     },
 
+    getProductByUuid: function(uuid) {
+        return this.data.productByUuid[uuid];
+    },
+
     init: function() {
         this._resetStore();
     },
@@ -170,8 +174,8 @@ let EProductStore = Reflux.createStore({
             return prod;
         }
         let anchor = this.getProductOwner(prod.authorUuid);
-        if (this.data.productsByUuid[prod.articleUuid] == null) {
-            this.data.productsByUuid[prod.articleUuid] = prod;
+        if (this.data.productByUuid[prod.articleUuid] == null) {
+            this.data.productByUuid[prod.articleUuid] = prod;
             anchor.addArticle(prod);
         }
         return prod;
@@ -261,11 +265,7 @@ let ArticleStore = Reflux.createStore({
     },
 
     getArticleByUuid: function(artUuid) {
-        let article = this.data.articlesByUuid[artUuid];
-        if (article != null) {
-            return article;
-        }
-        return null;
+        return this.data.articlesByUuid[artUuid];
     },
 
     sortArticlesByDate: function(articles) {

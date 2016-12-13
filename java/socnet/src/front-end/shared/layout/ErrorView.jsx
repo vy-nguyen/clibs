@@ -11,10 +11,11 @@ class ErrorView extends React.Component
     constructor(props) {
         super(props);
         this.state = {
-            error: ErrorStore.hasError(props.errorId)
+            error: ErrorStore.hasError(props.errorId, props.mesg)
         };
         this._changeState = this._changeState.bind(this);
         this._onCloseError = this._onCloseError.bind(this);
+        this._errorMesg = this._errorMesg.bind(this);
     }
 
     componentDidMount() {
@@ -33,13 +34,22 @@ class ErrorView extends React.Component
         ErrorStore.clearError(this.props.errorId);
     }
 
-    _changeState(data) {
-        let error = ErrorStore.hasError(this.props.errorId);
+    _changeState(data, notif) {
+        let error = ErrorStore.hasError(this.props.errorId, this.props.mesg);
         if (this.state.error != error) {
             this.setState({
                 error: error
             });
         }
+    }
+
+    _errorMesg(errorText) {
+        return (
+            <span className={this.props.className}>
+                <a className="close pull-left" onClick={this._onCloseError}><i className="fa fa-times"/></a>
+                {errorText}
+            </span>
+        );
     }
 
     render() {
@@ -58,6 +68,9 @@ class ErrorView extends React.Component
         }
         let userText = error.getUserText();
         if (userText != null) {
+            if (this.props.mesg === true) {
+                return this._errorMesg(userText);
+            }
             userText = <p>Reason: {userText}</p>;
         }
         let userHelp = error.getUserHelp();

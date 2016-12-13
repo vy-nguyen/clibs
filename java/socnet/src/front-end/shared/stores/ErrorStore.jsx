@@ -9,7 +9,13 @@ import Actions       from 'vntd-root/actions/Actions.jsx';
 
 class Error {
     constructor(resp, text, error) {
-        this.updateError(resp, null, null);
+        if (resp == null) {
+            this.resp = null;
+            this.userText = text;
+            this.errorCodeText = error;
+        } else {
+            this.updateError(resp, null, null);
+        }
     }
 
     getContext() {
@@ -26,6 +32,11 @@ class Error {
 
     getUserText() {
         return this.userText;
+    }
+
+    // Activate user error message.  Used with Error(null, text, null) constructor.
+    setUserErrorMesg() {
+        this.error = this.userText;
     }
 
     getUserHelp() {
@@ -107,23 +118,36 @@ let ErrorStore = Reflux.createStore({
         return this.data.userReport;
     },
 
+    reportErrMesg: function(id, text) {
+        if (id == null) {
+            return;
+        }
+        let err = this.data[id];
+        if (err == null) {
+            this.data[id] = new Error(null, text, null);
+            err = this.data[id];
+        }
+        err.setUserErrorMesg();
+        return err;
+    },
+
     reportFailure: function(id, resp, text, error) {
+        let err = this.data.error;
         if (id != null) {
-            if (this.data[id] == null) {
-                this.data[id] = new Error(resp, text, error);
-            } else {
-                this.data[id].updateError(resp, null, null);
-            }
-            this.trigger(this.data);
-            return this.data[id];
+            err = this.data[id];
         }
-        if (this.data.error == null) {
-            this.data.error = new Error(resp, text, error);
+        if (err != null) {
+            err.updateError(resp, null, null);
         } else {
-            this.data.error.updateError(resp, null, null);
+            err = new Error(resp, text, error);
+            if (id != null) {
+                this.data[id] = err;
+            } else {
+                this.data.error = err;
+            }
         }
-        this.trigger(this.data);
-        return this.data.error;
+        this.trigger(this.data, err);
+        return err;
     },
 
     reportInfo: function(id, userText, userHelp) {
@@ -133,26 +157,28 @@ let ErrorStore = Reflux.createStore({
     },
 
     clearError: function(id) {
+        let err = this.data.error;
         if (id != null) {
-            if (this.data[id] != null) {
-                this.data[id].clearError();
-                this.trigger(this.data);
-            }
-        } else if (this.data.error != null) {
-            this.data.error.clearError();
-            this.trigger(this.data);
+            err = this.data[id];
+        }
+        if (err != null) {
+            err.clearError();
+            this.trigger(this.data, err);
         }
     },
 
-    hasError: function(id) {
+    hasError: function(id, mesg) {
         if (id != null) {
             let err = this.data[id];
             if (err != null) {
                 return err.hasError() ? err : null;
             }
             return null;
-
-        } else if (this.data.error != null) {
+        }
+        if (mesg === true) {
+            return null;
+        }
+        if (this.data.error != null) {
             return this.data.error.hasError() ? this.data.error : null;
         }
         return null;
@@ -160,7 +186,7 @@ let ErrorStore = Reflux.createStore({
 
     onAuthRequiredCompleted: function(id, context) {
         this.reportInfo(id, "You need to register or login", "Please register or login to post or comment");
-        this.trigger(this.data);
+        this.trigger(this.data, null);
     },
 
     onPermissionFailed: function(error) {

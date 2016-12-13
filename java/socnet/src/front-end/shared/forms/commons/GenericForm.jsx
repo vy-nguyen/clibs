@@ -11,6 +11,7 @@ import Select            from 'react-select';
 import DropzoneComponent from 'react-dropzone-component';
 
 import {EditorEntry}     from 'vntd-shared/forms/editors/Editor.jsx';
+import ErrorView         from 'vntd-shared/layout/ErrorView.jsx';
 import NestableStore     from 'vntd-shared/stores/NestableStore.jsx';
 
 /*
@@ -163,6 +164,7 @@ class GenericForm extends React.Component
                     {label}
                     <div className={inputFmt}>
                         {GenericForm.renderInput(entry, bind, onBlur, onSelected)}
+                        <ErrorView mesg={true} errorId={entry.errorId}/>
                     </div>
                 </div>
             </div>
@@ -177,9 +179,12 @@ class GenericForm extends React.Component
             <div className="inbox-info-bar no-padding" key={_.uniqueId('gen-inp-')}>
                 <div className="row">
                     <div className="form-group">
-                        <label className={labelFmt}><strong>{entry.labelTxt}</strong></label>
+                        <label className={labelFmt}>
+                            <strong>{entry.labelTxt}</strong>
+                        </label>
                         <div className={inputFmt}>
                             {GenericForm.renderInput(entry, bind, onBlur, onSelected)}
+                            <ErrorView mesg={true} errorId={entry.errorId}/>
                         </div>
                     </div>
                 </div>

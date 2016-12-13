@@ -104,11 +104,30 @@ function _locationOf(elm, array, compareFn) {
     return curIdx + 1;
 }
 
+function insertUnique(elm, array, compareFn) {
+    let len = array.length;
+    for (let i = 0; i < length; i++) {
+        if (compareFn(array[i], elm) == 0) {
+            return -1;
+        }
+    }
+    array.push(elm);
+    return array.length;
+}
+
 function insertSorted(elm, array, compareFn) {
     if (array.length === 0) {
         return array.splice(0, 0, elm);
     }
     return array.splice(_locationOf(elm, array, compareFn), 0, elm);
+}
+
+function insertSortedUnique(elm, array, compareFn) {
+    let index = findSorted(elm, array, compareFn);
+    if (index == -1) {
+        return insertSorted(elm, array, compareFn);
+    }
+    return index;
 }
 
 function findSorted(elm, array, compareFn) {
@@ -163,16 +182,21 @@ function removeArray(array, elm, fromIdx, cmp) {
     return -1;
 }
 
+function compareUuid(uuid, elm, field) {
+    if (field != null) {
+        return elm[field] === uuid;
+    }
+    return elm === uuid;
+}
+
 function findUuid(array, field, uuid) {
     if (array != null) {
-        return _.findIndex(array, function(e) {
-            if (field != null) {
-                return e[field] === uuid;
-            }
-            return e === uuid;
-        });
+        return _.findIndex(array, compareUuid);
     }
     return -1;
 }
 
-export { Enum, safeStringify, insertSorted, toDateString, preend, getRandomInt, removeArray, findSorted, findUuid }
+export {
+    Enum, safeStringify, insertUnique, insertSorted, insertSortedUnique, toDateString, preend, getRandomInt,
+    removeArray, findSorted, findUuid, compareUuid
+}

@@ -196,12 +196,12 @@ class EStorePost extends React.Component
                     </div>
                     <div className="col-xs-12 col-sm-7 col-md-7 col-lg-7">
                         <div className="product-deatil">
-                            <h5 className="name">
+                            <div className="name">
                                 {GenericForm.renderInputInline(prodCat, this, this._onBlurInput)}
                                 {GenericForm.renderInputInline(prodName, this, this._onBlurInput)}
                                 {GenericForm.renderInputInline(prodPrice, this, this._onBlurInput)}
                                 {GenericForm.renderInputInline(priceNotice, this, this._onBlurInput)}
-                            </h5>
+                            </div>
                             <span className="tag1"></span>
                         </div>
                         <div className="description">
