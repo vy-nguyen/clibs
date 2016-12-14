@@ -290,6 +290,35 @@ public class UserPath
         return s_saveObjFailed;
     }
 
+    /**
+     * Upload images for product listing.
+     */
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @RequestMapping(value = "/user/upload-product-img", method = RequestMethod.POST)
+    @ResponseBody
+    public GenericResponse
+    uploadProdBrief(@RequestParam("name") String name,
+            @RequestParam("authorUuid") String authorUuid,
+            @RequestParam("articleUuid") String artUuid,
+            @RequestParam("file") MultipartFile file,
+            MultipartHttpServletRequest reqt, HttpSession session)
+    {
+        return s_saveObjFailed;
+    }
+
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @RequestMapping(value = "/user/upload-product-detail", method = RequestMethod.POST)
+    @ResponseBody
+    public GenericResponse
+    uploadProdDetail(@RequestParam("name") String name,
+            @RequestParam("authorUuid") String authorUuid,
+            @RequestParam("articleUuid") String artUuid,
+            @RequestParam("file") MultipartFile file,
+            MultipartHttpServletRequest reqt, HttpSession session)
+    {
+        return s_saveObjFailed;
+    }
+  
     private ArticleDTO
     genPendPost(ProfileDTO profile, boolean creat, String articleUuid)
     {

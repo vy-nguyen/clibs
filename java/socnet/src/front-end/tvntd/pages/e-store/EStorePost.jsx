@@ -128,21 +128,25 @@ class EStorePost extends React.Component
             labelTxt : "Categorty",
             inpName  : "prodCat",
             inpHolder: "Category",
+            errorId  : "prodCat",
         };
         const prodName = {
             labelTxt : "Name",
             inpName  : "prodName",
-            inpHolder: "Product Name"
+            inpHolder: "Product Name",
+            errorId  : "prodName",
         }
         const prodPrice = {
             labelTxt : "Price",
             inpName  : "prodPrice",
-            inpHolder: "Product Price"
+            inpHolder: "Product Price",
+            errorId  : "prodPrice",
         };
         const priceNotice = {
             labelTxt : "Promotion",
             inpName  : "prodNotice",
-            inpHolder: "Include shipping"
+            inpHolder: "Include shipping",
+            errorId  : "prodNotice",
         };
         const prodDesc = {
             id       : this._prodDescId,
@@ -174,7 +178,7 @@ class EStorePost extends React.Component
             url: "/user/upload-product-img"
         };
         const detailDz = {
-            url: "/user/upload-product-img"
+            url: "/user/upload-product-detail"
         };
 
         return (

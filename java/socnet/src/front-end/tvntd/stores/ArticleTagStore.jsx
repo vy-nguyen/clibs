@@ -76,7 +76,7 @@ let ArticleTagStore = Reflux.createStore({
                 this._addTag(new ArtTag(tag));
             }.bind(this));
             this._updateParents();
-            this.trigger(this.data);
+            this.trigger(this.data, tagData);
         }
     },
 
@@ -180,7 +180,7 @@ let ArticleTagStore = Reflux.createStore({
 
     removeSubTag(tag, sub) {
         tag.removeSubTag(sub);
-        this.trigger(this.data);
+        this.trigger(this.data, tag, sub);
     },
 
     getAllPublicTags: function(topLevel) {
