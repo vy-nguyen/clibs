@@ -26,6 +26,7 @@
  */
 package com.tvntd.service.user;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -36,6 +37,7 @@ import org.springframework.stereotype.Service;
 
 import com.tvntd.dao.ArticleRankRepo;
 import com.tvntd.dao.ProductRepository;
+import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Product;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.ICommentService;
@@ -60,43 +62,71 @@ public class ProductService implements IProductService
     @Override
     public ProductDTO getProductDTO(String uuid)
     {
+        Product prod = getProduct(uuid);
+        if (prod != null) {
+            return new ProductDTO(prod, artRankRepo.findByArticleUuid(uuid));
+        }
         return null;
     }
 
     @Override
     public Product getProduct(String uuid)
     {
-        return null;
+        return productRepo.findByArticleUuid(uuid);
     }
 
     @Override
     public List<ProductDTO> convert(List<Product> products)
     {
-        return null;
+        List<ProductDTO> result = new LinkedList<>();
+        for (Product p : products) {
+            ArticleRank r = artRankRepo.findByArticleUuid(p.getArticleUuid());
+            result.add(new ProductDTO(p, r));
+        }
+        return result;
     }
 
     @Override
     public List<ProductDTO> getProducts(List<String> uuids)
     {
-        return null;
+        List<ProductDTO> result = new LinkedList<>();
+        for (String u : uuids) {
+            result.add(getProductDTO(u));
+        }
+        return result;
     }
 
     @Override
     public List<ProductDTO> getProductsByUser(Long userId)
     {
+        List<Product> products = productRepo.findAllByAuthorId(userId);
+        if (products != null) {
+            return convert(products);
+        }
         return null;
     }
 
     @Override
     public List<ProductDTO> getProductsByUser(String userUuid)
     {
+        List<Product> products = productRepo.findAllByAuthorUuid(userUuid);
+        if (products != null) {
+            return convert(products);
+        }
         return null;
     }
 
     @Override
     public List<ProductDTO> getProductsByUser(List<String> userUuids)
     {
-        return null;
+        List<ProductDTO> result = new LinkedList<>();
+        for (String u : userUuids) {
+            List<ProductDTO> prods = getProductsByUser(u);
+            if (prods != null) {
+                result.addAll(prods);
+            }
+        }
+        return result;
     }
 
     @Override
@@ -114,16 +144,20 @@ public class ProductService implements IProductService
     @Override
     public void saveProduct(Product prod)
     {
+        productRepo.save(prod);
     }
 
     @Override
     public void saveProduct(ProductDTO prod)
     {
+        artRankRepo.save(prod.fetchRank());
+        productRepo.save(prod.fetchProduct());
     }
 
     @Override
     public void deleteProduct(Product prod)
     {
+        productRepo.delete(prod);
     }
 
     @Override

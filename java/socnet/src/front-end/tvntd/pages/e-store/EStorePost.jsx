@@ -9,10 +9,12 @@ import React  from 'react-mod';
 
 import {OverlayTrigger, Tooltip} from 'react-bootstrap';
 
+import ErrorView        from 'vntd-shared/layout/ErrorView.jsx';
 import GenericForm      from 'vntd-shared/forms/commons/GenericForm.jsx';
 import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
 import NestableStore    from 'vntd-shared/stores/NestableStore.jsx';
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
+import ErrorStore       from 'vntd-shared/stores/ErrorStore.jsx';
 import StateButton      from 'vntd-shared/utils/StateButton.jsx';
 import JarvisWidget     from 'vntd-shared/widgets/JarvisWidget.jsx';
 import Actions          from 'vntd-root/actions/Actions.jsx';
@@ -23,17 +25,20 @@ class EStorePost extends React.Component
     constructor(props) {
         super(props);
 
-        this.dropzone = null;
-        this._onSend  = this._onSend.bind(this);
-        this._dzError = this._dzError.bind(this);
+        this.dropzone  = null;
+        this._dzSend   = this._dzSend.bind(this);
+        this._dzError  = this._dzError.bind(this);
+        this._dzSuccess = this._dzSuccess.bind(this);
         this._onBlurInput = this._onBlurInput.bind(this);
         this._updateState = this._updateState.bind(this);
         this._editProduct = this._editProduct.bind(this);
         this._getPostData = this._getPostData.bind(this);
+        this._getInitState  = this._getInitState.bind(this);
         this._onSaveProduct = this._onSaveProduct.bind(this);
         this._onPostProduct = this._onPostProduct.bind(this);
 
-        this._myUuid = UserStore.getSelfUuid();
+        this._myUuid  = UserStore.getSelfUuid();
+        this._errorId = "estore-post-" + this._myUuid;
         this._prodDescId   = "prod-desc";
         this._prodSpecId   = "prod-spec";
         this._prodDetailId = "detail-desc";
@@ -46,6 +51,15 @@ class EStorePost extends React.Component
         this._publishBtn = StateButtonStore.createButton(this._publishBtnId, function() {
             return StateButton.saveButtonFsm("Create", "Create Product", "Published Product");
         });
+        this.state = this._getInitState();
+    }
+    
+    _getInitState() {
+        return {
+            articleUuid: null,
+            picObjId   : null,
+            logoObjId  : null
+        };
     }
 
     componentDidMount() {
@@ -62,16 +76,36 @@ class EStorePost extends React.Component
     _dzError() {
     }
 
-    _onSend(files, xhr, form) {
+    _dzSend(files, xhr, form) {
         form.append('name', files.name);
         form.append('authorUuid', this._myUuid);
+        form.append('articleUuid', this.state.articleUuid);
+    }
+
+    _dzSuccess(dz, hdr, progress) {
+        let picObjId = this.state.picObjId;
+        let logoObjId = this.state.logoObjId;
+
+        if (hdr.postType === "logo") {
+            logoObjId = hdr.imgObjId;
+        } else {
+            picObjId = hdr.imgObjId;
+        }
+        this.setState({
+            articleUuid: hdr.articleUuid,
+            authorUuid : hdr.authorUuid,
+            picObjId   : picObjId,
+            logoObjId  : logoObjId
+        });
     }
 
     _onBlurInput(e) {
+        ErrorStore.clearError(this._errorId);
         StateButtonStore.setButtonStateObj(this._publishBtn, "needSave");
     }
 
     _onSaveProduct() {
+        StateButtonStore.setButtonStateObj(this._publishBtn, "saving");
         console.log("Save product...");
         console.log(this._getPostData());
     }
@@ -80,26 +114,26 @@ class EStorePost extends React.Component
         StateButtonStore.setButtonStateObj(this._publishBtn, "saving");
 
         let product = this._getPostData();
-        product.estore = true;
-        product.articleUuid = _.uniqueId("uuid-");
-        product.authorUuid  = this._myUuid;
         Actions.publishProduct(product);
     }
 
     _getPostData() {
         return {
-            prodCat   : this.refs.prodCat.value,
-            prodName  : this.refs.prodName.value,
-            prodTitle : this.refs.prodName.value,
-            prodPrice : this.refs.prodPrice.value,
-            prodNotice: this.refs.prodNotice.value,
-            prodDesc  : NestableStore.getIndexString(this._prodDescId),
-            prodDetail: NestableStore.getIndexString(this._prodDetailId),
-            prodSpec  : NestableStore.getIndexString(this._prodSpecId),
-            prodImgs  : [],
-            prodTags  : [],
-            logoImg   : "",
-            createDate: 0
+            estore    : true,
+            authorUuid : this._myUuid,
+            articleUuid: this.state.articleUuid,
+            prodCat    : this.refs.prodCat.value,
+            prodName   : this.refs.prodName.value,
+            prodTitle  : this.refs.prodName.value,
+            prodPrice  : this.refs.prodPrice.value,
+            prodNotice : this.refs.prodNotice.value,
+            prodDesc   : NestableStore.getIndexString(this._prodDescId),
+            prodDetail : NestableStore.getIndexString(this._prodDetailId),
+            prodSpec   : NestableStore.getIndexString(this._prodSpecId),
+            prodImgs   : [],
+            prodTags   : [],
+            logoImg    : "",
+            createDate : 0
         };
     }
 
@@ -120,6 +154,9 @@ class EStorePost extends React.Component
         }
         if (status === "ok") {
             StateButtonStore.setButtonStateObj(this._publishBtn, "saved");
+            this._clearPostData();
+            this.setState(this._getInitState());
+            // ErrorStore.reportInfo(this._errorId, "You have some Error");
         }
     }
 
@@ -167,15 +204,16 @@ class EStorePost extends React.Component
             editor   : true
         };
         const eventHandlers = {
-            sending: this._onSend,
+            sending: this._dzSend,
+            success: this._dzSuccess,
             error  : this._dzError,
             init   : function(dz) {
                 this.dropzone = dz;
             }
         };
         const briefDz = {
-            defaultMesg: "Drop image here",
-            url: "/user/upload-product-img"
+            url        : "/user/upload-product-img",
+            defaultMesg: "Drop image here"
         };
         const detailDz = {
             url: "/user/upload-product-detail"
@@ -221,6 +259,7 @@ class EStorePost extends React.Component
                 </div>
                 <div className="row">
                     <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <ErrorView errorId={this._errorId}/>
                         <div className="btn-group pull-right" role="group">
                             <StateButton btnId={this._saveBtnId} className="btn btn-success" onClick={this._onSaveProduct}/>
                             <StateButton btnId={this._publishBtnId} className="btn btn-success" onClick={this._onPostProduct}/>

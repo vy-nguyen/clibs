@@ -283,12 +283,13 @@ public interface IArticleService
 
         public List<String> getPictureUrl()
         {
-            ObjStore objStore = ObjStore.getInstance();
             List<String> ret = new LinkedList<>();
             List<String> pictures = article.getPictures();
-            String store = s_baseUri + Long.toString(article.getAuthorId());
 
             if (pictures != null) {
+                ObjStore objStore = ObjStore.getInstance();
+                String store = s_baseUri + Long.toString(article.getAuthorId());
+
                 for (String poid : pictures) {
                     ObjectId oid = ObjectId.fromString(poid);
                     ret.add(objStore.imgObjUri(oid, store));

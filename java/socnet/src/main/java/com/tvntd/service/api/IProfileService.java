@@ -43,6 +43,7 @@ import com.tvntd.models.Role;
 import com.tvntd.models.User;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
+import com.tvntd.service.api.IProductService.ProductDTO;
 import com.tvntd.util.Constants;
 import com.tvntd.util.Util;
 
@@ -80,9 +81,13 @@ public interface IProfileService
         private String role;
         private Long roleMask;
 
-        private ArticleDTO pendPost;
+        private ArticleDTO             pendPost;
         private LinkedList<ArticleDTO> publishedArts;
         private LinkedList<ArticleDTO> savedArts;
+
+        private ProductDTO             pendProd;
+        private LinkedList<ProductDTO> publishedProds;
+        private LinkedList<ProductDTO> savedProds;
 
         // NewsFeed for this profile.
         //
@@ -130,14 +135,6 @@ public interface IProfileService
         /**
          * Get/set but not visible to JSON.
          */
-        public ArticleDTO fetchPendPost() {
-            return this.pendPost;
-        }
-
-        public void assignPendPost(ArticleDTO art) {
-            this.pendPost = art;
-        }
-
         public void assignPendTask(Future<List<String>> task)
         {
             this.task = task;
@@ -310,15 +307,12 @@ public interface IProfileService
         }
 
         /**
-         * @return the publishedArts
+         * ------------------- Article Posting ------------------------
          */
         public LinkedList<ArticleDTO> fetchPublishedArts() {
             return publishedArts;
         }
 
-        /**
-         * @param publishedArts the publishedArts to set
-         */
         public void assignPublishedArts(LinkedList<ArticleDTO> publishedArts) {
             this.publishedArts = publishedArts;
         }
@@ -331,16 +325,10 @@ public interface IProfileService
             publishedArts.addFirst(article);
         }
 
-        /**
-         * @return the savedArts
-         */
         public LinkedList<ArticleDTO> fetchSavedArts() {
             return savedArts;
         }
 
-        /**
-         * @param savedArts the savedArts to set
-         */
         public void assignSavedArts(LinkedList<ArticleDTO> savedArts) {
             this.savedArts = savedArts;
         }
@@ -351,6 +339,57 @@ public interface IProfileService
                 savedArts = new LinkedList<>();
             }
             savedArts.addFirst(article);
+        }
+
+        public ArticleDTO fetchPendPost() {
+            return this.pendPost;
+        }
+
+        public void assignPendPost(ArticleDTO art) {
+            this.pendPost = art;
+        }
+
+        /**
+         * ------------------ Product Posting ----------------------
+         */
+        public LinkedList<ProductDTO> fetchPublishProds() {
+            return publishedProds;
+        }
+
+        public void assignPublishedProds(LinkedList<ProductDTO> products) {
+            this.publishedProds = products;
+        }
+
+        public void pushPublishProduct(ProductDTO product)
+        {
+            if (publishedProds == null) {
+                publishedProds = new LinkedList<>();
+            }
+            publishedProds.addFirst(product);
+        }
+
+        public LinkedList<ProductDTO> fetchSavedProducts() {
+            return savedProds;
+        }
+
+        public void assignSavedProducts(LinkedList<ProductDTO> products) {
+            this.savedProds = products;
+        }
+
+        public void pushSavedProduct(ProductDTO product)
+        {
+            if (savedProds == null) {
+                savedProds = new LinkedList<>();
+            }
+            savedProds.addFirst(product);
+        }
+
+        public ProductDTO fetchPendProduct() {
+            return pendProd;
+        }
+
+        public void assignPendProduct(ProductDTO product) {
+            this.pendProd = product;
         }
 
         /**

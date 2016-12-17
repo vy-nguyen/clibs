@@ -28,7 +28,6 @@ package com.tvntd.web;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -59,13 +58,13 @@ import com.tvntd.forms.ArticleForm;
 import com.tvntd.forms.CommentChangeForm;
 import com.tvntd.forms.CommentForm;
 import com.tvntd.forms.PostForm;
+import com.tvntd.forms.ProductForm;
 import com.tvntd.forms.TagForm;
 import com.tvntd.forms.TagForm.TagArtRank;
 import com.tvntd.forms.TagForm.TagOrderResponse;
 import com.tvntd.forms.TagForm.TagRank;
 import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.ObjectId;
-import com.tvntd.models.ArtTag;
 import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Author;
@@ -81,6 +80,8 @@ import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.ICommentService;
 import com.tvntd.service.api.ICommentService.CommentDTOResponse;
 import com.tvntd.service.api.ICommentService.CommentRespDTO;
+import com.tvntd.service.api.IProductService;
+import com.tvntd.service.api.IProductService.ProductDTO;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.ITimeLineService;
@@ -120,6 +121,9 @@ public class UserPath
 
     @Autowired
     protected IArtTagService artTagSvc;
+
+    @Autowired
+    protected IProductService productSvc;
 
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     @ResponseBody
@@ -188,6 +192,10 @@ public class UserPath
     public GenericResponse
     getArticleList(@RequestBody UuidForm uuids, HttpSession session)
     {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
         return null;
     }
 
@@ -252,6 +260,35 @@ public class UserPath
     }
 
     /**
+     * User publish product to estore.
+     */
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @RequestMapping(value = "/user/publish-product",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    publishUserProduct(@RequestBody ProductForm form, HttpSession session) {
+        return saveProduct(form, session, true);
+    }
+
+    /**
+     * Shared code to save/publish a product to estore.
+     */
+    protected GenericResponse
+    saveProduct(ProductForm form, HttpSession session, boolean publish)
+    {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
+        if (form.cleanInput() == false) {
+            return s_noProfile;
+        }
+        return s_noProfile;
+    }
+
+    /**
      * Upload images for the pending article.
      */
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
@@ -270,19 +307,18 @@ public class UserPath
         }
         ArticleDTO art = genPendPost(profile, true, artUuid);
         try {
+            String uid = profile.fetchUserId().toString();
             ObjStore store = ObjStore.getInstance();
             InputStream is = file.getInputStream();
-            ObjectId oid = store.putUserImage(is,
-                    (int)file.getSize(), profile.fetchUserId() .toString());
+            ObjectId oid = store.putUserImage(is, (int)file.getSize(), uid);
 
             if (oid != null) {
                 art.addPicture(oid);
             }
-            ImageUploadResp resp = new ImageUploadResp(art.getArticleUuid(),
-                    profile.getUserUuid().toString(), oid);
+            ImageUploadResp resp =
+                new ImageUploadResp(art.getArticleUuid(), art.getAuthorUuid(), oid);
 
-            resp.setImgObjUrl(store.imgUserObjUri(oid,
-                        profile.fetchUserId().toString()));
+            resp.setImgObjUrl(store.imgUserObjUri(oid, uid));
             return resp;
 
         } catch(IOException e) {
@@ -303,7 +339,11 @@ public class UserPath
             @RequestParam("file") MultipartFile file,
             MultipartHttpServletRequest reqt, HttpSession session)
     {
-        return s_saveObjFailed;
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
+        return uploadProduct(profile, artUuid, file, true, "/user/upload-product-img");
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
@@ -316,9 +356,46 @@ public class UserPath
             @RequestParam("file") MultipartFile file,
             MultipartHttpServletRequest reqt, HttpSession session)
     {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
+        return uploadProduct(profile, artUuid, file, false, "/user/upload-product-detail");
+    }
+
+    private GenericResponse
+    uploadProduct(ProfileDTO profile, String artUuid, MultipartFile file, boolean logo, String url)
+    {
+        ProductDTO prod = genPendProduct(profile, true, artUuid);
+        try {
+            String uid = profile.fetchUserId().toString();
+            ObjStore store = ObjStore.getInstance();
+            InputStream is = file.getInputStream();
+            ObjectId oid = store.putUserImage(is, (int)file.getSize(), uid);
+
+            if (oid != null) {
+                if (logo == true) {
+                    prod.assignLogo(oid.name(), null);
+                } else {
+                    prod.addPicture(oid);
+                }
+            }
+            ImageUploadResp resp =
+                new ImageUploadResp(prod.getArticleUuid(), prod.getAuthorUuid(), oid);
+
+            resp.setPostUrl(url);
+            resp.setPostType(logo == true ? "logo" : "imgs");
+            resp.setImgObjUrl(store.imgUserObjUri(oid, uid));
+            return resp;
+
+        } catch(IOException e) {
+        }
         return s_saveObjFailed;
     }
-  
+
+    /**
+     * Generate or retrieve a pending article post.
+     */
     private ArticleDTO
     genPendPost(ProfileDTO profile, boolean creat, String articleUuid)
     {
@@ -338,6 +415,30 @@ public class UserPath
             profile.assignPendPost(pendPost);
         }
         return pendPost;
+    }
+
+    /**
+     * Generate or retrieve a pending product listing.
+     */
+    private ProductDTO
+    genPendProduct(ProfileDTO profile, boolean creat, String articleUuid)
+    {
+        ProductDTO product = profile.fetchPendProduct();
+
+        if (product != null) {
+            return product;
+        }
+        if (articleUuid != null) {
+            product = productSvc.getProductDTO(articleUuid);
+        }
+        if (creat == true && product == null) {
+            String authorUuid = profile.getUserUuid();
+            product = new ProductDTO(authorUuid, profile.toProfile().getUserId());
+        }
+        if (product != null) {
+            profile.assignPendProduct(product);
+        }
+        return product;
     }
 
     /**
@@ -367,6 +468,8 @@ public class UserPath
                 ImageUploadResp resp =
                     new ImageUploadResp(null, profile.getUserUuid().toString(), oid);
 
+                resp.setPostType("avatar");
+                resp.setPostUrl("/user/upload-avatar");
                 resp.setImgObjUrl(store.imgObjUri(oid, ProfileDTO.getImgBaseUrl()));
                 return resp;
             }

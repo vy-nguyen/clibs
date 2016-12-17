@@ -192,7 +192,9 @@ let ErrorStore = Reflux.createStore({
     onPermissionFailed: function(error) {
     },
 
-    exports: {
+    dumpData: function(hdr) {
+        console.log(hdr);
+        console.log(this.data);
     }
 });
 

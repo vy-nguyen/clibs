@@ -77,6 +77,24 @@ public class Author
             joinColumns = @JoinColumn(name = "authorUuid"))
     private List<String> timeLineArticles;
 
+    @Column(length = 64)
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "PendingProducts",
+            uniqueConstraints = @UniqueConstraint(columnNames = {
+                "authorUuid", "pendingProducts"
+            }),
+            joinColumns = @JoinColumn(name = "authorUuid"))
+    private List<String> pendingProducts;
+
+    @Column(length = 64)
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "PendingArticles",
+            uniqueConstraints = @UniqueConstraint(columnNames = {
+                "authorUuid", "pendingArticles"
+            }),
+            joinColumns = @JoinColumn(name = "authorUuid"))
+    private List<String> pendingArticles;
+
     @Transient
     private List<AuthorTag> authorTags;
 

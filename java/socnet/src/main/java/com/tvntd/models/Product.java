@@ -27,7 +27,9 @@
 package com.tvntd.models;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -40,6 +42,8 @@ import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.tvntd.lib.ObjectId;
 
@@ -73,11 +77,25 @@ public class Product
     private byte[]     prodDesc;
     private byte[]     prodSpec;
 
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date       createdDate;
+
     @Column(length = 64)
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "ProductImages",
             joinColumns = @JoinColumn(name = "articleId"))
     private List<String> images;
+
+    /**
+     * Methods.
+     */
+    public Product()
+    {
+        super();
+        articleUuid = UUID.randomUUID().toString();
+        createdDate = new Date();
+    }
 
     public void markPending() {
         pending = true;
@@ -310,5 +328,19 @@ public class Product
      */
     public void setProdSpec(byte[] prodSpec) {
         this.prodSpec = prodSpec;
+    }
+
+    /**
+     * @return the createdDate
+     */
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    /**
+     * @return the images
+     */
+    public List<String> getImages() {
+        return images;
     }
 }

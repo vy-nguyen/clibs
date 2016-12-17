@@ -9,6 +9,7 @@ import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import NavigationStore  from 'vntd-shared/stores/NavigationStore.jsx';
 import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
 import NestableStore    from 'vntd-shared/stores/NestableStore.jsx';
+import ErrorStore       from 'vntd-shared/stores/ErrorStore.jsx';
 import AboutUsStore     from 'vntd-root/stores/AboutUsStore.jsx';
 import ArticleStore     from 'vntd-root/stores/ArticleStore.jsx';
 import AuthorStore      from 'vntd-root/stores/AuthorStore.jsx';
@@ -72,6 +73,10 @@ class Debug extends React.Component {
         NestableStore.dumpData("Nestable Store");
     }
 
+    debugErrorStore() {
+        ErrorStore.dumpData("Error Store");
+    }
+
     render() {
         return (
             <div className="row">
@@ -100,6 +105,8 @@ class Debug extends React.Component {
                     <a onClick={this.debugStateButtonStore}>Debug State Button Store</a>
                     <br/>
                     <a onClick={this.debugNestTable}>Debug Nest Table Store</a>
+                    <br/>
+                    <a onClick={this.debugErrorStore}>Debug Error Store</a>
                 </div>
                 <br/>
                 <hr/>

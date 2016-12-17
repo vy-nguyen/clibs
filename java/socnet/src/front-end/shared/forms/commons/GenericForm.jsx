@@ -119,7 +119,7 @@ class GenericForm extends React.Component
             );
         }
         return  (
-            <input type="text" className="form-control" onBlur={onBlur || function() {}}
+            <input type="text" className="form-control" onBlur={onBlur}
                 name={entry.inpName} ref={entry.inpName} placeholder={entry.inpHolder}/>
         );
     }
