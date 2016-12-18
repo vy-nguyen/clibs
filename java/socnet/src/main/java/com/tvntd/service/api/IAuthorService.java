@@ -38,6 +38,7 @@ import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Author;
 import com.tvntd.models.AuthorTag;
+import com.tvntd.models.Product;
 import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 
@@ -64,6 +65,7 @@ public interface IAuthorService
     void deleteAuthor(String uuid);
 
     ArticleRank createArticleRank(Article article, String tagName);
+    ArticleRank createProductRank(Product product, String tagName);
 
     /**
      *

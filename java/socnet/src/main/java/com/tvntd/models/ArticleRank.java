@@ -121,6 +121,17 @@ public class ArticleRank
         this.contentBrief = article.getContentBrief();
     }
 
+    public ArticleRank(AuthorTag tag, Product product)
+    {
+        this();
+        this.articleUuid = product.getArticleUuid();
+        this.authorUuid = product.getAuthorUuid();
+        this.favorite = tag.isFavorite();
+        this.rank = tag.getRank();
+        this.tagHash = HashKey.toSha1Key(this.tag, authorUuid);
+        this.contentBrief = product.getProdDesc();
+    }
+
     public ArticleRank(CommentChangeForm form, String authorUuid)
     {
         this();

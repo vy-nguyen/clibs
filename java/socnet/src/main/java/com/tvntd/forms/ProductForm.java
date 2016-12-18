@@ -51,6 +51,7 @@ public class ProductForm
     private String  prodDesc;
     private String  prodDetail;
     private String  prodSpec;
+    private String  prodSub;
 
     public boolean cleanInput()
     {
@@ -221,5 +222,19 @@ public class ProductForm
      */
     public void setProdSpec(String prodSpec) {
         this.prodSpec = prodSpec;
+    }
+
+    /**
+     * @return the prodSub
+     */
+    public String getProdSub() {
+        return prodSub;
+    }
+
+    /**
+     * @param prodSub the prodSub to set
+     */
+    public void setProdSub(String prodSub) {
+        this.prodSub = prodSub;
     }
 }

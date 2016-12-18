@@ -261,10 +261,6 @@ public interface IProductService
             return product.isPending();
         }
 
-        public String getLogoImg() {
-            return product.getLogoImg();
-        }
-
         public String getProdPrice() {
             return product.getProdPrice().toString();
         }
@@ -353,6 +349,18 @@ public interface IProductService
         public String getCreatedDate() {
             DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm");
             return df.format(product.getCreatedDate());
+        }
+
+        public String getLogoImg()
+        {
+            String logo = product.getLogoImg();
+            if (logo != null) {
+                ObjStore objStore = ObjStore.getInstance();
+                String store = s_baseUri + Long.toString(product.getAuthorId());
+                ObjectId oid = ObjectId.fromString(logo);
+                return objStore.imgObjUri(oid, store);
+            }
+            return null;
         }
 
         public List<String> getPictureUrl()

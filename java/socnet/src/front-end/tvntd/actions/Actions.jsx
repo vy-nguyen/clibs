@@ -49,6 +49,7 @@ const Actions = Reflux.createActions({
 
     publishProduct:  completedFailedFn,
     pendingProduct:  completedFn,
+    getPublishProds: completedFailedFn,
 
     // Comment actions
     updateComment:   completedFn,
@@ -264,6 +265,10 @@ Actions.publishProduct.listen(function(data) {
 
 Actions.pendingProduct.listen(function(data) {
     this.completed(data);
+});
+
+Actions.getPublishProds.listen(function(data) {
+    postRestCall(data, "/public/get-estores", true, this, true, "getPublishProds");
 });
 
 /**

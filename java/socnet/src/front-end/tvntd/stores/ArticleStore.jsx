@@ -102,6 +102,11 @@ let EProductStore = Reflux.createStore({
         this.iterAuthorEStores(uuid, function(item) {
             products.push(item);
         });
+        if (_.isEmpty(products)) {
+            Actions.getPublishProds({
+                userUuids: [ uuid ]
+            });
+        }
         return products;
     },
 
@@ -146,6 +151,19 @@ let EProductStore = Reflux.createStore({
 
     onPublishProductFailure: function(product) {
         this.trigger(this.data, product, "failure");
+    },
+
+    onGetPublishProdsCompleted: function(data) {
+        let products = [];
+        _.forEach(data, function(product) {
+            products.push(this._addEStore(product, false));
+        }.bind(this));
+
+        this.trigger(this.data, data, products, "ok");
+    },
+
+    onGetPublishProdsFailure: function(data) {
+        this.trigger(this.data, null, "failure");
     },
 
     /**

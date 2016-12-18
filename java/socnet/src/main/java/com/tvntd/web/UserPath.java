@@ -69,6 +69,7 @@ import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Author;
 import com.tvntd.models.Comment;
+import com.tvntd.models.Product;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.GenericResponse;
 import com.tvntd.service.api.IArtTagService;
@@ -89,6 +90,7 @@ import com.tvntd.service.api.ImageUploadResp;
 import com.tvntd.service.api.LoginResponse;
 import com.tvntd.service.user.ArtTagService;
 import com.tvntd.service.user.ArticleService;
+import com.tvntd.service.user.ProductService;
 
 @Controller
 public class UserPath
@@ -240,7 +242,7 @@ public class UserPath
         ArticleService.applyPostForm(form, article, publish);
 
         if (publish == true) {
-            art.fetchArticle().markActive();
+            article.markActive();
             art.convertUTF();
             articleSvc.saveArticle(art);
 
@@ -272,6 +274,16 @@ public class UserPath
         return saveProduct(form, session, true);
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @RequestMapping(value = "/user/save-product",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    saveUserProduct(@RequestBody ProductForm form, HttpSession session) {
+        return saveProduct(form, session, false);
+    }
+
     /**
      * Shared code to save/publish a product to estore.
      */
@@ -285,7 +297,23 @@ public class UserPath
         if (form.cleanInput() == false) {
             return s_noProfile;
         }
-        return s_noProfile;
+        ProductDTO prodDto = genPendProduct(profile, true, form.getArticleUuid());
+        Product prod = prodDto.fetchProduct();
+        ProductService.applyPostProduct(form, prod, publish);
+
+        if (publish == true) {
+            prod.markActive();
+            productSvc.saveProduct(prod);
+
+            profile.assignPendProduct(null);
+            profile.pushPublishProduct(prodDto);
+        } else {
+            productSvc.saveProduct(prodDto);
+            profile.pushSavedProduct(prodDto);
+        }
+        ArticleRank rank = authorSvc.createProductRank(prod, form.getProdCat());
+        prodDto.assignRank(rank);
+        return prodDto;
     }
 
     /**

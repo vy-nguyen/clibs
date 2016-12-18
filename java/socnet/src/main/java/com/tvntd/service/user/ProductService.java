@@ -26,17 +26,21 @@
  */
 package com.tvntd.service.user;
 
+import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import com.tvntd.dao.ArticleRankRepo;
 import com.tvntd.dao.ProductRepository;
+import com.tvntd.forms.ProductForm;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Product;
 import com.tvntd.service.api.IAuthorService;
@@ -47,6 +51,8 @@ import com.tvntd.service.api.IProductService;
 @Transactional
 public class ProductService implements IProductService
 {
+    static private Logger s_log = LoggerFactory.getLogger(ProductService.class);
+
     @Autowired
     protected ArticleRankRepo artRankRepo;
 
@@ -58,6 +64,37 @@ public class ProductService implements IProductService
 
     @Autowired
     protected ICommentService commentSvc;
+
+    /**
+     * Common static methods.
+     */
+    public static void applyPostProduct(ProductForm form, Product prod, boolean publish)
+    {
+        if (publish == true) {
+            prod.markActive();
+        } else {
+            prod.markPending();
+        }
+        try {
+            String str = form.getProdNotice();
+            if (str != null) {
+                prod.setProdNotice(str.getBytes("UTF-8"));
+            }
+            prod.setProdCat(form.getProdCat().getBytes("UTF-8"));
+            prod.setProdName(form.getProdName().getBytes("UTF-8"));
+            prod.setProdTitle(form.getProdTitle().getBytes("UTF-8"));
+            prod.setProdDesc(form.getProdDesc().getBytes("UTF-8"));
+            prod.setProdSpec(form.getProdSpec().getBytes("UTF-8"));
+
+            prod.setProdPrice(0L);
+            prod.setPriceUnit("$");
+            prod.setProdSub("".getBytes("UTF-8"));
+            prod.setLogoTag("");
+
+        } catch(UnsupportedEncodingException e) {
+            s_log.info(e.getMessage());
+        }
+    }
 
     @Override
     public ProductDTO getProductDTO(String uuid)

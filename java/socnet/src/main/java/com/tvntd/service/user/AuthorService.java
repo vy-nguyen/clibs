@@ -48,6 +48,7 @@ import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Author;
 import com.tvntd.models.AuthorTag;
+import com.tvntd.models.Product;
 import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
@@ -271,6 +272,7 @@ public class AuthorService implements IAuthorService
         return tag;
     }
 
+    @Override
     public ArticleRank createArticleRank(Article article, String tagName)
     {
         String authorUuid = article.getAuthorUuid();
@@ -280,6 +282,21 @@ public class AuthorService implements IAuthorService
         }
         AuthorTag tag = updateAuthorTag(author, tagName, 0L, false);
         ArticleRank rank = new ArticleRank(tag, article);
+
+        rankRepo.save(rank);
+        return rank;
+    }
+
+    @Override
+    public ArticleRank createProductRank(Product product, String tagName)
+    {
+        String authorUuid = product.getAuthorUuid();
+        Author author = authorRepo.findByAuthorUuid(authorUuid);
+        if (author == null) {
+            author = new Author(authorUuid, product.getArticleUuid());
+        }
+        AuthorTag tag = updateAuthorTag(author, tagName, 0L, false);
+        ArticleRank rank = new ArticleRank(tag, product);
 
         rankRepo.save(rank);
         return rank;
