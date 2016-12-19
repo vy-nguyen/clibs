@@ -149,7 +149,11 @@ class EStorePost extends React.Component
     }
 
     _updateState(store, data, status) {
-        if (data.estore !== true || data.authorUuid !== this._myUuid) {
+        if (data == null || data.length > 1) {
+            return;
+        }
+        let product = data[0];
+        if (product.estore !== true || product.authorUuid !== this._myUuid) {
             return;
         }
         if (status === "ok") {

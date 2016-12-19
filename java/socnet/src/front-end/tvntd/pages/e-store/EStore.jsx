@@ -13,6 +13,8 @@ import ArticleTagBrief from 'vntd-root/components/ArticleTagBrief.jsx';
 import { EProductStore } from 'vntd-root/stores/ArticleStore.jsx';
 import { ProductInfo, ProductBrief } from './ProductInfo.jsx';
 
+import ErrorView from 'vntd-shared/layout/ErrorView.jsx';
+
 let testItems = require('json!../../mock-json/e-store-pview.json');
 
 class EStore extends React.Component
@@ -23,9 +25,8 @@ class EStore extends React.Component
         this._renderProdFull = this._renderProdFull.bind(this);
         this._updateState = this._updateState.bind(this);
 
-        this._myUuid = UserStore.getSelfUuid();
         this.state = {
-            products: EProductStore.getProductsByAuthor(this._myUuid)
+            products: EProductStore.getProductsByAuthor(props.userUuid)
         }
         this.state.products = this.state.products.concat(testItems.products);
     }
@@ -42,15 +43,18 @@ class EStore extends React.Component
     }
 
     _updateState(store, data, status) {
-        if (data.authorUuid !== this,_myUuid) {
+        let userUuid = this.props.userUuid;
+        if ((data.length <= 1) && (data[0].authorUuid !== userUuid)) {
             return;
         }
-        console.log("Get products");
-        console.log(this._myUuid);
-        this.setState({
-            products: EProductStore.getProductsByAuthor(this._myUuid)
-        });
-        console.log(EProductStore.getProductsByAuthor(this._myUuid) );
+        _.forEach(data, function(prod) {
+            if (prod.authorUuid !== userUuid) {
+                return;
+            }
+            this.setState({
+                products: EProductStore.getProductsByAuthor(userUuid)
+            });
+        }.bind(this));
     }
 
     _renderProdBrief(product) {

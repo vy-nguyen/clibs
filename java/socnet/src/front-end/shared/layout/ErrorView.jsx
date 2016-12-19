@@ -93,6 +93,12 @@ class ErrorView extends React.Component
             </div>
         );
     }
+
+    static stackTrace() {
+        let err = new Error();
+        console.log(err.stack);
+        return err.stack;
+    }
 }
 
 export default ErrorView;

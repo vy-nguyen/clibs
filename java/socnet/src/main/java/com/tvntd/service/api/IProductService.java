@@ -52,6 +52,7 @@ public interface IProductService
     List<ProductDTO> getProductsByUser(Long userId);
     List<ProductDTO> getProductsByUser(String userUuid);
     List<ProductDTO> getProductsByUser(List<String> userUuids);
+    List<ProductDTO> getProductsByUser(String[] userUuids);
 
     Page<ProductDTO> getUserProducts(Long userId);
     Page<ProductDTO> getUserProducts(String userUuid);
@@ -121,6 +122,14 @@ public interface IProductService
             for (ProductDTO p : products) {
                 articleRank.add(new ArticleRankDTO(p.fetchRank()));
             }
+        }
+
+        public ProductDTOResponse(List<ProductDTO> prods, List<ProductDTO> pend, List<ArticleRankDTO> ranks)
+        {
+            super(GenericResponse.USER_HOME, null, null);
+            this.products = prods;
+            this.pendings = pend;
+            this.articleRank = ranks;
         }
 
         public ProductDTOResponse(List<ArticleRankDTO> rank)
@@ -261,8 +270,10 @@ public interface IProductService
             return product.isPending();
         }
 
-        public String getProdPrice() {
-            return product.getProdPrice().toString();
+        public String getProdPrice()
+        {
+            Long price = product.getProdPrice();
+            return price != null ? price.toString() : "0.0";
         }
 
         public String getPriceUnit() {

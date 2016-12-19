@@ -34,6 +34,7 @@ class Article {
 
 class AuthorShelf {
     constructor(article, authorUuid) {
+        this.getData = 0;
         this.articles = {};
         this.sortedArticles = [];
 
@@ -69,6 +70,10 @@ class AuthorShelf {
         this.articles[article.articleUuid] = article;
     }
 
+    hasData() {
+        return true;
+    }
+
     getSortedArticles() {
         return this.sortedArticles;
     }
@@ -86,12 +91,13 @@ let EProductStore = Reflux.createStore({
 
     _resetStore: function() {
         this.data = {
-            estoresByAuthor : {},
-            productByUuid   : {},
-            mySavedProducts : {},
+            getStoreCount  : 0,
+            estoresByAuthor: {},
+            productByUuid  : {},
+            mySavedProducts: {},
 
-            myProducts    : null,
-            myProductPost : null,
+            myProducts   : null,
+            myProductPost: null,
             errorText : "",
             errorResp : null
         }
@@ -99,22 +105,29 @@ let EProductStore = Reflux.createStore({
 
     getProductsByAuthor: function(uuid) {
         let products = [];
-        this.iterAuthorEStores(uuid, function(item) {
-            products.push(item);
-        });
-        if (_.isEmpty(products)) {
-            Actions.getPublishProds({
-                userUuids: [ uuid ]
+        if (_.isEmpty(this.data.estoresByAuthor) && this.data.getStoreCount === 0) {
+            let uuids = UserStore.getUserUuidList();
+
+            if (!_.isEmpty(uuids)) {
+                this.data.getStoreCount++;
+                Actions.getPublishProds({
+                    uuids: uuids
+                });
+            }
+            return products;
+        }
+        let anchor = this.getProductOwner(uuid);
+        if (anchor.hasData() === true) {
+            anchor.iterArticles(function(item) {
+                products.push(item);
             });
         }
         return products;
     },
 
     iterAuthorEStores: function(uuid, func, arg) {
-        let anchor = this.data.estoresByAuthor[uuid];
-        if (anchor != null) {
-            anchor.iterArticles(func, arg);
-        }
+        let anchor = this.getProductOwner(uuid);
+        anchor.iterArticles(func, arg);
         return anchor;
     },
 
@@ -146,20 +159,25 @@ let EProductStore = Reflux.createStore({
     onPublishProductCompleted: function(product) {
         let prod = this._addEStore(product, false);
         this.data.myProductPost = prod;
-        this.trigger(this.data, prod, "ok");
+        console.log("Publish new product......");
+        this.trigger(this.data, [prod], "postOk");
     },
 
     onPublishProductFailure: function(product) {
-        this.trigger(this.data, product, "failure");
+        this.trigger(this.data, null, "failure");
     },
 
     onGetPublishProdsCompleted: function(data) {
         let products = [];
-        _.forEach(data, function(product) {
+
+        console.log("Get back product request......");
+        console.log(data);
+        _.forEach(data.products, function(product) {
             products.push(this._addEStore(product, false));
+            console.log(product);
         }.bind(this));
 
-        this.trigger(this.data, data, products, "ok");
+        this.trigger(this.data, products, "getOk");
     },
 
     onGetPublishProdsFailure: function(data) {
@@ -172,7 +190,7 @@ let EProductStore = Reflux.createStore({
     _errorHandler: function(error) {
         this.data.errorText = error.getErrorCodeText();
         this.data.errorResp = error.getUserText();
-        this.trigger(this.data, null);
+        this.trigger(this.data, null, "error");
     },
 
     _createOwnerAnchor: function(authorUuid, article) {
@@ -306,24 +324,24 @@ let ArticleStore = Reflux.createStore({
 
     onPreloadCompleted: function(json) {
         this._addFromJson(json.articles);
-        this.trigger(this.data);
+        this.trigger(this.data, null, "preload");
     },
 
     onLogoutCompleted: function() {
         this._resetStore();
-        this.trigger(this.data);
+        this.trigger(this.data, null, "logout");
     },
 
     onRefreshArticlesCompleted: function(data) {
         this._addFromJson(data.articles);
         this._addSavedJson(data.pendPosts);
-        this.trigger(this.data, null);
+        this.trigger(this.data, null, "refresh");
     },
 
     onStartupCompleted: function(data) {
         if (data.articles) {
             this._addFromJson(data.articles);
-            this.trigger(this.data, null);
+            this.trigger(this.data, null, "startup");
         }
     },
 
@@ -340,7 +358,7 @@ let ArticleStore = Reflux.createStore({
 
     onSaveUserPostCompleted: function(post) {
         this._addArticle(post, true);
-        this.trigger(this.data, post);
+        this.trigger(this.data, post, "save");
     },
 
     onPublishUserPostFailed: function(err) {
@@ -350,7 +368,7 @@ let ArticleStore = Reflux.createStore({
     onPublishUserPostCompleted: function(post) {
         this._addArticle(post, false);
         this.data.myPostResult = post;
-        this.trigger(this.data, post);
+        this.trigger(this.data, post, "publish");
     },
 
     /**
@@ -359,7 +377,7 @@ let ArticleStore = Reflux.createStore({
     _errorHandler: function(error) {
         this.data.errorText = error.getErrorCodeText();
         this.data.errorResp = error.getUserText();
-        this.trigger(this.data, null);
+        this.trigger(this.data, null, "error");
     },
 
     _createArtOwner: function(authorUuid, article) {

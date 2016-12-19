@@ -154,7 +154,7 @@ class AuthorFeed extends React.Component
                                     <Blog authorUuid={userUuid} user={user}/>
                                     <UserPostView userUuid={author.userUuid}/>
                                     <Timeline/>
-                                    <EStore/>
+                                    <EStore userUuid={author.userUuid}/>
                                 </TabPanel>
                             </div>
                         </div>

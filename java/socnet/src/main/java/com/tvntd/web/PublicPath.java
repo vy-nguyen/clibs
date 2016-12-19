@@ -68,6 +68,9 @@ import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.ICommentService;
 import com.tvntd.service.api.IMenuItemService;
 import com.tvntd.service.api.IMenuItemService.MenuItemResp;
+import com.tvntd.service.api.IProductService;
+import com.tvntd.service.api.IProductService.ProductDTO;
+import com.tvntd.service.api.IProductService.ProductDTOResponse;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.StartupResponse;
@@ -96,6 +99,9 @@ public class PublicPath
 
     @Autowired
     private ICommentService commentSvc;
+
+    @Autowired
+    private IProductService productSvc;
 
     /**
      * Handle public pages.
@@ -232,6 +238,21 @@ public class PublicPath
     getComments(@RequestBody UuidForm uuids, HttpSession session)
     {
         return commentSvc.getCommentPost(uuids.getUuids());
+    }
+
+    /**
+     * Get EStore for list of users.
+     */
+    @RequestMapping(value = "/public/get-estores",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    getEStores(@RequestBody UuidForm uuids, HttpSession session)
+    {
+        List<ProductDTO> list = productSvc.getProductsByUser(uuids.getUuids());
+        List<ArticleRankDTO> ranks = articleSvc.getArticleRank(uuids);
+        return new ProductDTOResponse(list, null, ranks);
     }
 
     /**

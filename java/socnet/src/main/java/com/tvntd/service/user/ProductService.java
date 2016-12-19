@@ -167,6 +167,21 @@ public class ProductService implements IProductService
     }
 
     @Override
+    public List<ProductDTO> getProductsByUser(String[] userUuids)
+    {
+        List<ProductDTO> result = new LinkedList<>();
+        if (userUuids != null) {
+            for (String u : userUuids) {
+                List<ProductDTO> prods = getProductsByUser(u);
+                if (prods != null) {
+                    result.addAll(prods);
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
     public Page<ProductDTO> getUserProducts(Long userId)
     {
         return null;

@@ -76,6 +76,14 @@ let UserStore = Reflux.createStore({
         return this.data.userMap[uuid];
     },
 
+    getUserUuidList: function() {
+        let uuids = [];
+        _.forOwn(this.data.userMap, function(v, k) {
+            uuids.push(k);
+        });
+        return uuids;
+    },
+
     getCsrfHeader: function() {
         return this.data.csrfHeader;
     },

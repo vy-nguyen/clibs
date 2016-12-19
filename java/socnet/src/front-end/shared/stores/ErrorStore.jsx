@@ -7,7 +7,7 @@
 import Reflux        from 'reflux';
 import Actions       from 'vntd-root/actions/Actions.jsx';
 
-class Error {
+class ErrorResp {
     constructor(resp, text, error) {
         if (resp == null) {
             this.resp = null;
@@ -124,7 +124,7 @@ let ErrorStore = Reflux.createStore({
         }
         let err = this.data[id];
         if (err == null) {
-            this.data[id] = new Error(null, text, null);
+            this.data[id] = new ErrorResp(null, text, null);
             err = this.data[id];
         }
         err.setUserErrorMesg();
@@ -139,7 +139,7 @@ let ErrorStore = Reflux.createStore({
         if (err != null) {
             err.updateError(resp, null, null);
         } else {
-            err = new Error(resp, text, error);
+            err = new ErrorResp(resp, text, error);
             if (id != null) {
                 this.data[id] = err;
             } else {
