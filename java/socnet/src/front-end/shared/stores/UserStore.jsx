@@ -46,21 +46,31 @@ class User {
 }
 
 let UserStore = Reflux.createStore({
-    data: {
-        userMap: {},
-        uuidFetch: {},
-        userSelf: null,
-        userActive: null,
-        authCode: null,
-        authMesg: null,
-        authError: null,
-        authToken: null,
-        authVerifToken: null,
-        fetchUsers: true,
-        csrfHeader: null,
-        csrfToken: null
-    },
+    data: null,
     listenables: [Actions],
+
+    _reset: function() {
+        this.data = {
+            userMap   : {},
+            uuidFetch : {},
+            userSelf  : null,
+            userActive: null,
+            authCode  : null,
+            authMesg  : null,
+            authError : null,
+            authToken : null,
+            csrfHeader: null,
+            csrfToken : null,
+            loginReady: false,
+
+            estoreUuids   : {},
+            authVerifToken: null
+        };
+    },
+
+    init: function() {
+        this._reset();
+    },
 
     /*
      * Public Api to get UserStore data.
@@ -76,12 +86,25 @@ let UserStore = Reflux.createStore({
         return this.data.userMap[uuid];
     },
 
-    getUserUuidList: function() {
-        let uuids = [];
-        _.forOwn(this.data.userMap, function(v, k) {
-            uuids.push(k);
-        });
-        return uuids;
+    getFetchedUuidList: function(req) {
+        if (this.data.loginReady === false) {
+            return null;
+        }
+        if (req === 'es') {
+            let result = [];
+            let userMap = this.data.userMap;
+            let updated = this.data.estoreUuids;
+
+            _.forOwn(userMap, function(user) {
+                let uuid = user.userUuid;
+                if (updated[uuid] !== uuid) {
+                    result.push(uuid);
+                    updated[uuid] = uuid;
+                }
+            });
+            return result;
+        }
+        return null;
     },
 
     getCsrfHeader: function() {
@@ -190,11 +213,14 @@ let UserStore = Reflux.createStore({
 
     /* Startup actions. */
     onStartupCompleted: function(json) {
-        if (json.userDTO != null) {
-            this._updateLogin(json.userDTO);
-            this._changedData(json.userDTO);
-        }
         this._addFromJson(json.linkedUsers);
+        if (json.userDTO != null) {
+            this._changedData(json.userDTO);
+            this._updateLogin(json.userDTO);
+        }
+        if (this.isLogin()) {
+            this.data.loginReady = true;
+        }
     },
 
     onRefreshNotifyCompleted: function(json) {
@@ -204,6 +230,7 @@ let UserStore = Reflux.createStore({
     /* Login actions. */
     onLoginCompleted: function(response, status) {
         this._changedData(response);
+        this.data.loginReady = true;
     },
 
     onLoginFailed: function(xhdr, text, error) {
@@ -230,6 +257,7 @@ let UserStore = Reflux.createStore({
     /* Logout actions. */
     onLogoutCompleted: function() {
         this._reset();
+        this.data.loginReady = false;
         localStorage.removeItem("authToken");
     },
 
@@ -266,16 +294,6 @@ let UserStore = Reflux.createStore({
         self.userImgUrl = data.imgObjUrl;
     },
 
-    _reset: function() {
-        this.data.userMap = {};
-        this.data.userSelf = null;
-        this.data.userActive = null;
-        this.data.authError = null;
-        this.data.authToken = null;
-        this.data.csrfHeader = null;
-        this.data.csrfToken = null;
-    },
-
     _changedDataFailure: function(xhdr, text, error) {
         console.log("Post action UserStore failed");
         console.log(xhdr);
@@ -290,13 +308,12 @@ let UserStore = Reflux.createStore({
 
     _updateLogin: function(user) {
         if (user != null) {
-            this.data.csrfHeader = user.csrfHeader;
-            this.data.csrfToken = user.csrfToken;
-
             if ((user.csrfHeader !== null) && (user.csrfHeader !== undefined)) {
                 $("meta[name='_csrf']").attr("content", user.csrfToken);
                 $("meta[name='_csrf_header']").attr("content", user.csrfHeader);
             }
+            this.data.csrfHeader = user.csrfHeader;
+            this.data.csrfToken = user.csrfToken;
         }
     },
 

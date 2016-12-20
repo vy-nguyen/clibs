@@ -105,16 +105,12 @@ let EProductStore = Reflux.createStore({
 
     getProductsByAuthor: function(uuid) {
         let products = [];
-        if (_.isEmpty(this.data.estoresByAuthor) && this.data.getStoreCount === 0) {
-            let uuids = UserStore.getUserUuidList();
+        let uuids = UserStore.getFetchedUuidList('es');
 
-            if (!_.isEmpty(uuids)) {
-                this.data.getStoreCount++;
-                Actions.getPublishProds({
-                    uuids: uuids
-                });
-            }
-            return products;
+        if (!_.isEmpty(uuids)) {
+            Actions.getPublishProds({
+                uuids: uuids
+            });
         }
         let anchor = this.getProductOwner(uuid);
         if (anchor.hasData() === true) {
@@ -159,7 +155,6 @@ let EProductStore = Reflux.createStore({
     onPublishProductCompleted: function(product) {
         let prod = this._addEStore(product, false);
         this.data.myProductPost = prod;
-        console.log("Publish new product......");
         this.trigger(this.data, [prod], "postOk");
     },
 
@@ -170,11 +165,8 @@ let EProductStore = Reflux.createStore({
     onGetPublishProdsCompleted: function(data) {
         let products = [];
 
-        console.log("Get back product request......");
-        console.log(data);
         _.forEach(data.products, function(product) {
             products.push(this._addEStore(product, false));
-            console.log(product);
         }.bind(this));
 
         this.trigger(this.data, products, "getOk");

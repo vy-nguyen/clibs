@@ -133,7 +133,7 @@ class AuthorFeed extends React.Component
         let articles = this.props.articles;
 
         if (articles == null) {
-            articles = ArticleStore.getSortedArticlesByAuthor(user.userUuid).slice(0, 2);
+            articles = this.state.articles;
         }
         let plugin = this.props.plugin;
         if (plugin == null) {
