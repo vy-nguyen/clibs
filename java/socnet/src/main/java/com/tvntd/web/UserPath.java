@@ -299,7 +299,7 @@ public class UserPath
         }
         ProductDTO prodDto = genPendProduct(profile, true, form.getArticleUuid());
         Product prod = prodDto.fetchProduct();
-        ProductService.applyPostProduct(form, prod, publish);
+        ProductService.applyPostProduct(form, prodDto, publish);
 
         if (publish == true) {
             prod.markActive();
@@ -388,11 +388,13 @@ public class UserPath
         if (profile == null) {
             return s_noProfile;
         }
-        return uploadProduct(profile, artUuid, file, false, "/user/upload-product-detail");
+        return uploadProduct(profile,
+                artUuid, file, false, "/user/upload-product-detail");
     }
 
     private GenericResponse
-    uploadProduct(ProfileDTO profile, String artUuid, MultipartFile file, boolean logo, String url)
+    uploadProduct(ProfileDTO profile,
+            String artUuid, MultipartFile file, boolean logo, String url)
     {
         ProductDTO prod = genPendProduct(profile, true, artUuid);
         try {
@@ -402,20 +404,20 @@ public class UserPath
             ObjectId oid = store.putUserImage(is, (int)file.getSize(), uid);
 
             if (oid != null) {
+                ImageUploadResp resp = new ImageUploadResp(
+                        prod.getArticleUuid(), prod.getAuthorUuid(), oid);
+
+                resp.setPostUrl(url);
+                resp.setImgObjUrl(store.imgUserObjUri(oid, uid));
                 if (logo == true) {
-                    prod.assignLogo(oid.name(), null);
+                    resp.setPostType("logo");
+                    prod.assignLogo(oid.name());
                 } else {
+                    resp.setPostType("imgs");
                     prod.addPicture(oid);
                 }
+                return resp;
             }
-            ImageUploadResp resp =
-                new ImageUploadResp(prod.getArticleUuid(), prod.getAuthorUuid(), oid);
-
-            resp.setPostUrl(url);
-            resp.setPostType(logo == true ? "logo" : "imgs");
-            resp.setImgObjUrl(store.imgUserObjUri(oid, uid));
-            return resp;
-
         } catch(IOException e) {
         }
         return s_saveObjFailed;

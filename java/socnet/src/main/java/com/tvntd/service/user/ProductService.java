@@ -68,8 +68,11 @@ public class ProductService implements IProductService
     /**
      * Common static methods.
      */
-    public static void applyPostProduct(ProductForm form, Product prod, boolean publish)
+    public static void
+    applyPostProduct(ProductForm form, ProductDTO prodDTO, boolean publish)
     {
+        Product prod = prodDTO.fetchProduct();
+
         if (publish == true) {
             prod.markActive();
         } else {

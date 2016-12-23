@@ -46,6 +46,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.tvntd.lib.ObjectId;
+import com.tvntd.service.api.IProductService.ProductDTO;
 
 @Entity
 @Inheritance
@@ -95,6 +96,25 @@ public class Product
         super();
         articleUuid = UUID.randomUUID().toString();
         createdDate = new Date();
+    }
+
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("articleUuid: ").append(articleUuid)
+            .append(", authorUuid: ").append(authorUuid)
+            .append(", logo image: ").append(logoImg).append("\n");
+
+        for (String s : images) {
+            sb.append("Image: ").append(s);
+        }
+        sb.append("\nprodCat  : ").append(ProductDTO.convertUTF(prodCat));
+        sb.append("\nprodName : ").append(ProductDTO.convertUTF(prodName));
+        sb.append("\nprodTitle: ").append(ProductDTO.convertUTF(prodTitle));
+        sb.append("\nprodDesc : ").append(ProductDTO.convertUTF(prodDesc));
+        sb.append("\nprodSpec : ").append(ProductDTO.convertUTF(prodSpec));
+        sb.append("\n");
+        return sb.toString();
     }
 
     public void markPending() {

@@ -64,6 +64,7 @@ let UserStore = Reflux.createStore({
             loginReady: false,
 
             estoreUuids   : {},
+            artStoreUuids : {},
             authVerifToken: null
         };
     },
@@ -90,21 +91,23 @@ let UserStore = Reflux.createStore({
         if (this.data.loginReady === false) {
             return null;
         }
-        if (req === 'es') {
-            let result = [];
-            let userMap = this.data.userMap;
-            let updated = this.data.estoreUuids;
+        let result = [];
+        let updated = null;
+        let userMap = this.data.userMap;
 
-            _.forOwn(userMap, function(user) {
-                let uuid = user.userUuid;
-                if (updated[uuid] !== uuid) {
-                    result.push(uuid);
-                    updated[uuid] = uuid;
-                }
-            });
-            return result;
+        if (req === 'es') {
+            updated = this.data.estoreUuids;
+        } else {
+            updated = this.data.artStoreUuids;
         }
-        return null;
+        _.forOwn(userMap, function(user) {
+            let uuid = user.userUuid;
+            if (updated[uuid] !== uuid) {
+                result.push(uuid);
+                updated[uuid] = uuid;
+            }
+        });
+        return result;
     },
 
     getCsrfHeader: function() {

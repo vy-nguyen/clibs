@@ -256,6 +256,19 @@ public class PublicPath
     }
 
     /**
+     * Get Articles for list of users.
+     */
+    @RequestMapping(value = "/public/get-articles",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    getArticles(@RequestBody UuidForm uuids, HttpSession session)
+    {
+        return null;
+    }
+
+    /**
      * Get public html files.
      */
     @RequestMapping(value = "/public/get-html/{html}",

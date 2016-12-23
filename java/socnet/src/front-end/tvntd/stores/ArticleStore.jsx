@@ -210,6 +210,11 @@ let EProductStore = Reflux.createStore({
     },
 
     _removeEStore: function(articleUuid) {
+    },
+
+    dumpData(hdr) {
+        console.log(hdr);
+        console.log(this.data);
     }
 });
 

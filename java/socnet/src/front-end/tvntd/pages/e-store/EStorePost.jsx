@@ -153,15 +153,13 @@ class EStorePost extends React.Component
             return;
         }
         let product = data[0];
-        if (product.estore !== true || product.authorUuid !== this._myUuid) {
+        if (status !== "postOk" || product.authorUuid !== this._myUuid) {
             return;
         }
-        if (status === "ok") {
-            StateButtonStore.setButtonStateObj(this._publishBtn, "saved");
-            this._clearPostData();
-            this.setState(this._getInitState());
+        StateButtonStore.setButtonStateObj(this._publishBtn, "saved");
+        this._clearPostData();
+        this.setState(this._getInitState());
             // ErrorStore.reportInfo(this._errorId, "You have some Error");
-        }
     }
 
     _editProduct() {

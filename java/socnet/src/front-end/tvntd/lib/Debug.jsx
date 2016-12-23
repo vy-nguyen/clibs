@@ -11,13 +11,14 @@ import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
 import NestableStore    from 'vntd-shared/stores/NestableStore.jsx';
 import ErrorStore       from 'vntd-shared/stores/ErrorStore.jsx';
 import AboutUsStore     from 'vntd-root/stores/AboutUsStore.jsx';
-import ArticleStore     from 'vntd-root/stores/ArticleStore.jsx';
 import AuthorStore      from 'vntd-root/stores/AuthorStore.jsx';
 import CommentStore     from 'vntd-root/stores/CommentStore.jsx';
 import RenderStore      from 'vntd-root/stores/RenderStore.jsx';
 import AdminStore       from 'vntd-root/stores/AdminStore.jsx';
 import ArtTagStore      from 'vntd-root/stores/ArticleTagStore.jsx';
 import LanguageStore    from 'vntd-root/stores/LanguageStore.jsx';
+
+import {ArticleStore, EProductStore} from 'vntd-root/stores/ArticleStore.jsx';
 
 class Debug extends React.Component {
 
@@ -39,6 +40,7 @@ class Debug extends React.Component {
 
     debugArticleStore() {
         ArticleStore.dumpData("Article Store Content");
+        EProductStore.dumpData("Product Store Content");
     }
 
     debugAuthorStore() {

@@ -124,7 +124,8 @@ public interface IProductService
             }
         }
 
-        public ProductDTOResponse(List<ProductDTO> prods, List<ProductDTO> pend, List<ArticleRankDTO> ranks)
+        public ProductDTOResponse(List<ProductDTO> prods,
+                List<ProductDTO> pend, List<ArticleRankDTO> ranks)
         {
             super(GenericResponse.USER_HOME, null, null);
             this.products = prods;
@@ -196,6 +197,10 @@ public interface IProductService
             product.setAuthorUuid(author);
         }
 
+        public String toString() {
+            return product.toString();
+        }
+
         public static String convertUTF(byte[] utf)
         {
             if (utf != null) {
@@ -229,9 +234,11 @@ public interface IProductService
             product.setAuthorId(id);
         }
 
-        public void assignLogo(String img, String tag)
-        {
+        public void assignLogo(String img) {
             product.setLogoImg(img);
+        }
+
+        public void assignLogoTag(String tag) {
             product.setLogoTag(tag);
         }
 
@@ -340,7 +347,7 @@ public interface IProductService
          */
         public String getProdDesc()
         {
-            if (prodDesc != null) {
+            if (prodDesc == null) {
                 prodDesc = convertUTF(product.getProdDesc());
             }
             return prodDesc;
@@ -351,7 +358,7 @@ public interface IProductService
          */
         public String getProdSpec()
         {
-            if (prodSpec != null) {
+            if (prodSpec == null) {
                 prodSpec = convertUTF(product.getProdSpec());
             }
             return prodSpec;

@@ -112,7 +112,7 @@ class ProductInfo extends React.Component
     _renderProduct() {
         const {
             articleUuid, prodTitle, prodPrice, priceNotice, prodSub,
-            prodTags, prodDesc, prodSpec, prodImgs
+            prodTags, prodDesc, prodSpec, pictureUrl
         } = this.props.product;
 
         let prodTab = this._productDesc(articleUuid, prodTitle, prodDesc, prodSpec);
@@ -130,7 +130,7 @@ class ProductInfo extends React.Component
             <div className="product-content product-wrap clearfix product-deatil">
                 <div className="row">
                     <div className="col-md-12 col-lg-12 col-sm-12 col-xs-12">
-                        {this._productImages(articleUuid, prodImgs)}
+                        {this._productImages(articleUuid, pictureUrl)}
                     </div>
                 </div>
                 <div className="row">
@@ -195,12 +195,12 @@ class ProductInfo extends React.Component
 ProductInfo.propTypes = {
     product: PropTypes.shape({
         articleUuid: PropTypes.string.isRequired,
+        pictureUrl : PropTypes.arrayOf(PropTypes.string).isRequired,
         prodPrice  : PropTypes.string.isRequired,
         priceNotice: PropTypes.string,
         prodTitle  : PropTypes.string.isRequired,
         prodDesc   : PropTypes.string.isRequired,
         prodSpec   : PropTypes.string.isRequired,
-        prodImgs   : PropTypes.arrayOf(PropTypes.string).isRequired,
         prodTags   : PropTypes.arrayOf(PropTypes.string)
     })
 };
