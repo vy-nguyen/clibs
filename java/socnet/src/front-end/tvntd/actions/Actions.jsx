@@ -50,6 +50,7 @@ const Actions = Reflux.createActions({
     publishProduct:  completedFailedFn,
     pendingProduct:  completedFn,
     getPublishProds: completedFailedFn,
+    deleteProduct:   completedFailedFn,
 
     // Comment actions
     updateComment:   completedFn,
@@ -269,6 +270,11 @@ Actions.pendingProduct.listen(function(data) {
 
 Actions.getPublishProds.listen(function(data) {
     postRestCall(data, "/public/get-estores", true, this, true, "getPublishProds");
+});
+
+Actions.deleteProduct.listen(function(data) {
+    console.log("action delete product");
+    this.completed(data);
 });
 
 /**

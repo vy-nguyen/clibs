@@ -53,6 +53,9 @@ import com.tvntd.util.Util;
 })
 public class ArticleRank
 {
+    public static int MaxTitleLength = 128;
+    public static int MaxContentLength = 256;
+
     @Id
     @Column(length = 64)
     private String articleUuid;
@@ -129,7 +132,7 @@ public class ArticleRank
         this.favorite = tag.isFavorite();
         this.rank = tag.getRank();
         this.tagHash = HashKey.toSha1Key(this.tag, authorUuid);
-        this.contentBrief = product.getProdDesc();
+        this.contentBrief = product.getProdName();
     }
 
     public ArticleRank(CommentChangeForm form, String authorUuid)

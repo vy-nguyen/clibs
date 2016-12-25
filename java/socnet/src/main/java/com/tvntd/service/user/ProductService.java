@@ -88,6 +88,7 @@ public class ProductService implements IProductService
             prod.setProdTitle(form.getProdTitle().getBytes("UTF-8"));
             prod.setProdDesc(form.getProdDesc().getBytes("UTF-8"));
             prod.setProdSpec(form.getProdSpec().getBytes("UTF-8"));
+            prod.setProdDetail(form.getProdDetail().getBytes("UTF-8"));
 
             prod.setProdPrice(0L);
             prod.setPriceUnit("$");

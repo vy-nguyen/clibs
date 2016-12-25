@@ -41,6 +41,7 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -56,6 +57,9 @@ import com.tvntd.service.api.IProductService.ProductDTO;
 })
 public class Product
 {
+    static public int MaxHeaderLength = 128;
+    static public int MaxContentLength = 1 << 16;
+
     @Id
     @Column(length = 64)
     private String     articleUuid;
@@ -66,16 +70,40 @@ public class Product
     private Long       authorId;
     private boolean    pending;
 
+    @Column(length = 64)
     private String     logoImg;
+
+    @Column(length = 64)
     private String     logoTag;
+
     private Long       prodPrice;
     private String     priceUnit;
+
+    @Column(length = 128)
     private byte[]     prodCat;
+
+    @Column(length = 128)
     private byte[]     prodName;
+
+    @Column(length = 128)
     private byte[]     prodNotice;
+
+    @Column(length = 128)
     private byte[]     prodTitle;
+
+    @Column(length = 128)
     private byte[]     prodSub;
+
+    @Lob
+    @Column(length = 1 << 16)
     private byte[]     prodDesc;
+
+    @Lob
+    @Column(length = 1 << 16)
+    private byte[]     prodDetail;
+
+    @Lob
+    @Column(length = 1 << 16)
     private byte[]     prodSpec;
 
     @Column
@@ -334,6 +362,20 @@ public class Product
      */
     public void setProdDesc(byte[] prodDesc) {
         this.prodDesc = prodDesc;
+    }
+
+    /**
+     * @return the prodDetail
+     */
+    public byte[] getProdDetail() {
+        return prodDetail;
+    }
+
+    /**
+     * @param prodDetail the prodDetail to set
+     */
+    public void setProdDetail(byte[] prodDetail) {
+        this.prodDetail = prodDetail;
     }
 
     /**

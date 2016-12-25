@@ -12,7 +12,7 @@ import CommentStore from 'vntd-root/stores/CommentStore.jsx';
 import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
 import UserStore    from 'vntd-shared/stores/UserStore.jsx';
 
-import {insertSorted, preend} from 'vntd-shared/utils/Enum.jsx';
+import {insertSorted, preend, removeArray} from 'vntd-shared/utils/Enum.jsx';
 
 class Article {
     constructor(data) {
@@ -38,6 +38,7 @@ class AuthorShelf {
         this.articles = {};
         this.sortedArticles = [];
 
+        this.addSortedArticle = this.addSortedArticle.bind(this);
         if (article != null) {
             this.addSortedArticle(article);
         } else {
@@ -53,21 +54,30 @@ class AuthorShelf {
         }
     }
 
+    _cmpArticle(anchor, elm) {
+        if (anchor.createdDate == elm.createdDate) {
+            return 0;
+        }
+        if (anchor.createdDate > elm.createdDate) {
+            return -1;
+        }
+        return 1;
+    }
+
+    removeArticle(articleUuid) {
+        let article = this.articles[articleUuid];
+        if (article != null) {
+            removeArray(this.sortedArticles, article, 0, this._cmpArticle);
+            delete this.articles[articleUuid];
+        }
+    }
+
     addSortedArticle(article) {
         if (this.articles[article.articleUuid] === article) {
             return;
         }
         this.articles[article.articleUuid] = article;
-        insertSorted(article, this.sortedArticles, function(anchor, elm) {
-            if (anchor.createdDate == elm.createdDate) {
-                return 0;
-            }
-            if (anchor.createdDate > elm.createdDate) {
-                return -1;
-            }
-            return 1;
-        });
-        this.articles[article.articleUuid] = article;
+        insertSorted(article, this.sortedArticles, this._cmpArticle);
     }
 
     hasData() {
@@ -176,6 +186,11 @@ let EProductStore = Reflux.createStore({
         this.trigger(this.data, null, "failure");
     },
 
+    onDeleteProductCompleted: function(data) {
+        this._removeEStore(data.articleUuid, data.authorUuid);
+        this.trigger(this.data, data, "delOk");
+    },
+
     /**
      * Internal methods.
      */
@@ -209,7 +224,10 @@ let EProductStore = Reflux.createStore({
         return prod;
     },
 
-    _removeEStore: function(articleUuid) {
+    _removeEStore: function(articleUuid, authorUuid) {
+        let anchor = this.getProductOwner(authorUuid);
+        anchor.removeArticle(articleUuid);
+        delete this.data.productByUuid[articleUuid];
     },
 
     dumpData(hdr) {
@@ -414,7 +432,7 @@ let ArticleStore = Reflux.createStore({
     },
 
     _removeArticle: function(artUuid) {
-
+        
     },
 
     _indexAuthors: function(artList) {

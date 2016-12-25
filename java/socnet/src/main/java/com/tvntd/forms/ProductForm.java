@@ -32,6 +32,9 @@ import javax.validation.constraints.Size;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
+import com.tvntd.models.Product;
+import com.tvntd.util.Util;
+
 public class ProductForm
 {
     private boolean estore;
@@ -61,11 +64,18 @@ public class ProductForm
             return false;
         }
         Whitelist wlist = Whitelist.basic();
-        prodName = Jsoup.clean(prodName, wlist);
-        prodCat = Jsoup.clean(prodCat, wlist);
-        prodTitle = Jsoup.clean(prodTitle, wlist);
         authorUuid = Jsoup.clean(authorUuid, wlist);
         articleUuid = Jsoup.clean(articleUuid, wlist);
+
+        int headerLen = Product.MaxHeaderLength;
+        int contentLen = Product.MaxContentLength;
+        prodName   = Util.clean(prodName, wlist, headerLen);
+        prodCat    = Util.clean(prodCat, wlist, headerLen);
+        prodTitle  = Util.clean(prodTitle, wlist, headerLen);
+        prodDesc   = Util.clean(prodDesc, wlist, contentLen);
+        prodDetail = Util.clean(prodDetail, wlist, contentLen);
+        prodSpec   = Util.clean(prodSpec, wlist, contentLen);
+        prodSub    = Util.clean(prodSub, wlist, contentLen);
 
         return true;
     }

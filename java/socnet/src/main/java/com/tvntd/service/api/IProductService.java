@@ -29,6 +29,7 @@ package com.tvntd.service.api;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -174,6 +175,7 @@ public interface IProductService
         private String      prodTitle;
         private String      prodSub;
         private String      prodDesc;
+        private String      prodDetail;
         private String      prodSpec;
 
         public ProductDTO(Product prod)
@@ -354,6 +356,17 @@ public interface IProductService
         }
 
         /**
+         * @return the prodDetail.
+         */
+        public String getProdDetail()
+        {
+            if (prodDetail == null) {
+                prodDetail = convertUTF(product.getProdDetail());
+            }
+            return prodDetail;
+        }
+
+        /**
          * @return the prodSpec
          */
         public String getProdSpec()
@@ -401,6 +414,9 @@ public interface IProductService
         public LikeStat getLikeStat()
         {
             DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm");
+            if (rank == null) {
+                return new LikeStat(0L, 0L, 0L, df.format(new Date()));
+            }
             return new LikeStat(
                     0L,
                     rank.getLikes(),

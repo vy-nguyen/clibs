@@ -6,17 +6,20 @@
 
 import React       from 'react-mod';
 import Modal       from 'react-modal';
+import NavStore    from 'vntd-shared/stores/NavigationStore.jsx';
 
-const modalStyle = {
+let modalStyle = {
     content: {
         top        : '50%',
         left       : '50%',
         right      : 'auto',
         bottom     : 'auto',
+        height     : '500px',
         marginRight: '-50%',
         transform  : 'translate(-50%, -50%)',
         overflowX  : 'auto',
         overflowY  : 'scroll',
+        overflow   : 'scroll',
         zIndex     : 9999
     }
 };
@@ -62,6 +65,7 @@ class ModalConfirm extends React.Component
     }
 
     render() {
+        modalStyle.content.height = NavStore.getMaxHeight();
         return (
             <Modal style={modalStyle} isOpen={this.state.modalIsOpen} onRequestClose={this.closeModal}>
                 <div className="modal-dialog" role="dialog">

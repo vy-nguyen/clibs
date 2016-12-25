@@ -57,6 +57,9 @@ import com.tvntd.lib.ObjectId;
 })
 public class Article
 {
+    public static int MaxTitleLength = 128;
+    public static int MaxContentLength = 1 << 16;
+
     @Id
     @Column(length = 64)
     private String   articleUuid;
@@ -74,7 +77,7 @@ public class Article
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
 
-    @Column
+    @Column(length = 128)
     private byte[] topic;
 
     @Lob

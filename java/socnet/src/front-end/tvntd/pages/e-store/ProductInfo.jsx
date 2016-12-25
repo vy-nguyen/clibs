@@ -4,11 +4,13 @@
  */
 import React, { PropTypes } from 'react-mod'
 
+import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import TabPanel         from 'vntd-shared/layout/TabPanel.jsx';
 import StarRating       from 'vntd-shared/layout/StarRating.jsx';
 import ModalConfirm     from 'vntd-shared/forms/commons/ModalConfirm.jsx';
 import LikeStat         from 'vntd-root/components/LikeStat.jsx';
 import PostComment      from 'vntd-root/components/PostComment.jsx';
+import Actions          from 'vntd-root/actions/Actions.jsx';
 
 class ProductInfo extends React.Component
 {
@@ -16,7 +18,7 @@ class ProductInfo extends React.Component
         super(props);
         this._productImages  = this._productImages.bind(this);
         this._getProductTabs = this._getProductTabs.bind(this);
-        this._productDesc    = this._productDesc.bind(this);
+        this._productDetail  = this._productDetail.bind(this);
         this._renderProduct  = this._renderProduct.bind(this);
     }
 
@@ -95,13 +97,13 @@ class ProductInfo extends React.Component
         };
     }
 
-    _productDesc(uuid, prodTitle, prodDesc, prodSpec) {
+    _productDetail(uuid, prodTitle, prodDetail, prodSpec) {
         let tabData = this._getProductTabs(uuid);
         return (
             <TabPanel context={tabData}>
                 <div>
                     <strong>{prodTitle}</strong>
-                    <div dangerouslySetInnerHTML={{__html: prodDesc}}/>
+                    <div dangerouslySetInnerHTML={{__html: prodDetail}}/>
                 </div>
                 <div dangerouslySetInnerHTML={{__html: prodSpec}}/>
                 <PostComment articleUuid={uuid}/>
@@ -112,10 +114,10 @@ class ProductInfo extends React.Component
     _renderProduct() {
         const {
             articleUuid, prodTitle, prodPrice, priceNotice, prodSub,
-            prodTags, prodDesc, prodSpec, pictureUrl
+            prodTags, prodDetail, prodSpec, pictureUrl
         } = this.props.product;
 
-        let prodTab = this._productDesc(articleUuid, prodTitle, prodDesc, prodSpec);
+        let prodTab = this._productDetail(articleUuid, prodTitle, prodDetail, prodSpec);
         let productTags = [];
 
         if (prodTags != null) {
@@ -199,7 +201,7 @@ ProductInfo.propTypes = {
         prodPrice  : PropTypes.string.isRequired,
         priceNotice: PropTypes.string,
         prodTitle  : PropTypes.string.isRequired,
-        prodDesc   : PropTypes.string.isRequired,
+        prodDetail : PropTypes.string.isRequired,
         prodSpec   : PropTypes.string.isRequired,
         prodTags   : PropTypes.arrayOf(PropTypes.string)
     })
@@ -213,6 +215,7 @@ class ProductBrief extends React.Component
         this._addCart     = this._addCart.bind(this);
         this._getDetail   = this._getDetail.bind(this);
         this._clickSelect = this._clickSelect.bind(this);
+        this._delProduct  = this._delProduct.bind(this);
     }
 
     componentDidMount() {
@@ -221,13 +224,23 @@ class ProductBrief extends React.Component
     componentWillUnmount() {
     }
 
-    _addCart() {
+    _addCart(event) {
+        console.log("add cart");
+        event.stopPropagation();
+    }
+
+    _delProduct(event) {
+        event.stopPropagation();
+        Actions.deleteProduct({
+            articleUuid: this.props.product.articleUuid,
+            authorUuid : UserStore.getSelfUuid()
+        });
     }
 
     _getDetail() {
     }
 
-    _clickSelect() {
+    _clickSelect(event) {
         this.refs.modal.openModal();
     }
 
@@ -241,7 +254,10 @@ class ProductBrief extends React.Component
         if (onClickCb == null) {
             onClickCb = this._clickSelect;
         }
-        //<img src={logoImg} width={logoWidth} height={logoHeight} className='img-responsive'/>
+        let button = <button className="btn btn-success" onClick={this._addCart}>Add to cart</button>;
+        if (UserStore.isUserMe(this.props.userUuid)) {
+            button = <button className="btn btn-danger" onClick={this._delProduct}>Remove Product Post</button>;
+        }
         return (
             <div className="product-content product-wrap clearfix" onClick={onClickCb}>
                 <div className="row">
@@ -263,13 +279,11 @@ class ProductBrief extends React.Component
                             <p className="price-container"><span>{prodPrice}</span></p>
                             <span className="tag1"></span>
                         </div>
-                        <div className="description">
-                            {/*prodDesc*/}
-                        </div>
+                        <div className="description" dangerouslySetInnerHTML={{__html: prodDesc}}/>
                         <div className="product-info smart-form">
                             <div className="row">
                                 <div className="col-md-6 col-sm-6 col-xs-6">
-                                    <button className="btn btn-success" onClick={this._addCart}>Add to cart</button>
+                                    {button}
                                 </div>
                             </div>
                         </div>

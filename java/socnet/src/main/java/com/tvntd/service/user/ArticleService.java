@@ -87,10 +87,14 @@ public class ArticleService implements IArticleService
             art.markPending();
         }
         try {
-            art.setTopic(form.getTopic().getBytes("UTF-8"));
-            art.setContent(form.getContent().getBytes("UTF-8"));
+            String str = Util.truncate(form.getTopic(), Article.MaxTitleLength);
+            art.setTopic(str.getBytes("UTF-8"));
+
+            str = Util.truncate(form.getContent(), Article.MaxContentLength);
+            art.setContent(str.getBytes("UTF-8"));
             if (form.getContentBrief() != null) {
-                art.setContentBrief(form.getContentBrief().getBytes("UTF-8"));
+                str = Util.truncate(form.getContentBrief(), ArticleRank.MaxContentLength);
+                art.setContentBrief(str.getBytes("UTF-8"));
             }
         } catch(UnsupportedEncodingException e) {
             s_log.info(e.getMessage());

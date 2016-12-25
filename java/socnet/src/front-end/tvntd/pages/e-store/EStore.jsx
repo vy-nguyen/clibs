@@ -44,6 +44,15 @@ class EStore extends React.Component
 
     _updateState(store, data, status) {
         let userUuid = this.props.userUuid;
+        if (status === "delOk") {
+            this.setState({
+                products: EProductStore.getProductsByAuthor(userUuid)
+            });
+            return;
+        }
+        if (data == null || !Array.isArray(data)) {
+            return;
+        }
         if ((data.length <= 1) && (data[0].authorUuid !== userUuid)) {
             return;
         }
@@ -60,7 +69,7 @@ class EStore extends React.Component
     _renderProdBrief(product) {
         return (
             <div className='col-xs-6 col-sm-6 col-md-6 col-lg-4'>
-                <ProductBrief product={product}/>
+                <ProductBrief product={product} userUuid={this.props.userUuid}/>
             </div>
         );
     }

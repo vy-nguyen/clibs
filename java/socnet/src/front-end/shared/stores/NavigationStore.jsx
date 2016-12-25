@@ -20,10 +20,11 @@ let NavigationStore = Reflux.createStore({
 
     init: function() {
         this.data = {
-            item: undefined,
-            items: [],
-            currMqIdx : undefined,
-            currMqMode: 'xs'
+            item      : undefined,
+            items     : [],
+            currMqIdx : null,
+            currMqMode: 'xs',
+            maxHeight : '500px'
         }
         this._checkForResize();
         $(window).on('resize', this._checkForResize);
@@ -33,16 +34,32 @@ let NavigationStore = Reflux.createStore({
         let data = this.data;
         data.currMqIdx = $('#mq-detector span').index($('#mq-detector span:visible'));
         switch(data.currMqIdx) {
-            case 0: data.currMqMode = 'xs'; break;
-            case 1: data.currMqMode = 'sm'; break;
-            case 2: data.currMqMode = 'md'; break;
-            case 3: data.currMqMode = 'lg'; break;
-            default: data.currMqMode = 'xs';
+            case 0:
+                data.currMqMode = 'xs';
+                break;
+            case 1:
+                data.currMqMode = 'sm';
+                data.maxHeight = '750px';
+                break;
+            case 2:
+                data.currMqMode = 'md';
+                data.maxHeight = '1000px';
+                break;
+            case 3:
+                data.currMqMode = 'lg';
+                data.maxHeight = '1000px';
+                break;
+            default:
+                data.currMqMode = 'xs';
         }
     },
 
     getViewMode: function() {
         return this.data.currMqMode;
+    },
+
+    getMaxHeight: function() {
+        return this.data.maxHeight;
     },
 
     replaceMenuItems: function(json) {

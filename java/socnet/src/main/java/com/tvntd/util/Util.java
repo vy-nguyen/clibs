@@ -33,6 +33,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
+
 public final class Util
 {
     static public final byte[] DefaultTag;
@@ -113,6 +116,26 @@ public final class Util
             sb.append(" ");
         }
         return sb;
+    }
+
+    public static String clean(String str, Whitelist wlist, int max)
+    {
+        if (str != null) {
+            str = Jsoup.clean(str, wlist);
+            if (str.length() <= max) {
+                return str;
+            }
+            return str.substring(0, max);
+        }
+        return str;
+    }
+
+    public static String truncate(String str, int max)
+    {
+        if (str.length() <= max) {
+            return str;
+        }
+        return str.substring(0, max);
     }
 
     private Util() {}
