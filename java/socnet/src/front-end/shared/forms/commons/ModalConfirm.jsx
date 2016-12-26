@@ -65,7 +65,7 @@ class ModalConfirm extends React.Component
     }
 
     render() {
-        modalStyle.content.height = NavStore.getMaxHeight();
+        modalStyle.content.height = this.props.height == null ? NavStore.getMaxHeight() : this.props.height;
         return (
             <Modal style={modalStyle} isOpen={this.state.modalIsOpen} onRequestClose={this.closeModal}>
                 <div className="modal-dialog" role="dialog">

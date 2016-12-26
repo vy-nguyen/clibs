@@ -213,11 +213,18 @@ public class ProductService implements IProductService
     @Override
     public void deleteProduct(Product prod)
     {
-        productRepo.delete(prod);
+        if (prod != null) {
+            ArticleRank rank = artRankRepo.findByArticleUuid(prod.getArticleUuid());
+            if (rank != null) {
+                artRankRepo.delete(rank);
+            }
+            productRepo.delete(prod);
+        }
     }
 
     @Override
     public void deleteProduct(String uuid)
     {
+        deleteProduct(productRepo.findByArticleUuid(uuid));
     }
 }

@@ -279,7 +279,9 @@ let CommentStore = Reflux.createStore({
                 articleList.push(it.articleUuid);
             });
             Actions.getComments({
-                uuids: articleList
+                authorUuid: UserStore.getSelfUuid(),
+                uuidType  : "artCmt",
+                uuids     : articleList
             });
         }
     },

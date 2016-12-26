@@ -360,7 +360,7 @@ public class ArticleService implements IArticleService
     }
 
     @Override
-    public void deleteArticle(Article art)
+    public void deleteArticle(Article art, ProfileDTO owner)
     {
         ArticleRank rank = artRankRepo.findByArticleUuid((art.getArticleUuid()));
         if (rank != null) {
@@ -370,11 +370,17 @@ public class ArticleService implements IArticleService
     }
 
     @Override
-    public void deleteArticle(String uuid)
+    public void deleteArticle(String uuid, ProfileDTO owner)
     {
+        System.out.println("Delete article " + uuid + ", owner " + owner.getUserUuid());
+
         ArticleDTO art = getArticleDTO(uuid);
         if (art != null) {
             Article article = art.fetchArticle();
+            if (!owner.getUserUuid().equals(article.getAuthorUuid())) {
+                System.out.println("Wrong owner " + owner.getUserUuid());
+                return;
+            }
             ArticleRank rank = artRankRepo.findByArticleUuid(article.getArticleUuid());
             if (rank != null) {
                 artRankRepo.delete(rank);

@@ -591,6 +591,7 @@ let AuthorStore = Reflux.createStore({
         if (authors != null) {
             this._addAuthorList(authors);
             //Actions.getArticleRank({
+            //    authorUuid: 0,
             //    uuids: this.getAuthorUuidList()
             //});
         }

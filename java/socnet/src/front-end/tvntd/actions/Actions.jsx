@@ -248,6 +248,7 @@ Actions.saveUserPost.listen(function(data) {
 
 Actions.deleteUserPost.listen(function(data) {
     postRestCall(data, "/user/delete-post", true, this, true, "deleteUserPost");
+    console.log("posted rest call delete ");
 });
 
 Actions.publishUserPost.listen(function(data) {
@@ -274,7 +275,7 @@ Actions.getPublishProds.listen(function(data) {
 
 Actions.deleteProduct.listen(function(data) {
     console.log("action delete product");
-    this.completed(data);
+    postRestCall(data, "/user/delete-product", true, this, true, "deleteProduct");
 });
 
 /**

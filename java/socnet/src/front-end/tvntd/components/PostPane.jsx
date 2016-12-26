@@ -165,7 +165,11 @@ class PostPane extends React.Component {
     }
 
     _deletePost() {
-        Actions.deleteUserPost(this.props.data.articleUuid);
+        Actions.deleteUserPost({
+            authorUuid: UserStore.getSelfUuid(),
+            uuidType  : "article",
+            uuids     : [ this.props.data.articleUuid ]
+        });
         this.refs.modal.closeModal();
         console.log("Delete uuid " + this.props.data.articleUuid);
     }
@@ -197,7 +201,7 @@ class PostPane extends React.Component {
             };
         }
         let modal = (
-            <ModalConfirm ref={"modal"} modalTitle={"Are you sure to delete this post?"}>
+            <ModalConfirm ref={"modal"} height={"auto"} modalTitle={"Delete this article post?"}>
                 <div className="modal-footer">
                     <button className="btn btn-primary pull-right" onClick={this._deletePost}>Delete</button>
                     <button className="btn btn-default pull-right" onClick={this._cancelDel}>Cancel</button>

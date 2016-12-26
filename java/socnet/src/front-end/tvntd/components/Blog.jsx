@@ -110,10 +110,10 @@ class Blog extends React.Component
         }
     }
 
-    _updateState(data) {
+    _updateState(store, data, status) {
         let articles = ArticleStore.getSortedArticlesByAuthor(this.props.authorUuid);
         if ((this.state.articles == null) ||
-            (this.state.articles.length !== articles.length)) {
+            (articles != null && this.state.articles.length !== articles.length)) {
             this.setState({
                 articles: ArticleStore.getSortedArticlesByAuthor(this.props.authorUuid)
             });

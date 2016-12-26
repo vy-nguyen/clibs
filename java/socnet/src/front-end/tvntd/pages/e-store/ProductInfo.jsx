@@ -216,6 +216,9 @@ class ProductBrief extends React.Component
         this._getDetail   = this._getDetail.bind(this);
         this._clickSelect = this._clickSelect.bind(this);
         this._delProduct  = this._delProduct.bind(this);
+        this._confirmDel  = this._confirmDel.bind(this);
+        this._cancelDel   = this._cancelDel.bind(this);
+        this._delConfirmBox = this._delConfirmBox.bind(this);
     }
 
     componentDidMount() {
@@ -231,10 +234,20 @@ class ProductBrief extends React.Component
 
     _delProduct(event) {
         event.stopPropagation();
+        this.refs.confirmRm.openModal();
+    }
+
+    _confirmDel() {
+        this.refs.confirmRm.closeModal();
         Actions.deleteProduct({
-            articleUuid: this.props.product.articleUuid,
-            authorUuid : UserStore.getSelfUuid()
+            authorUuid: UserStore.getSelfUuid(),
+            uuidType  : "product",
+            uuids     : [ this.props.product.articleUuid ]
         });
+    }
+
+    _cancelDel() {
+        this.refs.confirmRm.closeModal();
     }
 
     _getDetail() {
@@ -242,6 +255,17 @@ class ProductBrief extends React.Component
 
     _clickSelect(event) {
         this.refs.modal.openModal();
+    }
+
+    _delConfirmBox() {
+        return (
+            <ModalConfirm ref={"confirmRm"} height={"auto"} modalTitle={"Delete this product listing?"}>
+                <div className="modal-footer">
+                    <button className="btn btn-primary pull-right" onClick={this._confirmDel}>Delete</button>
+                    <button className="btn btn-default pull-right" onClick={this._cancelDel}>Cancel</button>
+                </div>
+            </ModalConfirm>
+        );
     }
 
     render() {
@@ -261,6 +285,7 @@ class ProductBrief extends React.Component
         return (
             <div className="product-content product-wrap clearfix" onClick={onClickCb}>
                 <div className="row">
+                    {this._delConfirmBox()}
                     <ProductInfo ref={"modal"} modal={true} product={this.props.product}/>
                     <div className="col-md-5 col-sm-12 col-xs-12">
                         <div className="product-image" style={{minHeight: "150"}}>

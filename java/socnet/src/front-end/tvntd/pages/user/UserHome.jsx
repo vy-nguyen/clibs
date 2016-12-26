@@ -45,9 +45,10 @@ class UserHome extends React.Component
         }
     }
 
-    _updateStore() {
+    _updateStore(store, data, status) {
+        console.log("update store " + status);
         let articles = this._getArticles();
-        if (this.state.articles.length != articles.length) {
+        if (articles != null && this.state.articles.length != articles.length) {
             this.setState(articles);
         }
     }

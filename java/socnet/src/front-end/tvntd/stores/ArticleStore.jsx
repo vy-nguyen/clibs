@@ -66,6 +66,7 @@ class AuthorShelf {
 
     removeArticle(articleUuid) {
         let article = this.articles[articleUuid];
+        console.log("remove from shelf " + article);
         if (article != null) {
             removeArray(this.sortedArticles, article, 0, this._cmpArticle);
             delete this.articles[articleUuid];
@@ -119,7 +120,9 @@ let EProductStore = Reflux.createStore({
 
         if (!_.isEmpty(uuids)) {
             Actions.getPublishProds({
-                uuids: uuids
+                authorUuid: UserStore.getSelfUuid(),
+                uuidType  : "product",
+                uuids     : uuids
             });
         }
         let anchor = this.getProductOwner(uuid);
@@ -187,7 +190,7 @@ let EProductStore = Reflux.createStore({
     },
 
     onDeleteProductCompleted: function(data) {
-        this._removeEStore(data.articleUuid, data.authorUuid);
+        this._removeEStore(data.uuids, data.authorUuid);
         this.trigger(this.data, data, "delOk");
     },
 
@@ -224,10 +227,12 @@ let EProductStore = Reflux.createStore({
         return prod;
     },
 
-    _removeEStore: function(articleUuid, authorUuid) {
-        let anchor = this.getProductOwner(authorUuid);
-        anchor.removeArticle(articleUuid);
-        delete this.data.productByUuid[articleUuid];
+    _removeEStore: function(prodUuids, authorUuid) {
+        _.forEach(prodUuids, function(articleUuid) {
+            let anchor = this.getProductOwner(authorUuid);
+            anchor.removeArticle(articleUuid);
+            delete this.data.productByUuid[articleUuid];
+        }.bind(this));
     },
 
     dumpData(hdr) {
@@ -386,6 +391,12 @@ let ArticleStore = Reflux.createStore({
         this.trigger(this.data, post, "publish");
     },
 
+    onDeleteUserPostCompleted: function(data) {
+        this._removeArticle(data.uuids, data.authorUuid); 
+        console.log("trigger article store");
+        this.trigger(this.data, data, "delOk");
+    },
+
     /**
      * Internal methods.
      */
@@ -431,8 +442,19 @@ let ArticleStore = Reflux.createStore({
         return article;
     },
 
-    _removeArticle: function(artUuid) {
-        
+    _removeArticle: function(artUuids, authorUuid) {
+        _.forEach(artUuids, function(articleUuid) {
+            console.log("remove article " + articleUuid);
+            let anchor = this.getArtOwner(authorUuid);
+            console.log("author uuid " + authorUuid);
+            console.log(anchor);
+            anchor.removeArticle(articleUuid);
+            delete this.data.articlesByUuid[articleUuid];
+
+            let authorTagMgr = AuthorStore.getAuthorTagMgr(authorUuid);
+            console.log("Author tag mgr");
+            console.log(authorTagMgr);
+        }.bind(this));
     },
 
     _indexAuthors: function(artList) {

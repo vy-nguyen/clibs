@@ -47,21 +47,21 @@ class EditorPost extends React.Component
         this.state = InitState.state;
         this.state.autoTags = AuthorStore.getTagsByAuthorUuid(null);
 
-        this._resetData = this._resetData.bind(this);
-        this._getData = this._getData.bind(this);
-        this._savePost = this._savePost.bind(this);
+        this._resetData   = this._resetData.bind(this);
+        this._getData     = this._getData.bind(this);
+        this._savePost    = this._savePost.bind(this);
         this._publishPost = this._publishPost.bind(this);
-        this._nextStatus = this._nextStatus.bind(this);
+        this._nextStatus  = this._nextStatus.bind(this);
         this._handleContentChange = this._handleContentChange.bind(this);
 
-        this._onPublishResult = this._onPublishResult.bind(this);
+        this._onPublishResult  = this._onPublishResult.bind(this);
         this._updateAuthorTags = this._updateAuthorTags.bind(this);
 
-        this._onSend = this._onSend.bind(this);
+        this._onSend     = this._onSend.bind(this);
         this._onComplete = this._onComplete.bind(this);
-        this._onSuccess = this._onSuccess.bind(this);
-        this._onError = this._onError.bind(this);
-        this._onBlurTag = this._onBlurTag.bind(this);
+        this._onSuccess  = this._onSuccess.bind(this);
+        this._onError    = this._onError.bind(this);
+        this._onBlurTag  = this._onBlurTag.bind(this);
         this._onTagOptSelected = this._onTagOptSelected.bind(this);
     }
 
@@ -85,11 +85,7 @@ class EditorPost extends React.Component
         }
     }
 
-    _onPublishResult(data, post) {
-        if (post != null && post.estore === true) {
-            console.log("Ignore post from estore");
-            return;
-        }
+    _onPublishResult(data, post, status) {
         if (data.errorResp !== null) {
             this.setState(this._nextStatus("Failed"));
         } else {
@@ -103,11 +99,11 @@ class EditorPost extends React.Component
                 state.articleUuid = data.myPostResult.articleUuid;
             }
             this.setState(state);
-
             if (this.state.content !== '') {
                 setTimeout(function() {
                     this._resetData();
                 }.bind(this), 1000);
+                this.setState(InitState.state);
             }
         }
     }
@@ -166,7 +162,6 @@ class EditorPost extends React.Component
         if (this.dropzone != null) {
             this.dropzone.removeAllFiles();
         }
-        this.setState(InitState.state);
     }
 
     /**

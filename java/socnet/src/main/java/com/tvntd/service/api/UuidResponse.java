@@ -24,92 +24,38 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.forms;
+package com.tvntd.service.api;
 
-public class UuidForm
+import com.tvntd.forms.UuidForm;
+
+public class UuidResponse extends GenericResponse
 {
-    public static final String artCmt   = "artCmt";
-    public static final String artRank  = "artRank";
-    public static final String artType  = "article";
-    public static final String prodType = "product";
+    private UuidForm in;
 
-    private String authorUuid;
-    private String uuidType;
-    private String[] uuids;
+    public UuidResponse(UuidForm in)
+    {
+        super(GenericResponse.USER_HOME, "ok", null);
+        this.in = in;
+    }
 
     /**
      * @return the authorUuid
      */
     public String getAuthorUuid() {
-        return authorUuid;
-    }
-
-    /**
-     * @param authorUuid the authorUuid to set
-     */
-    public void setAuthorUuid(String authorUuid) {
-        this.authorUuid = authorUuid;
+        return in.getAuthorUuid();
     }
 
     /**
      * @return the uuidType
      */
     public String getUuidType() {
-        return uuidType;
-    }
-
-    /**
-     * @param uuidType the uuidType to set
-     */
-    public void setUuidType(String uuidType) {
-        this.uuidType = uuidType;
+        return in.getUuidType();
     }
 
     /**
      * @return the uuids
      */
     public String[] getUuids() {
-        return uuids;
-    }
-
-    /**
-     * @param uuids the uuids to set
-     */
-    public void setUuids(String[] uuids) {
-        this.uuids = uuids;
-    }
-
-    public static class UserRoleForm
-    {
-        private String[] uuids;
-        private Long[] roleMasks;
-
-        /**
-         * @return the uuids
-         */
-        public String[] getUuids() {
-            return uuids;
-        }
-
-        /**
-         * @param uuids the uuids to set
-         */
-        public void setUuids(String[] uuids) {
-            this.uuids = uuids;
-        }
-
-        /**
-         * @return the roleMasks
-         */
-        public Long[] getRoleMasks() {
-            return roleMasks;
-        }
-
-        /**
-         * @param roleMasks the roleMasks to set
-         */
-        public void setRoleMasks(Long[] roleMasks) {
-            this.roleMasks = roleMasks;
-        }
+        return in.getUuids();
     }
 }

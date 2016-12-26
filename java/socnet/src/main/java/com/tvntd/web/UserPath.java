@@ -88,6 +88,7 @@ import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.ITimeLineService;
 import com.tvntd.service.api.ImageUploadResp;
 import com.tvntd.service.api.LoginResponse;
+import com.tvntd.service.api.UuidResponse;
 import com.tvntd.service.user.ArtTagService;
 import com.tvntd.service.user.ArticleService;
 import com.tvntd.service.user.ProductService;
@@ -259,6 +260,28 @@ public class UserPath
         ArticleRank artRank = authorSvc.createArticleRank(article, form.getTags());
         art.setRank(artRank);
         return art;
+    }
+
+    /**
+     * Delete user articles.
+     */
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @RequestMapping(value = "/user/delete-post",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    deleteUserArticle(@RequestBody UuidForm uuids, HttpSession session)
+    {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
+        String[] uuidList = uuids.getUuids();
+        for (String uid : uuidList) {
+            articleSvc.deleteArticle(uid, profile);
+        }
+        return new UuidResponse(uuids);
     }
 
     /**
