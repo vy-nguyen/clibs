@@ -68,7 +68,6 @@ class AuthorFeed extends React.Component
     }
 
     _updateState(data, post, status) {
-        console.log("author feed " + status);
         this.setState({
             articles: ArticleStore.getSortedArticlesByAuthor(this.props.authorUuid).slice(0, 2)
         });
@@ -121,7 +120,6 @@ class AuthorFeed extends React.Component
         let userUuid = this.props.authorUuid;
         let author = AuthorStore.getAuthorByUuid(userUuid);
         if (author == null) {
-            console.log("No author matching " + userUuid);
             return null;
         }
         let user = UserStore.getUserByUuid(userUuid);

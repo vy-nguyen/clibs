@@ -37,8 +37,6 @@ class TagInfo extends React.Component
     }
 
     _submitChange(data) {
-        console.log("Submit change tag info");
-        console.log(data);
         let name = ArticleTagStore.changeTagValue(data);
         console.log(ArticleTagStore.getPublicTag(name));
     }

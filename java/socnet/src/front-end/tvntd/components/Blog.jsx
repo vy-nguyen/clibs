@@ -32,7 +32,6 @@ class BlogItem extends React.Component
         if (article == null) {
             artRank = AuthorStore.getArticleRank(authorUuid, articleUuid);
             if (artRank == null) {
-                console.log("no rank info for  " + this.props.articleUuid);
                 return null;
             }
             arg.imgUrl = artRank.imgUrl;
@@ -44,7 +43,6 @@ class BlogItem extends React.Component
             } else {
                 let user = UserStore.getUserByUuid(authorUuid);
                 if (user == null) {
-                    console.log("No matching user uuid " + authorUuid);
                     return null;
                 }
                 imgUrl = user.userImgUrl;

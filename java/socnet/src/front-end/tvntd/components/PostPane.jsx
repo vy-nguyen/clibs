@@ -171,7 +171,6 @@ class PostPane extends React.Component {
             uuids     : [ this.props.data.articleUuid ]
         });
         this.refs.modal.closeModal();
-        console.log("Delete uuid " + this.props.data.articleUuid);
     }
 
     _cancelDel() {

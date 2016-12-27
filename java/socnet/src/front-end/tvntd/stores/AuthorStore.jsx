@@ -479,6 +479,14 @@ let AuthorStore = Reflux.createStore({
         this.trigger(this.data, artRank);
     },
 
+    removeArticleRank: function(article) {
+        if (article.rank != null) {
+            let tagMgr = this.getAuthorTagMgr(article.authorUuid);
+            tagMgr.removeArticleRank(article.rank);
+            this.trigger(this.data, article.rank, "remove");
+        }
+    },
+
     iterAuthor: function(uuidList, func) {
         if (uuidList == null) {
             _.forOwn(this.data.authorMap, function(author, key) {

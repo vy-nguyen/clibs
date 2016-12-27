@@ -248,7 +248,6 @@ Actions.saveUserPost.listen(function(data) {
 
 Actions.deleteUserPost.listen(function(data) {
     postRestCall(data, "/user/delete-post", true, this, true, "deleteUserPost");
-    console.log("posted rest call delete ");
 });
 
 Actions.publishUserPost.listen(function(data) {

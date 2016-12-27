@@ -37,7 +37,6 @@ class TabPanel extends React.Component
     render() {
         let tab = this.props.context;
         if (tab == null) {
-            console.log("no props data");console.log(this.props);
             return null;
         }
         if (tab.getActivePane == null) {

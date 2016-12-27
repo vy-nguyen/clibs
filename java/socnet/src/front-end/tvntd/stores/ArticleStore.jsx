@@ -66,7 +66,6 @@ class AuthorShelf {
 
     removeArticle(articleUuid) {
         let article = this.articles[articleUuid];
-        console.log("remove from shelf " + article);
         if (article != null) {
             removeArray(this.sortedArticles, article, 0, this._cmpArticle);
             delete this.articles[articleUuid];
@@ -393,7 +392,6 @@ let ArticleStore = Reflux.createStore({
 
     onDeleteUserPostCompleted: function(data) {
         this._removeArticle(data.uuids, data.authorUuid); 
-        console.log("trigger article store");
         this.trigger(this.data, data, "delOk");
     },
 
@@ -444,16 +442,12 @@ let ArticleStore = Reflux.createStore({
 
     _removeArticle: function(artUuids, authorUuid) {
         _.forEach(artUuids, function(articleUuid) {
-            console.log("remove article " + articleUuid);
             let anchor = this.getArtOwner(authorUuid);
-            console.log("author uuid " + authorUuid);
-            console.log(anchor);
             anchor.removeArticle(articleUuid);
-            delete this.data.articlesByUuid[articleUuid];
 
-            let authorTagMgr = AuthorStore.getAuthorTagMgr(authorUuid);
-            console.log("Author tag mgr");
-            console.log(authorTagMgr);
+            let article = this.data.articlesByUuid[articleUuid];
+            AuthorStore.removeArticleRank(article);
+            delete this.data.articlesByUuid[articleUuid];
         }.bind(this));
     },
 
