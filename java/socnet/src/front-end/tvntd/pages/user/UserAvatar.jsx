@@ -22,6 +22,7 @@ class UserAvatar extends React.Component
         this._onSending = this._onSending.bind(this);
         this._onSuccess = this._onSuccess.bind(this);
         this._onError = this._onError.bind(this);
+
         this.state = {
             self: UserStore.getUserByUuid(props.userUuid)
         };
@@ -68,9 +69,8 @@ class UserAvatar extends React.Component
             error  : this._onError,
             init   : function(dz) { this.dropzone = dz }.bind(this)
         };
-        let self = this.state.self;
+        let self = UserStore.getUserByUuid(this.props.userUuid)
         if (self === null) {
-            console.log(this.state);
             return null;
         }
         let file_drop;

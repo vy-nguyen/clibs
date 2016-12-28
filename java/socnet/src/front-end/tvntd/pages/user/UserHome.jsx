@@ -31,7 +31,10 @@ class UserHome extends React.Component
         this._setActivePane = this._setActivePane.bind(this);
         this._updateStore   = this._updateStore.bind(this);
 
-        this.state = this._getArticles(props);
+        let { userUuid } = props.params;
+        this.state = {
+            articles: this._getArticles(userUuid)
+        };
     }
 
     componentDidMount() {
@@ -46,23 +49,23 @@ class UserHome extends React.Component
     }
 
     _updateStore(store, data, status) {
-        console.log("update store " + status);
-        let articles = this._getArticles();
+        let { userUuid } = this.props.params;
+        let articles = this._getArticles(userUuid);
+        console.log(articles);
+        console.log("state len " + this.state.articles.length);
+        console.log("new len " + articles.length);
         if (articles != null && this.state.articles.length != articles.length) {
-            this.setState(articles);
+            this.setState({
+                articles: articles
+            });
         }
     }
 
-    _getArticles(props) {
-        let { userUuid } = this.props.params;
+    _getArticles(userUuid) {
         if (userUuid != null) {
-            return {
-                articles: ArticleStore.getSortedArticlesByAuthor(userUuid)
-            };
+            return ArticleStore.getSortedArticlesByAuthor(userUuid);
         }
-        return {
-            articles: ArticleStore.getMyArticles()
-        }
+        return ArticleStore.getMyArticles();
     }
 
     getUserTab() {
@@ -166,16 +169,19 @@ class UserHome extends React.Component
         let articles = this.state.articles;
         let { userUuid } = this.props.params;
 
-        if (articles == null) {
-            articles = {};
-        }
         if (userUuid != null) {
             me = false;
+            articles = this._getArticles(userUuid);
         } else {
             tabCtx = this.getMyUserTab();
             postView = <UserPostView userUuid={self.userUuid}/>;
             saveArticles = <PostArticles userUuid={self.userUuid} data={ArticleStore.getMySavedArticles()}/>
         }
+        if (articles == null) {
+            articles = {};
+        }
+        console.log("Render with user uuid " + userUuid);
+        console.log("Render with length " + articles.length);
         let editTab = null;
         if (me === true) {
             editTab = (

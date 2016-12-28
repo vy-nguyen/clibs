@@ -205,7 +205,7 @@ let UserStore = Reflux.createStore({
                 dispatch.followerFn(user, key, arg);
 
             } else if (user.isUserMe()) {
-                displatch.meFn(user, key, arg);
+                dispatch.meFn(user, key, arg);
 
             } else {
                 dispatch.strangerFn(user, key, arg);
