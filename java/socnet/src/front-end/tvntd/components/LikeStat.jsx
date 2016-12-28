@@ -24,7 +24,7 @@ class LikeStat extends React.Component
                 <li><i className="fa fa-share"/> {data.sharesCount}</li>
                 {dateSplit}
                 {data.dateString ? <li> <i className="fa fa-calendar"/> {data.dateString}</li> : null}
-                {data.dateMoment ? <li> {moment(data.dateMoment).fromNow()}</li> : null}
+                {data.dateMoment ? <li> {moment(new Date(data.dateMoment)).fromNow()}</li> : null}
             </ul>
         );
     }

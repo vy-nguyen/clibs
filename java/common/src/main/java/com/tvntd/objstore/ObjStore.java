@@ -104,18 +104,18 @@ public class ObjStore extends Module
         try {
             Path saved = null;
             ObjectId oid = null;
-            byte[] buf = FileResources.getBuffer(Constants.FileIOBufferSize); 
+            byte[] buf = FileResources.getBuffer(Constants.FileIOBufferSize);
             MessageDigest md = MessageDigest.getInstance(Constants.HashFunction);
 
             File temp = File.createTempFile("temp", null, m_temp);
             FileOutputStream fos = new FileOutputStream(temp);
 
-            for (int len, offset = 0; true; offset += len, limit -= len) {
-                len = is.read(buf, offset, limit);
-                fos.write(buf, offset, len);
-                md.update(buf, offset, len);
+            for (int len = 0; true; limit -= len) {
+                len = is.read(buf);
+                fos.write(buf, 0, len);
+                md.update(buf, 0, len);
 
-                if ((len == limit) || (len == -1)) {
+                if ((len == limit) || (len < 0)) {
                     break;
                 }
             }

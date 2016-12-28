@@ -273,7 +273,6 @@ Actions.getPublishProds.listen(function(data) {
 });
 
 Actions.deleteProduct.listen(function(data) {
-    console.log("action delete product");
     postRestCall(data, "/user/delete-product", true, this, true, "deleteProduct");
 });
 

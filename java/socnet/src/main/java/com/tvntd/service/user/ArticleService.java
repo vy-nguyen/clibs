@@ -360,33 +360,39 @@ public class ArticleService implements IArticleService
     }
 
     @Override
-    public void deleteArticle(Article art, ProfileDTO owner)
+    public boolean deleteArticle(Article art, ProfileDTO owner)
     {
+        if (!art.getAuthorUuid().equals(owner.getUserUuid())) {
+            return false;
+        }
         ArticleRank rank = artRankRepo.findByArticleUuid((art.getArticleUuid()));
         if (rank != null) {
             artRankRepo.delete(rank);
         }
         articleRepo.delete(art.getArticleUuid());
+        return true;
     }
 
     @Override
-    public void deleteArticle(String uuid, ProfileDTO owner)
+    public boolean deleteArticle(String uuid, ProfileDTO owner)
     {
-        System.out.println("Delete article " + uuid + ", owner " + owner.getUserUuid());
+        s_log.info("Delete article " + uuid + ", owner " + owner.getUserUuid());
 
         ArticleDTO art = getArticleDTO(uuid);
         if (art != null) {
             Article article = art.fetchArticle();
             if (!owner.getUserUuid().equals(article.getAuthorUuid())) {
-                System.out.println("Wrong owner " + owner.getUserUuid());
-                return;
+                s_log.info("Wrong owner " + owner.getUserUuid());
+                return false;
             }
             ArticleRank rank = artRankRepo.findByArticleUuid(article.getArticleUuid());
             if (rank != null) {
                 artRankRepo.delete(rank);
             }
             articleRepo.delete(article);
+            return true;
         }
+        return false;
     }
 
     @Override

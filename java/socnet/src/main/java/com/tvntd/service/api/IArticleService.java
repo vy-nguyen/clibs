@@ -73,8 +73,8 @@ public interface IArticleService
     void saveArticle(ArticleDTO article);
     void saveArticles(String josnFile, String dir);
 
-    void deleteArticle(Article article, ProfileDTO owner);
-    void deleteArticle(String uuid, ProfileDTO owner);
+    boolean deleteArticle(Article article, ProfileDTO owner);
+    boolean deleteArticle(String uuid, ProfileDTO owner);
 
     public static class ArticleDTOResponse extends GenericResponse
     {

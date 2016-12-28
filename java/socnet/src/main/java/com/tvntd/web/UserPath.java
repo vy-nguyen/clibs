@@ -279,7 +279,9 @@ public class UserPath
         }
         String[] uuidList = uuids.getUuids();
         for (String uid : uuidList) {
-            articleSvc.deleteArticle(uid, profile);
+            if (articleSvc.deleteArticle(uid, profile) == true) {
+                commentSvc.deleteComment(uid);
+            }
         }
         return new UuidResponse(uuids);
     }
@@ -492,6 +494,30 @@ public class UserPath
             profile.assignPendProduct(product);
         }
         return product;
+    }
+
+    /**
+     * Delete user products.
+     */
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @RequestMapping(value = "/user/delete-product",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    deleteUserProduct(@RequestBody UuidForm uuids, HttpSession session)
+    {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
+        String[] uuidList = uuids.getUuids();
+        for (String uid : uuidList) {
+            if (productSvc.deleteProduct(uid, profile) == true) {
+                commentSvc.deleteComment(uid);
+            }
+        }
+        return new UuidResponse(uuids);
     }
 
     /**

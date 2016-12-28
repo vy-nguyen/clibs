@@ -46,6 +46,7 @@ import com.tvntd.models.Product;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.ICommentService;
 import com.tvntd.service.api.IProductService;
+import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 @Service
 @Transactional
@@ -211,20 +212,25 @@ public class ProductService implements IProductService
     }
 
     @Override
-    public void deleteProduct(Product prod)
+    public boolean deleteProduct(Product prod, ProfileDTO owner)
     {
-        if (prod != null) {
-            ArticleRank rank = artRankRepo.findByArticleUuid(prod.getArticleUuid());
-            if (rank != null) {
-                artRankRepo.delete(rank);
-            }
-            productRepo.delete(prod);
+        s_log.info("Delete product " + prod.getArticleUuid() +
+                " owner " + owner.getUserUuid());
+
+        if (prod == null || !prod.getAuthorUuid().equals(owner.getUserUuid())) {
+            return false;
         }
+        ArticleRank rank = artRankRepo.findByArticleUuid(prod.getArticleUuid());
+        if (rank != null) {
+            artRankRepo.delete(rank);
+        }
+        productRepo.delete(prod);
+        return true;
     }
 
     @Override
-    public void deleteProduct(String uuid)
+    public boolean deleteProduct(String uuid, ProfileDTO owner)
     {
-        deleteProduct(productRepo.findByArticleUuid(uuid));
+        return deleteProduct(productRepo.findByArticleUuid(uuid), owner);
     }
 }

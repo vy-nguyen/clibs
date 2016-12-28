@@ -44,16 +44,7 @@ class EStore extends React.Component
 
     _updateState(store, data, status) {
         let userUuid = this.props.userUuid;
-        if (status === "delOk") {
-            this.setState({
-                products: EProductStore.getProductsByAuthor(userUuid)
-            });
-            return;
-        }
-        if (data == null || !Array.isArray(data)) {
-            return;
-        }
-        if ((data.length <= 1) && (data[0].authorUuid !== userUuid)) {
+        if (data == null || !_.isEmpty(data) || !Array.isArray(data)) {
             return;
         }
         _.forEach(data, function(prod) {

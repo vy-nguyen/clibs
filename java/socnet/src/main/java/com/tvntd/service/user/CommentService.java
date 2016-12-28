@@ -103,6 +103,19 @@ public class CommentService implements ICommentService
     @Override
     public void deleteComment(String articleUuid)
     {
+        List<Comment> out = commentRepo.findAllByArticleUuid(articleUuid);
+
+        s_log.info("Delete coment for art " + articleUuid);
+        if (out != null && !out.isEmpty()) {
+            for (Comment c : out) {
+                if (c.isHashRank() == true) {
+                    CommentRank r = new CommentRank();
+                    r.setCommentId(c.getId());
+                    rankRepo.delete(r);
+                }
+                commentRepo.delete(c);
+            }
+        }
     }
 
     @Override

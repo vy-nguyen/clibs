@@ -42,6 +42,7 @@ import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Product;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.IArticleService.ArticleRankDTO;
+import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 public interface IProductService
 {
@@ -61,8 +62,8 @@ public interface IProductService
     void saveProduct(Product prod);
     void saveProduct(ProductDTO prod);
 
-    void deleteProduct(Product prod);
-    void deleteProduct(String uuid);
+    boolean deleteProduct(Product prod, ProfileDTO owner);
+    boolean deleteProduct(String uuid, ProfileDTO owner);
 
     public static class LikeStat
     {

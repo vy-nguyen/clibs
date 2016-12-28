@@ -145,7 +145,7 @@ public class ArticleTest
         doAuthorTest(ap, arts);
 
         for (Article at : arts) {
-            articleSvc.deleteArticle(at);
+            articleSvc.deleteArticle(at, ap);
         }
         for (TimeLineDTO tl : check) {
             timeLineSvc.deleteTimeLine(tl.getUserUuid(), tl.getArticleUuid());

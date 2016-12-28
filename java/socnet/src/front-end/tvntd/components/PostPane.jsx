@@ -187,6 +187,7 @@ class PostPane extends React.Component {
 
     render() {
         let adminItem = null;
+        let ownerItem = null;
         let article = this.props.data;
 
         if (UserStore.amIAdmin() == true) {
@@ -196,6 +197,16 @@ class PostPane extends React.Component {
                 itemHandler: function(e, pane) {
                     e.preventDefault();
                     AdminStore.addPublicArticle(article.articleUuid);
+                }.bind(this)
+            };
+        }
+        if (UserStore.isUserMe(article.authorUuid)) {
+            ownerItem = {
+                itemFmt : 'fa fa-circle txt-color-red',
+                itemText: 'Delete Post',
+                itemHandler: function(e, pane) {
+                    e.stopPropagation();
+                    this.refs.modal.openModal();
                 }.bind(this)
             };
         }
@@ -218,19 +229,15 @@ class PostPane extends React.Component {
                     this._toggleFavorite();
                 }.bind(this)
             }, {
-                itemFmt : 'fa fa-circle txt-color-red',
-                itemText: 'Delete Post',
-                itemHandler: function(e, pane) {
-                    e.stopPropagation();
-                    this.refs.modal.openModal();
-                }.bind(this)
-            }, {
                 itemFmt : 'fa fa-circle txt-color-blue',
                 itemText: 'Tag Post',
                 itemHandler: function() {
                 }
             } ]
         };
+        if (ownerItem != null) {
+            ownerPostMenu.menuItems.push(ownerItem);
+        }
         if (adminItem != null) {
             ownerPostMenu.menuItems.push(adminItem);
         }

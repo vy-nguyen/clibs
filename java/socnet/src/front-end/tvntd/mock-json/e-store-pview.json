@@ -18,7 +18,8 @@
 "<strong>Product ABC</strong><p>Integer egestas, orci id condimentum eleifend, nibh nisi pulvinar eros, vitae ornare massa neque ut orci.  Nam aliquet lectus sed odio eleifend, at iaculis dolor egestas.  Nunc elementum pellentesque augue sodales porta.  Etiam aliquet rutrum turpis, feugiat sodales ipsum consectetur nec.</p>",
             "prodSpec" :
 "<dl className=''><dt>Gravina</dt><dd>Etiam porta sem malesuada magna mollis euismod.</dd><dd>Donec id elit non mi porta gravida at eget metus.</dd><dd>Eget lacinia odio sem nec elit.</dd><br/><dt>Test lists</dt><dd>A description list is perfect for defining terms.</dd><br/><dt>Altra porta</dt><dd>Vestibulum id ligula porta felis euismod semper</dd></dl>",
-            "prodImgs" : [
+            "prodDetail" : "Product Detail",
+            "pictureUrl" : [
                 "/rs/img/demo/e-comm/detail-1.png",
                 "/rs/img/demo/e-comm/detail-2.png",
                 "/rs/img/demo/e-comm/detail-3.png"
@@ -46,7 +47,8 @@
 "<strong>Product ABC</strong><p>Integer egestas, orci id condimentum eleifend, nibh nisi pulvinar eros, vitae ornare massa neque ut orci.  Nam aliquet lectus sed odio eleifend, at iaculis dolor egestas.  Nunc elementum pellentesque augue sodales porta.  Etiam aliquet rutrum turpis, feugiat sodales ipsum consectetur nec.</p>",
             "prodSpec" :
 "<dl className=''><dt>Gravina</dt><dd>Etiam porta sem malesuada magna mollis euismod.</dd><dd>Donec id elit non mi porta gravida at eget metus.</dd><dd>Eget lacinia odio sem nec elit.</dd><br/><dt>Test lists</dt><dd>A description list is perfect for defining terms.</dd><br/><dt>Altra porta</dt><dd>Vestibulum id ligula porta felis euismod semper</dd></dl>",
-            "prodImgs" : [
+            "prodDetail" : "Product Detail",
+            "pictureUrl" : [
                 "/rs/img/demo/e-comm/detail-1.png",
                 "/rs/img/demo/e-comm/detail-2.png",
                 "/rs/img/demo/e-comm/detail-3.png"
@@ -74,7 +76,8 @@
 "<strong>Product ABC</strong><p>Integer egestas, orci id condimentum eleifend, nibh nisi pulvinar eros, vitae ornare massa neque ut orci.  Nam aliquet lectus sed odio eleifend, at iaculis dolor egestas.  Nunc elementum pellentesque augue sodales porta.  Etiam aliquet rutrum turpis, feugiat sodales ipsum consectetur nec.</p>",
             "prodSpec" :
 "<dl className=''><dt>Gravina</dt><dd>Etiam porta sem malesuada magna mollis euismod.</dd><dd>Donec id elit non mi porta gravida at eget metus.</dd><dd>Eget lacinia odio sem nec elit.</dd><br/><dt>Test lists</dt><dd>A description list is perfect for defining terms.</dd><br/><dt>Altra porta</dt><dd>Vestibulum id ligula porta felis euismod semper</dd></dl>",
-            "prodImgs" : [
+            "prodDetail" : "Product Detail",
+            "pictureUrl" : [
                 "/rs/img/demo/e-comm/detail-1.png",
                 "/rs/img/demo/e-comm/detail-2.png",
                 "/rs/img/demo/e-comm/detail-3.png"
@@ -102,7 +105,8 @@
 "<strong>Product ABC</strong><p>Integer egestas, orci id condimentum eleifend, nibh nisi pulvinar eros, vitae ornare massa neque ut orci.  Nam aliquet lectus sed odio eleifend, at iaculis dolor egestas.  Nunc elementum pellentesque augue sodales porta.  Etiam aliquet rutrum turpis, feugiat sodales ipsum consectetur nec.</p>",
             "prodSpec" :
 "<dl className=''><dt>Gravina</dt><dd>Etiam porta sem malesuada magna mollis euismod.</dd><dd>Donec id elit non mi porta gravida at eget metus.</dd><dd>Eget lacinia odio sem nec elit.</dd><br/><dt>Test lists</dt><dd>A description list is perfect for defining terms.</dd><br/><dt>Altra porta</dt><dd>Vestibulum id ligula porta felis euismod semper</dd></dl>",
-            "prodImgs" : [
+            "prodDetail" : "Product Detail",
+            "pictureUrl" : [
                 "/rs/img/demo/e-comm/detail-1.png",
                 "/rs/img/demo/e-comm/detail-2.png",
                 "/rs/img/demo/e-comm/detail-3.png"
@@ -130,7 +134,8 @@
 "<strong>Product ABC</strong><p>Integer egestas, orci id condimentum eleifend, nibh nisi pulvinar eros, vitae ornare massa neque ut orci.  Nam aliquet lectus sed odio eleifend, at iaculis dolor egestas.  Nunc elementum pellentesque augue sodales porta.  Etiam aliquet rutrum turpis, feugiat sodales ipsum consectetur nec.</p>",
             "prodSpec" :
 "<dl className=''><dt>Gravina</dt><dd>Etiam porta sem malesuada magna mollis euismod.</dd><dd>Donec id elit non mi porta gravida at eget metus.</dd><dd>Eget lacinia odio sem nec elit.</dd><br/><dt>Test lists</dt><dd>A description list is perfect for defining terms.</dd><br/><dt>Altra porta</dt><dd>Vestibulum id ligula porta felis euismod semper</dd></dl>",
-            "prodImgs" : [
+            "prodDetail" : "Product Detail",
+            "pictureUrl" : [
                 "/rs/img/demo/e-comm/detail-1.png",
                 "/rs/img/demo/e-comm/detail-2.png",
                 "/rs/img/demo/e-comm/detail-3.png"
