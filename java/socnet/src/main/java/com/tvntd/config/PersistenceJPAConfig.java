@@ -93,9 +93,9 @@ public class PersistenceJPAConfig
     @Bean
     public JpaTransactionManager transactionManager()
     {
-        final JpaTransactionManager transactionManager = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
-        return transactionManager;
+        final JpaTransactionManager tm = new JpaTransactionManager();
+        tm.setEntityManagerFactory(entityManagerFactory().getObject());
+        return tm;
     }
 
     @Bean

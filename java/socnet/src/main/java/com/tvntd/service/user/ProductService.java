@@ -225,6 +225,8 @@ public class ProductService implements IProductService
             artRankRepo.delete(rank);
         }
         productRepo.delete(prod);
+        productRepo.flush();
+        artRankRepo.flush();
         return true;
     }
 

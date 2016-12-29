@@ -370,6 +370,8 @@ public class ArticleService implements IArticleService
             artRankRepo.delete(rank);
         }
         articleRepo.delete(art.getArticleUuid());
+        articleRepo.flush();
+        artRankRepo.flush();
         return true;
     }
 
@@ -390,6 +392,8 @@ public class ArticleService implements IArticleService
                 artRankRepo.delete(rank);
             }
             articleRepo.delete(article);
+            articleRepo.flush();
+            artRankRepo.flush();
             return true;
         }
         return false;

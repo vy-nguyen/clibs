@@ -42,7 +42,7 @@ class EStore extends React.Component
         }
     }
 
-    _updateState(store, data, status) {
+    _updateState(store, data, status, update) {
         let userUuid = this.props.userUuid;
         if (data == null || !_.isEmpty(data) || !Array.isArray(data)) {
             return;
@@ -54,6 +54,7 @@ class EStore extends React.Component
             this.setState({
                 products: EProductStore.getProductsByAuthor(userUuid)
             });
+            return false;
         }.bind(this));
     }
 

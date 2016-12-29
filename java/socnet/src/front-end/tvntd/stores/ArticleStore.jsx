@@ -167,11 +167,11 @@ let EProductStore = Reflux.createStore({
     onPublishProductCompleted: function(product) {
         let prod = this._addEStore(product, false);
         this.data.myProductPost = prod;
-        this.trigger(this.data, [prod], "postOk");
+        this.trigger(this.data, [prod], "postOk", true, prod.authorUuid);
     },
 
     onPublishProductFailure: function(product) {
-        this.trigger(this.data, null, "failure");
+        this.trigger(this.data, null, "failure", false, product.authorUuid);
     },
 
     onGetPublishProdsCompleted: function(data) {
@@ -181,16 +181,16 @@ let EProductStore = Reflux.createStore({
             products.push(this._addEStore(product, false));
         }.bind(this));
 
-        this.trigger(this.data, products, "getOk");
+        this.trigger(this.data, products, "getOk", !_.isEmpty(products), null);
     },
 
     onGetPublishProdsFailure: function(data) {
-        this.trigger(this.data, null, "failure");
+        this.trigger(this.data, null, "failure", false, null);
     },
 
     onDeleteProductCompleted: function(data) {
         this._removeEStore(data.uuids, data.authorUuid);
-        this.trigger(this.data, data, "delOk");
+        this.trigger(this.data, data, "delOk", true, data.authorUuid);
     },
 
     /**
@@ -199,7 +199,7 @@ let EProductStore = Reflux.createStore({
     _errorHandler: function(error) {
         this.data.errorText = error.getErrorCodeText();
         this.data.errorResp = error.getUserText();
-        this.trigger(this.data, null, "error");
+        this.trigger(this.data, null, "failure", false, null);
     },
 
     _createOwnerAnchor: function(authorUuid, article) {
@@ -343,24 +343,24 @@ let ArticleStore = Reflux.createStore({
 
     onPreloadCompleted: function(json) {
         this._addFromJson(json.articles);
-        this.trigger(this.data, null, "preload");
+        this.trigger(this.data, null, "preload", true, null);
     },
 
     onLogoutCompleted: function() {
         this._resetStore();
-        this.trigger(this.data, null, "logout");
+        this.trigger(this.data, null, "logout", true, null);
     },
 
     onRefreshArticlesCompleted: function(data) {
         this._addFromJson(data.articles);
         this._addSavedJson(data.pendPosts);
-        this.trigger(this.data, null, "refresh");
+        this.trigger(this.data, null, "startup", true, null);
     },
 
     onStartupCompleted: function(data) {
         if (data.articles) {
             this._addFromJson(data.articles);
-            this.trigger(this.data, null, "startup");
+            this.trigger(this.data, null, "startup", true, null);
         }
     },
 
@@ -377,7 +377,7 @@ let ArticleStore = Reflux.createStore({
 
     onSaveUserPostCompleted: function(post) {
         this._addArticle(post, true);
-        this.trigger(this.data, post, "save");
+        this.trigger(this.data, post, "save", true, post.authorUuid);
     },
 
     onPublishUserPostFailed: function(err) {
@@ -387,12 +387,12 @@ let ArticleStore = Reflux.createStore({
     onPublishUserPostCompleted: function(post) {
         this._addArticle(post, false);
         this.data.myPostResult = post;
-        this.trigger(this.data, post, "publish");
+        this.trigger(this.data, post, "publish", true, post.authorUuid);
     },
 
     onDeleteUserPostCompleted: function(data) {
         this._removeArticle(data.uuids, data.authorUuid); 
-        this.trigger(this.data, data, "delOk");
+        this.trigger(this.data, data, "delOk", true, data.authorUuid);
     },
 
     /**
@@ -401,7 +401,7 @@ let ArticleStore = Reflux.createStore({
     _errorHandler: function(error) {
         this.data.errorText = error.getErrorCodeText();
         this.data.errorResp = error.getUserText();
-        this.trigger(this.data, null, "error");
+        this.trigger(this.data, null, "error", false, null);
     },
 
     _createArtOwner: function(authorUuid, article) {

@@ -92,10 +92,10 @@ class GenericForm extends React.Component
 
     static renderInput(entry, bind, onBlur, onSelected) {
         if (entry.typeAhead === true) {
-            return GenericForm.renderTypeAhead(entry, onBur, onSelected, bind);
+            return GenericForm.renderTypeAhead(entry, bind, onBlur, onSelected);
         }
         if (entry.select === true) {
-            return GenericForm.renderSelect(entry, onSelected, bind);
+            return GenericForm.renderSelect(entry, bind, onSelected);
         }
         if (entry.dropzone === true) {
             const eventHandlers = {
@@ -217,12 +217,9 @@ class GenericForm extends React.Component
             );
         }
         let formEntries = form.formEntries.map(function(item) {
-            let renderFn = GenericForm.renderInputBox;
-            if (item.inline === true) {
-                renderFn = GenericForm.renderInputInline;
-            }
+            let renderFn = item.inline !== true ? GenericForm.renderInputBox : GenericForm.renderInputInline;
             let entries = item.entries.map(function(entry) {
-                return renderFn(entry);
+                return renderFn(entry, this, GenericForm._defOnBlur, GenericForm._defOnSelect);
             }.bind(this));
 
             return (

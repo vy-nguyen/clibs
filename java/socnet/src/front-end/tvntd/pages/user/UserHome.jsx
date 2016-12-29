@@ -48,15 +48,11 @@ class UserHome extends React.Component
         }
     }
 
-    _updateStore(store, data, status) {
+    _updateStore(store, data, status, update, authorUuid) {
         let { userUuid } = this.props.params;
-        let articles = this._getArticles(userUuid);
-        console.log(articles);
-        console.log("state len " + this.state.articles.length);
-        console.log("new len " + articles.length);
-        if (articles != null && this.state.articles.length != articles.length) {
+        if (update === true) {
             this.setState({
-                articles: articles
+                articles: this._getArticles(userUuid)
             });
         }
     }
@@ -180,8 +176,6 @@ class UserHome extends React.Component
         if (articles == null) {
             articles = {};
         }
-        console.log("Render with user uuid " + userUuid);
-        console.log("Render with length " + articles.length);
         let editTab = null;
         if (me === true) {
             editTab = (
