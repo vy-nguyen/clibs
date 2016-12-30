@@ -52,6 +52,12 @@ import com.tvntd.util.Util;
 })
 public class ArtTag
 {
+    public static String EDU    = "edu";
+    public static String ADS    = "ads";
+    public static String BLOG   = "blog";
+    public static String NEWS   = "news";
+    public static String ESTORE = "estore";
+
     /**
      * TagName hashed to sha1 form for efficiency lookup.
      */
@@ -81,6 +87,9 @@ public class ArtTag
 
     @Column(length = 64)
     private byte[] parentTag;
+
+    @Column(length = 16)
+    private String tagKind;
 
     public ArtTag()
     {
@@ -225,5 +234,19 @@ public class ArtTag
      */
     public void setParentTag(byte[] parentTag) {
         this.parentTag = parentTag;
+    }
+
+    /**
+     * @return the tagKind
+     */
+    public String getTagKind() {
+        return tagKind;
+    }
+
+    /**
+     * @param tagKind the tagKind to set
+     */
+    public void setTagKind(String tagKind) {
+        this.tagKind = tagKind;
     }
 }

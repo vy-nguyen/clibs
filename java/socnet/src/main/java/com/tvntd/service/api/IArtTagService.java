@@ -251,5 +251,30 @@ public interface IArtTagService
         public void setSubTags(List<ArtTagDTO> subTags) {
             this.subTags = subTags;
         }
+
+        /**
+         * Get/set tagKind.
+         */
+        public String getTagKind()
+        {
+            String kind = artTag.getTagKind();
+            return kind == null ? ArtTag.BLOG : kind;
+        }
+
+        public void setTagKind(String kind)
+        {
+            if (kind.equals(ArtTag.EDU)) {
+                artTag.setTagKind(ArtTag.EDU);
+
+            } else if (kind.equals(ArtTag.ADS)) {
+                artTag.setTagKind(ArtTag.ADS);
+
+            } else if (kind.equals(ArtTag.ESTORE)) {
+                artTag.setTagKind(ArtTag.ESTORE);
+
+            } else {
+                artTag.setTagKind(ArtTag.BLOG);
+            }
+        }
     }
 }

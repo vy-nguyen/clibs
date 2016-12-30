@@ -99,11 +99,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                     "/login*",
                     "/register/**",
                     "/public/**",
+                    "/api/**",
                     "/help/**").permitAll()
-            .antMatchers("/api/**", "/user/**").hasRole(Role.User)
+            .antMatchers("/user/**").hasRole(Role.User)
             .antMatchers("/admin/**").hasAnyRole(Role.Admin)
             .antMatchers("/db/***").hasAnyRole(Role.Dba)
-            // .anyRequest().fullyAuthenticated()
+            .anyRequest().fullyAuthenticated()
             .anyRequest().authenticated()
             .and()
                 .formLogin()

@@ -63,6 +63,8 @@ class GenericForm extends React.Component
 
     static _defOnSelect(entry, val) {
         entry.taValue = val;
+        console.log("on select");
+        console.log(entry);
     }
 
     static _defOnBlur(entry, val) {
@@ -85,7 +87,7 @@ class GenericForm extends React.Component
         return (
             <Select options={entry.selectOpt} name={entry.inpName} value={entry.inpHolder}
                 onChange={onSelected != null ?
-                    onSelected.bind(bind, entry) : GenericForm._defOnSelect.bind.bind(this, entry)}
+                    onSelected.bind(bind, entry) : GenericForm._defOnSelect.bind(this, entry)}
             />
         );
     }
@@ -219,7 +221,7 @@ class GenericForm extends React.Component
         let formEntries = form.formEntries.map(function(item) {
             let renderFn = item.inline !== true ? GenericForm.renderInputBox : GenericForm.renderInputInline;
             let entries = item.entries.map(function(entry) {
-                return renderFn(entry, this, GenericForm._defOnBlur, GenericForm._defOnSelect);
+                return renderFn(entry);
             }.bind(this));
 
             return (

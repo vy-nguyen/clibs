@@ -64,6 +64,7 @@ class MainBlog extends React.Component
 
     render() {
         let tabData = this._getBlogTab();
+        console.log(this.props.params);
         return (
             <div id="content">
                 <div className="row">

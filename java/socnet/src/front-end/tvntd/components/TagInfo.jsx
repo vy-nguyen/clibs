@@ -9,6 +9,23 @@ import React           from 'react-mod';
 import GenericForm     from 'vntd-shared/forms/commons/GenericForm.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 
+const tagKinds = [ {
+    value: "edu",
+    label: "Education"
+}, {
+    value: "ads",
+    label: "Advertising"
+}, {
+    value: "estore",
+    label: "E-Store"
+}, {
+    value: "blog",
+    label: "Blog Post"
+}, {
+    value: "news",
+    label: "News Post"
+} ];
+
 class TagInfo extends React.Component
 {
     constructor(props) {
@@ -59,6 +76,14 @@ class TagInfo extends React.Component
                         inpName : "parentTag",
                         inputFmt: inputFmt,
                         inpHolder: null
+                    }, {
+                        labelFmt : labelFmt,
+                        labelTxt : "Type",
+                        inpName  : "type",
+                        inputFmt : inputFmt,
+                        inpHolder: "blog",
+                        select   : true,
+                        selectOpt: tagKinds
                     }, {
                         labelFmt: labelFmt,
                         labelTxt: "Tag name",
@@ -122,6 +147,14 @@ class TagInfo extends React.Component
                     inpHolder: artTag.parentTag,
                     select   : true,
                     selectOpt: parentTags
+                }, {
+                    labelFmt : labelFmt,
+                    labelTxt : "Type",
+                    inpName  : "type",
+                    inputFmt : inputFmt,
+                    inpHolder: "blog",
+                    select   : true,
+                    selectOpt: tagKinds
                 }, {
                     labelFmt: labelFmt,
                     labelTxt: "Rank",
