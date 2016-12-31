@@ -189,14 +189,11 @@ let ArticleTagStore = Reflux.createStore({
             let result = [];
             let allTags = this.data.sortedPubTags;
 
-        console.log("get public tag " + pubMode);
             _.forEach(allTags, function(tag) {
-                console.log(tag);
                 if (tag.tagKind === pubMode) {
                     result.push(tag);
                 }
             });
-            console.log(result);
             return result;
         }
         return this.data.sortedIdxTags;
