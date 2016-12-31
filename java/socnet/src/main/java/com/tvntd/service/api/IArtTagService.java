@@ -135,7 +135,8 @@ public interface IArtTagService
         protected void toString(StringBuilder sb, int indent)
         {
             Util.printIndent(sb, indent);
-            sb.append("Tag ").append(getTagName()).append("\n");
+            sb.append("Tag ").append(getTagName());
+            sb.append(", kind ").append(getTagKind()).append("\n");
 
             List<ArtTagDTO> subTags = getSubTags();
             if (subTags != null) {
@@ -271,6 +272,9 @@ public interface IArtTagService
 
             } else if (kind.equals(ArtTag.ESTORE)) {
                 artTag.setTagKind(ArtTag.ESTORE);
+
+            } else if (kind.equals(ArtTag.NEWS)) {
+                artTag.setTagKind(ArtTag.NEWS);
 
             } else {
                 artTag.setTagKind(ArtTag.BLOG);

@@ -113,7 +113,7 @@ class Header extends React.Component
         return (
             <header id="header">
                 {logoBlock}
-                <HeaderBtn linkTo="/public/blogs" icon="fa fa-book" text="Read Blogs"/>
+                <HeaderBtn linkTo="/public/blog" icon="fa fa-book" text="Read Blogs"/>
                 <HeaderBtn linkTo="/public/ads" icon="fa fa-money" text="View Ads"/>
                 <HeaderBtn linkTo="/public/estore" icon="fa fa-shopping-cart" text="Shop E-Store"/>
 
@@ -124,7 +124,8 @@ class Header extends React.Component
                     <SearchMobile className="btn-header transparent pull-right"/>
 
                     <form action="#/misc/search.html" className="header-search pull-right">
-                        <input id="search-fld" type="text" name="param" placeholder={this.state.searchText} data-autocomplete='[]' />
+                        <input id="search-fld" type="text" name="param"
+                            placeholder={this.state.searchText} data-autocomplete='[]' />
                         <button type="submit"><i className="fa fa-search"/></button>
                         <a href="$" id="cancel-search-js" title="Cancel Search"><i className="fa fa-times"/></a>
                     </form>

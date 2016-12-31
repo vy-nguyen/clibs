@@ -162,6 +162,7 @@ let ArticleTagStore = Reflux.createStore({
                 }
                 trigger = true;
             }
+            self.tagKind = data.tagKind;
             if (trigger === true) {
                 this.trigger(this.data);
             }
@@ -183,9 +184,20 @@ let ArticleTagStore = Reflux.createStore({
         this.trigger(this.data, tag, sub);
     },
 
-    getAllPublicTags: function(topLevel) {
+    getAllPublicTags: function(topLevel, pubMode) {
         if (topLevel == null || topLevel === true) {
-            return this.data.sortedPubTags;
+            let result = [];
+            let allTags = this.data.sortedPubTags;
+
+        console.log("get public tag " + pubMode);
+            _.forEach(allTags, function(tag) {
+                console.log(tag);
+                if (tag.tagKind === pubMode) {
+                    result.push(tag);
+                }
+            });
+            console.log(result);
+            return result;
         }
         return this.data.sortedIdxTags;
     },
@@ -228,6 +240,7 @@ let ArticleTagStore = Reflux.createStore({
             tagName  : tag.tagName,
             rankScore: tag.rankScore != null ? tag.rankScore : 50,
             parentTag: tag.parentTag,
+            tagKind  : tag.tagKind,
             subTags  : [],
             articleRank: tag.articleRank != null ? tag.articleRank : []
         });

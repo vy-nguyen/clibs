@@ -9,22 +9,13 @@ import React           from 'react-mod';
 import GenericForm     from 'vntd-shared/forms/commons/GenericForm.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 
-const tagKinds = [ {
-    value: "edu",
-    label: "Education"
-}, {
-    value: "ads",
-    label: "Advertising"
-}, {
-    value: "estore",
-    label: "E-Store"
-}, {
-    value: "blog",
-    label: "Blog Post"
-}, {
-    value: "news",
-    label: "News Post"
-} ];
+const tagKinds = [
+    { value: "edu",       label: "Education" },
+    { value: "ads",       label: "Advertising" },
+    { value: "estore",    label: "E-Store" },
+    { value: "blog",      label: "Blog Post" },
+    { value: "news",      label: "News Post" }
+];
 
 class TagInfo extends React.Component
 {
@@ -54,8 +45,7 @@ class TagInfo extends React.Component
     }
 
     _submitChange(data) {
-        let name = ArticleTagStore.changeTagValue(data);
-        console.log(ArticleTagStore.getPublicTag(name));
+        ArticleTagStore.changeTagValue(data);
     }
 
     render() {
@@ -78,8 +68,8 @@ class TagInfo extends React.Component
                         inpHolder: null
                     }, {
                         labelFmt : labelFmt,
-                        labelTxt : "Type",
-                        inpName  : "type",
+                        labelTxt : "Kind",
+                        inpName  : "tagKind",
                         inputFmt : inputFmt,
                         inpHolder: "blog",
                         select   : true,
@@ -133,6 +123,7 @@ class TagInfo extends React.Component
             });
         });
 
+        let tagName = artTag.tagName;
         let labelFmt = "col-sm-3 col-md-3 col-lg-3 control-label";
         let inputFmt = "col-sm-9 col-md-9 col-lg-9 control-label";
         let tagValForm = {
@@ -149,22 +140,22 @@ class TagInfo extends React.Component
                     selectOpt: parentTags
                 }, {
                     labelFmt : labelFmt,
-                    labelTxt : "Type",
-                    inpName  : "type",
+                    labelTxt : "Kind",
+                    inpName  : "tagKind",
                     inputFmt : inputFmt,
-                    inpHolder: "blog",
+                    inpHolder: artTag.tagKind,
                     select   : true,
                     selectOpt: tagKinds
                 }, {
                     labelFmt: labelFmt,
                     labelTxt: "Rank",
-                    inpName : "rank",
+                    inpName : "rank-" + tagName,
                     inputFmt: inputFmt,
                     inpHolder: artTag.rankScore
                 }, {
                     labelFmt: labelFmt,
                     labelTxt: "Name",
-                    inpName : "tagName",
+                    inpName : "tagName-" + tagName,
                     inputFmt: "col-sm-8 col-md-8 col-lg-8 control-label",
                     inpHolder: artTag.tagName,
                     typeAhead: true,

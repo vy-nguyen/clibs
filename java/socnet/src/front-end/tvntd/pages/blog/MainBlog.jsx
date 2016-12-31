@@ -15,9 +15,10 @@ class MainBlog extends React.Component
 {
     constructor(props) {
         super(props);
-
+        let mode = props.params.blog;
         this.state = {
-            pubTags: ArticleTagStore.getAllPublicTags(true)
+            pubMode: mode,
+            pubTags: ArticleTagStore.getAllPublicTags(true, mode)
         };
         this._updateState = this._updateState.bind(this);
         this._getBlogTab = this._getBlogTab.bind(this);
@@ -35,8 +36,10 @@ class MainBlog extends React.Component
     }
 
     _updateState(data) {
+        let mode = this.props.params.blog;
         this.setState({
-            pubTags: ArticleTagStore.getAllPublicTags(true)
+            pubMode: mode,
+            pubTags: ArticleTagStore.getAllPublicTags(true, mode)
         });
     }
 
@@ -47,6 +50,11 @@ class MainBlog extends React.Component
             tabContents: []
         };
         let pubTags = this.state.pubTags;
+        let mode = this.props.params.blog;
+
+        if (mode !== this.state.pubMode) {
+            pubTags = ArticleTagStore.getAllPublicTags(true, mode)
+        }
         _.forOwn(pubTags, function(tag) {
             out.tabItems.push({
                 domId  : _.uniqueId('tag-'),
@@ -64,7 +72,6 @@ class MainBlog extends React.Component
 
     render() {
         let tabData = this._getBlogTab();
-        console.log(this.props.params);
         return (
             <div id="content">
                 <div className="row">

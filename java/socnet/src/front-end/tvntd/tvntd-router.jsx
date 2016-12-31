@@ -33,11 +33,11 @@ const Routes = (
             <IndexRoute component={MainPage}/>
             <Redirect from="/" to ="public"/>
             <Route path="public">
-                <Route path=":blogs" component={MainBlog} subHeader={true}/>
+                <Route path=":blog" component={MainBlog} subHeader={true}/>
                 <Route path=":ads" component={MainBlog} subHeader={true}/>
                 <Route path=":estore" component={MainBlog} subHeader={true}/>
                 <Route path=":edu" component={MainBlog} subHeader={true}/>
-                <Route path=":tech" component={MainBlog} subHeader={true}/>
+                <Route path=":news" component={MainBlog} subHeader={true}/>
             </Route>
 
             <Redirect from="public" to="public/proto"/>

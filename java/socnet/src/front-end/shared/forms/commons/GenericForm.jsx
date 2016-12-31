@@ -14,6 +14,39 @@ import {EditorEntry}     from 'vntd-shared/forms/editors/Editor.jsx';
 import ErrorView         from 'vntd-shared/layout/ErrorView.jsx';
 import NestableStore     from 'vntd-shared/stores/NestableStore.jsx';
 
+class SelectWrap extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this.state = {
+            value: props.entry.inpHolder
+        };
+    }
+
+    _defOnSelect(entry, val) {
+        entry.taValue = val.value;
+        console.log("on select");
+        console.log(entry);
+        console.log(val);
+        this.setState({
+            value: val
+        });
+    }
+
+    render() {
+        let entry = this.props.entry;
+        let bind = this.props.bind;
+        let onSelected = this.props.onSelected;
+
+        return (
+            <Select options={entry.selectOpt} name={entry.inpName} value={this.state.value}
+                onChange={onSelected != null ?
+                    onSelected.bind(bind, entry) : this._defOnSelect.bind(this, entry)}
+            />
+        );
+    }
+}
+
 /*
  * Form format:
  * formEntry {
@@ -63,8 +96,6 @@ class GenericForm extends React.Component
 
     static _defOnSelect(entry, val) {
         entry.taValue = val;
-        console.log("on select");
-        console.log(entry);
     }
 
     static _defOnBlur(entry, val) {
@@ -84,12 +115,13 @@ class GenericForm extends React.Component
     }
 
     static renderSelect(entry, bind, onSelected) {
-        return (
+        let sel = (
             <Select options={entry.selectOpt} name={entry.inpName} value={entry.inpHolder}
                 onChange={onSelected != null ?
                     onSelected.bind(bind, entry) : GenericForm._defOnSelect.bind(this, entry)}
             />
         );
+        return sel;
     }
 
     static renderInput(entry, bind, onBlur, onSelected) {
@@ -97,7 +129,7 @@ class GenericForm extends React.Component
             return GenericForm.renderTypeAhead(entry, bind, onBlur, onSelected);
         }
         if (entry.select === true) {
-            return GenericForm.renderSelect(entry, bind, onSelected);
+            return <SelectWrap entry={entry} bind={bind} onSelected={onSelected}/>
         }
         if (entry.dropzone === true) {
             const eventHandlers = {
@@ -244,4 +276,5 @@ class GenericForm extends React.Component
     }
 }
 
+export { SelectWrap, GenericForm };
 export default GenericForm;
