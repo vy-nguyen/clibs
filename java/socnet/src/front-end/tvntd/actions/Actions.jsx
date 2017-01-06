@@ -70,6 +70,9 @@ const Actions = Reflux.createActions({
     // Preload json for testing.
     preload:         completedFailedFn,
 
+    // Check point to sync new data.
+    syncServer:      completedFn,
+
     // Language choices
     translate:       completedFn,
     getLangJson:     completedFailedFn,
@@ -121,7 +124,7 @@ function postRestCall(formData, url, json, cbObj, authReq, id, context) {
     });
 };
 
-function getJSON(url, cbObj, authReq, id, context)
+function getJSON(url, cbObj, authReq, id, context, syncServer)
 {
     if ((authReq === true) && !UserStore.isLogin()) {
         Actions.authRequired(id, context);
@@ -130,6 +133,9 @@ function getJSON(url, cbObj, authReq, id, context)
     $.getJSON(url).done(function(data) {
         data.cbContext = context;
         cbObj.completed(data);
+        if (syncServer === true) {
+            Actions.syncServer();
+        }
 
     }).fail(function(resp, text, error) {
         resp.cbContext = context;
@@ -159,7 +165,7 @@ Actions.authRequired.listen(function(id, context) {
  */
 Actions.startup.listen(function(url) {
     $('[data-toggle="tooltip"]').tooltip();
-    getJSON(url, this, false, "startup");
+    getJSON(url, this, false, "startup", null, true);
 });
 
 Actions.refreshNotify.listen(function() {
@@ -269,7 +275,7 @@ Actions.pendingProduct.listen(function(data) {
 });
 
 Actions.getPublishProds.listen(function(data) {
-    postRestCall(data, "/public/get-estores", true, this, true, "getPublishProds");
+    postRestCall(data, "/public/get-estores", true, this, false, "getPublishProds");
 });
 
 Actions.deleteProduct.listen(function(data) {
@@ -361,6 +367,13 @@ Actions.translate.listen(function() {
 
 Actions.selectLanguage.listen(function(lang) {
     console.log("Set languages " + lang);
+});
+
+/**
+ * Generate event to sync up with server.
+ */
+Actions.syncServer.listen(function() {
+    this.completed();
 });
 
 export default Actions;

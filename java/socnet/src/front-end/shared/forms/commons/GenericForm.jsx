@@ -24,24 +24,22 @@ class SelectWrap extends React.Component
     }
 
     _defOnSelect(entry, val) {
-        entry.taValue = val.value;
-        console.log("on select");
-        console.log(entry);
-        console.log(val);
+        let onSelected = this.props.onSelected;
+        if (onSelected != null) {
+            onSelected(entry, val);
+        }
+        entry.taValue   = val.value;
+        entry.inpHolder = val.value;
         this.setState({
-            value: val
+            value: val.value
         });
     }
 
     render() {
         let entry = this.props.entry;
-        let bind = this.props.bind;
-        let onSelected = this.props.onSelected;
-
         return (
             <Select options={entry.selectOpt} name={entry.inpName} value={this.state.value}
-                onChange={onSelected != null ?
-                    onSelected.bind(bind, entry) : this._defOnSelect.bind(this, entry)}
+                onChange={this._defOnSelect.bind(this, entry)}
             />
         );
     }
@@ -112,16 +110,6 @@ class GenericForm extends React.Component
                     onSelected.bind(bind, entry) : GenericForm._defOnSelect.bind(this, entry)}
             />
         );
-    }
-
-    static renderSelect(entry, bind, onSelected) {
-        let sel = (
-            <Select options={entry.selectOpt} name={entry.inpName} value={entry.inpHolder}
-                onChange={onSelected != null ?
-                    onSelected.bind(bind, entry) : GenericForm._defOnSelect.bind(this, entry)}
-            />
-        );
-        return sel;
     }
 
     static renderInput(entry, bind, onBlur, onSelected) {

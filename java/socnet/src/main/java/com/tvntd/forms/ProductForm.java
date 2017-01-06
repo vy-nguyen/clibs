@@ -41,11 +41,11 @@ public class ProductForm
     private String  authorUuid;
     private String  articleUuid;
 
-    @Size(max = 140)
+    @Size(max = 128)
     private String  prodCat;
 
     @NotNull
-    @Size(max = 140)
+    @Size(max = 128)
     private String  prodName;
 
     private String  prodTitle;
@@ -55,12 +55,14 @@ public class ProductForm
     private String  prodDetail;
     private String  prodSpec;
     private String  prodSub;
+    private String  pubTag;
 
     public boolean cleanInput()
     {
         if (prodName == null || prodCat == null || prodTitle == null ||
             prodPrice == null || prodDesc == null || prodDetail == null ||
-            prodSpec == null || authorUuid == null || articleUuid == null) {
+            prodSpec == null || authorUuid == null || articleUuid == null ||
+            pubTag == null) {
             return false;
         }
         Whitelist wlist = Whitelist.basic();
@@ -76,7 +78,11 @@ public class ProductForm
         prodDetail = Util.clean(prodDetail, wlist, contentLen);
         prodSpec   = Util.clean(prodSpec, wlist, contentLen);
         prodSub    = Util.clean(prodSub, wlist, contentLen);
+        pubTag     = Util.clean(pubTag, wlist, headerLen);
 
+        if (prodSub == null) {
+            prodSub = "";
+        }
         return true;
     }
 
@@ -246,5 +252,19 @@ public class ProductForm
      */
     public void setProdSub(String prodSub) {
         this.prodSub = prodSub;
+    }
+
+    /**
+     * @return the pubTag
+     */
+    public String getPubTag() {
+        return pubTag;
+    }
+
+    /**
+     * @param pubTag the pubTag to set
+     */
+    public void setPubTag(String pubTag) {
+        this.pubTag = pubTag;
     }
 }

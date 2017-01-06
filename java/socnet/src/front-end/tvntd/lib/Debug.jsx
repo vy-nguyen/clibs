@@ -59,7 +59,7 @@ class Debug extends React.Component {
         AdminStore.dumpData("Admin Store Content");
     }
 
-    debugArtTagstore() {
+    debugArtTagStore() {
         ArtTagStore.dumpData("Article Tag Content");
     }
 
@@ -102,7 +102,7 @@ class Debug extends React.Component {
                     <br/>
                     <a onClick={this.debugAdminStore}>Debug Admin Store</a>
                     <br/>
-                    <a onClick={this.debugArtTagstore}>Debug ArticleTag Store</a>
+                    <a onClick={this.debugArtTagStore}>Debug ArticleTag Store</a>
                     <br/>
                     <a onClick={this.debugStateButtonStore}>Debug State Button Store</a>
                     <br/>

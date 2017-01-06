@@ -132,7 +132,10 @@ public class ArticleRank
         this.favorite = tag.isFavorite();
         this.rank = tag.getRank();
         this.tagHash = HashKey.toSha1Key(this.tag, authorUuid);
-        this.contentBrief = product.getProdName();
+
+        // XXX: trim the length here.
+        this.contentBrief = product.getProdDesc();
+        this.tag = product.getProdCat();
     }
 
     public ArticleRank(CommentChangeForm form, String authorUuid)

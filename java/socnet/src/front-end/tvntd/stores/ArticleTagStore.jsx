@@ -8,6 +8,7 @@ import _         from 'lodash';
 import Reflux    from 'reflux';
 import Actions   from 'vntd-root/actions/Actions.jsx';
 
+import {EProductStore}             from 'vntd-root/stores/ArticleStore.jsx';
 import {insertSorted, removeArray} from 'vntd-shared/utils/Enum.jsx';
 
 class ArtTag {
@@ -80,6 +81,16 @@ let ArticleTagStore = Reflux.createStore({
         }
     },
 
+    /* Signal to sync up data with server. */
+    onSyncServerCompleted: function() {
+        let pubTags = this.data.sortedPubTags;
+
+        _.forEach(pubTags, function(tag) {
+            EProductStore.updateMissingUuid(tag.articleRank);
+        });
+        EProductStore.requestProducts();
+    },
+
     /* Public methods. */
     addTagInput: function(tag) {
         this._addTag(new ArtTag(tag));
@@ -106,6 +117,18 @@ let ArticleTagStore = Reflux.createStore({
                 this.trigger(this.data);
             }
         }
+    },
+
+    addToPublicTag: function(tagName, tagKind, uuid) {
+        let tag = this.data.pubTagIndex[tagName];
+        if (tag != null) {
+            console.log("add to public tag " + tag);
+            if (tag.tagKind === tagKind) {
+                console.log("same tag kind " + tagKind);
+            }
+            tag.articleRank.push(uuid);
+        }
+        console.log(tag);
     },
 
     updatePublicTags: function(tagRanks, tagMgr) {
@@ -197,6 +220,19 @@ let ArticleTagStore = Reflux.createStore({
             return result;
         }
         return this.data.sortedIdxTags;
+    },
+
+    getPublicTagsSelOpt: function(kind) {
+        let result = [];
+        _.forOwn(this.data.sortedIdxTags, function(tag) {
+            if (tag.tagKind === kind) {
+                result.push({
+                    value: tag.tagName,
+                    label: tag.tagName
+                });
+            }
+        });
+        return result;
     },
 
     getAllPublicTagsString: function(topLevel) {

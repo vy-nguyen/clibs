@@ -71,7 +71,7 @@ public class Article
     private boolean  pending;
 
     @Column(length = 64)
-    private String   contentOId;
+    private String contentOId;
 
     @Column
     @Temporal(TemporalType.TIMESTAMP)
@@ -79,6 +79,9 @@ public class Article
 
     @Column(length = 128)
     private byte[] topic;
+
+    @Column(length = 128)
+    private byte[] publicTag;
 
     @Lob
     @Column(length = 1 << 16)
@@ -209,6 +212,13 @@ public class Article
      */
     public void setTopic(byte[] topic) {
         this.topic = topic;
+    }
+
+    /**
+     * @return the publicTag
+     */
+    public byte[] getPublicTag() {
+        return publicTag;
     }
 
     /**

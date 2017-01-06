@@ -61,9 +61,6 @@ let LanguageStore = Reflux.createStore({
 
     onSelectFailed: function(key, json) {
         console.log("lang sel failed");
-        console.log(this);
-        console.log(key);
-        console.log(json);
     },
 
     onInitCompleted: function(key, phrase) {

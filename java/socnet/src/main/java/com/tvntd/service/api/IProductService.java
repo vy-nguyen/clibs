@@ -55,6 +55,7 @@ public interface IProductService
     List<ProductDTO> getProductsByUser(String userUuid);
     List<ProductDTO> getProductsByUser(List<String> userUuids);
     List<ProductDTO> getProductsByUser(String[] userUuids);
+    List<ProductDTO> getProductsByUuids(String[] prodUuids);
 
     Page<ProductDTO> getUserProducts(Long userId);
     Page<ProductDTO> getUserProducts(String userUuid);
@@ -62,8 +63,8 @@ public interface IProductService
     void saveProduct(Product prod);
     void saveProduct(ProductDTO prod);
 
-    boolean deleteProduct(Product prod, ProfileDTO owner);
-    boolean deleteProduct(String uuid, ProfileDTO owner);
+    Product deleteProduct(Product prod, ProfileDTO owner);
+    Product deleteProduct(String uuid, ProfileDTO owner);
 
     public static class LikeStat
     {
@@ -178,6 +179,7 @@ public interface IProductService
         private String      prodDesc;
         private String      prodDetail;
         private String      prodSpec;
+        private String      publicTag;
 
         public ProductDTO(Product prod)
         {
@@ -376,6 +378,14 @@ public interface IProductService
                 prodSpec = convertUTF(product.getProdSpec());
             }
             return prodSpec;
+        }
+
+        public String getPublicTag()
+        {
+            if (publicTag == null) {
+                publicTag = convertUTF(product.getPublicTag());
+            }
+            return publicTag;
         }
 
         public String getCreatedDate() {

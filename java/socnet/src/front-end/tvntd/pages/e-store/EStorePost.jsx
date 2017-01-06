@@ -8,9 +8,9 @@ import _      from 'lodash';
 import React  from 'react-mod';
 
 import {OverlayTrigger, Tooltip} from 'react-bootstrap';
+import {GenericForm, SelectWrap} from 'vntd-shared/forms/commons/GenericForm.jsx';
 
 import ErrorView        from 'vntd-shared/layout/ErrorView.jsx';
-import GenericForm      from 'vntd-shared/forms/commons/GenericForm.jsx';
 import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
 import NestableStore    from 'vntd-shared/stores/NestableStore.jsx';
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
@@ -19,6 +19,7 @@ import StateButton      from 'vntd-shared/utils/StateButton.jsx';
 import JarvisWidget     from 'vntd-shared/widgets/JarvisWidget.jsx';
 import Actions          from 'vntd-root/actions/Actions.jsx';
 import {EProductStore}  from 'vntd-root/stores/ArticleStore.jsx';
+import ArticleTagStore  from 'vntd-root/stores/ArticleTagStore.jsx';
 
 class EStorePost extends React.Component
 {
@@ -33,6 +34,7 @@ class EStorePost extends React.Component
         this._updateState = this._updateState.bind(this);
         this._editProduct = this._editProduct.bind(this);
         this._getPostData = this._getPostData.bind(this);
+        this._selPublicCat  = this._selPublicCat.bind(this);
         this._getInitState  = this._getInitState.bind(this);
         this._onSaveProduct = this._onSaveProduct.bind(this);
         this._onPostProduct = this._onPostProduct.bind(this);
@@ -45,6 +47,12 @@ class EStorePost extends React.Component
         this._saveBtnId    = "save-product-btn";
         this._publishBtnId = "publish-product-btn";
 
+        this.publicCat = {
+            labelTxt : "Publish Category",
+            inpName  : "pulbTag",
+            select   : true,
+            selectOpt: ArticleTagStore.getPublicTagsSelOpt("estore")
+        };
         this._saveBtn = StateButtonStore.createButton(this._saveBtnId, function() {
             return StateButton.saveButtonFsm("Save", "Save Editing", "Saved Product");
         }); 
@@ -104,6 +112,10 @@ class EStorePost extends React.Component
         StateButtonStore.setButtonStateObj(this._publishBtn, "needSave");
     }
 
+    _selPublicCat(entry, val) {
+        console.log(">>> select public tag " + val.value);
+    }
+
     _onSaveProduct() {
         StateButtonStore.setButtonStateObj(this._publishBtn, "saving");
         console.log("Save product...");
@@ -114,6 +126,9 @@ class EStorePost extends React.Component
         StateButtonStore.setButtonStateObj(this._publishBtn, "saving");
 
         let product = this._getPostData();
+        console.log("publised this product");
+        console.log(product);
+
         Actions.publishProduct(product);
     }
 
@@ -122,6 +137,7 @@ class EStorePost extends React.Component
             estore    : true,
             authorUuid : this._myUuid,
             articleUuid: this.state.articleUuid,
+            pubTag     : this.publicCat.taValue,
             prodCat    : this.refs.prodCat.value,
             prodName   : this.refs.prodName.value,
             prodTitle  : this.refs.prodName.value,
@@ -241,6 +257,7 @@ class EStorePost extends React.Component
                     <div className="col-xs-12 col-sm-7 col-md-7 col-lg-7">
                         <div className="product-deatil">
                             <div className="name">
+                                {GenericForm.renderInputBox(this.publicCat, this, null, this._selPublicCat)}
                                 {GenericForm.renderInputInline(prodCat, this, this._onBlurInput)}
                                 {GenericForm.renderInputInline(prodName, this, this._onBlurInput)}
                                 {GenericForm.renderInputInline(prodPrice, this, this._onBlurInput)}

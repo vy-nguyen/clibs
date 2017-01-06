@@ -47,6 +47,9 @@ public interface IArtTagService
     ArtTagList getUserTagsDTO(String uuid);
     void deleteTag(String tag, String uuid);
 
+    void addPublicTagPost(String pubTag, String uuid);
+    void deletePublicTagPost(String pubTag, String uuid);
+
     public static class ArtTagList extends GenericResponse
     {
         private List<ArtTagDTO> publicTags;

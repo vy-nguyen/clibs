@@ -94,6 +94,9 @@ public class Product
     @Column(length = 128)
     private byte[]     prodSub;
 
+    @Column(length = 128)
+    private byte[]     publicTag;
+
     @Lob
     @Column(length = 1 << 16)
     private byte[]     prodDesc;
@@ -348,6 +351,20 @@ public class Product
      */
     public void setProdSub(byte[] prodSub) {
         this.prodSub = prodSub;
+    }
+
+    /**
+     * @return the publicTag
+     */
+    public byte[] getPublicTag() {
+        return publicTag;
+    }
+
+    /**
+     * @param publicTag the publicTag to set
+     */
+    public void setPublicTag(byte[] publicTag) {
+        this.publicTag = publicTag;
     }
 
     /**

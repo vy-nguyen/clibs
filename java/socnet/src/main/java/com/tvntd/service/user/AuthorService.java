@@ -44,6 +44,7 @@ import com.tvntd.dao.AuthorTagRepo;
 import com.tvntd.dao.AuthorTagRepo.AuthorTagDTO;
 import com.tvntd.dao.AuthorTagRepo.AuthorTagRespDTO;
 import com.tvntd.forms.ArticleForm;
+import com.tvntd.forms.ProductForm;
 import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Author;
@@ -288,14 +289,14 @@ public class AuthorService implements IAuthorService
     }
 
     @Override
-    public ArticleRank createProductRank(Product product, String tagName)
+    public ArticleRank createProductRank(Product product, ProductForm form)
     {
         String authorUuid = product.getAuthorUuid();
         Author author = authorRepo.findByAuthorUuid(authorUuid);
         if (author == null) {
             author = new Author(authorUuid, product.getArticleUuid());
         }
-        AuthorTag tag = updateAuthorTag(author, tagName, 0L, false);
+        AuthorTag tag = updateAuthorTag(author, form.getProdCat(), 0L, false);
         ArticleRank rank = new ArticleRank(tag, product);
 
         rankRepo.save(rank);

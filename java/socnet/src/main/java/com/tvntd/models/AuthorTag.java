@@ -62,6 +62,7 @@ public class AuthorTag
     private String headNotif;
 
     private boolean  favorite;
+    private boolean  published;
     private Long     rank;
     private Long     notifCount;
     private String   headChain;
@@ -116,6 +117,20 @@ public class AuthorTag
      */
     public boolean isFavorite() {
         return favorite;
+    }
+
+    /**
+     * @return the published
+     */
+    public boolean isPublished() {
+        return published;
+    }
+
+    /**
+     * @param published the published to set
+     */
+    public void setPublished(boolean published) {
+        this.published = published;
     }
 
     /**

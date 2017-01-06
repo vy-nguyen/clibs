@@ -9,8 +9,10 @@ import React    from 'react-mod';
 import NavigationStore from 'vntd-shared/stores/NavigationStore.jsx';
 import ArticleBox      from 'vntd-root/components/ArticleBox.jsx';
 import AuthorFeed      from 'vntd-root/components/AuthorFeed.jsx';
-import ArticleStore    from 'vntd-root/stores/ArticleStore.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
+import EStore          from 'vntd-root/pages/e-store/EStore.jsx';
+
+import {ArticleStore, EProductStore}  from 'vntd-root/stores/ArticleStore.jsx';
 
 class ArticleTagBrief extends React.Component
 {
@@ -112,6 +114,18 @@ class ArticleTagBrief extends React.Component
     }
 
     render() {
+        let tag = this.props.tag;
+
+        if (tag.tagKind === "estore") {
+            let products = [];
+            _.forEach(tag.articleRank, function(uuid) {
+                let prod = EProductStore.getProductByUuid(uuid);
+                if (prod != null) {
+                    products.push(prod);
+                }
+            });
+            return EStore.renderProducts(products, null);
+        }
         let articles = [];
         ArticleTagStore.getPublishedArticles(this.props.tag.tagName, articles);
 

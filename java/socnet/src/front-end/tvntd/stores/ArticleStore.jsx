@@ -11,6 +11,7 @@ import Actions      from 'vntd-root/actions/Actions.jsx';
 import CommentStore from 'vntd-root/stores/CommentStore.jsx';
 import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
 import UserStore    from 'vntd-shared/stores/UserStore.jsx';
+import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 
 import {insertSorted, preend, removeArray} from 'vntd-shared/utils/Enum.jsx';
 
@@ -106,6 +107,8 @@ let EProductStore = Reflux.createStore({
             productByUuid  : {},
             mySavedProducts: {},
 
+            requestUuids : null,
+            missingUuids : null,
             myProducts   : null,
             myProductPost: null,
             errorText : "",
@@ -118,9 +121,9 @@ let EProductStore = Reflux.createStore({
         let uuids = UserStore.getFetchedUuidList('es');
 
         if (!_.isEmpty(uuids)) {
-            Actions.getPublishProds({
+           Actions.getPublishProds({
                 authorUuid: UserStore.getSelfUuid(),
-                uuidType  : "product",
+                uuidType  : "user",
                 uuids     : uuids
             });
         }
@@ -157,7 +160,8 @@ let EProductStore = Reflux.createStore({
     },
 
     getProductByUuid: function(uuid) {
-        return this.data.productByUuid[uuid];
+        let uuids = this.data.productByUuid[uuid];
+        return uuids;
     },
 
     init: function() {
@@ -166,7 +170,10 @@ let EProductStore = Reflux.createStore({
 
     onPublishProductCompleted: function(product) {
         let prod = this._addEStore(product, false);
+        let pubTag = prod.publicTag;
+
         this.data.myProductPost = prod;
+        ArticleTagStore.addToPublicTag(pubTag, "estore", prod.articleUuid);
         this.trigger(this.data, [prod], "postOk", true, prod.authorUuid);
     },
 
@@ -181,6 +188,8 @@ let EProductStore = Reflux.createStore({
             products.push(this._addEStore(product, false));
         }.bind(this));
 
+        this.data.requestUuids = null;
+        this.requestProducts();
         this.trigger(this.data, products, "getOk", !_.isEmpty(products), null);
     },
 
@@ -191,6 +200,34 @@ let EProductStore = Reflux.createStore({
     onDeleteProductCompleted: function(data) {
         this._removeEStore(data.uuids, data.authorUuid);
         this.trigger(this.data, data, "delOk", true, data.authorUuid);
+    },
+
+    updateMissingUuid(uuids) {
+        let store = this.data.productByUuid;
+        let missing = this.data.missingUuids;
+        _.forEach(uuids, function(uid) {
+            if (store[uid] == null) {
+                if (this.data.missingUuids == null) {
+                    this.data.missingUuids = [];
+                    missing = this.data.missingUuids;
+                }
+                missing.push(uid);
+            }
+        }.bind(this));
+    },
+
+    requestProducts() {
+        if (this.data.requestdUuids != null || this.data.missingUuids == null) {
+            return;
+        }
+        this.data.requestUuids = this.data.missingUuids;
+        this.data.missingUuids = null;
+
+        Actions.getPublishProds({
+            authorUuid: null,
+            uuidType  : "product",
+            uuids     : this.data.requestUuids
+        });
     },
 
     /**
@@ -229,6 +266,7 @@ let EProductStore = Reflux.createStore({
     _removeEStore: function(prodUuids, authorUuid) {
         _.forEach(prodUuids, function(articleUuid) {
             let anchor = this.getProductOwner(authorUuid);
+
             anchor.removeArticle(articleUuid);
             delete this.data.productByUuid[articleUuid];
         }.bind(this));
@@ -254,6 +292,9 @@ let ArticleStore = Reflux.createStore({
             myPostResult  : null,
             artUuidByDate : [],
             artUuidByScore: [],
+
+            requestArtUuids: [],
+            missingArtUuids: [],
 
             errorText : "",
             errorResp : null

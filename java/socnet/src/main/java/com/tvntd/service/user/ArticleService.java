@@ -229,12 +229,23 @@ public class ArticleService implements IArticleService
     public List<ArticleRankDTO> getArticleRank(UuidForm uuids)
     {
         List<ArticleRankDTO> ranks = new LinkedList<>();
+        String type = uuids.getUuidType();
 
+        boolean author = true;
+        if (type != null && type.equals("product")) {
+            author = false;
+        }
         for (String uuid : uuids.getUuids()) {
-            List<ArticleRank> r = artRankRepo.findByAuthorUuid(uuid);
-
-            if (r != null && !r.isEmpty()) {
-                ranks.addAll(convertRank(r));
+            if (author == true) {
+                List<ArticleRank> r = artRankRepo.findByAuthorUuid(uuid);
+                if (r != null && !r.isEmpty()) {
+                    ranks.addAll(convertRank(r));
+                }
+            } else {
+                ArticleRank r = artRankRepo.findByArticleUuid(uuid);
+                if (r != null) {
+                    ranks.add(new ArticleRankDTO(r));
+                }
             }
         }
         return ranks;
@@ -360,10 +371,10 @@ public class ArticleService implements IArticleService
     }
 
     @Override
-    public boolean deleteArticle(Article art, ProfileDTO owner)
+    public Article deleteArticle(Article art, ProfileDTO owner)
     {
         if (!art.getAuthorUuid().equals(owner.getUserUuid())) {
-            return false;
+            return null;
         }
         ArticleRank rank = artRankRepo.findByArticleUuid((art.getArticleUuid()));
         if (rank != null) {
@@ -372,11 +383,11 @@ public class ArticleService implements IArticleService
         articleRepo.delete(art.getArticleUuid());
         articleRepo.flush();
         artRankRepo.flush();
-        return true;
+        return art;
     }
 
     @Override
-    public boolean deleteArticle(String uuid, ProfileDTO owner)
+    public Article deleteArticle(String uuid, ProfileDTO owner)
     {
         s_log.info("Delete article " + uuid + ", owner " + owner.getUserUuid());
 
@@ -385,7 +396,7 @@ public class ArticleService implements IArticleService
             Article article = art.fetchArticle();
             if (!owner.getUserUuid().equals(article.getAuthorUuid())) {
                 s_log.info("Wrong owner " + owner.getUserUuid());
-                return false;
+                return null;
             }
             ArticleRank rank = artRankRepo.findByArticleUuid(article.getArticleUuid());
             if (rank != null) {
@@ -394,9 +405,9 @@ public class ArticleService implements IArticleService
             articleRepo.delete(article);
             articleRepo.flush();
             artRankRepo.flush();
-            return true;
+            return article;
         }
-        return false;
+        return null;
     }
 
     @Override

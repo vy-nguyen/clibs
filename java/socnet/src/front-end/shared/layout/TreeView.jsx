@@ -32,13 +32,9 @@ class TreeViewItem extends React.Component
     }
 
     _handleDrag(entry, event) {
-        console.log("Handle drag child");
-        console.log(entry);
     }
 
     _handleDrop(entry, event) {
-        console.log("Handle drop child");
-        console.log(entry);
     }
 
     _handleDragOver(event) {
@@ -91,13 +87,9 @@ class TreeView extends React.Component
     }
 
     _handleDrag(entry, event) {
-        console.log("Handle drag");
-        console.log(entry);
     }
 
     _handleDrop(entry, event) {
-        console.log("Handle drop");
-        console.log(entry);
     }
 
     _handleDragOver(event) {

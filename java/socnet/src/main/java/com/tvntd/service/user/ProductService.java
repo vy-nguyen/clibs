@@ -90,10 +90,11 @@ public class ProductService implements IProductService
             prod.setProdDesc(form.getProdDesc().getBytes("UTF-8"));
             prod.setProdSpec(form.getProdSpec().getBytes("UTF-8"));
             prod.setProdDetail(form.getProdDetail().getBytes("UTF-8"));
+            prod.setPublicTag(form.getPubTag().getBytes("UTF-8"));
+            prod.setProdSub(form.getProdSub().getBytes("UTF-8"));
 
             prod.setProdPrice(0L);
             prod.setPriceUnit("$");
-            prod.setProdSub("".getBytes("UTF-8"));
             prod.setLogoTag("");
 
         } catch(UnsupportedEncodingException e) {
@@ -187,6 +188,21 @@ public class ProductService implements IProductService
     }
 
     @Override
+    public List<ProductDTO> getProductsByUuids(String[] prodUuids)
+    {
+        List<ProductDTO> result = new LinkedList<>();
+        if (prodUuids != null) {
+            for (String u : prodUuids) {
+                ProductDTO prod = getProductDTO(u);
+                if (prod != null) {
+                    result.add(prod);
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
     public Page<ProductDTO> getUserProducts(Long userId)
     {
         return null;
@@ -212,13 +228,13 @@ public class ProductService implements IProductService
     }
 
     @Override
-    public boolean deleteProduct(Product prod, ProfileDTO owner)
+    public Product deleteProduct(Product prod, ProfileDTO owner)
     {
         s_log.info("Delete product " + prod.getArticleUuid() +
                 " owner " + owner.getUserUuid());
 
         if (prod == null || !prod.getAuthorUuid().equals(owner.getUserUuid())) {
-            return false;
+            return null;
         }
         ArticleRank rank = artRankRepo.findByArticleUuid(prod.getArticleUuid());
         if (rank != null) {
@@ -227,11 +243,11 @@ public class ProductService implements IProductService
         productRepo.delete(prod);
         productRepo.flush();
         artRankRepo.flush();
-        return true;
+        return prod;
     }
 
     @Override
-    public boolean deleteProduct(String uuid, ProfileDTO owner)
+    public Product deleteProduct(String uuid, ProfileDTO owner)
     {
         return deleteProduct(productRepo.findByArticleUuid(uuid), owner);
     }

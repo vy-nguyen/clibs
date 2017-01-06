@@ -126,26 +126,18 @@ class UserInfo extends React.Component
 
     _onLineStatus() {
         console.log("onLine status");
-        console.log(this);
     }
 
     _offLineStatus() {
         console.log("offline status");
-        console.log(this);
     }
 
     _saveProfile(a, b) {
         console.log("Save profile");
-        console.log(this);
-        console.log(a);
-        console.log(b);
     }
 
     _cancelSave(a, b) {
         console.log("Cancel Save");
-        console.log(this);
-        console.log(a);
-        console.log(b);
     }
 
     render() {

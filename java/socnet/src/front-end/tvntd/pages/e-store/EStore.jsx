@@ -21,8 +21,6 @@ class EStore extends React.Component
 {
     constructor(props) {
         super(props);
-        this._renderProdBrief = this._renderProdBrief.bind(this);
-        this._renderProdFull = this._renderProdFull.bind(this);
         this._updateState = this._updateState.bind(this);
 
         this.state = {
@@ -58,27 +56,27 @@ class EStore extends React.Component
         }.bind(this));
     }
 
-    _renderProdBrief(product) {
+    static _renderProdBrief(userUuid, product) {
         return (
             <div className='col-xs-6 col-sm-6 col-md-6 col-lg-4'>
-                <ProductBrief product={product} userUuid={this.props.userUuid}/>
+                <ProductBrief product={product} userUuid={userUuid}/>
             </div>
         );
     }
 
-    _renderProdFull(product) {
+    static _renderProdFull(product) {
         return (
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             </div>
         );
     }
 
-    render() {
-        const products = this.state.products;
+    static renderProducts(products, userUuid) {
+        let renderBrief = EStore._renderProdBrief.bind(this, userUuid);
         return (
             <div id="content">
                 <section id="widget-grid" className="">
-                    {ArticleTagBrief.renderArtBox(products, this._renderProdBrief, this._renderProdFull)}
+                    {ArticleTagBrief.renderArtBox(products, renderBrief, EStore._renderProdFull)}
                     <div className="row">
                         <div className="col-sm-12 text-center">
                             <button className="btn btn-primary btn-lg">
@@ -89,6 +87,10 @@ class EStore extends React.Component
                 </section>
             </div>
         )
+    }
+
+    render() {
+        return EStore.renderProducts(this.state.products, this.props.userUuid);
     }
 }
 

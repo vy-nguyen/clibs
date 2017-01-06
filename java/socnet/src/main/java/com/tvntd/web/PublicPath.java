@@ -250,7 +250,17 @@ public class PublicPath
     public GenericResponse
     getEStores(@RequestBody UuidForm uuids, HttpSession session)
     {
-        List<ProductDTO> list = productSvc.getProductsByUser(uuids.getUuids());
+        if (uuids == null) {
+            return UserPath.s_genOkResp;
+        }
+        List<ProductDTO> list = null;
+        String type = uuids.getUuidType();
+
+        if (type.equals("user")) {
+            list = productSvc.getProductsByUser(uuids.getUuids());
+        } else {
+            list = productSvc.getProductsByUuids(uuids.getUuids());
+        }
         List<ArticleRankDTO> ranks = articleSvc.getArticleRank(uuids);
         return new ProductDTOResponse(list, null, ranks);
     }
@@ -265,6 +275,9 @@ public class PublicPath
     public GenericResponse
     getArticles(@RequestBody UuidForm uuids, HttpSession session)
     {
+        if (uuids == null) {
+            return UserPath.s_genOkResp;
+        }
         return null;
     }
 

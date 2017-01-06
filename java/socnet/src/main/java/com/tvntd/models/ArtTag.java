@@ -57,6 +57,7 @@ public class ArtTag
     public static String BLOG   = "blog";
     public static String NEWS   = "news";
     public static String ESTORE = "estore";
+    public static int TagLength = 128;
 
     /**
      * TagName hashed to sha1 form for efficiency lookup.
@@ -71,6 +72,7 @@ public class ArtTag
     /**
      * Raw tag to preserve encoding because we can't use it as key.
      */
+    @Column(length = 128)
     private byte[] tagName;
 
     private Date lastUpdate;
@@ -85,7 +87,7 @@ public class ArtTag
             joinColumns = @JoinColumn(name = "tagOid"))
     private List<String> tagArtRanks;
 
-    @Column(length = 64)
+    @Column(length = 128)
     private byte[] parentTag;
 
     @Column(length = 16)

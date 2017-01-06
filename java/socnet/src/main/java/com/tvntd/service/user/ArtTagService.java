@@ -26,10 +26,8 @@
  */
 package com.tvntd.service.user;
 
-import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +44,7 @@ import com.tvntd.forms.TagForm.TagRank;
 import com.tvntd.models.ArtTag;
 import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IAuthorService;
+import com.tvntd.util.Constants;
 
 @Service
 @Transactional
@@ -196,6 +195,36 @@ public class ArtTagService implements IArtTagService
         String key = ArtTagDTO.makeTagOidKey(tag, uuid);
         if (key != null) {
             artTagRepo.delete(key);
+        }
+    }
+
+    @Override
+    public synchronized void addPublicTagPost(String pubTag, String uuid)
+    {
+        if (pubTag == null || uuid == null) {
+            return;
+        }
+        ArtTagDTO pub = getTag(pubTag, Constants.PublicUuid);
+        if (pub != null) {
+            pub.addArtRank(uuid);
+            saveTag(pub);
+        } else {
+            s_log.info("Public tag " + pubTag + " doesn't exist");
+        }
+    }
+
+    @Override
+    public synchronized void deletePublicTagPost(String pubTag, String uuid)
+    {
+        if (pubTag == null) {
+            return;
+        }
+        ArtTagDTO pub = getTag(pubTag, Constants.PublicUuid);
+        if (pub != null) {
+            pub.removeArtRank(uuid);
+            saveTag(pub);
+        } else {
+            s_log.info("Public tag " + pubTag + " doesn't exist");
         }
     }
 }
