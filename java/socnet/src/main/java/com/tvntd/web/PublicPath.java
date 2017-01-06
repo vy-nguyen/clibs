@@ -66,8 +66,6 @@ import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.ICommentService;
-import com.tvntd.service.api.IMenuItemService;
-import com.tvntd.service.api.IMenuItemService.MenuItemResp;
 import com.tvntd.service.api.IProductService;
 import com.tvntd.service.api.IProductService.ProductDTO;
 import com.tvntd.service.api.IProductService.ProductDTOResponse;
@@ -87,9 +85,6 @@ public class PublicPath
 
     @Autowired
     private IAuthorService authorSvc;
-
-    @Autowired
-    private IMenuItemService menuItemSvc;
 
     @Autowired
     private IArticleService articleSvc;
@@ -116,18 +111,13 @@ public class PublicPath
         if (profile != null) {
             StartupResponse result = new StartupResponse(profile, reqt);
             ApiPath.fillStartupResponse(result, profile,
-                    profileSvc, authorSvc, menuItemSvc, articleSvc, artTagSvc);
+                    profileSvc, authorSvc, articleSvc, artTagSvc);
             return result;
         }
         if (s_publicDto == null) {
             s_publicDto = new ProfileDTO(s_public);
         }
         StartupResponse result = new StartupResponse(s_publicDto, reqt);
-        Long userId = menuItemSvc.getPublicId();
-        List<MenuItemResp> items = menuItemSvc.getMenuItemRespByUser(userId);
-        if (items != null) {
-            result.setMenuItems(items);
-        }
         fillStartupPublicResponse(result, s_publicDto);
         return result;
     }

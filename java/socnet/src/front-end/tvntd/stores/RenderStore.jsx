@@ -9,6 +9,104 @@ import Actions           from 'vntd-root/actions/Actions.jsx';
 import NavigationActions from 'vntd-shared/actions/NavigationActions.jsx';
 import NavigationStore   from 'vntd-shared/stores/NavigationStore.jsx';
 
+const _userMenuEntries = [ {
+    badge: null,
+    icon : 'fa fa-lg fa-fw fa-home',
+    items: null,
+    route: '/',
+    title: 'Home'
+}, {
+    badge: null,
+    icon : 'fa fa-lg fa-fw fa-user',
+    items: [ {
+        badge: null,
+        icon : 'fa fa-user',
+        items: null,
+        route: '/user/profile',
+        title: 'Edit Profile'
+    }, {
+        badge: null,
+        icon : 'fa fa-money',
+        items: null,
+        route: '/user/account',
+        title: 'My Account'
+    }, {
+        badge: null,
+        icon : 'fa fa-flag',
+        items: null,
+        route: '/user/logs',
+        title: 'Activity Logs'
+    }, {
+        badge: null,
+        icon : 'fa fa-users',
+        items: null,
+        route: '/user/all',
+        title: 'All Users'
+    }, {
+        badge: null,
+        icon : 'fa fa-sign-out',
+        items: null,
+        route: '/login/logout',
+        title: 'Logout'
+    } ],
+    route: '/user',
+    title: 'Profile'
+}, {
+    badge: null,
+    icon : 'fa fa-lg fa-fw fa-book',
+    items: null,
+    route: '/public/blog',
+    title: 'News/Blogs'
+}, {
+    badge: null,
+    icon : 'fa fa-lg fa-fw fa-money',
+    items: null,
+    route: '/public/ads',
+    title: 'Commercial Ads'
+}, {
+    badge: null,
+    icon : 'fa fa-lg fa-fw fa-shopping-cart',
+    items: null,
+    route: '/public/estore',
+    title: 'E Stores'
+}, {
+    badge: null,
+    icon : 'fa fa-lg fa-fw fa-book',
+    items: null,
+    route: '/public/edu',
+    title: 'Education'
+}, {
+    badge: null,
+    icon : 'fa fa-lg fa-fw fa-gear',
+    items: null,
+    route: '/public/tech',
+    title: 'Technology'
+}, {
+    badge: null,
+    icon : 'fa fa-lg fa-fw fa-briefcase',
+    items: [ {
+        badge: null,
+        icon : 'fa fa-money',
+        items: null,
+        route: '/public/projects',
+        title: 'Public Projects'
+    }, {
+        badge: null,
+        icon : 'fa fa-money',
+        items: null,
+        route: '/user/projects',
+        title: 'Private Projects'
+    } ],
+    route: '/public/projects',
+    title: 'Public Projects'
+}, {
+    badge: null,
+    icon : 'fa fa-lg fa-fw fa-globe',
+    tiems: null,
+    route: '/public/aboutus',
+    title: 'About Us'
+} ];
+
 let RenderStore = Reflux.createStore({
     data: {},
     listenables: [Actions, NavigationActions],
@@ -47,7 +145,8 @@ let RenderStore = Reflux.createStore({
     onStartupCompleted: function(json) {
         this.data.menuItems = json.menuItems;
 
-        NavigationStore.replaceMenuItems(json.menuItems);
+        NavigationStore.replaceMenuItems(_userMenuEntries);
+        //NavigationStore.replaceMenuItems(json.menuItems);
         this.trigger(this.data);
     },
 

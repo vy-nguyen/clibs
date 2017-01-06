@@ -158,7 +158,7 @@ class LoginForm extends React.Component
         this._clearRefs();
         if (data.authError == null) {
             Actions.startup("/api/user");
-            History.pushState(null, "/public/vietnam");
+            History.pushState(null, "/");
         }
     }
 

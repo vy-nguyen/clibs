@@ -54,11 +54,8 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.mongodb.Mongo;
-import com.tvntd.dao.AuthorTagRepo.AuthorTagDTO;
-import com.tvntd.dao.AuthorTagRepo.AuthorTagRespDTO;
 import com.tvntd.forms.UserConnectionForm;
 import com.tvntd.lib.ObjectId;
-import com.tvntd.models.Author;
 import com.tvntd.models.User;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.GenericResponse;
@@ -69,7 +66,6 @@ import com.tvntd.service.api.IArticleService.ArticleDTOResponse;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IAuthorService.AuthorDTO;
 import com.tvntd.service.api.IMenuItemService;
-import com.tvntd.service.api.IMenuItemService.MenuItemResp;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.IUserNotifService;
@@ -161,7 +157,7 @@ public class ApiPath
         }
         StartupResponse result = new StartupResponse(profile, reqt);
         fillStartupResponse(result, profile,
-                profileSvc, authorSvc, menuItemSvc, articleSvc, artTagSvc);
+                profileSvc, authorSvc, articleSvc, artTagSvc);
         return result;
     }
 
@@ -171,19 +167,8 @@ public class ApiPath
     public static void
     fillStartupResponse(StartupResponse resp, ProfileDTO profile,
             IProfileService profileSvc, IAuthorService authorSvc,
-            IMenuItemService menuItemSvc, IArticleService articleSvc,
-            IArtTagService artTagSvc)
+            IArticleService articleSvc, IArtTagService artTagSvc)
     {
-        if (menuItemSvc != null) {
-            Long mask = profile.getRoleMask();
-            Long userId = ((mask & Constants.Role_Admin) != 0) ?
-                menuItemSvc.getAdminId() : menuItemSvc.getPrivateId();
-            List<MenuItemResp> items = menuItemSvc.getMenuItemRespByUser(userId);
-
-            if (items != null) {
-                resp.setMenuItems(items);
-            }
-        }
         if (profileSvc != null) {
             resp.setLinkedUsers(profileSvc.getProfileFromRaw(null));
         }

@@ -38,14 +38,12 @@ import com.tvntd.service.api.IArtTagService.ArtTagList;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.IAuthorService.AuthorDTO;
-import com.tvntd.service.api.IMenuItemService.MenuItemResp;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 public class StartupResponse
 {
     private LoginResponse          userDTO;
     private List<ProfileDTO>       linkedUsers;
-    private List<MenuItemResp>     menuItems;
     private List<ArticleDTO>       articles;
     private List<ArticleRankDTO>   artRanks;
     private List<AuthorDTO>        authors;
@@ -122,20 +120,6 @@ public class StartupResponse
      */
     public void setLinkedUsers(List<ProfileDTO> linkedUsers) {
         this.linkedUsers = linkedUsers;
-    }
-
-    /**
-     * @return the menuItems
-     */
-    public List<MenuItemResp> getMenuItems() {
-        return menuItems;
-    }
-
-    /**
-     * @param menuItems the menuItems to set
-     */
-    public void setMenuItems(List<MenuItemResp> menuItems) {
-        this.menuItems = menuItems;
     }
 
     /**
