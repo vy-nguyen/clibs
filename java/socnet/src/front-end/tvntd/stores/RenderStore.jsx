@@ -8,14 +8,17 @@ import Reflux            from 'reflux';
 import Actions           from 'vntd-root/actions/Actions.jsx';
 import NavigationActions from 'vntd-shared/actions/NavigationActions.jsx';
 import NavigationStore   from 'vntd-shared/stores/NavigationStore.jsx';
+import UserStore         from 'vntd-shared/stores/UserStore.jsx';
 
-const _userMenuEntries = [ {
+const _menuHome = {
     badge: null,
     icon : 'fa fa-lg fa-fw fa-home',
     items: null,
     route: '/',
     title: 'Home'
-}, {
+};
+
+const _menuProfile = {
     badge: null,
     icon : 'fa fa-lg fa-fw fa-user',
     items: [ {
@@ -51,7 +54,9 @@ const _userMenuEntries = [ {
     } ],
     route: '/user',
     title: 'Profile'
-}, {
+};
+
+const _menuBlogs = [ {
     badge: null,
     icon : 'fa fa-lg fa-fw fa-book',
     items: null,
@@ -81,7 +86,9 @@ const _userMenuEntries = [ {
     items: null,
     route: '/public/tech',
     title: 'Technology'
-}, {
+} ];
+
+const _menuProjects = {
     badge: null,
     icon : 'fa fa-lg fa-fw fa-briefcase',
     items: [ {
@@ -99,13 +106,67 @@ const _userMenuEntries = [ {
     } ],
     route: '/public/projects',
     title: 'Public Projects'
-}, {
+};
+
+const _menuAboutUs = {
     badge: null,
     icon : 'fa fa-lg fa-fw fa-globe',
-    tiems: null,
+    items: null,
     route: '/public/aboutus',
     title: 'About Us'
-} ];
+};
+
+const _menuLogin = {
+    badge: null,
+    icon : 'fa fa-lg fa-fw fa-user',
+    items: [ {
+        badge: null,
+        icon : 'fa fa-user',
+        items: null,
+        route: '/register/form',
+        title: 'Register New Account'
+    }, {
+        badge: null,
+        icon : 'fa fa-flag',
+        items: null,
+        route: '/register/recover',
+        title: 'Recover Your Password?'
+    }, {
+        badge: null,
+        icon : 'fa fa-flag',
+        items: null,
+        route: '/register/reset',
+        title: 'Reset Your Password'
+    } ],
+    route: '/login',
+    title: 'Login/Register'
+};
+
+const _menuAdmin = {
+    badge: null,
+    icon : 'fa fa-lg fa-fw fa-user',
+    items: [ {
+        badge: null,
+        icon : 'fa fa-money',
+        items: null,
+        route: '/admin/manage-users',
+        title: 'Manage Users'
+    }, {
+        badge: null,
+        icon : 'fa fa-flag',
+        items: null,
+        route: '/admin/set-tags',
+        title: 'Manage Public Tags'
+    }, {
+        badge: null,
+        icon : 'fa fa-flag',
+        items: null,
+        route: '/admin/logs',
+        title: 'Review Logs'
+    } ],
+    route: '/admin',
+    title: 'Admin'
+};
 
 let RenderStore = Reflux.createStore({
     data: {},
@@ -143,10 +204,24 @@ let RenderStore = Reflux.createStore({
     },
 
     onStartupCompleted: function(json) {
-        this.data.menuItems = json.menuItems;
+        let menuItems = [_menuHome];
 
-        NavigationStore.replaceMenuItems(_userMenuEntries);
-        //NavigationStore.replaceMenuItems(json.menuItems);
+        if (UserStore.isLogin() == true) {
+            Array.prototype.push.apply(menuItems, _menuBlogs);
+            menuItems.push(_menuProfile);
+            menuItems.push(_menuProjects);
+
+            if (UserStore.amIAdmin() == true) {
+                menuItems.push(_menuAdmin);
+            }
+        } else {
+            Array.prototype.push.apply(menuItems, _menuBlogs);
+            menuItems.push(_menuLogin);
+        }
+        menuItems.push(_menuAboutUs);
+
+        this.data.menuItems = menuItems;
+        NavigationStore.replaceMenuItems(menuItems);
         this.trigger(this.data);
     },
 
