@@ -3,10 +3,12 @@
 # Install gradle stuffs
 #
 sudo apt-get install software-properties-common python-software-properties
+sudo add-apt-repository ppa:fcwu-tw/ppa   
 sudo add-apt-repository ppa:cwchien/gradle
 sudo add-apt-repository ppa:webupd8team/java -y
 
 sudo apt-get update
+sudo apt-get install vim tmux
 sudo apt-get install gradle
 
 # Install java
