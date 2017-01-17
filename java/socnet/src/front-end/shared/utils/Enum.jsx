@@ -196,7 +196,17 @@ function findUuid(array, field, uuid) {
     return -1;
 }
 
+function choose(value, key, defVal) {
+    if (key != null && defVal != null) {
+        if (value != null) {
+            return value[key] != null ? value[key] : defVal;
+        }
+        return defVal;
+    }
+    return value != null ? value : defVal;
+}
+
 export {
     Enum, safeStringify, insertUnique, insertSorted, insertSortedUnique, toDateString, preend, getRandomInt,
-    removeArray, findSorted, findUuid, compareUuid
+    removeArray, findSorted, findUuid, compareUuid, choose
 }

@@ -178,7 +178,8 @@ class GenericForm extends React.Component
     static renderInputBox(entry, bind, onBlur, onSelected) {
         let labelFmt = entry.labelFmt != null ? entry.labelFmt : "control-label col-xs-2 col-sm-2 col-md-2 col-lg-2";
         let inputFmt = entry.inputFmt != null ? entry.inputFmt : "control-label col-xs-10 col-sm-10 col-md-10 col-lg-10";
-        let label = <label className={labelFmt} for="textinput">{entry.labelTxt}</label>;
+        let style = entry.errorFlag == true ? { color:'red' } : null;
+        let label = <label className={labelFmt} style={style} for="textinput">{entry.labelTxt}</label>;
 
         return (
             <div className="row" key={_.uniqueId('gen-inp-')}>
@@ -196,13 +197,14 @@ class GenericForm extends React.Component
     static renderInputInline(entry, bind, onBlur, onSelected) {
         let labelFmt = entry.labelFmt != null ? entry.labelFmt : "control-label col-xs-2 col-sm-2 col-md-2 col-lg-2";
         let inputFmt = entry.inputFmt != null ? entry.inputFmt : "control-label col-xs-10 col-sm-10 col-md-10 col-lg-10";
+        let style = entry.errorFlag == true ? { color:'red' } : null;
 
         return (
             <div className="inbox-info-bar no-padding" key={_.uniqueId('gen-inp-')}>
                 <div className="row">
                     <div className="form-group">
                         <label className={labelFmt}>
-                            <strong>{entry.labelTxt}</strong>
+                            <strong style={style}>{entry.labelTxt}</strong>
                         </label>
                         <div className={inputFmt}>
                             {GenericForm.renderInput(entry, bind, onBlur, onSelected)}

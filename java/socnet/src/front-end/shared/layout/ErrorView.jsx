@@ -35,10 +35,12 @@ class ErrorView extends React.Component
     }
 
     _changeState(data, notif) {
-        let error = ErrorStore.hasError(this.props.errorId, this.props.mesg);
-        if (this.state.error != error) {
+        if (notif != null && this.props.errorId === notif.getErrorId()) {
+            if (notif.hasError() == false) {
+                notif = null;
+            }
             this.setState({
-                error: error
+                error: notif
             });
         }
     }
@@ -84,9 +86,9 @@ class ErrorView extends React.Component
                         <a className="close pull-left" onClick={this._onCloseError}><i className="fa fa-times"/></a>
                     </div>
                     <div className="col-sm-11 col-md-11 col-lg-11">
-                        {codeText}
-                        {userText}
-                        {userHelp}
+                        <h2>{codeText}</h2>
+                        <h2>{userText}</h2>
+                        <h3>{userHelp}</h3>
                     </div>
                 </div>
                 {this.props.children}

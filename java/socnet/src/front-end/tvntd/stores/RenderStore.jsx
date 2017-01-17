@@ -207,9 +207,9 @@ let RenderStore = Reflux.createStore({
         let menuItems = [_menuHome];
 
         if (UserStore.isLogin() == true) {
-            Array.prototype.push.apply(menuItems, _menuBlogs);
             menuItems.push(_menuProfile);
             menuItems.push(_menuProjects);
+            Array.prototype.push.apply(menuItems, _menuBlogs);
 
             if (UserStore.amIAdmin() == true) {
                 menuItems.push(_menuAdmin);

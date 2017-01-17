@@ -8,7 +8,8 @@ import Reflux        from 'reflux';
 import Actions       from 'vntd-root/actions/Actions.jsx';
 
 class ErrorResp {
-    constructor(resp, text, error) {
+    constructor(id, resp, text, error) {
+        this.errorId = id;
         if (resp == null) {
             this.resp = null;
             this.userText = text;
@@ -16,6 +17,10 @@ class ErrorResp {
         } else {
             this.updateError(resp, null, null);
         }
+    }
+
+    getErrorId() {
+        return this.errorId;
     }
 
     getContext() {
@@ -32,11 +37,6 @@ class ErrorResp {
 
     getUserText() {
         return this.userText;
-    }
-
-    // Activate user error message.  Used with Error(null, text, null) constructor.
-    setUserErrorMesg() {
-        this.error = this.userText;
     }
 
     getUserHelp() {
@@ -118,16 +118,17 @@ let ErrorStore = Reflux.createStore({
         return this.data.userReport;
     },
 
-    reportErrMesg: function(id, text) {
+    reportErrMesg: function(id, text, helpText) {
         if (id == null) {
             return;
         }
         let err = this.data[id];
         if (err == null) {
-            this.data[id] = new ErrorResp(null, text, null);
+            this.data[id] = new ErrorResp(id, null, text, null);
             err = this.data[id];
         }
-        err.setUserErrorMesg();
+        err.updateUserText(text, helpText);
+        this.trigger(this.data, err);
         return err;
     },
 
@@ -139,7 +140,7 @@ let ErrorStore = Reflux.createStore({
         if (err != null) {
             err.updateError(resp, null, null);
         } else {
-            err = new ErrorResp(resp, text, error);
+            err = new ErrorResp(id, resp, text, error);
             if (id != null) {
                 this.data[id] = err;
             } else {

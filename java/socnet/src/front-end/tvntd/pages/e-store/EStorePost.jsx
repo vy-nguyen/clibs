@@ -9,6 +9,7 @@ import React  from 'react-mod';
 
 import {OverlayTrigger, Tooltip} from 'react-bootstrap';
 import {GenericForm, SelectWrap} from 'vntd-shared/forms/commons/GenericForm.jsx';
+import {choose}                  from 'vntd-shared/utils/Enum.jsx';
 
 import ErrorView        from 'vntd-shared/layout/ErrorView.jsx';
 import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
@@ -66,7 +67,8 @@ class EStorePost extends React.Component
         return {
             articleUuid: null,
             picObjId   : null,
-            logoObjId  : null
+            logoObjId  : null,
+            errFlags   : {}
         };
     }
 
@@ -123,12 +125,33 @@ class EStorePost extends React.Component
     }
 
     _onPostProduct() {
+        let product  = this._getPostData();
+        let helpText = "Enter values in categories highlighed in red";
+        let errText  = null;
+        let errFlags = {};
+
+        if (product.articleUuid == null) {
+            errText  = "You forgot to upload pictures for your product";
+        }
+        [ "prodCat", "prodDesc", "prodDetail", "prodName",
+          "prodNotice", "prodPrice", "prodSpec", "prodTitle",
+          "priceNotice", "pubTag", "prodDetail"
+        ].forEach(function(entry) {
+            if (_.isEmpty(product[entry])) {
+                errFlags[entry] = true;
+            }
+            if (errText == null) {
+                errText  = "Please enter values highlighted fields";
+            }
+        });
+        if (errText != null) {
+            this.setState({
+                errFlags: errFlags
+            });
+            ErrorStore.reportErrMesg(this._errorId, errText, helpText);
+            return;
+        }
         StateButtonStore.setButtonStateObj(this._publishBtn, "saving");
-
-        let product = this._getPostData();
-        console.log("publised this product");
-        console.log(product);
-
         Actions.publishProduct(product);
     }
 
@@ -175,51 +198,61 @@ class EStorePost extends React.Component
         StateButtonStore.setButtonStateObj(this._publishBtn, "saved");
         this._clearPostData();
         this.setState(this._getInitState());
-            // ErrorStore.reportInfo(this._errorId, "You have some Error");
     }
 
     _editProduct() {
         const prodCat = {
             labelTxt : "Categorty",
             inpName  : "prodCat",
-            inpHolder: "Category",
+            inpHolder: choose(this.refs.prodCat, "value", "Category"),
             errorId  : "prodCat",
+            errorFlag: this.state.errFlags.prodCat
         };
         const prodName = {
             labelTxt : "Name",
             inpName  : "prodName",
-            inpHolder: "Product Name",
+            inpHolder: choose(this.refs.prodName, "value", "Product Name"),
             errorId  : "prodName",
+            errorFlag: this.state.errFlags.prodName
         }
         const prodPrice = {
             labelTxt : "Price",
             inpName  : "prodPrice",
-            inpHolder: "Product Price",
+            inpHolder: choose(this.refs.prodPrice, "value", "Product Price"),
             errorId  : "prodPrice",
+            errorFlag: this.state.errFlags.prodPrice
         };
         const priceNotice = {
             labelTxt : "Promotion",
             inpName  : "prodNotice",
-            inpHolder: "Include shipping",
+            inpHolder: choose(this.refs.prodNotice, "value", "Include shipping"),
             errorId  : "prodNotice",
+            errorFlag: this.state.errFlags.priceNotice
         };
         const prodDesc = {
             id       : this._prodDescId,
             labelTxt : "Brief description",
             inpName  : "prodDesc",
-            editor   : true
+            inpHolder: choose(NestableStore.getIndexString(this._prodDescId), "Brief description of product"),
+            editor   : true,
+            errorFlag: this.state.errFlags.prodDesc
         };
         const prodDescDetail = {
             id       : this._prodDetailId,
             labelTxt : "Detail description",
             inpName  : "prodDetail",
-            editor   : true
+            inpHolder: choose(NestableStore.getIndexString(this.), "Brief description of product"),
+            editor   : true,
+            errorId  : "prodDetail",
+            errorFlag: this.state.errFlags.prodDescDetail
         };
         const prodSpec = {
             id       : this._prodSpecId,
             labelTxt : "Product Specification",
             inpName  : "prodSpec",
-            editor   : true
+            editor   : true,
+            errorId  : "prodSpec",
+            errorFlag: this.state.errFlags.prodSpec
         };
         const eventHandlers = {
             sending: this._dzSend,
@@ -231,10 +264,14 @@ class EStorePost extends React.Component
         };
         const briefDz = {
             url        : "/user/upload-product-img",
-            defaultMesg: "Drop image here"
+            defaultMesg: "Drop image here",
+            errorId    : "logoImg",
+            errorFlag  : this.state.errFlags.logoImg
         };
         const detailDz = {
-            url: "/user/upload-product-detail"
+            url        : "/user/upload-product-detail",
+            errorId    : "prodImgs",
+            errorFlag  : this.state.errFlags.prodImgs
         };
 
         return (
