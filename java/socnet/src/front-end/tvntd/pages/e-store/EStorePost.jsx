@@ -133,9 +133,11 @@ class EStorePost extends React.Component
         if (product.articleUuid == null) {
             errText  = "You forgot to upload pictures for your product";
         }
-        [ "prodCat", "prodDesc", "prodDetail", "prodName",
-          "prodNotice", "prodPrice", "prodSpec", "prodTitle",
-          "priceNotice", "pubTag", "prodDetail"
+        [
+            "prodCat", "prodDesc", "prodDetail", "prodName",
+            "prodNotice", "prodPrice", "prodSpec", "prodTitle",
+            "priceNotice", "pubTag", "prodDetail"
+
         ].forEach(function(entry) {
             if (_.isEmpty(product[entry])) {
                 errFlags[entry] = true;
@@ -241,7 +243,7 @@ class EStorePost extends React.Component
             id       : this._prodDetailId,
             labelTxt : "Detail description",
             inpName  : "prodDetail",
-            inpHolder: choose(NestableStore.getIndexString(this.), "Brief description of product"),
+            inpHolder: choose(NestableStore.getIndexString(this._prodDetailId), "Brief description of product"),
             editor   : true,
             errorId  : "prodDetail",
             errorFlag: this.state.errFlags.prodDescDetail
@@ -250,6 +252,7 @@ class EStorePost extends React.Component
             id       : this._prodSpecId,
             labelTxt : "Product Specification",
             inpName  : "prodSpec",
+            inpHolder: choose(NestableStore.getIndexString(this._prodSpecId), "Brief description of product"),
             editor   : true,
             errorId  : "prodSpec",
             errorFlag: this.state.errFlags.prodSpec
@@ -317,8 +320,10 @@ class EStorePost extends React.Component
                     <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                         <ErrorView errorId={this._errorId}/>
                         <div className="btn-group pull-right" role="group">
-                            <StateButton btnId={this._saveBtnId} className="btn btn-success" onClick={this._onSaveProduct}/>
-                            <StateButton btnId={this._publishBtnId} className="btn btn-success" onClick={this._onPostProduct}/>
+                            <StateButton btnId={this._saveBtnId} className="btn btn-success"
+                                onClick={this._onSaveProduct}/>
+                            <StateButton btnId={this._publishBtnId} className="btn btn-success"
+                                onClick={this._onPostProduct}/>
                         </div>
                     </div>
                 </div>

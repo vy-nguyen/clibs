@@ -6,7 +6,7 @@
 import _             from 'lodash';
 import React         from 'react-mod';
 import ReactDOM      from 'react-dom';
-import {findDOMNode} from 'react-dom';
+// import {findDOMNode} from 'react-dom';
 
 import NestableStore    from 'vntd-shared/stores/NestableStore.jsx';
 import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
@@ -509,7 +509,7 @@ class Nestable extends React.Component
     }
 
     componentDidMount() {
-        let element = $(findDOMNode(this));
+        let element = $(ReactDOM.findDOMNode(this));
         let options = {};
 
         if (this.props.group){

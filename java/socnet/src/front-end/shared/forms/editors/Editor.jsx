@@ -3,8 +3,9 @@
  */
 'use strict';
 
-import React from 'react';
-import NestableStore from 'vntd-shared/stores/NestableStore.jsx';
+import React          from 'react';
+import TinyMCE        from 'react-tinymce';
+import NestableStore  from 'vntd-shared/stores/NestableStore.jsx';
 
 class Editor extends React.Component
 {
@@ -109,10 +110,12 @@ class Editor extends React.Component
                         <button type="button" className="btn btn-default" onClick={this.execCommand.bind(this, 'italic')}>
                             <i className="fa fa-italic"></i>
                         </button>
-                        <button type="button" className="btn btn-default" onClick={this.execCommand.bind(this, 'underline')}>
+                        <button type="button" className="btn btn-default"
+                            onClick={this.execCommand.bind(this, 'underline')}>
                             <i className="fa fa-underline"></i>
                         </button>
-                        <button type="button" className="btn btn-default" onClick={this.execCommand.bind(this, 'strikeThrough')}>
+                        <button type="button" className="btn btn-default"
+                            onClick={this.execCommand.bind(this, 'strikeThrough')}>
                             <i className="fa fa-strikethrough"></i>
                         </button>
 
@@ -163,20 +166,28 @@ class Editor extends React.Component
                     <div className="btn-group" style={buttonSpacing}>
                         <button className="btn btn-default btn-xs dropdown-toggle"
                             type="button" data-toggle="dropdown" aria-expanded="false">
-                            <i className="fa fa-align-left"></i> <i className="fa fa-caret-down"></i>                            
+                            <i className="fa fa-align-left"></i> <i className="fa fa-caret-down"></i>
                         </button>
                         <ul className="dropdown-menu" role="menu">
                             <li>
-                                <a href="javascript:;" onClick={this.execCommand.bind(this, 'justifyLeft')}>Align Left</a>
+                                <a href="javascript:;" onClick={this.execCommand.bind(this, 'justifyLeft')}>
+                                    Align Left
+                                </a>
                             </li>
                             <li>
-                                <a href="javascript:;" onClick={this.execCommand.bind(this, 'justifyRight')}>Align Right</a>
+                                <a href="javascript:;" onClick={this.execCommand.bind(this, 'justifyRight')}>
+                                    Align Right
+                                </a>
                             </li>
                             <li>
-                                <a href="javascript:;" onClick={this.execCommand.bind(this, 'justifyCenter')}>Align Center</a>
+                                <a href="javascript:;" onClick={this.execCommand.bind(this, 'justifyCenter')}>
+                                    Align Center
+                                </a>
                             </li>
                             <li>
-                                <a href="javascript:;" onClick={this.execCommand.bind(this, 'justifyFull')}>Align Justify</a>
+                                <a href="javascript:;" onClick={this.execCommand.bind(this, 'justifyFull')}>
+                                    Align Justify
+                                </a>
                             </li>
                         </ul>
                     </div>
@@ -202,27 +213,45 @@ class Editor extends React.Component
     }
 }
 
+class MarkedPreview extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        let content = this.props.content || "";
+        content = content.replace(/<div>(.*?)<\/div>/gi, "<p>$1</p>");
+        console.log(content);
+        let preview = marked(content);
+        return (
+            <div dangerouslySetInnerHTML={{__html: preview}}/>
+        );
+    }
+}
+
 class EditorEntry extends React.Component
 {
     constructor(props) {
         super(props);
         this._onChange = this._onChange.bind(this);
-
-        this.state = {
-            content: NestableStore.allocIndexString(props.id)
-        };
+        NestableStore.allocIndexString(props.id, props.entry.inpHolder)
     }
 
     _onChange(e) {
         NestableStore.storeItemIndex(this.props.id, e.value, true);
-        this.setState({
-            content: e.value
-        });
     }
 
     render() {
+        const { entry } = this.props;
         return (
-            <Editor id={this.props.id} content={this.state.content} onChange={this._onChange}/>
+            <TinyMCE content={entry.inpHolder}
+                config={{
+                    plugins: 'autolink link image lists print preview',
+                    toolbar: 'undo redo | bold italic | alignleft aligncenter alignright'
+                }}
+                onChange={this._onChange}
+            />
         );
     }
 }

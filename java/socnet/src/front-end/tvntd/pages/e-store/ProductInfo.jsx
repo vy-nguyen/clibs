@@ -45,7 +45,8 @@ class ProductInfo extends React.Component
         for (let i = 0; i < images.length; i++) {
             const clsn = i === 0 ? "active" : "";
             indicators.push(
-                <li key={_.uniqueId('prod-car-')} data-target={itemRef} data-slide-to={i.toString} className={clsn}></li>
+                <li key={_.uniqueId('prod-car-')} data-target={itemRef} data-slide-to={i.toString} className={clsn}>
+                </li>
             );
             inner.push(
                 <div key={_.uniqueId('prod-car-')} className={`item ${clsn}`}>

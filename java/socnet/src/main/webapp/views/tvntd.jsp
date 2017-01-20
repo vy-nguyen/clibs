@@ -33,6 +33,7 @@
       <span class="visible-lg"></span>
   </span>
   <div id="tvntd-root"></div>
+  <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
   <script src="/rs/client/tvntd-vendor-bundle.js"></script>
   <script src="/rs/client/tvntd-bundle.js"></script>
 </body>

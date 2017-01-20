@@ -11,6 +11,7 @@ import Select            from 'react-select';
 import DropzoneComponent from 'react-dropzone-component';
 
 import {EditorEntry}     from 'vntd-shared/forms/editors/Editor.jsx';
+// import MarkdownEditor    from 'vntd-shared/forms/editors/MarkdownEditor.jsx';
 import ErrorView         from 'vntd-shared/layout/ErrorView.jsx';
 import NestableStore     from 'vntd-shared/stores/NestableStore.jsx';
 
@@ -135,9 +136,10 @@ class GenericForm extends React.Component
             };
             return GenericForm.renderDropzone(entry, eventHandlers);
         }
+        // <MarkdownEditor id={entry.id} entry={entry}/>
         if (entry.editor === true) {
             return (
-                <EditorEntry id={entry.id}/>
+                <EditorEntry id={entry.id} entry={entry}/>
             );
         }
         return  (
@@ -177,7 +179,8 @@ class GenericForm extends React.Component
 
     static renderInputBox(entry, bind, onBlur, onSelected) {
         let labelFmt = entry.labelFmt != null ? entry.labelFmt : "control-label col-xs-2 col-sm-2 col-md-2 col-lg-2";
-        let inputFmt = entry.inputFmt != null ? entry.inputFmt : "control-label col-xs-10 col-sm-10 col-md-10 col-lg-10";
+        let inputFmt = entry.inputFmt != null ?
+            entry.inputFmt : "control-label col-xs-10 col-sm-10 col-md-10 col-lg-10";
         let style = entry.errorFlag == true ? { color:'red' } : null;
         let label = <label className={labelFmt} style={style} for="textinput">{entry.labelTxt}</label>;
 
@@ -196,7 +199,8 @@ class GenericForm extends React.Component
 
     static renderInputInline(entry, bind, onBlur, onSelected) {
         let labelFmt = entry.labelFmt != null ? entry.labelFmt : "control-label col-xs-2 col-sm-2 col-md-2 col-lg-2";
-        let inputFmt = entry.inputFmt != null ? entry.inputFmt : "control-label col-xs-10 col-sm-10 col-md-10 col-lg-10";
+        let inputFmt = entry.inputFmt != null ?
+            entry.inputFmt : "control-label col-xs-10 col-sm-10 col-md-10 col-lg-10";
         let style = entry.errorFlag == true ? { color:'red' } : null;
 
         return (
