@@ -1,0 +1,7 @@
+#!/bin/sh
+
+find -L . -regex ".*\.\(java\|html\|js\|jsx\|json\|xml\|properties\|gradle\|jsx\)" -print | grep -v foss | grep -v build | grep -v node_modules | grep -v bower_components | grep -v plugins | grep -v "*.min.*" > cscope.files
+
+#cat cscope.files | xargs ctags --fields=+l
+ctags -L cscope.files --fields=+l
+cscope 

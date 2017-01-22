@@ -78,7 +78,8 @@ class Editor extends React.Component
                                 <a href="javascript:;" onClick={this.execCommand.bind(this, 'formatBlock', 'P')}>
                                     Paragraph
                                 </a>
-                                <a href="javascript:;" onClick={this.execCommand.bind(this, 'formatBlock', 'BLOCKQUOTE')}>
+                                <a href="javascript:;"
+                                    onClick={this.execCommand.bind(this, 'formatBlock', 'BLOCKQUOTE')}>
                                     Block Quote
                                 </a>
                                 <a href="javascript:;" onClick={this.execCommand.bind(this, 'formatBlock', 'H1')}>
@@ -107,7 +108,8 @@ class Editor extends React.Component
                         <button type="button" className="btn btn-default" onClick={this.execCommand.bind(this, 'bold')}>
                             <i className="fa fa-bold"></i>
                         </button>
-                        <button type="button" className="btn btn-default" onClick={this.execCommand.bind(this, 'italic')}>
+                        <button type="button" className="btn btn-default"
+                            onClick={this.execCommand.bind(this, 'italic')}>
                             <i className="fa fa-italic"></i>
                         </button>
                         <button type="button" className="btn btn-default"
@@ -213,42 +215,94 @@ class Editor extends React.Component
     }
 }
 
-class MarkedPreview extends React.Component
-{
-    constructor(props) {
-        super(props);
-    }
-
-    render() {
-        let content = this.props.content || "";
-        content = content.replace(/<div>(.*?)<\/div>/gi, "<p>$1</p>");
-        console.log(content);
-        let preview = marked(content);
-        return (
-            <div dangerouslySetInnerHTML={{__html: preview}}/>
-        );
-    }
-}
-
 class EditorEntry extends React.Component
 {
     constructor(props) {
         super(props);
         this._onChange = this._onChange.bind(this);
+        this._uploadCall = this._uploadCall.bind(this);
+        this._filePicker = this._filePicker.bind(this);
+
+        this._csrfToken  = $("meta[name='_csrf']").attr("content");
+        this._csrfHeader = $("meta[name='_csrf_header']").attr("content");
+
         NestableStore.allocIndexString(props.id, props.entry.inpHolder)
     }
 
     _onChange(e) {
-        NestableStore.storeItemIndex(this.props.id, e.value, true);
+        let content = NestableStore.storeItemIndex(this.props.id, e.target.getContent(), true);
+        if (this.props.onChange != null) {
+            this.props.onChange(content);
+        }
+    }
+
+    _uploadCall(blobInfo, success, failure) {
+        let xhr = new XMLHttpRequest();
+        xhr.withCredentials = true;
+        xhr.open('POST', '/user/upload/product-detail', true);
+        xhr.onload = function() {
+            console.log("result");
+            console.log(xhr);
+            if (xhr.status != 200) {
+                failure('Server Error: ' + xhr.status);
+                return;
+            }
+            let json = JSON.parse(xhr.responseText);
+            if (!json || typeof json.location != 'string') {
+                failure('Invalid Response: ' + xhr.responseText);
+                return;
+            }
+            success(json.location);
+        };
+        let formData = new FormData();
+
+        formData.append('file', blobInfo.filename());
+        formData.append(this._csrfHeader, this._csrfToken);
+        xhr.setRequestHeader(this._csrfHeader, this._csrfToken);
+        console.log("do upload......");
+        console.log(xhr);
+        console.log(formData);
+        xhr.send(formData);
+    }
+
+    _filePicker(cb, value, meta) {
+        let input = document.createElement('input');
+
+        input.setAttribute('type', 'file');
+        input.setAttribute('accept', 'image/*');
+        input.onchange = function() {
+            let file = this.files[0];
+            let id = 'img-' + (new Date()).getTime();
+            let blobCache = tinymce.activeEditor.editorUpload.blobCache;
+            let blobInfo = blobCache.create(id, file);
+            blobCache.add(blobInfo);
+
+            // call the callback and populate the Title field with the file name
+            cb(blobInfo.blobUri(), { title: file.name });
+        }
+        input.click();
     }
 
     render() {
-        const { entry } = this.props;
+        const { entry, menu } = this.props;
+        let menubar = false;
+
+        if (menu === "short") {
+            menubar = "file edit insert format";
+        } else if (menu == "full") {
+            menubar = "file edit insert view format table tools";
+        }
         return (
             <TinyMCE content={entry.inpHolder}
                 config={{
-                    plugins: 'autolink link image lists print preview',
-                    toolbar: 'undo redo | bold italic | alignleft aligncenter alignright'
+                    plugins: 'autoresize autolink link image lists print preview',
+                    menubar: menubar,
+                    toolbar: 'undo | bold italic | styleselect | image | alignleft aligncenter alignright',
+                    file_picker_callback: this._filePicker,
+
+                    automatic_uploads: true,
+                    images_upload_url: '/user/upload/product-detail',
+                    images_upload_handler: this._uploadCall
                 }}
                 onChange={this._onChange}
             />

@@ -15,7 +15,8 @@ import ArticleStore    from 'vntd-root/stores/ArticleStore.jsx';
 import Actions         from 'vntd-root/actions/Actions.jsx';
 import AuthorStore     from 'vntd-root/stores/AuthorStore.jsx';
 import UserStore       from 'vntd-shared/stores/UserStore.jsx';
-import Editor          from 'vntd-shared/forms/editors/Editor.jsx';
+import DataStore       from 'vntd-shared/stores/NestableStore.jsx';
+import {EditorEntry}   from 'vntd-shared/forms/editors/Editor.jsx';
 import GenericForm     from 'vntd-shared/forms/commons/GenericForm.jsx';
 import JarvisWidget    from 'vntd-shared/widgets/JarvisWidget.jsx';
 
@@ -47,6 +48,7 @@ class EditorPost extends React.Component
         this.state = InitState.state;
         this.state.autoTags = AuthorStore.getTagsByAuthorUuid(null);
 
+        this._id          = "main-post";
         this._resetData   = this._resetData.bind(this);
         this._getData     = this._getData.bind(this);
         this._savePost    = this._savePost.bind(this);
@@ -99,7 +101,9 @@ class EditorPost extends React.Component
                 state.articleUuid = data.myPostResult.articleUuid;
             }
             this.setState(state);
-            if (this.state.content !== '') {
+
+            if (_.isEmpty(DataStore.getItemIndex(this.props.id))) {
+                DataStore.clearItemIndex(this.props.id);
                 setTimeout(function() {
                     this._resetData();
                 }.bind(this), 1000);
@@ -116,7 +120,6 @@ class EditorPost extends React.Component
 
     _handleContentChange(e) {
         let state = this._nextStatus("Draft");
-        state.content = e.value;
         this.setState(state);
     }
 
@@ -171,7 +174,7 @@ class EditorPost extends React.Component
         return {
             topic      : this.refs.topic.value,
             tags       : this.state.tagName,
-            content    : this.state.content,
+            content    : DataStore.getItemIndex(this._id),
             authorUuid : UserStore.getSelf().userUuid,
             articleUuid: this.state.articleUuid
         }
@@ -186,6 +189,8 @@ class EditorPost extends React.Component
     _publishPost(e) {
         e.preventDefault();
         this.setState(this._nextStatus("Publishing"));
+        console.log("Post data ");
+        console.log(this._getData());
         Actions.publishUserPost(this._getData());
     }
 
@@ -274,6 +279,13 @@ class EditorPost extends React.Component
             error   : this._error,
             init    : function(dz) { this.dropzone = dz }.bind(this)
         };
+        const editorEntry = {
+            id       : this._id,
+            editor   : true,
+            inpHolder: "",
+            errorId  : this._id + "-error",
+            errorFlag: this.state.errFlags
+        };
         let form = (
             <form encType="multipart/form-data" acceptCharset="utf-8" className="form-horizontal">
                 <div className="inbox-info-bar no-padding">
@@ -318,7 +330,7 @@ class EditorPost extends React.Component
                 </div>
 
                 <div className="inbox-message no-padding">
-                    <Editor id="main-post" content={this.state.content} onChange={this._handleContentChange}/>
+                    <EditorEntry id={editorEntry.id} menu="full" entry={editorEntry} onChange={this._handleContentChange}/>
                 </div>
         
                 <div className="inbox-compose-footer">

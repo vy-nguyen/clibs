@@ -41,11 +41,14 @@ public final class Util
     static public final byte[] DefaultTag;
     static public final byte[] DefaultTopic;
     static public final byte[] DefaultEmpty;
+    static public final Whitelist allowedTags;
 
     static {
         DefaultTag = Constants.DefaultTag.getBytes(Charset.forName("UTF-8"));
         DefaultTopic = Constants.DefaultTopic.getBytes(Charset.forName("UTF-8"));
         DefaultEmpty = "".getBytes(Charset.forName("UTF-8"));
+        allowedTags = Whitelist.basic()
+            .addTags("h1", "h2", "h3", "h4", "h5", "h6", "img");
     }
 
     static public UUID toUuid(String uuid)

@@ -16,6 +16,7 @@ let NestableStore = Reflux.createStore({
         if (this.data[id] == null || force == true) {
             this.data[id] = indexTab;
         }
+        return indexTab;
     },
 
     clearItemIndex: function(id) {
@@ -27,8 +28,7 @@ let NestableStore = Reflux.createStore({
     },
 
     getIndexString: function(id) {
-        let str = this.data[id] || "";
-        return str.replace(/<div>(.*?)<\/div>/gi, "<p>$1</p>");
+        return this.data[id] || "";
     },
 
     allocIndexString: function(id, initVal) {

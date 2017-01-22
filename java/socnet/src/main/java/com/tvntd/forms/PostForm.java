@@ -33,6 +33,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
 import com.tvntd.util.Constants;
+import com.tvntd.util.Util;
 
 public class PostForm
 {
@@ -59,7 +60,7 @@ public class PostForm
         if (tags == null) {
             tags = Constants.DefaultTag;
         }
-        Whitelist wlist = Whitelist.basic();
+        Whitelist wlist = Util.allowedTags;
         topic = Jsoup.clean(topic, wlist);
         content = Jsoup.clean(content, wlist);
         tags = Jsoup.clean(tags, wlist);

@@ -11,7 +11,6 @@ import Select            from 'react-select';
 import DropzoneComponent from 'react-dropzone-component';
 
 import {EditorEntry}     from 'vntd-shared/forms/editors/Editor.jsx';
-// import MarkdownEditor    from 'vntd-shared/forms/editors/MarkdownEditor.jsx';
 import ErrorView         from 'vntd-shared/layout/ErrorView.jsx';
 import NestableStore     from 'vntd-shared/stores/NestableStore.jsx';
 
@@ -136,7 +135,6 @@ class GenericForm extends React.Component
             };
             return GenericForm.renderDropzone(entry, eventHandlers);
         }
-        // <MarkdownEditor id={entry.id} entry={entry}/>
         if (entry.editor === true) {
             return (
                 <EditorEntry id={entry.id} entry={entry}/>
