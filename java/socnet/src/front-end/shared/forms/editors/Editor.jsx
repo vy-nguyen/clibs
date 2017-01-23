@@ -6,6 +6,7 @@
 import React          from 'react';
 import TinyMCE        from 'react-tinymce';
 import NestableStore  from 'vntd-shared/stores/NestableStore.jsx';
+import {postRestCall} from 'vntd-root/actions/Actions.jsx';
 
 class Editor extends React.Component
 {
@@ -223,9 +224,6 @@ class EditorEntry extends React.Component
         this._uploadCall = this._uploadCall.bind(this);
         this._filePicker = this._filePicker.bind(this);
 
-        this._csrfToken  = $("meta[name='_csrf']").attr("content");
-        this._csrfHeader = $("meta[name='_csrf_header']").attr("content");
-
         NestableStore.allocIndexString(props.id, props.entry.inpHolder)
     }
 
@@ -237,32 +235,34 @@ class EditorEntry extends React.Component
     }
 
     _uploadCall(blobInfo, success, failure) {
-        let xhr = new XMLHttpRequest();
-        xhr.withCredentials = true;
-        xhr.open('POST', '/user/upload/product-detail', true);
+        let xhr, header, token, form = new FormData();
+        form.append('file', blobInfo.blob());
+        form.append('name', blobInfo.filename());
+        form.append('authorUuid', 0);
+        form.append('articleUuid', 0);
+
+        xhr = new XMLHttpRequest();
+        xhr.withCredentials = false;
+        xhr.open('POST', '/user/upload-product-detail', true);
+
+        header = $("meta[name='_csrf_header']").attr("content");
+        token  = $("meta[name='_csrf']").attr("content");
+        xhr.setRequestHeader(header, token);
+
         xhr.onload = function() {
-            console.log("result");
-            console.log(xhr);
+            let json;
             if (xhr.status != 200) {
-                failure('Server Error: ' + xhr.status);
+                failure('Http error: ' + xhr.status);
                 return;
             }
-            let json = JSON.parse(xhr.responseText);
+            json = JSON.parse(xhr.responseText);
             if (!json || typeof json.location != 'string') {
-                failure('Invalid Response: ' + xhr.responseText);
+                failure('Invalid JSON ' + xhr.responseText);
                 return;
             }
             success(json.location);
         };
-        let formData = new FormData();
-
-        formData.append('file', blobInfo.filename());
-        formData.append(this._csrfHeader, this._csrfToken);
-        xhr.setRequestHeader(this._csrfHeader, this._csrfToken);
-        console.log("do upload......");
-        console.log(xhr);
-        console.log(formData);
-        xhr.send(formData);
+        xhr.send(form);
     }
 
     _filePicker(cb, value, meta) {

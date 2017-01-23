@@ -376,6 +376,7 @@ Actions.syncServer.listen(function() {
     this.completed();
 });
 
+export { postRestCall, Actions };
 export default Actions;
 
 /*

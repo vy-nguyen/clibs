@@ -130,7 +130,7 @@ class EditorPost extends React.Component
     }
 
     _onComplete(file, a) {
-        console.log(file.xhr);
+        // console.log(file.xhr);
     }
 
     _onSuccess(files) {
@@ -189,8 +189,6 @@ class EditorPost extends React.Component
     _publishPost(e) {
         e.preventDefault();
         this.setState(this._nextStatus("Publishing"));
-        console.log("Post data ");
-        console.log(this._getData());
         Actions.publishUserPost(this._getData());
     }
 
