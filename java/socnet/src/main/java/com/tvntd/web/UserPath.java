@@ -382,7 +382,7 @@ public class UserPath
             ImageUploadResp resp =
                 new ImageUploadResp(art.getArticleUuid(), art.getAuthorUuid(), oid);
 
-            resp.setImgObjUrl(store.imgUserObjUri(oid, uid));
+            resp.setLocation(ArticleDTO.getPictureUrl(profile.fetchProfile(), oid));
             return resp;
 
         } catch(IOException e) {
@@ -444,7 +444,7 @@ public class UserPath
                         prod.getArticleUuid(), prod.getAuthorUuid(), oid);
 
                 resp.setPostUrl(url);
-                resp.setImgObjUrl(store.imgUserObjUri(oid, uid));
+                resp.setLocation(ArticleDTO.getPictureUrl(profile.fetchProfile(), oid));
                 if (logo == true) {
                     resp.setPostType("logo");
                     prod.assignLogo(oid.name());
@@ -565,7 +565,7 @@ public class UserPath
 
                 resp.setPostType("avatar");
                 resp.setPostUrl("/user/upload-avatar");
-                resp.setImgObjUrl(store.imgObjUri(oid, ProfileDTO.getImgBaseUrl()));
+                resp.setLocation(store.imgObjUri(oid, ProfileDTO.getImgBaseUrl()));
                 return resp;
             }
         } catch(IOException e) {

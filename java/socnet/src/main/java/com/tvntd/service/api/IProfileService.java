@@ -215,6 +215,10 @@ public interface IProfileService
             }
         }
 
+        public Profile fetchProfile() {
+            return profile;
+        }
+
         /**
          * Connect this profile to the peer profile if there's mutual agreement.
          */

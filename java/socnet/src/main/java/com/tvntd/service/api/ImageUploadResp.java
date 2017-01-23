@@ -33,9 +33,9 @@ public class ImageUploadResp extends GenericResponse
     private String articleUuid;
     private String authorUuid;
     private String imgObjId;
-    private String imgObjUrl;
     private String postUrl;
     private String postType;
+    private String location;
 
     public ImageUploadResp(String type, String message, String error) {
         super(GenericResponse.USER_HOME, message, error);
@@ -92,20 +92,6 @@ public class ImageUploadResp extends GenericResponse
     }
 
     /**
-     * @return the imgObjUrl
-     */
-    public String getImgObjUrl() {
-        return imgObjUrl;
-    }
-
-    /**
-     * @param imgObjUrl the imgObjUrl to set
-     */
-    public void setImgObjUrl(String imgObjUrl) {
-        this.imgObjUrl = imgObjUrl;
-    }
-
-    /**
      * @return the postUrl
      */
     public String getPostUrl() {
@@ -131,5 +117,19 @@ public class ImageUploadResp extends GenericResponse
      */
     public void setPostType(String postType) {
         this.postType = postType;
+    }
+
+    /**
+     * @return the location
+     */
+    public String getLocation() {
+        return location;
+    }
+
+    /**
+     * @param location the location to set
+     */
+    public void setLocation(String location) {
+        this.location = location;
     }
 }

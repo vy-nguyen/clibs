@@ -243,7 +243,7 @@ class EditorEntry extends React.Component
 
         xhr = new XMLHttpRequest();
         xhr.withCredentials = false;
-        xhr.open('POST', '/user/upload-product-detail', true);
+        xhr.open('POST', '/user/upload-img', true);
 
         header = $("meta[name='_csrf_header']").attr("content");
         token  = $("meta[name='_csrf']").attr("content");

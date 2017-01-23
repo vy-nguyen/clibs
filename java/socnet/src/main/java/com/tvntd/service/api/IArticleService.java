@@ -43,6 +43,7 @@ import com.tvntd.lib.ObjectId;
 import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.models.AuthorTag;
+import com.tvntd.models.Profile;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.user.ArticleService;
@@ -296,6 +297,16 @@ public interface IArticleService
                 }
             }
             return ret;
+        }
+
+        public static String getPictureUrl(Profile profile, ObjectId oid)
+        {
+            if (oid != null) {
+                ObjStore objStore = ObjStore.getInstance();
+                String store = s_baseUri + Long.toString(profile.getUserId());
+                return objStore.imgObjUri(oid, store);
+            }
+            return null;
         }
     }
 
