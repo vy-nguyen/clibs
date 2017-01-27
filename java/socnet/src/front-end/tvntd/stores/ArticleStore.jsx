@@ -199,7 +199,7 @@ let EProductStore = Reflux.createStore({
 
     onDeleteProductCompleted: function(data) {
         this._removeEStore(data.uuids, data.authorUuid);
-        this.trigger(this.data, data, "delOk", true, data.authorUuid);
+        this.trigger(this.data, [data], "delOk", true, data.authorUuid);
     },
 
     updateMissingUuid(uuids) {

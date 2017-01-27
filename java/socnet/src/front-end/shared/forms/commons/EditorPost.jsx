@@ -281,8 +281,10 @@ class EditorPost extends React.Component
             id       : this._id,
             editor   : true,
             inpHolder: "",
+            menu     : "full",
             errorId  : this._id + "-error",
-            errorFlag: this.state.errFlags
+            errorFlag: this.state.errFlags,
+            uploadUrl: '/user/upload-img'
         };
         let form = (
             <form encType="multipart/form-data" acceptCharset="utf-8" className="form-horizontal">
@@ -328,7 +330,7 @@ class EditorPost extends React.Component
                 </div>
 
                 <div className="inbox-message no-padding">
-                    <EditorEntry id={editorEntry.id} menu="full" entry={editorEntry} onChange={this._handleContentChange}/>
+                    <EditorEntry entry={editorEntry} onChange={this._handleContentChange}/>
                 </div>
         
                 <div className="inbox-compose-footer">

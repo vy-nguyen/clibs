@@ -432,11 +432,17 @@ public class UserPath
     uploadProduct(ProfileDTO profile,
             String artUuid, MultipartFile file, boolean logo, String url)
     {
+        if (file.getSize() <= 0) {
+            return s_saveObjFailed;
+        }
         ProductDTO prod = genPendProduct(profile, true, artUuid);
         try {
             String uid = profile.fetchUserId().toString();
             ObjStore store = ObjStore.getInstance();
             InputStream is = file.getInputStream();
+
+            System.out.println("Upload file " + file.getName() + " size " +
+                    file.getSize());
             ObjectId oid = store.putUserImage(is, (int)file.getSize(), uid);
 
             if (oid != null) {

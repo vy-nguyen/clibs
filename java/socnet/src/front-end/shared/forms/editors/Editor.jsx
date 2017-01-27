@@ -6,7 +6,8 @@
 import React          from 'react';
 import TinyMCE        from 'react-tinymce';
 import NestableStore  from 'vntd-shared/stores/NestableStore.jsx';
-import {postRestCall} from 'vntd-root/actions/Actions.jsx';
+import ErrorView      from 'vntd-shared/layout/ErrorView.jsx';
+import {choose}       from 'vntd-shared/utils/Enum.jsx';
 
 class Editor extends React.Component
 {
@@ -227,28 +228,34 @@ class EditorEntry extends React.Component
         NestableStore.allocIndexString(props.id, props.entry.inpHolder)
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+        return false;
+    }
+
     _onChange(e) {
-        let content = NestableStore.storeItemIndex(this.props.id, e.target.getContent(), true);
+        let content = NestableStore.storeItemIndex(this.props.entry.id, e.target.getContent(), true);
         if (this.props.onChange != null) {
             this.props.onChange(content);
         }
     }
 
     _uploadCall(blobInfo, success, failure) {
-        let xhr, header, token, form = new FormData();
+        let xhr, url, header, token, form = new FormData(), entry = this.props.entry;
         form.append('file', blobInfo.blob());
         form.append('name', blobInfo.filename());
         form.append('authorUuid', 0);
         form.append('articleUuid', 0);
 
         xhr = new XMLHttpRequest();
+        url = choose(this.props.entry.uploadUrl, '/user/upload-img');
         xhr.withCredentials = false;
-        xhr.open('POST', '/user/upload-img', true);
+        xhr.open('POST', url, true);
 
         header = $("meta[name='_csrf_header']").attr("content");
         token  = $("meta[name='_csrf']").attr("content");
         xhr.setRequestHeader(header, token);
 
+        ErrorView.stackTrace();
         xhr.onload = function() {
             let json;
             if (xhr.status != 200) {
@@ -259,6 +266,9 @@ class EditorEntry extends React.Component
             if (!json || typeof json.location != 'string') {
                 failure('Invalid JSON ' + xhr.responseText);
                 return;
+            }
+            if (entry.uploadOk != null) {
+                entry.uploadOk(entry, json);
             }
             success(json.location);
         };
@@ -284,28 +294,31 @@ class EditorEntry extends React.Component
     }
 
     render() {
-        const { entry, menu } = this.props;
-        let menubar = false;
+        const entry = this.props.entry;
+        let toolbar, config, menubar = false;
 
-        if (menu === "short") {
+        if (entry.menu === "short") {
             menubar = "file edit insert format";
-        } else if (menu == "full") {
+        } else if (entry.menu == "full") {
             menubar = "file edit insert view format table tools";
         }
-        return (
-            <TinyMCE content={entry.inpHolder}
-                config={{
-                    plugins: 'autoresize autolink link image lists print preview',
-                    menubar: menubar,
-                    toolbar: 'undo | bold italic | styleselect | image | alignleft aligncenter alignright',
-                    file_picker_callback: this._filePicker,
+        if (entry.uploadUrl != null) {
+            config = {
+                toolbar: 'undo | bold italic | styleselect | image | alignleft aligncenter alignright',
+                automatic_uploads    : true,
+                images_upload_handler: this._uploadCall,
+                file_picker_callback : this._filePicker,
+            };
+        } else {
+            config = {
+                toolbar: 'undo | bold italic | styleselect | alignleft aligncenter alignright'
+            };
+        }
+        config.plugins = 'autoresize autolink link image lists print preview';
+        config.menubar = menubar;
 
-                    automatic_uploads: true,
-                    images_upload_url: '/user/upload/product-detail',
-                    images_upload_handler: this._uploadCall
-                }}
-                onChange={this._onChange}
-            />
+        return (
+            <TinyMCE id={entry.id} content={entry.inpHolder} config={config} onChange={this._onChange}/>
         );
     }
 }

@@ -42,7 +42,7 @@ class EStore extends React.Component
 
     _updateState(store, data, status, update) {
         let userUuid = this.props.userUuid;
-        if (data == null || !_.isEmpty(data) || !Array.isArray(data)) {
+        if (data == null || _.isEmpty(data) || !Array.isArray(data)) {
             return;
         }
         _.forEach(data, function(prod) {
