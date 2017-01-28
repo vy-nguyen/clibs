@@ -9,7 +9,6 @@ import React  from 'react-mod';
 import TA     from 'react-typeahead';
 
 import {OverlayTrigger, Tooltip} from 'react-bootstrap';
-import DropzoneComponent from 'react-dropzone-component';
 
 import ArticleStore    from 'vntd-root/stores/ArticleStore.jsx';
 import Actions         from 'vntd-root/actions/Actions.jsx';
@@ -44,7 +43,6 @@ class EditorPost extends React.Component
     constructor(props) {
         super(props);
 
-        this.dropzone = null;
         this.state = InitState.state;
         this.state.autoTags = AuthorStore.getTagsByAuthorUuid(null);
 
@@ -162,9 +160,6 @@ class EditorPost extends React.Component
                 this.refs.topic.value = InitState.topic;
             }
         }
-        if (this.dropzone != null) {
-            this.dropzone.removeAllFiles();
-        }
     }
 
     /**
@@ -264,19 +259,6 @@ class EditorPost extends React.Component
     }
 
     render() {
-        const djsConfig = GenericForm.getDjsConfig();
-        const componentConfig = {
-            iconFiletypes   : ['.jpg', '.png', '.gif'],
-            showFiletypeIcon: true,
-            postUrl         : '/user/upload-img'
-        };
-        const eventHandlers = {
-            sending : this._onSend,
-            complete: this._onComplete,
-            success : this._onSuccess,
-            error   : this._error,
-            init    : function(dz) { this.dropzone = dz }.bind(this)
-        };
         const editorEntry = {
             id       : this._id,
             editor   : true,
@@ -308,22 +290,6 @@ class EditorPost extends React.Component
                                     placeholder={InitState.tags}
                                     customClasses={{input: "form-control"}}
                                     onBlur={this._onBlurTag} onOptionSelected={this._onTagOptSelected}/>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="inbox-info-bar no-padding">
-                    <div className="row">
-                        <div className="form-group">
-                            <label className="control-label col-md-1">
-                                <strong>Images </strong><i className="fa fa-paperclip fa-lg"/>
-                            </label>
-                            <div className="col-md-10">
-                                <DropzoneComponent className="col-sm-12 col-md-12col-lg-12" id="post-dropzone"
-                                    dictDefaultMessage="Drop your image files here"
-                                    config={componentConfig} eventHandlers={eventHandlers} djsConfig={djsConfig}>
-                                </DropzoneComponent>
                             </div>
                         </div>
                     </div>
