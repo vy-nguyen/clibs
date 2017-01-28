@@ -35,7 +35,8 @@ class TabPanel extends React.Component
     }
 
     render() {
-        let tab = this.props.context;
+        let tab, activeIdx, containerFmt, headerFmt, contentFmt, tabList, tabClsn, tabContent, tabHeader;
+        tab = this.props.context;
         if (tab == null) {
             return null;
         }
@@ -43,12 +44,12 @@ class TabPanel extends React.Component
             tab.getActivePane = this._getActivePane;
             tab.setActivePane = this._setActivePane;
         }
-        let activeIdx = tab.getActivePane();
-        let containerFmt = tab.containerFmt != null ? tab.containerFmt : "tab-container no-padding";
-        let headerFmt = tab.headerFmt != null ? tab.headerFmt : "nav nav-tabs";
-        let contentFmt = tab.contentFmt != null ? tab.contentFmt : "tab-content no-padding";
+        activeIdx = tab.getActivePane();
+        containerFmt = tab.containerFmt != null ? tab.containerFmt : "tab-container no-padding";
+        headerFmt = tab.headerFmt != null ? tab.headerFmt : "nav nav-tabs";
+        contentFmt = tab.contentFmt != null ? tab.contentFmt : "tab-content no-padding";
 
-        let tabHeader = tab.tabItems.map(function(item, idx) {
+        tabHeader = tab.tabItems.map(function(item, idx) {
             return (
                 <li key={_.uniqueId('tab-panel-')} className={idx == activeIdx ? "active" : ""}>
                     <a data-toggle="tab" href={'#' + item.domId}
@@ -59,12 +60,14 @@ class TabPanel extends React.Component
             )
         }.bind(this));
 
-        let tabList = this.props.children;
-        let tabClsn = this.props.className;
-        let tabContent = tab.tabItems.map(function(item, idx) {
-            let tabRef = tabList[item.tabIdx];
-            let paneFmt = item.paneFmt != null ? item.paneFmt : "";
-            let clasname = classnames("tab-pane " + paneFmt, {active: idx == activeIdx});
+        tabList = this.props.children;
+        tabClsn = this.props.className;
+        tabContent = tab.tabItems.map(function(item, idx) {
+            let tabRef, paneFmt, clasname;
+
+            tabRef = tabList[item.tabIdx];
+            paneFmt = item.paneFmt != null ? item.paneFmt : "";
+            clasname = classnames("tab-pane " + paneFmt, {active: idx == activeIdx});
             return (
                 <div key={_.uniqueId('tab-panel-')}
                     id={item.domId} className={classnames("tab-pane", {active: idx == activeIdx})}>

@@ -258,9 +258,9 @@ class EStorePost extends React.Component
             inpName  : "prodDesc",
             editor   : true,
             inpHolder: choose(NestableStore.getIndexString(this._prodDescId), "Brief description of product"),
-            errorFlag: this.state.errFlags.prodDesc,
-            uploadUrl: '/user/upload-product-img',
-            uploadOk : this._imageUploadOk
+            errorFlag: this.state.errFlags.prodDesc
+            // uploadUrl: '/user/upload-product-img',
+            // uploadOk : this._imageUploadOk
         };
         const prodDescDetail = {
             id       : this._prodDetailId,
@@ -305,21 +305,21 @@ class EStorePost extends React.Component
         return (
             <div className="product-content product-wrap clearfix">
                 <div className="row">
-                    <div className="col-xs-12 col-sm-5 col-md-5 col-lg-5">
-                        <div className="row">
-                            <div className="container">
-                                <h3>Upload icon image</h3>
-                                {GenericForm.renderDropzone(briefDz, eventHandlers)}
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="container">
-                                <h3>Upload detail images</h3>
-                                {GenericForm.renderDropzone(detailDz, eventHandlers)}
-                            </div>
+                    <div className="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                        <div className="container">
+                            <h3>Upload icon image</h3>
+                            {GenericForm.renderDropzone(briefDz, eventHandlers)}
                         </div>
                     </div>
-                    <div className="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+                    <div className="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                        <div className="container">
+                            <h3>Upload detail images</h3>
+                            {GenericForm.renderDropzone(detailDz, eventHandlers)}
+                        </div>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                         <div className="product-deatil">
                             <div className="name">
                                 {GenericForm.renderInputBox(this.publicCat, this, null, this._selPublicCat)}
@@ -330,13 +330,11 @@ class EStorePost extends React.Component
                             </div>
                             <span className="tag1"></span>
                         </div>
-                        <div className="description">
-                            {GenericForm.renderInputInline(prodDesc, this, this._onBlurInput)}
-                        </div>
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        {GenericForm.renderInputInline(prodDesc, this, this._onBlurInput)}
                         {GenericForm.renderInputInline(prodDescDetail, this, this._onBlurInput)}
                         {GenericForm.renderInputInline(prodSpec, this, this._onBlurInput)}
                     </div>

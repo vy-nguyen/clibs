@@ -31,8 +31,14 @@ class UserHome extends React.Component
         this._setActivePane = this._setActivePane.bind(this);
         this._updateStore   = this._updateStore.bind(this);
 
+        this._getActEditPane   = this._getActEditPane.bind(this);
+        this._setActEditPane   = this._setActEditPane.bind(this);
+        this._getActPaneCommon = this._getActPaneCommon.bind(this);
+        this._setActPaneCommon = this._setActPaneCommon.bind(this);
+
         let { userUuid } = props.params;
         this.state = {
+            tabIndex: 0,
             articles: this._getArticles(userUuid)
         };
     }
@@ -115,7 +121,9 @@ class UserHome extends React.Component
     }
 
     _getEditTab() {
-        return {
+        const editTab = {
+            getActivePane: this._getActEditPane,
+            setActivePane: this._setActEditPane,
             tabItems: [ {
                 domId  : 'post-article',
                 tabText: 'Post Article',
@@ -126,6 +134,7 @@ class UserHome extends React.Component
                 tabIdx : 1
             } ]
         };
+        return editTab;
     }
 
     _getOwner() {
@@ -134,35 +143,56 @@ class UserHome extends React.Component
     }
 
     _getActivePane() {
+        return this._getActPaneCommon('tabPanelIdx');
+    }
+
+    _getActEditPane() {
+        return this._getActPaneCommon('editPanelIdx');
+    }
+
+    _getActPaneCommon(key) {
         let owner = this._getOwner();
         if (owner != null) {
-            if (owner.tabPanelIdx == null) {
-                owner.tabPanelIdx = 0;
+            if (owner[key] == null) {
+                owner[key] = 0;
             }
-            return owner.tabPanelIdx;
+            return owner[key];
         }
         return 0;
     }
-
+    
     _setActivePane(index) {
+        this._setActPaneCommon('tabPanelIdx', index);
+    }
+
+    _setActEditPane(index) {
+        this._setActPaneCommon('editPanelIdx', index);
+        this._setActPaneCommon('tabPanelIdx', index);
+        this.setState({
+            tabIndex: this.state.tabIndex + 1
+        });
+    }
+
+    _setActPaneCommon(key, index) {
         let owner = this._getOwner();
         if (owner != null) {
-            owner.tabPanelIdx = index;
+            owner[key] = index;
         }
     }
 
     render() {
-        let me = true;
-        let self = this._getOwner();
+        let me, self, postView, saveArticles, tabCtx, articles, editTab;
+        me = true;
+        self = this._getOwner();
 
         if (self == null) {
             History.pushState(null, "/");
             return;
         }
-        let postView = null;
-        let saveArticles = null;
-        let tabCtx = this.getUserTab();
-        let articles = this.state.articles;
+        postView = null;
+        saveArticles = null;
+        tabCtx = this.getUserTab();
+        articles = this.state.articles;
         let { userUuid } = this.props.params;
 
         if (userUuid != null) {
@@ -176,7 +206,7 @@ class UserHome extends React.Component
         if (articles == null) {
             articles = {};
         }
-        let editTab = null;
+        editTab = null;
         if (me === true) {
             editTab = (
                 <TabPanel context={this._getEditTab()}>
