@@ -16,6 +16,7 @@ import PostComment  from 'vntd-root/components/PostComment.jsx';
 import WidgetGrid   from 'vntd-shared/widgets/WidgetGrid.jsx';
 import JarvisWidget from 'vntd-shared/widgets/JarvisWidget.jsx';
 import ModalConfirm from 'vntd-shared/forms/commons/ModalConfirm.jsx';
+import EditorPost   from 'vntd-shared/forms/commons/EditorPost.jsx';
 
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
@@ -152,11 +153,13 @@ class PostPane extends React.Component {
             this.state = {
                 artRank : {},
                 favorite: false,
-                publish : false
+                publish : false,
+                editMode: false
             }
         }
         this._deletePost = this._deletePost.bind(this);
         this._cancelDel = this._cancelDel.bind(this);
+        this._editArticle    = this._editArticle.bind(this);
         this._toggleFavorite = this._toggleFavorite.bind(this);
     }
 
@@ -185,11 +188,29 @@ class PostPane extends React.Component {
         });
     }
 
-    render() {
-        let adminItem = null;
-        let ownerItem = null;
-        let article = this.props.data;
+    _editArticle() {
+        this.setState({
+            editMode: true
+        });
+    }
 
+    render() {
+        let adminItem = null,
+            ownerItem = null,
+            article = this.props.data,
+            modal = (
+            <ModalConfirm ref={"modal"} height={"auto"} modalTitle={"Delete this article post?"}>
+                <div className="modal-footer">
+                    <button className="btn btn-primary pull-right" onClick={this._deletePost}>Delete</button>
+                    <button className="btn btn-default pull-right" onClick={this._cancelDel}>Cancel</button>
+                </div>
+            </ModalConfirm>
+        );
+
+        if (this.state.editMode === true) {
+            console.log("In edit mode");
+            return <EditorPost article={article}/>
+        }
         if (UserStore.amIAdmin() == true) {
             adminItem = {
                 itemFmt : 'fa fa-circle txt-color-blue',
@@ -210,23 +231,21 @@ class PostPane extends React.Component {
                 }.bind(this)
             };
         }
-        let modal = (
-            <ModalConfirm ref={"modal"} height={"auto"} modalTitle={"Delete this article post?"}>
-                <div className="modal-footer">
-                    <button className="btn btn-primary pull-right" onClick={this._deletePost}>Delete</button>
-                    <button className="btn btn-default pull-right" onClick={this._cancelDel}>Cancel</button>
-                </div>
-            </ModalConfirm>
-        );
         const ownerPostMenu = {
             iconFmt  : 'btn-xs btn-success',
             titleText: 'Options',
             itemFmt  : 'pull-right js-status-update',
             menuItems: [ {
-                itemFmt : 'fa fa-circle txt-color-green',
+                itemFmt : 'fa fa-thumbs-up txt-color-green',
                 itemText: this.state.favorite ? "Not Favorite" : "Mark Favorite",
                 itemHandler: function() {
                     this._toggleFavorite();
+                }.bind(this)
+            }, {
+                itemFmt : 'fa fa-pencil-square-o txt-color-green',
+                itemText: 'Edit Post',
+                itemHandler: function() {
+                    this._editArticle();
                 }.bind(this)
             }, {
                 itemFmt : 'fa fa-circle txt-color-blue',

@@ -5,11 +5,11 @@
 import _ from 'lodash';
 import React, { PropTypes } from 'react-mod'
 
-import StarRating      from 'vntd-shared/layout/StarRating.jsx';
-import NavigationStore from 'vntd-shared/stores/NavigationStore.jsx';
-import UserStore       from 'vntd-shared/stores/UserStore.jsx';
-import LikeStat        from 'vntd-root/components/LikeStat.jsx';
-import ArticleTagBrief from 'vntd-root/components/ArticleTagBrief.jsx';
+import StarRating        from 'vntd-shared/layout/StarRating.jsx';
+import NavigationStore   from 'vntd-shared/stores/NavigationStore.jsx';
+import UserStore         from 'vntd-shared/stores/UserStore.jsx';
+import LikeStat          from 'vntd-root/components/LikeStat.jsx';
+import ArticleTagBrief   from 'vntd-root/components/ArticleTagBrief.jsx';
 import { EProductStore } from 'vntd-root/stores/ArticleStore.jsx';
 import { ProductInfo, ProductBrief } from './ProductInfo.jsx';
 
@@ -26,7 +26,9 @@ class EStore extends React.Component
         this.state = {
             products: EProductStore.getProductsByAuthor(props.userUuid)
         }
-        this.state.products = this.state.products.concat(testItems.products);
+        if (props.noProto == null) {
+            this.state.products = this.state.products.concat(testItems.products);
+        }
     }
 
     componentDidMount() {

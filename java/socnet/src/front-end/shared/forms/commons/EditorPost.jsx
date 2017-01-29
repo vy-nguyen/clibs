@@ -18,6 +18,7 @@ import DataStore       from 'vntd-shared/stores/NestableStore.jsx';
 import {EditorEntry}   from 'vntd-shared/forms/editors/Editor.jsx';
 import GenericForm     from 'vntd-shared/forms/commons/GenericForm.jsx';
 import JarvisWidget    from 'vntd-shared/widgets/JarvisWidget.jsx';
+import {choose}        from 'vntd-shared/utils/Enum.jsx';
 
 const InitState = {
     topic: 'Topic',
@@ -259,10 +260,21 @@ class EditorPost extends React.Component
     }
 
     render() {
+        let article = this.props.article, topic, content, artRank, tagName;
+        if (article != null) {
+            topic   = article.topic;
+            content = article.content;
+            artRank = AuthorStore.getArticleRank(article.authorUuid, article.articleUuid);
+            tagName = choose(artRank, 'tagName', InitState.tags);
+        } else {
+            topic   = InitState.topic;
+            tagName = InitState.tags;
+            content = '';
+        }
         const editorEntry = {
             id       : this._id,
             editor   : true,
-            inpHolder: "",
+            inpHolder: content,
             menu     : "full",
             errorId  : this._id + "-error",
             errorFlag: this.state.errFlags,
@@ -275,7 +287,7 @@ class EditorPost extends React.Component
                         <div className="form-group">
                             <label className="control-label col-md-1"><strong>Topic</strong></label>
                             <div className="col-md-10">
-                                <input ref="topic" className="form-control" placeholder={InitState.topic} type="text"/>
+                                <input ref="topic" className="form-control" placeholder={topic} type="text"/>
                             </div>
                         </div>
                     </div>
@@ -287,7 +299,7 @@ class EditorPost extends React.Component
                             <label className="control-label col-md-1"><strong>Tags</strong></label>
                             <div className="col-md-10">
                                 <TA.Typeahead options={this.state.autoTags} maxVisible={4}
-                                    placeholder={InitState.tags}
+                                    placeholder={tagName}
                                     customClasses={{input: "form-control"}}
                                     onBlur={this._onBlurTag} onOptionSelected={this._onTagOptSelected}/>
                             </div>

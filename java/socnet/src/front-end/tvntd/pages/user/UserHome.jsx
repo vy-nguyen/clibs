@@ -13,6 +13,7 @@ import TabPanel            from 'vntd-shared/layout/TabPanel.jsx';
 import EditorPost          from 'vntd-shared/forms/commons/EditorPost.jsx';
 import UserPostView        from 'vntd-root/pages/user/UserPostView.jsx';
 import EStorePost          from 'vntd-root/pages/e-store/EStorePost.jsx';
+import EStore              from 'vntd-root/pages/e-store/EStore.jsx';
 import ArticleStore        from 'vntd-root/stores/ArticleStore.jsx';
 import PostArticles        from 'vntd-root/components/PostArticles.jsx';
 import ProfileCover        from 'vntd-root/components/ProfileCover.jsx';
@@ -80,13 +81,17 @@ class UserHome extends React.Component
                 tabText: 'Published Articles',
                 tabIdx : 0
             }, {
+                domId  : 'publised-estore',
+                tabText: 'Publised EStore',
+                tabIdx : 1
+            }, {
                 domId  : 'connections',
                 tabText: 'Connections',
-                tabIdx : 3
+                tabIdx : 4
             }, {
                 domId  : 'block-chain',
                 tabText: 'Block Chains',
-                tabIdx : 4
+                tabIdx : 5
             } ]
         }
     }
@@ -101,21 +106,25 @@ class UserHome extends React.Component
                 tabText: 'Published Articles',
                 tabIdx : 0
             }, {
+                domId  : 'publised-estore',
+                tabText: 'My EStore',
+                tabIdx : 1
+            }, {
                 domId  : 'saved-articles',
                 tabText: 'Saved Articles',
-                tabIdx : 1
+                tabIdx : 2
             }, {
                 domId  : 'manage-articles',
                 tabText: 'Mananged Articles',
-                tabIdx : 2
+                tabIdx : 3
             }, {
                 domId  : 'connections',
                 tabText: 'Connections',
-                tabIdx : 3
+                tabIdx : 4
             }, {
                 domId  : 'block-chain',
                 tabText: 'Block Chains',
-                tabIdx : 4
+                tabIdx : 5
             } ]
         };
     }
@@ -201,7 +210,8 @@ class UserHome extends React.Component
         } else {
             tabCtx = this.getMyUserTab();
             postView = <UserPostView userUuid={self.userUuid}/>;
-            saveArticles = <PostArticles userUuid={self.userUuid} data={ArticleStore.getMySavedArticles()}/>
+            saveArticles =
+                <PostArticles userUuid={self.userUuid} data={ArticleStore.getMySavedArticles()} edit={true}/>
         }
         if (articles == null) {
             articles = {};
@@ -225,6 +235,7 @@ class UserHome extends React.Component
                     <article className="col-sm-12 col-md-12 col-lg-10">
                         <TabPanel context={tabCtx}>
                             <PostArticles userUuid={self.userUuid} data={articles}/>
+                            <EStore userUuid={self.userUuid} noProto={true}/>
                             {saveArticles}
                             {postView}
                             <Friends userUuid={self.userUuid}/>

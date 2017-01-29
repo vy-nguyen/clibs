@@ -17,9 +17,10 @@ class PostArticles extends React.Component
         let panes = null;
 
         if (this.props.data && !_.isEmpty(this.props.data)) {
+            let edit = this.props.edit;
             panes = [];
             _.forOwn(this.props.data, function(article, idx) {
-                panes.push(<PostPane data={article} key={_.uniqueId('post-pane-')}/>);
+                panes.push(<PostPane data={article} key={_.uniqueId('post-pane-')} edit={edit}/>);
             });
         } else {
             panes = <div><h2>No articles</h2></div>
