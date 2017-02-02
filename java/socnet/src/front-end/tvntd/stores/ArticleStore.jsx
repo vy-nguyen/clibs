@@ -431,6 +431,12 @@ let ArticleStore = Reflux.createStore({
         this.trigger(this.data, post, "publish", true, post.authorUuid);
     },
 
+    onUpdateUserPostCompleted: function(post) {
+        this._removeArticle([post.articleUuid], post.authorUuid, true);
+        this._addArticle(post, false);
+        this.trigger(this.data, post, "publish", true, post.authorUuid);
+    },
+
     onDeleteUserPostCompleted: function(data) {
         this._removeArticle(data.uuids, data.authorUuid); 
         this.trigger(this.data, data, "delOk", true, data.authorUuid);
@@ -481,13 +487,13 @@ let ArticleStore = Reflux.createStore({
         return article;
     },
 
-    _removeArticle: function(artUuids, authorUuid) {
+    _removeArticle: function(artUuids, authorUuid, silent) {
         _.forEach(artUuids, function(articleUuid) {
             let anchor = this.getArtOwner(authorUuid);
             anchor.removeArticle(articleUuid);
 
             let article = this.data.articlesByUuid[articleUuid];
-            AuthorStore.removeArticleRank(article);
+            AuthorStore.removeArticleRank(article, silent);
             delete this.data.articlesByUuid[articleUuid];
         }.bind(this));
     },

@@ -57,6 +57,7 @@ class UserHome extends React.Component
 
     _updateStore(store, data, status, update, authorUuid) {
         let { userUuid } = this.props.params;
+        console.log("Update store " + update);
         if (update === true) {
             this.setState({
                 articles: this._getArticles(userUuid)
@@ -65,6 +66,7 @@ class UserHome extends React.Component
     }
 
     _getArticles(userUuid) {
+        console.log("Get articles for " + userUuid);
         if (userUuid != null) {
             return ArticleStore.getSortedArticlesByAuthor(userUuid);
         }

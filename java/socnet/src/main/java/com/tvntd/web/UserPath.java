@@ -262,6 +262,53 @@ public class UserPath
         return art;
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @RequestMapping(value = "/user/update-post/{opt}",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    updateUserPost(@RequestBody PostForm form,
+            @PathVariable(value = "opt") String opt, HttpSession session)
+    {
+        System.out.println("Value param " + opt);
+        System.out.println("Update art " + form);
+        return updatePost(form, session, true);
+    }
+
+    /**
+     * Handler to update/re-edit article.
+     */
+    protected GenericResponse
+    updatePost(PostForm form, HttpSession session, boolean publish)
+    {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
+        if (form.cleanInput() == false) {
+            return s_noProfile;
+        }
+        ArticleDTO art = articleSvc.getArticleDTO(form.getArticleUuid());
+        if (art == null) {
+            return s_noProfile;
+        }
+        Article article = art.fetchArticle();
+        ArticleService.applyPostForm(form, article, publish);
+        articleSvc.saveArticle(art);
+
+        ArticleRank artRank = articleSvc.getRank(form.getArticleUuid());
+        if (artRank != null) {
+            String tag = form.getTags();
+            if (!tag.equals(artRank.getTag())) {
+                artRank.setTag(tag);
+                articleSvc.saveRank(artRank);
+            }
+        }
+        art.convertUTF();
+        return art;
+    }
+
     /**
      * Delete user articles.
      */
@@ -440,9 +487,6 @@ public class UserPath
             String uid = profile.fetchUserId().toString();
             ObjStore store = ObjStore.getInstance();
             InputStream is = file.getInputStream();
-
-            System.out.println("Upload file " + file.getName() + " size " +
-                    file.getSize());
             ObjectId oid = store.putUserImage(is, (int)file.getSize(), uid);
 
             if (oid != null) {

@@ -65,7 +65,7 @@ public class ProductForm
             pubTag == null) {
             return false;
         }
-        Whitelist wlist = Whitelist.basic();
+        Whitelist wlist = Util.allowedTags;
         authorUuid = Jsoup.clean(authorUuid, wlist);
         articleUuid = Jsoup.clean(articleUuid, wlist);
 

@@ -141,9 +141,13 @@ public class ArticleService implements IArticleService
      * Article ranking.
      */
     @Override
-    public ArticleRank getRank(String artUuid)
-    {
+    public ArticleRank getRank(String artUuid) {
         return artRankRepo.findByArticleUuid(artUuid);
+    }
+
+    @Override
+    public void saveRank(ArticleRank rank) {
+        artRankRepo.save(rank);
     }
 
     @Override

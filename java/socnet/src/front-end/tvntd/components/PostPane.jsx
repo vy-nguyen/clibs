@@ -208,30 +208,35 @@ class PostPane extends React.Component {
         );
 
         if (this.state.editMode === true) {
-            console.log("In edit mode");
             return <EditorPost article={article}/>
         }
         if (UserStore.amIAdmin() == true) {
-            adminItem = {
+            adminItem = [ {
                 itemFmt : 'fa fa-circle txt-color-blue',
                 itemText: 'Publish Post',
                 itemHandler: function(e, pane) {
                     e.preventDefault();
                     AdminStore.addPublicArticle(article.articleUuid);
                 }.bind(this)
-            };
+            } ];
         }
         if (UserStore.isUserMe(article.authorUuid)) {
-            ownerItem = {
+            ownerItem = [ {
                 itemFmt : 'fa fa-circle txt-color-red',
                 itemText: 'Delete Post',
                 itemHandler: function(e, pane) {
                     e.stopPropagation();
                     this.refs.modal.openModal();
                 }.bind(this)
-            };
+            }, {
+                itemFmt : 'fa fa-pencil-square-o txt-color-green',
+                itemText: 'Edit Post',
+                itemHandler: function() {
+                    this._editArticle();
+                }.bind(this)
+            } ];
         }
-        const ownerPostMenu = {
+        let ownerPostMenu = {
             iconFmt  : 'btn-xs btn-success',
             titleText: 'Options',
             itemFmt  : 'pull-right js-status-update',
@@ -242,12 +247,6 @@ class PostPane extends React.Component {
                     this._toggleFavorite();
                 }.bind(this)
             }, {
-                itemFmt : 'fa fa-pencil-square-o txt-color-green',
-                itemText: 'Edit Post',
-                itemHandler: function() {
-                    this._editArticle();
-                }.bind(this)
-            }, {
                 itemFmt : 'fa fa-circle txt-color-blue',
                 itemText: 'Tag Post',
                 itemHandler: function() {
@@ -255,10 +254,11 @@ class PostPane extends React.Component {
             } ]
         };
         if (ownerItem != null) {
-            ownerPostMenu.menuItems.push(ownerItem);
+            Array.prototype.push.apply(ownerPostMenu.menuItems, ownerItem);
         }
         if (adminItem != null) {
-            ownerPostMenu.menuItems.push(adminItem);
+            Array.prototype.push.apply(ownerPostMenu.menuItems, adminItem);
+            // ownerPostMenu.menuItems.push(adminItem);
         }
         let panelLabel = [ {
             labelIcon: 'label label-success',

@@ -55,6 +55,7 @@ public interface IArticleService
 
     ArticleRank getRank(String artUuid);
     List<ArticleRank> getArtRank(String[] artUuids);
+    void saveRank(ArticleRank rank);
 
     ArticleRank updateRank(CommentChangeForm form, ProfileDTO user);
     List<ArticleRankDTO> getArticleRank(UuidForm uuids);

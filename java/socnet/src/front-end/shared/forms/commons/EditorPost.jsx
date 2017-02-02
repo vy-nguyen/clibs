@@ -47,7 +47,7 @@ class EditorPost extends React.Component
         this.state = InitState.state;
         this.state.autoTags = AuthorStore.getTagsByAuthorUuid(null);
 
-        this._id          = "main-post";
+        this._getId       = this._getId.bind(this);
         this._resetData   = this._resetData.bind(this);
         this._getData     = this._getData.bind(this);
         this._savePost    = this._savePost.bind(this);
@@ -84,6 +84,13 @@ class EditorPost extends React.Component
             this.unsub = null;
             this.unsubAuthor = null;
         }
+    }
+
+    _getId() {
+        if (this.props.article == null) {
+            return "main-post";
+        }
+        return "main-post-" + this.props.article.articleUuid;
     }
 
     _onPublishResult(data, post, status) {
@@ -167,12 +174,37 @@ class EditorPost extends React.Component
      * Get data to submit to the server to change tag.
      */
     _getData() {
+        let article = this.props.article, authorUuid, articleUuid, artRank, tags, topic;
+
+        if (article != null) {
+            artRank = AuthorStore.getArticleRank(article.authorUuid, article.articleUuid);
+            if (artRank != null) {
+                tags = (this.state.tagName == null) ? artRank.tagName : this.state.tagName;
+            } else {
+                tags = this.state.tagName;
+            }
+            if (this.refs.topic != null) {
+                topic = this.refs.topic.value;
+                if (_.isEmpty(topic)) {
+                    topic = article.topic;
+                }
+            } else {
+                topic = article.topic;
+            }
+            authorUuid  = article.authorUuid;
+            articleUuid = article.articleUuid;
+        } else {
+            tags        = this.state.tagName;
+            topic       = this.refs.topic.value;
+            authorUuid  = UserStore.getSelf().userUuid;
+            articleUuid = this.state.articleUuid;
+        }
         return {
-            topic      : this.refs.topic.value,
-            tags       : this.state.tagName,
-            content    : DataStore.getItemIndex(this._id),
-            authorUuid : UserStore.getSelf().userUuid,
-            articleUuid: this.state.articleUuid
+            topic      : topic,
+            tags       : tags,
+            content    : DataStore.getItemIndex(this._getId()),
+            authorUuid : authorUuid,
+            articleUuid: articleUuid
         }
     }
 
@@ -185,7 +217,12 @@ class EditorPost extends React.Component
     _publishPost(e) {
         e.preventDefault();
         this.setState(this._nextStatus("Publishing"));
-        Actions.publishUserPost(this._getData());
+
+        if (this.props.article == null) {
+            Actions.publishUserPost(this._getData());
+        } else {
+            Actions.updateUserPost(this._getData());
+        }
     }
 
     _nextStatus(event) {
@@ -272,11 +309,11 @@ class EditorPost extends React.Component
             content = '';
         }
         const editorEntry = {
-            id       : this._id,
+            id       : this._getId(),
             editor   : true,
             inpHolder: content,
             menu     : "full",
-            errorId  : this._id + "-error",
+            errorId  : this._getId() + "error",
             errorFlag: this.state.errFlags,
             uploadUrl: '/user/upload-img'
         };

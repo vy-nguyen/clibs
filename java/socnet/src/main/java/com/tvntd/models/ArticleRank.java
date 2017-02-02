@@ -208,6 +208,10 @@ public class ArticleRank
         return Constants.DefaultTag;
     }
 
+    public void setTag(String newTag) {
+        this.tag = newTag.getBytes(Charset.forName("UTF-8"));
+    }
+
     /**
      * @return the authorUuid
      */

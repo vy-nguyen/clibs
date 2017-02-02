@@ -39,6 +39,7 @@ const Actions = Reflux.createActions({
     saveUserPost:    completedFailedFn,
     deleteUserPost:  completedFailedFn,
     publishUserPost: completedFailedFn,
+    updateUserPost:  completedFailedFn,
 
     getArticles:     completedFailedFn,
     getOneArticle:   completedFailedFn,
@@ -258,6 +259,12 @@ Actions.deleteUserPost.listen(function(data) {
 
 Actions.publishUserPost.listen(function(data) {
     postRestCall(data, "/user/publish-post", true, this, true, "publishUserPost");
+    Actions.pendingPost(data);
+});
+
+Actions.updateUserPost.listen(function(data, save) {
+    let url = save === true ? "/user/update-post/save" : "/user/update-post/publish";
+    postRestCall(data, url, true, this, true, "updateUserPost");
     Actions.pendingPost(data);
 });
 

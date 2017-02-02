@@ -75,6 +75,14 @@ public class PostForm
         return true;
     }
 
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Topic ").append(topic).append("\n")
+            .append("Tags ").append(tags).append("\n");
+        return sb.toString();
+    }
+
     /**
      * @return the topic
      */

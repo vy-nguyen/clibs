@@ -25,12 +25,17 @@ class NewsFeed extends React.Component
 
     componentDidMount() {
         this.unsub = AuthorStore.listen(this._updateState);
+        this.unsubArt = ArticleStore.listen(this._updateState);
     }
 
     componentWillUnmount() {
         if (this.unsub != null) {
             this.unsub();
             this.unsub = null;
+        }
+        if (this.unsubArt != null) {
+            this.unsubArt();
+            this.unsubArt = null;
         }
     }
 

@@ -107,7 +107,7 @@ dependencies {
 }
 
 gretty {
-    port  = 8080
+    //port  = 8080
     contextPath = '/'
     servletContainer = 'jetty9'
     jvmArgs = ['-Djava.net.preferIPv4Stack=true']

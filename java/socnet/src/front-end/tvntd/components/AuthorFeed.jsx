@@ -68,6 +68,9 @@ class AuthorFeed extends React.Component
     }
 
     _updateState(data, post, status) {
+        console.log("Authorfeed update state");
+        console.log(post);
+
         this.setState({
             articles: ArticleStore.getSortedArticlesByAuthor(this.props.authorUuid).slice(0, 2)
         });
