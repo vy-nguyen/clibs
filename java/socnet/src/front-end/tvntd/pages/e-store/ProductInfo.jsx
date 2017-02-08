@@ -11,6 +11,7 @@ import ModalConfirm     from 'vntd-shared/forms/commons/ModalConfirm.jsx';
 import LikeStat         from 'vntd-root/components/LikeStat.jsx';
 import PostComment      from 'vntd-root/components/PostComment.jsx';
 import Actions          from 'vntd-root/actions/Actions.jsx';
+import EStorePost       from './EStorePost.jsx';
 
 class ProductInfo extends React.Component
 {
@@ -217,9 +218,11 @@ class ProductBrief extends React.Component
         this._getDetail   = this._getDetail.bind(this);
         this._clickSelect = this._clickSelect.bind(this);
         this._delProduct  = this._delProduct.bind(this);
+        this._editProduct = this._editProduct.bind(this);
         this._confirmDel  = this._confirmDel.bind(this);
         this._cancelDel   = this._cancelDel.bind(this);
         this._delConfirmBox = this._delConfirmBox.bind(this);
+        this._editProductModal = this._editProductModal.bind(this);
     }
 
     componentDidMount() {
@@ -236,6 +239,12 @@ class ProductBrief extends React.Component
     _delProduct(event) {
         event.stopPropagation();
         this.refs.confirmRm.openModal();
+    }
+
+    _editProduct(event) {
+        event.stopPropagation();
+        console.log("Edit product");
+        this.refs.editProd.openModal();
     }
 
     _confirmDel() {
@@ -269,8 +278,18 @@ class ProductBrief extends React.Component
         );
     }
 
+    _editProductModal() {
+        return (
+            <ModalConfirm ref={"editProd"} modalTitle={"Edit Product Listing"}>
+                <div className="modal-content">
+                    <EStorePost/>
+                </div>
+            </ModalConfirm>
+        );
+    }
+
     render() {
-        let onClickCb = this.props.onClickCb;
+        let editBox, delBox, button, onClickCb = this.props.onClickCb;
         const {
             logoImg, logoWidth, logoHeight, logoTag, likeStat,
             articleUuid, rating, prodName, prodCat, prodPrice, prodDesc
@@ -279,14 +298,25 @@ class ProductBrief extends React.Component
         if (onClickCb == null) {
             onClickCb = this._clickSelect;
         }
-        let button = <button className="btn btn-success" onClick={this._addCart}>Add to cart</button>;
         if (UserStore.isUserMe(this.props.userUuid)) {
-            button = <button className="btn btn-danger" onClick={this._delProduct}>Remove Product Post</button>;
+            editBox = this._editProductModal();
+            delBox = this._delConfirmBox();
+            button = (
+                <div className="btn-group" role="group">
+                    <button className="btn btn-info" onClick={this._editProduct}>Edit Post</button>
+                    <button className="btn btn-danger" onClick={this._delProduct}>Remove Product</button>
+                </div>
+            );
+        } else {
+            editBox = null;
+            delBox = null;
+            button = <button className="btn btn-success" onClick={this._addCart}>Add to cart</button>;
         }
         return (
             <div className="product-content product-wrap clearfix" onClick={onClickCb}>
                 <div className="row">
-                    {this._delConfirmBox()}
+                    {delBox}
+                    {editBox}
                     <ProductInfo ref={"modal"} modal={true} product={this.props.product}/>
                     <div className="col-md-5 col-sm-12 col-xs-12">
                         <div className="product-image" style={{minHeight: "150"}}>
@@ -306,12 +336,12 @@ class ProductBrief extends React.Component
                             <span className="tag1"></span>
                         </div>
                         <div className="description" dangerouslySetInnerHTML={{__html: prodDesc}}/>
-                        <div className="product-info smart-form">
-                            <div className="row">
-                                <div className="col-md-6 col-sm-6 col-xs-6">
-                                    {button}
-                                </div>
-                            </div>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-md-12 col-sm-12 col-xs-12">
+                        <div className="product-info smart-form text-center">
+                            {button}
                         </div>
                     </div>
                 </div>

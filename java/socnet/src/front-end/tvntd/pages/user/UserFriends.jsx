@@ -17,9 +17,9 @@ class UserFriends extends React.Component
         super(props);
 
         this._submitChanges = this._submitChanges.bind(this);
-        this._getUserTable = this._getUserTable.bind(this);
-        this._getTabHeader = this._getTabHeader.bind(this);
-        this._updateState = this._updateState.bind(this);
+        this._getUserTable  = this._getUserTable.bind(this);
+        this._getTabHeader  = this._getTabHeader.bind(this);
+        this._updateState   = this._updateState.bind(this);
         this.state = {
             self: UserStore.getSelf()
         };
@@ -148,17 +148,13 @@ class UserFriends extends React.Component
             format: "fa fa-fw fa-user text-muted",
             header: "Last Name"
         }, {
-            key   : "eMail",
-            format: "fa fa-fw fa-phone text-muted",
-            header: "E-mail"
-        }, {
             key   : "uuid",
             format: "text-color-blue",
             header: "UUID"
         }, {
-            key   : "delete",
+            key   : "block",
             format: "text-color-red",
-            header: "Delete Account"
+            header: "Block Account"
         }, {
             key   : "follow",
             format: "text-color-blue",
