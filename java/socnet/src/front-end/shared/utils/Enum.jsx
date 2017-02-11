@@ -197,13 +197,13 @@ function findUuid(array, field, uuid) {
 }
 
 function choose(value, key, defVal) {
-    if (key != null && defVal != null) {
-        if (value != null) {
-            return value[key] != null ? value[key] : defVal;
+    if (!_.isEmpty(key) && !_.isEmpty(defVal)) {
+        if (!_.isEmpty(value)) {
+            return !_.isEmpty(value[key]) ? value[key] : defVal;
         }
         return defVal;
     }
-    return value != null ? value : defVal;
+    return !_.isEmpty(value) ? value : defVal;
 }
 
 export {

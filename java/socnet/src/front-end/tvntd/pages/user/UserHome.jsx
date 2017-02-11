@@ -66,7 +66,6 @@ class UserHome extends React.Component
     }
 
     _getArticles(userUuid) {
-        console.log("Get articles for " + userUuid);
         if (userUuid != null) {
             return ArticleStore.getSortedArticlesByAuthor(userUuid);
         }

@@ -26,7 +26,6 @@ class EStorePost extends React.Component
 {
     constructor(props) {
         super(props);
-
         this.dropzone  = null;
         this._dzSend   = this._dzSend.bind(this);
         this._dzError  = this._dzError.bind(this);
@@ -43,12 +42,12 @@ class EStorePost extends React.Component
 
         this._myUuid  = UserStore.getSelfUuid();
         this._errorId = "estore-post-" + this._myUuid;
-        this._prodDescId   = "prod-desc";
-        this._prodSpecId   = "prod-spec";
-        this._ImageRecId   = "prod-imgs";
-        this._prodDetailId = "detail-desc";
-        this._saveBtnId    = "save-product-btn";
-        this._publishBtnId = "publish-product-btn";
+        this._prodDescId   = "prod-desc-";
+        this._prodSpecId   = "prod-spec-";
+        this._ImageRecId   = "prod-imgs-";
+        this._prodDetailId = "detail-desc-";
+        this._saveBtnId    = "save-product-btn-";
+        this._publishBtnId = "publish-product-btn-";
 
         this.publicCat = {
             labelTxt : "Publish Category",
@@ -64,7 +63,11 @@ class EStorePost extends React.Component
         });
         this.state = this._getInitState();
     }
-    
+
+    _getItemId(base) {
+        return base + (this.props.product != null ? this.props.product.articleUuid : "");
+    }
+
     _getInitState() {
         return {
             errFlags: {}
@@ -72,7 +75,15 @@ class EStorePost extends React.Component
     }
 
     componentDidMount() {
+        let product =this.props.product;
+
         this.unsub = EProductStore.listen(this._updateState);
+        if (product != null) {
+            NestableStore.storeItemIndex(this._getItemId(this._prodDescId), product.prodDesc, false);
+            NestableStore.storeItemIndex(this._getItemId(this._prodDetailId), product.prodDetail, false);
+            NestableStore.storeItemIndex(this._getItemId(this._prodSpecId), product.prodSpec, false);
+            NestableStore.dumpData();
+        }
     }
 
     componentWillUnmount() {
@@ -96,11 +107,12 @@ class EStorePost extends React.Component
     }
 
     _imageUploadOk(entry, result) {
-        let picObjId, logoObjId, imgRec;
+        let picObjId, logoObjId, imgRec, imgRecId;
 
         picObjId  = this.state.picObjId;
         logoObjId = this.state.logoObjId;
-        imgRec    = NestableStore.getItemIndex(this._ImageRecId);
+        imgRecId  = this._getItemId(this._ImageRecId);
+        imgRec    = NestableStore.getItemIndex(imgRecId);
 
         if (imgRec == null) {
             imgRec = {
@@ -114,7 +126,7 @@ class EStorePost extends React.Component
         } else {
             imgRec.picObjIds.push(result.imgObjId);
         }
-        NestableStore.storeItemIndex(this._ImageRecId, imgRec, false);
+        NestableStore.storeItemIndex(imgRecId, imgRec, false);
     }
 
     _onBlurInput(e) {
@@ -141,6 +153,8 @@ class EStorePost extends React.Component
         errFlags = {};
 
         console.log(product);
+        console.log(this.refs.prodCat);
+
         if (product.articleUuid == null) {
             errText  = "You forgot to upload pictures for your product";
         }
@@ -170,7 +184,7 @@ class EStorePost extends React.Component
     }
 
     _getPostData() {
-        let imgRec = NestableStore.getItemIndex(this._ImageRecId);
+        let imgRec = NestableStore.getItemIndex(this._getItemId(this._ImageRecId));
         if (imgRec == null) {
             return {};
         }
@@ -184,9 +198,9 @@ class EStorePost extends React.Component
             prodTitle  : this.refs.prodName.value,
             prodPrice  : this.refs.prodPrice.value,
             prodNotice : this.refs.prodNotice.value,
-            prodDesc   : NestableStore.getIndexString(this._prodDescId),
-            prodDetail : NestableStore.getIndexString(this._prodDetailId),
-            prodSpec   : NestableStore.getIndexString(this._prodSpecId),
+            prodDesc   : NestableStore.getIndexString(this._getItemId(this._prodDescId)),
+            prodDetail : NestableStore.getIndexString(this._getItemId(this._prodDetailId)),
+            prodSpec   : NestableStore.getIndexString(this._getItemId(this._prodSpecId)),
             prodImgs   : imgRec.picObjIds,
             prodTags   : [],
             logoImg    : imgRec.logoObjId,
@@ -200,10 +214,10 @@ class EStorePost extends React.Component
         refs.prodName.value   = '';
         refs.prodPrice.value  = '';
         refs.prodNotice.value = '';
-        NestableStore.clearItemIndex(this._prodDescId);
-        NestableStore.clearItemIndex(this._prodDetailId);
-        NestableStore.clearItemIndex(this._prodSpecId);
-        NestableStore.clearItemIndex(this._ImageRecId);
+        NestableStore.clearItemIndex(this._getItemId(this._prodDescId));
+        NestableStore.clearItemIndex(this._getItemId(this._prodDetailId));
+        NestableStore.clearItemIndex(this._getItemId(this._prodSpecId));
+        NestableStore.clearItemIndex(this._getItemId(this._ImageRecId));
 
         if (this.dropzone != null) {
             this.dropzone.removeAllFiles();
@@ -224,60 +238,81 @@ class EStorePost extends React.Component
     }
 
     _editProduct() {
+        let catVal, nameVal, priceVal, noticeVal, prodDescId, prodDetailId, prodSpecId, post = this.props.product;
+
+        if (post != null) {
+            catVal    = post.prodCat;
+            nameVal   = post.prodName;
+            priceVal  = post.prodPrice;
+            noticeVal = post.prodNotice;
+        } else {
+            catVal    = choose(this.refs.prodCat, "value", null);
+            nameVal   = choose(this.refs.prodName, "value", null);
+            priceVal  = choose(this.refs.prodPrice, "value", null);
+            noticeVal = choose(this.refs.prodNotice, "value", null);
+        }
+        prodDescId   = this._getItemId(this._prodDescId);
+        prodDetailId = this._getItemId(this._prodDetailId);
+        prodSpecId   = this._getItemId(this._prodSpecId);
+
         const prodCat = {
             labelTxt : "Categorty",
             inpName  : "prodCat",
-            inpHolder: choose(this.refs.prodCat, "value", "Category"),
+            inpDefVal: catVal,
+            inpHolder: "Product Category",
             errorId  : "prodCat",
             errorFlag: this.state.errFlags.prodCat
         };
         const prodName = {
             labelTxt : "Name",
             inpName  : "prodName",
-            inpHolder: choose(this.refs.prodName, "value", "Product Name"),
+            inpDefVal: nameVal,
+            inpHolder: "Product Name",
             errorId  : "prodName",
             errorFlag: this.state.errFlags.prodName
         }
         const prodPrice = {
             labelTxt : "Price",
             inpName  : "prodPrice",
-            inpHolder: choose(this.refs.prodPrice, "value", "Product Price"),
+            inpDefVal: priceVal,
+            inpHolder: "Product Price",
             errorId  : "prodPrice",
             errorFlag: this.state.errFlags.prodPrice
         };
         const priceNotice = {
             labelTxt : "Promotion",
             inpName  : "prodNotice",
-            inpHolder: choose(this.refs.prodNotice, "value", "Include shipping"),
+            inpDefVal: noticeVal,
+            inpHolder: "Include shipping",
             errorId  : "prodNotice",
             errorFlag: this.state.errFlags.prodNotice
         };
         const prodDesc = {
-            id       : this._prodDescId,
+            id       : prodDescId,
             labelTxt : "Brief description",
             inpName  : "prodDesc",
             editor   : true,
-            inpHolder: choose(NestableStore.getIndexString(this._prodDescId), "Brief description of product"),
+            inpDefVal: choose(NestableStore.getIndexString(prodDescId), "Brief description of product"),
             errorFlag: this.state.errFlags.prodDesc
             // uploadUrl: '/user/upload-product-img',
             // uploadOk : this._imageUploadOk
         };
         const prodDescDetail = {
-            id       : this._prodDetailId,
+            id       : prodDetailId,
             labelTxt : "Detail description",
             inpName  : "prodDetail",
             editor   : true,
-            inpHolder: choose(NestableStore.getIndexString(this._prodDetailId), "Brief description of product"),
+            inpDefVal: choose(NestableStore.getIndexString(prodDetailId), "Brief description of product"),
             errorId  : "prodDetail",
             errorFlag: this.state.errFlags.prodDetail,
-            uploadUrl: '/user/upload-product-detail',
-            uploadOk : this._imageUploadOk
+            // uploadUrl: '/user/upload-product-detail',
+            // uploadOk : this._imageUploadOk
         };
         const prodSpec = {
-            id       : this._prodSpecId,
+            id       : prodSpecId,
             labelTxt : "Product Specification",
             inpName  : "prodSpec",
-            inpHolder: choose(NestableStore.getIndexString(this._prodSpecId), "Brief description of product"),
+            inpDefVal: choose(NestableStore.getIndexString(prodSpecId), "Brief description of product"),
             editor   : true,
             errorId  : "prodSpec",
             errorFlag: this.state.errFlags.prodSpec

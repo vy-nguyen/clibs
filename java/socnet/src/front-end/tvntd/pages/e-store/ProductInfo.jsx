@@ -282,7 +282,7 @@ class ProductBrief extends React.Component
         return (
             <ModalConfirm ref={"editProd"} modalTitle={"Edit Product Listing"}>
                 <div className="modal-content">
-                    <EStorePost/>
+                    <EStorePost product={this.props.product}/>
                 </div>
             </ModalConfirm>
         );

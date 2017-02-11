@@ -318,7 +318,7 @@ class EditorEntry extends React.Component
         config.menubar = menubar;
 
         return (
-            <TinyMCE id={entry.id} content={entry.inpHolder} config={config} onChange={this._onChange}/>
+            <TinyMCE id={entry.id} content={entry.inpDefVal} config={config} onChange={this._onChange}/>
         );
     }
 }
