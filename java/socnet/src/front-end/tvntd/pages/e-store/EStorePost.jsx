@@ -42,6 +42,7 @@ class EStorePost extends React.Component
 
         this._myUuid  = UserStore.getSelfUuid();
         this._errorId = "estore-post-" + this._myUuid;
+        this._publicCatId  = "pub-cat-id-";
         this._prodDescId   = "prod-desc-";
         this._prodSpecId   = "prod-spec-";
         this._ImageRecId   = "prod-imgs-";
@@ -49,12 +50,6 @@ class EStorePost extends React.Component
         this._saveBtnId    = "save-product-btn-";
         this._publishBtnId = "publish-product-btn-";
 
-        this.publicCat = {
-            labelTxt : "Publish Category",
-            inpName  : "pulbTag",
-            select   : true,
-            selectOpt: ArticleTagStore.getPublicTagsSelOpt("estore")
-        };
         this._saveBtn = StateButtonStore.createButton(this._saveBtnId, function() {
             return StateButton.saveButtonFsm("Save", "Save Editing", "Saved Product");
         }); 
@@ -74,16 +69,18 @@ class EStorePost extends React.Component
         };
     }
 
-    componentDidMount() {
-        let product =this.props.product;
-
-        this.unsub = EProductStore.listen(this._updateState);
+    componentWillMount() {
+        let product = this.props.product;
         if (product != null) {
+            NestableStore.storeItemIndex(this._getItemId(this._publicCatId), product.publicTag, false);
             NestableStore.storeItemIndex(this._getItemId(this._prodDescId), product.prodDesc, false);
             NestableStore.storeItemIndex(this._getItemId(this._prodDetailId), product.prodDetail, false);
             NestableStore.storeItemIndex(this._getItemId(this._prodSpecId), product.prodSpec, false);
-            NestableStore.dumpData();
         }
+    }
+
+    componentDidMount() {
+        this.unsub = EProductStore.listen(this._updateState);
     }
 
     componentWillUnmount() {
@@ -145,15 +142,12 @@ class EStorePost extends React.Component
     }
 
     _onPostProduct() {
-        let product, helpText, errText, errFlags;
+        let product, helpText, errText, errFlags, defProd = this.props.product;
 
         product  = this._getPostData();
         helpText = "Enter values in categories highlighed in red";
         errText  = null;
         errFlags = {};
-
-        console.log(product);
-        console.log(this.refs.prodCat);
 
         if (product.articleUuid == null) {
             errText  = "You forgot to upload pictures for your product";
@@ -164,14 +158,19 @@ class EStorePost extends React.Component
             "pubTag", "prodDetail"
 
         ].forEach(function(entry) {
+            if (defProd != null && defProd[entry] != null && _.isEmpty(product[entry])) {
+                product[entry] = defProd[entry];
+            }
             if (_.isEmpty(product[entry])) {
-                console.log("Missing field " + entry);
+                console.log("missing " + entry);
                 errFlags[entry] = true;
                 if (errText == null) {
-                    errText  = "Please enter values highlighted fields";
+                    errText  = "Please enter values in highlighted fields";
                 }
             }
         });
+        console.log("-------------");
+        console.log(product);
         if (errText != null) {
             this.setState({
                 errFlags: errFlags
@@ -184,20 +183,27 @@ class EStorePost extends React.Component
     }
 
     _getPostData() {
-        let imgRec = NestableStore.getItemIndex(this._getItemId(this._ImageRecId));
-        if (imgRec == null) {
+        let imgRec = NestableStore.getItemIndex(this._getItemId(this._ImageRecId)), product = this.props.product;
+        if (product == null && imgRec == null) {
             return {};
+        }
+        if (imgRec == null) {
+            imgRec = {
+                articleUuid: product.articleUuid,
+                prodImgs   : [],
+                logoImg    : 0
+            }
         }
         return {
             estore    : true,
             authorUuid : this._myUuid,
             articleUuid: imgRec.articleUuid,
-            pubTag     : this.publicCat.taValue,
             prodCat    : this.refs.prodCat.value,
             prodName   : this.refs.prodName.value,
             prodTitle  : this.refs.prodName.value,
             prodPrice  : this.refs.prodPrice.value,
             prodNotice : this.refs.prodNotice.value,
+            pubTag     : NestableStore.getIndexString(this._getItemId(this._publicCatId)),
             prodDesc   : NestableStore.getIndexString(this._getItemId(this._prodDescId)),
             prodDetail : NestableStore.getIndexString(this._getItemId(this._prodDetailId)),
             prodSpec   : NestableStore.getIndexString(this._getItemId(this._prodSpecId)),
@@ -214,6 +220,8 @@ class EStorePost extends React.Component
         refs.prodName.value   = '';
         refs.prodPrice.value  = '';
         refs.prodNotice.value = '';
+
+        NestableStore.clearItemIndex(this._getItemId(this._publicCatId));
         NestableStore.clearItemIndex(this._getItemId(this._prodDescId));
         NestableStore.clearItemIndex(this._getItemId(this._prodDetailId));
         NestableStore.clearItemIndex(this._getItemId(this._prodSpecId));
@@ -238,19 +246,26 @@ class EStorePost extends React.Component
     }
 
     _editProduct() {
-        let catVal, nameVal, priceVal, noticeVal, prodDescId, prodDetailId, prodSpecId, post = this.props.product;
+        let catVal, nameVal, priceVal, noticeVal, prodDescId, prodDetailId, prodSpecId, pubTag,
+            dropImg = null, post = this.props.product;
 
+        console.log(post);
         if (post != null) {
+            pubTag    = post.publicTag;         
             catVal    = post.prodCat;
             nameVal   = post.prodName;
             priceVal  = post.prodPrice;
             noticeVal = post.prodNotice;
         } else {
+            pubTag    = null;
             catVal    = choose(this.refs.prodCat, "value", null);
             nameVal   = choose(this.refs.prodName, "value", null);
             priceVal  = choose(this.refs.prodPrice, "value", null);
             noticeVal = choose(this.refs.prodNotice, "value", null);
         }
+        console.log(this.refs);
+        console.log(catVal);
+
         prodDescId   = this._getItemId(this._prodDescId);
         prodDetailId = this._getItemId(this._prodDetailId);
         prodSpecId   = this._getItemId(this._prodSpecId);
@@ -262,32 +277,40 @@ class EStorePost extends React.Component
             inpHolder: "Product Category",
             errorId  : "prodCat",
             errorFlag: this.state.errFlags.prodCat
-        };
-        const prodName = {
+        },
+        prodName = {
             labelTxt : "Name",
             inpName  : "prodName",
             inpDefVal: nameVal,
             inpHolder: "Product Name",
             errorId  : "prodName",
             errorFlag: this.state.errFlags.prodName
-        }
-        const prodPrice = {
+        },
+        prodPrice = {
             labelTxt : "Price",
             inpName  : "prodPrice",
             inpDefVal: priceVal,
             inpHolder: "Product Price",
             errorId  : "prodPrice",
             errorFlag: this.state.errFlags.prodPrice
-        };
-        const priceNotice = {
+        },
+        priceNotice = {
             labelTxt : "Promotion",
             inpName  : "prodNotice",
             inpDefVal: noticeVal,
             inpHolder: "Include shipping",
             errorId  : "prodNotice",
             errorFlag: this.state.errFlags.prodNotice
-        };
-        const prodDesc = {
+        },
+        publicCat = {
+            labelTxt : "Publish Category",
+            inpName  : "pulbTag",
+            inpHolder: pubTag,
+            select   : true,
+            tagValId : this._getItemId(this._publicCatId),
+            selectOpt: ArticleTagStore.getPublicTagsSelOpt("estore")
+        },
+        prodDesc = {
             id       : prodDescId,
             labelTxt : "Brief description",
             inpName  : "prodDesc",
@@ -296,8 +319,8 @@ class EStorePost extends React.Component
             errorFlag: this.state.errFlags.prodDesc
             // uploadUrl: '/user/upload-product-img',
             // uploadOk : this._imageUploadOk
-        };
-        const prodDescDetail = {
+        },
+        prodDescDetail = {
             id       : prodDetailId,
             labelTxt : "Detail description",
             inpName  : "prodDetail",
@@ -307,8 +330,8 @@ class EStorePost extends React.Component
             errorFlag: this.state.errFlags.prodDetail,
             // uploadUrl: '/user/upload-product-detail',
             // uploadOk : this._imageUploadOk
-        };
-        const prodSpec = {
+        },
+        prodSpec = {
             id       : prodSpecId,
             labelTxt : "Product Specification",
             inpName  : "prodSpec",
@@ -316,29 +339,29 @@ class EStorePost extends React.Component
             editor   : true,
             errorId  : "prodSpec",
             errorFlag: this.state.errFlags.prodSpec
-        };
-        const eventHandlers = {
+        },
+        eventHandlers = {
             sending: this._dzSend,
             success: this._dzSuccess,
             error  : this._dzError,
             init   : function(dz) {
                 this.dropzone = dz;
             }
-        };
-        const briefDz = {
+        },
+        briefDz = {
             url        : "/user/upload-product-img",
             defaultMesg: "Drop image here",
             errorId    : "logoImg",
             errorFlag  : this.state.errFlags.logoImg
-        };
-        const detailDz = {
+        },
+        detailDz = {
             url        : "/user/upload-product-detail",
             errorId    : "prodImgs",
             errorFlag  : this.state.errFlags.prodImgs
         };
-
-        return (
-            <div className="product-content product-wrap clearfix">
+        console.log(publicCat);
+        if (this.props.product == null) {
+            dropImg = (
                 <div className="row">
                     <div className="col-xs-12 col-sm-4 col-md-4 col-lg-4">
                         <div className="container">
@@ -353,11 +376,16 @@ class EStorePost extends React.Component
                         </div>
                     </div>
                 </div>
+            );
+        }
+        return (
+            <div className="product-content product-wrap clearfix">
+                {dropImg}
                 <div className="row">
                     <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                         <div className="product-deatil">
                             <div className="name">
-                                {GenericForm.renderInputBox(this.publicCat, this, null, this._selPublicCat)}
+                                {GenericForm.renderInputBox(publicCat, this, null, this._selPublicCat)}
                                 {GenericForm.renderInputInline(prodCat, this, this._onBlurInput)}
                                 {GenericForm.renderInputInline(prodName, this, this._onBlurInput)}
                                 {GenericForm.renderInputInline(prodPrice, this, this._onBlurInput)}

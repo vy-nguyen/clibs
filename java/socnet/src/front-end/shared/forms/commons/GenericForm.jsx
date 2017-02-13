@@ -19,7 +19,7 @@ class SelectWrap extends React.Component
     constructor(props) {
         super(props);
         this.state = {
-            value: props.entry.inpHolder
+            value: NestableStore.getIndexString(props.entry.tagValId)
         };
     }
 
@@ -28,8 +28,8 @@ class SelectWrap extends React.Component
         if (onSelected != null) {
             onSelected(entry, val);
         }
-        entry.taValue   = val.value;
         entry.inpHolder = val.value;
+        NestableStore.storeItemIndex(this.props.entry.tagValId, val.value);
         this.setState({
             value: val.value
         });
