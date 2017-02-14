@@ -21,7 +21,15 @@ class MainBlog extends React.Component
             pubTags: ArticleTagStore.getAllPublicTags(true, mode)
         };
         this._updateState = this._updateState.bind(this);
-        this._getBlogTab = this._getBlogTab.bind(this);
+        this._getBlogTab  = this._getBlogTab.bind(this);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        let mode = nextProps.params.blog;
+        this.state = {
+            pubMode: mode,
+            pubTags: ArticleTagStore.getAllPublicTags(true, mode)
+        };
     }
 
     componentDidMount() {

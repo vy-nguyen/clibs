@@ -7,6 +7,7 @@ import _               from 'lodash';
 import React           from 'react-mod';
 
 import GenericForm     from 'vntd-shared/forms/commons/GenericForm.jsx';
+import InputStore      from 'vntd-shared/stores/NestableStore.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 
 const tagKinds = [
@@ -49,7 +50,8 @@ class TagInfo extends React.Component
     }
 
     render() {
-        let artTag = this.props.artTag;
+        let subTags, taTags, parentTags, tagName, labelFmt, inputFmt, tagValForm,
+            artTag = this.props.artTag;
 
         if (artTag == null) {
             let labelFmt = "col-xs-4 col-sm-4 col-md-4 col-lg-4 control-label";
@@ -102,7 +104,7 @@ class TagInfo extends React.Component
                 </div>
             );
         }
-        let subTags = [];
+        subTags = [];
         _.forEach(artTag.subTags, function(tag) {
             subTags.push(
                 <li key={_.uniqueId('sub-tag-')}>
@@ -113,8 +115,8 @@ class TagInfo extends React.Component
             );
         }.bind(this));
 
-        let taTags = [];
-        let parentTags = [];
+        taTags = [];
+        parentTags = [];
         _.forOwn(ArticleTagStore.getAllPublicTags(false), function(tag) {
             taTags.push(tag.tagName);
             parentTags.push({
@@ -123,28 +125,28 @@ class TagInfo extends React.Component
             });
         });
 
-        let tagName = artTag.tagName;
-        let labelFmt = "col-sm-3 col-md-3 col-lg-3 control-label";
-        let inputFmt = "col-sm-9 col-md-9 col-lg-9 control-label";
-        let tagValForm = {
+        tagName = artTag.tagName;
+        labelFmt = "col-sm-3 col-md-3 col-lg-3 control-label";
+        inputFmt = "col-sm-9 col-md-9 col-lg-9 control-label";
+        tagValForm = {
             formFmt  : "smart-form client-form",
             formEntries: [ {
                 legend : "Modify tag values",
                 entries: [ {
                     labelFmt: labelFmt,
                     labelTxt: "Parent",
-                    inpName : "parent",
                     inputFmt: inputFmt,
                     inpHolder: artTag.parentTag,
                     select   : true,
+                    tagValId : "tag-parent-" + tagName,
                     selectOpt: parentTags
                 }, {
                     labelFmt : labelFmt,
                     labelTxt : "Kind",
-                    inpName  : "tagKind",
                     inputFmt : inputFmt,
                     inpHolder: artTag.tagKind,
                     select   : true,
+                    tagValId : "tag-sel-kind-" + tagName,
                     selectOpt: tagKinds
                 }, {
                     labelFmt: labelFmt,
@@ -155,10 +157,10 @@ class TagInfo extends React.Component
                 }, {
                     labelFmt: labelFmt,
                     labelTxt: "Name",
-                    inpName : "tagName-" + tagName,
                     inputFmt: "col-sm-8 col-md-8 col-lg-8 control-label",
                     inpHolder: artTag.tagName,
                     typeAhead: true,
+                    tagValId : "tag-typeahead-" + tagName,
                     taOptions: taTags
                 } ]
             } ],

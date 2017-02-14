@@ -114,6 +114,7 @@ class Header extends React.Component
             <header id="header">
                 {logoBlock}
                 <HeaderBtn linkTo="/public/blog" icon="fa fa-book" text="Read Blogs"/>
+                <HeaderBtn linkTo="/public/edu" icon="fa fa-users" text="Education"/>
                 <HeaderBtn linkTo="/public/ads" icon="fa fa-money" text="View Ads"/>
                 <HeaderBtn linkTo="/public/estore" icon="fa fa-shopping-cart" text="Shop E-Store"/>
 

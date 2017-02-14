@@ -12,14 +12,21 @@ import DropzoneComponent from 'react-dropzone-component';
 
 import {EditorEntry}     from 'vntd-shared/forms/editors/Editor.jsx';
 import ErrorView         from 'vntd-shared/layout/ErrorView.jsx';
-import NestableStore     from 'vntd-shared/stores/NestableStore.jsx';
+import InputStore        from 'vntd-shared/stores/NestableStore.jsx';
 
 class SelectWrap extends React.Component
 {
     constructor(props) {
+        let val, entry = props.entry;
+
         super(props);
+        if (entry.inpHolder != null) {
+            val = InputStore.storeItemIndex(entry.tagValId, entry.inpHolder);
+        } else {
+            val = null;
+        }
         this.state = {
-            value: NestableStore.getIndexString(props.entry.tagValId)
+            value: val
         };
     }
 
@@ -29,7 +36,7 @@ class SelectWrap extends React.Component
             onSelected(entry, val);
         }
         entry.inpHolder = val.value;
-        NestableStore.storeItemIndex(this.props.entry.tagValId, val.value);
+        InputStore.storeItemIndex(this.props.entry.tagValId, val.value, true);
         this.setState({
             value: val.value
         });
@@ -38,8 +45,47 @@ class SelectWrap extends React.Component
     render() {
         let entry = this.props.entry;
         return (
-            <Select options={entry.selectOpt} name={entry.inpName} value={this.state.value}
+            <Select options={entry.selectOpt} name={entry.tagValId} value={this.state.value}
                 onChange={this._defOnSelect.bind(this, entry)}
+            />
+        );
+    }
+}
+
+class TAWrap extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this.state = {
+            value: InputStore.getItemIndex(props.entry.tagValId)
+        };
+        this._defOnBlur   = this._defOnBlur.bind(this);
+        this._defOnSelect = this._defOnSelect.bind(this);
+    }
+
+    _defOnSelect(val) {
+        let entry = this.props.entry;
+
+        InputStore.storeItemIndex(entry.tagValId, val, true);
+        if (entry.onSelect != null) {
+            entry.onSelect(val);
+        }
+        this.setState({
+            value: val
+        });
+    }
+
+    _defOnBlur(val) {
+        this._defOnSelect(val.target.value);
+    }
+
+    render() {
+        let entry = this.props.entry;
+        return (
+            <TA.Typeahead options={entry.taOptions} maxVisible={entry.maxVisible ? entry.maxVisible : 6}
+                placeholder={entry.inpHolder} value={this.state.value}
+                customClasses={{input: 'form-control input-sm'}}
+                onBlur={this._defOnBlur} onOptionSelected={this._defOnSelect}
             />
         );
     }
@@ -76,14 +122,14 @@ class GenericForm extends React.Component
     }
 
     _btnClick(button, event) {
-        let dataRefs = {};
-        let entries = this.props.form.formEntries;
+        let dataRefs = {},
+            entries = this.props.form.formEntries;
 
         event.preventDefault();
         _.forEach(entries, function(section) {
             _.forEach(section.entries, function(item) {
                 if (item.typeAhead === true || item.select === true) {
-                    dataRefs[item.inpName] = item.taValue;
+                    dataRefs[item.inpName] = InputStore.getItemIndex(item.tagValId);
                 } else {
                     dataRefs[item.inpName] = this.refs[item.inpName].value;
                 }
@@ -100,21 +146,9 @@ class GenericForm extends React.Component
         entry.taValue = val.target.value;
     }
 
-    static renderTypeAhead(entry, bind, onBlur, onSelected) {
-        return (
-            <TA.Typeahead options={entry.taOptions} maxVisible={entry.maxVisible ? entry.maxVisible : 6}
-                placeholder={entry.inpHolder} value={entry.inpHolder}
-                customClasses={{input: 'form-control input-sm'}}
-                onBlur={onBlur != null ? onBlur.bind(bind, entry) : GenericForm._defOnBlur.bind(this, entry)}
-                onOptionSelected={onSelected != null ?
-                    onSelected.bind(bind, entry) : GenericForm._defOnSelect.bind(this, entry)}
-            />
-        );
-    }
-
     static renderInput(entry, bind, onBlur, onSelected) {
         if (entry.typeAhead === true) {
-            return GenericForm.renderTypeAhead(entry, bind, onBlur, onSelected);
+            return <TAWrap entry={entry}/>
         }
         if (entry.select === true) {
             return <SelectWrap entry={entry} bind={bind} onSelected={onSelected}/>
@@ -268,5 +302,5 @@ class GenericForm extends React.Component
     }
 }
 
-export { SelectWrap, GenericForm };
+export { SelectWrap, TAWrap, GenericForm };
 export default GenericForm;

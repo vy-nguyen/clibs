@@ -42,6 +42,8 @@ class EStorePost extends React.Component
 
         this._myUuid  = UserStore.getSelfUuid();
         this._errorId = "estore-post-" + this._myUuid;
+        this._logoImgId    = "prod-logo-id-";
+        this._prodPicsId   = "prod-pics-id-";
         this._publicCatId  = "pub-cat-id-";
         this._prodDescId   = "prod-desc-";
         this._prodSpecId   = "prod-spec-";
@@ -132,7 +134,6 @@ class EStorePost extends React.Component
     }
 
     _selPublicCat(entry, val) {
-        console.log(">>> select public tag " + val.value);
     }
 
     _onSaveProduct() {
@@ -162,15 +163,12 @@ class EStorePost extends React.Component
                 product[entry] = defProd[entry];
             }
             if (_.isEmpty(product[entry])) {
-                console.log("missing " + entry);
                 errFlags[entry] = true;
                 if (errText == null) {
                     errText  = "Please enter values in highlighted fields";
                 }
             }
         });
-        console.log("-------------");
-        console.log(product);
         if (errText != null) {
             this.setState({
                 errFlags: errFlags
@@ -215,7 +213,7 @@ class EStorePost extends React.Component
     }
 
     _clearPostData() {
-        let refs = this.refs;
+        let dz, refs = this.refs;
         refs.prodCat.value    = '';
         refs.prodName.value   = '';
         refs.prodPrice.value  = '';
@@ -227,8 +225,13 @@ class EStorePost extends React.Component
         NestableStore.clearItemIndex(this._getItemId(this._prodSpecId));
         NestableStore.clearItemIndex(this._getItemId(this._ImageRecId));
 
-        if (this.dropzone != null) {
-            this.dropzone.removeAllFiles();
+        dz = NestableStore.clearItemIndex(this._getItemId(this._logoImgId));
+        if (dz != null) {
+            dz.removeAllFiles();
+        }
+        dz = NestableStore.clearItemIndex(this._getItemId(this._prodPicsId));
+        if (dz != null) {
+            dz.removeAllFiles();
         }
     }
 
@@ -249,7 +252,6 @@ class EStorePost extends React.Component
         let catVal, nameVal, priceVal, noticeVal, prodDescId, prodDetailId, prodSpecId, pubTag,
             dropImg = null, post = this.props.product;
 
-        console.log(post);
         if (post != null) {
             pubTag    = post.publicTag;         
             catVal    = post.prodCat;
@@ -263,9 +265,6 @@ class EStorePost extends React.Component
             priceVal  = choose(this.refs.prodPrice, "value", null);
             noticeVal = choose(this.refs.prodNotice, "value", null);
         }
-        console.log(this.refs);
-        console.log(catVal);
-
         prodDescId   = this._getItemId(this._prodDescId);
         prodDetailId = this._getItemId(this._prodDetailId);
         prodSpecId   = this._getItemId(this._prodSpecId);
@@ -340,13 +339,21 @@ class EStorePost extends React.Component
             errorId  : "prodSpec",
             errorFlag: this.state.errFlags.prodSpec
         },
+        logoDropzone = {
+            sending: this._dzSend,
+            success: this._dzSuccess,
+            error  : this._dzError,
+            init   : function(dz) {
+                NestableStore.storeItemIndex(this._getItemId(this._logoImgId), dz, true);
+            }.bind(this)
+        },
         eventHandlers = {
             sending: this._dzSend,
             success: this._dzSuccess,
             error  : this._dzError,
             init   : function(dz) {
-                this.dropzone = dz;
-            }
+                NestableStore.storeItemIndex(this._getItemId(this._prodPicsId), dz, true);
+            }.bind(this)
         },
         briefDz = {
             url        : "/user/upload-product-img",
@@ -359,14 +366,13 @@ class EStorePost extends React.Component
             errorId    : "prodImgs",
             errorFlag  : this.state.errFlags.prodImgs
         };
-        console.log(publicCat);
         if (this.props.product == null) {
             dropImg = (
                 <div className="row">
                     <div className="col-xs-12 col-sm-4 col-md-4 col-lg-4">
                         <div className="container">
                             <h3>Upload icon image</h3>
-                            {GenericForm.renderDropzone(briefDz, eventHandlers)}
+                            {GenericForm.renderDropzone(briefDz, logoDropzone)}
                         </div>
                     </div>
                     <div className="col-xs-12 col-sm-8 col-md-8 col-lg-8">
