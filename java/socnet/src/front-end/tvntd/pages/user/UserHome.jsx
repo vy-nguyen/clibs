@@ -15,6 +15,7 @@ import UserPostView        from 'vntd-root/pages/user/UserPostView.jsx';
 import EStorePost          from 'vntd-root/pages/e-store/EStorePost.jsx';
 import EStore              from 'vntd-root/pages/e-store/EStore.jsx';
 import ArticleStore        from 'vntd-root/stores/ArticleStore.jsx';
+import Lang                from 'vntd-root/stores/LanguageStore.jsx';
 import PostArticles        from 'vntd-root/components/PostArticles.jsx';
 import ProfileCover        from 'vntd-root/components/ProfileCover.jsx';
 import Actions             from 'vntd-root/actions/Actions.jsx';
@@ -104,27 +105,27 @@ class UserHome extends React.Component
 
             tabItems: [ {
                 domId  : 'published-articles',
-                tabText: 'Published Articles',
+                tabText: Lang.translate('Published Articles'),
                 tabIdx : 0
             }, {
                 domId  : 'publised-estore',
-                tabText: 'My EStore',
+                tabText: Lang.translate('My EStore'),
                 tabIdx : 1
             }, {
                 domId  : 'saved-articles',
-                tabText: 'Saved Articles',
+                tabText: Lang.translate('Saved Articles'),
                 tabIdx : 2
             }, {
                 domId  : 'manage-articles',
-                tabText: 'Mananged Articles',
+                tabText: Lang.translate('Mananged Articles'),
                 tabIdx : 3
             }, {
                 domId  : 'connections',
-                tabText: 'Connections',
+                tabText: Lang.translate('Connections'),
                 tabIdx : 4
             }, {
                 domId  : 'block-chain',
-                tabText: 'Block Chains',
+                tabText: Lang.translate('Block Chains'),
                 tabIdx : 5
             } ]
         };
@@ -136,11 +137,11 @@ class UserHome extends React.Component
             setActivePane: this._setActEditPane,
             tabItems: [ {
                 domId  : 'post-article',
-                tabText: 'Post Article',
+                tabText: Lang.translate('Post Article'),
                 tabIdx : 0
             }, {
                 domId  : 'post-product',
-                tabText: 'Post Product',
+                tabText: Lang.translate('Post Product'),
                 tabIdx : 1
             } ]
         };

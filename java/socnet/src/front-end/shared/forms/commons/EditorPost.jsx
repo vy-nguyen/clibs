@@ -13,6 +13,7 @@ import {OverlayTrigger, Tooltip} from 'react-bootstrap';
 import ArticleStore    from 'vntd-root/stores/ArticleStore.jsx';
 import Actions         from 'vntd-root/actions/Actions.jsx';
 import AuthorStore     from 'vntd-root/stores/AuthorStore.jsx';
+import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 import UserStore       from 'vntd-shared/stores/UserStore.jsx';
 import DataStore       from 'vntd-shared/stores/NestableStore.jsx';
 import {EditorEntry}   from 'vntd-shared/forms/editors/Editor.jsx';
@@ -55,6 +56,7 @@ class EditorPost extends React.Component
         this._nextStatus  = this._nextStatus.bind(this);
         this._handleContentChange = this._handleContentChange.bind(this);
 
+        this._updateAutoTags   = this._updateAutoTags.bind(this);
         this._onPublishResult  = this._onPublishResult.bind(this);
         this._updateAuthorTags = this._updateAuthorTags.bind(this);
 
@@ -66,10 +68,8 @@ class EditorPost extends React.Component
         this._onTagOptSelected = this._onTagOptSelected.bind(this);
     }
 
-    componentWillMount() {
-        this.setState({
-            autoTags: AuthorStore.getTagsByAuthorUuid(null)
-        });
+    componentWillReceiveProps(nextProps) {
+        this.setState(this._updateAutoTags());
     }
 
     componentDidMount() {
@@ -83,6 +83,12 @@ class EditorPost extends React.Component
             this.unsubAuthor();
             this.unsub = null;
             this.unsubAuthor = null;
+        }
+    }
+
+    _updateAutoTags() {
+        return {
+            autoTags: _.merge([], AuthorStore.getTagsByAuthorUuid(null), ArticleTagStore.getAllPublicTags(false))
         }
     }
 
@@ -119,9 +125,7 @@ class EditorPost extends React.Component
     }
 
     _updateAuthorTags() {
-        this.setState({
-            autoTags: AuthorStore.getTagsByAuthorUuid(null)
-        });
+        this.setState(this._updateAutoTags());
     }
 
     _handleContentChange(e) {

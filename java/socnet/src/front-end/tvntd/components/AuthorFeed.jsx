@@ -14,6 +14,7 @@ import Author         from 'vntd-root/components/Author.jsx';
 import ProfileCover   from 'vntd-root/components/ProfileCover.jsx';
 import AuthorStore    from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleStore   from 'vntd-root/stores/ArticleStore.jsx';
+import Lang           from 'vntd-root/stores/LanguageStore.jsx';
 import UserPostView   from 'vntd-root/pages/user/UserPostView.jsx';
 import EStore         from 'vntd-root/pages/e-store/EStore.jsx';
 import Timeline       from 'vntd-root/pages/blog/Timeline.jsx';
@@ -83,23 +84,23 @@ class AuthorFeed extends React.Component
 
             tabItems: [ {
                 domId  : 'article-' + uuid,
-                tabText: 'Articles',
+                tabText: Lang.translate('Articles'),
                 tabIdx : 0
             }, {
                 domId  : 'favorite-' + uuid,
-                tabText: 'Favorites',
+                tabText: Lang.translate('Favorites'),
                 tabIdx : 1
             }, {
                 domId  : 'all-' + uuid,
-                tabText: 'All',
+                tabText: Lang.translate('All'),
                 tabIdx : 2
             }, {
                 domId  : 'timeline-' + uuid,
-                tabText: 'Timeline',
+                tabText: Lang.translate('Timeline'),
                 tabIdx : 3
             }, {
                 domId  : 'estore-' + uuid,
-                tabText: 'E-Store',
+                tabText: Lang.translate('E-Store'),
                 tabIdx : 4
             } ]
         };
@@ -195,6 +196,5 @@ class AuthorFeed extends React.Component
         )
     }
 }
-/*<PostTimeline data={this.author.activities}/> */
 
 export default AuthorFeed;

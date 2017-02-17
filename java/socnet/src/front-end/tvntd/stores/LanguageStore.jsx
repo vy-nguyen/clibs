@@ -76,6 +76,10 @@ let LanguageStore = Reflux.createStore({
             }.bind(this));
 
             this.data.languages = json.languages;
+            if (this.data.langIndex['vi'] != null) {
+                this.setLanguage('vi');
+                return;
+            }
             this.trigger(this.data)
         }
     },
