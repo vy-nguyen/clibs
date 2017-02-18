@@ -10,6 +10,8 @@ import Reflux       from 'reflux';
 import UserStore    from 'vntd-shared/stores/UserStore.jsx';
 import ArticleStore from 'vntd-root/stores/ArticleStore.jsx';
 import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
+import Lang         from 'vntd-root/stores/LanguageStore.jsx';
+import Mesg         from 'vntd-root/components/Mesg.jsx'
 import PostPane     from 'vntd-root/components/PostPane.jsx';
 import LikeStat     from 'vntd-root/components/LikeStat.jsx';
 
@@ -134,12 +136,12 @@ class Blog extends React.Component
         if ((this.state.articleUuid == null) || (this.state.articleUuid !== articleUuid)) {
             return {
                 className : "btn btn-primary",
-                buttonText: "Read more..."
+                buttonText: Lang.translate("Read more...")
             }
         }
         return {
             className : "btn btn-primary",
-            buttonText: "Hide article"
+            buttonText: Lang.translate("Hide article")
         }
     }
 
@@ -169,7 +171,7 @@ class Blog extends React.Component
         let items = [];
 
         if (articles == null) {
-            items.push(<h3>No post</h3>);
+            items.push(<h3><Mesg text="No post"/></h3>);
         } else {
             _.forEach(articles, function(art) {
                 items.push(

@@ -13,6 +13,7 @@ import Actions      from 'vntd-root/actions/Actions.jsx';
 import PostPane     from 'vntd-root/components/PostPane.jsx';
 import LikeStat     from 'vntd-root/components/LikeStat.jsx';
 import ArticleStore from 'vntd-root/stores/ArticleStore.jsx';
+import Lang         from 'vntd-root/stores/LanguageStore.jsx';
 
 class ArticleRank extends React.Component
 {
@@ -47,19 +48,19 @@ class ArticleRank extends React.Component
     _createReadButton() {
         return {
             success: {
-                text: "Read more...",
+                text     : Lang.translate("Read more..."),
                 disabled : false,
                 nextState: "fullArt",
                 className: "btn btn-success"
             },
             failure: {
-                text: "Read more...",
+                text     : Lang.translate("Read more..."),
                 disabled : false,
                 nextState: "success",
                 className: "btn btn-info"
             },
             fullArt: {
-                text: "Done reading...",
+                text     : Lang.translate("Done reading..."),
                 disabled : false,
                 nextState: "success",
                 className: "btn btn-info"

@@ -21,15 +21,17 @@ import JarvisWidget     from 'vntd-shared/widgets/JarvisWidget.jsx';
 import Actions          from 'vntd-root/actions/Actions.jsx';
 import {EProductStore}  from 'vntd-root/stores/ArticleStore.jsx';
 import ArticleTagStore  from 'vntd-root/stores/ArticleTagStore.jsx';
+import Lang             from 'vntd-root/stores/LanguageStore.jsx';
+import Mesg             from 'vntd-root/components/Mesg.jsx';
 
 class EStorePost extends React.Component
 {
     constructor(props) {
         super(props);
-        this.dropzone  = null;
-        this._dzSend   = this._dzSend.bind(this);
-        this._dzError  = this._dzError.bind(this);
-        this._dzSuccess = this._dzSuccess.bind(this);
+        this.dropzone     = null;
+        this._dzSend      = this._dzSend.bind(this);
+        this._dzError     = this._dzError.bind(this);
+        this._dzSuccess   = this._dzSuccess.bind(this);
         this._onBlurInput = this._onBlurInput.bind(this);
         this._updateState = this._updateState.bind(this);
         this._editProduct = this._editProduct.bind(this);
@@ -40,8 +42,8 @@ class EStorePost extends React.Component
         this._onPostProduct = this._onPostProduct.bind(this);
         this._imageUploadOk = this._imageUploadOk.bind(this);
 
-        this._myUuid  = UserStore.getSelfUuid();
-        this._errorId = "estore-post-" + this._myUuid;
+        this._myUuid       = UserStore.getSelfUuid();
+        this._errorId      = "estore-post-" + this._myUuid;
         this._logoImgId    = "prod-logo-id-";
         this._prodPicsId   = "prod-pics-id-";
         this._publicCatId  = "pub-cat-id-";
@@ -53,10 +55,14 @@ class EStorePost extends React.Component
         this._publishBtnId = "publish-product-btn-";
 
         this._saveBtn = StateButtonStore.createButton(this._saveBtnId, function() {
-            return StateButton.saveButtonFsm("Save", "Save Editing", "Saved Product");
+            return StateButton.saveButtonFsm(Lang.translate("Save"),
+                                             Lang.translate("Save Editing"),
+                                             Lang.translate("Saved Product"));
         }); 
         this._publishBtn = StateButtonStore.createButton(this._publishBtnId, function() {
-            return StateButton.saveButtonFsm("Create", "Create Product", "Published Product");
+            return StateButton.saveButtonFsm(Lang.translate("Create"),
+                                             Lang.translate("Create Product"),
+                                             Lang.translate("Published Product"));
         });
         this.state = this._getInitState();
     }
@@ -146,12 +152,12 @@ class EStorePost extends React.Component
         let product, helpText, errText, errFlags, defProd = this.props.product;
 
         product  = this._getPostData();
-        helpText = "Enter values in categories highlighed in red";
+        helpText = Lang.translate("Enter values in categories highlighted in red");
         errText  = null;
         errFlags = {};
 
         if (product.articleUuid == null) {
-            errText  = "You forgot to upload pictures for your product";
+            errText  = Lang.translate("You forgot to upload pictures for your product");
         }
         [
             "prodCat", "prodDesc", "prodDetail", "prodName",
@@ -165,7 +171,7 @@ class EStorePost extends React.Component
             if (_.isEmpty(product[entry])) {
                 errFlags[entry] = true;
                 if (errText == null) {
-                    errText  = "Please enter values in highlighted fields";
+                    errText  = Lang.translate("Please enter values in highlighted fields");
                 }
             }
         });
@@ -270,39 +276,39 @@ class EStorePost extends React.Component
         prodSpecId   = this._getItemId(this._prodSpecId);
 
         const prodCat = {
-            labelTxt : "Categorty",
+            labelTxt : Lang.translate("Categorty"),
             inpName  : "prodCat",
             inpDefVal: catVal,
-            inpHolder: "Product Category",
+            inpHolder: Lang.translate("Product Category"),
             errorId  : "prodCat",
             errorFlag: this.state.errFlags.prodCat
         },
         prodName = {
-            labelTxt : "Name",
+            labelTxt : Lang.translate("Name"),
             inpName  : "prodName",
             inpDefVal: nameVal,
-            inpHolder: "Product Name",
+            inpHolder: Lang.translate("Product Name"),
             errorId  : "prodName",
             errorFlag: this.state.errFlags.prodName
         },
         prodPrice = {
-            labelTxt : "Price",
+            labelTxt : Lang.translate("Price"),
             inpName  : "prodPrice",
             inpDefVal: priceVal,
-            inpHolder: "Product Price",
+            inpHolder: Lang.translate("Product Price"),
             errorId  : "prodPrice",
             errorFlag: this.state.errFlags.prodPrice
         },
         priceNotice = {
-            labelTxt : "Promotion",
+            labelTxt : Lang.translate("Promotion"),
             inpName  : "prodNotice",
             inpDefVal: noticeVal,
-            inpHolder: "Include shipping",
+            inpHolder: Lang.translate("Include shipping"),
             errorId  : "prodNotice",
             errorFlag: this.state.errFlags.prodNotice
         },
         publicCat = {
-            labelTxt : "Publish Category",
+            labelTxt : Lang.translate("Publish Category"),
             inpName  : "pulbTag",
             inpHolder: pubTag,
             select   : true,
@@ -311,20 +317,20 @@ class EStorePost extends React.Component
         },
         prodDesc = {
             id       : prodDescId,
-            labelTxt : "Brief description",
+            labelTxt : Lang.translate("Brief description"),
             inpName  : "prodDesc",
             editor   : true,
-            inpDefVal: choose(NestableStore.getIndexString(prodDescId), "Brief description of product"),
+            inpDefVal: choose(NestableStore.getIndexString(prodDescId), Lang.translate("Brief description of the product")),
             errorFlag: this.state.errFlags.prodDesc
             // uploadUrl: '/user/upload-product-img',
             // uploadOk : this._imageUploadOk
         },
         prodDescDetail = {
             id       : prodDetailId,
-            labelTxt : "Detail description",
+            labelTxt : Lang.translate("Detail description"),
             inpName  : "prodDetail",
             editor   : true,
-            inpDefVal: choose(NestableStore.getIndexString(prodDetailId), "Brief description of product"),
+            inpDefVal: choose(NestableStore.getIndexString(prodDetailId), Lang.translate("Detail description of the product")),
             errorId  : "prodDetail",
             errorFlag: this.state.errFlags.prodDetail,
             // uploadUrl: '/user/upload-product-detail',
@@ -332,9 +338,9 @@ class EStorePost extends React.Component
         },
         prodSpec = {
             id       : prodSpecId,
-            labelTxt : "Product Specification",
+            labelTxt : Lang.translate("Product Specification"),
             inpName  : "prodSpec",
-            inpDefVal: choose(NestableStore.getIndexString(prodSpecId), "Brief description of product"),
+            inpDefVal: choose(NestableStore.getIndexString(prodSpecId), Lang.translate("Specification of the product")),
             editor   : true,
             errorId  : "prodSpec",
             errorFlag: this.state.errFlags.prodSpec
@@ -371,13 +377,13 @@ class EStorePost extends React.Component
                 <div className="row">
                     <div className="col-xs-12 col-sm-4 col-md-4 col-lg-4">
                         <div className="container">
-                            <h3>Upload icon image</h3>
+                            <h3><Mesg text="Upload icon image"/></h3>
                             {GenericForm.renderDropzone(briefDz, logoDropzone)}
                         </div>
                     </div>
                     <div className="col-xs-12 col-sm-8 col-md-8 col-lg-8">
                         <div className="container">
-                            <h3>Upload detail images</h3>
+                            <h3><Mesg text="Upload detail images"/></h3>
                             {GenericForm.renderDropzone(detailDz, eventHandlers)}
                         </div>
                     </div>
@@ -430,7 +436,7 @@ class EStorePost extends React.Component
                     <JarvisWidget id="estore-post" color="purple">
                         <header>
                             <span className="widget-icon"> <i className="fa fa-pencil"/></span>
-                            <h2>EStore Item</h2>
+                            <h2><Mesg text="EStore Item"/></h2>
                         </header>
                         <div className="widget-body">
                             {this._editProduct()}

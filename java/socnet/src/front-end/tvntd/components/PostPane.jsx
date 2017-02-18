@@ -9,8 +9,10 @@ import React        from 'react-mod';
 import TA           from 'react-typeahead';
 
 import Actions      from 'vntd-root/actions/Actions.jsx';
+import Lang         from 'vntd-root/stores/LanguageStore.jsx';
 import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
 import AdminStore   from 'vntd-root/stores/AdminStore.jsx';
+import Mesg         from 'vntd-root/components/Mesg.jsx'
 import PostItem     from 'vntd-root/components/PostItem.jsx';
 import PostComment  from 'vntd-root/components/PostComment.jsx';
 import WidgetGrid   from 'vntd-shared/widgets/WidgetGrid.jsx';
@@ -79,27 +81,27 @@ class TagPost extends React.Component
         let artRank = AuthorStore.getArticleRank(this.props.authorUuid, this.props.articleUuid);
         return {
             success: {
-                text     : "Update",
+                text     : Lang.translate("Update"),
                 disabled : false,
                 nextState: "updating",
                 className: "btn btn-primary",
                 triggerFn: this._updateSuccess
             },
             failure: {
-                text     : "Update Failed",
+                text     : Lang.translate("Update Failed"),
                 disabled : false,
                 nextState: "updating",
                 className: "btn btn-danger"
             },
             updating: {
-                text     : "Updating",
+                text     : Lang.translate("Updating"),
                 disabled : true,
                 nextState: "success",
                 className: "btn btn-default"
             },
             savedInfo: {
                 artRank  : artRank,
-                tagName  : artRank != null ? artRank.tagName : "My Post",
+                tagName  : artRank != null ? artRank.tagName : Lang.translate("My Post"),
                 title    : this.props.artTitle
             }
         };
@@ -199,10 +201,10 @@ class PostPane extends React.Component {
             ownerItem = null,
             article = this.props.data,
             modal = (
-            <ModalConfirm ref={"modal"} height={"auto"} modalTitle={"Delete this article post?"}>
+            <ModalConfirm ref={"modal"} height={"auto"} modalTitle={Lang.translate("Delete this article post?")}>
                 <div className="modal-footer">
-                    <button className="btn btn-primary pull-right" onClick={this._deletePost}>Delete</button>
-                    <button className="btn btn-default pull-right" onClick={this._cancelDel}>Cancel</button>
+                    <button className="btn btn-primary pull-right" onClick={this._deletePost}><Mesg text="Delete"/></button>
+                    <button className="btn btn-default pull-right" onClick={this._cancelDel}><Mesg text="Cancel"/></button>
                 </div>
             </ModalConfirm>
         );
@@ -238,17 +240,17 @@ class PostPane extends React.Component {
         }
         let ownerPostMenu = {
             iconFmt  : 'btn-xs btn-success',
-            titleText: 'Options',
+            titleText: Lang.translate('Options'),
             itemFmt  : 'pull-right js-status-update',
             menuItems: [ {
                 itemFmt : 'fa fa-thumbs-up txt-color-green',
-                itemText: this.state.favorite ? "Not Favorite" : "Mark Favorite",
+                itemText: this.state.favorite ? Lang.translate("Not Favorite") : Lang.translate("Mark Favorite"),
                 itemHandler: function() {
                     this._toggleFavorite();
                 }.bind(this)
             }, {
                 itemFmt : 'fa fa-circle txt-color-blue',
-                itemText: 'Tag Post',
+                itemText: Lang.translate('Tag Post'),
                 itemHandler: function() {
                 }
             } ]
@@ -270,7 +272,7 @@ class PostPane extends React.Component {
         if (this.state.favorite == true) {
             panelLabel.push({
                 labelIcon: 'label label-info',
-                labelText: 'Favorite'
+                labelText: Lang.translate('Mark Favorite')
             });
         }
         const panelData = {
@@ -289,7 +291,7 @@ class PostPane extends React.Component {
                 <TagPost articleUuid={article.articleUuid} artTitle={article.topic} authorUuid={article.authorUuid}/>
             );
         } else {
-            tagPost = <h2>{article.topic ? article.topic : "Post"}</h2>
+            tagPost = <h2>{article.topic ? article.topic : Lang.translate("My Post")}</h2>
         }
         return (
             <Panel className="well no-padding" context={panelData}>

@@ -10,6 +10,7 @@ import {Dropdown, MenuItem} from 'react-bootstrap';
 
 import {LoginForm}          from '../login/Login.jsx';
 import {RegisterForm}       from '../login/Register.jsx';
+import Lang                 from 'vntd-root/stores/LanguageStore.jsx';
 
 const Components = {
     Login:    <LoginForm/>,
@@ -17,13 +18,13 @@ const Components = {
 };
 
 const MenuInfo = [ {
-    title: "Sign In",
+    title: Lang.translate("Sign In"),
     name : "Login"
 }, {
-    title: "Sign Up",
+    title: Lang.translate("Sign Up"),
     name : "Register"
 }, {
-    title: "Help",
+    title: Lang.translate("Help"),
     name : "Recover"
 } ];
 

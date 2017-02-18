@@ -9,13 +9,14 @@ import React           from 'react-mod';
 import GenericForm     from 'vntd-shared/forms/commons/GenericForm.jsx';
 import InputStore      from 'vntd-shared/stores/NestableStore.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
+import Lang            from 'vntd-root/stores/LanguageStore.jsx';
 
 const tagKinds = [
-    { value: "edu",       label: "Education" },
-    { value: "ads",       label: "Advertising" },
-    { value: "estore",    label: "E-Store" },
-    { value: "blog",      label: "Blog Post" },
-    { value: "news",      label: "News Post" }
+    { value: "edu",       label: Lang.translate("Education") },
+    { value: "ads",       label: Lang.translate("Advertising") },
+    { value: "estore",    label: Lang.translate("E-Store") },
+    { value: "blog",      label: Lang.translate("Blog Post") },
+    { value: "news",      label: Lang.translate("News Post") }
 ];
 
 class TagInfo extends React.Component
@@ -61,16 +62,16 @@ class TagInfo extends React.Component
                 hiddenHead: null,
                 hiddenTail: null,
                 formEntries: [ {
-                    legend: "Enter new tag",
+                    legend: Lang.translate("Enter new tag"),
                     entries: [ {
                         labelFmt: labelFmt,
-                        labelTxt: "Parent tag",
+                        labelTxt: Lang.translate("Parent tag"),
                         inpName : "parentTag",
                         inputFmt: inputFmt,
                         inpHolder: null
                     }, {
                         labelFmt : labelFmt,
-                        labelTxt : "Kind",
+                        labelTxt : Lang.translate("Kind"),
                         inpName  : "tagKind",
                         inputFmt : inputFmt,
                         inpHolder: "blog",
@@ -78,13 +79,13 @@ class TagInfo extends React.Component
                         selectOpt: tagKinds
                     }, {
                         labelFmt: labelFmt,
-                        labelTxt: "Tag name",
+                        labelTxt: Lang.translate("Tag name"),
                         inpName : "tagName",
                         inputFmt: inputFmt,
                         inpHolder: null
                     }, {
                         labelFmt: labelFmt,
-                        labelTxt: "Tag rank",
+                        labelTxt: Lang.translate("Tag rank"),
                         inpName : "rankScore",
                         inputFmt: inputFmt,
                         inpHolder: null
@@ -131,10 +132,10 @@ class TagInfo extends React.Component
         tagValForm = {
             formFmt  : "smart-form client-form",
             formEntries: [ {
-                legend : "Modify tag values",
+                legend : Lang.translate("Modify tag values"),
                 entries: [ {
                     labelFmt: labelFmt,
-                    labelTxt: "Parent",
+                    labelTxt: Lang.translate("Parent"),
                     inputFmt: inputFmt,
                     inpHolder: artTag.parentTag,
                     select   : true,
@@ -142,7 +143,7 @@ class TagInfo extends React.Component
                     selectOpt: parentTags
                 }, {
                     labelFmt : labelFmt,
-                    labelTxt : "Kind",
+                    labelTxt : Lang.translate("Kind"),
                     inputFmt : inputFmt,
                     inpHolder: artTag.tagKind,
                     select   : true,
@@ -150,13 +151,13 @@ class TagInfo extends React.Component
                     selectOpt: tagKinds
                 }, {
                     labelFmt: labelFmt,
-                    labelTxt: "Rank",
+                    labelTxt: Lang.translate("Rank"),
                     inpName : "rank-" + tagName,
                     inputFmt: inputFmt,
                     inpHolder: artTag.rankScore
                 }, {
                     labelFmt: labelFmt,
-                    labelTxt: "Name",
+                    labelTxt: Lang.translate("Name"),
                     inputFmt: "col-sm-8 col-md-8 col-lg-8 control-label",
                     inpHolder: artTag.tagName,
                     typeAhead: true,
@@ -166,7 +167,7 @@ class TagInfo extends React.Component
             } ],
             buttons: [ {
                 btnFmt : "btn btn-primary",
-                btnText: "Submit",
+                btnText: Lang.translate("Submit"),
                 onClick: function(data) {
                     data.curTag = artTag.tagName;
                     this._submitChange(data);

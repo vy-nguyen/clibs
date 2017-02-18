@@ -13,6 +13,8 @@ import Actions      from 'vntd-root/actions/Actions.jsx';
 import UserStore    from 'vntd-shared/stores/UserStore.jsx';
 import History      from 'vntd-shared/utils/History.jsx';
 import {htmlCodes}  from 'vntd-root/config/constants.js';
+import Mesg         from 'vntd-root/components/Mesg.jsx';
+import Lang         from 'vntd-root/stores/LanguageStore.jsx';
 
 import {LoginAbout, LoginSocial} from './Login.jsx';
 
@@ -25,8 +27,8 @@ class RegisterHeader extends React.Component
                     <span id="logo"> <img src="/rs/img/logo/flag.png" alt="Viet Nam"/> </span>
                 </div>
                 <span id="extr-page-header-space">
-                    <span className="hidden-mobile hiddex-xs">Already registered?</span>{htmlCodes.spaceNoBreak}
-                    <Link to="/login" className="btn btn-danger">Sign In</Link>
+                    <span className="hidden-mobile hiddex-xs"><Mesg text="Already registered?"/></span>{htmlCodes.spaceNoBreak}
+                    <Link to="/login" className="btn btn-danger"><Mesg text="Sign In"/></Link>
                 </span>
             </header>
         );
@@ -69,7 +71,7 @@ class RegisterForm extends React.Component
                 <div className="well no-padding">
                     <UiValidate>
                         <form onSubmit={this._submitRegister} id="smart-form-register" className="smart-form client-form">
-                            <header>Register to open your account</header>
+                            <header><Mesg text="Register to open your account"/></header>
                             <fieldset>
                                 <section>
                                     <div className="form-group alert alert-danger" id="id-register-error" style={{display:"none"}}>
@@ -78,7 +80,8 @@ class RegisterForm extends React.Component
                                     </div>
                                     <div className="form-group alert alert-info" id="id-register-info" style={{display:"none"}}>
                                         <a className="close" data-dismiss="alert" aria-label="close">x</a>
-                                        Success, sign in to your <Link to="/login" className="btn btn-info">account</Link>
+                                        <Mesg text="Success, sign in to your "/>
+                                        <Link to="/login" className="btn btn-info"><Mesg text="account"/></Link>
                                     </div>
                                 </section>
                             </fieldset>
@@ -86,36 +89,38 @@ class RegisterForm extends React.Component
                                 <section>
                                     <label className="input">
                                         <i className="icon-append fa fa-envelope"/>
-                                        <input type="email" name="email" ref="email" placeholder="Email address"
+                                        <input type="email" name="email" ref="email" placeholder={Lang.translate("Email address")}
                                                 onFocus={this._onFocus}
                                                 data-smart-validate-input="" data-required="" data-email=""
-                                                data-message-required="Please enter your email address"
-                                                data-message-email="Account is your email address"/>
-                                        <b className="tooltip tooltip-bottom-right">Needed to verify your account</b>
+                                                data-message-required={Lang.translate("Please enter your email address")}
+                                                data-message-email={Lang.translate("Account is your email address")}/>
+                                        <b className="tooltip tooltip-bottom-right"><Mesg text="Needed to verify your account"/></b>
                                     </label>
                                 </section>
 
                                 <section>
                                     <label className="input">
                                         <i className="icon-append fa fa-lock"/>
-                                        <input type="password" name="password" ref="password0" placeholder="Password" id="password"
+                                        <input type="password" name="password" ref="password0" placeholder={Lang.translate("Password")}
+                                                id="password"
                                                 onFocus={this._onFocus}
                                                 data-smart-validate-input="" data-required=""
                                                 data-minlength="3" data-maxnlength="20"
-                                                data-message="You need a password"/>
-                                        <b className="tooltip tooltip-bottom-right">Don't forget your password</b>
+                                                data-message={Lang.translate("You need a password")}/>
+                                        <b className="tooltip tooltip-bottom-right"><Mesg text="Don't forget your password"/></b>
                                     </label>
                                 </section>
 
                                 <section>
                                     <label className="input">
                                         <i className="icon-append fa fa-lock"/>
-                                        <input type="password" name="passwordConfirm" ref="password1" placeholder="Confirm password"
+                                        <input type="password" name="passwordConfirm" ref="password1"
+                                                placeholder={Lang.translate("Confirm password")}
                                                 onFocus={this._onFocus}
                                                 data-smart-validate-input="" data-required=""
                                                 data-minlength="3" data-maxnlength="20"
-                                                data-message="Password verification failed"/> 
-                                        <b className="tooltip tooltip-bottom-right">Don't forget your password</b>
+                                                data-message={Lang.translate("Password verification failed")}/> 
+                                        <b className="tooltip tooltip-bottom-right"><Mesg text="Don't forget your password"/></b>
                                     </label>
                                 </section>
                             </fieldset>
@@ -123,14 +128,14 @@ class RegisterForm extends React.Component
                                 <div className="row">
                                     <section className="col col-6">
                                         <label className="input">
-                                            <input type="text" name="firstname" ref="firstName" placeholder="First name"
-                                                    onFocus={this._onFocus}/>
+                                            <input type="text" name="firstname" ref="firstName"
+                                                placeholder={Lang.translate("First name")} onFocus={this._onFocus}/>
                                         </label>
                                     </section>
                                     <section className="col col-6">
                                         <label className="input">
-                                            <input type="text" name="lastname" ref="lastName" placeholder="Last name"
-                                                    onFocus={this._onFocus}/>
+                                            <input type="text" name="lastname" ref="lastName"
+                                                placeholder={Lang.translate("Last name")} onFocus={this._onFocus}/>
                                         </label>
                                     </section>
                                 </div>
@@ -138,10 +143,10 @@ class RegisterForm extends React.Component
                                     <section className="col col-6">
                                         <label className="select">
                                             <select name="gender" ref="gender" defaultValue={"0"}>
-                                                <option value="0" disabled={true}>Gender</option>
-                                                <option value="1">Male</option>
-                                                <option value="2">Female</option>
-                                                <option value="3">Prefer not to answer</option>
+                                                <option value="0" disabled={true}><Mesg text="Gender"/></option>
+                                                <option value="1"><Mesg text="Male"/></option>
+                                                <option value="2"><Mesg text="Female"/></option>
+                                                <option value="3"><Mesg text="Prefer not to answer"/></option>
                                             </select> <i/>
                                         </label>
                                     </section>
@@ -150,24 +155,24 @@ class RegisterForm extends React.Component
                                 <section>
                                     <label className="checkbox">
                                         <input type="checkbox" name="terms" ref="terms" id="terms"/>
-                                        <i/>I agree with the
-                                        <a href="#" data-toggle="modal" data-target="#id-reg-modal"> Terms and Conditions </a>
+                                        <i/><Mesg text="I agree with the"/>
+                                        <a href="#" data-toggle="modal" data-target="#id-reg-modal"><Mesg text=" Terms and Conditions "/></a>
                                     </label>
                                 </section>
                             </fieldset>
                             <footer>
-                                <button type="submit" className="btn btn-primary">Register</button>
+                                <button type="submit" className="btn btn-primary"><Mesg text="Register"/></button>
                             </footer>
 
                             <div className="message">
                                 <i className="fa fa-check"/>
-                                <p>Thank you for your registration!</p>
+                                <p><Mesg text="Thank you for your registration!"/></p>
                             </div>
                         </form>
                     </UiValidate>
                 </div>
-                <p className="note text-center">Welcome to ...</p>
-                <h5 className="text-center">- Or sign in using -</h5>
+                <p className="note text-center"><Mesg text="Welcome to ..."/></p>
+                <h5 className="text-center"><Mesg text="- Or sign in using -"/></h5>
                 <LoginSocial/>
             </div>
         );
@@ -237,15 +242,15 @@ class RegisterTos extends React.Component
                             <button type="button" className="close" data-dismiss="modal" aria-hidden="true">
                                 &times;
                             </button>
-                            <h4 className="modal-title" id="id-reg-modal-label">Terms & Conditions</h4>
+                            <h4 className="modal-title" id="id-reg-modal-label"><Mesg text=" Terms & Conditions "/></h4>
                         </div>
                         <div className="modal-body custom-scroll terms-body">
                             <LoadHtml url="/public/terms-and-conditions" />
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-default" data-dismiss="modal">Cancel</button>
+                            <button type="button" className="btn btn-default" data-dismiss="modal"><Mesg text="Cancel"/></button>
                             <button type="button" className="btn btn-primary" id="i-agree">
-                                <i className="fa fa-check"/> I Agree
+                                <i className="fa fa-check"/><Mesg text=" I Agree"/>
                             </button>
                         </div>
                     </div>

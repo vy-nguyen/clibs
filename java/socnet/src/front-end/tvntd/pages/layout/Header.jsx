@@ -113,10 +113,10 @@ class Header extends React.Component
         return (
             <header id="header">
                 {logoBlock}
-                <HeaderBtn linkTo="/public/blog" icon="fa fa-book" text="Read Blogs"/>
-                <HeaderBtn linkTo="/public/edu" icon="fa fa-users" text="Education"/>
-                <HeaderBtn linkTo="/public/ads" icon="fa fa-money" text="View Ads"/>
-                <HeaderBtn linkTo="/public/estore" icon="fa fa-shopping-cart" text="Shop E-Store"/>
+                <HeaderBtn linkTo="/public/blog" icon="fa fa-book" text={LanguageStore.translate("Read Blogs")}/>
+                <HeaderBtn linkTo="/public/edu" icon="fa fa-users" text={LanguageStore.translate("Education")}/>
+                <HeaderBtn linkTo="/public/ads" icon="fa fa-money" text={LanguageStore.translate("View Ads")}/>
+                <HeaderBtn linkTo="/public/estore" icon="fa fa-shopping-cart" text={LanguageStore.translate("Shop E-Store")}/>
 
                 <div className="pull-right">
                     <ToggleMenu className="btn-header pull-right"/>

@@ -7,6 +7,7 @@
 import _                from 'lodash';
 import React            from 'react-mod';
 import ProfileCover     from './ProfileCover.jsx';
+import Mesg             from 'vntd-root/components/Mesg.jsx'
 import UserIcon         from 'vntd-root/components/UserIcon.jsx';
 import AuthorLinks      from 'vntd-root/components/AuthorLinks.jsx';
 import KeyValueTable    from 'vntd-shared/layout/KeyValueTable.jsx';
@@ -81,22 +82,22 @@ class Author extends React.Component
                                 <br/>
                                 <small>{self.userStatus}</small>
                             </h1>
-                            <h4 className="font-md"><strong>{self.followers}</strong><small> Followers</small></h4>
-                            <h4 className="font-md"><strong>{self.connections}</strong><small> Connections</small></h4>
+                            <h4 className="font-md"><strong>{self.followers}</strong><small><Mesg text=" Followers"/></small></h4>
+                            <h4 className="font-md"><strong>{self.connections}</strong><small><Mesg text=" Connections"/></small></h4>
                         </div>
                         <div className="box-body">
-                            <strong><i className='fa fa-book margin-r-5'></i>Public Transactions</strong>
+                            <strong><i className='fa fa-book margin-r-5'></i><Mesg text="Public Transactions"/></strong>
                             <p/>
-                            <span className="label label-success">Money</span>
+                            <span className="label label-success"><Mesg text="Money"/></span>
                             <KeyValueTable keyValueList={moneyKv}/>
 
-                            <span className="label label-warning">Credit</span>
+                            <span className="label label-warning"><Mesg text="Credit"/></span>
                             <KeyValueTable keyValueList={creditKv}/>
 
                             {this.renderAboutMe(this.props.user.aboutList)}
 
                             <p/>
-                            <strong><i className="fa fa-book"/> Favorite Posts</strong>
+                            <strong><i className="fa fa-book"/><Mesg text=" Favorite Posts"/></strong>
                             <AuthorLinks authorUuid={self.userUuid}/>
                         </div>
                     </div>

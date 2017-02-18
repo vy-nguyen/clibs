@@ -12,8 +12,10 @@ import {OverlayTrigger, Tooltip} from 'react-bootstrap';
 
 import ArticleStore    from 'vntd-root/stores/ArticleStore.jsx';
 import Actions         from 'vntd-root/actions/Actions.jsx';
+import Lang            from 'vntd-root/stores/LanguageStore.jsx';
 import AuthorStore     from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
+import Mesg            from 'vntd-root/components/Mesg.jsx';
 import UserStore       from 'vntd-shared/stores/UserStore.jsx';
 import DataStore       from 'vntd-shared/stores/NestableStore.jsx';
 import {EditorEntry}   from 'vntd-shared/forms/editors/Editor.jsx';
@@ -22,8 +24,8 @@ import JarvisWidget    from 'vntd-shared/widgets/JarvisWidget.jsx';
 import {choose}        from 'vntd-shared/utils/Enum.jsx';
 
 const InitState = {
-    topic: 'Topic',
-    tags : 'My Post',
+    topic: Lang.translate('Topic'),
+    tags : Lang.translate('My Post'),
     state: {
         content    : '',
         errorText  : '',
@@ -35,7 +37,7 @@ const InitState = {
         saveTxt    : 'Save',
         saveBtn    : 'btn btn-info disabled',
         publishDis : true,
-        publishTxt : 'Publish',
+        publishTxt : Lang.translate('Publish'),
         publishBtn : 'btn btn-info disabled'
     }
 };
@@ -233,69 +235,69 @@ class EditorPost extends React.Component
         if (event === "Draft") {
             return {
                 saveDis: false,
-                saveTxt: 'Save',
+                saveTxt: Lang.translate('Save'),
                 saveBtn: 'btn btn-danger',
                 publishDis: false,
-                publishTxt: 'Publish',
+                publishTxt: Lang.translate('Publish'),
                 publishBtn: 'btn btn-primary'
             }
         }
         if (event === "Saving") {
             return {
                 saveDis: true,
-                saveTxt: 'Saving...',
+                saveTxt: Lang.translate('Saving...'),
                 saveBtn: 'btn btn-info disabled',
                 publishDis: true,
-                publishTxt: 'Publish',
+                publishTxt: Lang.translate('Publish'),
                 publishBtn: 'btn btn-primary disabled'
             }
         }
         if (event === "Saved") {
             return {
                 saveDis: true,
-                saveTxt: 'Saved',
+                saveTxt: Lang.translate('Saved'),
                 saveBtn: 'btn btn-info disabled',
                 publishDis: false,
-                publishTxt: 'Publish',
+                publishTxt: Lang.translate('Publish'),
                 publishBtn: 'btn btn-primary'
             }
         }
         if (event === "Failed") {
             return {
                 saveDis: false,
-                saveTxt: 'Retry Saving',
+                saveTxt: Lang.translate('Retry Saving'),
                 saveBtn: 'btn btn-danger',
                 publishDis: true,
-                publishTxt: 'Publish Failed',
+                publishTxt: Lang.translate('Publish Failed'),
                 publishBtn: 'btn btn-danger disabled'
             }
         }
         if (event === "Publishing") {
             return {
                 saveDis: true,
-                saveTxt: 'Save',
+                saveTxt: Lang.translate('Save'),
                 saveBtn: 'btn btn-primary disabled',
                 publishDis: true,
-                publishTxt: 'Publishing...',
+                publishTxt: Lang.translate('Publishing...'),
                 publishBtn: 'btn btn-danger disabled'
             }
         }
         if (event === "Published") {
             return {
                 saveDis: true,
-                saveTxt: 'Save',
+                saveTxt: Lang.translate('Save'),
                 saveBtn: 'btn btn-primary disabled',
                 publishDis: true,
-                publishTxt: 'Published',
+                publishTxt: Lang.translate('Published'),
                 publishBtn: 'btn btn-primary disabled'
             }
         }
         return {
             saveDis: false,
-            saveTxt: 'Save',
+            saveTxt: Lang.translate('Save'),
             saveBtn: 'btn btn-primary',
             publishDis: false,
-            publishTxt: 'Publish',
+            publishTxt: Lang.translate('Publish'),
             publishBtn: 'btn btn-primary'
         }
     }
@@ -326,7 +328,7 @@ class EditorPost extends React.Component
                 <div className="inbox-info-bar no-padding">
                     <div className="row">
                         <div className="form-group">
-                            <label className="control-label col-md-1"><strong>Topic</strong></label>
+                            <label className="control-label col-md-1"><strong><Mesg text='Topic'/></strong></label>
                             <div className="col-md-10">
                                 <input ref="topic" className="form-control" placeholder={topic} type="text"/>
                             </div>
@@ -337,7 +339,7 @@ class EditorPost extends React.Component
                 <div className="inbox-info-bar no-padding">
                     <div className="row">
                         <div className="form-group">
-                            <label className="control-label col-md-1"><strong>Tags</strong></label>
+                            <label className="control-label col-md-1"><strong><Mesg text='Tags'/></strong></label>
                             <div className="col-md-10">
                                 <TA.Typeahead options={this.state.autoTags} maxVisible={4}
                                     placeholder={tagName}
@@ -369,7 +371,7 @@ class EditorPost extends React.Component
                     <JarvisWidget id="my-post" color="purple">
                         <header>
                             <span className="widget-icon"> <i className="fa fa-pencil"/></span>
-                            <h2>Publish Post</h2>
+                            <h2><Mesg text='Publish Post'/></h2>
                         </header>
                         <div className="widget-body">
                             {form}

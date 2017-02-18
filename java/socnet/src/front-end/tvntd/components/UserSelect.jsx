@@ -9,18 +9,19 @@ import {renderToString} from 'react-dom-server';
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import Actions          from 'vntd-root/actions/Actions.jsx';
 import UserIcon         from 'vntd-root/components/UserIcon.jsx';
+import Mesg             from 'vntd-root/components/Mesg.jsx';
 
 var UserSelect = function() {
     const format = {
-        me      : "<button>Self</button>",
-        follow  : "<button>Follow</button>",
-        follower: "<button>Follower</button>",
-        block   : "<button>Blocked</button>",
-        connect : "<button>Connected</button>",
-        delAcct : "<button>Delete</button>",
-        noSelect: "<button>N/A</button",
-        notOwner: "<button>Not Owner</button>",
-        reqSent : "<button>Pending</button"
+        me      : "<button><Mesg text='Self'/></button>",
+        follow  : "<button><Mesg text='Follow'/></button>",
+        follower: "<button><Mesg text='Follower'/></button>",
+        block   : "<button><Mesg text='Blocked'/></button>",
+        connect : "<button><Mesg text='Connected'/></button>",
+        delAcct : "<button><Mesg text='Delete'/></button>",
+        noSelect: "<button><Mesg text='N/A'/></button",
+        notOwner: "<button><Mesg text='Not Owner'/></button>",
+        reqSent : "<button><Mesg text='Pending'/></button"
     };
 
     let submitChanges = function(userList) {

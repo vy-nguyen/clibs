@@ -7,6 +7,7 @@
 import _              from 'lodash';
 import React          from 'react-mod';
 import { htmlCodes }  from 'vntd-root/config/constants';
+import Mesg           from 'vntd-root/components/Mesg.jsx'
 import UserStore      from 'vntd-shared/stores/UserStore.jsx';
 
 class ProfileCover extends React.Component
@@ -14,7 +15,7 @@ class ProfileCover extends React.Component
     render() {
         let self = UserStore.getUserByUuid(this.props.userUuid);
         if (self === null) {
-            return <h1>Invalid user id</h1>
+            return <h1><Mesg text="Invalid user id"/></h1>
         }
         let imageId = self._id;
         let imgList = [
@@ -43,30 +44,30 @@ class ProfileCover extends React.Component
             if (self.isInConnection()) {
                 connectFmt = (
                     <button className="btn btn-sm txt-color-white bg-color-pinkDark">
-                        <i className="fa fa-link"/> Connected <i className="fa fa-check"/>
+                        <i className="fa fa-link"/><Mesg text=" Connected "/><i className="fa fa-check"/>
                     </button>
                 );
             } else if (self.isInFollowed()) {
                 followFmt = (
                     <button className="btn btn-sm txt-color-white bg-color-teal">
-                        Followed <i className="fa fa-check"/>
+                        <Mesg text=" Followed "/><i className="fa fa-check"/>
                     </button>
                 );
             } else if (self.isFollower()) {
                 connectFmt = (
                     <button className="btn btn-sm txt-color-white bg-color-pinkDark">
-                        <i className="fa fa-link"/> Connect
+                        <i className="fa fa-link"/><Mesg text=" Connect"/>
                     </button>
                 );
             } else {
                 connectFmt = (
                     <button className="btn btn-sm txt-color-white bg-color-pinkDark">
-                        <i className="fa fa-link"/> Connect
+                        <i className="fa fa-link"/><Mesg text=" Connect"/>
                     </button>
                 );
                 followFmt = (
                     <button className="btn btn-sm txt-color-white bg-color-teal">
-                        <i className="fa fa-check"/> Follow
+                        <i className="fa fa-check"/><Mesg text=" Follow"/>
                     </button>
                 );
             }

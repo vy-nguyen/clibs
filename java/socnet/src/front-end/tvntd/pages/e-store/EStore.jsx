@@ -10,12 +10,11 @@ import NavigationStore   from 'vntd-shared/stores/NavigationStore.jsx';
 import UserStore         from 'vntd-shared/stores/UserStore.jsx';
 import LikeStat          from 'vntd-root/components/LikeStat.jsx';
 import ArticleTagBrief   from 'vntd-root/components/ArticleTagBrief.jsx';
+import Mesg              from 'vntd-root/components/Mesg.jsx';
 import { EProductStore } from 'vntd-root/stores/ArticleStore.jsx';
 import { ProductInfo, ProductBrief } from './ProductInfo.jsx';
 
 import ErrorView from 'vntd-shared/layout/ErrorView.jsx';
-
-let testItems = require('json!../../mock-json/e-store-pview.json');
 
 class EStore extends React.Component
 {
@@ -25,9 +24,6 @@ class EStore extends React.Component
 
         this.state = {
             products: EProductStore.getProductsByAuthor(props.userUuid)
-        }
-        if (props.noProto == null) {
-            this.state.products = this.state.products.concat(testItems.products);
         }
     }
 
@@ -82,7 +78,7 @@ class EStore extends React.Component
                     <div className="row">
                         <div className="col-sm-12 text-center">
                             <button className="btn btn-primary btn-lg">
-                                Load more <i className="fa fa-arrow-down"></i>
+                                <Mesg text="Load more "/><i className="fa fa-arrow-down"></i>
                             </button>
                         </div>
                     </div>

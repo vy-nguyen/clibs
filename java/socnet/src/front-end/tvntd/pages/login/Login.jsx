@@ -10,6 +10,8 @@ import { Link }      from 'react-router';
 import {htmlCodes}   from 'vntd-root/config/constants.js';
 import Actions       from 'vntd-root/actions/Actions.jsx';
 import AboutUsStore  from 'vntd-root/stores/AboutUsStore.jsx';
+import Lang          from 'vntd-root/stores/LanguageStore.jsx';
+import Mesg          from 'vntd-root/components/Mesg.jsx';
 import UserStore     from 'vntd-shared/stores/UserStore.jsx';
 import UiValidate    from 'vntd-shared/forms/validation/UiValidate.jsx';
 import History       from 'vntd-shared/utils/History.jsx';
@@ -28,8 +30,8 @@ class LoginHeader extends React.Component
                     <span id="logo"> <img src="/rs/img/logo/flag.png" style={{height:'40px'}} alt="Viet Nam"/></span>
                 </div>
                 <span id="extr-page-header-space">
-                    <span className="hidden-mobile hiddex-xs">Need an account?</span>{htmlCodes.spaceNoBreak}
-                    <Link to="/register/form" className="btn btn-danger">Create Account</Link>
+                    <span className="hidden-mobile hiddex-xs"><Mesg text="Need an account?"/></span>{htmlCodes.spaceNoBreak}
+                    <Link to="/register/form" className="btn btn-danger"><Mesg text="Create Account"/></Link>
                 </span>
             </header>
         );
@@ -198,49 +200,49 @@ class LoginForm extends React.Component
                             <ErrorView className="alert alert-danger"/>
                             <fieldset>
                                 <section>
-                                    <label className="label">E-mail</label>
+                                    <label className="label"><Mesg text="E-mail"/></label>
                                     <label className="input"> <i className="icon-append fa fa-user"/>
                                     <input type="email" name="email" ref="email"
                                         onFocus={this._onFocus} 
                                         data-smart-validate-input=""
                                         data-required="" data-email=""
-                                        data-message-required="Please enter your email address"
-                                        data-message-email="Account is your email address"/>
+                                        data-message-required={Lang.translate("Please enter your email address")}
+                                        data-message-email={Lang.translate("Account is your email address")}/>
                                         <b className="tooltip tooltip-top-right">
-                                            <i className="fa fa-user txt-color-teal"/>Please enter email address/username
+                                            <i className="fa fa-user txt-color-teal"/><Mesg text="Please enter email address/username"/>
                                         </b>
                                     </label>
                                 </section>
                                 <section>
-                                    <label className="label">Password</label>
+                                    <label className="label"><Mesg text="Password"/></label>
                                     <label className="input"> <i className="icon-append fa fa-lock"/>
                                     <input type="password" name="password" ref="password"
                                         onFocus={this._onFocus} 
                                         data-smart-validate-input="" data-required=""
                                         data-minlength="3" data-maxnlength="20"
-                                        data-message="Please enter your account password"/>
+                                        data-message={Lang.translate("Please enter your account password")}/>
                                         <b className="tooltip tooltip-top-right">
-                                            <i className="fa fa-lock txt-color-teal"/> Enter your password
+                                            <i className="fa fa-lock txt-color-teal"/> <Mesg text="Enter your password"/>
                                         </b>
                                     </label>
                                     <div className="note">
-                                        <Link to="/register/recover">Forgot password?</Link>
+                                        <Link to="/register/recover"><Mesg text="Forgot password?"/></Link>
                                     </div>
                                 </section>
                                 <section>
                                     <label className="checkbox">
                                         <input type="checkbox" ref="remember" name="remember" defaultChecked={true}/>
-                                        <i/>Stay signed in
+                                        <i/><Mesg text="Stay signed in"/>
                                     </label>
                                 </section>
                             </fieldset>
                             <footer>
-                                <button className="btn btn-primary" onClick={this._submitLogin}>Sign in</button>
+                                <button className="btn btn-primary" onClick={this._submitLogin}><Mesg text="Sign in"/></button>
                             </footer>
                         </form>
                     </UiValidate>
                 </div>
-                <h5 className="text-center"> - Or sign in using -</h5>
+                <h5 className="text-center"><Mesg text=" - Or sign in using - "/></h5>
                     <LoginSocial />    
             </div>
         );

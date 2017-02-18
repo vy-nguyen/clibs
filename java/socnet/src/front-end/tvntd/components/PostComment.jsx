@@ -11,6 +11,7 @@ import {renderToString} from 'react-dom-server';
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
 import Actions          from 'vntd-root/actions/Actions.jsx';
+import Mesg             from 'vntd-root/components/Mesg.jsx'
 import UserIcon         from 'vntd-root/components/UserIcon.jsx';
 import LanguageStore    from 'vntd-root/stores/LanguageStore.jsx';
 import CommentStore     from 'vntd-root/stores/CommentStore.jsx';
@@ -185,26 +186,26 @@ class CommentBox extends React.Component
                     <button onClick={this._submitSelect.bind(this, "like")}
                         disabled={this.state.clickMuted} className={this.state.likeFmt}
                         rel="tooltip" title={LanguageStore.tooltip("like or unlike")}>
-                        <i className="fa fa-thumbs-up"></i>{"Like (" + likeCount + ")"}
+                        <i className="fa fa-thumbs-up"></i>{LanguageStore.translate("Like") + " (" + likeCount + ")"}
                     </button>
                     <button onClick={this._toggleComment} className="text-info"
                         rel="tooltip" title={LanguageStore.tip("toggle to hide/show comments")}>
-                        <i className="fa fa-comment"></i>{"Comments (" + this.props.cmtCount + ")"}
+                        <i className="fa fa-comment"></i>{LanguageStore.translate("Comments") + " (" + this.props.cmtCount + ")"}
                     </button>
                     <button onClick={this._submitSelect.bind(this, "share")}
                         disabled={this.state.clickMuted} className={this.state.shareFmt}
                         rel="tooltip" title={LanguageStore.tip("Not yet available")}>
-                        <i className="fa fa-share"></i>{"Share (" + shareCount + ")"}
+                        <i className="fa fa-share"></i>{LanguageStore.translate("Share") + ")" + shareCount + ")"}
                     </button>
                     <button onClick={this._submitSelect.bind(this, "save")}
                         disabled={this.state.clickMuted} className="text-info"
                         rel="tooltip" title={LanguageStore.tip("Not yet available")}>
-                        <i className="fa fa-book"></i>Save
+                        <i className="fa fa-book"></i><Mesg text="Save"/>
                     </button>
                     <button onClick={this._submitSelect.bind(this, "pay")}
                         disabled={this.state.clickMuted} className="text-info"
                         rel="tooltip" title={LanguageStore.tip("Not yet available")}>
-                        <i className="fa fa-money"></i>Micropay
+                        <i className="fa fa-money"></i><Mesg text="Micropay"/>
                     </button>
                 </div>
                 {userLiked}
@@ -217,7 +218,7 @@ class CommentBox extends React.Component
                             <div className="margin-top-10">
                                 <button className={"btn btn-danger btn-primary pull-right " + this.state.sendDisable}
                                     type="submit" disabled={this.state.submiting}
-                                    onClick={this._submitComment}>Post</button>
+                                    onClick={this._submitComment}><Mesg text="Post"/></button>
 
                                 <a href-void className="btn btn-link profile-link-btn" rel="tooltip" data-placement="bottom"
                                     title="Add Location"><i className="fa fa-location-arrow"></i></a>
@@ -324,10 +325,10 @@ class CommentItem extends React.Component {
         let userLiked = comment.getUserLiked();
 
         if (comment.amIArticleAuthor()) {
-            let favBtnText   = "Mark Favorite";
+            let favBtnText   = LanguageStore.translate("Mark Favorite");
             let favClassName = "fa fa-bookmark";
             if (comment.isFavorite() === true) {
-                favBtnText = "Not Favorite";
+                favBtnText = LanguageStore.translate("Not Favorite");
                 favClassName = "fa fa-thumbs-down";
             }
             favBtn = (
@@ -341,14 +342,14 @@ class CommentItem extends React.Component {
         if (userLiked == null || userLiked.length == 0) {
             var likeList = (
                 <span className="text-info">
-                    <i className="fa fa-thumbs-up"></i>(0) Likes
+                    <i className="fa fa-thumbs-up"></i>(0) <Mesg text="Likes"/>
                 </span>
             );
         } else {
             var likeList = (
                 <span className="text-info">
                     <a href-void rel="tooltip" title={comment.getUserLikedList()}>
-                        <i className="fa fa-thumbs-up"></i>({userLiked.length}) Likes
+                        <i className="fa fa-thumbs-up"></i>({userLiked.length}) <Mesg text="Likes"/>
                     </a>
                 </span>
             );

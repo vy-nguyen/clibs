@@ -10,6 +10,7 @@ import NavigationStore from 'vntd-shared/stores/NavigationStore.jsx';
 import ArticleBox      from 'vntd-root/components/ArticleBox.jsx';
 import AuthorFeed      from 'vntd-root/components/AuthorFeed.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
+import Lang            from 'vntd-root/stores/LanguageStore.jsx';
 import EStore          from 'vntd-root/pages/e-store/EStore.jsx';
 
 import {ArticleStore, EProductStore}  from 'vntd-root/stores/ArticleStore.jsx';
@@ -79,12 +80,12 @@ class ArticleTagBrief extends React.Component
                 if (this.state.articleUuid == null || this.state.articleUuid !== artUuid) {
                     return {
                         btnClass: "btn btn-success",
-                        btnText : "Read More..."
+                        btnText : Lang.translate("Read more...")
                     }
                 }
                 return {
                     btnClass: "btn btn-success",
-                    btnText : "Hide Post"
+                    btnText : Lang.translate("Hide Post")
                 }
             }.bind(this),
 
