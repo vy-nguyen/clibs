@@ -15,7 +15,9 @@ import AccordionView    from 'vntd-shared/layout/AccordionView.jsx';
 import ErrorView        from 'vntd-shared/layout/ErrorView.jsx';
 import Nestable         from 'vntd-shared/widgets/Nestable.jsx';
 import AuthorStore      from 'vntd-root/stores/AuthorStore.jsx';
+import Lang             from 'vntd-root/stores/LanguageStore.jsx';
 import ArticleRank      from 'vntd-root/components/ArticleRank.jsx';
+import Mesg             from 'vntd-root/components/Mesg.jsx';
 
 class UserPostView extends React.Component
 {
@@ -81,12 +83,12 @@ class UserPostView extends React.Component
         if (UserStore.isUserMe(this.props.userUuid) === true) {
             upRank = (
                 <span className="label label-info" onClick={this.moveUp.bind(this, tag)}>
-                    <i className="fa fa-sort-desc"/>Up
+                    <i className="fa fa-sort-desc"/><Mesg text="Up"/>
                 </span>
             );
             downRank = (
                 <span className="label label-info" onClick={this.moveDown.bind(this, tag)}>
-                    <i className="fa fa-sort-asc"/>Down
+                    <i className="fa fa-sort-asc"/><Mesg text="Down"/>
                 </span>
             );
         }
@@ -200,26 +202,26 @@ class UserPostView extends React.Component
     _createSaveBtn() {
         return {
             success: {
-                text: "Order Saved",
+                text: Lang.translate("Order Saved"),
                 disabled : true,
                 nextState: "needSave",
                 className: "btn btn-default",
                 triggerFn: UserPostView._saveStateSuccess
             },
             failure: {
-                text: "Save order failed",
+                text: Lang.translate("Save order failed"),
                 disabled : false,
                 nextState: "needSave",
                 className: "btn btn-default"
             },
             saving: {
-                text: "Saving...",
+                text: Lang.translate("Saving..."),
                 disabled : true,
                 nextState: "success",
                 className: "btn btn-danger"
             },
             needSave: {
-                text: "Save Order",
+                text: Lang.translate("Save Order"),
                 disabled : false,
                 nextState: "saving",
                 className: "btn btn-success"
@@ -230,19 +232,19 @@ class UserPostView extends React.Component
     _createArrangeBtn() {
         return {
             success: {
-                text: "Arrange Posts",
+                text: Lang.translate("Arrange Posts"),
                 disabled : false,
                 nextState: "arrange",
                 className: "btn btn-default"
             },
             failure: {
-                text: "Arrange Posts",
+                text: Lang.translate("Arrange Posts"),
                 disabled : false,
                 nextState: "success",
                 className: "btn btn-default"
             },
             arrange: {
-                text: "Move Posts To Arrange",
+                text: Lang.translate("Move Posts To Arrange"),
                 disabled : false,
                 nextState: "success",
                 className: "btn btn-success"

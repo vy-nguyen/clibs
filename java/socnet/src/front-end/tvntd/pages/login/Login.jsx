@@ -196,7 +196,7 @@ class LoginForm extends React.Component
                 <div className="well no-padding">
                     <UiValidate>
                         <form id="login-form" className="smart-form client-form">
-                            <header> Sign In </header>
+                            <header> <Mesg text="Sign In"/> </header>
                             <ErrorView className="alert alert-danger"/>
                             <fieldset>
                                 <section>

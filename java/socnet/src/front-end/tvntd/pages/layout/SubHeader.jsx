@@ -6,6 +6,7 @@
 import React              from 'react-mod';
 import { htmlCodes }      from 'vntd-root/config/constants';
 import SparklineContainer from 'vntd-shared/graphs/SparklineContainer.jsx';
+import Mesg               from 'vntd-root/components/Mesg.jsx';
 
 class SubHeader extends React.Component
 {
@@ -15,13 +16,13 @@ class SubHeader extends React.Component
             <SparklineContainer className="col-xs-12 col-sm-5 col-md-5 col-lg-8">
                 <ul id="sparks" className={className}>
                     <li className="sparks-info">
-                        <h5> My Income <span className="txt-color-blue">$47,171</span></h5>
+                        <h5><Mesg text=' My Income '/><span className="txt-color-blue">$47,171</span></h5>
                         <div className="sparkline txt-color-blue hidden-mobile hidden-md hidden-sm">
                             1300, 1877, 2500, 2577, 2000, 2100, 3000, 2700, 3631, 2471, 2700, 3631, 2471
                         </div>
                     </li>
                     <li className="sparks-info">
-                        <h5> My Orders <span className="txt-color-greenDark">
+                        <h5><Mesg text=' My Orders '/><span className="txt-color-greenDark">
                             <i className="fa fa-shopping-cart"/>{htmlCodes.ocrCheck}</span>
                         </h5>
                         <div className="sparkline txt-color-greenDark hidden-mobile hidden-md hidden-sm">

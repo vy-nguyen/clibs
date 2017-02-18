@@ -10,6 +10,8 @@ import UserStore      from 'vntd-shared/stores/UserStore.jsx';
 import Actions        from 'vntd-root/actions/Actions.jsx';
 import UserTable      from 'vntd-root/components/UserTable.jsx';
 import UserSelect     from 'vntd-root/components/UserSelect.jsx';
+import Mesg           from 'vntd-root/components/Mesg.jsx';
+import Lang           from 'vntd-root/stores/LanguageStore.jsx';
 
 class UserFriends extends React.Component
 {
@@ -72,81 +74,81 @@ class UserFriends extends React.Component
         const connectTab = [ {
             key   : "image",
             format: "",
-            header: "Image"
+            header: Lang.translate("Image")
         }, {
             key   : "firstName",
             format: "fa fa-fw fa-user text-muted",
-            header: "First Name"
+            header: Lang.translate("First Name")
         }, {
             key   : "lastName",
             format: "fa fa-fw fa-user text-muted",
-            header: "Last Name"
+            header: Lang.translate("Last Name")
         }, {
             key   : "unFollow",
             format: "text-color-blue",
-            header: "Unfollow"
+            header: Lang.translate("Unfollow")
         }, {
             key   : "unConnect",
             format: "text-color-blue",
-            header: "Unconnect"
+            header: Lang.translate("Unconnect")
         }, {
             key   : "block",
             format: "text-color-blue",
-            header: "Block"
+            header: Lang.translate("Block")
         } ];
 
         const followTab = [ {
             key   : "image",
             format: "",
-            header: "Image"
+            header: Lang.translate("Image")
         }, {
             key   : "firstName",
             format: "fa fa-fw fa-user text-muted",
-            header: "First Name"
+            header: Lang.translate("First Name")
         }, {
             key   : "lastName",
             format: "fa fa-fw fa-user text-muted",
-            header: "Last Name"
+            header: Lang.translate("Last Name")
         }, {
             key   : "unFollow",
             format: "text-color-blue",
-            header: "Unfollow"
+            header: Lang.translate("Unfollow")
         } ];
 
         const followerTab = [ {
             key   : "image",
             format: "",
-            header: "Image"
+            header: Lang.translate("Image")
         }, {
             key   : "firstName",
             format: "fa fa-fw fa-user text-muted",
-            header: "First Name"
+            header: Lang.translate("First Name")
         }, {
             key   : "lastName",
             format: "fa fa-fw fa-user text-muted",
-            header: "Last Name"
+            header: Lang.translate("Last Name")
         }, {
             key   : "connect",
             format: "text-color-blue",
-            header: "Connect"
+            header: Lang.translate("Connect")
         }, {
             key   : "block",
             format: "text-color-blue",
-            header: "Block"
+            header: Lang.translate("Block")
         } ];
 
         const fullTab = [ {
             key   : "image",
             format: "",
-            header: "Image"
+            header: Lang.translate("Image")
         }, {
             key   : "firstName",
             format: "fa fa-fw fa-user text-muted",
-            header: "First Name"
+            header: Lang.translate("First Name")
         }, {
             key   : "lastName",
             format: "fa fa-fw fa-user text-muted",
-            header: "Last Name"
+            header: Lang.translate("Last Name")
         }, {
             key   : "uuid",
             format: "text-color-blue",
@@ -154,15 +156,15 @@ class UserFriends extends React.Component
         }, {
             key   : "block",
             format: "text-color-red",
-            header: "Block Account"
+            header: Lang.translate("Block Account")
         }, {
             key   : "follow",
             format: "text-color-blue",
-            header: "Follow"
+            header: Lang.translate("Follow")
         }, {
             key   : "connect",
             format: "text-color-blue",
-            header: "Connect"
+            header: Lang.translate("Connect")
         } ];
 
         if (this.props.tableType) {
@@ -185,7 +187,7 @@ class UserFriends extends React.Component
         if (data.hasInput === true) {
             footer = (
                 <footer>
-                    <button className="btn btn-primary pull-right" onClick={this._submitChanges}>Save Changes</button>
+                    <button className="btn btn-primary pull-right" onClick={this._submitChanges}><Mesg text="Save Changes"/></button>
                 </footer>
             );
         }

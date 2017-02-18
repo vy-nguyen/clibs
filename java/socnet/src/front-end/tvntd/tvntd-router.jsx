@@ -13,7 +13,6 @@ import {Login}       from './pages/login/Login.jsx';
 import Logout        from './pages/login/Logout.jsx';
 import Register      from './pages/login/Register.jsx';
 import RecoverAcct   from './pages/login/Forgot.jsx';
-import Blog          from './pages/blog/Blog.jsx';
 import Timeline      from './pages/blog/Timeline.jsx';
 import NewsFeed      from './pages/news-feed/NewsFeed.jsx';
 import SocialWall    from './pages/wall/SocialWall.jsx';
@@ -43,7 +42,6 @@ const Routes = (
             <Redirect from="public" to="public/proto"/>
             <Route path="public/proto">
                 <IndexRoute component={SocialWall}/>
-                <Route path="blog" component={Blog} subHeader={true}/>
                 <Route path="timeline" component={Timeline} subHeader={true}/>
                 <Route path="wall" component={SocialWall} subHeader={true}/>
             </Route>

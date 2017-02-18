@@ -11,6 +11,7 @@ import UserStore         from 'vntd-shared/stores/UserStore.jsx';
 import GenericForm       from 'vntd-shared/forms/commons/GenericForm.jsx';
 import SubHeader         from 'vntd-root/pages/layout/SubHeader.jsx';
 import Actions           from 'vntd-root/actions/Actions.jsx';
+import Mesg              from 'vntd-root/components/Mesg.jsx';
 
 class UserAvatar extends React.Component
 {
@@ -97,11 +98,11 @@ class UserAvatar extends React.Component
                     </h1>
                     <div className="padding-10">
                         <h4 className="font-md"><strong>{self.connections}</strong>
-                            <br/><small>Connections</small>
+                            <br/><small><Mesg text="Connections"/></small>
                         </h4>
                         <br/>
                         <h4 className="font-md"><strong>{self.followers}</strong>
-                            <br/><small>Followers</small>
+                            <br/><small><Mesg text="Followers"/></small>
                         </h4>
                     </div>
                 </div>
@@ -111,18 +112,18 @@ class UserAvatar extends React.Component
                     </div>
                     <div className="row">
                         <div className="col-sm-6">
-                            <h1><small>Connections</small></h1>
+                            <h1><small><Mesg text="Connections"/></small></h1>
                             <ul className="list-inline friends-list">
                                 <li><img src="/rs/img/avatars/2.png" alt="friend-2"/></li>
                                 <li><img src="/rs/img/avatars/3.png" alt="friend-3"/></li>
                                 <li><img src="/rs/img/avatars/4.png" alt="friend-4"/></li>
                                 <li><img src="/rs/img/avatars/5.png" alt="friend-5"/></li>
                                 <li><img src="/rs/img/avatars/male.png" alt="friend-6"/></li>
-                                <li><a href-void>420 more</a></li>
+                                <li><a href-void>420 <Mesg text="more"/></a></li>
                             </ul>
                         </div>
                         <div className="col-sm-6">
-                            <h1><small>Recent Visitors</small></h1>
+                            <h1><small><Mesg text="Recent Visitors"/></small></h1>
                             <ul className="list-inline friends-list">
                                 <li><img src="/rs/img/avatars/male.png" alt="friend-7"/></li>
                                 <li><img src="/rs/img/avatars/female.png" alt="friend-8"/></li>

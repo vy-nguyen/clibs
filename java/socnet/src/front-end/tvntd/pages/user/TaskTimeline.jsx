@@ -5,6 +5,8 @@
 
 import React          from 'react-mod';
 import Panel          from 'vntd-shared/widgets/Panel.jsx';
+import Lang           from 'vntd-root/stores/LanguageStore.jsx';
+import Mesg           from 'vntd-root/components/Mesg.jsx';
 
 class TaskTimeline extends React.Component
 {
@@ -13,16 +15,16 @@ class TaskTimeline extends React.Component
         this._filterMenu = {
             reactId  : 'filter-friend',
             iconFmt  : 'btn-xs btn-warning',
-            titleText: 'Filter',
+            titleText: Lang.translate('Filter'),
             itemFmt  : 'pull-right js-status-update',
             menuItems: [ {
                 itemFmt : 'fa fa-circle txt-color-green',
-                itemText: 'Most promissing',
+                itemText: Lang.translate('Most promissing'),
                 itemHandler: function() {
                 }
             }, {
                 itemFmt : 'fa fa-circle txt-color-green',
-                itemText: 'Give me most credit',
+                itemText: Lang.translate('Give me most credit'),
                 itemHandler: function() {
                 }
             } ]
@@ -31,7 +33,7 @@ class TaskTimeline extends React.Component
             init   : false,
             reactId: 'task-info',
             icon   : 'fa fa-user',
-            header : 'My Task Timeline',
+            header : Lang.translate('My Task Timeline'),
             headerMenus: [ this._filterMenu ]
         };
 
@@ -40,7 +42,7 @@ class TaskTimeline extends React.Component
     render() {
         return (
             <Panel context={this._panelDef}>
-                <h1>You don't have any pending tasks yet!</h1>
+                <h1><Mesg text="You don't have any pending tasks yet!"/></h1>
             </Panel>
         )
     }

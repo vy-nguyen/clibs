@@ -6,6 +6,8 @@
 
 import React      from 'react';
 import Actions    from 'vntd-root/actions/Actions.jsx';
+import Mesg       from 'vntd-root/components/Mesg.jsx';
+import Lang       from 'vntd-root/stores/LanguageStore.jsx';
 import History    from 'vntd-shared/utils/History.jsx';
 import UserStore  from 'vntd-shared/stores/UserStore.jsx';
 import { LoginAbout, LoginHeader, LoginSocial } from './Login.jsx';
@@ -56,8 +58,9 @@ class Forgot extends React.Component
     }
 
     render() {
-        let style = { display: this.state.display };
-        let mesg = "We sent reset password to your email";
+        let style = { display: this.state.display },
+            mesg = Lang.translate("We sent reset password to your email");
+
         if (this.refs.email != null) {
             mesg = mesg + ": " + this.refs.email.value;
         }
@@ -73,7 +76,7 @@ class Forgot extends React.Component
                             <div className="col-xs-12 col-sm-12 col-md-5 col-lg-4">
                                 <div className="well no-padding">
                                     <form id="login-form" className="smart-form client-form">
-                                        <header>Forgot Password</header>
+                                        <header><Mesg text="Forgot Password"/></header>
                                         <fieldset>
                                             <section>
                                                 <div className="form-group alert alert-info" id="id-acct-info" style={style}>
@@ -82,13 +85,13 @@ class Forgot extends React.Component
                                                 </div>
                                             </section>
                                             <section>
-                                                <label className="label">Enter your email address</label>
+                                                <label className="label"><Mesg text='Enter your email address'/></label>
                                                 <label className="input">
                                                     <i className="icon-append fa fa-envelope"/>
                                                     <input type="email" name="email" ref="email"/>
                                                     <b className="tooltip tooltip-top-right">
                                                         <i className="fa fa-envelope txt-color-teal"/>
-                                                        Please enter email address for password reset
+                                                        <Mesg text="Please enter email address for password reset"/>
                                                     </b>
                                                 </label>
                                             </section>
@@ -114,12 +117,12 @@ class Forgot extends React.Component
                                         </fieldset>
                                         <footer>
                                             <button type="button" className="btn btn-primary" onClick={this._submitForm}>
-                                                <i className="fa fa-refresh"/> Reset Password
+                                                <i className="fa fa-refresh"/><Mesg text=" Reset Password"/>
                                             </button>
                                         </footer>
                                     </form>
                                 </div>
-                                <h5 className="text-center"> - Or sign in using -</h5>
+                                <h5 className="text-center"><Mesg text=" - Or sign in using -"/></h5>
                                 <LoginSocial/> 
                             </div>
                         </div>

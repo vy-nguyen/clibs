@@ -80,19 +80,19 @@ class UserHome extends React.Component
 
             tabItems: [ {
                 domId  : 'published-articles',
-                tabText: 'Published Articles',
+                tabText: Lang.translate('Published Articles'),
                 tabIdx : 0
             }, {
                 domId  : 'publised-estore',
-                tabText: 'Publised EStore',
+                tabText: Lang.translate('Publised EStore'),
                 tabIdx : 1
             }, {
                 domId  : 'connections',
-                tabText: 'Connections',
+                tabText: Lang.translate('Connections'),
                 tabIdx : 4
             }, {
                 domId  : 'block-chain',
-                tabText: 'Block Chains',
+                tabText: Lang.translate('Block Chains'),
                 tabIdx : 5
             } ]
         }

@@ -10,6 +10,7 @@ import TabPanel           from 'vntd-shared/layout/TabPanel.jsx';
 import UserStore          from 'vntd-shared/stores/UserStore.jsx';
 import Panel              from 'vntd-shared/widgets/Panel.jsx';
 import GenericForm        from 'vntd-shared/forms/commons/GenericForm.jsx';
+import Lang               from 'vntd-root/stores/LanguageStore.jsx';
 import Friends            from './Friends.jsx';
 import Messages           from './Messages.jsx';
 import TaskTimeline       from './TaskTimeline.jsx';
@@ -32,21 +33,21 @@ class UserInfo extends React.Component
         };
         this._profileMenu = {
             iconFmt  : 'btn-xs btn-success',
-            titleText: 'Status',
+            titleText: Lang.translate('Status'),
             itemFmt  : 'pull-right js-status-update',
             menuItems: [ {
                 itemFmt : 'fa fa-circle txt-color-green',
-                itemText: 'Online',
+                itemText: Lang.translate('Online'),
                 itemHandler: this._onLineStatus
             }, {
                 itemFmt : 'fa fa-circle txt-color-red',
-                itemText: 'Offline',
+                itemText: Lang.translate('Offline'),
                 itemHandler: this._offLineStatus
             } ]
         };
         this._panelData = {
             icon   : 'fa fa-book',
-            header : 'My Basic Information',
+            header : Lang.translate('My Basic Information'),
             headerMenus: [this._profileMenu]
         };
         this._profileForm = {
@@ -54,40 +55,40 @@ class UserInfo extends React.Component
             hiddenHead: null,
             hiddenTail: null,
             formEntries: [ {
-                legend: "About me",
+                legend: Lang.translate("About Me"),
                 entries: [ {
-                    labelTxt: "First Name",
+                    labelTxt: Lang.translate("First Name"),
                     inpName : "firstName",
                     inpHolder: self.firstName
                 }, {
-                    labelTxt: "Last Name",
+                    labelTxt: Lang.translate("Last Name"),
                     inpName : "lastName",
                     inpHolder: self.lastName
                 }, {
-                    labelTxt: "Home Town",
+                    labelTxt: Lang.translate("Home Town"),
                     inpName : "homeTown",
-                    inpHolder: "Home Town"
+                    inpHolder: Lang.translate("Home Town")
                 }, {
-                    labelTxt: "Country",
-                    inpName : "lastName",
-                    inpHolder: "Country"
+                    labelTxt: Lang.translate("Country"),
+                    inpName : "country",
+                    inpHolder: Lang.translate("Country")
                 } ]
             }, {
-                legend: "My interests",
+                legend: Lang.translate("My interests"),
                 entries: [ {
-                    labelTxt: "Favorite tags",
+                    labelTxt: Lang.translate("Favorite tags"),
                     inpName : "favTags",
-                    inpHolder: "Your interest tags"
+                    inpHolder: Lang.translate("Your interest tags")
                 } ]
             }, {
-                legend: "My security preferences",
+                legend: Lang.translate("My security preferences"),
                 entries: [ {
                     labelTxt: "Something here",
                     inpName : "favTags",
                     inpHolder: "Something in here"
                 } ]
             }, {
-                legend: "My work",
+                legend: Lang.translate("My work"),
                 entries: [ {
                     labelTxt: "Something here",
                     inpName : "favTags",
@@ -96,11 +97,11 @@ class UserInfo extends React.Component
             } ],
             buttons: [ {
                 btnFmt : "btn btn-lg btn-default",
-                btnText: "Cancel",
+                btnText: Lang.translate("Cancel"),
                 onClick: this._cancelSave
             }, {
                 btnFmt : "btn btn-lg btn-primary",
-                btnText: "Save",
+                btnText: Lang.translate("Save"),
                 onClick: this._saveProfile
             } ]
         };
@@ -157,23 +158,23 @@ const ProfileTab = {
     reactId : 'user-profile',
     tabItems: [ {
         domId  : 'profile-tab',
-        tabText: 'About Me',
+        tabText: Lang.translate('About Me'),
         tabIdx : 0
     }, {
         domId  : 'connection-tab',
-        tabText: 'Connections',
+        tabText: Lang.translate('Connections'),
         tabIdx : 1
     }, {
         domId  : 'user-tags',
-        tabText: 'Post Categories',
+        tabText: Lang.translate('Post Categories'),
         tabIdx : 2
     }, {
         domId  : 'message',
-        tabText: 'Secure Messages',
+        tabText: Lang.translate('Secure Messages'),
         tabIdx : 3
     }, {
         domId  : 'pending-task',
-        tabText: 'Pending Tasks',
+        tabText: Lang.translate('Pending Tasks'),
         tabIdx : 4
     } ]
 };
@@ -183,7 +184,7 @@ class UserProfile extends React.Component
     render() {
         let self = UserStore.getSelf();
         if (self == null) {
-            return <h1>Something's wrong, try logout and login again</h1>;
+            return null;
         }
         console.log(self);
         return (

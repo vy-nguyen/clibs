@@ -325,7 +325,7 @@ class CommentItem extends React.Component {
         let userLiked = comment.getUserLiked();
 
         if (comment.amIArticleAuthor()) {
-            let favBtnText   = LanguageStore.translate("Mark Favorite");
+            let favBtnText   = LanguageStore.translate("Favorites");
             let favClassName = "fa fa-bookmark";
             if (comment.isFavorite() === true) {
                 favBtnText = LanguageStore.translate("Not Favorite");
