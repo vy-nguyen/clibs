@@ -22,13 +22,35 @@ class HeaderBtn extends React.Component
 {
     constructor(props) {
         super(props);
+        this.state = {
+            text: LanguageStore.translate(this.props.text)
+        }
+        this._updateLang = this._updateLang.bind(this);
+    }
+
+    componentDidMount() {
+        this.unsub = LanguageStore.listen(this._updateLang);
+    }
+
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    _updateLang() {
+        this.setState({
+            text: LanguageStore.translate(this.props.text)
+        });
     }
 
     render() {
         return (
             <div id="logo-group">
                 <span id="activity" className="activity-dropdown"
-                    data-toggle="tooltip" data-placement="right" title={this.props.text}>
+                    data-original-title={this.state.text}
+                    data-toggle="tooltip" data-placement="right" title={this.state.text}>
                     <Link to={this.props.linkTo}>
                         <i className={this.props.icon}/>
                     </Link>
@@ -113,10 +135,10 @@ class Header extends React.Component
         return (
             <header id="header">
                 {logoBlock}
-                <HeaderBtn linkTo="/public/blog" icon="fa fa-book" text={LanguageStore.translate("Read Blogs")}/>
-                <HeaderBtn linkTo="/public/edu" icon="fa fa-users" text={LanguageStore.translate("Education")}/>
-                <HeaderBtn linkTo="/public/ads" icon="fa fa-money" text={LanguageStore.translate("View Ads")}/>
-                <HeaderBtn linkTo="/public/estore" icon="fa fa-shopping-cart" text={LanguageStore.translate("Shop E-Store")}/>
+                <HeaderBtn linkTo="/public/blog" icon="fa fa-book" text="Read Blogs"/>
+                <HeaderBtn linkTo="/public/edu" icon="fa fa-users" text="Education"/>
+                <HeaderBtn linkTo="/public/ads" icon="fa fa-money" text="View Ads"/>
+                <HeaderBtn linkTo="/public/estore" icon="fa fa-shopping-cart" text="Shop E-Store"/>
 
                 <div className="pull-right">
                     <ToggleMenu className="btn-header pull-right"/>
