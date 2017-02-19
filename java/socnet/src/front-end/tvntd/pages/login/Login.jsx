@@ -226,7 +226,7 @@ class LoginForm extends React.Component
                                         </b>
                                     </label>
                                     <div className="note">
-                                        <Link to="/register/recover"><Mesg text="Forgot password?"/></Link>
+                                        <Link to="/register/recover"><Mesg text="Forgot Password"/>?</Link>
                                     </div>
                                 </section>
                                 <section>

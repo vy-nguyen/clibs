@@ -186,8 +186,9 @@ class AuthorFeed extends React.Component
                 event.stopPropagation();
                 plugin.upCallback(plugin.articleUuid, plugin.upCallArg);
             }
-        };
-        let articles = [ article ];
+        },
+        articles = [ article ];
+        console.log(cbArg);
         return (
             <AuthorFeed authorUuid={authorUuid} articles={articles} plugin={togglePlugin}/>
         )

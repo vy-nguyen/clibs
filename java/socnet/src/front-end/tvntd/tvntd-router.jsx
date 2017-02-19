@@ -8,7 +8,6 @@ import React from 'react-mod';
 import {Route, Redirect, IndexRoute, DefaultRoute} from 'react-router';
 
 import Layout        from './pages/layout/Layout.jsx';
-import MainPage      from './pages/public/MainPage.jsx';
 import {Login}       from './pages/login/Login.jsx';
 import Logout        from './pages/login/Logout.jsx';
 import Register      from './pages/login/Register.jsx';
@@ -26,17 +25,21 @@ import SetTags       from './pages/admin/SetTags.jsx';
 import MainBlog      from './pages/blog/MainBlog.jsx';
 import LoginRequired from 'vntd-shared/utils/LoginRequired.jsx';
 
+import {MainPage, AboutUs}  from './pages/public/MainPage.jsx';
+
 const Routes = (
     <Route>
         <Route path="/" component={Layout} url={"/public/start"}>
             <IndexRoute component={MainPage}/>
             <Redirect from="/" to ="public"/>
             <Route path="public">
+                <Route path="aboutus" component={AboutUs}/>
                 <Route path=":blog" component={MainBlog} subHeader={true}/>
                 <Route path=":ads" component={MainBlog} subHeader={true}/>
                 <Route path=":estore" component={MainBlog} subHeader={true}/>
                 <Route path=":edu" component={MainBlog} subHeader={true}/>
                 <Route path=":news" component={MainBlog} subHeader={true}/>
+                <Route path=":tech" component={MainBlog} subHeader={true}/>
             </Route>
 
             <Redirect from="public" to="public/proto"/>

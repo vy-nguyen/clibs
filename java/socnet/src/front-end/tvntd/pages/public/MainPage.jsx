@@ -192,7 +192,7 @@ class TimeLineDev extends React.Component
     }
 }
 
-class MainPage extends React.Component
+class AboutUs extends React.Component
 {
     constructor(props) {
         super(props);
@@ -216,15 +216,16 @@ class MainPage extends React.Component
     }
 
     render() {
-        if (UserStore.isLogin()) {
-            return <NewsFeed/>;
-        }
+        let goalBoxes = [], featureBoxes = [], teamBoxes = [], screenBox,
+            plan = this.state.plan,
+            welcome = this.state.welcome,
+            goals = this.state.goals,
+            screen = this.state.screen,
+            features = this.state.features;
 
-        if (this.state.goals == null) {
+        if (goals == null) {
             return (<ReactSpinner/>);
         }
-        let goalBoxes = [];
-        let goals = this.state.goals;
         _.forOwn(goals.panes, function(item) {
             goalBoxes.push(
                 <PriceBox key={_.uniqueId('goal-box-')}
@@ -238,8 +239,6 @@ class MainPage extends React.Component
                     footerDetail={item.footerHL}/>
             );
         });
-        let features = this.state.features;
-        let featureBoxes = [];
         _.forOwn(features.features, function(item) {
             let text = [];
             let key = _.uniqueId('feature-box-');
@@ -253,15 +252,21 @@ class MainPage extends React.Component
                 </FeatureBox>
             );
         });
-        let teamBoxes = [];
         _.forOwn(this.state.team.members, function(item) {
             teamBoxes.push(
                 <TeamBio key={_.uniqueId('team-bio-')} name={item.name}
                     title={item.title} avatar={item.avatar} teamDesc={item.teamDesc}/>
             );
         });
-        let plan = this.state.plan;
-        let welcome = this.state.welcome;
+        if (screen != null) {
+            screenBox = (
+                <FeatureSection title={this.state.screen.title} titleDetail={this.state.screen.titleDetail}>
+                    <Gallery imageList={this.state.screen.images}/>
+                </FeatureSection>
+            );
+        } else {
+            screenBox = null;
+        }
         return (
             <div id="content">
                 <FeatureSection title={welcome.title} titleDetail={welcome.titleDetail} format="bg-gray">
@@ -275,9 +280,7 @@ class MainPage extends React.Component
                     {featureBoxes}
                 </FeatureSection>
 
-                <FeatureSection title={this.state.screen.title} titleDetail={this.state.screen.titleDetail}>
-                    <Gallery imageList={this.state.screen.images}/>
-                </FeatureSection>
+                {screenBox}
 
                 <FeatureSection title={this.state.team.title} titleDetail={this.state.team.titleDetail} format="bg-gray">
                     {teamBoxes}
@@ -299,4 +302,15 @@ class MainPage extends React.Component
     }
 }
 
+class MainPage extends React.Component
+{
+    render() {
+        if (UserStore.isLogin()) {
+            return <NewsFeed/>;
+        }
+        return <AboutUs/>
+    }
+}
+
+export { MainPage, AboutUs }
 export default MainPage;
