@@ -9,7 +9,8 @@
     <meta name="_csrf_header" content="${_csrf.headerName}"/>
 
     <%-- #CSS Links --%>
-    <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+      <%-- <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/bootstrap.min.css"> --%>
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/font-awesome.min.css">
 
     <%-- SmartAdmin Styles : Caution! DO NOT change the order, XXX: merge admin & Admin --%>
@@ -33,7 +34,7 @@
       <span class="visible-lg"></span>
   </span>
   <div id="tvntd-root"></div>
-  <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+  <script async src="//cdn.tinymce.com/4/tinymce.min.js"></script>
   <script src="/rs/client/tvntd-vendor-bundle.js"></script>
   <script src="/rs/client/tvntd-bundle.js"></script>
 </body>
