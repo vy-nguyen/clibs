@@ -42,6 +42,7 @@ import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Product;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.IArticleService.ArticleRankDTO;
+import com.tvntd.service.api.ICommentService.CommentDTO;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 public interface IProductService
@@ -114,6 +115,7 @@ public interface IProductService
     {
         private List<ProductDTO> products;
         private List<ProductDTO> pendings;
+        private List<CommentDTO> comments;
         private List<ArticleRankDTO> articleRank;
 
         public ProductDTOResponse(List<ProductDTO> prods, List<ProductDTO> pend)
@@ -127,13 +129,14 @@ public interface IProductService
             }
         }
 
-        public ProductDTOResponse(List<ProductDTO> prods,
-                List<ProductDTO> pend, List<ArticleRankDTO> ranks)
+        public ProductDTOResponse(List<ProductDTO> prods, List<ProductDTO> pend,
+                List<ArticleRankDTO> ranks, List<CommentDTO> comments)
         {
             super(GenericResponse.USER_HOME, null, null);
             this.products = prods;
             this.pendings = pend;
             this.articleRank = ranks;
+            this.comments = comments;
         }
 
         public ProductDTOResponse(List<ArticleRankDTO> rank)
@@ -154,6 +157,20 @@ public interface IProductService
          */
         public List<ProductDTO> getPendings() {
             return pendings;
+        }
+
+        /**
+         * @return the comments
+         */
+        public List<CommentDTO> getComments() {
+            return comments;
+        }
+
+        /**
+         * @param comments the comments to set
+         */
+        public void setComments(List<CommentDTO> comments) {
+            this.comments = comments;
         }
 
         /**

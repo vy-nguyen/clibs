@@ -184,6 +184,7 @@ let EProductStore = Reflux.createStore({
     onGetPublishProdsCompleted: function(data) {
         let products = [];
 
+        CommentStore.onGetCommentsCompleted(data);
         _.forEach(data.products, function(product) {
             products.push(this._addEStore(product, false));
         }.bind(this));

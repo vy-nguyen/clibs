@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,6 +67,7 @@ import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.ICommentService;
+import com.tvntd.service.api.ICommentService.CommentDTOResponse;
 import com.tvntd.service.api.IProductService;
 import com.tvntd.service.api.IProductService.ProductDTO;
 import com.tvntd.service.api.IProductService.ProductDTOResponse;
@@ -252,7 +254,12 @@ public class PublicPath
             list = productSvc.getProductsByUuids(uuids.getUuids());
         }
         List<ArticleRankDTO> ranks = articleSvc.getArticleRank(uuids);
-        return new ProductDTOResponse(list, null, ranks);
+        ArrayList<String> artUuids = new ArrayList<>(list.size());
+        for (ProductDTO prod : list) {
+            artUuids.add(prod.getArticleUuid());
+        }
+        CommentDTOResponse co = commentSvc.getCommentPost(artUuids);
+        return new ProductDTOResponse(list, null, ranks, co.getComments());
     }
 
     /**

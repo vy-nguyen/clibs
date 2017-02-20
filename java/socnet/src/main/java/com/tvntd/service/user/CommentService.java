@@ -27,6 +27,7 @@
 package com.tvntd.service.user;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -75,6 +76,16 @@ public class CommentService implements ICommentService
         return out;
     }
 
+    @Override
+    public CommentDTOResponse getCommentPost(ArrayList<String> uuidList)
+    {
+        CommentDTOResponse out = new CommentDTOResponse();
+        for (String uuid : uuidList) {
+            getCommentForArticle(uuid, out);
+        }
+        return out;
+    }
+
     private void getCommentForArticle(String uuid, CommentDTOResponse resp)
     {
         List<Comment> out = commentRepo.findAllByArticleUuid(uuid);
@@ -93,10 +104,15 @@ public class CommentService implements ICommentService
     @Override
     public void saveComment(CommentDTO comment)
     {
+        System.out.println("Save comment art uuid " + comment.getArticleUuid() +
+                ", user " + comment.getUserUuid());
+        commentRepo.save(comment.fetchComment());
     }
 
     @Override
     public Comment saveComment(Comment comment) {
+        System.out.println("Save comment art uuid " + comment.getArticleUuid() +
+                ", user " + comment.getUserUuid());
         return  commentRepo.save(comment);
     }
 

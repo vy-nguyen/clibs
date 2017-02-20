@@ -494,7 +494,9 @@ public class UserPath
                         prod.getArticleUuid(), prod.getAuthorUuid(), oid);
 
                 resp.setPostUrl(url);
-                resp.setLocation(ArticleDTO.getPictureUrl(profile.fetchProfile(), oid));
+                resp.setLocation(ArticleDTO
+                        .getPictureUrl(profile.fetchProfile(), oid));
+
                 if (logo == true) {
                     resp.setPostType("logo");
                     prod.assignLogo(oid.name());

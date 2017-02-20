@@ -46,6 +46,7 @@ public interface ICommentService
 {
     public CommentDTOResponse getCommentPost(String articleUuid);
     public CommentDTOResponse getCommentPost(String[] uuidList);
+    public CommentDTOResponse getCommentPost(ArrayList<String> uuidList);
 
     public void deleteComment(String articleUuid);
     public void saveComment(CommentDTO comment);
