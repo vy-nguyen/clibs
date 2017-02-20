@@ -169,7 +169,7 @@ class ProductInfo extends React.Component
                 </div>
                 <div className="row">
                     <div className="col-sm-12 col-md-6 col-lg-6"> 
-                        <a href="javascript:void(0);" className="btn btn-success btn-lg"><Mesg text="Add to cart "/>{prodPrice}</a>
+                        <a href="javascript:void(0);" className="btn btn-success btn-lg"><Mesg text="Add to cart"/>  (${prodPrice})</a>
                     </div>
                     <div className="col-sm-12 col-md-6 col-lg-6">
                         <div className="btn-group pull-right">
