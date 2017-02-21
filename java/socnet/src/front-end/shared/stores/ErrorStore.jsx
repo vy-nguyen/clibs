@@ -6,6 +6,7 @@
 
 import Reflux        from 'reflux';
 import Actions       from 'vntd-root/actions/Actions.jsx';
+import Lang          from 'vntd-root/stores/LanguageStore.jsx';
 
 class ErrorResp {
     constructor(id, resp, text, error) {
@@ -80,22 +81,22 @@ class ErrorResp {
         if (300 <= status && status < 400) {
             this.errorCodeText = this.resp.statusText;
             this.userText = "Error 300";
-            this.userHelp = "Refresh the page";
+            this.userHelp = Lang.translate("Refresh the web browser");
 
         } else if (400 <= status && status < 500) {
             this.errorCodeText = this.resp.statusText;
             this.userText = "Error 400";
-            this.userHelp = "Refresh the page";
+            this.userHelp = Lang.translate("Refresh the web browser");
 
         } else {
             this.errorCodeText = this.resp.statusText;
             this.userText = "Error 500";
-            this.userHelp = "Refresh the page";
+            this.userHelp = Lang.translate("Refresh the web browser");
         }
         this.error = this.errorCodeText;
         if (this.resp.responseJSON != null) {
-            this.userText = this.resp.responseJSON.message;
-            this.userHelp = this.resp.responseJSON.action;
+            this.userText = Lang.translate(this.resp.responseJSON.message);
+            this.userHelp = Lang.translate(this.resp.responseJSON.action);
         }
     }
 }
@@ -186,7 +187,7 @@ let ErrorStore = Reflux.createStore({
     },
 
     onAuthRequiredCompleted: function(id, context) {
-        this.reportInfo(id, "You need to register or login", "Please register or login to post or comment");
+        this.reportInfo(id, Lang.translate("You need to login first"), Lang.translate("Please login to post or comment"));
         this.trigger(this.data, null);
     },
 

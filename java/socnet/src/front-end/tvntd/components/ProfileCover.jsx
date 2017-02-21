@@ -10,35 +10,40 @@ import { htmlCodes }  from 'vntd-root/config/constants';
 import Mesg           from 'vntd-root/components/Mesg.jsx'
 import UserStore      from 'vntd-shared/stores/UserStore.jsx';
 
+import { choose, getRandomInt } from 'vntd-shared/utils/Enum.jsx';
+
 class ProfileCover extends React.Component
 {
     render() {
-        let self = UserStore.getUserByUuid(this.props.userUuid);
+        let self = UserStore.getUserByUuid(this.props.userUuid), imageId, imgList,
+            active, cover_hdr, cover_img, connectFmt, followFmt;
+
         if (self === null) {
             return <h1><Mesg text="Invalid user id"/></h1>
         }
-        let imageId = self._id;
-        let imgList = [
-            self.coverImg0,
-            self.coverImg1,
-            self.coverImg2,
+        imageId = 'prof-' + self.userUuid;
+        imgList = [
+            choose(self.coverImg0, '/rs/img/demo/s1.jpg'),
+            choose(self.coverImg1, '/rs/img/demo/s2.jpg'),
+            choose(self.coverImg2, '/rs/img/demo/s3.jpg')
         ];
-        let cover_hdr = imgList.map(function(item, index) {
+        active = getRandomInt(0, imgList.length);
+        cover_hdr = imgList.map(function(item, index) {
             let id = _.uniqueId('prof-cover-img-');
-            if (index == 0) {
+            if (index == active) {
                 return <li key={id} data-target={'#' + imageId} data-slide-to={index.toString()} className='active'></li>;
             }
             return <li key={id} data-target={'#' + imageId} data-slide-to={index.toString()} className=''></li>;
         });
-        var cover_img = imgList.map(function(item, index) {
+        cover_img = imgList.map(function(item, index) {
             return (
-                <div key={_.uniqueId('prof-cover-img-')} className={index == 0 ? "item active" : "item"}>
+                <div key={_.uniqueId('prof-cover-img-')} className={index == active ? "item active" : "item"}>
                     <img src={item} alt="Cover Image"/>
                 </div>
             );
         });
-        let connectFmt = "";
-        let followFmt = "";
+        connectFmt = "";
+        followFmt = "";
 
         if (UserStore.getSelf() != self) {
             if (self.isInConnection()) {

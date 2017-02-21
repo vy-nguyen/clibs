@@ -132,12 +132,12 @@ class ArticleTagBrief extends React.Component
 
         return (
             <section id='widget-grid'>
-                {ArticleTagBrief.renderArtBox(articles, this._renderArtBrief, this._renderArtFull)}
+                {ArticleTagBrief.renderArtBox(articles, this._renderArtBrief, this._renderArtFull, true)}
             </section>
         );
     }
 
-    static renderArtBox(articles, renderBrief, renderFull) {
+    static renderArtBox(articles, renderBrief, renderFull, maxCol) {
         let output = [];
         let mode = NavigationStore.getViewMode();
         let length = articles.length;
@@ -155,7 +155,7 @@ class ArticleTagBrief extends React.Component
             }
             let threeBrief = null;
             let threeFull  = null;
-            if ((mode === "lg") && ((i + 1) < length)) {
+            if ((maxCol == true) && (mode === "lg") && ((i + 1) < length)) {
                 i++;
                 threeBrief = renderBrief(articles[i]);
                 threeFull  = renderFull(articles[i]);

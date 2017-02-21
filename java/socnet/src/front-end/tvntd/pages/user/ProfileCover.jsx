@@ -20,18 +20,17 @@ class ProfileCover extends React.Component
     }
 
     render() {
-        const djsConfig = GenericForm.getDjsConfig();
-        const componentConfig = {
+        const djsConfig = GenericForm.getDjsConfig(),
+        componentConfig = {
             iconFiletypes   : ['.jpg', '.png', '.gif'],
             showFiletypeIcon: true,
             postUrl         : '/api/upload-img'
-        };
-        const eventHandlers = {
+        },
+        eventHandlers = {
             sending: this.onSending,
-        };
-
-        const imageId = "profile-cover";
-        const imgList = [
+        },
+        imageId = "profile-cover",
+        imgList = [
             "/rs/img/demo/s1.jpg",
             "/rs/img/demo/s2.jpg",
             "/rs/img/demo/s3.jpg"
@@ -43,8 +42,8 @@ class ProfileCover extends React.Component
             } else {
                 return <li key={index} data-target={'#' + imageId} data-slide-to={index.toString()} class></li>;
             }
-        });
-        let cover_img = imgList.map(function(item, index) {
+        }),
+        cover_img = imgList.map(function(item, index) {
             return (
                 <div key={index} className={index == 0 ? "item active" : "item"}>
                     <img src={item} alt="Cover Image"/>

@@ -5,6 +5,7 @@
 
 import React         from 'react-mod';
 import ErrorStore    from 'vntd-shared/stores/ErrorStore.jsx';
+import Mesg          from 'vntd-root/components/Mesg.jsx';
 
 class ErrorView extends React.Component
 {
@@ -63,7 +64,7 @@ class ErrorView extends React.Component
         if (codeText != null) {
             codeText = (
                 <div>
-                    <span>Status {error.getErrorCode()}: {codeText}</span>
+                    <span><Mesg text="Status"/> {error.getErrorCode()}: {codeText}</span>
                     <hr/>
                 </div>
             );
@@ -73,11 +74,11 @@ class ErrorView extends React.Component
             if (this.props.mesg === true) {
                 return this._errorMesg(userText);
             }
-            userText = <p>Reason: {userText}</p>;
+            userText = <p><Mesg text="Reason"/>: {userText}</p>;
         }
         let userHelp = error.getUserHelp();
         if (userHelp != null) {
-            userHelp = <p>Action: {userHelp}</p>;
+            userHelp = <p><Mesg text="Action"/>: {userHelp}</p>;
         }
         return (
             <div className={this.props.className}>
@@ -86,9 +87,9 @@ class ErrorView extends React.Component
                         <a className="close pull-left" onClick={this._onCloseError}><i className="fa fa-times"/></a>
                     </div>
                     <div className="col-sm-11 col-md-11 col-lg-11">
-                        <h2>{codeText}</h2>
-                        <h2>{userText}</h2>
-                        <h3>{userHelp}</h3>
+                        <h4>{codeText}</h4>
+                        <h4>{userText}</h4>
+                        <h4>{userHelp}</h4>
                     </div>
                 </div>
                 {this.props.children}
