@@ -5,6 +5,7 @@
 
 import React    from 'react-mod';
 import Modal    from 'react-modal';
+import Mesg     from 'vntd-root/components/Mesg.jsx';  
 
 const modalStyle = {
     content: {
@@ -60,7 +61,7 @@ class ModalButton extends React.Component
     render() {
         return (
             <div className={this.props.divClass || ""}>
-                <a className={this.props.className} onClick={this._openModal}>{this.props.buttonText}</a>
+                <a className={this.props.className} onClick={this._openModal}><Mesg text={this.props.buttonText}/></a>
                 <Modal style={modalStyle}
                     isOpen={this.state.modalIsOpen}
                     onAfterOpen={this._afterOpenModal}
@@ -73,7 +74,7 @@ class ModalButton extends React.Component
                                 </button>
                                 {
                                     this.props.html ? 
-                                    <div dangerouslySetInnerHTML={{__html: this.props.modalTitle}}/> :
+                                        <div dangerouslySetInnerHTML={{__html: this.props.modalTitle}}/> :
                                     <h3 className="modal-title">{this.props.modalTitle}</h3>
                                 }
                             </div>

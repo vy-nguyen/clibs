@@ -13,6 +13,7 @@ import Gallery          from 'vntd-shared/layout/Gallery.jsx';
 import ModalHtml        from 'vntd-shared/layout/ModalHtml.jsx';
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import AboutUsStore     from 'vntd-root/stores/AboutUsStore.jsx';
+import Lang             from 'vntd-root/stores/LanguageStore.jsx';
 import NewsFeed         from '../news-feed/NewsFeed.jsx';
 
 class PriceBox extends React.Component
@@ -270,6 +271,11 @@ class AboutUs extends React.Component
         return (
             <div id="content">
                 <FeatureSection title={welcome.title} titleDetail={welcome.titleDetail} format="bg-gray">
+                    <div className="panel-footer text-align-center">
+                        <ModalHtml className="btn btn-primary btn-block"
+                            modalTitle={Lang.translate("About This Project")}
+                            buttonText="Read More" url="/public/get-html/vision"/>
+                    </div>
                 </FeatureSection>
 
                 <FeatureSection title={goals.title} titleDetail={goals.titleDetail}>
