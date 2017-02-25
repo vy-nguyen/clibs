@@ -7,6 +7,7 @@
 import _            from 'lodash';
 import moment       from 'moment';
 import Actions      from 'vntd-root/actions/Actions.jsx';
+import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
 import CommentStore from 'vntd-root/stores/CommentStore.jsx';
 import UserStore    from 'vntd-shared/stores/UserStore.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
@@ -110,19 +111,21 @@ class CommonStore {
             missingUuids : null,
             myItems      : null,
             myItemPost   : null,
+            myPostResult : null,
             errorText    : "",
             errorResp    : null,
             itemKinds    : {},
             storeKind    : kind
         }
+        return this.data;
     }
 
-    getItemsByAuthor(uuid) {
+    getItemsByAuthor(uuid, fetch) {
         let items = [],
             uuids = UserStore.getFetchedUuidList(this.storeKind);
 
-        if (!_.isEmpty(uuids)) {
-           Actions.getPublishProds({
+        if (fetch === true && !_.isEmpty(uuids)) {
+            Actions.getPublishProds({
                 authorUuid: UserStore.getSelfUuid(),
                 uuidType  : "user",
                 reqKind   : this.storeKind,
@@ -140,7 +143,9 @@ class CommonStore {
 
     iterAuthorItemStores(uuid, func, arg) {
         let anchor = this.getItemOwner(uuid);
-        anchor.iterArticles(func, arg);
+        if (anchor != null) {
+            anchor.iterArticles(func, arg);
+        }
         return anchor;
     }
 
@@ -161,9 +166,32 @@ class CommonStore {
         return anchor.getSortedArticles();
     }
 
+    getMyItems() {
+        if (this.data.myItems != null) {
+            return this.data.myItems.sortedArticles;
+        }
+        return null;
+    }
+
+    getMySavedItems() {
+        return this.data.mySavedItems;
+    }
+
     getItemByUuid(uuid) {
         let uuids = this.data.itemsByUuid[uuid];
         return uuids;
+    }
+
+    getAuthorUuid(articleUuid) {
+        let item = this.data.itemsByUuid[articleUuid];
+        if (item != null) {
+            return item.authorUuid;
+        }
+        return null;
+    }
+
+    onPendingPostCompleted(item) {
+        this.data.myPostResult = item;
     }
 
     onPublishItemCompleted(item, store) {
@@ -231,9 +259,9 @@ class CommonStore {
     }
 
     /**
-     * Internal methods.
+     * Internal methods, used by derrived stores.
      */
-    _errorHandler(error, store) {
+    errorHandler(error, store) {
         this.data.errorText = error.getErrorCodeText();
         this.data.errorResp = error.getUserText();
         store.trigger(this.data, null, "failure", false, null);
@@ -241,6 +269,7 @@ class CommonStore {
 
     _createOwnerAnchor(authorUuid, article) {
         let anchor = new AuthorShelf(article, authorUuid);
+
         this.data.itemsByAuthor[authorUuid] = anchor;
         if (UserStore.isUserMe(authorUuid)) {
             this.data.myItems = anchor;
@@ -249,26 +278,74 @@ class CommonStore {
     }
 
     _addItemStore(item, saved) {
-        let it = new Article(item);
+        let anchor, authorTagMgr, it = new Article(item);
 
         if (saved === true) {
             this.data.mySavedItems = preend(it, this.data.mySavedItems);
             return it;
         }
-        let anchor = this.getItemOwner(it.authorUuid);
+        anchor = this.getItemOwner(it.authorUuid);
         if (this.data.itemsByUuid[it.articleUuid] == null) {
             this.data.itemsByUuid[it.articleUuid] = it;
             anchor.addArticle(it);
         }
+        if (it.rank != null) {
+            authorTagMgr = AuthorStore.getAuthorTagMgr(it.authorUuid);
+            authorTagMgr.addArticleRank(it.rank);
+        }
         return it;
     }
 
-    _removeItemStore(itemUuids, authorUuid) {
-        _.forEach(itemUuids, function(articleUuid) {
-            let anchor = this.getItemOwner(authorUuid);
+    _removeItemStore(itemUuids, authorUuid, silent) {
+        let item, anchor = this.getItemOwner(authorUuid);
 
+        _.forEach(itemUuids, function(articleUuid) {
             anchor.removeArticle(articleUuid);
+            if (silent == true) {
+                item = this.data.itemsByUuid[articleUuid];
+                AuthorStore.removeArticleRank(item, silent);
+            }
             delete this.data.itemsByUuid[articleUuid];
+        }.bind(this));
+    }
+
+    _triggerStore(store, item, code) {
+        store.trigger(this.data, item, code, true, item.authorUuid);
+    }
+
+    addFromJson(items, key, index) {
+        let itemsByKey = this.data[key];
+
+        items && _.forOwn(items, function(it, k) {
+            if (itemsByKey[it.articleUuid] == null) {
+                itemsByKey[it.articleUuid] = new Article(it);
+            }
+        }.bind(this));
+
+        if (index == true) {
+            this.indexAuthors(items);
+        }
+        return this.data;
+    }
+
+    indexAuthors(items) {
+        let itemsByUuid = this.data.itemsByUuid,
+            itemsByAuthor = this.data.itemsByAuthor;
+
+        items && _.forOwn(items, function(jsonItem, key) {
+            let anchor, item = itemsByUuid[jsonItem.articleUuid];
+            if (item == null) {
+                return;
+            }
+            if (item.author == null) {
+                item.author = UserStore.getUserByUuid(item.authorUuid);
+            }
+            anchor = this.getItemOwner(item.authorUuid);
+            anchor.addSortedArticle(item);
+
+            if (UserStore.isUserMe(item.authorUuid)) {
+                this.data.myItems = anchor;
+            }
         }.bind(this));
     }
 
