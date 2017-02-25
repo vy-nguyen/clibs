@@ -10,6 +10,7 @@ import moment       from 'moment';
 import Actions      from 'vntd-root/actions/Actions.jsx';
 import CommentStore from 'vntd-root/stores/CommentStore.jsx';
 import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
+import CommonStore  from 'vntd-root/stores/CommonStore.jsx';
 import UserStore    from 'vntd-shared/stores/UserStore.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 
@@ -97,185 +98,59 @@ class AuthorShelf {
 }
 
 let EProductStore = Reflux.createStore({
-    data: {},
+    store: {},
     listenables: Actions,
 
-    _resetStore: function() {
-        this.data = {
-            getStoreCount  : 0,
-            estoresByAuthor: {},
-            productByUuid  : {},
-            mySavedProducts: {},
-
-            requestUuids : null,
-            missingUuids : null,
-            myProducts   : null,
-            myProductPost: null,
-            errorText : "",
-            errorResp : null
-        }
+    init: function() {
+        this.store = new CommonStore('estore');
     },
 
     getProductsByAuthor: function(uuid) {
-        let products = [];
-        let uuids = UserStore.getFetchedUuidList('es');
-
-        if (!_.isEmpty(uuids)) {
-           Actions.getPublishProds({
-                authorUuid: UserStore.getSelfUuid(),
-                uuidType  : "user",
-                uuids     : uuids
-            });
-        }
-        let anchor = this.getProductOwner(uuid);
-        if (anchor.hasData() === true) {
-            anchor.iterArticles(function(item) {
-                products.push(item);
-            });
-        }
-        return products;
+        return this.store.getItemsByAuthor(uuid);
     },
 
     iterAuthorEStores: function(uuid, func, arg) {
-        let anchor = this.getProductOwner(uuid);
-        anchor.iterArticles(func, arg);
-        return anchor;
+        return this.store.iterAuthorItemStores(uuid, func, arg);
     },
 
     getProductOwner: function(uuid) {
-        let anchor = this.data.estoresByAuthor[uuid];
-        if (anchor == null) {
-            anchor = this._createOwnerAnchor(uuid, null);
-            this.data.estoresByAuthor[uuid] = anchor;
-        }
-        return anchor;
+        return this.store.getItemOwner(uuid);
     },
 
-    /*
-     * Return author's articles sorted to display.
-     */
     getSortedProductsByAuthor: function(uuid) {
-        let anchor = this.getProductOwner(uuid);
-        return anchor.getSortedArticles();
+        return this.store.getSortedItemsByAuthor(uuid);
     },
 
     getProductByUuid: function(uuid) {
-        let uuids = this.data.productByUuid[uuid];
-        return uuids;
-    },
-
-    init: function() {
-        this._resetStore();
+        return this.store.getItemByUuid(uuid);
     },
 
     onPublishProductCompleted: function(product) {
-        let prod = this._addEStore(product, false);
-        let pubTag = prod.publicTag;
-
-        this.data.myProductPost = prod;
-        ArticleTagStore.addToPublicTag(pubTag, "estore", prod.articleUuid);
-        this.trigger(this.data, [prod], "postOk", true, prod.authorUuid);
+        this.store.onPublishItemCompleted(product, this);
     },
 
     onPublishProductFailure: function(product) {
-        this.trigger(this.data, null, "failure", false, product.authorUuid);
+        this.store.onPublishItemFailure(product, this);
     },
 
     onGetPublishProdsCompleted: function(data) {
-        let products = [];
-
-        CommentStore.onGetCommentsCompleted(data);
-        _.forEach(data.products, function(product) {
-            products.push(this._addEStore(product, false));
-        }.bind(this));
-
-        this.data.requestUuids = null;
-        this.requestProducts();
-        this.trigger(this.data, products, "getOk", !_.isEmpty(products), null);
+        this.store.onGetPublishItemCompleted(data, 'products', this);
     },
 
     onGetPublishProdsFailure: function(data) {
-        this.trigger(this.data, null, "failure", false, null);
+        this.store.onGetPublishItemFailure(data, this);
     },
 
     onDeleteProductCompleted: function(data) {
-        this._removeEStore(data.uuids, data.authorUuid);
-        this.trigger(this.data, [data], "delOk", true, data.authorUuid);
+        this.store.onDeleteItemCompleted(data, this);
     },
 
     updateMissingUuid(uuids) {
-        let store = this.data.productByUuid;
-        let missing = this.data.missingUuids;
-        _.forEach(uuids, function(uid) {
-            if (store[uid] == null) {
-                if (this.data.missingUuids == null) {
-                    this.data.missingUuids = [];
-                    missing = this.data.missingUuids;
-                }
-                missing.push(uid);
-            }
-        }.bind(this));
+        this.store.updateMissingUuid(uuids);
     },
 
     requestProducts() {
-        if (this.data.requestdUuids != null || this.data.missingUuids == null) {
-            return;
-        }
-        this.data.requestUuids = this.data.missingUuids;
-        this.data.missingUuids = null;
-
-        Actions.getPublishProds({
-            authorUuid: null,
-            uuidType  : "product",
-            uuids     : this.data.requestUuids
-        });
-    },
-
-    /**
-     * Internal methods.
-     */
-    _errorHandler: function(error) {
-        this.data.errorText = error.getErrorCodeText();
-        this.data.errorResp = error.getUserText();
-        this.trigger(this.data, null, "failure", false, null);
-    },
-
-    _createOwnerAnchor: function(authorUuid, article) {
-        let anchor = new AuthorShelf(article, authorUuid);
-        this.data.estoresByAuthor[authorUuid] = anchor;
-        if (UserStore.isUserMe(authorUuid)) {
-            this.data.myProducts = anchor;
-        }
-        return anchor;
-    },
-
-    _addEStore: function(product, saved) {
-        let prod = new Article(product);
-
-        if (saved === true) {
-            this.data.mySavedProducts = preend(prod, this.data.mySavedProducts);
-            return prod;
-        }
-        let anchor = this.getProductOwner(prod.authorUuid);
-        if (this.data.productByUuid[prod.articleUuid] == null) {
-            this.data.productByUuid[prod.articleUuid] = prod;
-            anchor.addArticle(prod);
-        }
-        return prod;
-    },
-
-    _removeEStore: function(prodUuids, authorUuid) {
-        _.forEach(prodUuids, function(articleUuid) {
-            let anchor = this.getProductOwner(authorUuid);
-
-            anchor.removeArticle(articleUuid);
-            delete this.data.productByUuid[articleUuid];
-        }.bind(this));
-    },
-
-    dumpData(hdr) {
-        console.log(hdr);
-        console.log(this.data);
+        this.store.requestItems();
     }
 });
 

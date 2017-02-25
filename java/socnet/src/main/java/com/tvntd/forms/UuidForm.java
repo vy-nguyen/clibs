@@ -35,6 +35,7 @@ public class UuidForm
 
     private String authorUuid;
     private String uuidType;
+    private String reqKind;
     private String[] uuids;
 
     /**
@@ -63,6 +64,20 @@ public class UuidForm
      */
     public void setUuidType(String uuidType) {
         this.uuidType = uuidType;
+    }
+
+    /**
+     * @return the reqKind
+     */
+    public String getReqKind() {
+        return reqKind;
+    }
+
+    /**
+     * @param reqKind the reqKind to set
+     */
+    public void setReqKind(String reqKind) {
+        this.reqKind = reqKind;
     }
 
     /**

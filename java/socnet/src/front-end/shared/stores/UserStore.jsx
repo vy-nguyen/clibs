@@ -95,7 +95,7 @@ let UserStore = Reflux.createStore({
         let updated = null;
         let userMap = this.data.userMap;
 
-        if (req === 'es') {
+        if (req === 'estore') {
             updated = this.data.estoreUuids;
         } else {
             updated = this.data.artStoreUuids;
