@@ -56,12 +56,16 @@ let EProductStore = Reflux.createStore({
         this.store.onDeleteItemCompleted(data, this);
     },
 
-    updateMissingUuid(uuids) {
+    updateMissingUuid: function(uuids) {
         this.store.updateMissingUuid(uuids);
     },
 
-    requestProducts() {
+    requestProducts: function() {
         this.store.requestItems();
+    },
+
+    dumpData: function(header) {
+        this.store.dumpData(header);
     }
 });
 
@@ -118,8 +122,7 @@ let ArticleStore = Reflux.createStore({
     },
 
     dumpData: function(header) {
-        console.log(header);
-        console.log(this.store);
+        this.store.dumpData(header);
     },
 
     /**
@@ -180,7 +183,6 @@ let ArticleStore = Reflux.createStore({
     },
 
     onDeleteUserPostCompleted: function(data) {
-        console.log(this.code);
         this.store._removeItemStore(data.uuids, data.authorUuid);
         this.store._triggerStore(this, data, "delOk");
     },

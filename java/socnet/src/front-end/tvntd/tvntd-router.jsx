@@ -23,6 +23,7 @@ import UserConnect   from './pages/user/UserConnect.jsx';
 import ListUsers     from './pages/admin/ListUsers.jsx';
 import SetTags       from './pages/admin/SetTags.jsx';
 import MainBlog      from './pages/blog/MainBlog.jsx';
+import MainAds       from './pages/ads/MainAds.jsx';
 import LoginRequired from 'vntd-shared/utils/LoginRequired.jsx';
 
 import {MainPage, AboutUs}  from './pages/public/MainPage.jsx';
@@ -34,8 +35,8 @@ const Routes = (
             <Redirect from="/" to ="public"/>
             <Route path="public">
                 <Route path="aboutus" component={AboutUs}/>
+                <Route path="ads" component={MainAds} subHeader={false}/>
                 <Route path=":blog" component={MainBlog} subHeader={true}/>
-                <Route path=":ads" component={MainBlog} subHeader={true}/>
                 <Route path=":estore" component={MainBlog} subHeader={true}/>
                 <Route path=":edu" component={MainBlog} subHeader={true}/>
                 <Route path=":news" component={MainBlog} subHeader={true}/>
