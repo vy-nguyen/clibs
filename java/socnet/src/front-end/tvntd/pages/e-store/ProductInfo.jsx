@@ -274,8 +274,12 @@ class ProductBrief extends React.Component
         return (
             <ModalConfirm ref={"confirmRm"} height={"auto"} modalTitle={Lang.translate("Delete this product listing?")}>
                 <div className="modal-footer">
-                    <button className="btn btn-primary pull-right" onClick={this._confirmDel}><Mesg text="Delete"/></button>
-                    <button className="btn btn-default pull-right" onClick={this._cancelDel}><Mesg text="Cancel"/></button>
+                    <button className="btn btn-primary pull-right" onClick={this._confirmDel}>
+                        <Mesg text="Delete"/>
+                    </button>
+                    <button className="btn btn-default pull-right" onClick={this._cancelDel}>
+                        <Mesg text="Cancel"/>
+                    </button>
                 </div>
             </ModalConfirm>
         );

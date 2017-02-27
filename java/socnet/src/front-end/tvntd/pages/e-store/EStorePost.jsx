@@ -13,7 +13,7 @@ import {choose}                  from 'vntd-shared/utils/Enum.jsx';
 
 import ErrorView        from 'vntd-shared/layout/ErrorView.jsx';
 import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
-import NestableStore    from 'vntd-shared/stores/NestableStore.jsx';
+import InputStore       from 'vntd-shared/stores/NestableStore.jsx';
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import ErrorStore       from 'vntd-shared/stores/ErrorStore.jsx';
 import StateButton      from 'vntd-shared/utils/StateButton.jsx';
@@ -44,6 +44,10 @@ class EStorePost extends React.Component
 
         this._myUuid       = UserStore.getSelfUuid();
         this._errorId      = "estore-post-" + this._myUuid;
+        this._prodCatId    = "prod-cat-id-";
+        this._prodNameId   = "prod-name-id-";
+        this._prodPriceId  = "prod-price-id-";
+        this._prodNoticeId = "prod-notice-id-";
         this._logoImgId    = "prod-logo-id-";
         this._prodPicsId   = "prod-pics-id-";
         this._publicCatId  = "pub-cat-id-";
@@ -80,10 +84,14 @@ class EStorePost extends React.Component
     componentWillMount() {
         let product = this.props.product;
         if (product != null) {
-            NestableStore.storeItemIndex(this._getItemId(this._publicCatId), product.publicTag, false);
-            NestableStore.storeItemIndex(this._getItemId(this._prodDescId), product.prodDesc, false);
-            NestableStore.storeItemIndex(this._getItemId(this._prodDetailId), product.prodDetail, false);
-            NestableStore.storeItemIndex(this._getItemId(this._prodSpecId), product.prodSpec, false);
+            InputStore.storeItemIndex(this._getItemId(this._prodCatId), product.prodCat, false);
+            InputStore.storeItemIndex(this._getItemId(this._prodNameId), product.prodName, false);
+            InputStore.storeItemIndex(this._getItemId(this._prodPriceId), product.prodPrice, false);
+            InputStore.storeItemIndex(this._getItemId(this._prodNoticeId), product.prodNotice, false);
+            InputStore.storeItemIndex(this._getItemId(this._publicCatId), product.publicTag, false);
+            InputStore.storeItemIndex(this._getItemId(this._prodDescId), product.prodDesc, false);
+            InputStore.storeItemIndex(this._getItemId(this._prodDetailId), product.prodDetail, false);
+            InputStore.storeItemIndex(this._getItemId(this._prodSpecId), product.prodSpec, false);
         }
     }
 
@@ -117,7 +125,7 @@ class EStorePost extends React.Component
         picObjId  = this.state.picObjId;
         logoObjId = this.state.logoObjId;
         imgRecId  = this._getItemId(this._ImageRecId);
-        imgRec    = NestableStore.getItemIndex(imgRecId);
+        imgRec    = InputStore.getItemIndex(imgRecId);
 
         if (imgRec == null) {
             imgRec = {
@@ -131,7 +139,7 @@ class EStorePost extends React.Component
         } else {
             imgRec.picObjIds.push(result.imgObjId);
         }
-        NestableStore.storeItemIndex(imgRecId, imgRec, false);
+        InputStore.storeItemIndex(imgRecId, imgRec, false);
     }
 
     _onBlurInput(e) {
@@ -156,13 +164,13 @@ class EStorePost extends React.Component
         errText  = null;
         errFlags = {};
 
+        console.log(product);
         if (product.articleUuid == null) {
             errText  = Lang.translate("You forgot to upload pictures for your product");
         }
         [
             "prodCat", "prodDesc", "prodDetail", "prodName",
-            "prodNotice", "prodPrice", "prodSpec", "prodTitle",
-            "pubTag", "prodDetail"
+            "prodNotice", "prodPrice", "prodSpec", "pubTag", "prodDetail"
 
         ].forEach(function(entry) {
             if (defProd != null && defProd[entry] != null && _.isEmpty(product[entry])) {
@@ -187,7 +195,7 @@ class EStorePost extends React.Component
     }
 
     _getPostData() {
-        let imgRec = NestableStore.getItemIndex(this._getItemId(this._ImageRecId)), product = this.props.product;
+        let imgRec = InputStore.getItemIndex(this._getItemId(this._ImageRecId)), product = this.props.product;
         if (product == null && imgRec == null) {
             return {};
         }
@@ -202,15 +210,15 @@ class EStorePost extends React.Component
             estore    : true,
             authorUuid : this._myUuid,
             articleUuid: imgRec.articleUuid,
-            prodCat    : this.refs.prodCat.value,
-            prodName   : this.refs.prodName.value,
-            prodTitle  : this.refs.prodName.value,
-            prodPrice  : this.refs.prodPrice.value,
-            prodNotice : this.refs.prodNotice.value,
-            pubTag     : NestableStore.getIndexString(this._getItemId(this._publicCatId)),
-            prodDesc   : NestableStore.getIndexString(this._getItemId(this._prodDescId)),
-            prodDetail : NestableStore.getIndexString(this._getItemId(this._prodDetailId)),
-            prodSpec   : NestableStore.getIndexString(this._getItemId(this._prodSpecId)),
+            prodCat    : InputStore.getIndexString(this._getItemId(this._prodCatId)),
+            prodName   : InputStore.getIndexString(this._getItemId(this._prodNameId)),
+            prodTitle  : InputStore.getIndexString(this._getItemId(this._prodNameId)),
+            prodPrice  : InputStore.getIndexString(this._getItemId(this._prodPriceId)),
+            prodNotice : InputStore.getIndexString(this._getItemId(this._prodNoticeId)),
+            pubTag     : InputStore.getIndexString(this._getItemId(this._publicCatId)),
+            prodDesc   : InputStore.getIndexString(this._getItemId(this._prodDescId)),
+            prodDetail : InputStore.getIndexString(this._getItemId(this._prodDetailId)),
+            prodSpec   : InputStore.getIndexString(this._getItemId(this._prodSpecId)),
             prodImgs   : imgRec.picObjIds,
             prodTags   : [],
             logoImg    : imgRec.logoObjId,
@@ -220,22 +228,22 @@ class EStorePost extends React.Component
 
     _clearPostData() {
         let dz, refs = this.refs;
-        refs.prodCat.value    = '';
-        refs.prodName.value   = '';
-        refs.prodPrice.value  = '';
-        refs.prodNotice.value = '';
 
-        NestableStore.clearItemIndex(this._getItemId(this._publicCatId));
-        NestableStore.clearItemIndex(this._getItemId(this._prodDescId));
-        NestableStore.clearItemIndex(this._getItemId(this._prodDetailId));
-        NestableStore.clearItemIndex(this._getItemId(this._prodSpecId));
-        NestableStore.clearItemIndex(this._getItemId(this._ImageRecId));
+        InputStore.clearItemIndex(this._getItemId(this._prodCatId));
+        InputStore.clearItemIndex(this._getItemId(this._prodNameId));
+        InputStore.clearItemIndex(this._getItemId(this._prodPriceId));
+        InputStore.clearItemIndex(this._getItemId(this._prodNoticeId));
+        InputStore.clearItemIndex(this._getItemId(this._publicCatId));
+        InputStore.clearItemIndex(this._getItemId(this._prodDescId));
+        InputStore.clearItemIndex(this._getItemId(this._prodDetailId));
+        InputStore.clearItemIndex(this._getItemId(this._prodSpecId));
+        InputStore.clearItemIndex(this._getItemId(this._ImageRecId));
 
-        dz = NestableStore.clearItemIndex(this._getItemId(this._logoImgId));
+        dz = InputStore.clearItemIndex(this._getItemId(this._logoImgId));
         if (dz != null) {
             dz.removeAllFiles();
         }
-        dz = NestableStore.clearItemIndex(this._getItemId(this._prodPicsId));
+        dz = InputStore.clearItemIndex(this._getItemId(this._prodPicsId));
         if (dz != null) {
             dz.removeAllFiles();
         }
@@ -277,7 +285,7 @@ class EStorePost extends React.Component
 
         const prodCat = {
             labelTxt : Lang.translate("Categorty"),
-            inpName  : "prodCat",
+            inpName  : this._getItemId(this._prodCatId),
             inpDefVal: catVal,
             inpHolder: Lang.translate("Product Category"),
             errorId  : "prodCat",
@@ -285,7 +293,7 @@ class EStorePost extends React.Component
         },
         prodName = {
             labelTxt : Lang.translate("Name"),
-            inpName  : "prodName",
+            inpName  : this._getItemId(this._prodNameId),
             inpDefVal: nameVal,
             inpHolder: Lang.translate("Product Name"),
             errorId  : "prodName",
@@ -293,7 +301,7 @@ class EStorePost extends React.Component
         },
         prodPrice = {
             labelTxt : Lang.translate("Price"),
-            inpName  : "prodPrice",
+            inpName  : this._getItemId(this._prodPriceId),
             inpDefVal: priceVal,
             inpHolder: Lang.translate("Product Price"),
             errorId  : "prodPrice",
@@ -301,7 +309,7 @@ class EStorePost extends React.Component
         },
         priceNotice = {
             labelTxt : Lang.translate("Promotion"),
-            inpName  : "prodNotice",
+            inpName  : this._getItemId(this._prodNoticeId),
             inpDefVal: noticeVal,
             inpHolder: Lang.translate("Include shipping"),
             errorId  : "prodNotice",
@@ -309,7 +317,6 @@ class EStorePost extends React.Component
         },
         publicCat = {
             labelTxt : Lang.translate("Publish Category"),
-            inpName  : "pulbTag",
             inpHolder: pubTag,
             select   : true,
             tagValId : this._getItemId(this._publicCatId),
@@ -320,7 +327,8 @@ class EStorePost extends React.Component
             labelTxt : Lang.translate("Brief description"),
             inpName  : "prodDesc",
             editor   : true,
-            inpDefVal: choose(NestableStore.getIndexString(prodDescId), Lang.translate("Brief description of the product")),
+            inpDefVal: choose(InputStore.getIndexString(prodDescId),
+                              Lang.translate("Brief description of the product")),
             errorFlag: this.state.errFlags.prodDesc
             // uploadUrl: '/user/upload-product-img',
             // uploadOk : this._imageUploadOk
@@ -330,7 +338,8 @@ class EStorePost extends React.Component
             labelTxt : Lang.translate("Detail description"),
             inpName  : "prodDetail",
             editor   : true,
-            inpDefVal: choose(NestableStore.getIndexString(prodDetailId), Lang.translate("Detail description of the product")),
+            inpDefVal: choose(InputStore.getIndexString(prodDetailId),
+                              Lang.translate("Detail description of the product")),
             errorId  : "prodDetail",
             errorFlag: this.state.errFlags.prodDetail,
             // uploadUrl: '/user/upload-product-detail',
@@ -340,7 +349,8 @@ class EStorePost extends React.Component
             id       : prodSpecId,
             labelTxt : Lang.translate("Product Specification"),
             inpName  : "prodSpec",
-            inpDefVal: choose(NestableStore.getIndexString(prodSpecId), Lang.translate("Specification of the product")),
+            inpDefVal: choose(InputStore.getIndexString(prodSpecId),
+                              Lang.translate("Specification of the product")),
             editor   : true,
             errorId  : "prodSpec",
             errorFlag: this.state.errFlags.prodSpec
@@ -350,7 +360,7 @@ class EStorePost extends React.Component
             success: this._dzSuccess,
             error  : this._dzError,
             init   : function(dz) {
-                NestableStore.storeItemIndex(this._getItemId(this._logoImgId), dz, true);
+                InputStore.storeItemIndex(this._getItemId(this._logoImgId), dz, true);
             }.bind(this)
         },
         eventHandlers = {
@@ -358,7 +368,7 @@ class EStorePost extends React.Component
             success: this._dzSuccess,
             error  : this._dzError,
             init   : function(dz) {
-                NestableStore.storeItemIndex(this._getItemId(this._prodPicsId), dz, true);
+                InputStore.storeItemIndex(this._getItemId(this._prodPicsId), dz, true);
             }.bind(this)
         },
         briefDz = {

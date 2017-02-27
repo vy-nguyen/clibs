@@ -75,7 +75,7 @@ class ModalButton extends React.Component
                                 {
                                     this.props.html ? 
                                         <div dangerouslySetInnerHTML={{__html: this.props.modalTitle}}/> :
-                                    <h3 className="modal-title">{this.props.modalTitle}</h3>
+                                        <h3 className="modal-title">{this.props.modalTitle}</h3>
                                 }
                             </div>
                             <div className="modal-body">

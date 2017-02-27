@@ -67,13 +67,16 @@ class Friends extends React.Component
         }
         let owned = UserStore.isUserMe(self.userUuid);
         let connect = _.isEmpty(self.connectList) ? null
-            : <UserFriends owned={owned} userList={self.connectList} tableType="connect" tableTitle={Lang.translate("Connections")}/>;
+            : <UserFriends owned={owned} userList={self.connectList}
+                    tableType="connect" tableTitle={Lang.translate("Connections")}/>;
 
         let follow  = _.isEmpty(self.followList) ? null
-            : <UserFriends owned={owned} userList={self.followList} tableType="follow" tableTitle={Lang.translate("Follows")}/>;
+            : <UserFriends owned={owned} userList={self.followList}
+                    tableType="follow" tableTitle={Lang.translate("Follows")}/>;
 
         let follower = _.isEmpty(self.followerList) ? null
-            : <UserFriends owned={owned} userList={self.followerList} tableType="follower" tableTitle={Lang.translate("Followers")}/>;
+            : <UserFriends owned={owned} userList={self.followerList}
+                    tableType="follower" tableTitle={Lang.translate("Followers")}/>;
 
         return (
             <div>

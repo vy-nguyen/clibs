@@ -21,10 +21,19 @@ class Author {
         this._id       = _.uniqueId('id-author-');
         this.profile   = null;
         this.userUuid  = data.authorUuid;
-        this.coverImg  = this.profile ? this.profile.coverImg0 : "/rs/img/demo/s1.jpg";
         this.aboutList = data.aboutList;
         this.authorTags = data.authorTags;
-
+        if (this.profile != null) {
+            this.coverImg = this.profile.coverImg0;
+            this.imgList  = [];
+        } else {
+            this.coverImg = "/rs/img/demo/s1.jpg";
+            this.imgList  = [
+                "/rs/img/demo/s1.jpg",
+                "/rs/img/demo/s2.jpg",
+                "/rs/img/demo/s3.jpg"
+            ];
+        }
         this.frontArticleUuid = data.frontArticleUuid;
         this.favoriteArticles = data.favoriteArticles;
         this.timeLineArticles = data.timeLineArticles;

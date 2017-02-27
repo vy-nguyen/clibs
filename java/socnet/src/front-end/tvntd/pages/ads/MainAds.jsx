@@ -7,10 +7,74 @@
 import _               from 'lodash';
 import React           from 'react-mod'
 import TabPanel        from 'vntd-shared/layout/TabPanel.jsx';
+import DynamicTable    from 'vntd-root/components/DynamicTable.jsx';
 import Lang            from 'vntd-root/stores/LanguageStore.jsx';
 import AdminStore      from 'vntd-root/stores/AdminStore.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
+import Mesg            from 'vntd-root/components/Mesg.jsx';
 import ArticleTagBrief from 'vntd-root/components/ArticleTagBrief.jsx';
+
+class TagListing extends React.Component
+{
+    constructor(props) {
+        super(props);
+
+        this._submitChanges = this._submitChanges.bind(this);
+        this._getTagHeader   = this._getTagHeader.bind(this);
+        this._getTagFooter   = this._getTagFooter.bind(this);
+    }
+
+    _submitChanges() {
+    }
+
+    _getEditForm() {
+    }
+
+    _getTagHeader() {
+        const tagTab = [ {
+            key   : "tagName",
+            format: "fa fa-tags",
+            header: Lang.translate("Tag Name")
+        }, {
+            key   : "parentTag",
+            format: "fa fa-tags",
+            header: Lang.translate("Parent Tag")
+        }, {
+            key   : "tagKind",
+            format: "",
+            header: Lang.translate("Tag Kind")
+        }, {
+            key   : "rankScore",
+            format: "fa fa-tags",
+            header: Lang.translate("Tag Rank")
+        }, {
+            key   : "ownerUuid",
+            format: "fa fa-user",
+            header: Lang.translate("Owner")
+        } ];
+        return tagTab;
+    }
+
+    _getTagFooter() {
+        return (
+            <footer>
+                <button className="btn btn-primary pull-right" onClick={this._submitChanges}>
+                    <Mesg text="Save Changes"/>
+                </button>
+            </footer>
+        );
+    }
+
+    render() {
+        return (
+            <DynamicTable tableFormat={this._getTagHeader()}
+                tableData={ArticleTagStore.getTagTableData(this.props.tagKind)}
+                tableTitle={Lang.translate("Tag Listing")}
+                tableFooter={this._getTagFooter()}
+            />
+        );
+    }
+}
 
 class MainAds extends React.Component
 {
@@ -95,7 +159,7 @@ class MainAds extends React.Component
     }
 
     _renderYellowPage() {
-        return <h1>Yellow Page</h1>
+        return <TagListing tagKind="ads"/>
     }
 
     _renderPostAds() {

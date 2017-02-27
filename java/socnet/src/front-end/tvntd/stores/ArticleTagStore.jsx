@@ -65,6 +65,7 @@ let ArticleTagStore = Reflux.createStore({
             pubTagIndex: {},
             sortedPubTags: [],
             sortedIdxTags: [],
+            sortedTagKind: {},
             deletedTags: {}
         };
     },
@@ -403,6 +404,25 @@ let ArticleTagStore = Reflux.createStore({
             }
         });
         return ret;
+    },
+
+    getTagTableData: function(kind, ownerUuid) {
+        let data = [];
+
+        _.forEach(this.data.sortedIdxTags, function(tag) {
+            if (((kind != null) && (tag.tagKind !== kind)) ||
+                ((ownerUuid != null) && (ownerUuid !== tag.userUuid))) {
+                return;
+            }
+            data.push({
+                tagName  : tag.tagName,
+                parentTag: tag.parentTag,
+                rankScore: tag.rankScore,
+                ownerUuid: tag.userUuid,
+                tagKind  : tag.tagKind
+            });
+        });
+        return data;
     },
 
     dumpData: function(header) {

@@ -91,6 +91,105 @@ class TAWrap extends React.Component
     }
 }
 
+class InputWrap extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this._onBlur = this._onBlur.bind(this);
+    }
+
+    _onBlur(event) {
+        let { entry, onBlur } = this.props;
+
+        InputStore.storeItemIndex(entry.inpName, this.refs[entry.inpName].value, true);
+        if (onBlur != null) {
+            onBlur(event);
+        }
+    }
+
+    render() {
+        let { entry, bind, onBlur, onSelected } = this.props;
+
+        if (entry.typeAhead === true) {
+            return <TAWrap entry={entry}/>
+        }
+        if (entry.select === true) {
+            return <SelectWrap entry={entry} bind={bind} onSelected={onSelected}/>
+        }
+        if (entry.dropzone === true) {
+            const eventHandlers = {
+                complete: entry.dzComplete,
+                success : entry.dzSuccess,
+                sending : entry.dzSending,
+                error   : entry.dzError,
+                init    : function(dz) {
+                    if (entry.bind != null) {
+                        entry.bind.dropzone = dz;
+                    } else {
+                        entry.dropzone = dz;
+                    }
+                }
+            };
+            return GenericForm.renderDropzone(entry, eventHandlers);
+        }
+        if (entry.editor === true) {
+            return (
+                <EditorEntry id={entry.id} entry={entry}/>
+            );
+        }
+        return  (
+            <input type="text" className="form-control" onBlur={this._onBlur}
+                ref={entry.inpName} defaultValue={entry.inpDefVal} placeholder={entry.inpHolder}/>
+        );
+    }
+}
+
+class DropZoneWrap extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        let { entry, eventHandlers } = this.props;
+        const djsConfig = GenericForm.getDjsConfig(),
+        componentConfig = {
+            iconFiletypes   : ['.jpg', '.png', '.gif'],
+            showFiletypeIcon: true,
+            postUrl         : entry.url != null ? entry.url : '/user/upload-img'
+        },
+        id = entry.djsId != null ? entry.djsId : _.uniqueId('dropzone-');
+
+        return (
+            <DropzoneComponent className="col-xs-12 col-sm-12 col-md-12 col-lg-12"
+                id={id} dictDefaultMessage={entry.defaultMesg}
+                config={componentConfig} eventHandlers={eventHandlers} djsConfig={djsConfig}
+            />
+        );
+   }
+}
+
+class InputBox extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+    }
+}
+
+class InputInline extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+    }
+}
+
+
 /*
  * Form format:
  * formEntry {
@@ -128,61 +227,27 @@ class GenericForm extends React.Component
         event.preventDefault();
         _.forEach(entries, function(section) {
             _.forEach(section.entries, function(item) {
+                let key;
+
                 if (item.typeAhead === true || item.select === true) {
-                    dataRefs[item.inpName] = InputStore.getItemIndex(item.tagValId);
+                    key = item.tagValId;
                 } else {
-                    dataRefs[item.inpName] = this.refs[item.inpName].value;
+                    key = item.inpName;
                 }
+                dataRefs[item.inpName] = InputStore.getItemIndex(key);
             }.bind(this));
         }.bind(this));
         button.onClick(dataRefs, button);
     }
 
-    static _defOnSelect(entry, val) {
-        entry.taValue = val;
-    }
-
-    static _defOnBlur(entry, val) {
-        entry.taValue = val.target.value;
-    }
-
     static renderInput(entry, bind, onBlur, onSelected) {
-        if (entry.typeAhead === true) {
-            return <TAWrap entry={entry}/>
-        }
-        if (entry.select === true) {
-            return <SelectWrap entry={entry} bind={bind} onSelected={onSelected}/>
-        }
-        if (entry.dropzone === true) {
-            const eventHandlers = {
-                complete: entry.dzComplete,
-                success : entry.dzSuccess,
-                sending : entry.dzSending,
-                error   : entry.dzError,
-                init    : function(dz) {
-                    if (entry.bind != null) {
-                        entry.bind.dropzone = dz;
-                    } else {
-                        entry.dropzone = dz;
-                    }
-                }
-            };
-            return GenericForm.renderDropzone(entry, eventHandlers);
-        }
-        if (entry.editor === true) {
-            return (
-                <EditorEntry id={entry.id} entry={entry}/>
-            );
-        }
-        return  (
-            <input type="text" className="form-control" onBlur={onBlur}
-                ref={entry.inpName} defaultValue={entry.inpDefVal} placeholder={entry.inpHolder}/>
-        );
+        return <InputWrap entry={entry} bind={bind} onBlur={onBlur} onSelected={onSelected}/>
     }
 
     static getDjsConfig() {
-        const token  = $("meta[name='_csrf']").attr("content");
-        const header = $("meta[name='_csrf_header']").attr("content");
+        const token  = $("meta[name='_csrf']").attr("content"),
+            header = $("meta[name='_csrf_header']").attr("content");
+
         return {
             addRemoveLinks: true,
             acceptedFiles : "image/*",
@@ -194,27 +259,15 @@ class GenericForm extends React.Component
     }
 
     static renderDropzone(entry, eventHandlers) {
-        const djsConfig = GenericForm.getDjsConfig();
-        const componentConfig = {
-            iconFiletypes   : ['.jpg', '.png', '.gif'],
-            showFiletypeIcon: true,
-            postUrl         : entry.url != null ? entry.url : '/user/upload-img'
-        };
-        const id = entry.djsId != null ? entry.djsId : _.uniqueId('dropzone-');
-        return (
-            <DropzoneComponent className="col-xs-12 col-sm-12 col-md-12 col-lg-12"
-                id={id} dictDefaultMessage={entry.defaultMesg}
-                config={componentConfig} eventHandlers={eventHandlers} djsConfig={djsConfig}
-            />
-        );
+        return <DropZoneWrap entry={entry} eventHandlers={eventHandlers}/>
     }
 
     static renderInputBox(entry, bind, onBlur, onSelected) {
-        let labelFmt = entry.labelFmt != null ? entry.labelFmt : "control-label col-xs-2 col-sm-2 col-md-2 col-lg-2";
-        let inputFmt = entry.inputFmt != null ?
-            entry.inputFmt : "control-label col-xs-10 col-sm-10 col-md-10 col-lg-10";
-        let style = entry.errorFlag == true ? { color:'red' } : null;
-        let label = <label className={labelFmt} style={style} for="textinput">{entry.labelTxt}</label>;
+        let labelFmt = entry.labelFmt != null ? entry.labelFmt : "control-label col-xs-2 col-sm-2 col-md-2 col-lg-2",
+            inputFmt = entry.inputFmt != null ?
+            entry.inputFmt : "control-label col-xs-10 col-sm-10 col-md-10 col-lg-10",
+            style = entry.errorFlag == true ? { color:'red' } : null,
+            label = <label className={labelFmt} style={style} for="textinput">{entry.labelTxt}</label>;
 
         return (
             <div className="row" key={_.uniqueId('gen-inp-')}>
@@ -302,5 +355,5 @@ class GenericForm extends React.Component
     }
 }
 
-export { SelectWrap, TAWrap, GenericForm };
+export { SelectWrap, TAWrap, InputWrap, DropZoneWrap, InputBox, InputInline, GenericForm };
 export default GenericForm;

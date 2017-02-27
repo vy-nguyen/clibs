@@ -187,7 +187,9 @@ class UserFriends extends React.Component
         if (data.hasInput === true) {
             footer = (
                 <footer>
-                    <button className="btn btn-primary pull-right" onClick={this._submitChanges}><Mesg text="Save Changes"/></button>
+                    <button className="btn btn-primary pull-right" onClick={this._submitChanges}>
+                        <Mesg text="Save Changes"/>
+                    </button>
                 </footer>
             );
         }

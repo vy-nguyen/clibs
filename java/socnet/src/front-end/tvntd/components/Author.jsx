@@ -11,6 +11,7 @@ import Mesg             from 'vntd-root/components/Mesg.jsx'
 import UserIcon         from 'vntd-root/components/UserIcon.jsx';
 import AuthorLinks      from 'vntd-root/components/AuthorLinks.jsx';
 import KeyValueTable    from 'vntd-shared/layout/KeyValueTable.jsx';
+import {getRandomInt}   from 'vntd-shared/utils/Enum.jsx';
 
 class Author extends React.Component
 {
@@ -46,24 +47,26 @@ class Author extends React.Component
         if (!this.props.user) {
             return null;
         }
-        let self = this.props.user.getUser();
-        let infoStyle = {
-            backgroundImage: 'url(' + this.props.user.coverImg + ')'
-        };
-        let moneyKv = [{
-            key: "Earned",
-            val: self.moneyEarned
-        }, {
-            key: "Issued",
-            val: self.moneyIssued
-        }];
-        let creditKv = [{
-            key: "Earned",
-            val: self.creditEarned
-        }, {
-            key: "Issued",
-            val: self.creditIssued
-        }];
+        let user = this.props.user,
+            self = user.getUser(),
+            coverIdx = getRandomInt(0, user.imgList.length - 1),
+            infoStyle = {
+                backgroundImage: 'url(' + user.imgList[coverIdx] + ')'
+            },
+            moneyKv = [{
+                key: "Earned",
+                val: self.moneyEarned
+            }, {
+                key: "Issued",
+                val: self.moneyIssued
+            }],
+            creditKv = [{
+                key: "Earned",
+                val: self.creditEarned
+            }, {
+                key: "Issued",
+                val: self.creditIssued
+            }];
 
         return (
             <div className="row">
