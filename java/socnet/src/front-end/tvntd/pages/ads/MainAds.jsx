@@ -58,7 +58,8 @@ class TagListing extends React.Component
     _getTagFooter() {
         return (
             <footer>
-                <button className="btn btn-primary pull-right" onClick={this._submitChanges}>
+                <button className="btn btn-primary pull-right"
+                    onClick={this._submitChanges}>
                     <Mesg text="Save Changes"/>
                 </button>
             </footer>
@@ -66,10 +67,10 @@ class TagListing extends React.Component
     }
 
     render() {
+        let tab = ArticleTagStore.getTagTableData(true, this.props.tagKind);
         return (
-            <DynamicTable tableFormat={this._getTagHeader()}
-                tableData={ArticleTagStore.getTagTableData(this.props.tagKind)}
-                tableTitle={Lang.translate("Tag Listing")}
+            <DynamicTable tableFormat={this._getTagHeader()} tableData={tab}
+                tableTitle={Lang.translate("Tag Listing")} edit={true}
                 tableFooter={this._getTagFooter()}
             />
         );

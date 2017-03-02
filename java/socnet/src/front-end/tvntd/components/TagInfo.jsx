@@ -139,7 +139,7 @@ class TagInfo extends React.Component
                     inputFmt: inputFmt,
                     inpHolder: artTag.parentTag,
                     select   : true,
-                    tagValId : "tag-parent-" + tagName,
+                    inpName  : "tag-parent-" + tagName,
                     selectOpt: parentTags
                 }, {
                     labelFmt : labelFmt,
@@ -147,7 +147,7 @@ class TagInfo extends React.Component
                     inputFmt : inputFmt,
                     inpHolder: artTag.tagKind,
                     select   : true,
-                    tagValId : "tag-sel-kind-" + tagName,
+                    inpName  : "tag-sel-kind-" + tagName,
                     selectOpt: tagKinds
                 }, {
                     labelFmt: labelFmt,
@@ -161,7 +161,7 @@ class TagInfo extends React.Component
                     inputFmt: "col-sm-8 col-md-8 col-lg-8 control-label",
                     inpHolder: artTag.tagName,
                     typeAhead: true,
-                    tagValId : "tag-typeahead-" + tagName,
+                    inpName  : "tag-typeahead-" + tagName,
                     taOptions: taTags
                 } ]
             } ],

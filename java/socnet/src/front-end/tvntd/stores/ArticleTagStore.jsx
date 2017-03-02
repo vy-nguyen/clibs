@@ -284,10 +284,10 @@ let ArticleTagStore = Reflux.createStore({
      * Compare function between tag a and b.
      */
     _computeRank: function(tag) {
-        let rank = parseInt(tag.rankScore);
-        let tagIndex = this.data.pubTagIndex;
+        let count, rank = parseInt(tag.rankScore),
+            tagIndex = this.data.pubTagIndex;
 
-        for (let count = 0; tag != null && tag.parentTag != null && count < 20; count++) {
+        for (count = 0; tag != null && tag.parentTag != null && count < 20; count++) {
             rank = rank + 100;
             tag = tagIndex[tag.parentTag];
         }
@@ -406,21 +406,50 @@ let ArticleTagStore = Reflux.createStore({
         return ret;
     },
 
-    getTagTableData: function(kind, ownerUuid) {
-        let data = [];
+    getTagTableData: function(edit, kind, ownerUuid) {
+        let parentTag, userUuid, data = [];
 
         _.forEach(this.data.sortedIdxTags, function(tag) {
             if (((kind != null) && (tag.tagKind !== kind)) ||
                 ((ownerUuid != null) && (ownerUuid !== tag.userUuid))) {
                 return;
             }
-            data.push({
-                tagName  : tag.tagName,
-                parentTag: tag.parentTag,
-                rankScore: tag.rankScore,
-                ownerUuid: tag.userUuid,
-                tagKind  : tag.tagKind
-            });
+            if (edit === true) {
+                userUuid  = tag.userUuid;
+                parentTag = tag.parentTag != null ? tag.parentTag : "root";
+                data.push({
+                    tagName  : tag.tagName,
+                    ownerUuid: tag.userUuid,
+                    parentTag: {
+                        select   : true,
+                        inpHolder: tag.parentTag,
+                        inpDefVal: tag.parentTag,
+                        selectOpt: [ "123", "234", "532" ],
+                        inpName  : _.uniqueId(parentTag)
+                    },
+                    rankScore: {
+                        inpValue : tag.rankScore,
+                        inpDefVal: tag.rankScore,
+                        inpHolder: 100,
+                        inpName  : tag.tagName + "-" + userUuid
+                    },
+                    tagKind: {
+                        select   : true,
+                        inpHolder: tag.tagKind,
+                        inpDefVal: tag.tagKind,
+                        selectOpt: [ "abc", "def" ],
+                        inpName  : tag.tagName + "-" + tag.tagKind
+                    }
+                });
+            } else {
+                data.push({
+                    tagName  : tag.tagName,
+                    parentTag: tag.parentTag,
+                    rankScore: tag.rankScore,
+                    ownerUuid: tag.userUuid,
+                    tagKind  : tag.tagKind
+                });
+            }
         });
         return data;
     },

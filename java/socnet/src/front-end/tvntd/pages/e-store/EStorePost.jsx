@@ -8,7 +8,6 @@ import _      from 'lodash';
 import React  from 'react-mod';
 
 import {OverlayTrigger, Tooltip} from 'react-bootstrap';
-import {GenericForm, SelectWrap} from 'vntd-shared/forms/commons/GenericForm.jsx';
 import {choose}                  from 'vntd-shared/utils/Enum.jsx';
 
 import ErrorView        from 'vntd-shared/layout/ErrorView.jsx';
@@ -23,6 +22,10 @@ import {EProductStore}  from 'vntd-root/stores/ArticleStore.jsx';
 import ArticleTagStore  from 'vntd-root/stores/ArticleTagStore.jsx';
 import Lang             from 'vntd-root/stores/LanguageStore.jsx';
 import Mesg             from 'vntd-root/components/Mesg.jsx';
+
+import {
+    GenericForm, SelectWrap, DropZoneWrap
+} from 'vntd-shared/forms/commons/GenericForm.jsx';
 
 class EStorePost extends React.Component
 {
@@ -164,7 +167,6 @@ class EStorePost extends React.Component
         errText  = null;
         errFlags = {};
 
-        console.log(product);
         if (product.articleUuid == null) {
             errText  = Lang.translate("You forgot to upload pictures for your product");
         }
@@ -319,7 +321,7 @@ class EStorePost extends React.Component
             labelTxt : Lang.translate("Publish Category"),
             inpHolder: pubTag,
             select   : true,
-            tagValId : this._getItemId(this._publicCatId),
+            inpName  : this._getItemId(this._publicCatId),
             selectOpt: ArticleTagStore.getPublicTagsSelOpt("estore")
         },
         prodDesc = {
@@ -388,13 +390,13 @@ class EStorePost extends React.Component
                     <div className="col-xs-12 col-sm-4 col-md-4 col-lg-4">
                         <div className="container">
                             <h3><Mesg text="Upload icon image"/></h3>
-                            {GenericForm.renderDropzone(briefDz, logoDropzone)}
+                            <DropZoneWrap entry={briefDz} eventHandlers={logoDropzone}/>
                         </div>
                     </div>
                     <div className="col-xs-12 col-sm-8 col-md-8 col-lg-8">
                         <div className="container">
                             <h3><Mesg text="Upload detail images"/></h3>
-                            {GenericForm.renderDropzone(detailDz, eventHandlers)}
+                            <DropZoneWrap entry={detailDz} eventHandlers={eventHandlers}/>
                         </div>
                     </div>
                 </div>

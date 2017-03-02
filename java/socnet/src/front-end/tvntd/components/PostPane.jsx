@@ -159,8 +159,8 @@ class PostPane extends React.Component {
                 editMode: false
             }
         }
-        this._deletePost = this._deletePost.bind(this);
-        this._cancelDel = this._cancelDel.bind(this);
+        this._deletePost     = this._deletePost.bind(this);
+        this._cancelDel      = this._cancelDel.bind(this);
         this._editArticle    = this._editArticle.bind(this);
         this._toggleFavorite = this._toggleFavorite.bind(this);
     }
@@ -203,8 +203,12 @@ class PostPane extends React.Component {
             modal = (
             <ModalConfirm ref={"modal"} height={"auto"} modalTitle={Lang.translate("Delete this article post?")}>
                 <div className="modal-footer">
-                    <button className="btn btn-primary pull-right" onClick={this._deletePost}><Mesg text="Delete"/></button>
-                    <button className="btn btn-default pull-right" onClick={this._cancelDel}><Mesg text="Cancel"/></button>
+                    <button className="btn btn-primary pull-right" onClick={this._deletePost}>
+                        <Mesg text="Delete"/>
+                    </button>
+                    <button className="btn btn-default pull-right" onClick={this._cancelDel}>
+                        <Mesg text="Cancel"/>
+                    </button>
                 </div>
             </ModalConfirm>
         );

@@ -21,7 +21,7 @@ class SelectWrap extends React.Component
 
         super(props);
         if (entry.inpHolder != null) {
-            val = InputStore.storeItemIndex(entry.tagValId, entry.inpHolder);
+            val = InputStore.storeItemIndex(entry.inpName, entry.inpHolder);
         } else {
             val = null;
         }
@@ -32,24 +32,45 @@ class SelectWrap extends React.Component
 
     _defOnSelect(entry, val) {
         let onSelected = this.props.onSelected;
-        if (onSelected != null) {
-            onSelected(entry, val);
-        }
+
         entry.inpHolder = val.value;
-        InputStore.storeItemIndex(this.props.entry.tagValId, val.value, true);
+        InputStore.storeItemIndex(this.props.entry.inpName, val.value, true);
         this.setState({
             value: val.value
         });
+        if (onSelected != null) {
+            onSelected(entry, val);
+        }
     }
 
     render() {
         let entry = this.props.entry;
         return (
-            <Select options={entry.selectOpt} name={entry.tagValId} value={this.state.value}
+            <Select options={entry.selectOpt}
+                name={entry.inpName} value={this.state.value}
                 onChange={this._defOnSelect.bind(this, entry)}
             />
         );
     }
+}
+
+function htmlSelect(entry)
+{
+    let opt = [
+        '<select id="' + entry.inpName + '">'
+    ];
+
+    if (entry.selectOpt != null) {
+        _.forEach(entry.selectOpt, function(elm) {
+            if (elm === entry.inpHolder) {
+                opt.push('<option selected value="' + elm + '">' + elm);
+            } else {
+                opt.push('<option value="' + elm + '">' + elm);
+            }
+        });
+    }
+    opt.push('</select>');
+    return opt.join('\n');
 }
 
 class TAWrap extends React.Component
@@ -57,7 +78,7 @@ class TAWrap extends React.Component
     constructor(props) {
         super(props);
         this.state = {
-            value: InputStore.getItemIndex(props.entry.tagValId)
+            value: InputStore.getItemIndex(props.entry.inpName)
         };
         this._defOnBlur   = this._defOnBlur.bind(this);
         this._defOnSelect = this._defOnSelect.bind(this);
@@ -66,7 +87,7 @@ class TAWrap extends React.Component
     _defOnSelect(val) {
         let entry = this.props.entry;
 
-        InputStore.storeItemIndex(entry.tagValId, val, true);
+        InputStore.storeItemIndex(entry.inpName, val, true);
         if (entry.onSelect != null) {
             entry.onSelect(val);
         }
@@ -82,13 +103,32 @@ class TAWrap extends React.Component
     render() {
         let entry = this.props.entry;
         return (
-            <TA.Typeahead options={entry.taOptions} maxVisible={entry.maxVisible ? entry.maxVisible : 6}
+            <TA.Typeahead options={entry.taOptions}
+                maxVisible={entry.maxVisible ? entry.maxVisible : 6}
                 placeholder={entry.inpHolder} value={this.state.value}
                 customClasses={{input: 'form-control input-sm'}}
                 onBlur={this._defOnBlur} onOptionSelected={this._defOnSelect}
             />
         );
     }
+}
+
+function htmlInput(entry)
+{
+    return '<input id="' + entry.inpName +
+        '" type="text" class="form-control" value="' + entry.inpDefVal +
+        '" placeholder="' + entry.inpHolder + '">';
+}
+
+function renderHtmInputl(entry)
+{
+    if (entry.typeAhead === true) {
+        return "";
+    }
+    if (entry.select === true) {
+        return htmlSelect(entry);
+    }
+    return htmlInput(entry);
 }
 
 class InputWrap extends React.Component
@@ -102,6 +142,8 @@ class InputWrap extends React.Component
         let { entry, onBlur } = this.props;
 
         InputStore.storeItemIndex(entry.inpName, this.refs[entry.inpName].value, true);
+        console.log("input onBlur " + entry.inpName);
+        console.log(this.refs[entry.inpName]);
         if (onBlur != null) {
             onBlur(event);
         }
@@ -130,7 +172,7 @@ class InputWrap extends React.Component
                     }
                 }
             };
-            return GenericForm.renderDropzone(entry, eventHandlers);
+            return <DropZoneWrap entry={entry} eventHandlers={eventHandlers}/>
         }
         if (entry.editor === true) {
             return (
@@ -138,8 +180,9 @@ class InputWrap extends React.Component
             );
         }
         return  (
-            <input type="text" className="form-control" onBlur={this._onBlur}
-                ref={entry.inpName} defaultValue={entry.inpDefVal} placeholder={entry.inpHolder}/>
+            <input id={entry.inpName} type="text" className="form-control"
+                onBlur={this._onBlur} ref={entry.inpName}
+                defaultValue={entry.inpDefVal} placeholder={entry.inpHolder}/>
         );
     }
 }
@@ -163,7 +206,8 @@ class DropZoneWrap extends React.Component
         return (
             <DropzoneComponent className="col-xs-12 col-sm-12 col-md-12 col-lg-12"
                 id={id} dictDefaultMessage={entry.defaultMesg}
-                config={componentConfig} eventHandlers={eventHandlers} djsConfig={djsConfig}
+                config={componentConfig}
+                eventHandlers={eventHandlers} djsConfig={djsConfig}
             />
         );
    }
@@ -188,7 +232,6 @@ class InputInline extends React.Component
     render() {
     }
 }
-
 
 /*
  * Form format:
@@ -226,22 +269,16 @@ class GenericForm extends React.Component
 
         event.preventDefault();
         _.forEach(entries, function(section) {
-            _.forEach(section.entries, function(item) {
-                let key;
-
-                if (item.typeAhead === true || item.select === true) {
-                    key = item.tagValId;
-                } else {
-                    key = item.inpName;
-                }
-                dataRefs[item.inpName] = InputStore.getItemIndex(key);
-            }.bind(this));
-        }.bind(this));
+            GenericForm.readContent(section.entries, dataRefs);
+        });
         button.onClick(dataRefs, button);
     }
 
-    static renderInput(entry, bind, onBlur, onSelected) {
-        return <InputWrap entry={entry} bind={bind} onBlur={onBlur} onSelected={onSelected}/>
+    static readContent(entries, dataRefs) {
+        _.forEach(entries, function(item) {
+            dataRefs[item.inpName] = InputStore.getItemIndex(item.inpName);
+        });
+        return dataRefs;
     }
 
     static getDjsConfig() {
@@ -258,23 +295,27 @@ class GenericForm extends React.Component
         };
     }
 
-    static renderDropzone(entry, eventHandlers) {
-        return <DropZoneWrap entry={entry} eventHandlers={eventHandlers}/>
-    }
-
     static renderInputBox(entry, bind, onBlur, onSelected) {
-        let labelFmt = entry.labelFmt != null ? entry.labelFmt : "control-label col-xs-2 col-sm-2 col-md-2 col-lg-2",
-            inputFmt = entry.inputFmt != null ?
+        let labelFmt = entry.labelFmt != null ?
+            entry.labelFmt : "control-label col-xs-2 col-sm-2 col-md-2 col-lg-2",
+
+        inputFmt = entry.inputFmt != null ?
             entry.inputFmt : "control-label col-xs-10 col-sm-10 col-md-10 col-lg-10",
-            style = entry.errorFlag == true ? { color:'red' } : null,
-            label = <label className={labelFmt} style={style} for="textinput">{entry.labelTxt}</label>;
+
+        style = entry.errorFlag == true ? { color:'red' } : null,
+        label = (
+            <label className={labelFmt} style={style} for="textinput">
+                {entry.labelTxt}
+            </label>
+        );
 
         return (
             <div className="row" key={_.uniqueId('gen-inp-')}>
                 <div className="form-group">
                     {label}
                     <div className={inputFmt}>
-                        {GenericForm.renderInput(entry, bind, onBlur, onSelected)}
+                        <InputWrap entry={entry} bind={bind}
+                            onBlur={onBlur} onSelected={onSelected}/>
                         <ErrorView mesg={true} errorId={entry.errorId}/>
                     </div>
                 </div>
@@ -283,9 +324,12 @@ class GenericForm extends React.Component
     }
 
     static renderInputInline(entry, bind, onBlur, onSelected) {
-        let labelFmt = entry.labelFmt != null ? entry.labelFmt : "control-label col-xs-2 col-sm-2 col-md-2 col-lg-2";
+        let labelFmt = entry.labelFmt != null ?
+            entry.labelFmt : "control-label col-xs-2 col-sm-2 col-md-2 col-lg-2";
+
         let inputFmt = entry.inputFmt != null ?
             entry.inputFmt : "control-label col-xs-10 col-sm-10 col-md-10 col-lg-10";
+
         let style = entry.errorFlag == true ? { color:'red' } : null;
 
         return (
@@ -296,7 +340,8 @@ class GenericForm extends React.Component
                             <strong style={style}>{entry.labelTxt}</strong>
                         </label>
                         <div className={inputFmt}>
-                            {GenericForm.renderInput(entry, bind, onBlur, onSelected)}
+                            <InputWrap entry={entry} bind={bind}
+                                onBlur={onBlur} onSelected={onSelected}/>
                             <ErrorView mesg={true} errorId={entry.errorId}/>
                         </div>
                     </div>
@@ -313,7 +358,8 @@ class GenericForm extends React.Component
             let buttons = form.buttons.map(function(item, idx) {
                 return (
                     <button key={_.uniqueId('form-btn-')} type={"button"}
-                        className={item.btnFormat} onClick={this._btnClick.bind(this, item)}>
+                        className={item.btnFormat}
+                        onClick={this._btnClick.bind(this, item)}>
                         {item.btnText}
                     </button>
                 );
@@ -330,8 +376,9 @@ class GenericForm extends React.Component
             );
         }
         let formEntries = form.formEntries.map(function(item) {
-            let renderFn = item.inline !== true ? GenericForm.renderInputBox : GenericForm.renderInputInline;
-            let entries = item.entries.map(function(entry) {
+            let renderFn = item.inline !== true ?
+                GenericForm.renderInputBox : GenericForm.renderInputInline,
+            entries = item.entries.map(function(entry) {
                 return renderFn(entry);
             }.bind(this));
 
@@ -346,7 +393,8 @@ class GenericForm extends React.Component
         }.bind(this));
 
         return (
-            <form className={form.formFmt} encType="multipart/form-data" acceptCharset="utf-8">
+            <form className={form.formFmt}
+                encType="multipart/form-data" acceptCharset="utf-8">
                 {form.hiddenHead}
                 {formEntries}
                 {formButtons}
@@ -355,5 +403,8 @@ class GenericForm extends React.Component
     }
 }
 
-export { SelectWrap, TAWrap, InputWrap, DropZoneWrap, InputBox, InputInline, GenericForm };
+export {
+    SelectWrap, TAWrap, InputWrap, DropZoneWrap, InputBox, InputInline, GenericForm,
+    renderHtmInputl
+};
 export default GenericForm;

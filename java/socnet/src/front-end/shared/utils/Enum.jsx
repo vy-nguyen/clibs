@@ -207,6 +207,6 @@ function choose(value, key, defVal) {
 }
 
 export {
-    Enum, safeStringify, insertUnique, insertSorted, insertSortedUnique, toDateString, preend, getRandomInt,
-    removeArray, findSorted, findUuid, compareUuid, choose
+    Enum, safeStringify, insertUnique, insertSorted, insertSortedUnique, toDateString,
+    preend, getRandomInt, removeArray, findSorted, findUuid, compareUuid, choose
 }
