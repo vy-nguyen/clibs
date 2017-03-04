@@ -38,8 +38,10 @@ class ActivitiesDropdown extends React.Component
         });
         let actRender = activities.map(function (_activity, idx) {
             return (
-                <label className={classnames(["btn", "btn-default", { active: _activity.name == activity.name }])}
-                    key={'dropdown-' + idx} onClick={this._setActivity.bind(this, _activity)}>
+                <label className={classnames(["btn", "btn-default", {
+                    active: _activity.name == activity.name }])}
+                    key={'dropdown-' + idx}
+                    onClick={this._setActivity.bind(this, _activity)}>
                     <input type="radio" name="activity"/>
                     {_activity.title} ({_activity.length})
                 </label>
@@ -58,7 +60,8 @@ class ActivitiesDropdown extends React.Component
         }.bind(this));
         return (
             <div>
-                <span id="activity" onClick={this._toggleDropdown} ref="dropdownToggle" className="activity-dropdown">
+                <span id="activity" onClick={this._toggleDropdown}
+                    ref="dropdownToggle" className="activity-dropdown">
                     <i className="fa fa-user"/>
                     <b className="badge bg-color-red">{count}</b>
                 </span>
@@ -76,8 +79,10 @@ class ActivitiesDropdown extends React.Component
                     {/* end notification content */}
 
                     {/* footer: refresh area */}
-                    <span> Last updated on: <Moment data={this.state.lastUpdate} format="h:mm:ss a"/>
-                        <button type="button" onClick={this._update} className="btn btn-xs btn-default pull-right">
+                    <span> Last updated on:
+                        <Moment data={this.state.lastUpdate} format="h:mm:ss a"/>
+                        <button type="button" onClick={this._update}
+                            className="btn btn-xs btn-default pull-right">
                             <i ref="loadingSpin" className="fa fa-refresh"/>
                             <span ref="loadingText"/>
                         </button>
@@ -130,7 +135,6 @@ class ActivitiesDropdown extends React.Component
             })
         }.bind(this))
     }
-
 }
 
 export default ActivitiesDropdown;

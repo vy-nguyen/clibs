@@ -61,11 +61,14 @@ function htmlSelect(entry)
     ];
 
     if (entry.selectOpt != null) {
+        if (entry.inpDefVal == null) {
+            opt.push('<option value="">-none-');
+        }
         _.forEach(entry.selectOpt, function(elm) {
-            if (elm === entry.inpHolder) {
-                opt.push('<option selected value="' + elm + '">' + elm);
+            if (elm.value === entry.inpDefVal) {
+                opt.push('<option selected value="' + elm.value + '">' + elm.label);
             } else {
-                opt.push('<option value="' + elm + '">' + elm);
+                opt.push('<option value="' + elm.value + '">' + elm.label);
             }
         });
     }
@@ -120,7 +123,7 @@ function htmlInput(entry)
         '" placeholder="' + entry.inpHolder + '">';
 }
 
-function renderHtmInputl(entry)
+function renderHtmlInput(entry)
 {
     if (entry.typeAhead === true) {
         return "";
@@ -129,6 +132,17 @@ function renderHtmInputl(entry)
         return htmlSelect(entry);
     }
     return htmlInput(entry);
+}
+
+function cloneInputEntry(entry, base)
+{
+    return {
+        inpHolder: entry.inpHolder,
+        inpDefVal: entry.inpDefVal,
+        inpName  : _.uniqueId(base),
+        select   : entry.select,
+        selectOpt: entry.selectOpt
+    };
 }
 
 class InputWrap extends React.Component
@@ -405,6 +419,6 @@ class GenericForm extends React.Component
 
 export {
     SelectWrap, TAWrap, InputWrap, DropZoneWrap, InputBox, InputInline, GenericForm,
-    renderHtmInputl
+    renderHtmlInput, cloneInputEntry
 };
 export default GenericForm;

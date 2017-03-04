@@ -20,11 +20,15 @@ class TagListing extends React.Component
         super(props);
 
         this._submitChanges = this._submitChanges.bind(this);
-        this._getTagHeader   = this._getTagHeader.bind(this);
-        this._getTagFooter   = this._getTagFooter.bind(this);
+        this._getTagHeader  = this._getTagHeader.bind(this);
+        this._getTagFooter  = this._getTagFooter.bind(this);
+        this._cloneTabRow   = this._cloneTabRow.bind(this);
     }
 
-    _submitChanges() {
+    _submitChanges(rows, changes) {
+        console.log("Submit change");
+        console.log(rows);
+        console.log(changes);
     }
 
     _getEditForm() {
@@ -55,6 +59,10 @@ class TagListing extends React.Component
         return tagTab;
     }
 
+    _cloneTabRow(row) {
+        return ArticleTagStore.cloneTagTableRow(row)
+    }
+
     _getTagFooter() {
         return (
             <footer>
@@ -68,10 +76,16 @@ class TagListing extends React.Component
 
     render() {
         let tab = ArticleTagStore.getTagTableData(true, this.props.tagKind);
+        // let tab = ArticleTagStore.getTagTableData(true, null);
+        const footer = [ {
+            format : "btn btn-primary pull-right",
+            title  : "Save Changes",
+            onClick: this._submitChanges
+        } ];
         return (
             <DynamicTable tableFormat={this._getTagHeader()} tableData={tab}
                 tableTitle={Lang.translate("Tag Listing")} edit={true}
-                tableFooter={this._getTagFooter()}
+                tableFooter={footer} cloneRow={this._cloneTabRow}
             />
         );
     }

@@ -187,4 +187,5 @@ class TagInfo extends React.Component
     }
 }
 
+export { tagKinds };
 export default TagInfo;

@@ -8,8 +8,10 @@ import _         from 'lodash';
 import Reflux    from 'reflux';
 import Actions   from 'vntd-root/actions/Actions.jsx';
 
+import {tagKinds}                  from 'vntd-root/components/TagInfo.jsx';
 import {EProductStore}             from 'vntd-root/stores/ArticleStore.jsx';
 import {insertSorted, removeArray} from 'vntd-shared/utils/Enum.jsx';
+import {cloneInputEntry}           from 'vntd-shared/forms/commons/GenericForm.jsx';
 
 class ArtTag {
     constructor(data) {
@@ -226,7 +228,7 @@ let ArticleTagStore = Reflux.createStore({
     getPublicTagsSelOpt: function(kind) {
         let result = [];
         _.forOwn(this.data.sortedIdxTags, function(tag) {
-            if (tag.tagKind === kind) {
+            if (kind == null || tag.tagKind === kind) {
                 result.push({
                     value: tag.tagName,
                     label: tag.tagName
@@ -407,8 +409,9 @@ let ArticleTagStore = Reflux.createStore({
     },
 
     getTagTableData: function(edit, kind, ownerUuid) {
-        let parentTag, userUuid, data = [];
+        let parentTag, userUuid, parents, data = [];
 
+        parents = this.getPublicTagsSelOpt(kind);
         _.forEach(this.data.sortedIdxTags, function(tag) {
             if (((kind != null) && (tag.tagKind !== kind)) ||
                 ((ownerUuid != null) && (ownerUuid !== tag.userUuid))) {
@@ -416,7 +419,7 @@ let ArticleTagStore = Reflux.createStore({
             }
             if (edit === true) {
                 userUuid  = tag.userUuid;
-                parentTag = tag.parentTag != null ? tag.parentTag : "root";
+                parentTag = tag.parentTag != null ? tag.parentTag : "none";
                 data.push({
                     tagName  : tag.tagName,
                     ownerUuid: tag.userUuid,
@@ -424,7 +427,7 @@ let ArticleTagStore = Reflux.createStore({
                         select   : true,
                         inpHolder: tag.parentTag,
                         inpDefVal: tag.parentTag,
-                        selectOpt: [ "123", "234", "532" ],
+                        selectOpt: parents,
                         inpName  : _.uniqueId(parentTag)
                     },
                     rankScore: {
@@ -437,7 +440,7 @@ let ArticleTagStore = Reflux.createStore({
                         select   : true,
                         inpHolder: tag.tagKind,
                         inpDefVal: tag.tagKind,
-                        selectOpt: [ "abc", "def" ],
+                        selectOpt: tagKinds,
                         inpName  : tag.tagName + "-" + tag.tagKind
                     }
                 });
@@ -452,6 +455,21 @@ let ArticleTagStore = Reflux.createStore({
             }
         });
         return data;
+    },
+
+    cloneTagTableRow: function(row) {
+        return [ {
+            clone  : true,
+            tagName: {
+                inpHolder: 'Enter new tag',
+                inpName  : _.uniqueId('new-tag-'),
+                inpDefVal: ''
+            },
+            ownerUuid: row.ownerUuid,
+            parentTag: cloneInputEntry(row.parentTag, 'new-tag-'),
+            rankScore: cloneInputEntry(row.rankScore, 'new-tag-'),
+            tagKind  : cloneInputEntry(row.tagKind, 'new-tag-')
+        } ];
     },
 
     dumpData: function(header) {
