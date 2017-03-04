@@ -10,9 +10,11 @@ sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable
 #
 sudo add-apt-repository ppa:fcwu-tw/ppa   
 sudo add-apt-repository ppa:cwchien/gradle
+sudo add-apt-repository ppa:alessandro-strada/ppa
 sudo add-apt-repository ppa:webupd8team/java -y
 
 sudo apt-get update
+sudo apt-get install google-drive-ocamlfuse
 sudo apt-get install vim tmux
 sudo apt-get install gradle
 
