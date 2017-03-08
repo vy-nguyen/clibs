@@ -59,8 +59,8 @@ class TagListing extends React.Component
         return tagTab;
     }
 
-    _cloneTabRow(row) {
-        return ArticleTagStore.cloneTagTableRow(row)
+    _cloneTabRow(row, count) {
+        return ArticleTagStore.cloneTagTableRow(row, count);
     }
 
     _getTagFooter() {

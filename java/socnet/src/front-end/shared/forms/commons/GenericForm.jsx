@@ -10,6 +10,7 @@ import TA                from 'react-typeahead';
 import Select            from 'react-select';
 import DropzoneComponent from 'react-dropzone-component';
 
+import Mesg              from 'vntd-root/components/Mesg.jsx';
 import {EditorEntry}     from 'vntd-shared/forms/editors/Editor.jsx';
 import ErrorView         from 'vntd-shared/layout/ErrorView.jsx';
 import InputStore        from 'vntd-shared/stores/NestableStore.jsx';
@@ -153,13 +154,14 @@ class InputWrap extends React.Component
     }
 
     _onBlur(event) {
-        let { entry, onBlur } = this.props;
+        let val, { entry, onBlur } = this.props;
 
-        InputStore.storeItemIndex(entry.inpName, this.refs[entry.inpName].value, true);
+        val = this.refs[entry.inpName].value;
+        InputStore.storeItemIndex(entry.inpName, val, true);
         console.log("input onBlur " + entry.inpName);
-        console.log(this.refs[entry.inpName]);
+        console.log(val);
         if (onBlur != null) {
-            onBlur(event);
+            onBlur(entry, val);
         }
     }
 
@@ -191,6 +193,22 @@ class InputWrap extends React.Component
         if (entry.editor === true) {
             return (
                 <EditorEntry id={entry.id} entry={entry}/>
+            );
+        }
+        if (entry.button != null) {
+            return (
+                <div className={"input-group " + entry.inpClass}>
+                    <input id={entry.inpName} type="text" className="form-control"
+                        onBlur={this._onBlur} ref={entry.inpName}
+                        defaultValue={entry.inpDefVal} placeholder={entry.inpHolder}
+                    />
+                    <span className="input-group-btn">
+                        <button className="btn btn-primary" onClick={entry.btnClick}>
+                            <Mesg text={entry.button}/>
+                        </button>
+                        {entry.inlineButtons}
+                    </span>
+                </div>
             );
         }
         return  (

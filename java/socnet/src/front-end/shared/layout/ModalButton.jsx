@@ -3,9 +3,10 @@
  */
 'use strict';
 
-import React    from 'react-mod';
-import Modal    from 'react-modal';
-import Mesg     from 'vntd-root/components/Mesg.jsx';  
+import React      from 'react-mod';
+import Modal      from 'react-modal';
+import Mesg       from 'vntd-root/components/Mesg.jsx';
+import InputStore from 'vntd-shared/stores/NestableStore.jsx';
 
 const modalStyle = {
     content: {
@@ -28,18 +29,31 @@ class ModalButton extends React.Component
         this.state = {
             modalIsOpen: false
         };
+        this._onBlur = this._onBlur.bind(this);
         this._openModal = this._openModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
         this._afterOpenModal = this._afterOpenModal.bind(this);
     }
 
+    _onBlur() {
+        let val, entry = this.props.entry;
+        if (entry != null) {
+            val = this.refs[entry.inpName].value;
+            InputStore.storeItemIndex(entry.inpName, val, true);
+        }
+    }
+
     _openModal() {
+        let val = 0, entry = this.props.entry;
+        if (entry != null) {
+            val = InputStore.getItemIndex(entry.inpName);
+        }
         this.setState({
             modalIsOpen: true
         });
         $("body").css("overflow", "hidden");
         if (this.props.openCb != null) {
-            this.props.openCb();
+            this.props.openCb(val);
         }
     }
 
@@ -59,9 +73,35 @@ class ModalButton extends React.Component
     }
 
     render() {
+        let entry, input, title = this.props.html ?
+            <div dangerouslySetInnerHTML={{__html: this.props.modalTitle}}/> :
+            <h3 className="modal-title">{this.props.modalTitle}</h3>
+
+        entry = this.props.entry;
+        if (entry != null) {
+            input = (
+                <div className="input-group col-sx-6 col-sm-6 col-md-4 col-lg-4">
+                    <input id={entry.inpName} type="text" className="form-control"
+                        onBlur={this._onBlur} ref={entry.inpName}
+                        defaultValue={entry.inpDefVal} placeholder={entry.inpHolder}
+                    />
+                    <span className="input-group-btn">
+                        <a className={this.props.className} onClick={this._openModal}>
+                            <Mesg text={this.props.buttonText}/>
+                        </a>
+                    </span>
+                </div>
+            );
+        } else {
+            input = (
+                <a className={this.props.className} onClick={this._openModal}>
+                    <Mesg text={this.props.buttonText}/>
+                </a>
+            );
+        }
         return (
             <div className={this.props.divClass || ""}>
-                <a className={this.props.className} onClick={this._openModal}><Mesg text={this.props.buttonText}/></a>
+                {input}
                 <Modal style={modalStyle}
                     isOpen={this.state.modalIsOpen}
                     onAfterOpen={this._afterOpenModal}
@@ -69,14 +109,11 @@ class ModalButton extends React.Component
                     <div className="container">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <button type="button" aria-label="close" className="close" onClick={this._closeModal}>
+                                <button type="button" aria-label="close"
+                                    className="close" onClick={this._closeModal}>
                                     <i className="fa fa-times"/>
                                 </button>
-                                {
-                                    this.props.html ? 
-                                        <div dangerouslySetInnerHTML={{__html: this.props.modalTitle}}/> :
-                                        <h3 className="modal-title">{this.props.modalTitle}</h3>
-                                }
+                                {title}
                             </div>
                             <div className="modal-body">
                                 {this.props.children}

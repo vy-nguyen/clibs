@@ -457,19 +457,24 @@ let ArticleTagStore = Reflux.createStore({
         return data;
     },
 
-    cloneTagTableRow: function(row) {
-        return [ {
-            clone  : true,
-            tagName: {
-                inpHolder: 'Enter new tag',
-                inpName  : _.uniqueId('new-tag-'),
-                inpDefVal: ''
-            },
-            ownerUuid: row.ownerUuid,
-            parentTag: cloneInputEntry(row.parentTag, 'new-tag-'),
-            rankScore: cloneInputEntry(row.rankScore, 'new-tag-'),
-            tagKind  : cloneInputEntry(row.tagKind, 'new-tag-')
-        } ];
+    cloneTagTableRow: function(row, count) {
+        let i, out = [];
+        for (i = 0; i < count; i++) {
+            out.push({
+                clone  : true,
+                rowId  : _.uniqueId('new-tag'),
+                tagName: {
+                    inpHolder: 'Enter new tag',
+                    inpName  : _.uniqueId('new-tag-'),
+                    inpDefVal: ''
+                },
+                ownerUuid: row.ownerUuid,
+                parentTag: cloneInputEntry(row.parentTag, 'new-tag-'),
+                rankScore: cloneInputEntry(row.rankScore, 'new-tag-'),
+                tagKind  : cloneInputEntry(row.tagKind, 'new-tag-')
+            });
+        }
+        return out;
     },
 
     dumpData: function(header) {
