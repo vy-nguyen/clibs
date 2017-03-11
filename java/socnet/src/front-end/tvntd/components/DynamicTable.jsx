@@ -6,12 +6,13 @@
 import _                 from 'lodash';
 import React             from 'react-mod';
 
-import WidgetGrid     from 'vntd-shared/widgets/WidgetGrid.jsx';
-import JarvisWidget   from 'vntd-shared/widgets/JarvisWidget.jsx';
-import Datatable      from 'vntd-shared/tables/Datatable.jsx';
-import ModalButton    from 'vntd-shared/layout/ModalButton.jsx';
-import InputStore     from 'vntd-shared/stores/NestableStore.jsx';
-import Mesg           from 'vntd-root/components/Mesg.jsx';
+import WidgetGrid        from 'vntd-shared/widgets/WidgetGrid.jsx';
+import JarvisWidget      from 'vntd-shared/widgets/JarvisWidget.jsx';
+import Datatable         from 'vntd-shared/tables/Datatable.jsx';
+import ModalButton       from 'vntd-shared/layout/ModalButton.jsx';
+import InputStore        from 'vntd-shared/stores/NestableStore.jsx';
+import Mesg              from 'vntd-root/components/Mesg.jsx';
+import { ModalChoice }   from 'vntd-shared/forms/commons/ModalConfirm.jsx';
 
 import {
     InputWrap, renderHtmlInput
@@ -39,6 +40,11 @@ class RenderRow extends React.Component
         DynamicTable.iterTableCell(tabRows, function(cell, row, key) {
             RenderRow.bindCellEvent(cell, row, this._inputChange, this);
         }.bind(this));
+    }
+
+    componentWillUnmount() {
+        console.log("--- unmont ---");
+        this._cleanupData();
     }
 
     _cloneRow(props, count) {
@@ -334,8 +340,6 @@ class DynamicTable extends React.Component
         columns = RenderRow.renderHeader(this.props.tableFormat, tableFmt);
         table = RenderRow.renderTable(tableData, tableFmt, columns);
 
-        console.log("@@@@@@@");
-        console.log(this.state);
         return (
             <WidgetGrid>
                 <div className="row">
@@ -346,8 +350,11 @@ class DynamicTable extends React.Component
                                     <i className="fa fa-table"/>
                                 </span>
                                 <h2>{this.props.tableTitle}</h2>
-                                <ModalButton divClass="widget-toolbar"
-                                    className="btn btn-sm btn-primary" buttonText="Add Row">
+
+                                <ModalButton ref="rowModal" divClass="widget-toolbar"
+                                    className="btn btn-sm btn-primary"
+                                    closeWarning="You will loose unsaved data"
+                                    buttonText="Add Row">
                                     {this._renderInputModal()}
                                 </ModalButton>
                             </header>

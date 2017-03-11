@@ -197,16 +197,18 @@ class PostPane extends React.Component {
     }
 
     render() {
+        const fmt = "btn btn-primary pull-right";
         let adminItem = null,
             ownerItem = null,
             article = this.props.data,
             modal = (
-            <ModalConfirm ref={"modal"} height={"auto"} modalTitle={Lang.translate("Delete this article post?")}>
+            <ModalConfirm ref="modal" height="auto"
+                modalTitle="Delete this article post?">
                 <div className="modal-footer">
-                    <button className="btn btn-primary pull-right" onClick={this._deletePost}>
+                    <button className={fmt} onClick={this._deletePost}>
                         <Mesg text="Delete"/>
                     </button>
-                    <button className="btn btn-default pull-right" onClick={this._cancelDel}>
+                    <button className={fmt} onClick={this._cancelDel}>
                         <Mesg text="Cancel"/>
                     </button>
                 </div>
@@ -248,7 +250,9 @@ class PostPane extends React.Component {
             itemFmt  : 'pull-right js-status-update',
             menuItems: [ {
                 itemFmt : 'fa fa-thumbs-up txt-color-green',
-                itemText: this.state.favorite ? Lang.translate("Not Favorite") : Lang.translate("Mark Favorite"),
+                itemText: this.state.favorite ?
+                    Lang.translate("Not Favorite") :
+                    Lang.translate("Mark Favorite"),
                 itemHandler: function() {
                     this._toggleFavorite();
                 }.bind(this)

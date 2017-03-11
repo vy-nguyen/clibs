@@ -7,6 +7,7 @@ import React      from 'react-mod';
 import Modal      from 'react-modal';
 import Mesg       from 'vntd-root/components/Mesg.jsx';
 import InputStore from 'vntd-shared/stores/NestableStore.jsx';
+import { ModalChoice } from 'vntd-shared/forms/commons/ModalConfirm.jsx';
 
 const modalStyle = {
     content: {
@@ -30,8 +31,9 @@ class ModalButton extends React.Component
             modalIsOpen: false
         };
         this._onBlur = this._onBlur.bind(this);
-        this._openModal = this._openModal.bind(this);
-        this._closeModal = this._closeModal.bind(this);
+        this.openModal = this.openModal.bind(this);
+        this.closeModal = this.closeModal.bind(this);
+        this._okModalClose = this._okModalClose.bind(this);
         this._afterOpenModal = this._afterOpenModal.bind(this);
     }
 
@@ -43,7 +45,7 @@ class ModalButton extends React.Component
         }
     }
 
-    _openModal() {
+    openModal() {
         let val = 0, entry = this.props.entry;
         if (entry != null) {
             val = InputStore.getItemIndex(entry.inpName);
@@ -62,18 +64,29 @@ class ModalButton extends React.Component
         // this.refs.subtitle.style.color = '#f00';
     }
 
-    _closeModal() {
+    _okModalClose() {
         this.setState({
             modalIsOpen: false
         });
         $("body").css("overflow", "auto");
-        if (this.props.closeCb != null) {
-            this.props.closeCb();
+    }
+
+    closeModal() {
+        if (this.props.closeWarning != null) {
+            this.refs.choice.openModal();
+            return;
         }
+        if (this.props.closeCb != null) {
+            if (this.props.closeCb() == false) {
+                return;
+            }
+        }
+        this._okModalClose();
     }
 
     render() {
-        let entry, input, title = this.props.html ?
+        let entry, input, choice = null,
+        title = this.props.html ?
             <div dangerouslySetInnerHTML={{__html: this.props.modalTitle}}/> :
             <h3 className="modal-title">{this.props.modalTitle}</h3>
 
@@ -86,7 +99,7 @@ class ModalButton extends React.Component
                         defaultValue={entry.inpDefVal} placeholder={entry.inpHolder}
                     />
                     <span className="input-group-btn">
-                        <a className={this.props.className} onClick={this._openModal}>
+                        <a className={this.props.className} onClick={this.openModal}>
                             <Mesg text={this.props.buttonText}/>
                         </a>
                     </span>
@@ -94,9 +107,15 @@ class ModalButton extends React.Component
             );
         } else {
             input = (
-                <a className={this.props.className} onClick={this._openModal}>
+                <a className={this.props.className} onClick={this.openModal}>
                     <Mesg text={this.props.buttonText}/>
                 </a>
+            );
+        }
+        if (this.props.closeWarning != null) {
+            choice = (
+                <ModalChoice ref="choice" okFn={this._okModalClose}
+                    closeWarning={this.props.closeWarning}/>
             );
         }
         return (
@@ -105,17 +124,18 @@ class ModalButton extends React.Component
                 <Modal style={modalStyle}
                     isOpen={this.state.modalIsOpen}
                     onAfterOpen={this._afterOpenModal}
-                    onRequestClose={this._closeModal}>
+                    onRequestClose={this.closeModal}>
                     <div className="container">
                         <div className="modal-content">
                             <div className="modal-header">
                                 <button type="button" aria-label="close"
-                                    className="close" onClick={this._closeModal}>
+                                    className="close" onClick={this.closeModal}>
                                     <i className="fa fa-times"/>
                                 </button>
                                 {title}
                             </div>
                             <div className="modal-body">
+                                {choice}
                                 {this.props.children}
                             </div>
                         </div>
