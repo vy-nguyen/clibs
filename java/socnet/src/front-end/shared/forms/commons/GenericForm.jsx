@@ -62,7 +62,7 @@ function htmlSelect(entry)
     ];
 
     if (entry.selectOpt != null) {
-        if (entry.inpDefVal == null) {
+        if (_.isEmpty(entry.inpDefVal)) {
             opt.push('<option value="">-none-');
         }
         _.forEach(entry.selectOpt, function(elm) {
@@ -158,8 +158,6 @@ class InputWrap extends React.Component
 
         val = this.refs[entry.inpName].value;
         InputStore.storeItemIndex(entry.inpName, val, true);
-        console.log("input onBlur " + entry.inpName);
-        console.log(val);
         if (onBlur != null) {
             onBlur(entry, val);
         }

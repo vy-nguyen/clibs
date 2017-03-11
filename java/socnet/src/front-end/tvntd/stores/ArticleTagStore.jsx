@@ -458,7 +458,16 @@ let ArticleTagStore = Reflux.createStore({
     },
 
     cloneTagTableRow: function(row, count) {
-        let i, out = [];
+        let i, out = [],
+            rpTag = row.parentTag,
+            parent = rpTag.inpHolder != null ? rpTag.inpHolder : "",
+            parentTag = {
+                inpHolder: parent,
+                inpDefVal: parent,
+                selectOpt: rpTag.selectOpt,
+                select   : rpTag.select
+            };
+
         for (i = 0; i < count; i++) {
             out.push({
                 clone  : true,
@@ -469,11 +478,12 @@ let ArticleTagStore = Reflux.createStore({
                     inpDefVal: ''
                 },
                 ownerUuid: row.ownerUuid,
-                parentTag: cloneInputEntry(row.parentTag, 'new-tag-'),
+                parentTag: cloneInputEntry(parentTag, 'new-tag-'),
                 rankScore: cloneInputEntry(row.rankScore, 'new-tag-'),
                 tagKind  : cloneInputEntry(row.tagKind, 'new-tag-')
             });
         }
+        console.log(out);
         return out;
     },
 

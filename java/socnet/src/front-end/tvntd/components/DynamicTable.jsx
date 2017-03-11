@@ -37,13 +37,12 @@ class RenderRow extends React.Component
     componentDidMount() {
         let tabRows = this.state.tableData;
 
-        DynamicTable.iterTableCell(tabRows, function(cell, row, key) {
+        RenderRow.iterTableCell(tabRows, function(cell, row, key) {
             RenderRow.bindCellEvent(cell, row, this._inputChange, this);
         }.bind(this));
     }
 
     componentWillUnmount() {
-        console.log("--- unmont ---");
         this._cleanupData();
     }
 
@@ -56,9 +55,6 @@ class RenderRow extends React.Component
                 rowCount  : 0,
                 tableData: null
             };
-        }
-        if (this.state != null && this.state.rowCount === count) {
-            return this.state;
         }
         newRows = {
             rowCount : count,
@@ -88,6 +84,82 @@ class RenderRow extends React.Component
             InputStore.storeItemIndex(row.rowId, row, true);
         }
         console.log("Input change val " + cellVal);
+    }
+
+    _createRows() {
+        let val = InputStore.getItemIndex(this.props.tableId);
+        this.setState(this._cloneRow(this.props, val || 1));
+    }
+
+    _submitRows() {
+        let row, data = [];
+        _.forEach(this.state.tableData, function(inpRow) {
+            row = {
+                invalid: false
+            };
+            _.forOwn(inpRow, function(cell, key) {
+                if (typeof cell === 'object') {
+                    row[key] = InputStore.getItemIndex(cell.inpName);
+                    if (row[key] == null) {
+                        row[key] = cell.inpDefVal;
+                    } else {
+                        InputStore.freeItemIndex(cell.inpName);
+                    }
+                } else {
+                    row[key] = cell;
+                }
+                if (row[key] == null) {
+                    row.invalid = true
+                }
+            });
+            if (row.invalid === false) {
+                delete row.clone;
+                delete row.invalid;
+                data.push(row);
+            }
+            InputStore.freeItemIndex(row.rowId);
+        });
+        console.log(data);
+        this.props.onSubmit(data);
+    }
+
+    _cleanupData() {
+    }
+
+    render() {
+        const entry = {
+            inpName  : this.props.tableId,
+            inpDefVal: 1,
+            inpHolder: "Enter number of rows",
+            inpClass : "pull-right col-sx-6 col-sm-6 col-md-4 col-lg-4",
+            button   : "Add rows",
+            btnClick : this._createRows,
+            inlineButtons: (
+                <button className="btn btn-primary" onClick={this._submitRows}>
+                    Submit
+                </button>
+            )
+        };
+        let table, columns, renderData, tableData, tableFmt = [];
+
+        tableData = this.state.tableData;
+        if (tableData == null || this.props.cloneRow == null) {
+            return <p>Don't know how to clone row</p>
+        }
+        renderData = RenderRow.toTableEdit(tableData, null);
+        columns    = RenderRow.renderHeader(this.props.tableFormat, tableFmt);
+        table      = RenderRow.renderTable(renderData, tableFmt, columns);
+
+        return (
+            <div className="row">
+                <div className="widget-header">
+                    <InputWrap entry={entry}/>
+                </div>
+                <div className="widget-body no-padding">
+                    {table}
+                </div>
+            </div>
+        );
     }
 
     static bindCellEvent(cell, row, callbackFn, bind) {
@@ -172,53 +244,12 @@ class RenderRow extends React.Component
         return columns;
     }
 
-    _createRows() {
-        let val = InputStore.getItemIndex(this.props.tableId);
-        this.setState(this._cloneRow(this.props, val || 1));
-    }
-
-    _submitRows() {
-        console.log("Submit rows");
-        console.log(this);
-    }
-
-    _cleanupData() {
-    }
-
-    render() {
-        const entry = {
-            inpName  : this.props.tableId,
-            inpDefVal: 1,
-            inpHolder: "Enter number of rows",
-            inpClass : "pull-right col-sx-6 col-sm-6 col-md-4 col-lg-4",
-            button   : "Add rows",
-            btnClick : this._createRows,
-            inlineButtons: (
-                <button className="btn btn-primary" onClick={this._submitRows}>
-                    Submit
-                </button>
-            )
-        };
-        let table, columns, renderData, tableData, tableFmt = [];
-
-        tableData = this.state.tableData;
-        if (tableData == null || this.props.cloneRow == null) {
-            return <p>Don't know how to clone row</p>
-        }
-        renderData = RenderRow.toTableEdit(tableData, null);
-        columns    = RenderRow.renderHeader(this.props.tableFormat, tableFmt);
-        table      = RenderRow.renderTable(renderData, tableFmt, columns);
-
-        return (
-            <div className="row">
-                <div className="widget-header">
-                    <InputWrap entry={entry}/>
-                </div>
-                <div className="widget-body no-padding">
-                    {table}
-                </div>
-            </div>
-        );
+    static iterTableCell(tableData, iterFn) {
+        _.forOwn(tableData, function(inpRow) {
+            _.forOwn(inpRow, function(cell, key) {
+                iterFn(cell, inpRow, key);
+            });
+        });
     }
 }
 
@@ -231,7 +262,7 @@ class DynamicTable extends React.Component
         this._renderInputModal = this._renderInputModal.bind(this);
         this._renderFooter = this._renderFooter.bind(this);
         this._getTableData = this._getTableData.bind(this);
-        this._inputNewRow  = this._inputNewRow.bind(this);
+        this._addNewRows   = this._addNewRows.bind(this);
 
         this.state = {
             newRows: {}
@@ -241,17 +272,9 @@ class DynamicTable extends React.Component
     componentDidMount() {
         let elm, changeFn, tabRows = this._getTableData();
 
-        DynamicTable.iterTableCell(tabRows, function(cell, row, key) {
+        RenderRow.iterTableCell(tabRows, function(cell, row, key) {
             RenderRow.bindCellEvent(cell, row, this._selectChange, this);
         }.bind(this));
-    }
-
-    static iterTableCell(tableData, iterFn) {
-        _.forOwn(tableData, function(inpRow) {
-            _.forOwn(inpRow, function(cell, key) {
-                iterFn(cell, inpRow, key);
-            });
-        });
     }
 
     _selectChange(entry, row, elm) {
@@ -279,9 +302,16 @@ class DynamicTable extends React.Component
         console.log(newRows);
     }
 
+    _addNewRows(data) {
+        console.log("add new rows");
+        console.log(data);
+        this.refs.rowModal.closeModal(true);
+    }
+
     _renderInputModal() {
         return (
             <RenderRow inputCb={this._selectChange} bind={this}
+                onSubmit={this._addNewRows}
                 tableFormat={this.props.tableFormat} tableId={_.uniqueId('new-row-')}
                 cloneRow={this.props.cloneRow} tableData={this.props.tableData}/>
         );
@@ -291,7 +321,7 @@ class DynamicTable extends React.Component
         let val, changes = {};
 
         console.log("Invoke footer click");
-        DynamicTable.iterTableCell(this.props.tableData, function(cell, row, key) {
+        RenderRow.iterTableCell(this.props.tableData, function(cell, row, key) {
             val = InputStore.getItemIndex(cell.inpName);
             if (val != null) {
                 changes[cell.inpName] = val;
@@ -322,10 +352,6 @@ class DynamicTable extends React.Component
             return RenderRow.toTableEdit(this.props.tableData, this.state.newRows);
         }
         return this.props.tableData;
-    }
-
-    _inputNewRow() {
-        console.log("value " + this.refs.rowCount);
     }
 
     render() {

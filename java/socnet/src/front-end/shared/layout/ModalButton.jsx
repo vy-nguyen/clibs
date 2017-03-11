@@ -71,13 +71,13 @@ class ModalButton extends React.Component
         $("body").css("overflow", "auto");
     }
 
-    closeModal() {
-        if (this.props.closeWarning != null) {
+    closeModal(force) {
+        if (force !== true && this.props.closeWarning != null) {
             this.refs.choice.openModal();
             return;
         }
         if (this.props.closeCb != null) {
-            if (this.props.closeCb() == false) {
+            if (this.props.closeCb() == false && force !== true) {
                 return;
             }
         }
