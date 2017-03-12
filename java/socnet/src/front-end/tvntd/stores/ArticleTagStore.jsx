@@ -419,22 +419,23 @@ let ArticleTagStore = Reflux.createStore({
             }
             if (edit === true) {
                 userUuid  = tag.userUuid;
-                parentTag = tag.parentTag != null ? tag.parentTag : "none";
+                parentTag = tag.parentTag != null ? tag.parentTag : "";
                 data.push({
+                    rowId    : _.uniqueId(tag.tagName),
                     tagName  : tag.tagName,
                     ownerUuid: tag.userUuid,
                     parentTag: {
                         select   : true,
-                        inpHolder: tag.parentTag,
-                        inpDefVal: tag.parentTag,
+                        inpHolder: parentTag,
+                        inpDefVal: parentTag,
                         selectOpt: parents,
-                        inpName  : _.uniqueId(parentTag)
+                        inpName  : _.uniqueId('parent-')
                     },
                     rankScore: {
                         inpValue : tag.rankScore,
                         inpDefVal: tag.rankScore,
                         inpHolder: 100,
-                        inpName  : tag.tagName + "-" + userUuid
+                        inpName  : _.uniqueId('rank-')
                     },
                     tagKind: {
                         select   : true,

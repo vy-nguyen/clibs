@@ -44,6 +44,9 @@ class RenderRow extends React.Component
 
     componentWillUnmount() {
         this._cleanupData();
+        if (this.props.onClose != null) {
+            this.props.onClose();
+        }
     }
 
     _cloneRow(props, count) {
@@ -83,7 +86,6 @@ class RenderRow extends React.Component
             rowVal = row;
             InputStore.storeItemIndex(row.rowId, row, true);
         }
-        console.log("Input change val " + cellVal);
     }
 
     _createRows() {
@@ -92,35 +94,9 @@ class RenderRow extends React.Component
     }
 
     _submitRows() {
-        let row, data = [];
-        _.forEach(this.state.tableData, function(inpRow) {
-            row = {
-                invalid: false
-            };
-            _.forOwn(inpRow, function(cell, key) {
-                if (typeof cell === 'object') {
-                    row[key] = InputStore.getItemIndex(cell.inpName);
-                    if (row[key] == null) {
-                        row[key] = cell.inpDefVal;
-                    } else {
-                        InputStore.freeItemIndex(cell.inpName);
-                    }
-                } else {
-                    row[key] = cell;
-                }
-                if (row[key] == null) {
-                    row.invalid = true
-                }
-            });
-            if (row.invalid === false) {
-                delete row.clone;
-                delete row.invalid;
-                data.push(row);
-            }
-            InputStore.freeItemIndex(row.rowId);
-        });
-        console.log(data);
-        this.props.onSubmit(data);
+        let data = RenderRow.fetchTableData(this.state.tableData, null, []);
+
+        this.props.onSubmit(data.value, data.rowEdit);
     }
 
     _cleanupData() {
@@ -214,7 +190,7 @@ class RenderRow extends React.Component
 
     static renderTable(tableData, tableFmt, columns) {
         return (
-            <Datatable tableData={tableData}
+            <Datatable ref="dataTable" tableData={tableData}
                 options={{
                     data: tableData,
                     columns: columns
@@ -251,6 +227,50 @@ class RenderRow extends React.Component
             });
         });
     }
+
+    static fetchTableData(tableData, data, rowEdit) {
+        let row, edit;
+
+        _.forEach(tableData, function(inpRow) {
+            edit = {};
+            row = {
+                invalid: false
+            };
+            _.forOwn(inpRow, function(cell, key) {
+                if (rowEdit != null) {
+                    edit[key] = cell;
+                }
+                if (typeof cell === 'object') {
+                    row[key] = InputStore.getItemIndex(cell.inpName);
+                    if (row[key] == null) {
+                        row[key] = cell.inpDefVal;
+                    } else {
+                        InputStore.freeItemIndex(cell.inpName);
+                    }
+                } else {
+                    row[key] = cell;
+                }
+                if (row[key] == null) {
+                    row.invalid = true
+                }
+            });
+            if (row.invalid === false) {
+                delete row.clone;
+                delete row.invalid;
+                if (data != null) {
+                    data.push(row);
+                }
+                if (rowEdit != null) {
+                    rowEdit.push(edit);
+                }
+            }
+            InputStore.freeItemIndex(row.rowId);
+        });
+        return {
+            value  : data,
+            rowEdit: rowEdit
+        };
+    }
 }
 
 class DynamicTable extends React.Component
@@ -260,74 +280,89 @@ class DynamicTable extends React.Component
 
         super(props);
         this._renderInputModal = this._renderInputModal.bind(this);
-        this._renderFooter = this._renderFooter.bind(this);
-        this._getTableData = this._getTableData.bind(this);
-        this._addNewRows   = this._addNewRows.bind(this);
+        this._renderFooter  = this._renderFooter.bind(this);
+        this._getTableData  = this._getTableData.bind(this);
+        this._addNewRows    = this._addNewRows.bind(this);
+        this._closeRowInput = this._closeRowInput.bind(this);
 
         this.state = {
             newRows: {}
         }
     }
 
-    componentDidMount() {
-        let elm, changeFn, tabRows = this._getTableData();
+    componentDidUpdate() {
+        this.componentDidMount();
+        RenderRow.iterTableCell(this.state.newRows, function(cell, row, key) {
+            RenderRow.bindCellEvent(cell, row, this._selectChange, this);
+        }.bind(this));
+    }
 
-        RenderRow.iterTableCell(tabRows, function(cell, row, key) {
+    componentDidMount() {
+        RenderRow.iterTableCell(this.props.tableData, function(cell, row, key) {
             RenderRow.bindCellEvent(cell, row, this._selectChange, this);
         }.bind(this));
     }
 
     _selectChange(entry, row, elm) {
-        let newRows, val = InputStore.storeItemIndex(entry.inpName, elm.val(), true);
+        let change, val = InputStore.storeItemIndex(entry.inpName, elm.val(), true);
 
         entry.inpHolder = val;
         entry.inpDefVal = val;
 
-        if (row.clone === true && row.rowId != null) {
-            newRows = this.state.newRows;
-            if (entry.ownerRow == null) {
-                entry.ownerRow = row;
+        if (entry.ownerRow == null) {
+            entry.ownerRow = row;
+        }
+        if (this.state.newRows[row.rowId] == null) {
+            change = InputStore.getItemIndex(this.props.tableId);
+            if (change == null) {
+                change = {};
+                InputStore.storeItemIndex(this.props.tableId, change, true);
             }
-            if (newRows[row.rowId] == null) {
-                newRows[row.rowId] = row;
-                this.setState({
-                    newRows: newRows
-                });
-            } else {
-                console.log("skip known row");
-                console.log(row);
-            }
+            change[row.rowId] = row;
         }
         console.log("selected " + val);
-        console.log(newRows);
     }
 
-    _addNewRows(data) {
-        console.log("add new rows");
-        console.log(data);
+    _addNewRows(data, rowEdit) {
+        let newRows = this.state.newRows;
         this.refs.rowModal.closeModal(true);
+
+        _.forEach(rowEdit, function(row) {
+            newRows[row.rowId] = row;
+        });
+        this.setState({
+            newRows: newRows
+        });
+    }
+
+    _closeRowInput() {
+        // Work-around datatable pagation, use this mechanism to get all entries
+        // in datatable to the DOM.
+        //
+        this.componentDidUpdate();
     }
 
     _renderInputModal() {
         return (
             <RenderRow inputCb={this._selectChange} bind={this}
-                onSubmit={this._addNewRows}
+                onSubmit={this._addNewRows} onClose={this._closeRowInput}
                 tableFormat={this.props.tableFormat} tableId={_.uniqueId('new-row-')}
                 cloneRow={this.props.cloneRow} tableData={this.props.tableData}/>
         );
     }
 
     _footerClick(footer) {
-        let val, changes = {};
+        let changedRows, changes = [];
 
-        console.log("Invoke footer click");
-        RenderRow.iterTableCell(this.props.tableData, function(cell, row, key) {
-            val = InputStore.getItemIndex(cell.inpName);
-            if (val != null) {
-                changes[cell.inpName] = val;
-            }
-        });
-        footer.onClick(this.props.tableData, changes);
+        changedRows = InputStore.getItemIndex(this.props.tableId);
+
+        if (changedRows != null) {
+            RenderRow.fetchTableData(changedRows, changes, null);
+        }
+        if (this.state.newRows != null) {
+            RenderRow.fetchTableData(this.state.newRows, changes, null);
+        }
+        footer.onClick(changes);
     }
 
     _renderFooter() {

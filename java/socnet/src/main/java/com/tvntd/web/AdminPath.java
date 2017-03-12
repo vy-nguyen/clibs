@@ -114,14 +114,20 @@ public class AdminPath
             return UserPath.s_noProfile;
         }
         s_log.debug("Got set tags requests");
-        List<ArtTagDTO> fixup =
-            ArtTagService.makeSubTags(tagList.getPublicTags(), Constants.PublicUuid);
+        List<ArtTagDTO> tags = tagList.getPublicTags();
 
-        for (ArtTagDTO tag : fixup) {
-            artTagSvc.saveTag(tag);       
+        if (tags != null) {
+            List<ArtTagDTO> fixup = ArtTagService.makeSubTags(tags, Constants.PublicUuid);
+
+            for (ArtTagDTO tag : fixup) {
+                artTagSvc.saveTag(tag);       
+            }
         }
-        for (ArtTagDTO tag : tagList.getDeletedTags()) {
-            artTagSvc.deleteTag(tag.getTagName(), Constants.PublicUuid);
+        tags = tagList.getDeletedTags();
+        if (tags != null) {
+            for (ArtTagDTO tag : tags) {
+                artTagSvc.deleteTag(tag.getTagName(), Constants.PublicUuid);
+            }
         }
         return UserPath.s_genOkResp;
     }

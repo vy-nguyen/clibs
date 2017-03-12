@@ -84,7 +84,7 @@
     "moment": "2.12.0",
     "moment-timezone": "0.5.1",
     "fastclick": "1.0.6",
-    "datatables": "1.10.11",
+    "datatables": "1.10.13",
     "datatables-buttons": "1.0.3",
     "datatables-responsive": "1.0.7",
     "jcrop": "0.0.1",

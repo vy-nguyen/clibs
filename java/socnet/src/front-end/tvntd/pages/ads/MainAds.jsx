@@ -6,6 +6,7 @@
 
 import _               from 'lodash';
 import React           from 'react-mod'
+import Actions         from 'vntd-root/actions/Actions.jsx';
 import TabPanel        from 'vntd-shared/layout/TabPanel.jsx';
 import DynamicTable    from 'vntd-root/components/DynamicTable.jsx';
 import Lang            from 'vntd-root/stores/LanguageStore.jsx';
@@ -25,10 +26,13 @@ class TagListing extends React.Component
         this._cloneTabRow   = this._cloneTabRow.bind(this);
     }
 
-    _submitChanges(rows, changes) {
+    _submitChanges(changes) {
         console.log("Submit change");
-        console.log(rows);
         console.log(changes);
+        Actions.setTags({
+            publicTags : changes,
+            deletedTags: []
+        });
     }
 
     _getEditForm() {
@@ -86,6 +90,7 @@ class TagListing extends React.Component
             <DynamicTable tableFormat={this._getTagHeader()} tableData={tab}
                 tableTitle={Lang.translate("Tag Listing")} edit={true}
                 tableFooter={footer} cloneRow={this._cloneTabRow}
+                tableId={_.uniqueId('tag-list-')}
             />
         );
     }
