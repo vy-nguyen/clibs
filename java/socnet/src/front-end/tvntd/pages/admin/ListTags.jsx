@@ -3,8 +3,8 @@
  */
 'use strict';
 
-import _               from 'lodash';
-import React           from 'react-mod';
+import _                  from 'lodash';
+import React, {PropTypes} from 'react-mod';
 
 import Actions         from 'vntd-root/actions/Actions.jsx';
 import DynamicTable    from 'vntd-root/components/DynamicTable.jsx';
@@ -41,7 +41,6 @@ class ListTags extends React.Component
     }
 
     _updateArtTags() {
-        console.log("--- update state --- ");
         this.setState({
             tabData: ArticleTagStore.getTagTableData(true, this.props.tagKind)
         });
@@ -137,6 +136,7 @@ class ListTags extends React.Component
             title  : "Delete Selected Rows",
             onSelect: this._selectChanges
         } ];
+
         return (
             <DynamicTable tableFormat={this._getTagHeader()}
                 tableData={this.state.tabData} select={true}
@@ -147,5 +147,9 @@ class ListTags extends React.Component
         );
     }
 }
+
+ListTags.propTypes = {
+    tagKind: PropTypes.string
+};
 
 export default ListTags;

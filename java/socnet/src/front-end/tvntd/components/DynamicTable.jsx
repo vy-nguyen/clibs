@@ -389,6 +389,9 @@ class DynamicTable extends React.Component
             RenderRow.fetchTableData(this.state.newRows, changes, null);
         }
         footer.onSubmit(changes);
+        this.setState({
+            newRows: null
+        });
     }
 
     _footerSelect(footer) {
@@ -397,11 +400,13 @@ class DynamicTable extends React.Component
         _.forEach(this.props.tableData, function(row) {
             if (row.selected != null && row.selected === true) {
                 data.push(row);
+                row.selected = false;
             }
         });
         _.forOwn(this.state.newRows, function(row) {
             if (row.selected != null && row.selected === true) {
                 data.push(row);
+                row.selected = false;
             }
         });
         RenderRow.fetchTableData(data, changes, null);

@@ -63,12 +63,10 @@ let ArticleTagStore = Reflux.createStore({
 
     init: function() {
         this.data = {
-            publicTags : {},
             pubTagIndex: {},
             sortedPubTags: [],
             sortedIdxTags: [],
             sortedTagKind: {},
-            deletedTags  : {},
             pendArtPubTag: {}
         };
     },
@@ -221,7 +219,6 @@ let ArticleTagStore = Reflux.createStore({
         _.forEach(tags, function(tag) {
             rec = this.data.pubTagIndex[tag.tagName];
             if (rec != null) {
-                console.log("remove tag " + tag.tagName);
                 this._removeTag(rec);
             }
         }.bind(this));
@@ -271,17 +268,6 @@ let ArticleTagStore = Reflux.createStore({
         return tagStrings;
     },
 
-    getSubmitTags: function() {
-        let pubTags = [], delTags = [];
-
-        this._toTagArray(pubTags, this.data.publicTags);
-        this._toTagArray(delTags, this.data.deletedTags);
-        return {
-            publicTags : pubTags,
-            deletedTags: delTags
-        }
-    },
-
     _addNewPublicTag: function(artRank, parentTag, articleUuid) {
         let tag = this.data.pubTagIndex[artRank.tagName];
 
@@ -291,8 +277,9 @@ let ArticleTagStore = Reflux.createStore({
         tag = new ArtTag({
             tagName  : artRank.tagName,
             userUuid : artRank.authorUuid,
-            rankScore: artRank.rank,
+            rankScore: artRank.rank || artRank.rankScore,
             parentTag: parentTag,
+            tagKind  : artRank.tagKind,
             subTags  : [],
             articleRank: (articleUuid != null ? [ articleUuid ] : [])
         });
@@ -355,9 +342,6 @@ let ArticleTagStore = Reflux.createStore({
             if (t != null) {
                 t.addSubTag(tagObj);
             }
-        } else if (this.data.publicTags[tagObj.tagName] == null) {
-            this.data.publicTags[tagObj.tagName] = tagObj;
-            insertSorted(tagObj, this.data.sortedPubTags, this._compareTags);
         }
     },
 
@@ -391,12 +375,6 @@ let ArticleTagStore = Reflux.createStore({
         }
         delete tagIndex[tagObj.tagName];
         removeArray(sortedIdxTags, tagObj, 0, this._compareTagName);
-
-        if (this.data.publicTags[tagObj.tagName] != null) {
-            delete this.data.publicTags[tagObj.tagName];
-            removeArray(this.data.sortedPubTags, tagObj, 0, this._compareTagName);
-        }
-        this.data.deletedTags[tagObj.tagName] = tagObj;
     },
 
     _resortTags: function() {
@@ -525,7 +503,6 @@ let ArticleTagStore = Reflux.createStore({
                 tagKind  : cloneInputEntry(row.tagKind, 'new-tag-')
             });
         }
-        console.log(out);
         return out;
     },
 

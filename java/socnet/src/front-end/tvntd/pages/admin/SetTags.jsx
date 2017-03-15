@@ -22,7 +22,6 @@ class SetTags extends React.Component
         super(props);
         this._updateAdmin   = this._updateAdmin.bind(this);
         this._updateArtTag  = this._updateArtTag.bind(this);
-        this._submitSetTag  = this._submitSetTag.bind(this);
         this._tagArticle    = this._tagArticle.bind(this);
         this._renderTagInfo = this._renderTagInfo.bind(this);
 
@@ -54,11 +53,6 @@ class SetTags extends React.Component
     _updateArtTag(data) {
         this.setState({
         });
-    }
-
-    _submitSetTag(event) {
-        event.preventDefault();
-        Actions.setTags(ArticleTagStore.getSubmitTags());
     }
 
     /*
