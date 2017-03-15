@@ -110,7 +110,9 @@ class TagInfo extends React.Component
             subTags.push(
                 <li key={_.uniqueId('sub-tag-')}>
                     <a onClick={this._removeSub.bind(this, artTag, tag)}>
-                        <span className="label label-info" style={{fontSize: 14}}> x {tag.tagName}</span>
+                        <span className="label label-info" style={{fontSize: 14}}>
+                            x {tag.tagName}
+                        </span>
                     </a>
                 </li>
             );
@@ -178,7 +180,12 @@ class TagInfo extends React.Component
             <div className="well well-sm">
                 <GenericForm form={tagValForm}/>
                 <hr/>
-                <span><h4><a onClick={this._removeSelf}> x </a>{artTag.tagName}</h4></span>
+                <span>
+                    <h4>
+                        <a onClick={this._removeSelf}> x </a>
+                        {artTag.tagName}
+                    </h4>
+                </span>
                 <ul className="list-inline padding-10">
                     {subTags}
                 </ul>

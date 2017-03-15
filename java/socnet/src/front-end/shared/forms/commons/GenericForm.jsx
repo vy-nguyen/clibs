@@ -55,6 +55,19 @@ class SelectWrap extends React.Component
     }
 }
 
+function htmlCheckBox(entry)
+{
+    let opt = [
+        '<input type="checkbox" value="' + entry.inpHolder +
+        '" id="' + entry.inpName + '"' +
+        (entry.checked === true ? ' checked="checked">' : '>')
+    ];
+    if (entry.labelText != null) {
+        opt.push('<label for="' + entry.inpName + '">' + entry.labelText + '</label>');
+    }
+    return opt.join('\n');
+}
+
 function htmlSelect(entry)
 {
     let opt = [
@@ -131,6 +144,9 @@ function renderHtmlInput(entry)
     }
     if (entry.select === true) {
         return htmlSelect(entry);
+    }
+    if (entry.checked != null) {
+        return htmlCheckBox(entry);
     }
     return htmlInput(entry);
 }

@@ -3,14 +3,15 @@
  */
 'use strict';
 
-import _                 from 'lodash';
-import React             from 'react-mod';
+import _                  from 'lodash';
+import React, {PropTypes} from 'react-mod';
 
 import WidgetGrid        from 'vntd-shared/widgets/WidgetGrid.jsx';
 import JarvisWidget      from 'vntd-shared/widgets/JarvisWidget.jsx';
 import Datatable         from 'vntd-shared/tables/Datatable.jsx';
 import ModalButton       from 'vntd-shared/layout/ModalButton.jsx';
 import InputStore        from 'vntd-shared/stores/NestableStore.jsx';
+import Lang              from 'vntd-root/stores/LanguageStore.jsx';
 import Mesg              from 'vntd-root/components/Mesg.jsx';
 import { ModalChoice }   from 'vntd-shared/forms/commons/ModalConfirm.jsx';
 
@@ -50,7 +51,7 @@ class RenderRow extends React.Component
     }
 
     _cloneRow(props, count) {
-        let newRows, tableData;
+        let newRows, orig, tableData;
 
         tableData = props.tableData;
         if (props.cloneRow == null || tableData == null || _.isEmpty(tableData[0])) {
@@ -59,9 +60,12 @@ class RenderRow extends React.Component
                 tableData: null
             };
         }
+        orig = this.state != null && this.state.newRows != null ?
+            this.state.newRows.tableData[0] : tableData[0];
+            
         newRows = {
             rowCount : count,
-            tableData: props.cloneRow(tableData[0], count)
+            tableData: props.cloneRow(orig, count)
         };
         if (this.state != null) {
             _.forEach(this.state.tableData, function(row) {
@@ -100,6 +104,9 @@ class RenderRow extends React.Component
     }
 
     _cleanupData() {
+        _.forEach(this.state.tableData, function(row) {
+            InputStore.freeItemIndex(row.rowId);
+        });
     }
 
     render() {
@@ -122,8 +129,8 @@ class RenderRow extends React.Component
         if (tableData == null || this.props.cloneRow == null) {
             return <p>Don't know how to clone row</p>
         }
-        renderData = RenderRow.toTableEdit(tableData, null);
-        columns    = RenderRow.renderHeader(this.props.tableFormat, tableFmt);
+        renderData = RenderRow.toTableEdit(tableData, null, true);
+        columns    = RenderRow.renderHeader(this.props.tableFormat, tableFmt, false);
         table      = RenderRow.renderTable(renderData, tableFmt, columns);
 
         return (
@@ -145,7 +152,7 @@ class RenderRow extends React.Component
             elm = $('#' + cell.inpName);
             if (elm != null) {
                 cbFn = callbackFn.bind(bind, cell, row, elm);
-                if (cell.select === true) {
+                if (cell.select === true || cell.checked != null) {
                     elm.on('change', cbFn);
                 } else {
                     elm.on('blur', cbFn);
@@ -154,11 +161,30 @@ class RenderRow extends React.Component
         }
     }
 
-    static toTableEdit(tabRows, newRows) {
-        let val, entry, row, data = [];
+    static toTableEdit(tabRows, newRows, select) {
+        let val, checkbox, entry, row, data = [];
 
+        _.forOwn(newRows, function(inpRow) {
+            row = {};
+            _.forOwn(inpRow, function(cell, key) {
+                if (typeof cell === 'object') {
+                    row[key] = renderHtmlInput(cell);
+                } else {
+                    row[key] = cell;
+                }
+            });
+            data.push(row);
+        });
         _.forEach(tabRows, function(inpRow) {
             row = {};
+            if (select === true) {
+                inpRow.checkbox = {
+                    inpName  : _.uniqueId('check-'),
+                    inpHolder: 'checkedRow',
+                    inpDefVal: false,
+                    checked  : false
+                };
+            }
             _.forOwn(inpRow, function(cell, key) {
                 if (typeof cell === 'object') {
                     entry = cell;
@@ -168,17 +194,6 @@ class RenderRow extends React.Component
                         entry.inpDefVal = val;
                     }
                     row[key] = renderHtmlInput(entry);
-                } else {
-                    row[key] = cell;
-                }
-            });
-            data.push(row);
-        });
-        _.forOwn(newRows, function(inpRow) {
-            row = {};
-            _.forOwn(inpRow, function(cell, key) {
-                if (typeof cell === 'object') {
-                    row[key] = renderHtmlInput(cell);
                 } else {
                     row[key] = cell;
                 }
@@ -206,9 +221,17 @@ class RenderRow extends React.Component
         );
     }
 
-    static renderHeader(headerFmt, tableFmt) {
+    static renderHeader(headerFmt, tableFmt, select) {
         let columns = [];
-
+        
+        if (select === true) {
+            columns = [ {data: 'checkbox'} ];
+            tableFmt.push(
+                <th key={_.uniqueId("dym-table-")}>
+                    <i className=""/>{Lang.translate('Select')}
+                </th>
+            );
+        }
         _.forEach(headerFmt, function(value, key) {
             columns.push({data: value.key});
             tableFmt.push(
@@ -304,13 +327,16 @@ class DynamicTable extends React.Component
     }
 
     _selectChange(entry, row, elm) {
-        let change, val = InputStore.storeItemIndex(entry.inpName, elm.val(), true);
+        let change, val = entry.checked == null ? elm.val() : elm.is(':checked');
 
-        entry.inpHolder = val;
+        InputStore.storeItemIndex(entry.inpName, val, true);
         entry.inpDefVal = val;
 
         if (entry.ownerRow == null) {
             entry.ownerRow = row;
+            if (entry.checked != null) {
+                row.selected = val;
+            }
         }
         if (this.state.newRows[row.rowId] == null) {
             change = InputStore.getItemIndex(this.props.tableId);
@@ -351,7 +377,7 @@ class DynamicTable extends React.Component
         );
     }
 
-    _footerClick(footer) {
+    _footerSubmit(footer) {
         let changedRows, changes = [];
 
         changedRows = InputStore.getItemIndex(this.props.tableId);
@@ -362,19 +388,40 @@ class DynamicTable extends React.Component
         if (this.state.newRows != null) {
             RenderRow.fetchTableData(this.state.newRows, changes, null);
         }
-        footer.onClick(changes);
+        footer.onSubmit(changes);
+    }
+
+    _footerSelect(footer) {
+        let data = [], changes = [];
+
+        _.forEach(this.props.tableData, function(row) {
+            if (row.selected != null && row.selected === true) {
+                data.push(row);
+            }
+        });
+        _.forOwn(this.state.newRows, function(row) {
+            if (row.selected != null && row.selected === true) {
+                data.push(row);
+            }
+        });
+        RenderRow.fetchTableData(data, changes, null);
+        footer.onSelect(changes);
     }
 
     _renderFooter() {
-        let btn = [], footer = this.props.tableFooter;
+        let onClick, btn = [], footer = this.props.tableFooter;
 
         if (footer == null) {
             return null;
         }
         _.forEach(footer, function(entry) {
+            onClick = (entry.onSubmit != null) ?
+                this._footerSubmit.bind(this, entry) :
+                this._footerSelect.bind(this, entry);
+
             btn.push(
-                <button key={_.uniqueId('dym-tab-')} className={entry.format}
-                    onClick={this._footerClick.bind(this, entry)}>
+                <button key={_.uniqueId('dym-tab-')}
+                    className={entry.format} onClick={onClick}>
                     <Mesg text={entry.title}/>
                 </button>
             );
@@ -384,7 +431,8 @@ class DynamicTable extends React.Component
 
     _getTableData() {
         if (this.props.edit === true) {
-            return RenderRow.toTableEdit(this.props.tableData, this.state.newRows);
+            return RenderRow.toTableEdit(this.props.tableData,
+                                         this.state.newRows, this.props.select);
         }
         return this.props.tableData;
     }
@@ -395,10 +443,11 @@ class DynamicTable extends React.Component
             inpDefVal: 1,
             inpHolder: "Enter new rows"
         };
-        let table, tableData, columns, tableFmt = [];
+        let table, tableData, columns, tableFmt = [],
+            tableFormat = this.props.tableFormat, select = this.props.select;
 
         tableData = this._getTableData();
-        columns = RenderRow.renderHeader(this.props.tableFormat, tableFmt);
+        columns = RenderRow.renderHeader(tableFormat, tableFmt, select);
         table = RenderRow.renderTable(tableData, tableFmt, columns);
 
         return (
@@ -430,5 +479,15 @@ class DynamicTable extends React.Component
         )
     }
 }
+
+DynamicTable.propTypes = {
+    tableFormat: PropTypes.array.isRequired,
+    tableData  : PropTypes.array.isRequired,
+    select     : PropTypes.bool,
+    edit       : PropTypes.bool,
+    tableTitle : PropTypes.string,
+    tableFooter: PropTypes.array,
+    tableId    : PropTypes.string.isRequired
+};
 
 export default DynamicTable;

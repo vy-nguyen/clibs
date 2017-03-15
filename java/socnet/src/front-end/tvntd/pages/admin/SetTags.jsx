@@ -3,6 +3,7 @@
  */
 'use strict';
 
+import _                  from 'lodash';
 import React              from 'react-mod';
 
 import ErrorView          from 'vntd-shared/layout/ErrorView.jsx';
@@ -12,6 +13,8 @@ import ArticleTagStore    from 'vntd-root/stores/ArticleTagStore.jsx';
 import ArticleBox         from 'vntd-root/components/ArticleBox.jsx';
 import TagInfo            from 'vntd-root/components/TagInfo.jsx';
 import ArticleTagBrief    from 'vntd-root/components/ArticleTagBrief.jsx';
+import Mesg               from 'vntd-root/components/Mesg.jsx';
+import ListTags           from './ListTags.jsx';
 
 class SetTags extends React.Component
 {
@@ -58,8 +61,11 @@ class SetTags extends React.Component
         Actions.setTags(ArticleTagStore.getSubmitTags());
     }
 
+    /*
+     * Tag articles to publish to public space.
+     */
     _tagArticle(uuid, artRank) {
-        ArticleTagStore.addPublicTag(artRank.tagName, artRank.rank, null, uuid);
+        ArticleTagStore.addPublicTag(artRank, null, uuid);
     }
 
     _renderTagInfo(artTag) {
@@ -84,18 +90,18 @@ class SetTags extends React.Component
     }
 
     render() {
-        let publicArts = this.state.publicArts;
-        let clickCb = {
+        let selected = [], publicArts = this.state.publicArts;
+        const clickCb = {
             getBtnFormat: SetTags.getBtnFormat,
             clickHandler: this._tagArticle,
             callbackArg : this
         };
-        let selected = [];
 
         _.forOwn(publicArts, function(v, artUuid) {
             clickCb.articleUuid = artUuid;
             selected.push(
-                <div className="col-sm-6 col-md-6 col-lg-4" key={_.uniqueId("pub-art-selected-")}>
+                <div className="col-sm-6 col-md-6 col-lg-4"
+                    key={_.uniqueId("pub-art-selected-")}>
                     {ArticleBox.article(artUuid, clickCb)}
                 </div> 
             )
@@ -133,6 +139,8 @@ class SetTags extends React.Component
                         {selected}
                     </div>
                 </section>
+                <ListTags tagKind={null}/>
+                {/*
                 <div className="row">
                     {!_.isEmpty(pubTagRender) ? pubTagRender : null}
                 </div>
@@ -141,9 +149,13 @@ class SetTags extends React.Component
                         <TagInfo artTag={null}/>
                     </div>
                     <footer>
-                        <button className="btn btn-primary" onClick={this._submitSetTag}>Save Changes</button>
+                        <button className="btn btn-primary"
+                            onClick={this._submitSetTag}>
+                            <Mesg text="Save Changes"/>
+                        </button>
                     </footer>
                 </div>
+                    */}
                 {ArticleTagBrief.renderPublicTags()}
             </div>
         );

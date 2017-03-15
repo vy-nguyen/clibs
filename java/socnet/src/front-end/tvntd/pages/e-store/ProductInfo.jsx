@@ -48,7 +48,8 @@ class ProductInfo extends React.Component
         for (let i = 0; i < images.length; i++) {
             const clsn = i === 0 ? "active" : "";
             indicators.push(
-                <li key={_.uniqueId('prod-car-')} data-target={itemRef} data-slide-to={i.toString} className={clsn}>
+                <li key={_.uniqueId('prod-car-')}
+                    data-target={itemRef} data-slide-to={i.toString} className={clsn}>
                 </li>
             );
             inner.push(
@@ -69,7 +70,8 @@ class ProductInfo extends React.Component
                     <a className="left carousel-control" href={itemRef} data-slide="prev">
                         <span className="glyphicon glyphicon-chevron-left"></span>
                     </a>
-                    <a className="right carousel-control" href={itemRef} data-slide="next">
+                    <a className="right carousel-control"
+                        href={itemRef} data-slide="next">
                         <span className="glyphicon glyphicon-chevron-right"></span>
                     </a>
                 </div>
@@ -128,7 +130,9 @@ class ProductInfo extends React.Component
             let tagLength = prodTags.length;
             for (let i = 0; i < tagLength; i++) {
                 productTags.push(
-                    <li key={_.uniqueId('prod-info-')}><div dangerouslySetInnerHTML={{__html: prodTags[i]}}/></li>
+                    <li key={_.uniqueId('prod-info-')}>
+                        <div dangerouslySetInnerHTML={{__html: prodTags[i]}}/>
+                    </li>
                 );
             }
         }
@@ -175,10 +179,12 @@ class ProductInfo extends React.Component
                     <div className="col-sm-12 col-md-6 col-lg-6">
                         <div className="btn-group pull-right">
                             <button className="btn btn-white btn-default">
-                                <i className="fa fa-star"></i><Mesg text=" Add to wishlist"/>
+                                <i className="fa fa-star"></i>
+                                <Mesg text=" Add to wishlist"/>
                             </button>
                             <button className="btn btn-white btn-default">
-                                <i className="fa fa-envelope"></i><Mesg text=" Contact Seller"/>
+                                <i className="fa fa-envelope"></i>
+                                <Mesg text=" Contact Seller"/>
                             </button>
                         </div>
                     </div>
@@ -272,12 +278,15 @@ class ProductBrief extends React.Component
 
     _delConfirmBox() {
         return (
-            <ModalConfirm ref={"confirmRm"} height={"auto"} modalTitle={Lang.translate("Delete this product listing?")}>
+            <ModalConfirm ref={"confirmRm"} height={"auto"}
+                modalTitle={Lang.translate("Delete this product listing?")}>
                 <div className="modal-footer">
-                    <button className="btn btn-primary pull-right" onClick={this._confirmDel}>
+                    <button className="btn btn-primary pull-right"
+                        onClick={this._confirmDel}>
                         <Mesg text="Delete"/>
                     </button>
-                    <button className="btn btn-default pull-right" onClick={this._cancelDel}>
+                    <button className="btn btn-default pull-right"
+                        onClick={this._cancelDel}>
                         <Mesg text="Cancel"/>
                     </button>
                 </div>
@@ -287,7 +296,8 @@ class ProductBrief extends React.Component
 
     _editProductModal() {
         return (
-            <ModalConfirm ref={"editProd"} modalTitle={Lang.translate("Edit Product Listing")}>
+            <ModalConfirm ref={"editProd"}
+                modalTitle={Lang.translate("Edit Product Listing")}>
                 <div className="modal-content">
                     <EStorePost product={this.props.product}/>
                 </div>
@@ -310,14 +320,22 @@ class ProductBrief extends React.Component
             delBox = this._delConfirmBox();
             button = (
                 <div className="btn-group" role="group">
-                    <button className="btn btn-info" onClick={this._editProduct}><Mesg text="Edit Post"/></button>
-                    <button className="btn btn-danger" onClick={this._delProduct}><Mesg text="Remove Product"/></button>
+                    <button className="btn btn-info" onClick={this._editProduct}>
+                        <Mesg text="Edit Post"/>
+                    </button>
+                    <button className="btn btn-danger" onClick={this._delProduct}>
+                        <Mesg text="Remove Product"/>
+                    </button>
                 </div>
             );
         } else {
             editBox = null;
             delBox = null;
-            button = <button className="btn btn-success" onClick={this._addCart}><Mesg text="Add to cart"/></button>;
+            button = (
+                <button className="btn btn-success" onClick={this._addCart}>
+                    <Mesg text="Add to cart"/>
+                </button>
+            );
         }
         return (
             <div className="product-content product-wrap clearfix" onClick={onClickCb}>
@@ -342,7 +360,8 @@ class ProductBrief extends React.Component
                             <p className="price-container"><span>{prodPrice}</span></p>
                             <span className="tag1"></span>
                         </div>
-                        <div className="description" dangerouslySetInnerHTML={{__html: prodDesc}}/>
+                        <div className="description"
+                            dangerouslySetInnerHTML={{__html: prodDesc}}/>
                     </div>
                 </div>
                 <div className="row">

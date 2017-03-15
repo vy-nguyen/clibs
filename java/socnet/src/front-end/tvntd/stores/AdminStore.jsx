@@ -39,7 +39,7 @@ let AdminStore = Reflux.createStore({
     },
 
     addPublicArticle: function(artUuid, artRank) {
-        this.data.publicArticle[artUuid] = artRank;
+        this.data.publicArticle[artUuid] = artUuid;
     },
 
     getPublicArticle: function() {

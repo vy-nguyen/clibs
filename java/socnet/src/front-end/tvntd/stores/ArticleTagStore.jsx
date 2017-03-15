@@ -68,7 +68,8 @@ let ArticleTagStore = Reflux.createStore({
             sortedPubTags: [],
             sortedIdxTags: [],
             sortedTagKind: {},
-            deletedTags: {}
+            deletedTags  : {},
+            pendArtPubTag: {}
         };
     },
 
@@ -100,17 +101,10 @@ let ArticleTagStore = Reflux.createStore({
         this.trigger(this.data);
     },
 
-    addPublicTag: function(tagName, rank, parentName, articleUuid) {
-        let tag = this.data.pubTagIndex[tagName];
+    addPublicTag: function(artRank, parentTag, articleUuid) {
+        let tag = this.data.pubTagIndex[artRank.tagName];
         if (tag == null) {
-            tag = new ArtTag({
-                tagName  : tagName,
-                rankScore: rank,
-                parentTag: parentName,
-                subTags  : [],
-                articleRank: [ articleUuid ]
-            });
-            this._addTag(tag);
+            this._addNewPublicTag(artRank, parentTag, articleUuid);
             this.trigger(this.data);
 
         } else if (tag.articleRank != null) {
@@ -120,6 +114,15 @@ let ArticleTagStore = Reflux.createStore({
                 this.trigger(this.data);
             }
         }
+        this.data.pendArtPubTag[artRank.tagName] = tag;
+    },
+
+    getModifiedPubTags(clear) {
+        let ret = this.data.pendArtPubTag;
+        if (clear === true) {
+            this.data.pendArtPubTag = {};
+        }
+        return ret;
     },
 
     addToPublicTag: function(tagName, tagKind, uuid) {
@@ -205,6 +208,26 @@ let ArticleTagStore = Reflux.createStore({
         }
     },
 
+    addPubListTags: function(tags) {
+        _.forEach(tags, function(tag) {
+            this._addNewPublicTag(tag, tag.parentTag, null);
+        }.bind(this));
+        this.trigger(this.data);
+    },
+
+    removePubListTags: function(tags) {
+        let rec;
+
+        _.forEach(tags, function(tag) {
+            rec = this.data.pubTagIndex[tag.tagName];
+            if (rec != null) {
+                console.log("remove tag " + tag.tagName);
+                this._removeTag(rec);
+            }
+        }.bind(this));
+        this.trigger(this.data);
+    },
+
     removeSubTag(tag, sub) {
         tag.removeSubTag(sub);
         this.trigger(this.data, tag, sub);
@@ -257,6 +280,24 @@ let ArticleTagStore = Reflux.createStore({
             publicTags : pubTags,
             deletedTags: delTags
         }
+    },
+
+    _addNewPublicTag: function(artRank, parentTag, articleUuid) {
+        let tag = this.data.pubTagIndex[artRank.tagName];
+
+        if (tag != null) {
+            return tag;
+        }
+        tag = new ArtTag({
+            tagName  : artRank.tagName,
+            userUuid : artRank.authorUuid,
+            rankScore: artRank.rank,
+            parentTag: parentTag,
+            subTags  : [],
+            articleRank: (articleUuid != null ? [ articleUuid ] : [])
+        });
+        this._addTag(tag);
+        return tag;
     },
 
     _toTagArray: function(array, tagMgr) {

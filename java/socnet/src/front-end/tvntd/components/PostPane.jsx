@@ -123,13 +123,16 @@ class TagPost extends React.Component
                         <TA.Typeahead options={allTags} maxVisible={6}
                             placeholder={postInfo.tagName} value={postInfo.tagName}
                             customClasses={{input: "form-control input-sm"}}
-                            onBlur={this._onBlur} onOptionSelected={this._onOptionSelected}/>
+                            onBlur={this._onBlur}
+                            onOptionSelected={this._onOptionSelected}/>
                     </div>
-                    <StateButton btnId={btnId} onClick={this._submitUpdate.bind(this, btnId)}/>
+                    <StateButton btnId={btnId}
+                        onClick={this._submitUpdate.bind(this, btnId)}/>
                 </div>
                 <div className="row">
                     <div className="col-xs-10 col-sm-10 col-md-10 col-lg-10">
-                        <input className="form-control input-lg" ref="title" placeholder={postInfo.title}/>
+                        <input className="form-control input-lg"
+                            ref="title" placeholder={postInfo.title}/>
                     </div>
                 </div>
             </form>
@@ -141,7 +144,8 @@ class PostPane extends React.Component {
 
     constructor(props) {
         super(props);
-        let artRank = AuthorStore.getArticleRank(props.data.authorUuid, props.data.articleUuid);
+        let artRank = AuthorStore.getArticleRank(props.data.authorUuid,
+                                                 props.data.articleUuid);
         if (artRank != null) {
             if (artRank.publishPost == null) {
                 artRank.publishPost = false;
@@ -268,7 +272,6 @@ class PostPane extends React.Component {
         }
         if (adminItem != null) {
             Array.prototype.push.apply(ownerPostMenu.menuItems, adminItem);
-            // ownerPostMenu.menuItems.push(adminItem);
         }
         let panelLabel = [ {
             labelIcon: 'label label-success',
@@ -296,7 +299,8 @@ class PostPane extends React.Component {
         let tagPost = null;
         if (UserStore.isUserMe(article.authorUuid)) {
             tagPost = (
-                <TagPost articleUuid={article.articleUuid} artTitle={article.topic} authorUuid={article.authorUuid}/>
+                <TagPost articleUuid={article.articleUuid}
+                    artTitle={article.topic} authorUuid={article.authorUuid}/>
             );
         } else {
             tagPost = <h2>{article.topic ? article.topic : Lang.translate("My Post")}</h2>

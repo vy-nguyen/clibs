@@ -77,7 +77,8 @@ class ArticleTagBrief extends React.Component
         let artTag = art.artTag;
         let clickCb = {
             getBtnFormat: function() {
-                if (this.state.articleUuid == null || this.state.articleUuid !== artUuid) {
+                if (this.state.articleUuid == null ||
+                    this.state.articleUuid !== artUuid) {
                     return {
                         btnClass: "btn btn-success",
                         btnText : Lang.translate("Read more...")
@@ -109,7 +110,8 @@ class ArticleTagBrief extends React.Component
 
         return (
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                {AuthorFeed.renderToggleView(article.authorUuid, article, this._readArticle, artTag)}
+                {AuthorFeed.renderToggleView(article.authorUuid,
+                    article, this._readArticle, artTag)}
             </div>
         )
     }
@@ -132,7 +134,8 @@ class ArticleTagBrief extends React.Component
 
         return (
             <section id='widget-grid'>
-                {ArticleTagBrief.renderArtBox(articles, this._renderArtBrief, this._renderArtFull, true)}
+                {ArticleTagBrief.renderArtBox(articles,
+                    this._renderArtBrief, this._renderArtFull, true)}
             </section>
         );
     }

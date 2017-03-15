@@ -44,24 +44,41 @@ class ArticleBox extends React.Component
                     <div className="col-md-4 col-sm-12 col-xs-12">
                         <div className="product-image" style={{minHeight: "150"}}>
                             <div className="air air-top-left padding-10">
-                                <img src={data.logo} width={data.logoWidth} height={data.logoHeight} className="img-responsive"/>
+                                <img src={data.logo} width={data.logoWidth}
+                                    height={data.logoHeight} className="img-responsive"/>
                             </div>
                             <img src={data.image} className="img-responsive"/>
                         </div>
-                        {data.tagImage ? <span className="tag2 hot">{data.tagImage}</span> : null}
+                        {data.tagImage ?
+                            <span className="tag2 hot">{data.tagImage}</span> : null}
                         <LikeStat data={data.likeStat} split={true}/>
                         <div className="smart-form">
                             <div className="rating">
-                                <input type="radio" name="stars-rating" id="stars-rating-5"/>
-                                <label for="stars-rating-5"><i className="fa fa-star"></i></label>
-                                <input type="radio" name="stars-rating" id="stars-rating-4"/>
-                                <label for="stars-rating-4"><i className="fa fa-star"></i></label>
-                                <input type="radio" name="stars-rating" id="stars-rating-3"/>
-                                <label for="stars-rating-3"><i className="fa fa-star text-primary"></i></label>
-                                <input type="radio" name="stars-rating" id="stars-rating-2"/>
-                                <label for="stars-rating-2"><i className="fa fa-star text-primary"></i></label>
-                                <input type="radio" name="stars-rating" id="stars-rating-1"/>
-                                <label for="stars-rating-1"><i className="fa fa-star text-primary"></i></label>
+                                <input type="radio"
+                                    name="stars-rating" id="stars-rating-5"/>
+                                <label for="stars-rating-5">
+                                    <i className="fa fa-star"></i>
+                                </label>
+                                <input type="radio" name="stars-rating"
+                                    id="stars-rating-4"/>
+                                <label for="stars-rating-4">
+                                    <i className="fa fa-star"></i>
+                                </label>
+                                <input type="radio" name="stars-rating"
+                                    id="stars-rating-3"/>
+                                <label for="stars-rating-3">
+                                    <i className="fa fa-star text-primary"></i>
+                                </label>
+                                <input type="radio" name="stars-rating"
+                                    id="stars-rating-2"/>
+                                <label for="stars-rating-2">
+                                    <i className="fa fa-star text-primary"></i>
+                                </label>
+                                <input type="radio" name="stars-rating"
+                                    id="stars-rating-1"/>
+                                <label for="stars-rating-1">
+                                    <i className="fa fa-star text-primary"></i>
+                                </label>
                             </div>
                         </div>
                     </div>
@@ -75,13 +92,19 @@ class ArticleBox extends React.Component
                             <p className="price-container">
                                 <span>{data.artPrice}</span>
                             </p>
-                            {data.dateInfo ? <span><i className="fa fa-calendar"/> {data.dateInfo}</span> : null}
+                            {data.dateInfo ?
+                                <span><i className="fa fa-calendar"/>
+                                    {data.dateInfo}
+                                </span> : null}
                         </div>
                         {data.description}
                         <div className="product-info smart-form">
                             <div className="row">
                                 <div className="col-md-6 col-sm-6 col-xs-6">
-                                    <a className={data.clickBtn.btnClass} onClick={data.clickCbFn}>{data.clickBtn.btnText}</a>
+                                    <a className={data.clickBtn.btnClass}
+                                        onClick={data.clickCbFn}>
+                                        {data.clickBtn.btnText}
+                                    </a>
                                 </div>
                                 <div className="col-md-6 col-sm-6 col-xs-6">
                                 </div>
@@ -115,7 +138,8 @@ class ArticleBox extends React.Component
             artCategory: artRank.tagName,
             artBrief   : artRank.contentBrief,
             artPrice   : author.getUserName(),
-            clickCbFn  : clickCb.clickHandler.bind(clickCb.callbackArg, articleUuid, artRank),
+            clickCbFn  : clickCb.clickHandler
+                            .bind(clickCb.callbackArg, articleUuid, artRank),
             clickBtn   : clickCb.getBtnFormat(clickCb.articleUuid),
             likeStat   : {
                 dateMoment  : article.createdDate,
