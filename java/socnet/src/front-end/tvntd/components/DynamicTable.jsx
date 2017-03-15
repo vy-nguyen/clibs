@@ -390,7 +390,7 @@ class DynamicTable extends React.Component
         }
         footer.onSubmit(changes);
         this.setState({
-            newRows: null
+            newRows: {}
         });
     }
 
