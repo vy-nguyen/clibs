@@ -118,14 +118,15 @@ class TAWrap extends React.Component
     }
 
     render() {
-        let entry = this.props.entry;
+        let entry = this.props.entry, fmt;
+        fmt = this.props.taFormat != null ? this.props.taFormat : {
+            input: 'form-control input-sm'
+        };
         return (
             <TA.Typeahead options={entry.taOptions}
                 maxVisible={entry.maxVisible ? entry.maxVisible : 6}
-                placeholder={entry.inpHolder} value={this.state.value}
-                customClasses={{input: 'form-control input-sm'}}
-                onBlur={this._defOnBlur} onOptionSelected={this._defOnSelect}
-            />
+                placeholder={entry.inpHolder} value={this.state.value} customClasses={fmt}
+                onBlur={this._defOnBlur} onOptionSelected={this._defOnSelect}/>
         );
     }
 }

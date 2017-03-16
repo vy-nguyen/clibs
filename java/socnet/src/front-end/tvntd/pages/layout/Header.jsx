@@ -240,7 +240,8 @@ class Header extends React.Component
             logoutMenu = (
                 <div id="logout" className="btn-header transparent pull-right">
                     <span>
-                        <a href="/login/logout" title="Sign Out" data-logout-msg="Close this browser window">
+                        <a href="/login/logout" title="Sign Out"
+                            data-logout-msg="Close this browser window">
                             <i className="fa fa-sign-out"/>
                         </a>
                     </span>

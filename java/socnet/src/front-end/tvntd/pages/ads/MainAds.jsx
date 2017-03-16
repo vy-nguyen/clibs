@@ -13,88 +13,7 @@ import Lang            from 'vntd-root/stores/LanguageStore.jsx';
 import AdminStore      from 'vntd-root/stores/AdminStore.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 import Mesg            from 'vntd-root/components/Mesg.jsx';
-import ArticleTagBrief from 'vntd-root/components/ArticleTagBrief.jsx';
-
-class TagListing extends React.Component
-{
-    constructor(props) {
-        super(props);
-
-        this._submitChanges = this._submitChanges.bind(this);
-        this._getTagHeader  = this._getTagHeader.bind(this);
-        this._getTagFooter  = this._getTagFooter.bind(this);
-        this._cloneTabRow   = this._cloneTabRow.bind(this);
-    }
-
-    _submitChanges(changes) {
-        console.log("Submit change");
-        console.log(changes);
-        Actions.setTags({
-            publicTags : changes,
-            deletedTags: []
-        });
-    }
-
-    _getEditForm() {
-    }
-
-    _getTagHeader() {
-        const tagTab = [ {
-            key   : "tagName",
-            format: "fa fa-tags",
-            header: Lang.translate("Tag Name")
-        }, {
-            key   : "parentTag",
-            format: "fa fa-tags",
-            header: Lang.translate("Parent Tag")
-        }, {
-            key   : "tagKind",
-            format: "",
-            header: Lang.translate("Tag Kind")
-        }, {
-            key   : "rankScore",
-            format: "fa fa-tags",
-            header: Lang.translate("Tag Rank")
-        }, {
-            key   : "ownerUuid",
-            format: "fa fa-user",
-            header: Lang.translate("Owner")
-        } ];
-        return tagTab;
-    }
-
-    _cloneTabRow(row, count) {
-        return ArticleTagStore.cloneTagTableRow(row, count);
-    }
-
-    _getTagFooter() {
-        return (
-            <footer>
-                <button className="btn btn-primary pull-right"
-                    onClick={this._submitChanges}>
-                    <Mesg text="Save Changes"/>
-                </button>
-            </footer>
-        );
-    }
-
-    render() {
-        let tab = ArticleTagStore.getTagTableData(true, this.props.tagKind);
-        // let tab = ArticleTagStore.getTagTableData(true, null);
-        const footer = [ {
-            format : "btn btn-primary pull-right",
-            title  : "Save Changes",
-            onClick: this._submitChanges
-        } ];
-        return (
-            <DynamicTable tableFormat={this._getTagHeader()} tableData={tab}
-                tableTitle={Lang.translate("Tag Listing")} edit={true}
-                tableFooter={footer} cloneRow={this._cloneTabRow}
-                tableId={_.uniqueId('tag-list-')}
-            />
-        );
-    }
-}
+import YellowPage      from './YellowPage.jsx';
 
 class MainAds extends React.Component
 {
@@ -179,7 +98,7 @@ class MainAds extends React.Component
     }
 
     _renderYellowPage() {
-        return <TagListing tagKind="ads"/>
+        return <YellowPage/>
     }
 
     _renderPostAds() {

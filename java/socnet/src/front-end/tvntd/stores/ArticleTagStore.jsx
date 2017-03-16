@@ -63,7 +63,8 @@ let ArticleTagStore = Reflux.createStore({
 
     init: function() {
         this.data = {
-            pubTagIndex: {},
+            publicTags   : {},  // all public tags
+            pubTagIndex  : {},  // non-public tags
             sortedPubTags: [],
             sortedIdxTags: [],
             sortedTagKind: {},
@@ -342,6 +343,10 @@ let ArticleTagStore = Reflux.createStore({
             if (t != null) {
                 t.addSubTag(tagObj);
             }
+        } else if (this.data.publicTags[tagObj.tagName] == null) {
+            // No parent tag is public tag.
+            this.data.publicTags[tagObj.tagName] = tagObj;
+            insertSorted(tagObj, this.data.sortedPubTags, this._compareTags);
         }
     },
 
@@ -375,6 +380,11 @@ let ArticleTagStore = Reflux.createStore({
         }
         delete tagIndex[tagObj.tagName];
         removeArray(sortedIdxTags, tagObj, 0, this._compareTagName);
+
+        if (this.data.publicTags[tagObj.tagName] != null) {
+            delete this.data.publicTags[tagObj.tagName];
+            removeArray(this.data.sortedPubTags, tagObj, 0, this._compareTagName);
+        }
     },
 
     _resortTags: function() {
