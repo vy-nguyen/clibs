@@ -63,8 +63,8 @@ let ArticleTagStore = Reflux.createStore({
 
     init: function() {
         this.data = {
-            publicTags   : {},  // all public tags
-            pubTagIndex  : {},  // non-public tags
+            publicTags   : {},  // only public tags
+            pubTagIndex  : {},  // all tags
             sortedPubTags: [],
             sortedIdxTags: [],
             sortedTagKind: {},
@@ -116,12 +116,27 @@ let ArticleTagStore = Reflux.createStore({
         this.data.pendArtPubTag[artRank.tagName] = tag;
     },
 
-    getModifiedPubTags(clear) {
+    getModifiedPubTags: function(clear) {
         let ret = this.data.pendArtPubTag;
         if (clear === true) {
             this.data.pendArtPubTag = {};
         }
         return ret;
+    },
+
+    getFilterTag: function(kind, filterFn, arg) {
+        if (this.data.sortedTagKind[kind] != null) {
+            return filterFn(this.data.sortedTagKind[kind], arg);
+        }
+        return null;
+    },
+
+    getTagByName: function(tagName) {
+        let tag = this.data.pubTagIndex[tagName];
+        if (tag != null) {
+            return tag;
+        }
+        return this.data.publicTags[tagName];
     },
 
     addToPublicTag: function(tagName, tagKind, uuid) {
@@ -348,6 +363,18 @@ let ArticleTagStore = Reflux.createStore({
             this.data.publicTags[tagObj.tagName] = tagObj;
             insertSorted(tagObj, this.data.sortedPubTags, this._compareTags);
         }
+        this._addSortedTagKind(tagObj);
+    },
+
+    _addSortedTagKind: function(tagObj) {
+        let tagKind, index = tagObj.tagKind != null ? tagObj.tagKind : "blog";
+
+        tagKind = this.data.sortedTagKind[index];
+        if (tagKind == null) {
+            this.data.sortedTagKind[index] = [];
+            tagKind = this.data.sortedTagKind[index];
+        }
+        insertSorted(tagObj, tagKind, this._compareTags);
     },
 
     _updateParents: function() {

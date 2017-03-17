@@ -40,15 +40,17 @@ class SelectWrap extends React.Component
             value: val.value
         });
         if (onSelected != null) {
-            onSelected(entry, val);
+            onSelected(entry, val.value);
         }
     }
 
     render() {
-        let entry = this.props.entry;
+        let entry = this.props.entry,
+            value = this.props.value != null ? this.props.value : this.state.value;
+
         return (
             <Select options={entry.selectOpt}
-                name={entry.inpName} value={this.state.value}
+                name={entry.inpName} value={value}
                 onChange={this._defOnSelect.bind(this, entry)}
             />
         );

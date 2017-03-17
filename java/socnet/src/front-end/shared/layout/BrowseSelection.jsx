@@ -13,16 +13,53 @@ import {
 class BrowseSelection extends React.Component
 {
     constructor(props) {
+        let i, entry, labels = props.labels, len = labels.length;
+
         super(props);
         this._onSearch   = this._onSearch.bind(this);
         this._onSelected = this._onSelected.bind(this);
+
+        for (i = 0; i < len; i++) {
+            entry = labels[i].entry;
+            this._setDefEntry(entry);
+
+            if (entry.inpDefVal != null) {
+                break;
+            }
+        }
+        this.state = {
+            select: entry
+        };
+    }
+
+    getCurrEntry() {
+        return this.state.entry;
     }
 
     _onSearch() {
     }
 
+    _setDefEntry(entry) {
+        if (!_.isEmpty(entry.selectOpt) && entry.inpDefVal == null) {
+            entry.inpDefVal = entry.selectOpt[0].label;
+        }
+    }
+
+    _clickLabel(label) {
+        let entry = label.entry;
+
+        this._setDefEntry(entry);
+        entry.onSelect(entry, entry.inpDefVal);
+
+        this.setState({
+            select: entry
+        });
+    }
+
     _onSelected(entry, val) {
-        console.log("on selected " + entry.inpName + " " + val);
+        console.log("select val " + val + " entry " + entry.inpName);
+        entry.inpDefVal = val;
+        entry.onSelect(entry, val);
     }
 
     render() {
@@ -32,28 +69,28 @@ class BrowseSelection extends React.Component
             inpHolder : "abc",
             onSelect  : this._onSelected
         },
-        inpLabels, entry, labels = [];
+        inpLabels, select = this.state.select, labels = [];
 
         inpLabels = this.props.labels;
-        entry = inpLabels[0].entry;
-
         _.forEach(inpLabels, function(item) {
             labels.push(
                 <li key={_.uniqueId('label-')}>
                     <h3>
-                        <span className="label label-primary">{item.label}</span>
+                        <a onClick={this._clickLabel.bind(this, item)}>
+                            <span className="label label-primary">{item.label}</span>
+                        </a>
                     </h3>
                 </li>
             );
-        });
+        }.bind(this));
+
         return (
-            <div className="container">
-                <div className="row">
-                    <ul className="list-inline">{labels}</ul>
-                </div>
+            <div className="row">
+                <ul className="list-inline">{labels}</ul>
                 <div className="row">
                     <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                        <SelectWrap entry={entry}/>
+                        <SelectWrap entry={select} value={select.inpDefVal}
+                            onSelected={this._onSelected}/>
                     </div>
                     <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                         <div className="input-group">

@@ -61,7 +61,8 @@ class TypeAhead extends React.Component
     }
 
     _updateState(data) {
-        let artRank = AuthorStore.getArticleRank(this.state.myUuid, this.props.articleUuid);
+        let artRank = AuthorStore.getArticleRank(this.state.myUuid,
+                                                 this.props.articleUuid);
         this.setState({
             artRank  : artRank,
             authorTag: AuthorStore.getAuthorTag(myUuid, artRank.tagName)

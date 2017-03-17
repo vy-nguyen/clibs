@@ -37,6 +37,7 @@ class ListTags extends React.Component
     componentWillUnmount() {
         if (this.unsub != null) {
             this.unsub();
+            this.unsub = null;
         }
     }
 
