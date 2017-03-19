@@ -85,24 +85,24 @@ class EStorePost extends React.Component
 
     componentWillMount() {
         let product = this.props.product;
-        if (product != null) {
-            InputStore.storeItemIndex(this._getItemId(this._prodCatId),
-                                      product.prodCat, false);
-            InputStore.storeItemIndex(this._getItemId(this._prodNameId),
-                                      product.prodName, false);
-            InputStore.storeItemIndex(this._getItemId(this._prodPriceId),
-                                      product.prodPrice, false);
-            InputStore.storeItemIndex(this._getItemId(this._prodNoticeId),
-                                      product.prodNotice, false);
-            InputStore.storeItemIndex(this._getItemId(this._publicCatId),
-                                      product.publicTag, false);
-            InputStore.storeItemIndex(this._getItemId(this._prodDescId),
-                                      product.prodDesc, false);
-            InputStore.storeItemIndex(this._getItemId(this._prodDetailId),
-                                      product.prodDetail, false);
-            InputStore.storeItemIndex(this._getItemId(this._prodSpecId),
-                                      product.prodSpec, false);
+        if (product == null) {
+            return;
         }
+        InputStore.storeItemIndex(this._getItemId(this._prodCatId), product.prodCat, false);
+        InputStore.storeItemIndex(this._getItemId(this._prodNameId),
+                                  product.prodName, false);
+        InputStore.storeItemIndex(this._getItemId(this._prodPriceId),
+                                  product.prodPrice, false);
+        InputStore.storeItemIndex(this._getItemId(this._prodNoticeId),
+                                  product.prodNotice, false);
+        InputStore.storeItemIndex(this._getItemId(this._publicCatId),
+                                  product.publicTag, false);
+        InputStore.storeItemIndex(this._getItemId(this._prodDescId),
+                                  product.prodDesc, false);
+        InputStore.storeItemIndex(this._getItemId(this._prodDetailId),
+                                  product.prodDetail, false);
+        InputStore.storeItemIndex(this._getItemId(this._prodSpecId),
+                                  product.prodSpec, false);
     }
 
     componentDidMount() {
@@ -159,8 +159,6 @@ class EStorePost extends React.Component
 
     _onSaveProduct() {
         StateButtonStore.setButtonStateObj(this._publishBtn, "saving");
-        console.log("Save product...");
-        console.log(this._getPostData());
     }
 
     _onPostProduct() {
@@ -235,8 +233,15 @@ class EStorePost extends React.Component
     }
 
     _clearPostData() {
-        let dz, refs = this.refs;
+        let dz = InputStore.clearItemIndex(this._getItemId(this._logoImgId));
 
+        if (dz != null) {
+            dz.removeAllFiles();
+        }
+        dz = InputStore.clearItemIndex(this._getItemId(this._prodPicsId));
+        if (dz != null) {
+            dz.removeAllFiles();
+        }
         InputStore.clearItemIndex(this._getItemId(this._prodCatId));
         InputStore.clearItemIndex(this._getItemId(this._prodNameId));
         InputStore.clearItemIndex(this._getItemId(this._prodPriceId));
@@ -246,15 +251,6 @@ class EStorePost extends React.Component
         InputStore.clearItemIndex(this._getItemId(this._prodDetailId));
         InputStore.clearItemIndex(this._getItemId(this._prodSpecId));
         InputStore.clearItemIndex(this._getItemId(this._ImageRecId));
-
-        dz = InputStore.clearItemIndex(this._getItemId(this._logoImgId));
-        if (dz != null) {
-            dz.removeAllFiles();
-        }
-        dz = InputStore.clearItemIndex(this._getItemId(this._prodPicsId));
-        if (dz != null) {
-            dz.removeAllFiles();
-        }
     }
 
     _updateState(store, data, status) {
@@ -282,10 +278,10 @@ class EStorePost extends React.Component
             noticeVal = post.prodNotice;
         } else {
             pubTag    = null;
-            catVal    = choose(this.refs.prodCat, "value", null);
-            nameVal   = choose(this.refs.prodName, "value", null);
-            priceVal  = choose(this.refs.prodPrice, "value", null);
-            noticeVal = choose(this.refs.prodNotice, "value", null);
+            catVal    = null;
+            nameVal   = null;
+            priceVal  = null;
+            noticeVal = null;
         }
         prodDescId   = this._getItemId(this._prodDescId);
         prodDetailId = this._getItemId(this._prodDetailId);

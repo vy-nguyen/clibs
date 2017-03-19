@@ -51,7 +51,8 @@ class StateButton extends React.Component
         let btnState = this.state.btnState;
         let className = btnState.getClassFmt();
         return (
-            <button className={className} onClick={this._btnClick} disabled={btnState.isDisabled()}>
+            <button className={className}
+                onClick={this._btnClick} disabled={btnState.isDisabled()}>
                 {btnState.getText()}
             </button>
         );
