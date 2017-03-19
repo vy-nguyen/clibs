@@ -24,7 +24,7 @@ import Lang             from 'vntd-root/stores/LanguageStore.jsx';
 import Mesg             from 'vntd-root/components/Mesg.jsx';
 
 import {
-    GenericForm, SelectWrap, DropZoneWrap
+    GenericForm, SelectWrap, DropZoneWrap, InputInline, InputBox
 } from 'vntd-shared/forms/commons/GenericForm.jsx';
 
 class EStorePost extends React.Component
@@ -39,7 +39,6 @@ class EStorePost extends React.Component
         this._updateState = this._updateState.bind(this);
         this._editProduct = this._editProduct.bind(this);
         this._getPostData = this._getPostData.bind(this);
-        this._selPublicCat  = this._selPublicCat.bind(this);
         this._getInitState  = this._getInitState.bind(this);
         this._onSaveProduct = this._onSaveProduct.bind(this);
         this._onPostProduct = this._onPostProduct.bind(this);
@@ -87,14 +86,22 @@ class EStorePost extends React.Component
     componentWillMount() {
         let product = this.props.product;
         if (product != null) {
-            InputStore.storeItemIndex(this._getItemId(this._prodCatId), product.prodCat, false);
-            InputStore.storeItemIndex(this._getItemId(this._prodNameId), product.prodName, false);
-            InputStore.storeItemIndex(this._getItemId(this._prodPriceId), product.prodPrice, false);
-            InputStore.storeItemIndex(this._getItemId(this._prodNoticeId), product.prodNotice, false);
-            InputStore.storeItemIndex(this._getItemId(this._publicCatId), product.publicTag, false);
-            InputStore.storeItemIndex(this._getItemId(this._prodDescId), product.prodDesc, false);
-            InputStore.storeItemIndex(this._getItemId(this._prodDetailId), product.prodDetail, false);
-            InputStore.storeItemIndex(this._getItemId(this._prodSpecId), product.prodSpec, false);
+            InputStore.storeItemIndex(this._getItemId(this._prodCatId),
+                                      product.prodCat, false);
+            InputStore.storeItemIndex(this._getItemId(this._prodNameId),
+                                      product.prodName, false);
+            InputStore.storeItemIndex(this._getItemId(this._prodPriceId),
+                                      product.prodPrice, false);
+            InputStore.storeItemIndex(this._getItemId(this._prodNoticeId),
+                                      product.prodNotice, false);
+            InputStore.storeItemIndex(this._getItemId(this._publicCatId),
+                                      product.publicTag, false);
+            InputStore.storeItemIndex(this._getItemId(this._prodDescId),
+                                      product.prodDesc, false);
+            InputStore.storeItemIndex(this._getItemId(this._prodDetailId),
+                                      product.prodDetail, false);
+            InputStore.storeItemIndex(this._getItemId(this._prodSpecId),
+                                      product.prodSpec, false);
         }
     }
 
@@ -150,9 +157,6 @@ class EStorePost extends React.Component
         StateButtonStore.setButtonStateObj(this._publishBtn, "needSave");
     }
 
-    _selPublicCat(entry, val) {
-    }
-
     _onSaveProduct() {
         StateButtonStore.setButtonStateObj(this._publishBtn, "saving");
         console.log("Save product...");
@@ -197,7 +201,9 @@ class EStorePost extends React.Component
     }
 
     _getPostData() {
-        let imgRec = InputStore.getItemIndex(this._getItemId(this._ImageRecId)), product = this.props.product;
+        let imgRec = InputStore.getItemIndex(this._getItemId(this._ImageRecId)),
+            product = this.props.product;
+
         if (product == null && imgRec == null) {
             return {};
         }
@@ -265,8 +271,8 @@ class EStorePost extends React.Component
     }
 
     _editProduct() {
-        let catVal, nameVal, priceVal, noticeVal, prodDescId, prodDetailId, prodSpecId, pubTag,
-            dropImg = null, post = this.props.product;
+        let catVal, nameVal, priceVal, noticeVal, prodDescId, prodDetailId,
+            prodSpecId, pubTag, dropImg = null, post = this.props.product;
 
         if (post != null) {
             pubTag    = post.publicTag;         
@@ -286,7 +292,7 @@ class EStorePost extends React.Component
         prodSpecId   = this._getItemId(this._prodSpecId);
 
         const prodCat = {
-            labelTxt : Lang.translate("Categorty"),
+            labelTxt : Lang.translate("Category"),
             inpName  : this._getItemId(this._prodCatId),
             inpDefVal: catVal,
             inpHolder: Lang.translate("Product Category"),
@@ -409,11 +415,15 @@ class EStorePost extends React.Component
                     <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                         <div className="product-deatil">
                             <div className="name">
-                                {GenericForm.renderInputBox(publicCat, this, null, this._selPublicCat)}
-                                {GenericForm.renderInputInline(prodCat, this, this._onBlurInput)}
-                                {GenericForm.renderInputInline(prodName, this, this._onBlurInput)}
-                                {GenericForm.renderInputInline(prodPrice, this, this._onBlurInput)}
-                                {GenericForm.renderInputInline(priceNotice, this, this._onBlurInput)}
+                                <InputBox entry={publicCat}/>
+                                <InputInline entry={prodCat}
+                                    bind={this} onBlur={this._onBlurInput}/>
+                                <InputInline entry={prodName}
+                                    bind={this} onBlur={this._onBlurInput}/>
+                                <InputInline entry={prodPrice}
+                                    bind={this} onBlur={this._onBlurInput}/>
+                                <InputInline entry={priceNotice}
+                                    bind={this} onBlur={this._onBlurInput}/>
                             </div>
                             <span className="tag1"></span>
                         </div>
@@ -421,9 +431,12 @@ class EStorePost extends React.Component
                 </div>
                 <div className="row">
                     <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                        {GenericForm.renderInputInline(prodDesc, this, this._onBlurInput)}
-                        {GenericForm.renderInputInline(prodDescDetail, this, this._onBlurInput)}
-                        {GenericForm.renderInputInline(prodSpec, this, this._onBlurInput)}
+                        <InputInline entry={prodDesc}
+                            bind={this} onBlur={this._onBlurInput}/>
+                        <InputInline entry={prodDescDetail}
+                            bind={this} onBlur={this._onBlurInput}/>
+                        <InputInline entry={prodSpec}
+                            bind={this} onBlur={this._onBlurInput}/>
                     </div>
                 </div>
                 <div className="row">
@@ -432,8 +445,8 @@ class EStorePost extends React.Component
                         <div className="btn-group pull-right" role="group">
                             <StateButton btnId={this._saveBtnId} className="btn btn-success"
                                 onClick={this._onSaveProduct}/>
-                            <StateButton btnId={this._publishBtnId} className="btn btn-success"
-                                onClick={this._onPostProduct}/>
+                            <StateButton btnId={this._publishBtnId}
+                                className="btn btn-success" onClick={this._onPostProduct}/>
                         </div>
                     </div>
                 </div>
@@ -447,7 +460,9 @@ class EStorePost extends React.Component
                 <article className="col-sm-12 col-md-12 col-lg-12">
                     <JarvisWidget id="estore-post" color="purple">
                         <header>
-                            <span className="widget-icon"> <i className="fa fa-pencil"/></span>
+                            <span className="widget-icon">
+                                <i className="fa fa-pencil"/>
+                            </span>
                             <h2><Mesg text="EStore Item"/></h2>
                         </header>
                         <div className="widget-body">

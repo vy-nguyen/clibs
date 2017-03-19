@@ -14,12 +14,15 @@ import AdminStore      from 'vntd-root/stores/AdminStore.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 import Mesg            from 'vntd-root/components/Mesg.jsx';
 import YellowPage      from './YellowPage.jsx';
+import PostAds         from './PostAds.jsx';
+import FeatureAds      from './FeatureAds.jsx';
 
 class MainAds extends React.Component
 {
     constructor(props) {
         let mode = props.params.blog;
         super(props);
+
         this.state = {
             tabIdx : 0,
             pubMode: mode,
@@ -94,7 +97,7 @@ class MainAds extends React.Component
     }
 
     _renderFeatureAds() {
-        return <h1>Feature Ads</h1>
+        return <FeatureAds/>
     }
 
     _renderYellowPage() {
@@ -102,7 +105,7 @@ class MainAds extends React.Component
     }
 
     _renderPostAds() {
-        return <h1>Post Ads</h1>
+        return <PostAds/>
     }
 
     render() {

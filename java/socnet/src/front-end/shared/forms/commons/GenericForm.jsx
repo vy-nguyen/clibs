@@ -269,6 +269,32 @@ class InputBox extends React.Component
     }
 
     render() {
+        let { entry, bind, onBlur, onSelected } = this.props,
+        labelFmt = entry.labelFmt != null ?
+            entry.labelFmt : "control-label col-xs-2 col-sm-2 col-md-2 col-lg-2",
+
+        inputFmt = entry.inputFmt != null ?
+            entry.inputFmt : "control-label col-xs-10 col-sm-10 col-md-10 col-lg-10",
+
+        style = entry.errorFlag == true ? { color:'red' } : null,
+        label = (
+            <label className={labelFmt} style={style} for="textinput">
+                <Mesg text={entry.labelTxt}/>
+            </label>
+        );
+
+        return (
+            <div className="row" key={_.uniqueId('gen-inp-')}>
+                <div className="form-group">
+                    {label}
+                    <div className={inputFmt}>
+                        <InputWrap entry={entry} bind={bind}
+                            onBlur={onBlur} onSelected={onSelected}/>
+                        <ErrorView mesg={true} errorId={entry.errorId}/>
+                    </div>
+                </div>
+            </div>
+        );
     }
 }
 
@@ -279,6 +305,33 @@ class InputInline extends React.Component
     }
 
     render() {
+        let { entry, bind, onBlur, onSelected } = this.props,
+        labelFmt = entry.labelFmt != null ?
+            entry.labelFmt : "control-label col-xs-2 col-sm-2 col-md-2 col-lg-2",
+
+        inputFmt = entry.inputFmt != null ?
+            entry.inputFmt : "control-label col-xs-10 col-sm-10 col-md-10 col-lg-10",
+
+        style = entry.errorFlag == true ? { color:'red' } : null;
+
+        return (
+            <div className="inbox-info-bar no-padding" key={_.uniqueId('gen-inp-')}>
+                <div className="row">
+                    <div className="form-group">
+                        <label className={labelFmt}>
+                            <strong style={style}>
+                                <Mesg text={entry.labelTxt}/>
+                            </strong>
+                        </label>
+                        <div className={inputFmt}>
+                            <InputWrap entry={entry} bind={bind}
+                                onBlur={onBlur} onSelected={onSelected}/>
+                            <ErrorView mesg={true} errorId={entry.errorId}/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
     }
 }
 
@@ -344,61 +397,6 @@ class GenericForm extends React.Component
         };
     }
 
-    static renderInputBox(entry, bind, onBlur, onSelected) {
-        let labelFmt = entry.labelFmt != null ?
-            entry.labelFmt : "control-label col-xs-2 col-sm-2 col-md-2 col-lg-2",
-
-        inputFmt = entry.inputFmt != null ?
-            entry.inputFmt : "control-label col-xs-10 col-sm-10 col-md-10 col-lg-10",
-
-        style = entry.errorFlag == true ? { color:'red' } : null,
-        label = (
-            <label className={labelFmt} style={style} for="textinput">
-                {entry.labelTxt}
-            </label>
-        );
-
-        return (
-            <div className="row" key={_.uniqueId('gen-inp-')}>
-                <div className="form-group">
-                    {label}
-                    <div className={inputFmt}>
-                        <InputWrap entry={entry} bind={bind}
-                            onBlur={onBlur} onSelected={onSelected}/>
-                        <ErrorView mesg={true} errorId={entry.errorId}/>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    static renderInputInline(entry, bind, onBlur, onSelected) {
-        let labelFmt = entry.labelFmt != null ?
-            entry.labelFmt : "control-label col-xs-2 col-sm-2 col-md-2 col-lg-2";
-
-        let inputFmt = entry.inputFmt != null ?
-            entry.inputFmt : "control-label col-xs-10 col-sm-10 col-md-10 col-lg-10";
-
-        let style = entry.errorFlag == true ? { color:'red' } : null;
-
-        return (
-            <div className="inbox-info-bar no-padding" key={_.uniqueId('gen-inp-')}>
-                <div className="row">
-                    <div className="form-group">
-                        <label className={labelFmt}>
-                            <strong style={style}>{entry.labelTxt}</strong>
-                        </label>
-                        <div className={inputFmt}>
-                            <InputWrap entry={entry} bind={bind}
-                                onBlur={onBlur} onSelected={onSelected}/>
-                            <ErrorView mesg={true} errorId={entry.errorId}/>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
     render() {
         let form = this.props.form;
         let formButtons = null;
@@ -425,10 +423,11 @@ class GenericForm extends React.Component
             );
         }
         let formEntries = form.formEntries.map(function(item) {
-            let renderFn = item.inline !== true ?
-                GenericForm.renderInputBox : GenericForm.renderInputInline,
-            entries = item.entries.map(function(entry) {
-                return renderFn(entry);
+            let entries = item.entries.map(function(entry) {
+                if (item.inline !== null) {
+                    return <InpubBox entry={entry}/>;
+                }
+                return <InputInline entry={entry}/>
             }.bind(this));
 
             return (
