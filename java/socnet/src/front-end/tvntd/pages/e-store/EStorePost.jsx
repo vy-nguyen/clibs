@@ -162,12 +162,10 @@ class EStorePost extends React.Component
     }
 
     _onPostProduct() {
-        let product, helpText, errText, errFlags, defProd = this.props.product;
+        let product, helpText, errText = null, errFlags = {}, defProd = this.props.product;
 
         product  = this._getPostData();
         helpText = Lang.translate("Enter values in categories highlighted in red");
-        errText  = null;
-        errFlags = {};
 
         if (product.articleUuid == null) {
             errText  = Lang.translate("You forgot to upload pictures for your product");
@@ -175,7 +173,6 @@ class EStorePost extends React.Component
         [
             "prodCat", "prodDesc", "prodDetail", "prodName",
             "prodNotice", "prodPrice", "prodSpec", "pubTag", "prodDetail"
-
         ].forEach(function(entry) {
             if (defProd != null && defProd[entry] != null && _.isEmpty(product[entry])) {
                 product[entry] = defProd[entry];
@@ -213,7 +210,7 @@ class EStorePost extends React.Component
             }
         }
         return {
-            estore    : true,
+            estore     : true,
             authorUuid : this._myUuid,
             articleUuid: imgRec.articleUuid,
             prodCat    : InputStore.getIndexString(this._getItemId(this._prodCatId)),

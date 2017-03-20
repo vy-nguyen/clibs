@@ -6,6 +6,7 @@
 import _                  from 'lodash';
 import React, {PropTypes} from 'react-mod';
 
+import {choose}         from 'vntd-shared/utils/Enum.jsx';
 import ErrorView        from 'vntd-shared/layout/ErrorView.jsx';
 import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
 import InputStore       from 'vntd-shared/stores/NestableStore.jsx';
@@ -31,6 +32,7 @@ class PostAds extends React.Component
         this._errorId     = 'post-ads-err';
         this._postAdId    = 'post-ads-id';
         this._busCatId    = 'ad-category';
+        this._busImgId    = 'ad-main-img';
         this._busNameId   = 'bus-name';
         this._busHourId   = 'bus-hour';
         this._busDescId   = 'bus-desc';
@@ -52,11 +54,16 @@ class PostAds extends React.Component
         this._updateState = this._updateState.bind(this);
         this._imgUploadOk = this._imgUploadOk.bind(this);
         this._clearAdData = this._clearAdData.bind(this);
+        this._getInitState = this._getInitState.bind(this);
 
         this._postAdBtn = StateButtonStore.createButton(this._postAdId, function() {
             return StateButton.saveButtonFsm("Post", "Post Ad", "Published Ad");
         });
-        this.state = {
+        this.state = this._getInitState();
+    }
+
+    _getInitState() {
+        return {
             errFlags: {}
         };
     }
@@ -107,23 +114,96 @@ class PostAds extends React.Component
     }
 
     _clearAdData() {
-    }
-
-    _updateState() {
-    }
-
-    _postAdClick() {
-        StateButtonStore.setButtonStateObj(this._postAdBtn, "saving");
+        if (this._imgDz != null) {
+            this._imgDz.removeAllFiles();
+        }
+        InputStore.clearItemIndex(this._busCatId);
+        InputStore.clearItemIndex(this._busNameId);
+        InputStore.clearItemIndex(this._busImgId);
+        InputStore.clearItemIndex(this._busHourId);
+        InputStore.clearItemIndex(this._busDecId);
+        InputStore.clearItemIndex(this._busPhoneId);
+        InputStore.clearItemIndex(this._busStreetId);
+        InputStore.clearItemIndex(this._busCityId);
+        InputStore.clearItemIndex(this._busStateId);
+        InputStore.clearItemIndex(this._busZipId);
+        InputStore.clearItemIndex(this._busWebId);
+        InputStore.clearItemIndex(this._busEmailId);
     }
 
     _imgUploadOk(entry, result) {
     }
 
+    _updateState() {
+        StateButtonStore.setButtonStateObj(this._postAdBtn, "saved");
+        this._clearAdData();
+        this.setState(this._getInitState());
+    }
+
+    _postAdClick() {
+        let ad, helpText, errText = null, errFlags = {}, defAd = this.props.ads;
+
+        ad = this._getAdData();
+        helpText = Lang.translate("Enter values in highlighted fields");
+        [
+            "busCat", "busName", "busHour", "busDesc", "busPhone",
+            "busStreet", "busCity", "busState", "busZip", "busWeb", "busEmail"
+        ].forEach(function(field) {
+            if (defAd != null && defAd[field] != null && _.isEmpty(ad[field])) {
+                ad[field] = defAd[field];
+            }
+            if (_.isEmpty(ad[field])) {
+                errFlags[field] = true;
+                if (errText == null) {
+                    errText = Lang.translate(
+                        "Please correct values in highlighted fields");
+                }
+            }
+        });
+        if (errText != null) {
+            this.setState({
+                errFlags: errFlags
+            });
+            ErrorStore.reportErrMesg(this._errorId, errText, helpText);
+            return;
+        }
+        StateButtonStore.setButtonStateObj(this._postAdBtn, "saving");
+        console.log(ad);
+    }
+
     _getAdData() {
+        let imgRec = InputStore.getItemIndex(this.busImgId),
+            ad = this.props.ads;
+
+        if (imgRec == null) {
+            imgRec = {
+                articleUuid: 0,
+                adImgs     : [],
+                mainImg    : null
+            };
+        }
+        return {
+            authorUuid : 0,
+            articleUuid: imgRec.articleUuid,
+            busCat     : InputStore.getIndexString(this._busCatId),
+            busName    : InputStore.getIndexString(this._busNameId),
+            busHour    : InputStore.getIndexString(this._busHourId),
+            busDesc    : InputStore.getIndexString(this._busDescId),
+            busPhone   : InputStore.getIndexString(this._busPhoneId),
+            busStreet  : InputStore.getIndexString(this._busStreetId),
+            busCity    : InputStore.getIndexString(this._busCityId),
+            busState   : InputStore.getIndexString(this._busStateId),
+            busZip     : InputStore.getIndexString(this._busZipId),
+            busWeb     : InputStore.getIndexString(this._busWebId),
+            busEmail   : InputStore.getIndexString(this._busEmailId),
+            mainImg    : imgRec.mainImg,
+            adImgs     : imgRec.adImgs,
+            createDate : (new Date()).getDate()
+        };
     }
 
     _editAd() {
-        let post = this.props.post, errFlag = this.state.errFlags,
+        let ad = this.props.ads, errFlag = this.state.errFlags,
             adImg, twoCols,
         busCat = {
             select   : true,
@@ -137,17 +217,17 @@ class PostAds extends React.Component
         },
         busName = {
             inpName  : this._busNameId,
-            inpDefVal: null,
+            inpDefVal: choose(InputStore.getItemIndex(this._busNameId), null),
             inpHolder: Lang.translate('ABC Service'),
             errorId  : this._busNameId,
-            errorFlag: errFlag.adName,
+            errorFlag: errFlag.busName,
             labelTxt : 'Business Name',
             labelFmt : 'control-label col-sx-3 col-sm-3 col-md-3 col-lg-3',
             inputFmt : 'control-label col-sx-9 col-sm-9 col-md-9 col-lg-9'
         },
         busHour = {
             inpName  : this._busHourId,
-            inpDefVal: null,
+            inpDefVal: choose(InputStore.getItemIndex(this._busHourId), null),
             ipgHolder: Lang.translate('M-F: 9am-5pm'),
             editor   : true,
             errorId  : this._busHourId,
@@ -158,18 +238,18 @@ class PostAds extends React.Component
         },
         busDesc = {
             inpName  : this._busDescId,
-            inpDefVal: null,
+            inpDefVal: choose(InputStore.getItemIndex(this._busDescId), null),
             ipgHolder: Lang.translate('About your busines'),
             editor   : true,
             errorId  : this._busDescId,
-            errorFlag: errFlag.busHour,
+            errorFlag: errFlag.busDesc,
             labelTxt : 'Business Description',
             labelFmt : 'control-label col-sx-2 col-sm-2 col-md-2 col-lg-2',
             inputFmt : 'control-label col-sx-10 col-sm-10 col-md-10 col-lg-10'
         },
         busPhone = {
             inpName  : this._busPhoneId,
-            inpDefVal: null,
+            inpDefVal: choose(InputStore.getItemIndex(this._busPhoneId), null),
             inpHolder: Lang.translate('123-123-1234'),
             errorId  : this._busPhoneId,
             errorFlag: errFlag.busPhone,
@@ -179,7 +259,7 @@ class PostAds extends React.Component
         },
         busStreet = {
             inpName  : this._busStreetId,
-            inpDefVal: null,
+            inpDefVal: choose(InputStore.getItemIndex(this._busStreetId), null),
             inpHolder: Lang.translate('123 Main Street'),
             errorId  : this._busStreetId,
             errorFlag: errFlag.busStreet,
@@ -189,7 +269,7 @@ class PostAds extends React.Component
         },
         busCity = {
             inpName  : this._busCityId,
-            inpDefVal: null,
+            inpDefVal: choose(InputStore.getItemIndex(this._busCityId), null),
             inpHolder: Lang.translate('Some City'),
             errorId  : this._busCityId,
             errorFlag: errFlag.busCity,
@@ -199,7 +279,7 @@ class PostAds extends React.Component
         },
         busState = {
             inpName  : this._busStateId,
-            inpDefVal: null,
+            inpDefVal: choose(InputStore.getItemIndex(this._busStateId), null),
             inpHolder: 'CA',
             errorId  : this._busStateId,
             errorFlag: errFlag.busState,
@@ -209,7 +289,7 @@ class PostAds extends React.Component
         },
         busZip = {
             inpName  : this._busZipId,
-            inpDefVal: null,
+            inpDefVal: choose(InputStore.getItemIndex(this._busZipId), null),
             inpHolder: '12345',
             errorId  : this._busZipId,
             errorFlag: errFlag.busZip,
@@ -219,7 +299,7 @@ class PostAds extends React.Component
         },
         busWeb = {
             inpName  : this._busWebId,
-            inpDefVal: null,
+            inpDefVal: choose(InputStore.getItemIndex(this._busWebId), null),
             inpHolder: 'https://something.com',
             errorId  : this._busWebId,
             errorFlag: errFlag.busWeb,
@@ -229,10 +309,10 @@ class PostAds extends React.Component
         },
         email = {
             inpName  : this._busEmailId,
-            inpDefVal: null,
+            inpDefVal: choose(InputStore.getItemIndex(this._busEmailId), null),
             inpHolder: 'you@something.com',
             errorId  : this._busEmailId,
-            errorFlag: errFlag.email,
+            errorFlag: errFlag.busEmail,
             labelTxt : 'Your email (to claim this ad later)',
             labelFmt : 'control-label col-sx-3 col-sm-3 col-md-3 col-lg-3',
             inputFmt : 'control-label col-sx-9 col-sm-9 col-md-9 col-lg-9'
@@ -252,7 +332,7 @@ class PostAds extends React.Component
             defaultMesg: 'Drop your image here'
         };
 
-        if (post != null) {
+        if (ad != null) {
             adImg = null;
         } else {
             adImg = (
