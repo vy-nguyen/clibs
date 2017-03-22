@@ -93,7 +93,8 @@ public class ArticleService implements IArticleService
             str = Util.truncate(form.getContent(), Article.MaxContentLength);
             art.setContent(str.getBytes("UTF-8"));
             if (form.getContentBrief() != null) {
-                str = Util.truncate(form.getContentBrief(), ArticleRank.MaxContentLength);
+                str = Util.truncate(form.getContentBrief(),
+                        ArticleRank.MaxContentLength);
                 art.setContentBrief(str.getBytes("UTF-8"));
             }
         } catch(UnsupportedEncodingException e) {

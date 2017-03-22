@@ -102,7 +102,8 @@ class PostAds extends React.Component
         form.append('articleUuid', '');
     }
 
-    _dzSuccess() {
+    _dzSuccess(dz, hdr, progress) {
+        this._imgUploadOk(null, hdr);
     }
 
     _dzError() {
@@ -132,6 +133,18 @@ class PostAds extends React.Component
     }
 
     _imgUploadOk(entry, result) {
+        let img = InputStore.getItemIndex(this._busImgId);
+
+        if (img == null) {
+            img = {
+                articleUuid: result.articleUuid,
+                authorUuid : result.authorUuid,
+                imgObjId   : result.imgObjId
+            };
+            InputStore.storeItemIndex(this._busImgId, img, false);
+        }
+        console.log("upload ok");
+        console.log(result);
     }
 
     _updateState() {
@@ -147,7 +160,8 @@ class PostAds extends React.Component
         helpText = Lang.translate("Enter values in highlighted fields");
         [
             "busCat", "busName", "busHour", "busDesc", "busPhone",
-            "busStreet", "busCity", "busState", "busZip", "busWeb", "busEmail"
+            "busStreet", "busCity", "busState", "busZip", "busWeb",
+            "busEmail"
         ].forEach(function(field) {
             if (defAd != null && defAd[field] != null && _.isEmpty(ad[field])) {
                 ad[field] = defAd[field];
@@ -160,6 +174,9 @@ class PostAds extends React.Component
                 }
             }
         });
+        console.log(ad);
+        console.log(errFlags);
+
         if (errText != null) {
             this.setState({
                 errFlags: errFlags
@@ -211,6 +228,8 @@ class PostAds extends React.Component
             inpDefVal: null,
             selectOpt: null,
             onSelect : null,
+            errorId  : this._busCatId,
+            errorFlag: errFlag.busCat,
             labelTxt : 'Category',
             labelFmt : 'control-label col-sx-2 col-sm-2 col-md-2 col-lg-2',
             inputFmt : 'control-label col-sx-10 col-sm-10 col-md-10 col-lg-10'
@@ -226,6 +245,7 @@ class PostAds extends React.Component
             inputFmt : 'control-label col-sx-9 col-sm-9 col-md-9 col-lg-9'
         },
         busHour = {
+            id       : this._busHourId,
             inpName  : this._busHourId,
             inpDefVal: choose(InputStore.getItemIndex(this._busHourId), null),
             ipgHolder: Lang.translate('M-F: 9am-5pm'),
@@ -237,6 +257,7 @@ class PostAds extends React.Component
             inputFmt : 'control-label col-sx-10 col-sm-10 col-md-10 col-lg-10'
         },
         busDesc = {
+            id       : this._busDescId,
             inpName  : this._busDescId,
             inpDefVal: choose(InputStore.getItemIndex(this._busDescId), null),
             ipgHolder: Lang.translate('About your busines'),

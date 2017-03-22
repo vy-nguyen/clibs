@@ -50,7 +50,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tvntd.forms.UuidForm;
@@ -310,7 +313,21 @@ public class PublicPath
             uuid = com.tvntd.util.Constants.PublicUuid;
         }
         List<ArtTagDTO> result = artTagSvc.getUserTags(uuid);
-        System.out.println("Result tag list " + result);
         return new ArtTagList(result, null);
+    }
+
+    /**
+     * Upload anonymous ad images for self-service ad posting.
+     */
+    @RequestMapping(value = "/public/upload-ad-img", method = RequestMethod.POST)
+    @ResponseBody
+    public GenericResponse
+    uploadAdImage(@RequestParam("name") String name,
+            @RequestParam("authorUuid") String authorUuid,
+            @RequestParam("articleUuid") String artUuid,
+            @RequestParam("file") MultipartFile file,
+            MultipartHttpServletRequest reqt, HttpSession session)
+    {
+        return UserPath.s_saveObjFailed;
     }
 }
