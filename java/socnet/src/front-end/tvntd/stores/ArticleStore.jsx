@@ -69,6 +69,27 @@ let EProductStore = Reflux.createStore({
     }
 });
 
+let AdsStore = Reflux.createStore({
+    store: {},
+    listenables: Actions,
+
+    init: function() {
+        this.store = new CommonStore('adstore');
+    },
+
+    getAdsByUuid: function(uuid) {
+        return this.store.getItemByUuid(uuid);
+    },
+
+    onPublicPostAdsCompleted: function(res) {
+        this.store.onPublishItemCompleted(res, this);
+    },
+
+    onPublicPostAdsFailure: function(res) {
+        this.store.onPublishItemFailure(res, this);
+    }
+});
+
 let ArticleStore = Reflux.createStore({
     store: {},
     listenables: Actions,
@@ -188,5 +209,5 @@ let ArticleStore = Reflux.createStore({
     },
 });
 
-export { EProductStore, ArticleStore };
+export { EProductStore, ArticleStore, AdsStore };
 export default ArticleStore;

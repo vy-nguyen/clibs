@@ -17,6 +17,7 @@ import JarvisWidget     from 'vntd-shared/widgets/JarvisWidget.jsx';
 import Actions          from 'vntd-root/actions/Actions.jsx';
 import ArticleTagStore  from 'vntd-root/stores/ArticleTagStore.jsx';
 import Lang             from 'vntd-root/stores/LanguageStore.jsx';
+import {AdsStore}       from 'vntd-root/stores/ArticleStore.jsx';
 import Mesg             from 'vntd-root/components/Mesg.jsx';
 
 import {
@@ -87,6 +88,7 @@ class PostAds extends React.Component
     }
 
     componentDidMount() {
+        this.unsub = AdsStore.listen(this._updateState);
     }
 
     componentWillUnmount() {
@@ -118,18 +120,18 @@ class PostAds extends React.Component
         if (this._imgDz != null) {
             this._imgDz.removeAllFiles();
         }
-        InputStore.clearItemIndex(this._busCatId);
-        InputStore.clearItemIndex(this._busNameId);
-        InputStore.clearItemIndex(this._busImgId);
-        InputStore.clearItemIndex(this._busHourId);
-        InputStore.clearItemIndex(this._busDecId);
-        InputStore.clearItemIndex(this._busPhoneId);
-        InputStore.clearItemIndex(this._busStreetId);
-        InputStore.clearItemIndex(this._busCityId);
-        InputStore.clearItemIndex(this._busStateId);
-        InputStore.clearItemIndex(this._busZipId);
-        InputStore.clearItemIndex(this._busWebId);
-        InputStore.clearItemIndex(this._busEmailId);
+        InputStore.freeItemIndex(this._busCatId);
+        InputStore.freeItemIndex(this._busNameId);
+        InputStore.freeItemIndex(this._busImgId);
+        InputStore.freeItemIndex(this._busHourId);
+        InputStore.freeItemIndex(this._busDescId);
+        InputStore.freeItemIndex(this._busPhoneId);
+        InputStore.freeItemIndex(this._busStreetId);
+        InputStore.freeItemIndex(this._busCityId);
+        InputStore.freeItemIndex(this._busStateId);
+        InputStore.freeItemIndex(this._busZipId);
+        InputStore.freeItemIndex(this._busWebId);
+        InputStore.freeItemIndex(this._busEmailId);
     }
 
     _imgUploadOk(entry, result) {
@@ -147,7 +149,9 @@ class PostAds extends React.Component
         console.log(result);
     }
 
-    _updateState() {
+    _updateState(store, data, status) {
+        console.log("---- post status --- " + status);
+        console.log(data);
         StateButtonStore.setButtonStateObj(this._postAdBtn, "saved");
         this._clearAdData();
         this.setState(this._getInitState());
@@ -177,6 +181,9 @@ class PostAds extends React.Component
         console.log(ad);
         console.log(errFlags);
 
+        Actions.publicPostAds(ad);
+        return;
+
         if (errText != null) {
             this.setState({
                 errFlags: errFlags
@@ -186,6 +193,7 @@ class PostAds extends React.Component
         }
         StateButtonStore.setButtonStateObj(this._postAdBtn, "saving");
         console.log(ad);
+        Actions.publicPostAds(ad);
     }
 
     _getAdData() {

@@ -36,40 +36,74 @@ import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 
 public interface IAdsPostService
 {
+    AdsPostDTO getAdsPostDTO(String uuid);
+    AdsPost getAdsPost(String uuid);
+
+    void saveAds(AdsPostDTO ads);
+    AdsPost deleteAds(String uuid);
 
     public static class AdsPostDTO extends GenericResponse
     {
-        private AdsPost     adPost;
-        private ArticleRank adRank;
-        private String      busName;
-        private String      busCat;
-        private String      busWeb;
-        private String      busEmail;
-        private String      busPhone;
-        private String      busStreet;
-        private String      busCity;
-        private String      busState;
-        private String      busZip;
-        private String      busHour;
-        private String      busDesc;
+        private AdsPost        adPost;
+        private ArticleRankDTO adRank;
+        private String         busName;
+        private String         busCat;
+        private String         busWeb;
+        private String         busEmail;
+        private String         busPhone;
+        private String         busStreet;
+        private String         busCity;
+        private String         busState;
+        private String         busZip;
+        private String         busHour;
+        private String         busDesc;
 
-        AdsPostDTO(AdsPost ad, ArticleRank rank)
+        public AdsPostDTO(AdsPost ad, ArticleRankDTO rank)
         {
             super(GenericResponse.USER_HOME, null, null);
             adPost = ad;
             adRank = rank;
         }
 
-        public ArticleRankDTO getRank() {
-            return new ArticleRankDTO(adRank);
+        /**
+         * Get internal data.
+         */
+        public AdsPost fetchAdPost() {
+            return adPost;
+        }
+
+        public ArticleRank fetchArtRank() {
+            return adRank.fetchArtRank();
+        }
+
+        /**
+         * Getters/setters.
+         */
+        public void setAdsRank(ArticleRankDTO rank) {
+            adRank = rank;
+        }
+
+        public ArticleRankDTO getAdsRank() {
+            return adRank;
         }
 
         public String getArticleUuid() {
             return adPost.getArticleUuid();
         }
 
+        public void setAuthorUuid(String uuid) {
+            adPost.setAuthorUuid(uuid);
+        }
+
         public String getAuthorUuid() {
             return adPost.getAuthorUuid();
+        }
+
+        /**
+         * Set ad images.
+         */
+        public void setAdImgOid0(String oid) {
+            adPost.setAdImgOid0(oid);
         }
 
         public List<String> getImageUrl() {

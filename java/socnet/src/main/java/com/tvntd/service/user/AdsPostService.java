@@ -26,6 +26,8 @@
  */
 package com.tvntd.service.user;
 
+import java.io.UnsupportedEncodingException;
+
 import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -35,7 +37,11 @@ import org.springframework.stereotype.Service;
 
 import com.tvntd.dao.AdsPostRepo;
 import com.tvntd.dao.ArticleRankRepo;
+import com.tvntd.forms.AdsForm;
+import com.tvntd.models.AdsPost;
+import com.tvntd.models.ArticleRank;
 import com.tvntd.service.api.IAdsPostService;
+import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.ICommentService;
 
 @Service
@@ -45,11 +51,75 @@ public class AdsPostService implements IAdsPostService
     static private Logger s_log = LoggerFactory.getLogger(AdsPostService.class);
 
     @Autowired
-    protected AdsPostRepo  adRepo;
+    protected AdsPostRepo  adsRepo;
 
     @Autowired
     protected ArticleRankRepo artRankRepo;
 
     @Autowired
     protected ICommentService commentSvc;
+
+    /**
+     * Common static methods.
+     */
+    public static void applyPostAds(AdsForm form, AdsPostDTO adsDTO)
+    {
+        s_log.info("Apply ad form " + form.getBusName());
+        AdsPost ads = adsDTO.fetchAdPost();
+        try {
+            ads.setBusName(form.getBusName().getBytes("UTF-8"));
+            ads.setBusCat(form.getBusCat().getBytes("UTF-8"));
+            ads.setBusWeb(form.getBusWeb().getBytes("UTF-8"));
+            ads.setBusEmail(form.getBusEmail().getBytes("UTF-8"));
+            ads.setBusPhone(form.getBusPhone().getBytes("UTF-8"));
+            ads.setBusStreet(form.getBusStreet().getBytes("UTF-8"));
+            ads.setBusCity(form.getBusCity().getBytes("UTF-8"));
+            ads.setBusState(form.getBusState().getBytes("UTF-8"));
+            ads.setBusZip(form.getBusZip().getBytes("UTF-8"));
+            ads.setBusHour(form.getBusHour().getBytes("UTF-8"));
+            ads.setBusDesc(form.getBusDesc().getBytes("UTF-8"));
+
+        } catch(UnsupportedEncodingException e) {
+            s_log.info(e.getMessage());
+        }
+    }
+
+    @Override
+    public AdsPostDTO getAdsPostDTO(String uuid)
+    {
+        AdsPost ads = adsRepo.findByArticleUuid(uuid);
+        if (ads != null) {
+            ArticleRank rank = artRankRepo.findByArticleUuid(uuid);
+            return new AdsPostDTO(ads, new ArticleRankDTO(rank));
+        }
+        return null;
+    }
+
+    @Override
+    public AdsPost getAdsPost(String uuid)
+    {
+        return adsRepo.findByArticleUuid(uuid);
+    }
+
+    @Override
+    public void saveAds(AdsPostDTO ads)
+    {
+        adsRepo.save(ads.fetchAdPost());
+    }
+
+    @Override
+    public AdsPost deleteAds(String uuid)
+    {
+        AdsPost ads = adsRepo.findByArticleUuid(uuid);
+        ArticleRank rank = artRankRepo.findByArticleUuid(uuid);
+
+        if (ads != null) {
+            s_log.info("Delete ad " + uuid);
+            adsRepo.delete(ads);
+        }
+        if (rank != null) {
+            artRankRepo.delete(rank);
+        }
+        return ads;
+    }
 }

@@ -54,6 +54,8 @@ public class ObjStore extends Module
     protected Path m_base;
     protected Path m_user;
     protected Path m_userUrl;
+    protected Path m_public;
+    protected Path m_publicUrl;
     protected File m_temp;
 
     public ObjStore()
@@ -62,11 +64,14 @@ public class ObjStore extends Module
         m_temp = new File("/var/www/static/temp");
         m_base = Paths.get("/var/www/static/upload");
         m_user = Paths.get("/var/www/static/user");
+        m_public  = Paths.get("/var/www/static/obj");
         m_userUrl = Paths.get("/rs/user");
+        m_publicUrl = Paths.get("/rs/obj");
 
         try {
             Files.createDirectories(m_base);
             Files.createDirectories(m_user);
+            Files.createDirectories(m_public);
             Files.createDirectories(m_temp.toPath());
 
         } catch(IOException e) {
@@ -97,6 +102,10 @@ public class ObjStore extends Module
 
     public ObjectId putUserImage(InputStream is, int limit, String user) {
         return putFile(m_user.resolve(user), is, limit);
+    }
+
+    public ObjectId putPublicImg(InputStream is, int limit) {
+        return putFile(m_public, is, limit);
     }
 
     private ObjectId putFile(Path base, InputStream is, int limit)
@@ -143,10 +152,27 @@ public class ObjStore extends Module
         return null;
     }
 
+    /**
+     * @return uri of the object saved in the upload directory.
+     */
     public String imgObjUri(ObjectId oid)
     {
         if (oid != null) {
             Path dest = oid.toPath(m_base,
+                    Constants.OIdDirLevels, Constants.OIdDirHexChars);
+
+            return dest.toString();
+        }
+        return null;
+    }
+
+    /**
+     * @return uri of the object saved in public directory.
+     */
+    public String imgObjPublicUri(ObjectId oid)
+    {
+        if (oid != null) {
+            Path dest = oid.toPath(m_publicUrl,
                     Constants.OIdDirLevels, Constants.OIdDirHexChars);
 
             return dest.toString();

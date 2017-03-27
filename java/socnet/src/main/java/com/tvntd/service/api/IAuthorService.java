@@ -33,8 +33,10 @@ import java.util.UUID;
 
 import com.tvntd.dao.AuthorTagRepo.AuthorTagDTO;
 import com.tvntd.dao.AuthorTagRepo.AuthorTagRespDTO;
+import com.tvntd.forms.AdsForm;
 import com.tvntd.forms.ArticleForm;
 import com.tvntd.forms.ProductForm;
+import com.tvntd.models.AdsPost;
 import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Author;
@@ -67,6 +69,7 @@ public interface IAuthorService
 
     ArticleRank createArticleRank(Article article, String tagName);
     ArticleRank createProductRank(Product product, ProductForm form);
+    ArticleRank createAdsRank(AdsPost ads, AdsForm form);
 
     /**
      *

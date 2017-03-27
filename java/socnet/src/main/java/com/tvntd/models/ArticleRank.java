@@ -124,6 +124,9 @@ public class ArticleRank
         this.contentBrief = article.getContentBrief();
     }
 
+    /**
+     * Create article rank from product.
+     */
     public ArticleRank(AuthorTag tag, Product product)
     {
         this();
@@ -136,6 +139,22 @@ public class ArticleRank
         // XXX: trim the length here.
         this.contentBrief = product.getProdDesc();
         this.tag = product.getProdCat();
+    }
+
+    /**
+     * Create article rank from ads.
+     */
+    public ArticleRank(AuthorTag tag, AdsPost ads)
+    {
+        this();
+        this.articleUuid = ads.getArticleUuid();
+        this.authorUuid = ads.getAuthorUuid();
+        this.favorite = tag.isFavorite();
+        this.rank = tag.getRank();
+        this.tagHash = HashKey.toSha1Key(this.tag, authorUuid);
+
+        this.contentBrief = ads.getBusDesc();
+        this.tag = ads.getBusCat();
     }
 
     public ArticleRank(CommentChangeForm form, String authorUuid)

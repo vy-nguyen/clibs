@@ -26,6 +26,7 @@
  */
 package com.tvntd.service.user;
 
+import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,17 @@ public class AnnonService implements IAnnonService
     @Override
     public AnnonUserDTO getAnnonUser(String uuid) {
         return null;
+    }
+
+    @Override
+    public AnnonUserDTO getAnnonUser(HttpSession session)
+    {
+        AnnonUserDTO user = (AnnonUserDTO) session.getAttribute("annon-user");
+        if (user == null) {
+            user = new AnnonUserDTO(new AnnonUser());
+            session.setAttribute("annon-user", user);
+        }
+        return user;
     }
 
     @Override

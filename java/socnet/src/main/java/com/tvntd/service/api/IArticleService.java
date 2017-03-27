@@ -325,6 +325,10 @@ public interface IArticleService
             artRank = rank;
         }
 
+        public ArticleRank fetchArtRank() {
+            return artRank;
+        }
+
         public void setRank(ArticleRank rank, AuthorTag tag) {
             artRank = rank;
         }

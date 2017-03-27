@@ -28,6 +28,11 @@ package com.tvntd.forms;
 
 import javax.validation.constraints.Size;
 
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
+
+import com.tvntd.util.Util;
+
 public class AdsForm
 {
     @Size(max = 128)
@@ -48,7 +53,37 @@ public class AdsForm
 
     public boolean cleanInput()
     {
-        return false;
+        if (articleUuid == null || busCat == null || busWeb == null ||
+            busEmail == null || busPhone == null || busStreet == null ||
+            busCity == null || busState == null || busZip == null ||
+            busHour == null || busDesc == null) {
+            return false;
+        }
+        Whitelist wlist = Util.allowedTags;
+        articleUuid = Jsoup.clean(articleUuid, wlist);
+        busName = Jsoup.clean(busName, wlist);
+        busCat = Jsoup.clean(busCat, wlist);
+        busWeb = Jsoup.clean(busWeb, wlist);
+        busEmail = Jsoup.clean(busEmail, wlist);
+        busPhone = Jsoup.clean(busPhone, wlist);
+        busStreet = Jsoup.clean(busStreet, wlist);
+        busCity = Jsoup.clean(busCity, wlist);
+        busState = Jsoup.clean(busState, wlist);
+        busZip = Jsoup.clean(busZip, wlist);
+        busHour = Jsoup.clean(busHour, wlist);
+        busDesc = Jsoup.clean(busDesc, wlist);
+
+        if (authorUuid != null) {
+            authorUuid = Jsoup.clean(authorUuid, wlist);
+        }
+        return true;
+    }
+
+    /**
+     * @return the busName
+     */
+    public String getBusName() {
+        return busName;
     }
 
     /**

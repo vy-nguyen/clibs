@@ -152,15 +152,22 @@ public interface IArtTagService
             }
         }
 
-        public void addArtRank(String rankKey) {
-            artTag.addArtRank(rankKey);
+        public void addArtRank(String rankKey)
+        {
+            if (artTag != null) {
+                artTag.addArtRank(rankKey);
+            }
         }
 
-        public void removeArtRank(String artKey) {
-            artTag.removeArtRank(artKey);
+        public void removeArtRank(String artKey)
+        {
+            if (artTag != null) {
+                artTag.removeArtRank(artKey);
+            }
         }
 
-        public static String makeTagOidKey(String tagName, String userUuid) {
+        public static String makeTagOidKey(String tagName, String userUuid)
+        {
             try {
                 return HashKey.toSha1Key(tagName.getBytes("UTF-8"), userUuid);
             } catch(UnsupportedEncodingException e) {

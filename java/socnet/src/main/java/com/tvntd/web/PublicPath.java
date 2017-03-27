@@ -30,6 +30,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,12 +57,19 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.tvntd.forms.AdsForm;
 import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.Constants;
 import com.tvntd.lib.FileResources;
+import com.tvntd.lib.ObjectId;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Profile;
+import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.GenericResponse;
+import com.tvntd.service.api.IAdsPostService;
+import com.tvntd.service.api.IAdsPostService.AdsPostDTO;
+import com.tvntd.service.api.IAnnonService;
+import com.tvntd.service.api.IAnnonService.AnnonUserDTO;
 import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArtTagService.ArtTagDTO;
 import com.tvntd.service.api.IArtTagService.ArtTagList;
@@ -76,7 +84,9 @@ import com.tvntd.service.api.IProductService.ProductDTO;
 import com.tvntd.service.api.IProductService.ProductDTOResponse;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
+import com.tvntd.service.api.ImageUploadResp;
 import com.tvntd.service.api.StartupResponse;
+import com.tvntd.service.user.AdsPostService;
 
 @Controller
 public class PublicPath
@@ -102,6 +112,12 @@ public class PublicPath
 
     @Autowired
     private IProductService productSvc;
+
+    @Autowired
+    private IAnnonService annonSvc;
+
+    @Autowired
+    private IAdsPostService adsSvc;
 
     /**
      * Handle public pages.
@@ -328,6 +344,60 @@ public class PublicPath
             @RequestParam("file") MultipartFile file,
             MultipartHttpServletRequest reqt, HttpSession session)
     {
+        AnnonUserDTO user = annonSvc.getAnnonUser(session);
+        AdsPostDTO ads = user.genPendAds(null);
+        ObjStore store = ObjStore.getInstance();
+
+        System.out.println("Annon user " + user.getUserUuid());
+        System.out.println("Ad uuid " + ads.getArticleUuid());
+
+        try {
+            InputStream is = file.getInputStream();
+            ObjectId oid = store.putPublicImg(is, (int)file.getSize());
+
+            if (oid != null) {
+                ads.setAdImgOid0(oid.name());
+            }
+            ads.setAuthorUuid(com.tvntd.util.Constants.PublicUuid);
+            ImageUploadResp resp =
+                new ImageUploadResp(ads.getArticleUuid(), ads.getAuthorUuid(), oid);
+
+            resp.setLocation(store.imgObjPublicUri(oid));
+            return resp;
+
+        } catch(IOException e) {
+        }
         return UserPath.s_saveObjFailed;
+    }
+
+    /**
+     * Handle public upload for ads.
+     */
+    @RequestMapping(value = "/public/publish-ads",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    publishAds(@RequestBody AdsForm form, HttpSession session)
+    {
+        AnnonUserDTO user = annonSvc.getAnnonUser(session);
+        AdsPostDTO ads = user.genPendAds(form.getArticleUuid()); 
+
+        System.out.println("----------------");
+        System.out.println("Annon user " + user.getUserUuid());
+        System.out.println("Ad uuid " + ads.getArticleUuid());
+
+        if (form.cleanInput() == false) {
+            return UserPath.s_saveObjFailed;
+        }
+        AdsPostService.applyPostAds(form, ads);
+        adsSvc.saveAds(ads);
+
+        ArticleRank rank = authorSvc.createAdsRank(ads.fetchAdPost(), form);
+        ads.setAdsRank(new ArticleRankDTO(rank));
+
+        // artTagSvc.addPublicTagPost(form.getBusCat(), ads.getArticleUuid());
+        artTagSvc.addPublicTagPost("A", ads.getArticleUuid());
+        return ads;
     }
 }

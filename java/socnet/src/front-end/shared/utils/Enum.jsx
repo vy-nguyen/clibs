@@ -206,7 +206,36 @@ function choose(value, key, defVal) {
     return !_.isEmpty(value) ? value : defVal;
 }
 
+function setCookie(cname, cvalue, exdays) {
+    let expires, d = new Date();
+
+    if (exdays == null) {
+        exdays = 10000;
+    }
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    expires = "expires="+ d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+    let decodedCookie, ca, name = cname + "=";
+    decodedCookie = decodeURIComponent(document.cookie);
+    ca = decodedCookie.split(';');
+
+    for(let i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
 export {
     Enum, safeStringify, insertUnique, insertSorted, insertSortedUnique, toDateString,
-    preend, getRandomInt, removeArray, findSorted, findUuid, compareUuid, choose
+    preend, getRandomInt, removeArray, findSorted, findUuid, compareUuid, choose,
+    setCookie, getCookie
 }

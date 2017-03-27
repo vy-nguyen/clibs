@@ -116,13 +116,24 @@ public class AdsPost
         createdDate = new Date();
     }
 
+    public AdsPost(String uuid)
+    {
+        articleUuid = uuid;
+        createdDate = new Date();
+    }
+
     public void addPicture(ObjectId img, int idx)
     {
+        String oid = img.name();
+
         if (idx == 0) {
-            adImgOId0 = img.name();
+            adImgOId0 = oid;
         } else if (idx == 1) {
+            adImgOId1 = oid;
         } else if (idx == 2) {
+            adImgOId2 = oid;
         } else {
+            adImgOId3 = oid;
         }
     }
 
