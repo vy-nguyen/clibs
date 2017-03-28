@@ -26,11 +26,15 @@
  */
 package com.tvntd.service.user;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.WebUtils;
 
 import com.tvntd.dao.AnnonUserRepo;
 import com.tvntd.lib.ObjectId;
@@ -45,24 +49,44 @@ public class AnnonService implements IAnnonService
     protected AnnonUserRepo annonRepo;
 
     @Override
-    public AnnonUserDTO getAnnonUser(AnnonUser user) {
-        return null;
-    }
-
-    @Override
-    public AnnonUserDTO getAnnonUser(String uuid) {
-        return null;
-    }
-
-    @Override
-    public AnnonUserDTO getAnnonUser(HttpSession session)
+    public AnnonUserDTO getAnnonUser(HttpServletRequest reqt,
+            HttpServletResponse resp, HttpSession session)
     {
-        AnnonUserDTO user = (AnnonUserDTO) session.getAttribute("annon-user");
-        if (user == null) {
-            user = new AnnonUserDTO(new AnnonUser());
-            session.setAttribute("annon-user", user);
+        AnnonUser user;
+        AnnonUserDTO dto;
+        Cookie cookie = WebUtils.getCookie(reqt, annonKey);
+
+        if (cookie == null) {
+            user = new AnnonUser();
+            dto = new AnnonUserDTO(user);
+
+            annonRepo.save(user);
+            session.setAttribute(annonKey, dto);
+
+            cookie = new Cookie(annonKey, user.getUserUuid());
+            cookie.setSecure(true);
+            cookie.setPath("/");
+            cookie.setMaxAge(1000 * 24 * 60 * 60);
+            resp.addCookie(cookie);
+            return dto;
         }
-        return user;
+        dto = (AnnonUserDTO) session.getAttribute(annonKey);
+        if (dto != null) {
+            user = dto.fetchAnnonUser();
+            if (!cookie.getValue().equals(user.getUserUuid())) {
+                user.setUserUuid(cookie.getValue());
+                annonRepo.save(user);
+            }
+            return dto;
+        }
+        user = annonRepo.findByUserUuid(cookie.getValue());
+        if (user == null) {
+            user = new AnnonUser(cookie.getValue());
+            annonRepo.save(user);
+        }
+        dto = new AnnonUserDTO(user);
+        session.setAttribute(annonKey, dto);
+        return dto;
     }
 
     @Override

@@ -130,7 +130,7 @@ public class PublicPath
     {
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
         if (profile != null) {
-            StartupResponse result = new StartupResponse(profile, reqt);
+            StartupResponse result = new StartupResponse(profile, reqt, session);
             ApiPath.fillStartupResponse(result, profile,
                     profileSvc, authorSvc, articleSvc, artTagSvc);
             return result;
@@ -138,7 +138,8 @@ public class PublicPath
         if (s_publicDto == null) {
             s_publicDto = new ProfileDTO(s_public);
         }
-        StartupResponse result = new StartupResponse(s_publicDto, reqt);
+        annonSvc.getAnnonUser(reqt, resp, session);
+        StartupResponse result = new StartupResponse(s_publicDto, reqt, session);
         fillStartupPublicResponse(result, s_publicDto);
         return result;
     }
@@ -342,15 +343,20 @@ public class PublicPath
             @RequestParam("authorUuid") String authorUuid,
             @RequestParam("articleUuid") String artUuid,
             @RequestParam("file") MultipartFile file,
-            MultipartHttpServletRequest reqt, HttpSession session)
+            MultipartHttpServletRequest reqt,
+            HttpServletResponse resp, HttpSession session)
     {
-        AnnonUserDTO user = annonSvc.getAnnonUser(session);
-        AdsPostDTO ads = user.genPendAds(null);
+        AdsPostDTO ads;
         ObjStore store = ObjStore.getInstance();
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
 
-        System.out.println("Annon user " + user.getUserUuid());
+        if (profile == null) {
+            AnnonUserDTO user = annonSvc.getAnnonUser(reqt, resp, session);
+            ads = user.genPendAds();
+        } else {
+            ads = profile.genPendAds();
+        }
         System.out.println("Ad uuid " + ads.getArticleUuid());
-
         try {
             InputStream is = file.getInputStream();
             ObjectId oid = store.putPublicImg(is, (int)file.getSize());
@@ -358,12 +364,11 @@ public class PublicPath
             if (oid != null) {
                 ads.setAdImgOid0(oid.name());
             }
-            ads.setAuthorUuid(com.tvntd.util.Constants.PublicUuid);
-            ImageUploadResp resp =
+            ImageUploadResp out =
                 new ImageUploadResp(ads.getArticleUuid(), ads.getAuthorUuid(), oid);
 
-            resp.setLocation(store.imgObjPublicUri(oid));
-            return resp;
+            out.setLocation(store.imgObjPublicUri(oid));
+            return out;
 
         } catch(IOException e) {
         }
@@ -378,13 +383,20 @@ public class PublicPath
     @JsonIgnoreProperties(ignoreUnknown = true)
     @ResponseBody
     public GenericResponse
-    publishAds(@RequestBody AdsForm form, HttpSession session)
+    publishAds(@RequestBody AdsForm form,
+            HttpServletRequest reqt, HttpServletResponse resp, HttpSession session)
     {
-        AnnonUserDTO user = annonSvc.getAnnonUser(session);
-        AdsPostDTO ads = user.genPendAds(form.getArticleUuid()); 
+        AdsPostDTO ads;
+        AnnonUserDTO user = null;
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
 
+        if (profile == null) {
+            user = annonSvc.getAnnonUser(reqt, resp, session);
+            ads = user.genPendAds();
+        } else {
+            ads = profile.genPendAds();
+        }
         System.out.println("----------------");
-        System.out.println("Annon user " + user.getUserUuid());
         System.out.println("Ad uuid " + ads.getArticleUuid());
 
         if (form.cleanInput() == false) {
@@ -398,6 +410,12 @@ public class PublicPath
 
         // artTagSvc.addPublicTagPost(form.getBusCat(), ads.getArticleUuid());
         artTagSvc.addPublicTagPost("A", ads.getArticleUuid());
+        if (profile != null) {
+            profile.assignPendAds(null);
+        }
+        if (user != null) {
+            user.assignPendAds(null);
+        }
         return ads;
     }
 }

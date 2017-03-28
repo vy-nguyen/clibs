@@ -27,9 +27,11 @@
 package com.tvntd.service.api;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.security.web.csrf.CsrfToken;
 
+import com.tvntd.service.api.IAnnonService.AnnonUserDTO;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 public class LoginResponse extends GenericResponse
@@ -39,6 +41,7 @@ public class LoginResponse extends GenericResponse
     private String csrfToken;
     private String csrfHeader;
     private ProfileDTO userSelf;
+    private AnnonUserDTO annonUser;
 
     public LoginResponse(String type, String message, String error, String token)
     {
@@ -50,17 +53,20 @@ public class LoginResponse extends GenericResponse
         this.csrfHeader = null;
     }
 
-    public LoginResponse(ProfileDTO profile, HttpServletRequest reqt)
+    public LoginResponse(ProfileDTO profile,
+            HttpServletRequest reqt, HttpSession session)
     {
         super(GenericResponse.USER_HOME, null, null);
 
         this.userSelf = profile;
         this.authToken = profile.toProfile().getAuthToken();
         CsrfToken token = (CsrfToken) reqt.getAttribute("_csrf");
+
         if (token != null) {
             csrfToken = token.getToken();
             csrfHeader = token.getHeaderName();
         }
+        annonUser = (AnnonUserDTO) session.getAttribute("annon-user");
     }
 
     /**
@@ -110,5 +116,19 @@ public class LoginResponse extends GenericResponse
      */
     public ProfileDTO getUserSelf() {
         return userSelf;
+    }
+
+    /**
+     * @return the annonUser
+     */
+    public AnnonUserDTO getAnnonUser() {
+        return annonUser;
+    }
+
+    /**
+     * @param annonUser the annonUser to set
+     */
+    public void setAnnonUser(AnnonUserDTO annonUser) {
+        this.annonUser = annonUser;
     }
 }

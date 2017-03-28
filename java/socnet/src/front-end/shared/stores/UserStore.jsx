@@ -7,11 +7,12 @@
 import _        from 'lodash';
 import Reflux   from 'reflux';
 
-import ErrorStore from 'vntd-shared/stores/ErrorStore.jsx';
-import Actions    from 'vntd-root/actions/Actions.jsx';
+import {getCookie}  from 'vntd-shared/utils/Enum.jsx';
+import ErrorStore   from 'vntd-shared/stores/ErrorStore.jsx';
+import Actions      from 'vntd-root/actions/Actions.jsx';
 
-let OnlineEnum = ["online", "offline", "busy"];
-let ConnetEnum = ["self", "connected", "followed", "follower", "stranger"];
+// let OnlineEnum = ["online", "offline", "busy"];
+// let ConnetEnum = ["self", "connected", "followed", "follower", "stranger"];
 
 /*
  * Explicit define known fields in User object.

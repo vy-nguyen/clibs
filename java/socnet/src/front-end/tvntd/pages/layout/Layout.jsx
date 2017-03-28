@@ -22,7 +22,6 @@ class Layout extends React.Component
 
     componentWillMount() {
         Actions.startup(UserStore.isLogin() ? "/api/user" : this.props.route.url);
-        Actions.preload();
     }
 
     render() {

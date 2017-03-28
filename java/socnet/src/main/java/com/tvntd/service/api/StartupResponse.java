@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import com.tvntd.service.api.IArtTagService.ArtTagList;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
@@ -51,10 +52,11 @@ public class StartupResponse
     private List<Language>         languages;
     private ArtTagList             publicTags;
 
-    public StartupResponse(ProfileDTO profile, HttpServletRequest reqt)
+    public StartupResponse(ProfileDTO profile,
+            HttpServletRequest reqt, HttpSession session)
     {
         initLanguages();
-        userDTO = new LoginResponse(profile, reqt);
+        userDTO = new LoginResponse(profile, reqt, session);
     }
 
     protected void initLanguages()

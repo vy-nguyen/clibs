@@ -26,6 +26,8 @@
  */
 package com.tvntd.service.api;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.tvntd.lib.ObjectId;
@@ -36,9 +38,10 @@ import com.tvntd.service.api.IAdsPostService.AdsPostDTO;
 
 public interface IAnnonService
 {
-    AnnonUserDTO getAnnonUser(AnnonUser user);
-    AnnonUserDTO getAnnonUser(String uuid);
-    AnnonUserDTO getAnnonUser(HttpSession session);
+    static public final String annonKey = "annon-user";
+
+    AnnonUserDTO getAnnonUser(HttpServletRequest reqt,
+            HttpServletResponse resp, HttpSession session);
 
     void saveAnnonUser(AnnonUserDTO user);
     void saveAnnonUserImgUrl(AnnonUserDTO user, ObjectId oid, int index);
@@ -49,32 +52,32 @@ public interface IAnnonService
 
     public static class AnnonUserDTO
     {
-        private static String s_baseUri = "/rs/ads";
+        private static String s_baseUri = "/rs/objs";
         private AnnonUser user;
-        private ObjStore objStore;
         private AdsPostDTO pendAds;
 
         public AnnonUserDTO(AnnonUser user)
         {
             this.user = user;
-            objStore = ObjStore.getInstance();
         }
 
         public AnnonUser fetchAnnonUser() {
             return this.user;
         }
 
-        public AdsPostDTO genPendAds(String postUuid)
+        public AdsPostDTO genPendAds()
         {
             if (pendAds != null) {
                 return pendAds;
             }
-            if (postUuid == null) {
-                pendAds = new AdsPostDTO(new AdsPost(), null);
-            } else {
-                pendAds = new AdsPostDTO(new AdsPost(postUuid), null);
-            }
+            AdsPost ads = new AdsPost();
+            ads.setAuthorUuid(com.tvntd.util.Constants.PublicUuid);
+            pendAds = new AdsPostDTO(ads, null);
             return pendAds;
+        }
+
+        public void assignPendAds(AdsPostDTO ads) {
+            pendAds = ads;
         }
 
         /**
@@ -88,19 +91,27 @@ public interface IAnnonService
             return user.getAdUuid();
         }
 
-        public String getAdImgOid0() {
+        public String getAdImgOid0()
+        {
+            ObjStore objStore = ObjStore.getInstance();
             return objStore.imgObjUri(user.getAdImgOid0(), s_baseUri);
         }
 
-        public String getAdImgOid1() {
+        public String getAdImgOid1()
+        {
+            ObjStore objStore = ObjStore.getInstance();
             return objStore.imgObjUri(user.getAdImgOid1(), s_baseUri);
         }
 
-        public String getAdImgOid2() {
+        public String getAdImgOid2()
+        {
+            ObjStore objStore = ObjStore.getInstance();
             return objStore.imgObjUri(user.getAdImgOid2(), s_baseUri);
         }
 
-        public String getAdImgOid3() {
+        public String getAdImgOid3()
+        {
+            ObjStore objStore = ObjStore.getInstance();
             return objStore.imgObjUri(user.getAdImgOid3(), s_baseUri);
         }
 

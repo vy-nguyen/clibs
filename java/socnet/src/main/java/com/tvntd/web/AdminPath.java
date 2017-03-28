@@ -81,7 +81,7 @@ public class AdminPath
             s_log.info("No profile " + user);
             return null;
         }
-        LoginResponse resp = new LoginResponse(profile, reqt);
+        LoginResponse resp = new LoginResponse(profile, reqt, session);
         ApiPath.fillLoginResponse(resp, profile);
         return resp;
     }
@@ -117,7 +117,8 @@ public class AdminPath
         List<ArtTagDTO> tags = tagList.getPublicTags();
 
         if (tags != null) {
-            List<ArtTagDTO> fixup = ArtTagService.makeSubTags(tags, Constants.PublicUuid);
+            List<ArtTagDTO> fixup =
+                ArtTagService.makeSubTags(tags, Constants.PublicUuid);
 
             for (ArtTagDTO tag : fixup) {
                 artTagSvc.saveTag(tag);       

@@ -52,9 +52,12 @@ public class AnnonUser
     @Column(length = 64)
     private String remoteIp;
 
-    public AnnonUser()
-    {
+    public AnnonUser() {
         userUuid = UUID.randomUUID().toString();
+    }
+
+    public AnnonUser(String uuid) {
+        userUuid = uuid;
     }
 
     /**

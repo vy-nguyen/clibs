@@ -133,7 +133,7 @@ public class UserPath
     public LoginResponse user(HttpSession session, HttpServletRequest reqt)
     {
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
-        LoginResponse resp = new LoginResponse(profile, reqt);
+        LoginResponse resp = new LoginResponse(profile, reqt, session);
         ApiPath.fillLoginResponse(resp, profile);
         return resp;
     }
