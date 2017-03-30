@@ -391,7 +391,11 @@ public class PublicPath
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
 
         if (profile == null) {
+            // Annon user can only have 1 ad/cookie.
+            //
             user = annonSvc.getAnnonUser(reqt, resp, session);
+            adsSvc.deleteAnnonAds(user.getUserUuid());
+
             ads = user.genPendAds();
         } else {
             ads = profile.genPendAds();
@@ -405,11 +409,10 @@ public class PublicPath
         AdsPostService.applyPostAds(form, ads);
         adsSvc.saveAds(ads);
 
-        ArticleRank rank = authorSvc.createAdsRank(ads.fetchAdPost(), form);
+        ArticleRank rank = authorSvc.createAdsRank(ads.fetchAdPost(), form, user);
         ads.setAdsRank(new ArticleRankDTO(rank));
 
-        // artTagSvc.addPublicTagPost(form.getBusCat(), ads.getArticleUuid());
-        artTagSvc.addPublicTagPost("A", ads.getArticleUuid());
+        artTagSvc.addPublicTagPost(form.getBusCat(), ads.getArticleUuid());
         if (profile != null) {
             profile.assignPendAds(null);
         }

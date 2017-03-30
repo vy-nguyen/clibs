@@ -229,12 +229,12 @@ class PostAds extends React.Component
 
     _editAd() {
         let ad = this.props.ads, errFlag = this.state.errFlags,
-            adImg, twoCols,
+            adImg, twoCols, adsOpt = ArticleTagStore.getPublicTagsSelOpt("ads"),
         busCat = {
             select   : true,
             inpName  : this._busCatId,
-            inpDefVal: null,
-            selectOpt: null,
+            inpDefVal: adsOpt != null ? adsOpt[0] : null,
+            selectOpt: adsOpt,
             onSelect : null,
             errorId  : this._busCatId,
             errorFlag: errFlag.busCat,

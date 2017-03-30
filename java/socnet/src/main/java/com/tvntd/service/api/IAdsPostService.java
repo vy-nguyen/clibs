@@ -26,6 +26,7 @@
  */
 package com.tvntd.service.api;
 
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -38,8 +39,12 @@ public interface IAdsPostService
 {
     AdsPostDTO getAdsPostDTO(String uuid);
     AdsPost getAdsPost(String uuid);
+    List<AdsPost> getAdsPostByAuthor(String authorUuid);
 
+    void deleteAnnonAds(String uuid);
     void saveAds(AdsPostDTO ads);
+
+    void deleteAds(AdsPost ads);
     AdsPost deleteAds(String uuid);
 
     public static class AdsPostDTO extends GenericResponse
@@ -63,6 +68,58 @@ public interface IAdsPostService
             super(GenericResponse.USER_HOME, null, null);
             adPost = ad;
             adRank = rank;
+        }
+
+        public void convertUTF()
+        {
+            try {
+                byte[] str = adPost.getBusName();
+                if (str != null) {
+                    busName = new String(str, "UTF-8");
+                }
+                str = adPost.getBusCat();
+                if (str != null) {
+                    busCat = new String(str, "UTF-8");
+                }
+                str = adPost.getBusWeb();
+                if (str != null) {
+                    busWeb = new String(str, "UTF-8");
+                }
+                str = adPost.getBusEmail();
+                if (str != null) {
+                    busEmail = new String(str, "UTF-8");
+                }
+                str = adPost.getBusPhone();
+                if (str != null) {
+                    busPhone = new String(str, "UTF-8");
+                }
+                str = adPost.getBusStreet();
+                if (str != null) {
+                    busStreet = new String(str, "UTF-8");
+                }
+                str = adPost.getBusCity();
+                if (str != null) {
+                    busCity = new String(str, "UTF-8");
+                }
+                str = adPost.getBusState();
+                if (str != null) {
+                    busState = new String(str, "UTF-8");
+                }
+                str = adPost.getBusZip();
+                if (str != null) {
+                    busZip = new String(str, "UTF-8");
+                }
+                str = adPost.getBusHour();
+                if (str != null) {
+                    busHour = new String(str, "UTF-8");
+                }
+                str = adPost.getBusDesc();
+                if (str != null) {
+                    busDesc = new String(str, "UTF-8");
+                }
+
+            } catch(UnsupportedEncodingException e) {
+            }
         }
 
         /**

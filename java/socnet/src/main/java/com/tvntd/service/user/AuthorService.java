@@ -52,6 +52,7 @@ import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Author;
 import com.tvntd.models.AuthorTag;
 import com.tvntd.models.Product;
+import com.tvntd.service.api.IAnnonService.AnnonUserDTO;
 import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
@@ -306,9 +307,15 @@ public class AuthorService implements IAuthorService
     }
 
     @Override
-    public ArticleRank createAdsRank(AdsPost ads, AdsForm form)
+    public ArticleRank createAdsRank(AdsPost ads, AdsForm form, AnnonUserDTO user)
     {
         String authorUuid = ads.getAuthorUuid();
+
+        if (user != null) {
+            // This is annonymous user.
+            //
+            authorUuid = com.tvntd.util.Constants.PublicUuid;
+        }
         Author author = authorRepo.findByAuthorUuid(authorUuid);
         if (author == null) {
             author = new Author(authorUuid, ads.getArticleUuid());

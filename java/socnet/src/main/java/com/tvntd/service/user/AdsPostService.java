@@ -27,6 +27,7 @@
 package com.tvntd.service.user;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 import javax.transaction.Transactional;
 
@@ -85,6 +86,24 @@ public class AdsPostService implements IAdsPostService
     }
 
     @Override
+    public List<AdsPost> getAdsPostByAuthor(String authorUuid) {
+        return adsRepo.findAllByAuthorUuid(authorUuid);
+    }
+
+    @Override
+    public void deleteAnnonAds(String uuid)
+    {
+        List<AdsPost> ads = getAdsPostByAuthor(uuid);
+        System.out.println("Delete ads " + ads.size());
+        if (ads != null) {
+            for (AdsPost a : ads) {
+                System.out.println("Delete " + a.getBusName());
+                deleteAds(a);
+            }
+        }
+    }
+
+    @Override
     public AdsPostDTO getAdsPostDTO(String uuid)
     {
         AdsPost ads = adsRepo.findByArticleUuid(uuid);
@@ -105,6 +124,17 @@ public class AdsPostService implements IAdsPostService
     public void saveAds(AdsPostDTO ads)
     {
         adsRepo.save(ads.fetchAdPost());
+    }
+
+    @Override
+    public void deleteAds(AdsPost ads)
+    {
+        adsRepo.delete(ads);
+        ArticleRank rank = artRankRepo.findByArticleUuid(ads.getArticleUuid());
+
+        if (rank != null) {
+            artRankRepo.delete(rank);
+        }
     }
 
     @Override

@@ -56,8 +56,7 @@ public interface IAnnonService
         private AnnonUser user;
         private AdsPostDTO pendAds;
 
-        public AnnonUserDTO(AnnonUser user)
-        {
+        public AnnonUserDTO(AnnonUser user) {
             this.user = user;
         }
 
@@ -71,7 +70,7 @@ public interface IAnnonService
                 return pendAds;
             }
             AdsPost ads = new AdsPost();
-            ads.setAuthorUuid(com.tvntd.util.Constants.PublicUuid);
+            ads.setAuthorUuid(user.getUserUuid());
             pendAds = new AdsPostDTO(ads, null);
             return pendAds;
         }

@@ -56,12 +56,16 @@ public class RegisterForm
     @NotNull
     private String password1;
 
+    @Size(max = 64)
     private String gender;
 
+    @Size(max = 32)
     private String checkTerms;
 
+    @Size(max = 32)
     private String locale;
 
+    @Size(max = 32)
     protected String role;
 
     public RegisterForm()

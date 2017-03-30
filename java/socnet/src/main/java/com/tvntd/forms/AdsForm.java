@@ -26,29 +26,69 @@
  */
 package com.tvntd.forms;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
 import com.tvntd.util.Util;
+import com.tvntd.util.ValidEmail;
 
 public class AdsForm
 {
+    @NotNull
     @Size(max = 128)
     private String busName;
 
+    @NotNull
+    @Size(max = 64)
     private String articleUuid;
+
+    @NotNull
+    @Size(max = 64)
     private String authorUuid;
+
+    @NotNull
+    @Size(max = 128)
     private String busCat;
+
+    @NotNull
+    @Size(max = 128)
     private String busWeb;
+
+    @NotNull
+    @Size(max = 128)
+    @ValidEmail
     private String busEmail;
+
+
+    @NotNull
+    @Size(max = 128)
     private String busPhone;
+
+    @NotNull
+    @Size(max = 128)
     private String busStreet;
+
+    @NotNull
+    @Size(max = 128)
     private String busCity;
+
+    @NotNull
+    @Size(max = 128)
     private String busState;
+
+    @NotNull
+    @Size(max = 128)
     private String busZip;
+
+    @NotNull
+    @Size(max = 1024)
     private String busHour;
+
+    @NotNull
+    @Size(max = 1 << 14)
     private String busDesc;
 
     public boolean cleanInput()
@@ -56,7 +96,7 @@ public class AdsForm
         if (articleUuid == null || busCat == null || busWeb == null ||
             busEmail == null || busPhone == null || busStreet == null ||
             busCity == null || busState == null || busZip == null ||
-            busHour == null || busDesc == null) {
+            busHour == null || busDesc == null || busCat == null) {
             return false;
         }
         Whitelist wlist = Util.allowedTags;
