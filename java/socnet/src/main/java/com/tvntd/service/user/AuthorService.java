@@ -315,7 +315,9 @@ public class AuthorService implements IAuthorService
             // This is annonymous user.
             //
             authorUuid = com.tvntd.util.Constants.PublicUuid;
+            System.out.println("Public author uuid " + authorUuid);
         }
+        System.out.println("Create with author uuid " + authorUuid);
         Author author = authorRepo.findByAuthorUuid(authorUuid);
         if (author == null) {
             author = new Author(authorUuid, ads.getArticleUuid());

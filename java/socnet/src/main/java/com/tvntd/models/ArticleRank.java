@@ -28,6 +28,7 @@ package com.tvntd.models;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -54,7 +55,7 @@ import com.tvntd.util.Util;
 public class ArticleRank
 {
     public static int MaxTitleLength = 128;
-    public static int MaxContentLength = 256;
+    public static int MaxContentLength = 250;
 
     @Id
     @Column(length = 64)
@@ -136,8 +137,9 @@ public class ArticleRank
         this.rank = tag.getRank();
         this.tagHash = HashKey.toSha1Key(this.tag, authorUuid);
 
-        // XXX: trim the length here.
-        this.contentBrief = product.getProdDesc();
+        this.contentBrief =
+            Arrays.copyOfRange(product.getProdDesc(), 0, MaxContentLength);
+        this.artTitle = product.getProdName();
         this.tag = product.getProdCat();
     }
 
@@ -153,7 +155,8 @@ public class ArticleRank
         this.rank = tag.getRank();
         this.tagHash = HashKey.toSha1Key(this.tag, authorUuid);
 
-        this.contentBrief = ads.getBusDesc();
+        this.contentBrief = Arrays.copyOfRange(ads.getBusDesc(), 0, MaxContentLength);
+        this.artTitle = ads.getBusName();
         this.tag = ads.getBusCat();
     }
 

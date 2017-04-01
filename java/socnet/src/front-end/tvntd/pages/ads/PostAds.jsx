@@ -145,8 +145,6 @@ class PostAds extends React.Component
             };
             InputStore.storeItemIndex(this._busImgId, img, false);
         }
-        console.log("upload ok");
-        console.log(result);
     }
 
     _updateState(store, data, status) {
@@ -178,12 +176,6 @@ class PostAds extends React.Component
                 }
             }
         });
-        console.log(ad);
-        console.log(errFlags);
-
-        Actions.publicPostAds(ad);
-        return;
-
         if (errText != null) {
             this.setState({
                 errFlags: errFlags
@@ -192,7 +184,6 @@ class PostAds extends React.Component
             return;
         }
         StateButtonStore.setButtonStateObj(this._postAdBtn, "saving");
-        console.log(ad);
         Actions.publicPostAds(ad);
     }
 
@@ -230,10 +221,12 @@ class PostAds extends React.Component
     _editAd() {
         let ad = this.props.ads, errFlag = this.state.errFlags,
             adImg, twoCols, adsOpt = ArticleTagStore.getPublicTagsSelOpt("ads"),
+            adsOptDef = !_.isEmpty(adsOpt) ? adsOpt[0].label : null,
         busCat = {
             select   : true,
             inpName  : this._busCatId,
-            inpDefVal: adsOpt != null ? adsOpt[0] : null,
+            inpDefVal: adsOptDef,
+            inpHolder: adsOptDef,
             selectOpt: adsOpt,
             onSelect : null,
             errorId  : this._busCatId,

@@ -27,6 +27,7 @@
 package com.tvntd.service.user;
 
 import java.io.UnsupportedEncodingException;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -42,6 +43,7 @@ import com.tvntd.forms.AdsForm;
 import com.tvntd.models.AdsPost;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.service.api.IAdsPostService;
+import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.ICommentService;
 
@@ -59,6 +61,9 @@ public class AdsPostService implements IAdsPostService
 
     @Autowired
     protected ICommentService commentSvc;
+
+    @Autowired
+    private IArtTagService artTagSvc;
 
     /**
      * Common static methods.
@@ -91,6 +96,22 @@ public class AdsPostService implements IAdsPostService
     }
 
     @Override
+    public List<AdsPostDTO> getAdsPostByUuids(String[] adsUuids)
+    {
+        List<AdsPostDTO> result = new LinkedList<>();
+
+        if (adsUuids != null) {
+            for (String u : adsUuids) {
+                AdsPostDTO ads = getAdsPostDTO(u);
+                if (ads != null) {
+                    result.add(ads);
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
     public void deleteAnnonAds(String uuid)
     {
         List<AdsPost> ads = getAdsPostByAuthor(uuid);
@@ -109,7 +130,10 @@ public class AdsPostService implements IAdsPostService
         AdsPost ads = adsRepo.findByArticleUuid(uuid);
         if (ads != null) {
             ArticleRank rank = artRankRepo.findByArticleUuid(uuid);
-            return new AdsPostDTO(ads, new ArticleRankDTO(rank));
+            AdsPostDTO result = new AdsPostDTO(ads, new ArticleRankDTO(rank));
+
+            result.convertUTF();
+            return result;
         }
         return null;
     }
@@ -129,12 +153,15 @@ public class AdsPostService implements IAdsPostService
     @Override
     public void deleteAds(AdsPost ads)
     {
-        adsRepo.delete(ads);
-        ArticleRank rank = artRankRepo.findByArticleUuid(ads.getArticleUuid());
+        String uuid = ads.getArticleUuid();
+        ArticleRank rank = artRankRepo.findByArticleUuid(uuid);
 
         if (rank != null) {
             artRankRepo.delete(rank);
         }
+        artTagSvc.deletePublicTagPost(ads.getBusCat(), uuid);
+        commentSvc.deleteComment(uuid);
+        adsRepo.delete(ads);
     }
 
     @Override

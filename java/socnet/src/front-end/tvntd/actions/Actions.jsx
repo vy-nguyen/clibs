@@ -60,6 +60,7 @@ const Actions = Reflux.createActions({
 
     // Public ads posting
     publicPostAds:   completedFailedFn,
+    getPublishAds:   completedFailedFn,
 
     // Rank article
     getArticleRank:  completedFailedFn,
@@ -297,6 +298,12 @@ Actions.deleteProduct.listen(function(data) {
  */
 Actions.publicPostAds.listen(function(data) {
     postRestCall(data, "/public/publish-ads", true, this, false, "publicPostAds");
+});
+
+Actions.getPublishAds.listen(function(data) {
+    console.log("Request ad uuids");
+    console.log(data);
+    postRestCall(data, "/public/get-ads", true, this, false, "getPublishAds");
 });
 
 /**

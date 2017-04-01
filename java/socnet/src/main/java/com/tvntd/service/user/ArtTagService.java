@@ -61,7 +61,8 @@ public class ArtTagService implements IArtTagService
     @Autowired
     protected IAuthorService authorSvc;
 
-    public static List<ArtTagDTO> makeSubTags(List<ArtTagDTO> children, String userUuid)
+    public static List<ArtTagDTO>
+    makeSubTags(List<ArtTagDTO> children, String userUuid)
     {
         List<ArtTagDTO> result = new LinkedList<>();
         Map<String, ArtTagDTO> map = new HashMap<>();
@@ -163,6 +164,19 @@ public class ArtTagService implements IArtTagService
     }
 
     @Override
+    public ArtTagDTO getTag(byte[] tag, String uuid)
+    {
+        String key = ArtTagDTO.makeTagOidKey(tag, uuid);
+        if (key != null) {
+            ArtTag artTag = artTagRepo.findByTagOid(key);
+            if (tag != null) {
+                return new ArtTagDTO(artTag);
+            }
+        }
+        return null;
+    }
+
+    @Override
     public List<ArtTagDTO> getUserTags(String uuid)
     {
         List<ArtTag> all = artTagRepo.findAllByUserUuid(uuid);
@@ -215,6 +229,21 @@ public class ArtTagService implements IArtTagService
 
     @Override
     public synchronized void deletePublicTagPost(String pubTag, String uuid)
+    {
+        if (pubTag == null) {
+            return;
+        }
+        ArtTagDTO pub = getTag(pubTag, Constants.PublicUuid);
+        if (pub != null) {
+            pub.removeArtRank(uuid);
+            saveTag(pub);
+        } else {
+            s_log.info("Public tag " + pubTag + " doesn't exist");
+        }
+    }
+
+    @Override
+    public synchronized void deletePublicTagPost(byte[] pubTag, String uuid)
     {
         if (pubTag == null) {
             return;

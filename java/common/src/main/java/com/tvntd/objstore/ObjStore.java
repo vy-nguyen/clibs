@@ -180,6 +180,10 @@ public class ObjStore extends Module
         return null;
     }
 
+    public String imgObjPublicUri(String oidStr) {
+        return oidStr != null ? imgObjPublicUri(ObjectId.fromString(oidStr)) : null;
+    }
+
     public String imgUserObjUri(ObjectId oid, String user)
     {
         if (oid != null) {

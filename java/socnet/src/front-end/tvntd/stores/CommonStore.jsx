@@ -244,14 +244,14 @@ class CommonStore {
         }.bind(this));
     }
 
-    requestItems() {
+    requestItems(actionFn) {
         if (this.data.requestdUuids != null || this.data.missingUuids == null) {
             return;
         }
         this.data.requestUuids = this.data.missingUuids;
         this.data.missingUuids = null;
 
-        Actions.getPublishProds({
+        actionFn({
             authorUuid: null,
             uuidType  : this.data.storeKind,
             uuids     : this.data.requestUuids

@@ -326,14 +326,7 @@ public class UserPath
         }
         String[] uuidList = uuids.getUuids();
         for (String uid : uuidList) {
-            Article art = articleSvc.deleteArticle(uid, profile);
-            if (art != null) {
-                commentSvc.deleteComment(uid);
-                String pubTag = ProductDTO.convertUTF(art.getPublicTag());
-                if (pubTag != null) {
-                    artTagSvc.deletePublicTagPost(pubTag, uid);
-                }
-            }
+            articleSvc.deleteArticle(uid, profile);
         }
         return new UuidResponse(uuids);
     }
@@ -576,7 +569,8 @@ public class UserPath
         }
         String[] uuidList = uuids.getUuids();
         for (String uid : uuidList) {
-            Product prod = productSvc.deleteProduct(uid, profile);
+            productSvc.deleteProduct(uid, profile);
+            /*
             if (prod != null) {
                 commentSvc.deleteComment(uid);
                 String pubTag = ProductDTO.convertUTF(prod.getPublicTag());
@@ -584,6 +578,7 @@ public class UserPath
                     artTagSvc.deletePublicTagPost(pubTag, uid);
                 }
             }
+            */
         }
         return new UuidResponse(uuids);
     }

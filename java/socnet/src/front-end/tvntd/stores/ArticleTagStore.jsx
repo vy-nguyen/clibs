@@ -9,9 +9,11 @@ import Reflux    from 'reflux';
 import Actions   from 'vntd-root/actions/Actions.jsx';
 
 import {tagKinds}                  from 'vntd-root/components/TagInfo.jsx';
-import {EProductStore}             from 'vntd-root/stores/ArticleStore.jsx';
 import {insertSorted, removeArray} from 'vntd-shared/utils/Enum.jsx';
 import {cloneInputEntry}           from 'vntd-shared/forms/commons/GenericForm.jsx';
+import {
+    EProductStore, AdsStore
+} from 'vntd-root/stores/ArticleStore.jsx';
 
 class ArtTag {
     constructor(data) {
@@ -86,12 +88,19 @@ let ArticleTagStore = Reflux.createStore({
 
     /* Signal to sync up data with server. */
     onSyncServerCompleted: function() {
-        let pubTags = this.data.sortedPubTags;
+        let pubTags = this.data.sortedTagKind["estore"];
 
         _.forEach(pubTags, function(tag) {
             EProductStore.updateMissingUuid(tag.articleRank);
         });
         EProductStore.requestProducts();
+
+        // Add to ads store.
+        pubTags = this.data.sortedTagKind["ads"];
+        _.forEach(pubTags, function(tag) {
+            AdsStore.updateMissingUuid(tag.articleRank);
+        });
+        AdsStore.requestAds();
     },
 
     /* Public methods. */
@@ -346,6 +355,9 @@ let ArticleTagStore = Reflux.createStore({
         return aRank - bRank; 
     },
 
+   /**
+    * Main method to add tag to this store.
+    */
     _addTag: function(tagObj) {
         let tagIndex = this.data.pubTagIndex;
 

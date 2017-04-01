@@ -26,6 +26,11 @@
  */
 package com.tvntd.forms;
 
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
+
+import com.tvntd.util.Util;
+
 public class UuidForm
 {
     public static final String artCmt   = "artCmt";
@@ -37,6 +42,18 @@ public class UuidForm
     private String uuidType;
     private String reqKind;
     private String[] uuids;
+
+    public boolean cleanInput()
+    {
+        if (uuids == null || reqKind == null) {
+            return false;
+        }
+        Whitelist wlist = Util.allowedTags;
+        for (int i = 0; i < uuids.length; i++) {
+            uuids[i] = Jsoup.clean(uuids[i], wlist);
+        }
+        return true;
+    }
 
     /**
      * @return the authorUuid

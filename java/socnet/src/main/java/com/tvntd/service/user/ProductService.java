@@ -43,6 +43,7 @@ import com.tvntd.dao.ProductRepository;
 import com.tvntd.forms.ProductForm;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Product;
+import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.ICommentService;
 import com.tvntd.service.api.IProductService;
@@ -62,6 +63,9 @@ public class ProductService implements IProductService
 
     @Autowired
     protected IAuthorService authorSvc;
+
+    @Autowired
+    protected IArtTagService artTagSvc;
 
     @Autowired
     protected ICommentService commentSvc;
@@ -240,7 +244,10 @@ public class ProductService implements IProductService
         if (rank != null) {
             artRankRepo.delete(rank);
         }
+        commentSvc.deleteComment(prod.getArticleUuid());
+        artTagSvc.deletePublicTagPost(prod.getPublicTag(), prod.getArticleUuid());
         productRepo.delete(prod);
+
         productRepo.flush();
         artRankRepo.flush();
         return prod;

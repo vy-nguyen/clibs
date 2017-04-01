@@ -68,6 +68,7 @@ import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.GenericResponse;
 import com.tvntd.service.api.IAdsPostService;
 import com.tvntd.service.api.IAdsPostService.AdsPostDTO;
+import com.tvntd.service.api.IAdsPostService.AdsPostDTOResponse;
 import com.tvntd.service.api.IAnnonService;
 import com.tvntd.service.api.IAnnonService.AnnonUserDTO;
 import com.tvntd.service.api.IArtTagService;
@@ -356,13 +357,12 @@ public class PublicPath
         } else {
             ads = profile.genPendAds();
         }
-        System.out.println("Ad uuid " + ads.getArticleUuid());
         try {
             InputStream is = file.getInputStream();
             ObjectId oid = store.putPublicImg(is, (int)file.getSize());
 
             if (oid != null) {
-                ads.setAdImgOid0(oid.name());
+                ads.setAdImgOId0(oid.name());
             }
             ImageUploadResp out =
                 new ImageUploadResp(ads.getArticleUuid(), ads.getAuthorUuid(), oid);
@@ -400,9 +400,6 @@ public class PublicPath
         } else {
             ads = profile.genPendAds();
         }
-        System.out.println("----------------");
-        System.out.println("Ad uuid " + ads.getArticleUuid());
-
         if (form.cleanInput() == false) {
             return UserPath.s_saveObjFailed;
         }
@@ -419,6 +416,35 @@ public class PublicPath
         if (user != null) {
             user.assignPendAds(null);
         }
+        ads.convertUTF();
         return ads;
+    }
+
+    /**
+     * Get ads based on requested uuids.
+     */
+    @RequestMapping(value = "/public/get-ads",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    getPublicAds(@RequestBody UuidForm uuids, HttpSession session)
+    {
+        if (uuids == null) {
+            return UserPath.s_genOkResp;
+        }
+        /*
+        if (uuids.cleanInput() == false) {
+            return UserPath.s_invalidArticle;
+        }
+        */
+        List<AdsPostDTO> ads = adsSvc.getAdsPostByUuids(uuids.getUuids());
+        ArrayList<String> artUuids = new ArrayList<>(ads.size());
+
+        for (AdsPostDTO a : ads) {
+            artUuids.add(a.getArticleUuid());
+        }
+        CommentDTOResponse co = commentSvc.getCommentPost(artUuids);
+        return new AdsPostDTOResponse(ads, co.getComments());
     }
 }

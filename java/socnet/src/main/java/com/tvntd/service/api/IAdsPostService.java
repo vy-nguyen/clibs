@@ -29,17 +29,22 @@ package com.tvntd.service.api;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.tvntd.models.AdsPost;
 import com.tvntd.models.ArticleRank;
+import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.IArticleService.ArticleRankDTO;
+import com.tvntd.service.api.ICommentService.CommentDTO;
 
 public interface IAdsPostService
 {
     AdsPostDTO getAdsPostDTO(String uuid);
     AdsPost getAdsPost(String uuid);
+
     List<AdsPost> getAdsPostByAuthor(String authorUuid);
+    List<AdsPostDTO> getAdsPostByUuids(String[] adsUuids);
 
     void deleteAnnonAds(String uuid);
     void saveAds(AdsPostDTO ads);
@@ -47,6 +52,39 @@ public interface IAdsPostService
     void deleteAds(AdsPost ads);
     AdsPost deleteAds(String uuid);
 
+    /**
+     * @return list of ads.
+     */
+    public static class AdsPostDTOResponse extends GenericResponse
+    {
+        private List<AdsPostDTO> ads;
+        private List<CommentDTO> comments;
+
+        public AdsPostDTOResponse(List<AdsPostDTO> ads, List<CommentDTO> comments)
+        {
+            super(GenericResponse.USER_HOME, null, null);
+            this.ads = ads;
+            this.comments = comments;
+        }
+
+        /**
+         * @return the ads
+         */
+        public List<AdsPostDTO> getAds() {
+            return ads;
+        }
+
+        /**
+         * @return the comments
+         */
+        public List<CommentDTO> getComments() {
+            return comments;
+        }
+    }
+
+    /**
+     * @return one ad.
+     */
     public static class AdsPostDTO extends GenericResponse
     {
         private AdsPost        adPost;
@@ -159,12 +197,32 @@ public interface IAdsPostService
         /**
          * Set ad images.
          */
-        public void setAdImgOid0(String oid) {
-            adPost.setAdImgOid0(oid);
+        public void setAdImgOId0(String oid) {
+            adPost.setAdImgOId0(oid);
         }
 
-        public List<String> getImageUrl() {
-            return null;
+        public List<String> getImageUrl()
+        {
+            List<String> img = new LinkedList<>();
+            ObjStore store = ObjStore.getInstance();
+            String url = store.imgObjPublicUri(adPost.getAdImgOId0());
+
+            if (url != null) {
+                img.add(url);
+            }
+            url = store.imgObjPublicUri(adPost.getAdImgOId1());
+            if (url != null) {
+                img.add(url);
+            }
+            url = store.imgObjPublicUri(adPost.getAdImgOId2());
+            if (url != null) {
+                img.add(url);
+            }
+            url = store.imgObjPublicUri(adPost.getAdImgOId3());
+            if (url != null) {
+                img.add(url);
+            }
+            return img;
         }
 
         public String getCreatedDate() {

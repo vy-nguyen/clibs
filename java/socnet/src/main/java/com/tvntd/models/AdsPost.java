@@ -182,14 +182,14 @@ public class AdsPost
     /**
      * @return the adImgOid0
      */
-    public String getAdImgOid0() {
+    public String getAdImgOId0() {
         return adImgOId0;
     }
 
     /**
      * @param adImgOid0 the adImgOid0 to set
      */
-    public void setAdImgOid0(String adImgOId0) {
+    public void setAdImgOId0(String adImgOId0) {
         this.adImgOId0 = adImgOId0;
     }
 
@@ -208,16 +208,16 @@ public class AdsPost
     }
 
     /**
-     * @return the adImgOid2
+     * @return the adImgOId2
      */
-    public String getAdImgOid2() {
+    public String getAdImgOId2() {
         return adImgOId2;
     }
 
     /**
-     * @param adImgOid2 the adImgOid2 to set
+     * @param adImgOId2 the adImgOId2 to set
      */
-    public void setAdImgOid2(String adImgOId2) {
+    public void setAdImgOId2(String adImgOId2) {
         this.adImgOId2 = adImgOId2;
     }
 

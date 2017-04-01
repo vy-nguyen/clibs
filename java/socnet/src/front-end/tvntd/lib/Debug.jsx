@@ -18,7 +18,9 @@ import AdminStore       from 'vntd-root/stores/AdminStore.jsx';
 import ArtTagStore      from 'vntd-root/stores/ArticleTagStore.jsx';
 import LanguageStore    from 'vntd-root/stores/LanguageStore.jsx';
 
-import {ArticleStore, EProductStore} from 'vntd-root/stores/ArticleStore.jsx';
+import {
+    ArticleStore, EProductStore, AdsStore
+} from 'vntd-root/stores/ArticleStore.jsx';
 
 class Debug extends React.Component {
 
@@ -79,6 +81,10 @@ class Debug extends React.Component {
         ErrorStore.dumpData("Error Store");
     }
 
+    debugAdsStore() {
+        AdsStore.dumpData("Ads Store");
+    }
+
     render() {
         return (
             <div className="row">
@@ -94,6 +100,8 @@ class Debug extends React.Component {
                     <a onClick={this.debugCommentStore}>Debug Comment Store</a>
                     <br/>
                     <a onClick={this.debugLanguageStore}>Debug Language Store</a>
+                    <br/>
+                    <a onClick={this.debugAdsStore}>Debug Ads Store</a>
                 </div>
                 <div className="col-md-6">
                     <a onClick={this.debugNavStore}>Debug Nav Store</a>

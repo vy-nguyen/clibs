@@ -43,12 +43,15 @@ public interface IArtTagService
     void saveTag(String uuid, String tag, String parent, Long rank);
 
     ArtTagDTO getTag(String tag, String uuid);
+    ArtTagDTO getTag(byte[] tag, String uuid);
+
     List<ArtTagDTO> getUserTags(String uuid);
     ArtTagList getUserTagsDTO(String uuid);
     void deleteTag(String tag, String uuid);
 
     void addPublicTagPost(String pubTag, String uuid);
     void deletePublicTagPost(String pubTag, String uuid);
+    void deletePublicTagPost(byte[] pubTag, String uuid);
 
     public static class ArtTagList extends GenericResponse
     {
@@ -173,6 +176,10 @@ public interface IArtTagService
             } catch(UnsupportedEncodingException e) {
             }
             return null;
+        }
+
+        public static String makeTagOidKey(byte[] tagName, String userUuid) {
+            return HashKey.toSha1Key(tagName, userUuid);
         }
 
         /**

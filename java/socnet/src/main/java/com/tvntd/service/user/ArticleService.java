@@ -52,6 +52,7 @@ import com.tvntd.forms.PostForm;
 import com.tvntd.forms.UuidForm;
 import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
+import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.ICommentService;
@@ -75,6 +76,9 @@ public class ArticleService implements IArticleService
 
     @Autowired
     protected ICommentService commentSvc;
+
+    @Autowired
+    protected IArtTagService artTagSvc;
 
     /**
      * Common static methods.
@@ -378,14 +382,19 @@ public class ArticleService implements IArticleService
     @Override
     public Article deleteArticle(Article art, ProfileDTO owner)
     {
-        if (!art.getAuthorUuid().equals(owner.getUserUuid())) {
+        String uuid = art.getArticleUuid();
+
+        if (!uuid.equals(owner.getUserUuid())) {
             return null;
         }
-        ArticleRank rank = artRankRepo.findByArticleUuid((art.getArticleUuid()));
+        ArticleRank rank = artRankRepo.findByArticleUuid(uuid);
         if (rank != null) {
             artRankRepo.delete(rank);
         }
-        articleRepo.delete(art.getArticleUuid());
+        commentSvc.deleteComment(uuid);
+        artTagSvc.deletePublicTagPost(art.getPublicTag(), uuid);
+        articleRepo.delete(uuid);
+
         articleRepo.flush();
         artRankRepo.flush();
         return art;
@@ -398,19 +407,7 @@ public class ArticleService implements IArticleService
 
         ArticleDTO art = getArticleDTO(uuid);
         if (art != null) {
-            Article article = art.fetchArticle();
-            if (!owner.getUserUuid().equals(article.getAuthorUuid())) {
-                s_log.info("Wrong owner " + owner.getUserUuid());
-                return null;
-            }
-            ArticleRank rank = artRankRepo.findByArticleUuid(article.getArticleUuid());
-            if (rank != null) {
-                artRankRepo.delete(rank);
-            }
-            articleRepo.delete(article);
-            articleRepo.flush();
-            artRankRepo.flush();
-            return article;
+            return deleteArticle(art.fetchArticle(), owner);
         }
         return null;
     }

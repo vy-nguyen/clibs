@@ -61,7 +61,7 @@ let EProductStore = Reflux.createStore({
     },
 
     requestProducts: function() {
-        this.store.requestItems();
+        this.store.requestItems(Actions.getPublishProds);
     },
 
     dumpData: function(header) {
@@ -82,11 +82,39 @@ let AdsStore = Reflux.createStore({
     },
 
     onPublicPostAdsCompleted: function(res) {
+        console.log("Publish ads");
+        console.log(res);
         this.store.onPublishItemCompleted(res, this);
     },
 
     onPublicPostAdsFailure: function(res) {
         this.store.onPublishItemFailure(res, this);
+    },
+
+    onDeleteProductCompleted: function(data) {
+        this.store.onDeleteItemCompleted(data, this);
+    },
+
+    onGetPublishAdsCompleted: function(data) {
+        console.log("Get published ads");
+        console.log(data);
+        this.store.onGetPublishItemCompleted(data, 'ads', this);
+    },
+
+    onGetPublishAdsFailure: function(data) {
+        this.store.onGetPublishItemFailure(data, this);
+    },
+
+    updateMissingUuid: function(uuids) {
+        this.store.updateMissingUuid(uuids);
+    },
+
+    requestAds: function() {
+        this.store.requestItems(Actions.getPublishAds);
+    },
+
+    dumpData: function(header) {
+        this.store.dumpData(header);
     }
 });
 
