@@ -351,6 +351,7 @@ public class PublicPath
         ObjStore store = ObjStore.getInstance();
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
 
+        System.out.println("Upload uuid " + artUuid);
         if (profile == null) {
             AnnonUserDTO user = annonSvc.getAnnonUser(reqt, resp, session);
             ads = user.genPendAds();

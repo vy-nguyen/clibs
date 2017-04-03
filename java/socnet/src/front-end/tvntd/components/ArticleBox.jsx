@@ -45,7 +45,8 @@ class ArticleBox extends React.Component
                         <div className="product-image" style={{minHeight: "150"}}>
                             <div className="air air-top-left padding-10">
                                 <img src={data.logo} width={data.logoWidth}
-                                    height={data.logoHeight} className="img-responsive"/>
+                                    height={data.logoHeight}
+                                    className="img-responsive"/>
                             </div>
                             <img src={data.image} className="img-responsive"/>
                         </div>

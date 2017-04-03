@@ -9,13 +9,7 @@ import React, {PropTypes} from 'react-mod';
 import BrowseSelection    from 'vntd-shared/layout/BrowseSelection.jsx';
 import ArticleTagStore    from 'vntd-root/stores/ArticleTagStore.jsx';
 import ArticleTagBrief    from 'vntd-root/components/ArticleTagBrief.jsx';
-
-const sample = [
-    { value: "abc",    label: "abc" },
-    { value: "def",    label: "def" },
-    { value: "img",    label: "img" },
-    { value: "dws",    label: "dws" },
-];
+import AdsTableListing    from './AdsTableListing.jsx';
 
 function filterLeterTags(tags, letter)
 {
@@ -121,7 +115,7 @@ class YellowPage extends React.Component
 
     _updateArtTags() {
         let label, select, defTag = null,
-            buckets = ArticleTagStore.getFilterTag("blog", filterTagBuckets);
+            buckets = ArticleTagStore.getFilterTag("ads", filterTagBuckets);
 
         _.forEach(buckets, function(item, key) {
             label  = this.browse[parseInt(key)];
@@ -150,11 +144,6 @@ class YellowPage extends React.Component
     }
 
     _renderTagAds(tagName) {
-        let tag = ArticleTagStore.getTagByName(tagName);
-
-        if (tag == null) {
-            return null;
-        }
         return (
             <div className="panel panel-default">
                 {/*
@@ -163,7 +152,7 @@ class YellowPage extends React.Component
                 </div>
                     */}
                 <div className="panel-body">
-                    <ArticleTagBrief tag={tag}/>
+                    <AdsTableListing tag={tag}/>
                 </div>
             </div>
         );
@@ -174,7 +163,9 @@ class YellowPage extends React.Component
             <div className="padding-top-10">
                 <BrowseSelection labels={this.browse}/>
                 <div className="row">
-                    {this._renderTagAds(this.state.currentTag)}
+                    <div className="panel-body">
+                        <AdsTableListing tagName={this.state.currentTag}/>
+                    </div>
                 </div>
             </div>
         );

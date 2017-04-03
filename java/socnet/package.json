@@ -66,6 +66,7 @@
     "react-select": "1.0.0-rc.2",
     "react-markdown-area": "0.3.8",
     "react-tinymce": "0.5.1",
+    "react-star-rating": "1.4.2",
     "reflux": "0.4.1",
     "redux": "^3.x.x",
     "marked": "0.3.5",

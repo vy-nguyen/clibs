@@ -241,8 +241,8 @@ Actions.preload.listen(function() {
         users   : require('json!../mock-json/user.json'),
         comments: require('json!../mock-json/comment.json')
     };
+    */
     this.completed(data);
-     */
 });
 
 /**
@@ -310,7 +310,8 @@ Actions.getPublishAds.listen(function(data) {
  * Comment actions.
  */
 Actions.updateComment.listen(function(data, callback) {
-    postRestCall(data, "/user/change-comment", true, this, true, "updateComment", callback);
+    postRestCall(data, "/user/change-comment",
+                 true, this, true, "updateComment", callback);
 });
 
 Actions.postComment.listen(function(data) {
@@ -325,7 +326,8 @@ Actions.postCmtSelect.listen(function(data) {
  * Rank article actions.
  */
 Actions.updateArtRank.listen(function(data, callback) {
-    postRestCall(data, "/user/update-art-rank", true, this, true, "updateArtRank", callback);
+    postRestCall(data, "/user/update-art-rank",
+                 true, this, true, "updateArtRank", callback);
 });
 
 Actions.postArtSelect.listen(function(data) {
