@@ -56,9 +56,7 @@ class EStore extends React.Component
 
     static _renderProdBrief(userUuid, product) {
         return (
-            <div className='col-xs-6 col-sm-6 col-md-6 col-lg-6'>
-                <ProductBrief product={product} userUuid={userUuid}/>
-            </div>
+            <ProductBrief product={product} userUuid={userUuid}/>
         );
     }
 
@@ -74,11 +72,13 @@ class EStore extends React.Component
         return (
             <div id="content">
                 <section id="widget-grid" className="">
-                    {ArticleTagBrief.renderArtBox(products, renderBrief, EStore._renderProdFull, false)}
+                    {ArticleTagBrief.renderArtBox(products,
+                        renderBrief, EStore._renderProdFull, false)}
                     <div className="row">
                         <div className="col-sm-12 text-center">
                             <button className="btn btn-primary btn-lg">
-                                <Mesg text="Load more "/><i className="fa fa-arrow-down"></i>
+                                <Mesg text="Load more "/>
+                                 <i className="fa fa-arrow-down"></i>
                             </button>
                         </div>
                     </div>
@@ -99,4 +99,4 @@ EStore.propTypes = {
 EStore.defaultProps = {
 };
 
- export default EStore;
+export default EStore;

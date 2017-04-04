@@ -93,15 +93,12 @@ class ArticleTagBrief extends React.Component
             callbackArg : this,
             clickHandler: this._readArticle
         };
-        return (
-            <div className="col-xs-12 col-sm-6 col-md-4 col-lg-4">
-                {ArticleBox.article(artUuid, clickCb)}
-            </div>
-        )
+        return ArticleBox.article(artUuid, clickCb);
     }
 
     _renderArtFull(art) {
-        if (this.state.articleUuid == null || this.state.articleUuid !== art.artUuid) {
+        if (this.state.articleUuid == null ||
+            this.state.articleUuid !== art.artUuid) {
             return null;
         }
         let artUuid = art.artUuid;
@@ -135,51 +132,77 @@ class ArticleTagBrief extends React.Component
         return (
             <section id='widget-grid'>
                 {ArticleTagBrief.renderArtBox(articles,
-                    this._renderArtBrief, this._renderArtFull, true)}
+                    this._renderArtBrief, this._renderArtFull, false)}
             </section>
         );
     }
 
-    static renderArtBox(articles, renderBrief, renderFull, maxCol) {
+    static renderArtBox(adsList, renderBrief, renderFull, maxCol) {
         let output = [], mode = NavigationStore.getViewMode(),
-            length = articles.length,
-            oneBrief, oneFull, twoBrief, twoFull, threeBrief, threeFull;
+            length = adsList.length,
+            oneBrief, oneFull, twoBrief, twoFull,
+            threeBrief, threeFull, fourBrief, fourFull,
+            briefFmt = "col-xs-12 col-sm-6 col-md-4 col-lg-3";
 
         for (let i = 0; i < length; i++) {
-            oneBrief = renderBrief(articles[i]);
-            oneFull  = renderFull(articles[i]);
-
+            oneFull  = renderFull(adsList[i]);
+            oneBrief = (
+                <div className={briefFmt}>
+                    {renderBrief(adsList[i])}
+                </div>
+            );
             twoBrief   = null;
             twoFull    = null;
             threeBrief = null;
             threeFull  = null;
+            fourBrief  = null;
+            fourFull   = null;
 
             if (mode !== 'xs') {
                 if ((i + 1) < length) {
                     i++;
-                    twoBrief = renderBrief(articles[i]);
-                    twoFull  = renderFull(articles[i]);
+                    twoFull  = renderFull(adsList[i]);
+                    twoBrief = (
+                        <div className={briefFmt}>
+                            {renderBrief(adsList[i])}
+                        </div>
+                    );
                 }
                 if (mode === 'md' || mode === 'lg') {
                     if ((i + 1) < length) {
                         i++;
-                        threeBrief = renderBrief(articles[i]);
-                        threeFull  = renderFull(articles[i]);
+                        threeFull  = renderFull(adsList[i]);
+                        threeBrief = (
+                            <div className={briefFmt}>
+                                {renderBrief(adsList[i])}
+                            </div>
+                        );
+                    }
+                    if ((maxCol === true) && (mode === 'lg') && ((i + 1) < length)) {
+                        i++;
+                        fourFull  = renderFull(adsList[i]);
+                        fourBrief = (
+                            <div className={briefFmt}>
+                                {renderBrief(adsList[i])}
+                            </div>
+                        );
                     }
                 }
             }
             output.push(
-                <div className="row" key={_.uniqueId("art-brief-")}>
+                <div className="row" key={_.uniqueId("ads-brief-")}>
                     {oneBrief}
                     {twoBrief}
                     {threeBrief}
+                    {fourBrief}
                 </div>
             );
             output.push(
-                <div className="row" key={_.uniqueId("art-full-")}>
+                <div className="row" key={_.uniqueId("ads-full-")}>
                     {oneFull}
                     {twoFull}
                     {threeFull}
+                    {fourFull}
                 </div>
             );
         }
