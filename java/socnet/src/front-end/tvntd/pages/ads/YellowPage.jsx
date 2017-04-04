@@ -146,11 +146,6 @@ class YellowPage extends React.Component
     _renderTagAds(tagName) {
         return (
             <div className="panel panel-default">
-                {/*
-                <div className="panel-heading">
-                    <h4 className="panel-title">{tag.tagName}</h4>
-                </div>
-                    */}
                 <div className="panel-body">
                     <AdsTableListing tag={tag}/>
                 </div>

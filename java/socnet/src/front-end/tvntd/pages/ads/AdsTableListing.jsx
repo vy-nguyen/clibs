@@ -90,10 +90,11 @@ class AdsTableListing extends React.Component
     }
 
     static renderAdsBox(adsList, renderBrief, renderFull, maxCol) {
-        let output = [], mode = NavigationStore.getViewMode(), length = adsList.length,
+        let output = [], mode = NavigationStore.getViewMode(),
+            length = adsList.length,
             oneBrief, oneFull, twoBrief, twoFull,
             threeBrief, threeFull, fourBrief, fourFull,
-            briefFmt = "col-xs-4 col-sm-4 col-md-3 col-lg-3";
+            briefFmt = "col-xs-12 col-sm-6 col-md-4 col-lg-3";
 
         for (let i = 0; i < length; i++) {
             oneFull  = renderFull(adsList[i]);
@@ -102,38 +103,43 @@ class AdsTableListing extends React.Component
                     {renderBrief(adsList[i])}
                 </div>
             );
-            twoBrief = null;
-            twoFull  = null;
-            if ((i + 1) < length) {
-                i++;
-                twoFull  = renderFull(adsList[i]);
-                twoBrief = (
-                    <div className={briefFmt}>
-                        {renderBrief(adsList[i])}
-                    </div>
-                );
-            }
+            twoBrief   = null;
+            twoFull    = null;
             threeBrief = null;
             threeFull  = null;
-            if ((i + 1) < length) {
-                i++;
-                threeFull  = renderFull(adsList[i]);
-                threeBrief = (
-                    <div className={briefFmt}>
-                        {renderBrief(adsList[i])}
-                    </div>
-                );
-            }
-            fourBrief = null;
-            fourFull  = null;
-            if ((i + 1) < length) {
-                i++;
-                fourFull  = renderFull(adsList[i]);
-                fourBrief = (
-                    <div className={briefFmt}>
-                        {renderBrief(adsList[i])}
-                    </div>
-                );
+            fourBrief  = null;
+            fourFull   = null;
+
+            if (mode !== 'xs') {
+                if ((i + 1) < length) {
+                    i++;
+                    twoFull  = renderFull(adsList[i]);
+                    twoBrief = (
+                        <div className={briefFmt}>
+                            {renderBrief(adsList[i])}
+                        </div>
+                    );
+                }
+                if (mode === 'md' || mode === 'lg') {
+                    if ((i + 1) < length) {
+                        i++;
+                        threeFull  = renderFull(adsList[i]);
+                        threeBrief = (
+                            <div className={briefFmt}>
+                                {renderBrief(adsList[i])}
+                            </div>
+                        );
+                    }
+                    if ((mode === 'lg') && ((i + 1) < length)) {
+                        i++;
+                        fourFull  = renderFull(adsList[i]);
+                        fourBrief = (
+                            <div className={briefFmt}>
+                                {renderBrief(adsList[i])}
+                            </div>
+                        );
+                    }
+                }
             }
             output.push(
                 <div className="row" key={_.uniqueId("ads-brief-")}>

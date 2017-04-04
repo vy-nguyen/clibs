@@ -94,7 +94,7 @@ class ArticleTagBrief extends React.Component
             clickHandler: this._readArticle
         };
         return (
-            <div className="col-xs-6 col-sm-6 col-md-6 col-lg-4">
+            <div className="col-xs-12 col-sm-6 col-md-4 col-lg-4">
                 {ArticleBox.article(artUuid, clickCb)}
             </div>
         )
@@ -141,27 +141,32 @@ class ArticleTagBrief extends React.Component
     }
 
     static renderArtBox(articles, renderBrief, renderFull, maxCol) {
-        let output = [];
-        let mode = NavigationStore.getViewMode();
-        let length = articles.length;
+        let output = [], mode = NavigationStore.getViewMode(),
+            length = articles.length,
+            oneBrief, oneFull, twoBrief, twoFull, threeBrief, threeFull;
 
         for (let i = 0; i < length; i++) {
-            let oneBrief = renderBrief(articles[i]);
-            let oneFull  = renderFull(articles[i]);
+            oneBrief = renderBrief(articles[i]);
+            oneFull  = renderFull(articles[i]);
 
-            let twoBrief = null;
-            let twoFull  = null;
-            if ((i + 1) < length) {
-                i++;
-                twoBrief = renderBrief(articles[i]);
-                twoFull  = renderFull(articles[i]);
-            }
-            let threeBrief = null;
-            let threeFull  = null;
-            if ((maxCol == true) && (mode === "lg") && ((i + 1) < length)) {
-                i++;
-                threeBrief = renderBrief(articles[i]);
-                threeFull  = renderFull(articles[i]);
+            twoBrief   = null;
+            twoFull    = null;
+            threeBrief = null;
+            threeFull  = null;
+
+            if (mode !== 'xs') {
+                if ((i + 1) < length) {
+                    i++;
+                    twoBrief = renderBrief(articles[i]);
+                    twoFull  = renderFull(articles[i]);
+                }
+                if (mode === 'md' || mode === 'lg') {
+                    if ((i + 1) < length) {
+                        i++;
+                        threeBrief = renderBrief(articles[i]);
+                        threeFull  = renderFull(articles[i]);
+                    }
+                }
             }
             output.push(
                 <div className="row" key={_.uniqueId("art-brief-")}>
