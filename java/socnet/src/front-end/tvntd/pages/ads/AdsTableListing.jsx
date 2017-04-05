@@ -6,14 +6,12 @@
 import _        from 'lodash';
 import React    from 'react-mod';
 
-import NavigationStore from 'vntd-shared/stores/NavigationStore.jsx';
-import AuthorFeed      from 'vntd-root/components/AuthorFeed.jsx';
 import ArticleTagBrief from 'vntd-root/components/ArticleTagBrief.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 import Lang            from 'vntd-root/stores/LanguageStore.jsx';
-import EStore          from 'vntd-root/pages/e-store/EStore.jsx';
 import {AdsStore}      from 'vntd-root/stores/ArticleStore.jsx';
 import AdsBox          from './AdsBox.jsx';
+import EStoreFeed      from './EStoreFeed.jsx';
 
 class AdsTableListing extends React.Component
 {
@@ -30,7 +28,7 @@ class AdsTableListing extends React.Component
 
     _readAds(ads) {
         console.log("Click read ads");
-        if (ads === this.state.currAds) {
+        if (this._isActive(ads)) {
             this.setState({
                 currAds: null
             });
@@ -60,15 +58,9 @@ class AdsTableListing extends React.Component
         if (this._isActive(ads) == false) {
             return null;
         }
-        console.log("render full");
-        return null;
-        let artUuid = ads.artUuid;
-        let artTag = ads.artTag;
-
         return (
-            <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                {AuthorFeed.renderToggleView(null, null, this._readAds, artTag)}
-            </div>
+            <EStoreFeed adsRec={ads} authorUuid={ads.artObj.authorUuid}
+                onClick={this._readAds.bind(this, ads)}/>
         )
     }
 

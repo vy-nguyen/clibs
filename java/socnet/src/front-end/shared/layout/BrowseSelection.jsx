@@ -57,7 +57,6 @@ class BrowseSelection extends React.Component
     }
 
     _onSelected(entry, val) {
-        console.log("select val " + val + " entry " + entry.inpName);
         entry.inpDefVal = val;
         entry.onSelect(entry, val);
     }
@@ -73,20 +72,23 @@ class BrowseSelection extends React.Component
 
         inpLabels = this.props.labels;
         _.forEach(inpLabels, function(item) {
+            let fmt = (select.inpDefVal === item.label) ?
+                "btn btn-danger" : "btn btn-primary";
+
             labels.push(
-                <li key={_.uniqueId('label-')}>
-                    <h3>
-                        <a onClick={this._clickLabel.bind(this, item)}>
-                            <span className="label label-primary">{item.label}</span>
-                        </a>
-                    </h3>
-                </li>
+                <button type="button" className={fmt} key={_.uniqueId('lbl-')}
+                    onClick={this._clickLabel.bind(this, item)}>
+                    <span>{item.label}</span>
+                </button>
             );
         }.bind(this));
 
+        //<ul className="list-inline">{labels}</ul>
         return (
             <div className="row">
-                <ul className="list-inline">{labels}</ul>
+                <div className="btn-group" role="group">
+                    {labels}
+                </div>
                 <div className="row">
                     <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                         <SelectWrap entry={select} value={select.inpDefVal}

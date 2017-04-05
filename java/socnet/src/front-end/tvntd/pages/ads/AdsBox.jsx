@@ -7,6 +7,7 @@ import _               from 'lodash';
 import React           from 'react-mod';
 import StarRating      from 'react-star-rating';
 
+import WidgetGrid      from 'vntd-shared/widgets/WidgetGrid.jsx'
 import UserStore       from 'vntd-shared/stores/UserStore.jsx';
 import AuthorStore     from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
@@ -17,10 +18,6 @@ class AdsBox extends React.Component
 {
     constructor(props) {
         super(props);
-        this._clickSelect = this._clickSelect.bind(this);
-    }
-
-    _clickSelect() {
     }
 
     render() {
@@ -32,18 +29,15 @@ class AdsBox extends React.Component
             imgUrl = !_.isEmpty(ads.imageUrl) ?  ads.imageUrl[0] : null,
             active = this.props.active === true ?
                 <span className="tag2 hot">Active</span> : null,
-        likeStat = {
-            commentCount: rank.notifCount ? rank.notifCount : 0,
-            likesCount  : rank.likes,
-            sharesCount : rank.shares
-        };
+            likeStat = AdsBox.getLikeStat(rank);
 
         return (
             <div className="product-content product-wrap clearfix">
                 <div className="product-deatil" onClick={this.props.onClick}>
                     <div className="row">
                         <div className="product-image" style={{height: "100"}}>
-                            <img src={imgUrl} className="img-responsive" style={style}/>
+                            <img src={imgUrl} className="img-responsive"
+                                style={style}/>
                             {active}
                         </div>
                     </div>
@@ -70,6 +64,35 @@ class AdsBox extends React.Component
             </div>
         )
     }
+
+    static getLikeStat(rank) {
+        return {
+            commentCount: rank.notifCount ? rank.notifCount : 0,
+            likesCount  : rank.likes,
+            sharesCount : rank.shares
+        };
+    }
 }
 
+class BusinessInfo extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        let adsRec = this.props.adsRec,
+            ads    = adsRec.artObj,
+            rank   = ads.adsRank,
+            adsTag = adsRec.artTag;
+
+        return (
+            <WidgetGrid className={this.props.className} style={{ height: 'auto' }}>
+                <h1>{ads.busName}</h1>
+            </WidgetGrid>
+        );
+    }
+}
+
+export { AdsBox, BusinessInfo };
 export default AdsBox;

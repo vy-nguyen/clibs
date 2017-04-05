@@ -53,7 +53,8 @@ class AuthorFeed extends React.Component
         this.state = {
             author  : author,
             tabIdx  : tabIdx,
-            articles: ArticleStore.getSortedArticlesByAuthor(props.authorUuid).slice(0, 2)
+            articles: ArticleStore
+                .getSortedArticlesByAuthor(props.authorUuid).slice(0, 2)
         }
     }
 
@@ -70,7 +71,8 @@ class AuthorFeed extends React.Component
 
     _updateState(data, post, status) {
         this.setState({
-            articles: ArticleStore.getSortedArticlesByAuthor(this.props.authorUuid).slice(0, 2)
+            articles: ArticleStore
+                .getSortedArticlesByAuthor(this.props.authorUuid).slice(0, 2)
         });
     }
 
@@ -118,18 +120,19 @@ class AuthorFeed extends React.Component
     }
 
     render() {
-        let userUuid = this.props.authorUuid;
-        let author = AuthorStore.getAuthorByUuid(userUuid);
+        let userUuid = this.props.authorUuid, user, articles, plugin,
+            author = AuthorStore.getAuthorByUuid(userUuid);
+
         if (author == null) {
             return null;
         }
-        let user = UserStore.getUserByUuid(userUuid);
-        let articles = this.props.articles;
+        user = UserStore.getUserByUuid(userUuid);
+        articles = this.props.articles;
 
         if (articles == null) {
             articles = this.state.articles;
         }
-        let plugin = this.props.plugin;
+        plugin = this.props.plugin;
         if (plugin == null) {
             plugin = DefaultPlugin;
         }
@@ -143,7 +146,8 @@ class AuthorFeed extends React.Component
                                 {plugin.render.bind(this, plugin)(author.coverImg)}
                             </div>
                             <div className="col-sm-9 col-md-9 col-lg-9">
-                                <TabPanel className="padding-top-10" context={this._getAuthorTab(author.userUuid)}>
+                                <TabPanel className="padding-top-10"
+                                    context={this._getAuthorTab(author.userUuid)}>
                                     <PostArticles data={articles} user={user}/>
                                     <Blog authorUuid={userUuid} user={user}/>
                                     <UserPostView userUuid={author.userUuid}/>
@@ -175,7 +179,8 @@ class AuthorFeed extends React.Component
                     backgroundImage: "url(" + img + ")"
                 }
                 return (
-                    <div className="row" style={divStyle} onClick={plugin.clickHandler.bind(this, plugin)}>
+                    <div className="row" style={divStyle}
+                        onClick={plugin.clickHandler.bind(this, plugin)}>
                         <br/>
                         <h3 style={plugin.txtStyle}>{plugin.content}</h3>
                         <br/>
@@ -188,9 +193,9 @@ class AuthorFeed extends React.Component
             }
         },
         articles = [ article ];
-        console.log(cbArg);
         return (
-            <AuthorFeed authorUuid={authorUuid} articles={articles} plugin={togglePlugin}/>
+            <AuthorFeed authorUuid={authorUuid}
+                articles={articles} plugin={togglePlugin}/>
         )
     }
 }
