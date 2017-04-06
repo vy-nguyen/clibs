@@ -6,6 +6,7 @@
 import _                  from 'lodash';
 import React, {PropTypes} from 'react-mod';
 
+import SparklineContainer from 'vntd-shared/graphs/SparklineContainer.jsx';
 import {
     SelectWrap, TAWrap
 } from 'vntd-shared/forms/commons/GenericForm.jsx';
@@ -16,8 +17,9 @@ class BrowseSelection extends React.Component
         let i, entry, labels = props.labels, len = labels.length;
 
         super(props);
-        this._onSearch   = this._onSearch.bind(this);
-        this._onSelected = this._onSelected.bind(this);
+        this._onSearch     = this._onSearch.bind(this);
+        this._onSelected   = this._onSelected.bind(this);
+        this._selectSearch = this._selectSearch.bind(this);
 
         for (i = 0; i < len; i++) {
             entry = labels[i].entry;
@@ -61,12 +63,16 @@ class BrowseSelection extends React.Component
         entry.onSelect(entry, val);
     }
 
+    _selectSearch(val) {
+    }
+
     render() {
         let search = {
-            taOptions : [ "abc", "def", "hef" ],
             maxVisible: 100,
-            inpHolder : "abc",
-            onSelect  : this._onSelected
+            taOptions : this.props.searchItems,
+            inpHolder : this.props.searchHolder,
+            inpDefVal : null,
+            onSelect  : this._selectSearch
         },
         inpLabels, select = this.state.select, labels = [];
 
@@ -84,11 +90,17 @@ class BrowseSelection extends React.Component
         }.bind(this));
 
         return (
-            <div className="row">
-                <div className="btn-group" role="group">
-                    {labels}
+            <SparklineContainer>
+                <div className="row">
+                    <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div className="btn-group" role="group">
+                            {labels}
+                        </div>
+                    </div>
                 </div>
-                <br/>
+                <div className="row">
+                    <p></p>
+                </div>
                 <div className="row">
                     <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                         <SelectWrap entry={select} value={select.inpDefVal}
@@ -107,7 +119,7 @@ class BrowseSelection extends React.Component
                         </div>
                     </div>
                 </div>
-            </div>
+            </SparklineContainer>
         );
     }
 };

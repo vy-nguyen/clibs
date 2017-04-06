@@ -9,6 +9,7 @@ import React, {PropTypes} from 'react-mod';
 import BrowseSelection    from 'vntd-shared/layout/BrowseSelection.jsx';
 import ArticleTagStore    from 'vntd-root/stores/ArticleTagStore.jsx';
 import ArticleTagBrief    from 'vntd-root/components/ArticleTagBrief.jsx';
+import YellowPage         from './YellowPage.jsx';
 
 const sample = [
     { value: "abc",    label: "abc" },
@@ -103,30 +104,8 @@ class FeatureAds extends React.Component
         });
     }
 
-    _renderTagAds(tagName) {
-        let tag = ArticleTagStore.getTagByName(tagName);
-
-        if (tag == null) {
-            return null;
-        }
-        return (
-            <div className="panel panel-default">
-                <div className="panel-body">
-                    <ArticleTagBrief tag={tag}/>
-                </div>
-            </div>
-        );
-    }
-
     render() {
-        return (
-            <div className="padding-top-10">
-                <BrowseSelection labels={this.browse}/>
-                <div className="row">
-                    {this._renderTagAds(this.state.currentTag)}
-                </div>
-            </div>
-        );
+        return YellowPage.renderAds(this.browse, this.state.currentTag);
     }
 }
 

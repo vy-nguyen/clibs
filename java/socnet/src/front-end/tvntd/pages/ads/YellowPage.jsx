@@ -136,30 +136,27 @@ class YellowPage extends React.Component
     }
 
     _onSelected(entry, val) {
-        console.log("select entry " + entry.index + " val " + val);
-        console.log(val);
         this.setState({
             currentTag: val
         });
     }
 
-    _renderTagAds(tagName) {
-        return (
-            <div className="panel panel-default">
-                <div className="panel-body">
-                    <AdsTableListing tag={tag}/>
-                </div>
-            </div>
-        );
+    render() {
+        return YellowPage.renderAds(this.browse, this.state.currentTag);
     }
 
-    render() {
+    static renderAds(browse, currentTag) {
+        let search = ArticleTagStore.getAllPublicTagsString(false, "ads"),
+            searchHolder = "Category Search";
+
         return (
             <div className="padding-top-10">
-                <BrowseSelection labels={this.browse}/>
+                <BrowseSelection labels={browse}
+                    searchItems={search} searchHolder={searchHolder}/>
+
                 <div className="row">
                     <div className="panel-body">
-                        <AdsTableListing tagName={this.state.currentTag}/>
+                        <AdsTableListing tagName={currentTag}/>
                     </div>
                 </div>
             </div>

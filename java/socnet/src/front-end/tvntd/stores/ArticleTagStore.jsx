@@ -256,18 +256,19 @@ let ArticleTagStore = Reflux.createStore({
     },
 
     getAllPublicTags: function(topLevel, pubMode) {
-        if (topLevel == null || topLevel === true) {
-            let result = [];
-            let allTags = this.data.sortedPubTags;
+        let allTags, result = [];
 
-            _.forEach(allTags, function(tag) {
-                if (tag.tagKind === pubMode) {
-                    result.push(tag);
-                }
-            });
-            return result;
+        if (topLevel == null || topLevel === true) {
+            allTags = this.data.sortedPubTags;
+        } else {
+            allTags = this.data.sortedIdxTags;
         }
-        return this.data.sortedIdxTags;
+        _.forEach(allTags, function(tag) {
+            if (tag.tagKind === pubMode) {
+                result.push(tag);
+            }
+        });
+        return result;
     },
 
     getPublicTagsSelOpt: function(kind) {
@@ -283,9 +284,9 @@ let ArticleTagStore = Reflux.createStore({
         return result;
     },
 
-    getAllPublicTagsString: function(topLevel) {
+    getAllPublicTagsString: function(topLevel, pubMode) {
         let tagStrings = [];
-        let tags = this.getAllPublicTags(topLevel);
+        let tags = this.getAllPublicTags(topLevel, pubMode);
 
         _.forOwn(tags, function(it) {
             tagStrings.push(it.tagName);
