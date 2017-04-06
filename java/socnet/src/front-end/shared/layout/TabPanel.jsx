@@ -7,6 +7,7 @@
 import _                from 'lodash';
 import React            from 'react-mod';
 import classnames       from 'classnames';
+import Mesg             from 'vntd-root/components/Mesg.jsx';
 
 class TabPanel extends React.Component
 {
@@ -35,7 +36,9 @@ class TabPanel extends React.Component
     }
 
     render() {
-        let tab, activeIdx, containerFmt, headerFmt, contentFmt, tabList, tabClsn, tabContent, tabHeader;
+        let tab, activeIdx, containerFmt, headerFmt, contentFmt,
+            tabList, tabClsn, tabContent, tabHeader;
+
         tab = this.props.context;
         if (tab == null) {
             return null;
@@ -44,17 +47,21 @@ class TabPanel extends React.Component
             tab.getActivePane = this._getActivePane;
             tab.setActivePane = this._setActivePane;
         }
-        activeIdx = tab.getActivePane();
-        containerFmt = tab.containerFmt != null ? tab.containerFmt : "tab-container no-padding";
-        headerFmt = tab.headerFmt != null ? tab.headerFmt : "nav nav-tabs";
+        activeIdx    = tab.getActivePane();
+        containerFmt = tab.containerFmt != null ?
+            tab.containerFmt : "tab-container no-padding";
+
+        headerFmt  = tab.headerFmt != null ? tab.headerFmt : "nav nav-tabs";
         contentFmt = tab.contentFmt != null ? tab.contentFmt : "tab-content no-padding";
 
         tabHeader = tab.tabItems.map(function(item, idx) {
             return (
-                <li key={_.uniqueId('tab-panel-')} className={idx == activeIdx ? "active" : ""}>
+                <li key={_.uniqueId('tab-panel-')}
+                    className={idx == activeIdx ? "active" : ""}>
                     <a data-toggle="tab" href={'#' + item.domId}
-                        id={'tab-panel-' + item.domId} onClick={this._selectTab.bind(this, idx)}>
-                        {item.tabText}
+                        id={'tab-panel-' + item.domId}
+                        onClick={this._selectTab.bind(this, idx)}>
+                        <Mesg text={item.tabText}/>
                     </a>
                 </li>
             )
@@ -70,7 +77,8 @@ class TabPanel extends React.Component
             clasname = classnames("tab-pane " + paneFmt, {active: idx == activeIdx});
             return (
                 <div key={_.uniqueId('tab-panel-')}
-                    id={item.domId} className={classnames("tab-pane", {active: idx == activeIdx})}>
+                    id={item.domId}
+                    className={classnames("tab-pane", {active: idx == activeIdx})}>
                     <div className={classnames("panel-body no-padding", tabClsn)}>
                         {tabRef}
                     </div>

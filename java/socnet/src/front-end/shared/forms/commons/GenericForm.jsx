@@ -425,7 +425,7 @@ class GenericForm extends React.Component
         let formEntries = form.formEntries.map(function(item) {
             let entries = item.entries.map(function(entry) {
                 if (item.inline !== null) {
-                    return <InpubBox entry={entry}/>;
+                    return <InputBox entry={entry}/>;
                 }
                 return <InputInline entry={entry}/>
             }.bind(this));

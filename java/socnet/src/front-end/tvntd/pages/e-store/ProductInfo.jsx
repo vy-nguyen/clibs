@@ -86,17 +86,17 @@ class ProductInfo extends React.Component
             contentFmt  : 'tab-content',
             tabItems: [ {
                 domId  : 'prod-tab-desc-' + uuid,
-                tabText: Lang.translate('Product Description'),
+                tabText: 'Product Description',
                 paneFmt: 'fade in',
                 tabIdx : 0
             }, {
                 domId  : 'prod-tab-spec-' + uuid,
-                tabText: Lang.translate('Specifications'),
+                tabText: 'Specifications',
                 paneFmt: 'fade',
                 tabIdx : 1
             }, {
                 domId  : 'prod-tab-review-' + uuid,
-                tabText: Lang.translate('Reviews'),
+                tabText: 'Reviews',
                 paneFmt: 'fade in',
                 tabIdx : 2
             } ]

@@ -158,23 +158,23 @@ const ProfileTab = {
     reactId : 'user-profile',
     tabItems: [ {
         domId  : 'profile-tab',
-        tabText: Lang.translate('About Me'),
+        tabText: 'About Me',
         tabIdx : 0
     }, {
         domId  : 'connection-tab',
-        tabText: Lang.translate('Connections'),
+        tabText: 'Connections',
         tabIdx : 1
     }, {
         domId  : 'user-tags',
-        tabText: Lang.translate('Post Categories'),
+        tabText: 'Post Categories',
         tabIdx : 2
     }, {
         domId  : 'message',
-        tabText: Lang.translate('Secure Messages'),
+        tabText: 'Secure Messages',
         tabIdx : 3
     }, {
         domId  : 'pending-task',
-        tabText: Lang.translate('Pending Tasks'),
+        tabText: 'Pending Tasks',
         tabIdx : 4
     } ]
 };

@@ -83,12 +83,12 @@ class BrowseSelection extends React.Component
             );
         }.bind(this));
 
-        //<ul className="list-inline">{labels}</ul>
         return (
             <div className="row">
                 <div className="btn-group" role="group">
                     {labels}
                 </div>
+                <br/>
                 <div className="row">
                     <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                         <SelectWrap entry={select} value={select.inpDefVal}

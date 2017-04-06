@@ -10,21 +10,14 @@ import SparklineContainer from 'vntd-shared/graphs/SparklineContainer.jsx';
 import TabPanel       from 'vntd-shared/layout/TabPanel.jsx';
 import UserStore      from 'vntd-shared/stores/UserStore.jsx';
 import AuthorStore    from 'vntd-root/stores/AuthorStore.jsx';
-import Lang           from 'vntd-root/stores/LanguageStore.jsx';
 import EStore         from 'vntd-root/pages/e-store/EStore.jsx';
+import AdsPromo       from './AdsPromo.jsx';
+import AdsReview      from './AdsReview.jsx';
+import BusinessMap    from './BusinessMap.jsx';
+import BusinessMedia  from './BusinessMedia.jsx';
 
-import { AdsBox, BusinessInfo } from './AdsBox.jsx';
+import { AdsBox, BusinessInfo }    from './AdsBox.jsx';
 import { AdsStore, EProductStore } from 'vntd-root/stores/ArticleStore.jsx';
-
-const DefaultPlugin = {
-    render: function(plugin, img) {
-        return null;
-    },
-
-    clickHandler: function(plugin, event) {
-        event.stopPropagation();
-    }
-};
 
 class StoreFeed extends React.Component
 {
@@ -83,27 +76,27 @@ class StoreFeed extends React.Component
 
             tabItems: [ {
                 domId  : 'ads-' + uuid,
-                tabText: Lang.translate('Info'),
+                tabText: 'Info',
                 tabIdx : 0
             }, {
                 domId  : 'ads-map-' + uuid,
-                tabText: Lang.translate('Map'),
+                tabText: 'Map',
                 tabIdx : 1
             }, {
                 domId  : 'ads-media-' + uuid,
-                tabText: Lang.translate('Media'),
+                tabText: 'Media',
                 tabIdx : 2
             }, {
                 domId  : 'ads-promo-' + uuid,
-                tabText: Lang.translate('Promotion'),
+                tabText: 'Promotion',
                 tabIdx : 3
             }, {
                 domId  : 'ads-review-' + uuid,
-                tabText: Lang.translate('Review'),
+                tabText: 'Review',
                 tabIdx : 4
             }, {
                 domId  : 'bus-estore-' + uuid,
-                tabText: Lang.translate('E-Store'),
+                tabText: 'E-Store',
                 tabIdx : 5
             } ]
         };
@@ -126,8 +119,6 @@ class StoreFeed extends React.Component
     render() {
         let adsRec = this.props.adsRec,
             ads    = adsRec.artObj,
-            rank   = ads.adsRank,
-            adsTag = adsRec.artTag,
             userUuid = ads.authorUuid,
             context  = this._getAuthorTab(userUuid);
 
@@ -136,10 +127,10 @@ class StoreFeed extends React.Component
                 <div className="well well-light well-sm">
                     <TabPanel className="padding-top-10" context={context}>
                         <BusinessInfo adsRec={adsRec}/>
-                        <div><h1>dwddd</h1></div>
-                        <h1>def</h1>
-                        <h1>Abc</h1>
-                        <div><h1>Abc</h1></div>
+                        <BusinessMap adsRec={adsRec} userUuid={userUuid}/>
+                        <BusinessMedia adsRec={adsRec} userUuid={userUuid}/>
+                        <AdsPromo adsRec={adsRec} userUuid={userUuid}/>
+                        <AdsReview adsRec={adsRec} userUuid={userUuid}/>
                         <EStore userUuid={userUuid}/>
                     </TabPanel>
                 </div>

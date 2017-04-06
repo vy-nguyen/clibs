@@ -15,7 +15,6 @@ import UserPostView        from 'vntd-root/pages/user/UserPostView.jsx';
 import EStorePost          from 'vntd-root/pages/e-store/EStorePost.jsx';
 import EStore              from 'vntd-root/pages/e-store/EStore.jsx';
 import ArticleStore        from 'vntd-root/stores/ArticleStore.jsx';
-import Lang                from 'vntd-root/stores/LanguageStore.jsx';
 import PostArticles        from 'vntd-root/components/PostArticles.jsx';
 import ProfileCover        from 'vntd-root/components/ProfileCover.jsx';
 import Actions             from 'vntd-root/actions/Actions.jsx';
@@ -80,19 +79,19 @@ class UserHome extends React.Component
 
             tabItems: [ {
                 domId  : 'published-articles',
-                tabText: Lang.translate('Published Articles'),
+                tabText: 'Published Articles',
                 tabIdx : 0
             }, {
                 domId  : 'publised-estore',
-                tabText: Lang.translate('Publised EStore'),
+                tabText: 'Publised EStore',
                 tabIdx : 1
             }, {
                 domId  : 'connections',
-                tabText: Lang.translate('Connections'),
+                tabText: 'Connections',
                 tabIdx : 4
             }, {
                 domId  : 'block-chain',
-                tabText: Lang.translate('Block Chains'),
+                tabText: 'Block Chains',
                 tabIdx : 5
             } ]
         }
@@ -105,27 +104,27 @@ class UserHome extends React.Component
 
             tabItems: [ {
                 domId  : 'published-articles',
-                tabText: Lang.translate('Published Articles'),
+                tabText: 'Published Articles',
                 tabIdx : 0
             }, {
                 domId  : 'publised-estore',
-                tabText: Lang.translate('My EStore'),
+                tabText: 'My EStore',
                 tabIdx : 1
             }, {
                 domId  : 'saved-articles',
-                tabText: Lang.translate('Saved Articles'),
+                tabText: 'Saved Articles',
                 tabIdx : 2
             }, {
                 domId  : 'manage-articles',
-                tabText: Lang.translate('Mananged Articles'),
+                tabText: 'Mananged Articles',
                 tabIdx : 3
             }, {
                 domId  : 'connections',
-                tabText: Lang.translate('Connections'),
+                tabText: 'Connections',
                 tabIdx : 4
             }, {
                 domId  : 'block-chain',
-                tabText: Lang.translate('Block Chains'),
+                tabText: 'Block Chains',
                 tabIdx : 5
             } ]
         };
@@ -137,11 +136,11 @@ class UserHome extends React.Component
             setActivePane: this._setActEditPane,
             tabItems: [ {
                 domId  : 'post-article',
-                tabText: Lang.translate('Post Article'),
+                tabText: 'Post Article',
                 tabIdx : 0
             }, {
                 domId  : 'post-product',
-                tabText: Lang.translate('Post Product'),
+                tabText: 'Post Product',
                 tabIdx : 1
             } ]
         };
@@ -213,7 +212,8 @@ class UserHome extends React.Component
             tabCtx = this.getMyUserTab();
             postView = <UserPostView userUuid={self.userUuid}/>;
             saveArticles =
-                <PostArticles userUuid={self.userUuid} data={ArticleStore.getMySavedArticles()} edit={true}/>
+                <PostArticles userUuid={self.userUuid}
+                    data={ArticleStore.getMySavedArticles()} edit={true}/>
         }
         if (articles == null) {
             articles = {};

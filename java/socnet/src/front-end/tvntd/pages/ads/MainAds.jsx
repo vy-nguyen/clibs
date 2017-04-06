@@ -9,7 +9,6 @@ import React           from 'react-mod'
 import Actions         from 'vntd-root/actions/Actions.jsx';
 import TabPanel        from 'vntd-shared/layout/TabPanel.jsx';
 import DynamicTable    from 'vntd-root/components/DynamicTable.jsx';
-import Lang            from 'vntd-root/stores/LanguageStore.jsx';
 import AdminStore      from 'vntd-root/stores/AdminStore.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 import Mesg            from 'vntd-root/components/Mesg.jsx';
@@ -82,15 +81,15 @@ class MainAds extends React.Component
 
             tabItems: [ {
                 domId  : 'ad-feature',
-                tabText: Lang.translate('Feature Ads'),
+                tabText: 'Feature Ads',
                 tabIdx : 0
             }, {
                 domId  : 'ad-list',
-                tabText: Lang.translate('Yellow Page'),
+                tabText: 'Yellow Page',
                 tabIdx : 1
             }, {
                 domId  : 'post-ads',
-                tabText: Lang.translate('Post Your Ads'),
+                tabText: 'Post Your Ads',
                 tabIdx : 2
             } ]
         };

@@ -30,8 +30,8 @@ import { toDateString } from 'vntd-shared/utils/Enum.jsx';
 class TagPost extends React.Component
 {
     constructor(props) {
-        super(props);
         let btnId = "chg-tag-" + props.articleUuid;
+        super(props);
         this.state = {
             buttonId: btnId
         };
@@ -55,8 +55,8 @@ class TagPost extends React.Component
     }
 
     _submitUpdate(btnId) {
-        let postInfo = this._getSavedInfo();
-        let tagInfo = {
+        let artRank, postInfo = this._getSavedInfo(),
+        tagInfo = {
             tagName    : postInfo.tagName,
             favorite   : this.state.favorite,
             userUuid   : this.props.authorUuid,
@@ -70,7 +70,7 @@ class TagPost extends React.Component
             postInfo.title = this.refs.title.value;
         }
         StateButtonStore.getButtonState(btnId).setNextState();
-        let artRank = AuthorStore.getArticleRank(this.props.authorUuid, this.props.articleUuid);
+        artRank = AuthorStore.getArticleRank(this.props.authorUuid, this.props.articleUuid);
         AuthorStore.updateAuthorTag(tagInfo, artRank);
     }
 
@@ -78,7 +78,8 @@ class TagPost extends React.Component
     }
 
     _createUpdateBtn() {
-        let artRank = AuthorStore.getArticleRank(this.props.authorUuid, this.props.articleUuid);
+        let artRank = AuthorStore
+            .getArticleRank(this.props.authorUuid, this.props.articleUuid);
         return {
             success: {
                 text     : Lang.translate("Update"),
@@ -143,9 +144,9 @@ class TagPost extends React.Component
 class PostPane extends React.Component {
 
     constructor(props) {
-        super(props);
         let artRank = AuthorStore.getArticleRank(props.data.authorUuid,
                                                  props.data.articleUuid);
+        super(props);
         if (artRank != null) {
             if (artRank.publishPost == null) {
                 artRank.publishPost = false;
