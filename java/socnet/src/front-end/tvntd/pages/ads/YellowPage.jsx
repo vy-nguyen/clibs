@@ -36,7 +36,7 @@ function filterTagBuckets(tags)
             if (letter > last) {
                 letter = letter - 32;
             }
-            if (first <= letter <= last) {
+            if ((first <= letter) && (letter <= last)) {
                 index = letter - first;
                 if (out[index] == null) {
                     out[index] = [];
