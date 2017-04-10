@@ -92,16 +92,24 @@ public class RegisterPath
             User user = userService.registerNewUserAccount(reg);
             RegistrationEvent event = new RegistrationEvent(user, request);
 
-            return emailShortcut(event);
-            // XXX: disable for now...
-            // eventPublisher.publishEvent(event);
+            s_log.debug("OK, send email " + event.toString());
+            eventPublisher.publishEvent(event);
+            // return emailShortcut(event);
+            return new LoginResponse(GenericResponse.REG_WAIT_EMAIL,
+                    messages.getMessage("reg.success.login",
+                        new Object[] { reg.getEmail() }, locale), null, null);
 
         } catch(EmailExistsException e) {
+            s_log.debug("Email exist: " + e.getMessage());
+
+            User user = userService.findUserByEmail(reg.getEmail());
+            RegistrationEvent event = new RegistrationEvent(user, request);
+            eventPublisher.publishEvent(event);
+            s_log.debug("Register mail " + event.toString());
+
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return new LoginResponse(
-                    GenericResponse.REG_USER_EXISTS,
-                    messages.getMessage("reg.email.exists",
-                        new Object[] { reg.getEmail() }, locale),
+                    GenericResponse.REG_USER_EXISTS, e.getMessage(),
                     "Email exists", null);
         }
     }
