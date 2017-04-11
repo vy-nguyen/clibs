@@ -66,13 +66,7 @@ public class RegistrationEvent extends ApplicationEvent
 
     public RegistrationEvent makeCallbackUrl()
     {
-        callbackUrl
-            .append("http://")
-            .append(request.getServerName())
-            .append(":")
-            .append(request.getServerPort())
-            .append(request.getContextPath());
-
+        callbackUrl.append("https://www.tvntd.com");
         return this;
     }
 
@@ -97,5 +91,10 @@ public class RegistrationEvent extends ApplicationEvent
             .append(">this link</a>");
 
         return this;
+    }
+
+    public String toString()
+    {
+        return callbackUrl.toString();
     }
 }

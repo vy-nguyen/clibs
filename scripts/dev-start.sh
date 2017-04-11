@@ -17,7 +17,7 @@ sudo apt-get update
 sudo apt-get install google-drive-ocamlfuse
 sudo apt-get install vim tmux
 sudo apt-get install gradle
-sudo apt-get install sendmail
+sudo apt-get install mail-stack-delivery
 
 # Server stuffs
 #

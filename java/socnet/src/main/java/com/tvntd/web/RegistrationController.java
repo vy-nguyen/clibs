@@ -257,6 +257,9 @@ public class RegistrationController
         email.setSubject("Reset Password");
         email.setText(message + " \r\n" + url);
         email.setFrom(env.getProperty("support.email"));
+
+        System.out.println("Send email to " + user.getEmail());
+        System.out.println(email.toString());
         return email;
     }
 

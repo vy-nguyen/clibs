@@ -58,6 +58,7 @@ public class RegistrationListener implements ApplicationListener<RegistrationEve
 
     @Override
     public void onApplicationEvent(RegistrationEvent event) {
+        System.out.println("Register mail " + event.toString());
         this.confirmRegistration(event);
     }
 
