@@ -187,7 +187,8 @@ class UserFriends extends React.Component
         if (data.hasInput === true) {
             footer = (
                 <footer>
-                    <button className="btn btn-primary pull-right" onClick={this._submitChanges}>
+                    <button className="btn btn-primary pull-right" 
+                        onClick={this._submitChanges}>
                         <Mesg text="Save Changes"/>
                     </button>
                 </footer>
@@ -195,7 +196,8 @@ class UserFriends extends React.Component
         }
         return (
             <UserTable tableFormat={data.tabHeader}
-                tableData={data.tabdata} tableTitle={this.props.tableTitle} tableFooter={footer}/>
+                tableData={data.tabdata}
+                tableTitle={this.props.tableTitle} tableFooter={footer}/>
         );
     }
 }

@@ -3,10 +3,10 @@
  * BSD License
  */
 import React, { PropTypes } from 'react-mod'
+import StarRating           from 'react-star-rating';
 
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import TabPanel         from 'vntd-shared/layout/TabPanel.jsx';
-import StarRating       from 'vntd-shared/layout/StarRating.jsx';
 import ModalConfirm     from 'vntd-shared/forms/commons/ModalConfirm.jsx';
 import Mesg             from 'vntd-root/components/Mesg.jsx';
 import LikeStat         from 'vntd-root/components/LikeStat.jsx';
@@ -123,8 +123,9 @@ class ProductInfo extends React.Component
             prodTags, prodDetail, prodSpec, pictureUrl
         } = this.props.product;
 
-        let prodTab = this._productDetail(articleUuid, prodTitle, prodDetail, prodSpec);
-        let productTags = [];
+        let productTags = [],
+            prodTab = this._productDetail(articleUuid,
+                                          prodTitle, prodDetail, prodSpec);
 
         if (prodTags != null) {
             let tagLength = prodTags.length;
@@ -149,9 +150,11 @@ class ProductInfo extends React.Component
                             <div className="col-xs-12 col-sm-12 col-md-8 col-lg-8">
                                 <h2 className="name">
                                     {prodTitle}
-                                    <div dangerouslySetInnerHTML={{__html: prodSub}}/>
+                                    <div dangerouslySetInnerHTML=
+                                        {{__html: prodSub}}/>
                                 </h2>
-                                <StarRating name={articleUuid} value={7} />
+                                <StarRating size={15}
+                                    totalStars={5} rating={4} disabled={true}/>
                             </div>
                             <div className="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                 <h3 className="price-container">
@@ -173,8 +176,9 @@ class ProductInfo extends React.Component
                 </div>
                 <div className="row">
                     <div className="col-sm-12 col-md-6 col-lg-6"> 
-                        <a href="javascript:void(0);" className="btn btn-success btn-lg">
-                            <Mesg text="Add to cart"/>  (${prodPrice})</a>
+                        <button className="btn btn-success btn-lg">
+                            <Mesg text="Add to cart"/>  (${prodPrice})
+                        </button>
                     </div>
                     <div className="col-sm-12 col-md-6 col-lg-6">
                         <div className="btn-group pull-right">
@@ -338,26 +342,30 @@ class ProductBrief extends React.Component
             );
         }
         return (
-            <div className="product-content product-wrap clearfix" onClick={onClickCb}>
+            <div className="product-content product-wrap clearfix"
+                onClick={onClickCb}>
                 <div className="row">
                     {delBox}
                     {editBox}
-                    <ProductInfo ref={"modal"} modal={true} product={this.props.product}/>
+                    <ProductInfo ref={"modal"} modal={true}
+                        product={this.props.product}/>
                     <div className="col-md-5 col-sm-12 col-xs-12">
                         <div className="product-image" style={{minHeight: "150"}}>
                             <img src={logoImg} className='img-responsive'/>
                         </div>
                         {logoTag ? <span className='tag2 hot'>{logoTag}</span> : null}
                         <LikeStat data={likeStat} split={true}/>
-                        {/*
-                            <StarRating name={`prod-${articleUuid}`} value={rating}/>*/}
+                        <StarRating size={15}
+                            totalStars={5} rating={4} disabled={true}/>
                     </div>
                     <div className="col-md-7 col-sm-12 col-xs-12">
                         <div className="product-deatil">
                             <h5 className="name">
                                 <a href="#">{prodName}<span>{prodCat}</span></a>
                             </h5>
-                            <p className="price-container"><span>{prodPrice}</span></p>
+                            <p className="price-container">
+                                <span>{prodPrice}</span>
+                            </p>
                             <span className="tag1"></span>
                         </div>
                         <div className="description"

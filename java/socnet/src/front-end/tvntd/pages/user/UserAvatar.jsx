@@ -126,8 +126,12 @@ class UserAvatar extends React.Component
                             <h1><small><Mesg text="Recent Visitors"/></small></h1>
                             <ul className="list-inline friends-list">
                                 <li><img src="/rs/img/avatars/male.png" alt="friend-7"/></li>
-                                <li><img src="/rs/img/avatars/female.png" alt="friend-8"/></li>
-                                <li><img src="/rs/img/avatars/female.png" alt="friend-9"/></li>
+                                <li>
+                                    <img src="/rs/img/avatars/female.png" alt="friend-8"/>
+                                </li>
+                                <li>
+                                    <img src="/rs/img/avatars/female.png" alt="friend-9"/>
+                                </li>
                             </ul>
                         </div>
                     </div>

@@ -35,8 +35,11 @@ class UserPostView extends React.Component
         this._createArrangeBtn = this._createArrangeBtn.bind(this);
 
         let myUuid      = props.userUuid;
-        this.saveBtn    = StateButtonStore.createButton("my-post-order-" + myUuid, this._createSaveBtn);
-        this.arrangeBtn = StateButtonStore.createButton("arrange-btn-" + myUuid, this._createArrangeBtn);
+        this.saveBtn    = StateButtonStore
+            .createButton("my-post-order-" + myUuid, this._createSaveBtn);
+        this.arrangeBtn = StateButtonStore
+            .createButton("arrange-btn-" + myUuid, this._createArrangeBtn);
+
         this.state = {
             status: "init",
             tagMgr: AuthorStore.getAuthorTagMgr(props.userUuid)
@@ -175,7 +178,8 @@ class UserPostView extends React.Component
                     renderArg: null,
                     renderFn : function() {
                         return (
-                            <Nestable group={parent._id} onChange={this._onChangeArt.bind(this, parent, children)}>
+                            <Nestable group={parent._id}
+                                onChange={this._onChangeArt.bind(this, parent, children)}>
                                 <div className="dd">
                                     <ol className="dd-list">
                                         {sub}
@@ -264,8 +268,10 @@ class UserPostView extends React.Component
                 <div>
                     <ErrorView className="alert alert-success" errorId={btnId}/>
                     <div className="btn-group" role="group">
-                        <StateButton btnId={btnId} onClick={this._saveState.bind(this, btnId)}/>
-                        <StateButton btnId={arBtnId} onClick={this._arrangeMode.bind(this, arBtnId)}/>
+                        <StateButton btnId={btnId}
+                            onClick={this._saveState.bind(this, btnId)}/>
+                        <StateButton btnId={arBtnId}
+                            onClick={this._arrangeMode.bind(this, arBtnId)}/>
                     </div>
                 </div>
             );

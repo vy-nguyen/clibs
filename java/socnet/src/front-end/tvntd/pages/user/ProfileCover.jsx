@@ -38,9 +38,11 @@ class ProfileCover extends React.Component
 
         let cover_hdr = imgList.map(function(item, index) {
             if (index == 0) {
-                return <li key={index} data-target={'#' + imageId} data-slide-to={index.toString()} className='active'></li>;
+                return <li key={index} data-target={'#' + imageId}
+                    data-slide-to={index.toString()} className='active'></li>;
             } else {
-                return <li key={index} data-target={'#' + imageId} data-slide-to={index.toString()} class></li>;
+                return <li key={index} data-target={'#' + imageId}
+                    data-slide-to={index.toString()} class></li>;
             }
         }),
         cover_img = imgList.map(function(item, index) {

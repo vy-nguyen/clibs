@@ -34,8 +34,8 @@ class Friends extends React.Component
                 itemHandler: function() {
                 }.bind(this)
             } ]
-        };
-        let queryMenu = {
+        },
+        queryMenu = {
             iconFmt  : 'btn-xs btn-success',
             titleText: 'Query',
             itemFmt  : 'pull-right js-status-update',
@@ -50,14 +50,15 @@ class Friends extends React.Component
                 itemHandler: function() {
                 }.bind(this)
             } ]
-        };
-        let panelDef = {
+        },
+        panelDef = {
             init   : false,
             icon   : 'fa fa-user',
             header : Lang.translate('My Connections'),
             headerMenus: [filterMenu, queryMenu]
-        };
-        let self = UserStore.getUserByUuid(this.props.userUuid);
+        },
+        self = UserStore.getUserByUuid(this.props.userUuid);
+
         if (self === null) {
             return (
                 <Panel context={panelDef}>
@@ -65,16 +66,16 @@ class Friends extends React.Component
                 </Panel>
             )
         }
-        let owned = UserStore.isUserMe(self.userUuid);
-        let connect = _.isEmpty(self.connectList) ? null
+        let owned = UserStore.isUserMe(self.userUuid),
+        connect = _.isEmpty(self.connectList) ? null
             : <UserFriends owned={owned} userList={self.connectList}
-                    tableType="connect" tableTitle={Lang.translate("Connections")}/>;
+                    tableType="connect" tableTitle={Lang.translate("Connections")}/>,
 
-        let follow  = _.isEmpty(self.followList) ? null
+        follow  = _.isEmpty(self.followList) ? null
             : <UserFriends owned={owned} userList={self.followList}
-                    tableType="follow" tableTitle={Lang.translate("Follows")}/>;
+                    tableType="follow" tableTitle={Lang.translate("Follows")}/>,
 
-        let follower = _.isEmpty(self.followerList) ? null
+        follower = _.isEmpty(self.followerList) ? null
             : <UserFriends owned={owned} userList={self.followerList}
                     tableType="follower" tableTitle={Lang.translate("Followers")}/>;
 

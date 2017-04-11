@@ -8,6 +8,7 @@ import React           from 'react-mod';
 
 import WidgetGrid      from 'vntd-shared/widgets/WidgetGrid.jsx'
 import Mesg            from 'vntd-root/components/Mesg.jsx';
+import PostComment     from 'vntd-root/components/PostComment.jsx';
 
 class AdsReview extends React.Component
 {
@@ -24,6 +25,7 @@ class AdsReview extends React.Component
             <WidgetGrid className={this.props.className} style={{ height: 'auto' }}>
                 <div className="row">
                     <h1>Review for {ads.busName}</h1>
+                    <PostComment articleUuid={ads.articleUuid}/>
                 </div>
             </WidgetGrid>
         )

@@ -3,8 +3,9 @@
  */
 'use strict';
 
-import _         from 'lodash';
-import React     from 'react-mod';
+import _               from 'lodash';
+import React           from 'react-mod';
+import StarRating      from 'react-star-rating';
 
 import UserStore       from 'vntd-shared/stores/UserStore.jsx';
 import ArticleStore    from 'vntd-root/stores/ArticleStore.jsx';
@@ -23,7 +24,16 @@ class ArticleBox extends React.Component
     }
 
     render() {
-        let data = this.props.data;
+        let data = this.props.data,
+            tagImg = data.tagImage ?
+                <span className="tag2 hot">{data.tagImage}</span> : null,
+            dateInfo = data.dateInfo ?
+                <span><i className="fa fa-calendar"/>{data.dateInfo}</span> : null;
+
+        const style = {
+            maxWidth : "100%"
+        };
+
         if (data.logoWidth == null) {
             data.logoWidth = 40;
             data.logoHeight = 40;
@@ -41,62 +51,31 @@ class ArticleBox extends React.Component
         return (
             <div className="product-content product-wrap clearfix">
                 <div className="row">
-                    <div className="col-md-4 col-sm-12 col-xs-12">
-                        <div className="product-image" style={{minHeight: "150"}}>
+                    <div className="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                        <div className="product-image" style={{height: "100"}}>
                             <div className="air air-top-left padding-10">
-                                <img src={data.logo} width={data.logoWidth}
-                                    height={data.logoHeight}
-                                    className="img-responsive"/>
+                                <img src={data.logo} className="img-responsive"
+                                    width={data.logoWidth}
+                                    height={data.logoHeight}/>
                             </div>
-                            <img src={data.image} className="img-responsive"/>
+                            <img src={data.image}
+                                className="img-responsive" style={style}/>
+                            <img src={data.image1}
+                                className="img-responsive" style={style}/>
+                            {tagImg}
                         </div>
-                        {data.tagImage ?
-                            <span className="tag2 hot">{data.tagImage}</span> : null}
                         <LikeStat data={data.likeStat} split={true}/>
-                        <div className="smart-form">
-                            <div className="rating">
-                                <input type="radio"
-                                    name="stars-rating" id="stars-rating-5"/>
-                                <label for="stars-rating-5">
-                                    <i className="fa fa-star"></i>
-                                </label>
-                                <input type="radio" name="stars-rating"
-                                    id="stars-rating-4"/>
-                                <label for="stars-rating-4">
-                                    <i className="fa fa-star"></i>
-                                </label>
-                                <input type="radio" name="stars-rating"
-                                    id="stars-rating-3"/>
-                                <label for="stars-rating-3">
-                                    <i className="fa fa-star text-primary"></i>
-                                </label>
-                                <input type="radio" name="stars-rating"
-                                    id="stars-rating-2"/>
-                                <label for="stars-rating-2">
-                                    <i className="fa fa-star text-primary"></i>
-                                </label>
-                                <input type="radio" name="stars-rating"
-                                    id="stars-rating-1"/>
-                                <label for="stars-rating-1">
-                                    <i className="fa fa-star text-primary"></i>
-                                </label>
-                            </div>
-                        </div>
+                        <StarRating size={15} totalStars={5} rating={4} disabled={true}/>
                     </div>
                     <div className="col-md-8 col-sm-12 col-xs-12">
                         <div className="product-deatil">
                             <h4 className="name">
-                                <a href="#"><span>{data.artCategory}</span></a>
-                                <br/>
-                                <a href="#">{data.artTitle}</a>
+                                {data.artTitle}
                             </h4>
                             <p className="price-container">
                                 <span>{data.artPrice}</span>
                             </p>
-                            {data.dateInfo ?
-                                <span><i className="fa fa-calendar"/>
-                                    {data.dateInfo}
-                                </span> : null}
+                            {dateInfo}
                         </div>
                         {data.description}
                         <div className="product-info smart-form">
@@ -134,6 +113,7 @@ class ArticleBox extends React.Component
         let arg = {
             logo       : author.userImgUrl,
             image      : article.pictureUrl[0],
+            image1     : article.pictureUrl[1],
             dateInfo   : article.dateString,
             artTitle   : article.topic,
             artCategory: artRank.tagName,

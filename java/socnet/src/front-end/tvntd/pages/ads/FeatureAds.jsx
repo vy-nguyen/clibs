@@ -50,7 +50,7 @@ class FeatureAds extends React.Component
         this._updateArtTags = this._updateArtTags.bind(this);
 
         this.browse = [
-            { label: "A-M", entry: {} },
+            { label: "A-N", entry: {} },
             { label: "M-Z", entry: {} },
 
             { label: "Tutoring",     entry: {} },
