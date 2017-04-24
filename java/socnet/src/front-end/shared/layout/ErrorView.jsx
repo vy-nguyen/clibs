@@ -14,9 +14,9 @@ class ErrorView extends React.Component
         this.state = {
             error: ErrorStore.hasError(props.errorId, props.mesg)
         };
-        this._changeState = this._changeState.bind(this);
+        this._changeState  = this._changeState.bind(this);
         this._onCloseError = this._onCloseError.bind(this);
-        this._errorMesg = this._errorMesg.bind(this);
+        this._errorMesg    = this._errorMesg.bind(this);
     }
 
     componentDidMount() {
@@ -49,50 +49,58 @@ class ErrorView extends React.Component
     _errorMesg(errorText) {
         return (
             <span className={this.props.className}>
-                <a className="close pull-left" onClick={this._onCloseError}><i className="fa fa-times"/></a>
+                <a className="close pull-left" onClick={this._onCloseError}>
+                    <i className="fa fa-times"/>
+                </a>
                 {errorText}
             </span>
         );
     }
 
     render() {
-        let error = this.state.error;
+        let error = this.state.error,
+            codeText, userText, userHelp;
+
         if (error == null) {
             return null;
         }
-        let codeText = error.getErrorCodeText();
-        if (codeText != null) {
-            codeText = (
-                <div>
-                    <span><Mesg text="Status"/> {error.getErrorCode()}: {codeText}</span>
-                    <hr/>
-                </div>
-            );
-        }
-        let userText = error.getUserText();
+        userText = error.getUserText();
         if (userText != null) {
             if (this.props.mesg === true) {
                 return this._errorMesg(userText);
             }
             userText = <p><Mesg text="Reason"/>: {userText}</p>;
         }
-        let userHelp = error.getUserHelp();
+        userHelp = error.getUserHelp();
         if (userHelp != null) {
-            userHelp = <p><Mesg text="Action"/>: {userHelp}</p>;
+            userHelp = <p>{userHelp}</p>;
+        }
+        codeText = error.getErrorCodeText();
+        if (codeText != null) {
+            codeText = (
+                <span>
+                    <Mesg text="Status"/> {error.getErrorCode()}: {codeText}
+                </span>
+            );
+        } else {
+            codeText = <span>Error</span>
         }
         return (
             <div className={this.props.className}>
-                <div className="row">
-                    <div className="col-sm-1 col-md-1 col-lg-1">
-                        <a className="close pull-left" onClick={this._onCloseError}><i className="fa fa-times"/></a>
-                    </div>
-                    <div className="col-sm-11 col-md-11 col-lg-11">
-                        <h4>{codeText}</h4>
-                        <h4>{userText}</h4>
-                        <h4>{userHelp}</h4>
-                    </div>
+                <div className="page-header">
+                    <button type="button" aria-label="close" className="close"
+                        onClick={this._onCloseError}>
+                        <i className="fa fa-times"/>
+                    </button>
+                    {codeText}
                 </div>
-                {this.props.children}
+                <div className="message-text">
+                    <i>{userHelp}</i>
+                    <strong>{userText}</strong>
+                </div>
+                <div className="row">
+                    {this.props.children}
+                </div>
             </div>
         );
     }

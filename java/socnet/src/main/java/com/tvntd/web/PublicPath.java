@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -447,5 +448,26 @@ public class PublicPath
         }
         CommentDTOResponse co = commentSvc.getCommentPost(artUuids);
         return new AdsPostDTOResponse(ads, co.getComments());
+    }
+
+    /**
+     * Test hook
+     */
+    @RequestMapping(value = "/public/api/{x}/{y}", method = RequestMethod.GET)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public void
+    postApiTest(HttpSession session, HttpServletResponse resp,
+            @PathVariable(value = "x") String x,
+            @PathVariable(value = "y") String y)
+    {
+        String buf = "hello world x = " + x + ", y = " + y;
+        System.out.println("Input x = " + x + ", y = " + y);
+        resp.setContentType("text/html;charset=UTF-8");
+        resp.setCharacterEncoding("utf-8");
+        try {
+            resp.getOutputStream().write(buf.getBytes("utf-8"), 0, buf.length());
+        } catch(IOException e) {
+        }
     }
 }

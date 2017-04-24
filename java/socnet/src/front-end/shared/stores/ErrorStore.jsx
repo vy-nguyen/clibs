@@ -187,7 +187,8 @@ let ErrorStore = Reflux.createStore({
     },
 
     onAuthRequiredCompleted: function(id, context) {
-        this.reportInfo(id, Lang.translate("You need to login first"), Lang.translate("Please login to post or comment"));
+        this.reportInfo(id, Lang.translate("You need to login first"),
+                        Lang.translate("Please login to post or comment"));
         this.trigger(this.data, null);
     },
 

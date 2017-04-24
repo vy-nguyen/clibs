@@ -102,11 +102,12 @@ public class RegisterPath
         } catch(EmailExistsException e) {
             s_log.debug("Email exist: " + e.getMessage());
 
+            /*
             User user = userService.findUserByEmail(reg.getEmail());
             RegistrationEvent event = new RegistrationEvent(user, request);
             eventPublisher.publishEvent(event);
             s_log.debug("Register mail " + event.toString());
-
+*/
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return new LoginResponse(
                     GenericResponse.REG_USER_EXISTS, e.getMessage(),
