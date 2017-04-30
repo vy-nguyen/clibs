@@ -24,7 +24,7 @@ import Lang             from 'vntd-root/stores/LanguageStore.jsx';
 import Mesg             from 'vntd-root/components/Mesg.jsx';
 
 import {
-    GenericForm, SelectWrap, DropZoneWrap, InputInline, InputBox
+    SelectWrap, DropZoneWrap, InputInline, InputBox
 } from 'vntd-shared/forms/commons/GenericForm.jsx';
 
 class EStorePost extends React.Component
@@ -88,7 +88,8 @@ class EStorePost extends React.Component
         if (product == null) {
             return;
         }
-        InputStore.storeItemIndex(this._getItemId(this._prodCatId), product.prodCat, false);
+        InputStore.storeItemIndex(this._getItemId(this._prodCatId),
+                                  product.prodCat, false);
         InputStore.storeItemIndex(this._getItemId(this._prodNameId),
                                   product.prodName, false);
         InputStore.storeItemIndex(this._getItemId(this._prodPriceId),
@@ -162,7 +163,8 @@ class EStorePost extends React.Component
     }
 
     _onPostProduct() {
-        let product, helpText, errText = null, errFlags = {}, defProd = this.props.product;
+        let product, helpText, errText = null, errFlags = {},
+            defProd = this.props.product;
 
         product  = this._getPostData();
         helpText = Lang.translate("Enter values in categories highlighted in red");
@@ -180,7 +182,8 @@ class EStorePost extends React.Component
             if (_.isEmpty(product[entry])) {
                 errFlags[entry] = true;
                 if (errText == null) {
-                    errText  = Lang.translate("Please enter values in highlighted fields");
+                    errText  = Lang
+                        .translate("Please enter values in highlighted fields");
                 }
             }
         });
@@ -395,7 +398,8 @@ class EStorePost extends React.Component
                     <div className="col-xs-12 col-sm-8 col-md-8 col-lg-8">
                         <div className="container">
                             <h3><Mesg text="Upload detail images"/></h3>
-                            <DropZoneWrap entry={detailDz} eventHandlers={eventHandlers}/>
+                            <DropZoneWrap entry={detailDz}
+                                eventHandlers={eventHandlers}/>
                         </div>
                     </div>
                 </div>
@@ -436,10 +440,12 @@ class EStorePost extends React.Component
                     <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                         <ErrorView errorId={this._errorId}/>
                         <div className="btn-group pull-right" role="group">
-                            <StateButton btnId={this._saveBtnId} className="btn btn-success"
+                            <StateButton btnId={this._saveBtnId}
+                                className="btn btn-success"
                                 onClick={this._onSaveProduct}/>
                             <StateButton btnId={this._publishBtnId}
-                                className="btn btn-success" onClick={this._onPostProduct}/>
+                                className="btn btn-success"
+                                onClick={this._onPostProduct}/>
                         </div>
                     </div>
                 </div>

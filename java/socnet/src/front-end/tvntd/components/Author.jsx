@@ -78,29 +78,44 @@ class Author extends React.Component
                         <div className="col-sm-7">
                         </div>
                     </div>
-                    <div className="well well-sm" style={{background: "rgba(255,255,255,0.8)"}}>
+                    <div className="well well-sm"
+                        style={{background: "rgba(255,255,255,0.8)"}}>
                         <div className="box-header">
                             <h1 className="profile-username text-center">
                                 {self.firstName} <span className="semi-bold">{self.lastName}</span>
                                 <br/>
                                 <small>{self.userStatus}</small>
                             </h1>
-                            <h4 className="font-md"><strong>{self.followers}</strong><small><Mesg text=" Followers"/></small></h4>
-                            <h4 className="font-md"><strong>{self.connections}</strong><small><Mesg text=" Connections"/></small></h4>
+                            <h4 className="font-md">
+                                <strong>{self.followers}</strong>
+                                <small><Mesg text=" Followers"/></small>
+                            </h4>
+                            <h4 className="font-md">
+                                <strong>{self.connections}</strong>
+                                <small><Mesg text=" Connections"/></small></h4>
                         </div>
                         <div className="box-body">
-                            <strong><i className='fa fa-book margin-r-5'></i><Mesg text="Public Transactions"/></strong>
+                            <strong>
+                                <i className='fa fa-book margin-r-5'></i>
+                                <Mesg text="Public Transactions"/>
+                            </strong>
                             <p/>
-                            <span className="label label-success"><Mesg text="Money"/></span>
+                            <span className="label label-success">
+                                <Mesg text="Money"/>
+                            </span>
                             <KeyValueTable keyValueList={moneyKv}/>
 
-                            <span className="label label-warning"><Mesg text="Credit"/></span>
+                            <span className="label label-warning">
+                                <Mesg text="Credit"/>
+                            </span>
                             <KeyValueTable keyValueList={creditKv}/>
 
                             {this.renderAboutMe(this.props.user.aboutList)}
 
                             <p/>
-                            <strong><i className="fa fa-book"/><Mesg text=" Favorite Posts"/></strong>
+                            <strong><i className="fa fa-book"/>
+                                <Mesg text=" Favorite Posts"/>
+                            </strong>
                             <AuthorLinks authorUuid={self.userUuid}/>
                         </div>
                     </div>

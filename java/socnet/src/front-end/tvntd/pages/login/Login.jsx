@@ -27,11 +27,18 @@ class LoginHeader extends React.Component
         return (
             <header id="header" className="animated fadeInDown">
                 <div id="logo-group">
-                    <span id="logo"> <img src="/rs/img/logo/flag.png" style={{height:'40px'}} alt="Viet Nam"/></span>
+                    <span id="logo">
+                        <img src="/rs/img/logo/flag.png"
+                            style={{height:'40px'}} alt="Viet Nam"/>
+                    </span>
                 </div>
                 <span id="extr-page-header-space">
-                    <span className="hidden-mobile hiddex-xs"><Mesg text="Need an account?"/></span>{htmlCodes.spaceNoBreak}
-                    <Link to="/register/form" className="btn btn-danger"><Mesg text="Create Account"/></Link>
+                    <span className="hidden-mobile hiddex-xs">
+                        <Mesg text="Need an account?"/>
+                    </span>{htmlCodes.spaceNoBreak}
+                    <Link to="/register/form" className="btn btn-danger">
+                        <Mesg text="Create Account"/>
+                    </Link>
                 </span>
             </header>
         );
@@ -66,25 +73,35 @@ class LoginAbout extends React.Component
     }
 
     render() {
-        let login = this.state.login;
-        let loginBox = login || { header: "Viet Nam Tu Do" };
+        let login = this.state.login,
+            loginBox = login || { header: "Viet Nam Tu Do" },
+            logoImg = this.props.logoImg == null ?
+                <img src="/rs/img/logo/flag.png" className="pull-right display-image"
+                    alt="" style={{width:'210px'}}/> : null;
 
         if (login == null) {
             return null;
         }
         return (
             <div>
-                <h1 className="txt-color-red login-header-big">{loginBox.headerBar}</h1>
+                <h1 className="txt-color-red login-header-big">
+                    {loginBox.headerBar}
+                </h1>
                 <div className="hero">
                     <div className="pull-left login-desc-box-l">
                         <h4 className="paragraph-header">{loginBox.headerText}</h4>
                         <div className="login-app-icons">
-                            <a href="#" className="btn btn-danger btn-sm">{loginBox.tourButton}</a>
+                            <button href="#" className="btn btn-danger btn-sm">
+                                {loginBox.tourButton}
+                            </button>
                             <span> </span>
-                            <Link to="/public/aboutus" className="btn btn-danger btn-sm">{loginBox.aboutButton}</Link>
+                            <Link to="/public/aboutus"
+                                className="btn btn-danger btn-sm">
+                                {loginBox.aboutButton}
+                            </Link>
                         </div>
                     </div>
-                    <img src="/rs/img/logo/flag.png" className="pull-right display-image" alt="" style={{width:'210px'}}/>
+                    {logoImg}
                 </div>
                 <div className="row">
                     <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6">
@@ -111,13 +128,19 @@ class LoginSocial extends React.Component
         return (
             <ul className="list-inline text-center">
                 <li>
-                    <a href-void="" className="btn btn-primary btn-circle"><i className="fa fa-facebook"/></a>
+                    <a href-void="" className="btn btn-primary btn-circle">
+                        <i className="fa fa-facebook"/>
+                    </a>
                 </li>
                 <li>
-                    <a href-void="" className="btn btn-info btn-circle"><i className="fa fa-twitter"/></a>
+                    <a href-void="" className="btn btn-info btn-circle">
+                        <i className="fa fa-twitter"/>
+                    </a>
                 </li>
                 <li>
-                    <a href-void="" className="btn btn-warning btn-circle"><i className="fa fa-linkedin"/></a>
+                    <a href-void="" className="btn btn-warning btn-circle">
+                        <i className="fa fa-linkedin"/>
+                    </a>
                 </li>
             </ul>
         );

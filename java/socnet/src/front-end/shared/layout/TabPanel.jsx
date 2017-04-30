@@ -77,8 +77,7 @@ class TabPanel extends React.Component
             clasname = classnames("tab-pane " + paneFmt, {active: idx == activeIdx});
             return (
                 <div key={_.uniqueId('tab-panel-')}
-                    id={item.domId}
-                    className={classnames("tab-pane", {active: idx == activeIdx})}>
+                    id={item.domId} className={clasname}>
                     <div className={classnames("panel-body no-padding", tabClsn)}>
                         {tabRef}
                     </div>
