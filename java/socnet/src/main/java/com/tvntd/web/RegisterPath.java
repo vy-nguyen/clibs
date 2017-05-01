@@ -28,7 +28,6 @@ package com.tvntd.web;
 
 import java.util.Calendar;
 import java.util.Locale;
-import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -94,7 +93,7 @@ public class RegisterPath
 
             s_log.debug("OK, send email " + event.toString());
             eventPublisher.publishEvent(event);
-            // return emailShortcut(event);
+
             return new LoginResponse(GenericResponse.REG_WAIT_EMAIL,
                     messages.getMessage("reg.success.login",
                         new Object[] { reg.getEmail() }, locale), null, null);
@@ -102,28 +101,11 @@ public class RegisterPath
         } catch(EmailExistsException e) {
             s_log.debug("Email exist: " + e.getMessage());
 
-            /*
-            User user = userService.findUserByEmail(reg.getEmail());
-            RegistrationEvent event = new RegistrationEvent(user, request);
-            eventPublisher.publishEvent(event);
-            s_log.debug("Register mail " + event.toString());
-*/
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return new LoginResponse(
                     GenericResponse.REG_USER_EXISTS, e.getMessage(),
                     "Email exists", null);
         }
-    }
-
-    private GenericResponse emailShortcut(RegistrationEvent event)
-    {
-        String token = UUID.randomUUID().toString();
-
-        s_log.debug("Sent verify token " + token);
-        event.makeEmailShortCut(messages, token);
-        userService.createVerificationTokenForUser(event.getUser(), token);
-        return new LoginResponse(
-                GenericResponse.REG_VERIFY_CODE, event.getCallbackUrl(), null, token);
     }
 
     /**

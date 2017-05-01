@@ -41,6 +41,7 @@ public interface IUserService
     void deleteUser(User user);
 
     void createVerificationTokenForUser(User user, String token);
+    VerificationToken getVerificationToken(User user);
     VerificationToken getVerificationToken(String verificationToken);
     VerificationToken generateNewVerificationToken(String token);
 

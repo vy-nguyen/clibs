@@ -31,7 +31,6 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.context.ApplicationEvent;
-import org.springframework.context.MessageSource;
 
 import com.tvntd.models.User;
 
@@ -39,12 +38,15 @@ import com.tvntd.models.User;
 public class RegistrationEvent extends ApplicationEvent
 {
     private User user;
+    private String token;
     private final StringBuilder callbackUrl;
     private final HttpServletRequest request;
 
-    public RegistrationEvent(User user, HttpServletRequest request) {
+    public RegistrationEvent(User user, HttpServletRequest request)
+    {
         super(user);
         this.user = user;
+        this.token = null;
         this.request = request;
         this.callbackUrl = new StringBuilder();
     }
@@ -66,30 +68,21 @@ public class RegistrationEvent extends ApplicationEvent
 
     public RegistrationEvent makeCallbackUrl()
     {
-        callbackUrl.append("https://www.tvntd.com");
+        callbackUrl
+            .append("https://www.tvntd.com/register/confirm?token=")
+            .append(token);
         return this;
+    }
+
+    public boolean hasToken() {
+        return token != null;
     }
 
     public RegistrationEvent addToken(String token)
     {
-        callbackUrl
-            .append("/register/confirm?token=")
-            .append(token);
-
-        return this;
-    }
-
-    public RegistrationEvent makeEmailShortCut(MessageSource mesg, String token)
-    {
-        callbackUrl
-            .append(mesg.getMessage("message.email.error", null, request.getLocale()))
-            .append(" <a href=");
-        makeCallbackUrl();
-        callbackUrl
-            .append("/register/shortcut?token=")
-            .append(token)
-            .append(">this link</a>");
-
+        if (this.token == null) {
+            this.token = token;
+        }
         return this;
     }
 

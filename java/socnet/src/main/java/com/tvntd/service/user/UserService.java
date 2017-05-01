@@ -117,6 +117,18 @@ public class UserService implements IUserService
     }
 
     @Override
+    public VerificationToken getVerificationToken(User user)
+    {
+        VerificationToken token = tokenRepository.findByUser(user);
+        if (token == null) {
+            String code = UUID.randomUUID().toString();
+            token = new VerificationToken(code, user);
+            tokenRepository.save(token);
+        }
+        return token;
+    }
+
+    @Override
     public void createVerificationTokenForUser(User user, String token)
     {
         final VerificationToken myToken = new VerificationToken(token, user);

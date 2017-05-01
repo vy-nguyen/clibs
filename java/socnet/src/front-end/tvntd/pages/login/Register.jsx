@@ -416,11 +416,9 @@ class RegisterForm extends React.Component
         };
     }
 
-    _submitRegister(event) {
-        event.preventDefault();
+    _submitRegister() {
         let data = this._getData();
         console.log(data);
-        return;
 
         let form = $('#smart-form-register');
         form.find('input').prop('disabled', true);

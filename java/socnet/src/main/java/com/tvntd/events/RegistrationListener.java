@@ -30,23 +30,24 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.MessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
 import com.tvntd.models.User;
+import com.tvntd.models.VerificationToken;
 import com.tvntd.service.api.IUserService;
 
 @Component
 public class RegistrationListener implements ApplicationListener<RegistrationEvent>
 {
-    @Autowired
-    private IUserService service;
+    static private final String s_mailSubject = "Registration Confirmation";
+    static private final String s_mailMessage =
+        "We have created an account for you.  Please click on the link to activate your account";
 
     @Autowired
-    private MessageSource messages;
+    private IUserService service;
 
     @Autowired
     private JavaMailSender mailSender;
@@ -59,33 +60,33 @@ public class RegistrationListener implements ApplicationListener<RegistrationEve
     @Override
     public void onApplicationEvent(RegistrationEvent event) {
         System.out.println("Register mail " + event.toString());
+        System.out.println("Reg obj " + this.toString() + ": " + System.identityHashCode(this));
         this.confirmRegistration(event);
     }
 
     private void confirmRegistration(RegistrationEvent event)
     {
         User user = event.getUser();
-        String token = UUID.randomUUID().toString();
-        service.createVerificationTokenForUser(user, token);
+        if (user == null || event.hasToken() == true) {
+            System.out.println("Skip confirm, already has token " + event.toString());
+            return;
+        }
+        VerificationToken token = service.getVerificationToken(user);
+        event.addToken(token.getToken()).makeCallbackUrl();
 
-        SimpleMailMessage email = constructEmailMessage(event, user, token);
+        SimpleMailMessage email = constructEmailMessage(event, user);
         mailSender.send(email);
     }
 
     //
-    private final SimpleMailMessage constructEmailMessage(
-            RegistrationEvent event, User user, String token)
+    private final SimpleMailMessage constructEmailMessage(RegistrationEvent event, User user)
     {
         String recipientAddress = user.getEmail();
-        String subject = "Registration Confirmation";
-        String message = messages.getMessage("message.regSucc",
-                null, event.getLocale());
         SimpleMailMessage email = new SimpleMailMessage();
 
-        event.makeCallbackUrl().addToken(token);
         email.setTo(recipientAddress);
-        email.setSubject(subject);
-        email.setText(message + " \r\n" + event.getCallbackUrl());
+        email.setSubject(s_mailSubject);
+        email.setText(s_mailMessage + " \r\n" + event.getCallbackUrl());
         email.setFrom(env.getProperty("support.email"));
         return email;
     }

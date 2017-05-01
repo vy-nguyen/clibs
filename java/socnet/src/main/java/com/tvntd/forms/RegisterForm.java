@@ -60,7 +60,7 @@ public class RegisterForm
     private String gender;
 
     @Size(max = 32)
-    private String checkTerms;
+    private String okTerm;
 
     @Size(max = 32)
     private String locale;
@@ -71,7 +71,7 @@ public class RegisterForm
     public RegisterForm()
     {
         role   = "User";
-        locale = "EN";
+        locale = "VN";
     }
 
     /**
@@ -159,17 +159,17 @@ public class RegisterForm
     }
 
     /**
-     * @return the terms
+     * @return the okTerm
      */
-    public String checkTerms() {
-        return checkTerms;
+    public String getOkTerm() {
+        return okTerm;
     }
 
     /**
-     * @param terms the terms to set
+     * @param okTerm the okTerm to set
      */
-    public void setCheckTerms(String terms) {
-        this.checkTerms = terms;
+    public void setOkTerm(String okTerm) {
+        this.okTerm = okTerm;
     }
 
     /**
