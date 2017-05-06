@@ -39,7 +39,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.
     authentication.builders.AuthenticationManagerBuilder;
 
@@ -55,6 +54,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import com.tvntd.models.Role;
+import com.tvntd.security.AuthenticationHandler;
 import com.tvntd.security.ServiceUser;
 
 @Configuration
@@ -96,20 +96,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
         http.authorizeRequests()
             .antMatchers("/",
                     "/rs/**",
-                    "/login*",
+                    "/login/**",
                     "/register/**",
                     "/public/**",
                     "/api/**",
                     "/help/**").permitAll()
             .antMatchers("/user/**").hasRole(Role.User)
-            .antMatchers("/admin/**").hasAnyRole(Role.Admin)
+            .antMatchers("/admin/**").hasRole(Role.Admin)
+            .antMatchers("/sec-api/**").hasRole(Role.User)
             .antMatchers("/db/***").hasAnyRole(Role.Dba)
             .anyRequest().fullyAuthenticated()
             .anyRequest().authenticated()
             .and()
                 .formLogin()
                     .loginPage("/login")
-                    .defaultSuccessUrl("/home")
+                    //.defaultSuccessUrl("/home")
                     //.failureUrl("/login.do?error=true")
                     .successHandler(urlAuthenticationSuccessHandler)
                     .failureHandler(authenticationFailureHandler)
@@ -135,9 +136,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
     }
 
     @Bean
-    public DaoAuthenticationProvider authProvider()
+    public AuthenticationHandler authProvider()
     {
-        final DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        final AuthenticationHandler authProvider = new AuthenticationHandler();
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(encoder());
         return authProvider;

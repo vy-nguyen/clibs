@@ -30,6 +30,7 @@ import java.util.Collection;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -40,7 +41,7 @@ import javax.persistence.ManyToMany;
 @Entity
 public class Role
 {
-    private static final Long userIdStart = 1000L;
+    public static final Long userIdStart = 1000L;
 
     public static String User    = "User";
     public static String Dba     = "Dba";
@@ -59,7 +60,7 @@ public class Role
     @ManyToMany(mappedBy = "roles")
     private Collection<User> users;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "RolesPrivileges",
         joinColumns = @JoinColumn(name = "RoleId", referencedColumnName = "id"),
         inverseJoinColumns = @JoinColumn(name = "PrivId",

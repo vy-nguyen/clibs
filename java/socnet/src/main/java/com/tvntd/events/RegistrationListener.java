@@ -26,8 +26,6 @@
  */
 package com.tvntd.events;
 
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.Environment;
@@ -44,7 +42,7 @@ public class RegistrationListener implements ApplicationListener<RegistrationEve
 {
     static private final String s_mailSubject = "Registration Confirmation";
     static private final String s_mailMessage =
-        "We have created an account for you.  Please click on the link to activate your account";
+        "We created an account for you, click on the link to activate your account";
 
     @Autowired
     private IUserService service;
@@ -59,8 +57,6 @@ public class RegistrationListener implements ApplicationListener<RegistrationEve
 
     @Override
     public void onApplicationEvent(RegistrationEvent event) {
-        System.out.println("Register mail " + event.toString());
-        System.out.println("Reg obj " + this.toString() + ": " + System.identityHashCode(this));
         this.confirmRegistration(event);
     }
 
@@ -68,10 +64,9 @@ public class RegistrationListener implements ApplicationListener<RegistrationEve
     {
         User user = event.getUser();
         if (user == null || event.hasToken() == true) {
-            System.out.println("Skip confirm, already has token " + event.toString());
             return;
         }
-        VerificationToken token = service.getVerificationToken(user);
+        VerificationToken token = service.getVerificationToken(user, true);
         event.addToken(token.getToken()).makeCallbackUrl();
 
         SimpleMailMessage email = constructEmailMessage(event, user);
@@ -79,7 +74,8 @@ public class RegistrationListener implements ApplicationListener<RegistrationEve
     }
 
     //
-    private final SimpleMailMessage constructEmailMessage(RegistrationEvent event, User user)
+    private final SimpleMailMessage
+    constructEmailMessage(RegistrationEvent event, User user)
     {
         String recipientAddress = user.getEmail();
         SimpleMailMessage email = new SimpleMailMessage();

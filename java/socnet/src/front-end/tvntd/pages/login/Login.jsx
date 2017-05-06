@@ -13,9 +13,12 @@ import AboutUsStore  from 'vntd-root/stores/AboutUsStore.jsx';
 import Lang          from 'vntd-root/stores/LanguageStore.jsx';
 import Mesg          from 'vntd-root/components/Mesg.jsx';
 import UserStore     from 'vntd-shared/stores/UserStore.jsx';
+import ErrorStore    from 'vntd-shared/stores/ErrorStore.jsx';
 import UiValidate    from 'vntd-shared/forms/validation/UiValidate.jsx';
 import History       from 'vntd-shared/utils/History.jsx';
 import ErrorView     from 'vntd-shared/layout/ErrorView.jsx';
+
+import { validateEmail } from './Register.jsx';
 
 class LoginHeader extends React.Component
 {
@@ -152,10 +155,12 @@ class LoginForm extends React.Component
     constructor(props) {
         super(props);
 
-        this._onFocus = this._onFocus.bind(this);
-        this._clearRefs = this._clearRefs.bind(this);
+        this._onFocus      = this._onFocus.bind(this);
+        this._clearRefs    = this._clearRefs.bind(this);
         this._onAuthChange = this._onAuthChange.bind(this);
-        this._submitLogin = this._submitLogin.bind(this);
+        this._submitLogin  = this._submitLogin.bind(this);
+        this._emailLogin   = this._emailLogin.bind(this);
+        this._loginByEmail = this._loginByEmail.bind(this);
     }
 
     componentWillMount() {
@@ -185,6 +190,7 @@ class LoginForm extends React.Component
             Actions.startup("/api/user");
             History.pushState(null, "/");
         }
+        console.log(data);
     }
 
     _clearRefs() {
@@ -197,6 +203,7 @@ class LoginForm extends React.Component
 
     _onFocus() {
         $('#id-login-error').hide();
+        ErrorStore.clearError("login-err");
     }
 
     _submitLogin(event) {
@@ -213,60 +220,120 @@ class LoginForm extends React.Component
         }, formData);
     }
 
+    _emailLogin() {
+        let email = this.refs.email.value;
+        console.log(email);
+        if (_.isEmpty(email) || validateEmail(email) == false) {
+            ErrorStore.reportErrMesg("login-err", "Please enter valid email");
+            this.refs.email.value = "";
+        } else {
+            console.log("Send email login request");
+            Actions.loginEmail({
+                email   : email,
+                password: null,
+                remember: null
+            });
+        }
+    }
+
+    _loginByEmail() {
+        return (
+            <div className="well no-padding">
+                <div id="smart-form-register" className="smart-form client-form">
+                    <header>
+                        <Mesg text="Email Sign In"/>
+                    </header>
+                    <fieldset>
+                        <section>
+                            <label className="label"><Mesg text="E-mail"/></label>
+                            <label className="input">
+                                <i className="icon-append fa fa-user"/>
+                                <input type="email" name="email" ref="email"
+                                    placeholder={Lang.translate("Your email address")}
+                                    onFocus={this._onFocus}/>
+                                <b className="tooltip tooltip-bottom-right">
+                                    <Mesg text="We will send login info to your email"/>
+                                </b>
+                            </label>
+                        </section>
+                    </fieldset>
+                    <footer>
+                        <button className="btn btn-primary" onClick={this._emailLogin}>
+                            <Mesg text="Email Login Link"/>
+                        </button>
+                    </footer>
+                </div>
+            </div>
+        );
+    }
+
     render() {
         return (
             <div>
                 <div className="well no-padding">
-                    <UiValidate>
-                        <form id="login-form" className="smart-form client-form">
-                            <header> <Mesg text="Sign In"/> </header>
-                            <ErrorView className="alert alert-danger"/>
-                            <fieldset>
-                                <section>
-                                    <label className="label"><Mesg text="E-mail"/></label>
-                                    <label className="input"> <i className="icon-append fa fa-user"/>
+                    <form id="login-form" className="smart-form client-form">
+                        <header> <Mesg text="Sign In"/> </header>
+                        <ErrorView errorId={"login-err"} className="alert alert-danger"/>
+                        <fieldset>
+                            <section>
+                                <label className="label"><Mesg text="E-mail"/></label>
+                                <label className="input">
+                                    <i className="icon-append fa fa-user"/>
                                     <input type="email" name="email" ref="email"
-                                        onFocus={this._onFocus} 
-                                        data-smart-validate-input=""
-                                        data-required="" data-email=""
-                                        data-message-required={Lang.translate("Please enter your email address")}
-                                        data-message-email={Lang.translate("Account is your email address")}/>
-                                        <b className="tooltip tooltip-top-right">
-                                            <i className="fa fa-user txt-color-teal"/><Mesg text="Please enter email address/username"/>
-                                        </b>
-                                    </label>
-                                </section>
-                                <section>
-                                    <label className="label"><Mesg text="Password"/></label>
-                                    <label className="input"> <i className="icon-append fa fa-lock"/>
+                                        placeholder={Lang.translate("Your email address")}
+                                        onFocus={this._onFocus}/>
+                                    <b className="tooltip tooltip-top-right">
+                                        <i className="fa fa-user txt-color-teal"/>
+                                        <Mesg text="Please enter your email address"/>
+                                    </b>
+                                </label>
+                            </section>
+                            <section>
+                                <label className="label"><Mesg text="Password"/></label>
+                                <label className="input">
+                                    <i className="icon-append fa fa-lock"/>
                                     <input type="password" name="password" ref="password"
-                                        onFocus={this._onFocus} 
-                                        data-smart-validate-input="" data-required=""
-                                        data-minlength="3" data-maxnlength="20"
-                                        data-message={Lang.translate("Please enter your account password")}/>
-                                        <b className="tooltip tooltip-top-right">
-                                            <i className="fa fa-lock txt-color-teal"/> <Mesg text="Enter your password"/>
-                                        </b>
-                                    </label>
-                                    <div className="note">
-                                        <Link to="/register/recover"><Mesg text="Forgot Password"/>?</Link>
-                                    </div>
-                                </section>
-                                <section>
-                                    <label className="checkbox">
-                                        <input type="checkbox" ref="remember" name="remember" defaultChecked={true}/>
-                                        <i/><Mesg text="Stay signed in"/>
-                                    </label>
-                                </section>
-                            </fieldset>
-                            <footer>
-                                <button className="btn btn-primary" onClick={this._submitLogin}><Mesg text="Sign in"/></button>
-                            </footer>
-                        </form>
-                    </UiValidate>
+                                        placeholder={Lang.translate("Your password")}
+                                        onFocus={this._onFocus}/>
+                                    <b className="tooltip tooltip-top-right">
+                                        <i className="fa fa-lock txt-color-teal"/>
+                                        <Mesg text="Enter your password"/>
+                                    </b>
+                                </label>
+                                <div className="note">
+                                    <Link to="/register/recover">
+                                        <Mesg text="Forgot Password"/>?
+                                    </Link>
+                                </div>
+                            </section>
+                            <section>
+                                <label className="checkbox">
+                                    <input type="checkbox" ref="remember"
+                                        name="remember" defaultChecked={true}/>
+                                    <i/><Mesg text="Stay signed in"/>
+                                </label>
+                            </section>
+                        </fieldset>
+                        <footer>
+                            <button className="btn btn-primary"
+                                onClick={this._submitLogin}>
+                                <Mesg text="Sign in"/>
+                            </button>
+                        </footer>
+                    </form>
                 </div>
-                <h5 className="text-center"><Mesg text=" - Or sign in using - "/></h5>
-                    <LoginSocial />    
+                <h4 className="text-center">
+                    <Mesg text="Or Sign In By Email"/>
+                </h4>
+                <br/>
+                {this._loginByEmail()}
+                {/*
+                <h4 className="text-center">
+                    <Mesg text="Or Sign In Using"/>
+                </h4>
+                <br/>
+                <LoginSocial/>    
+                */}
             </div>
         );
     }
@@ -285,7 +352,7 @@ class Login extends React.Component
                 <div id="main" role="main" className="animated fadeInDown">
                     <div id="content" className="container">
                         <div className="row">
-                            <div className="col-xs-12 col-sm-12 col-md-7 col-lg-8 hidden-xs hidden-sm">
+                            <div className="col-md-7 col-lg-8 hidden-xs hidden-sm">
                                 <LoginAbout/>
                             </div>
                             <div className="col-xs-12 col-sm-12 col-md-5 col-lg-4">

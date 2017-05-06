@@ -26,6 +26,59 @@
  */
 package com.tvntd.forms;
 
+import javax.validation.constraints.NotNull;
+
+import com.tvntd.util.ValidEmail;
+
 public class ProfileForm
 {
+    @NotNull
+    @ValidEmail
+    private String email;
+
+    private String password;
+
+    private String remember;
+
+    /**
+     * @return the email
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * @param email the email to set
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    /**
+     * @return the password
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * @param password the password to set
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    /**
+     * @return the remember
+     */
+    public String getRemember() {
+        return remember;
+    }
+
+    /**
+     * @param remember the remember to set
+     */
+    public void setRemember(String remember) {
+        this.remember = remember;
+    }
 }

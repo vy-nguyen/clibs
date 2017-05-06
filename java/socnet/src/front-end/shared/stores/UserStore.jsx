@@ -174,7 +174,8 @@ let UserStore = Reflux.createStore({
     },
 
     /**
-     * Iterate through each user with uuid in the list.  If the list is null, iterate through all users.
+     * Iterate through each user with uuid in the list.  If the list is null,
+     * iterate through all users.
      */
     iterUser: function(uuidList, func) {
         if (uuidList == null) {
@@ -233,12 +234,22 @@ let UserStore = Reflux.createStore({
         this.data.loginReady = true;
     },
 
+    onLoginEmailCompleted: function(response) {
+        console.log("email login");
+        console.log(response);
+        this._changedData(response);
+    },
+
     onLoginFailed: function(xhdr, text, error) {
         this._changedDataFailure(xhdr, text, error);
     },
 
     /* Register actions. */
     onRegisterCompleted: function(response, text) {
+        this._changedData(response);
+    },
+
+    onResendRegisterCompleted: function(response, text) {
         this._changedData(response);
     },
 

@@ -40,7 +40,8 @@ class LoginInfo extends React.Component
 	            <span>
 		            <ToggleShortcut>
                         <img src={this.state.userImgUrl} alt="Menu" className="online"/>
-                        <span>{ this.state.firstName}</span><i className="fa fa-angle-down"/>
+                        <span>{this.state.firstName}</span>
+                        <i className="fa fa-angle-down"/>
 		            </ToggleShortcut>
 	            </span>
             </div>

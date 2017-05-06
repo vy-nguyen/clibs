@@ -141,5 +141,18 @@ public final class Util
         return str.substring(0, max);
     }
 
+    public static void printStackTrace(String header, int depth)
+    {
+        System.out.println(header);
+
+        int i = 0;
+        for (StackTraceElement se : Thread.currentThread().getStackTrace()) {
+            System.out.println(se);
+            if (i++ > depth) {
+                break;
+            }
+        }
+    }
+
     private Util() {}
 }

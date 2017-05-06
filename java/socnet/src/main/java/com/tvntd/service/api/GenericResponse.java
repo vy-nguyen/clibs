@@ -45,11 +45,12 @@ public class GenericResponse
     static private Logger s_log =
         LoggerFactory.getLogger(GenericResponse.class.getName());
 
-    public static final String REG_VERIFY_CODE = "register-verify";
-    public static final String REG_WAIT_EMAIL  = "registr-email-sent";
-    public static final String REG_FAILED      = "failure";
-    public static final String REG_OK_LOGIN    = "register-done";
-    public static final String REG_USER_EXISTS = "register-user-exists";
+    public static final String REG_VERIFY_CODE = "reg-verify";
+    public static final String REG_WAIT_EMAIL  = "reg-email-sent";
+    public static final String REG_FAILED      = "reg-failure";
+    public static final String REG_OK_LOGIN    = "reg-done";
+    public static final String REG_USER_EXISTS = "reg-user-exists";
+    public static final String REG_NO_USER     = "reg-no-user";
     public static final String USER_HOME       = "user";
 
     private String type;

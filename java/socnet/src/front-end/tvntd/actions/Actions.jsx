@@ -31,7 +31,9 @@ const Actions = Reflux.createActions({
     refreshArticles: completedFailedFn,
     refreshNotify:   completedFailedFn,
     login:           completedFailedFn,
+    loginEmail:      completedFailedFn,
     register:        completedFailedFn,
+    resendRegister:  completedFailedFn,
     verifyAccount:   completedFailedFn,
     resetPassword:   completedFailedAlwaysFn,
 
@@ -118,6 +120,9 @@ function postRestCall(formData, url, json, cbObj, authReq, id, context) {
         cbObj.completed(resp, context);
 
     }).fail(function(resp, text, error) {
+        console.log("failed");
+        console.log(error);
+
         resp.cbContext = context;
         cbObj.failed(ErrorStore.reportFailure(id, resp, text, error));
 
@@ -216,6 +221,12 @@ Actions.login.listen(function(loginData, formData) {
     postRestCall(formData, "/login", false, this);
 });
 
+Actions.loginEmail.listen(function(loginData) {
+    console.log("login api ");
+    console.log(loginData);
+    postRestCall(loginData, "/login/email", true, this);
+});
+
 Actions.logout.listen(function() {
     this.completed();
     document.location.href = "/login/logout";
@@ -223,6 +234,10 @@ Actions.logout.listen(function() {
 
 Actions.register.listen(function(regData) {
     postRestCall(regData, "/register", true, this);
+});
+
+Actions.resendRegister.listen(function(regData) {
+    postRestCall(regData, "/register/resend", true, this);
 });
 
 Actions.verifyAccount.listen(function(regData) {

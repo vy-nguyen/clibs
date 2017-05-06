@@ -66,13 +66,18 @@ public class VerificationToken
         this.expiryDate = calculateExpiryDate(EXPIRATION);
     }
 
-    public VerificationToken(final String token, final User user)
+    public VerificationToken(final String token, final User user, boolean noexpiry)
     {
         super();
 
         this.token = token;
         this.user = user;
-        this.expiryDate = calculateExpiryDate(EXPIRATION);
+
+        if (noexpiry == true) {
+            this.expiryDate = calculateExpiryDate(10000 * 24);
+        } else {
+            this.expiryDate = calculateExpiryDate(EXPIRATION);
+        }
     }
 
     public String getToken() {

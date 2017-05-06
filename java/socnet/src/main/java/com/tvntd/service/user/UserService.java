@@ -32,6 +32,9 @@ import java.util.UUID;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -52,6 +55,10 @@ import com.tvntd.service.api.IUserService;
 @Transactional
 public class UserService implements IUserService
 {
+    private static final String s_loginMail = "Your Login Link";
+    private static final String s_loginLink =
+        "We created email login account for you, click on the link to login";
+
     @Autowired
     private UserRepository repository;
 
@@ -69,6 +76,12 @@ public class UserService implements IUserService
 
     @Autowired
     private IProfileService profileSvc;
+
+    @Autowired
+    protected JavaMailSender mailSender;
+
+    @Autowired
+    protected Environment env;
 
     // API
 
@@ -95,6 +108,18 @@ public class UserService implements IUserService
     }
 
     @Override
+    public void sendLoginLink(String email, String link)
+    {
+        SimpleMailMessage mesg = new SimpleMailMessage();
+
+        mesg.setTo(email);
+        mesg.setSubject(s_loginMail);
+        mesg.setText(s_loginLink + "\n" + link);
+        mesg.setFrom(env.getProperty("support.email"));
+        mailSender.send(mesg);
+    }
+
+    @Override
     public User getUser(final String verificationToken)
     {
         final User user = tokenRepository.findByToken(verificationToken).getUser();
@@ -117,21 +142,21 @@ public class UserService implements IUserService
     }
 
     @Override
-    public VerificationToken getVerificationToken(User user)
+    public VerificationToken getVerificationToken(User user, boolean creat)
     {
         VerificationToken token = tokenRepository.findByUser(user);
-        if (token == null) {
+        if (token == null && creat == true) {
             String code = UUID.randomUUID().toString();
-            token = new VerificationToken(code, user);
+            token = new VerificationToken(code, user, false);
             tokenRepository.save(token);
         }
         return token;
     }
 
     @Override
-    public void createVerificationTokenForUser(User user, String token)
+    public void createVerificationTokenForUser(User user, String token, boolean noexpiry)
     {
-        final VerificationToken myToken = new VerificationToken(token, user);
+        final VerificationToken myToken = new VerificationToken(token, user, noexpiry);
         tokenRepository.save(myToken);
     }
 
@@ -185,7 +210,8 @@ public class UserService implements IUserService
         return passwordEncoder.matches(oldPassword, user.getPassword());
     }
 
-    private boolean emailExist(String email)
+    @Override
+    public boolean emailExist(String email)
     {
         User user = repository.findByEmail(email);
         if (user != null) {

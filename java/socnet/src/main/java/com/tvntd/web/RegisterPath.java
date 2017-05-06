@@ -95,17 +95,37 @@ public class RegisterPath
             eventPublisher.publishEvent(event);
 
             return new LoginResponse(GenericResponse.REG_WAIT_EMAIL,
-                    messages.getMessage("reg.success.login",
-                        new Object[] { reg.getEmail() }, locale), null, null);
+                    reg.getEmail(), null, null);
 
         } catch(EmailExistsException e) {
             s_log.debug("Email exist: " + e.getMessage());
 
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return new LoginResponse(
-                    GenericResponse.REG_USER_EXISTS, e.getMessage(),
-                    "Email exists", null);
+            return new LoginResponse(GenericResponse.REG_USER_EXISTS,
+                    e.getMessage(), "Email exists", null);
         }
+    }
+
+    @RequestMapping(value = "/register/resend",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    resendRegLink(Locale locale, @RequestBody RegisterForm reg,
+            HttpServletRequest request, HttpServletResponse response)
+    {
+        String email = reg.getEmail();
+
+        s_log.debug("Resend reg for " + email);
+        User user = userService.findUserByEmail(email);
+        if (user == null) {
+            return new LoginResponse(GenericResponse.REG_NO_USER,
+                    "Could not find email account", email, null);
+        }
+        RegistrationEvent event = new RegistrationEvent(user, request);
+        eventPublisher.publishEvent(event);
+        return new LoginResponse(GenericResponse.REG_WAIT_EMAIL,
+                reg.getEmail(), null, null);
     }
 
     /**
@@ -131,27 +151,6 @@ public class RegisterPath
         user.setEnabled(true);
         userService.saveRegisteredUser(user);
         return new LoginResponse(GenericResponse.REG_OK_LOGIN, "ok", null, null);
-    }
-
-    /**
-     * Resend registration token.  TODO: Need to test this code.
-     */
-    @RequestMapping(value = "/register/resend",
-            consumes = "application/json", method = RequestMethod.POST)
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    @ResponseBody
-    public GenericResponse
-    resentRegisterToken(Locale locale, @RequestBody VerifyToken input)
-    {
-        VerificationToken token =
-            userService.generateNewVerificationToken(input.getAuthVerifToken());
-
-        if (token == null) {
-            return errorResponse("Invalid Token",
-                    "reg.confirm.invalid.token", null, locale);
-        }
-        return new LoginResponse(
-                GenericResponse.REG_VERIFY_CODE, null, null, token.getToken());
     }
 
     /**

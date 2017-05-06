@@ -80,19 +80,29 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
             if (user == null) {
                 return;
             }
-            session.setAttribute("user", user);
-            session.setMaxInactiveInterval(120 * 60);
-
-            ProfileDTO profile = profileSvc.getProfile(user);
-            if (profile != null) {
-                session.setAttribute("profile", profile);
-                user.setLastLogin(new Date());
-                userRepository.save(user);
-                newsFeedSvc.generateNewsFeed(profile, profile.getUserUuid());
-            }
+            setupLoginSession(user, session, request, response, authentication);
         }
         handle(request, response, authentication);
         clearAuthenticationAttributes(request);
+    }
+
+    /**
+     * Setup login session after successful authentication.
+     */
+    public void setupLoginSession(User user,
+            HttpSession session, HttpServletRequest request,
+            HttpServletResponse response, Authentication auth)
+    {
+        session.setAttribute("user", user);
+        session.setMaxInactiveInterval(120 * 60);
+
+        ProfileDTO profile = profileSvc.getProfile(user);
+        if (profile != null) {
+            session.setAttribute("profile", profile);
+            user.setLastLogin(new Date());
+            userRepository.save(user);
+            newsFeedSvc.generateNewsFeed(profile, profile.getUserUuid());
+        }
     }
 
     protected void handle(HttpServletRequest request,

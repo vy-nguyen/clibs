@@ -40,11 +40,13 @@ public interface IUserService
     void saveRegisteredUser(User user);
     void deleteUser(User user);
 
-    void createVerificationTokenForUser(User user, String token);
-    VerificationToken getVerificationToken(User user);
+    void createVerificationTokenForUser(User user, String token, boolean noexpir);
+    VerificationToken getVerificationToken(User user, boolean creat);
     VerificationToken getVerificationToken(String verificationToken);
     VerificationToken generateNewVerificationToken(String token);
 
+    boolean emailExist(String email);
+    void sendLoginLink(String email, String link);
     void createPasswordResetTokenForUser(User user, String token);
     User findUserByEmail(String email);
 

@@ -57,6 +57,7 @@ class RegisterForm extends React.Component
 {
     constructor(props) {
         super(props);
+        this._reStart   = this._reStart.bind(this);
         this._getData   = this._getData.bind(this);
         this._onBlur    = this._onBlur.bind(this);
         this._onFocus   = this._onFocus.bind(this);
@@ -64,6 +65,7 @@ class RegisterForm extends React.Component
         this._resetRefs = this._resetRefs.bind(this);
         this._clickTerm = this._clickTerm.bind(this);
 
+        this._resendEmail     = this._resendEmail.bind(this);
         this._submitRegister  = this._submitRegister.bind(this);
         this._registerResult  = this._registerResult.bind(this);
         this._getRegisterStep = this._getRegisterStep.bind(this);
@@ -78,6 +80,7 @@ class RegisterForm extends React.Component
                                              Lang.translate("Click on TOS"));
         });
         this.state = {
+            reSend  : 0,
             stepIdx : 0,
             okTerm  : false
         };
@@ -92,7 +95,7 @@ class RegisterForm extends React.Component
 
     componentDidMount() {
         this.unsub = UserStore.listen(this._registerResult);
-        if (UserStore.getAuthCode() == "register-done") {
+        if (UserStore.getAuthCode() == "reg-done") {
             ErrorStore.reportErrMesg("reg-ok", "Sucess");
         }
     }
@@ -127,6 +130,31 @@ class RegisterForm extends React.Component
     }
 
     _setCurrentStep(step) {
+    }
+
+    _resendEmail() {
+        let data = {
+            email: this.state.email
+        };
+        if (!_.isEmpty(data.email)) {
+            ErrorStore.clearError("reg-error");
+            Actions.resendRegister(data);
+
+            if (this.state.reSend >= 5) {
+                ErrorStore.clearError("reg-error");
+                ErrorStore.reportErrMesg("reg-ok",
+                    "Warning: too many retries!  Please retry with different email");
+            }
+            if (this.state.reSend >= 10) {
+                this._reStart();
+            } else {
+                this.setState({
+                    reSend: this.state.reSend + 1
+                });
+            }
+        } else {
+            this._reStart();
+        }
     }
 
     _clickTerm() {
@@ -267,43 +295,42 @@ class RegisterForm extends React.Component
         ),
         mainForm = (
             <div className="well no-padding">
-                <div className="well no-padding">
-                    <UiValidate>
-                        <form id="smart-form-register" className="smart-form client-form">
-                            <header>
-                                <Mesg text="Register to open your account"/>
-                            </header>
-                            <fieldset>
-                                {status}
-                            </fieldset>
-                            <fieldset>
-                                {emailInput}
-                                {passInp1}
-                                {passInp2}
-                            </fieldset>
-                            <fieldset>
-                                {nameInp}
-                                {genderInp}
-                                {termsInp}
-                            </fieldset>
-                            <footer>
-                                <StateButton btnId={this._submitId}
-                                    className="btn btn-success"
-                                    onClick={this._submitRegister}/>
-                            </footer>
+                <UiValidate>
+                    <form id="smart-form-register" className="smart-form client-form">
+                        <header>
+                            <Mesg text="Register to open your account"/>
+                        </header>
+                        <fieldset>
+                            {status}
+                        </fieldset>
+                        <fieldset>
+                            {emailInput}
+                            {passInp1}
+                            {passInp2}
+                        </fieldset>
+                        <fieldset>
+                            {nameInp}
+                            {genderInp}
+                            {termsInp}
+                        </fieldset>
+                        <footer>
+                            <StateButton btnId={this._submitId}
+                                className="btn btn-success"
+                                onClick={this._submitRegister}/>
+                        </footer>
 
-                            <div className="message">
-                                <i className="fa fa-check"/>
-                                <p><Mesg text="Thank you for your registration!"/></p>
-                            </div>
-                        </form>
-                    </UiValidate>
-                </div>
+                        <div className="message">
+                            <i className="fa fa-check"/>
+                            <p><Mesg text="Thank you for your registration!"/></p>
+                        </div>
+                    </form>
+                </UiValidate>
                 <h5 className="text-center"><Mesg text="- Or sign in using -"/></h5>
                 <LoginSocial/>
             </div>
         ),
-        email = this.state.email;
+        email = this.state.email,
+        reSend = this.state.reSend > 0 ? "(" + this.state.reSend + ")" : null
 
         return (
             <Wizard context={this._getRegisterStep()} proText="Step">
@@ -320,8 +347,12 @@ class RegisterForm extends React.Component
                     <hr/>
                     <div className="row">
                         <p><Mesg text="Don't receive confirmation email?"/></p>
-                        <button className="btn btn-primary">
-                            <Mesg text="Send email again"/>
+                        {status}
+                        <button className="btn btn-primary" onClick={this._resendEmail}>
+                            <Mesg text="Send email again "/>{reSend}
+                        </button>
+                        <button className="btn btn-danger" onClick={this._reStart}>
+                            <Mesg text="Register Again"/>
                         </button>
                     </div>
                 </div>
@@ -346,27 +377,44 @@ class RegisterForm extends React.Component
         console.log("Result ");
         console.log(data);
         form.find('input').prop('disabled', false);
-        if (data.authCode === "register-done") {
+        switch(data.authCode) {
+        case "reg-done":
             ErrorStore.reportErrMesg("reg-ok", authError.userText);
+            break;
 
-        } else if (data.authCode === "register-verify") {
+        case "reg-verify":
             Actions.verifyAccount({
                 type: data.authCode,
                 authVerifToken: data.authVerifToken
             });
-        } else if ((data.authCode === "failure") || (data.authError)) {
+            break;
+
+        case "reg-failure":
             ErrorStore.reportErrMesg("reg-error",
                                      authErr.userText,
                                      "Try different email address");
-        } else if (data.authCode === "registr-email-sent") {
-            this.setState({
-                stepIdx  : 1,
-                stepMesg : data.authMesg,
-                userEmail: this.refs.email.value
-            });
-        } else if (data.authCode === "user") {
+            break;
 
-        } else {
+        case "reg-email-sent":
+            this.setState({
+                stepIdx : 1,
+                stepMesg: data.authMesg,
+                email   : this.refs.email.value
+            });
+            break;
+
+        case "reg-no-user":
+            if (this.state.reSend <= 5) {
+                ErrorStore.reportErrMesg("reg-error",
+                                         data.authMesg,
+                                         "Invalid email " + data.authError);
+            }
+            break;
+
+        case "user":
+            break;
+
+        default:
             console.log(data);
             ErrorStore.reportErrMesg("reg-error", data.authMesg);
         }
@@ -388,6 +436,21 @@ class RegisterForm extends React.Component
         }
         return null;
      }
+
+    _reStart() {
+        ErrorStore.clearError("reg-ok");
+        ErrorStore.clearError("reg-error");
+        StateButtonStore.setButtonStateObj(this._submitBtn, "saving");
+
+        this._resetRefs();
+        this.setState({
+            reSend  : 0,
+            stepIdx : 0,
+            okTerm  : false,
+            stepMesg: null,
+            email   : null
+        });
+    }
 
     _onFocus() {
         if (this._hasError() == null) {
@@ -417,10 +480,9 @@ class RegisterForm extends React.Component
     }
 
     _submitRegister() {
-        let data = this._getData();
-        console.log(data);
+        let data = this._getData(),
+            form = $('#smart-form-register');
 
-        let form = $('#smart-form-register');
         form.find('input').prop('disabled', true);
         Actions.register(data);
     }
@@ -490,4 +552,4 @@ class Register extends React.Component
 }
 
 export default Register
-export { RegisterForm }
+export { RegisterForm, validateEmail }

@@ -26,6 +26,8 @@
  */
 package com.tvntd.forms;
 
+import java.util.UUID;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -42,18 +44,20 @@ public class RegisterForm
     private String email;
 
     @NotNull
-    @Size(min = 1)
+    @Size(min = 1, max = 16)
     private String firstName;
 
     @NotNull
-    @Size(min = 1)
+    @Size(min = 1, max = 16)
     private String lastName;
 
     @NotNull
     @ValidPassword
+    @Size(min = 1, max = 64)
     private String password0;
 
     @NotNull
+    @Size(min = 1, max = 64)
     private String password1;
 
     @Size(max = 64)
@@ -72,6 +76,15 @@ public class RegisterForm
     {
         role   = "User";
         locale = "VN";
+    }
+
+    public RegisterForm(String email)
+    {
+        super();
+        this.email     = email;
+        this.firstName = "auto";
+        this.lastName  = null;
+        this.password0 = UUID.randomUUID().toString();
     }
 
     /**

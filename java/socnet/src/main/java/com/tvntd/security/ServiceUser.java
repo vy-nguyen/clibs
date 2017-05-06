@@ -90,17 +90,18 @@ public class ServiceUser implements UserDetailsService
                         user.isEnabled(), true, true, true,
                         getAuthorities(user.getRoles()));
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new RuntimeException(e);
         }
     }
 
-    public final Collection<? extends GrantedAuthority> getAuthorities(
-            Collection<Role> roles)
+    public static Collection<GrantedAuthority>
+    getAuthorities(Collection<Role> roles)
     {
         return getGrantedAuthorities(getPrivileges(roles));
     }
 
-    private final List<String> getPrivileges(Collection<Role> roles)
+    private static List<String> getPrivileges(Collection<Role> roles)
     {
         List<String> privileges = new ArrayList<String>();
         List<Privilege> collection = new ArrayList<Privilege>();
@@ -114,7 +115,7 @@ public class ServiceUser implements UserDetailsService
         return privileges;
     }
 
-    private final List<GrantedAuthority> getGrantedAuthorities(List<String> privileges)
+    private static List<GrantedAuthority> getGrantedAuthorities(List<String> privileges)
     {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         for (String privilege : privileges) {
