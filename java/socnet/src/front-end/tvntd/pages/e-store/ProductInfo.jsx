@@ -245,7 +245,6 @@ class ProductBrief extends React.Component
     }
 
     _addCart(event) {
-        console.log("add cart");
         event.stopPropagation();
     }
 
@@ -256,7 +255,6 @@ class ProductBrief extends React.Component
 
     _editProduct(event) {
         event.stopPropagation();
-        console.log("Edit product");
         this.refs.editProd.openModal();
     }
 

@@ -29,8 +29,6 @@ class MarkdownEditor extends React.Component
     }
 
     _bindMDE() {
-        console.log("Bind mde ");
-        console.log(this);
         if (this._mde != null) {
             return;
         }

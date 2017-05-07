@@ -233,12 +233,10 @@ let RenderStore = Reflux.createStore({
     },
 
     onRefreshNotifyFailed: function(error) {
-        console.log(error);
         error.dispatch();
     },
 
     onStartupFailed: function(xhdr, text, status) {
-        console.log("on startup failed");
     },
 
     dumpData: function(header) {

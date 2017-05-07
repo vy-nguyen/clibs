@@ -90,7 +90,8 @@ class EditorPost extends React.Component
 
     _updateAutoTags() {
         return {
-            autoTags: _.merge([], AuthorStore.getTagsByAuthorUuid(null), ArticleTagStore.getAllPublicTags(false))
+            autoTags: _.merge([], AuthorStore.getTagsByAuthorUuid(null),
+                              ArticleTagStore.getAllPublicTags(false))
         }
     }
 
@@ -142,14 +143,12 @@ class EditorPost extends React.Component
     }
 
     _onComplete(file, a) {
-        // console.log(file.xhr);
     }
 
     _onSuccess(files) {
     }
 
     _onError(file) {
-        console.log("Error upload");
         console.log(file.xhr);
     }
 
@@ -185,7 +184,8 @@ class EditorPost extends React.Component
         if (article != null) {
             artRank = AuthorStore.getArticleRank(article.authorUuid, article.articleUuid);
             if (artRank != null) {
-                tags = (this.state.tagName == null) ? artRank.tagName : this.state.tagName;
+                tags = (this.state.tagName == null) ?
+                    artRank.tagName : this.state.tagName;
             } else {
                 tags = this.state.tagName;
             }
@@ -324,13 +324,17 @@ class EditorPost extends React.Component
             uploadUrl: '/user/upload-img'
         };
         let form = (
-            <form encType="multipart/form-data" acceptCharset="utf-8" className="form-horizontal">
+            <form encType="multipart/form-data"
+                acceptCharset="utf-8" className="form-horizontal">
                 <div className="inbox-info-bar no-padding">
                     <div className="row">
                         <div className="form-group">
-                            <label className="control-label col-md-1"><strong><Mesg text='Topic'/></strong></label>
+                            <label className="control-label col-md-1">
+                                <strong><Mesg text='Topic'/></strong>
+                            </label>
                             <div className="col-md-10">
-                                <input ref="topic" className="form-control" placeholder={topic} type="text"/>
+                                <input ref="topic" className="form-control"
+                                    placeholder={topic} type="text"/>
                             </div>
                         </div>
                     </div>
@@ -339,19 +343,23 @@ class EditorPost extends React.Component
                 <div className="inbox-info-bar no-padding">
                     <div className="row">
                         <div className="form-group">
-                            <label className="control-label col-md-1"><strong><Mesg text='Tags'/></strong></label>
+                            <label className="control-label col-md-1">
+                                <strong><Mesg text='Tags'/></strong>
+                            </label>
                             <div className="col-md-10">
                                 <TA.Typeahead options={this.state.autoTags} maxVisible={4}
                                     placeholder={tagName}
                                     customClasses={{input: "form-control"}}
-                                    onBlur={this._onBlurTag} onOptionSelected={this._onTagOptSelected}/>
+                                    onBlur={this._onBlurTag}
+                                    onOptionSelected={this._onTagOptSelected}/>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div className="inbox-message no-padding">
-                    <EditorEntry entry={editorEntry} onChange={this._handleContentChange}/>
+                    <EditorEntry entry={editorEntry}
+                        onChange={this._handleContentChange}/>
                 </div>
         
                 <div className="inbox-compose-footer">
@@ -370,7 +378,8 @@ class EditorPost extends React.Component
                 <article className="col-sm-12 col-md-12 col-lg-12">
                     <JarvisWidget id="my-post" color="purple">
                         <header>
-                            <span className="widget-icon"> <i className="fa fa-pencil"/></span>
+                            <span className="widget-icon"> <i className="fa fa-pencil"/>
+                            </span>
                             <h2><Mesg text='Publish Post'/></h2>
                         </header>
                         <div className="widget-body">
@@ -383,4 +392,4 @@ class EditorPost extends React.Component
     }
 }
 
-export default EditorPost
+export default EditorPost;

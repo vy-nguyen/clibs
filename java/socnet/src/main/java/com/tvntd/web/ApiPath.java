@@ -155,7 +155,7 @@ public class ApiPath
         if (user == null || profile == null) {
             return null;
         }
-        StartupResponse result = new StartupResponse(profile, reqt, session);
+        StartupResponse result = new StartupResponse(profile, reqt, session, false);
         fillStartupResponse(result, profile,
                 profileSvc, authorSvc, articleSvc, artTagSvc);
         return result;

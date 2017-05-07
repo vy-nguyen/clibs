@@ -148,7 +148,6 @@ class PostAds extends React.Component
     }
 
     _updateState(store, data, status) {
-        console.log("---- post status --- " + status);
         StateButtonStore.setButtonStateObj(this._postAdBtn, "saved");
         this._clearAdData();
         this.setState(this._getInitState());

@@ -31,7 +31,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -132,7 +131,7 @@ public class PublicPath
     {
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
         if (profile != null) {
-            StartupResponse result = new StartupResponse(profile, reqt, session);
+            StartupResponse result = new StartupResponse(profile, reqt, session, false);
             ApiPath.fillStartupResponse(result, profile,
                     profileSvc, authorSvc, articleSvc, artTagSvc);
             return result;
@@ -141,7 +140,7 @@ public class PublicPath
             s_publicDto = new ProfileDTO(s_public);
         }
         annonSvc.getAnnonUser(reqt, resp, session);
-        StartupResponse result = new StartupResponse(s_publicDto, reqt, session);
+        StartupResponse result = new StartupResponse(s_publicDto, reqt, session, true);
         fillStartupPublicResponse(result, s_publicDto);
         return result;
     }
@@ -352,7 +351,6 @@ public class PublicPath
         ObjStore store = ObjStore.getInstance();
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
 
-        System.out.println("Upload uuid " + artUuid);
         if (profile == null) {
             AnnonUserDTO user = annonSvc.getAnnonUser(reqt, resp, session);
             ads = user.genPendAds();

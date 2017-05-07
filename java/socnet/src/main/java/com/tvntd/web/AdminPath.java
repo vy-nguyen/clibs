@@ -81,7 +81,7 @@ public class AdminPath
             s_log.info("No profile " + user);
             return null;
         }
-        LoginResponse resp = new LoginResponse(profile, reqt, session);
+        LoginResponse resp = new LoginResponse(profile, reqt, session, false);
         ApiPath.fillLoginResponse(resp, profile);
         return resp;
     }

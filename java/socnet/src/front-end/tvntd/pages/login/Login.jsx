@@ -161,6 +161,10 @@ class LoginForm extends React.Component
         this._submitLogin  = this._submitLogin.bind(this);
         this._emailLogin   = this._emailLogin.bind(this);
         this._loginByEmail = this._loginByEmail.bind(this);
+
+        this.state = {
+            emailSent: 0
+        };
     }
 
     componentWillMount() {
@@ -182,15 +186,43 @@ class LoginForm extends React.Component
     }
 
     _onAuthChange(data) {
-        let form = $('#login-form');
+        let form = $('#login-form'), retry = this.state.emailSent;
         form.find('input').prop('disabled', false);
 
+        if (data.authCode === "failure") {
+            ErrorStore.triggerError("login-err", data.authError);
+            return;
+        }
+        if (data.authCode === "reg-email-sent") {
+            let hdr, style, text;
+            
+            if (retry < 8) {
+                hdr   = "Notification";
+                style = "alert alert-success";
+                text  = [
+                    "We sent login link to your email:",
+                    this.refs.email != null ? this.refs.email.value : "",
+                    "Please check the spam folder if you don't receive it."
+                ];
+            } else {
+                hdr   = "Warning";
+                style = "alert alert-warning";
+                text  = [
+                    "You requested to send email too many times.",
+                    "We may take action to disable this account"
+                ];
+            }
+            ErrorStore.reportMesg("login-err", hdr, style, text);
+            this.setState({
+                emailSent: retry + 1
+            });
+            return;
+        };
         this._clearRefs();
         if (data.authError == null) {
             Actions.startup("/api/user");
             History.pushState(null, "/");
         }
-        console.log(data);
     }
 
     _clearRefs() {
@@ -222,12 +254,10 @@ class LoginForm extends React.Component
 
     _emailLogin() {
         let email = this.refs.email.value;
-        console.log(email);
         if (_.isEmpty(email) || validateEmail(email) == false) {
             ErrorStore.reportErrMesg("login-err", "Please enter valid email");
             this.refs.email.value = "";
         } else {
-            console.log("Send email login request");
             Actions.loginEmail({
                 email   : email,
                 password: null,
@@ -237,6 +267,25 @@ class LoginForm extends React.Component
     }
 
     _loginByEmail() {
+        let emailBtn = null, sent = this.state.emailSent,
+            btnText = <Mesg text="Email Login Link"/>;
+
+        if (sent > 0) {
+            btnText = (
+                <span>
+                    <Mesg text="Email Login Link Again"/> ({sent} retries)
+                </span>
+            );
+        }
+        if (sent < 10) {
+            emailBtn = (
+                <footer>
+                    <button className="btn btn-primary" onClick={this._emailLogin}>
+                        {btnText}
+                    </button>
+                </footer>
+            );
+        }
         return (
             <div className="well no-padding">
                 <div id="smart-form-register" className="smart-form client-form">
@@ -252,16 +301,12 @@ class LoginForm extends React.Component
                                     placeholder={Lang.translate("Your email address")}
                                     onFocus={this._onFocus}/>
                                 <b className="tooltip tooltip-bottom-right">
-                                    <Mesg text="We will send login info to your email"/>
+                                    <Mesg text="We will send login link to your email"/>
                                 </b>
                             </label>
                         </section>
                     </fieldset>
-                    <footer>
-                        <button className="btn btn-primary" onClick={this._emailLogin}>
-                            <Mesg text="Email Login Link"/>
-                        </button>
-                    </footer>
+                    {emailBtn}
                 </div>
             </div>
         );

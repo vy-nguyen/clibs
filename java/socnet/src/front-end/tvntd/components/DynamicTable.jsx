@@ -346,7 +346,6 @@ class DynamicTable extends React.Component
             }
             change[row.rowId] = row;
         }
-        console.log("selected " + val);
     }
 
     _addNewRows(data, rowEdit) {

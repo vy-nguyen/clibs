@@ -54,7 +54,7 @@ public class LoginResponse extends GenericResponse
     }
 
     public LoginResponse(ProfileDTO profile,
-            HttpServletRequest reqt, HttpSession session)
+            HttpServletRequest reqt, HttpSession session, boolean annon)
     {
         super(GenericResponse.USER_HOME, null, null);
 
@@ -66,7 +66,9 @@ public class LoginResponse extends GenericResponse
             csrfToken = token.getToken();
             csrfHeader = token.getHeaderName();
         }
-        annonUser = (AnnonUserDTO) session.getAttribute("annon-user");
+        if (annon == true) {
+            annonUser = (AnnonUserDTO) session.getAttribute("annon-user");
+        }
     }
 
     /**

@@ -215,9 +215,6 @@ class AuthorTagMgr {
 
     updatePrivateTags(tagRanks, artRanks) {
         console.log("Update private tags");
-        console.log(tagRanks);
-        console.log(artRanks);
-        console.log(this);
     }
 
     removeAuthorTag(tag) {

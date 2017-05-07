@@ -186,7 +186,6 @@ class UserProfile extends React.Component
         if (self == null) {
             return null;
         }
-        console.log(self);
         return (
             <div className="content">
                 <ProfileCover/>

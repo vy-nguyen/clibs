@@ -7,6 +7,7 @@
 import _        from 'lodash';
 import Reflux   from 'reflux';
 
+import History      from 'vntd-shared/utils/History.jsx';
 import ErrorStore   from 'vntd-shared/stores/ErrorStore.jsx';
 import Actions      from 'vntd-root/actions/Actions.jsx';
 
@@ -235,8 +236,6 @@ let UserStore = Reflux.createStore({
     },
 
     onLoginEmailCompleted: function(response) {
-        console.log("email login");
-        console.log(response);
         this._changedData(response);
     },
 
@@ -306,8 +305,6 @@ let UserStore = Reflux.createStore({
     },
 
     _changedDataFailure: function(xhdr, text, error) {
-        console.log("Post action UserStore failed");
-        console.log(xhdr);
         this._changedData({
             type   : "failure",
             error  : ErrorStore.hasError(),
@@ -329,6 +326,8 @@ let UserStore = Reflux.createStore({
     },
 
     _changedData: function(resp) {
+        let startPage = null;
+
         if (resp != null) {
             this.data.authCode  = resp.type;
             this.data.authMesg  = resp.message;
@@ -342,12 +341,14 @@ let UserStore = Reflux.createStore({
                 this.data.userActive = self;
                 this.data.userMap[self.userUuid] = self;
                 localStorage.setItem("authToken", resp.authToken);
+                startPage = self.startPage;
             }
             if (resp.message == "") {
                 this.data.authMesg = resp.error;
             }
         }
-        this.trigger(this.data);
+        this.trigger(this.data, startPage);
+            // History.pushState(null, "/user");
     },
 
     _addFromJson: function(items) {

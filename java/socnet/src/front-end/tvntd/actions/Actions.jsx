@@ -120,7 +120,7 @@ function postRestCall(formData, url, json, cbObj, authReq, id, context) {
         cbObj.completed(resp, context);
 
     }).fail(function(resp, text, error) {
-        console.log("failed");
+        console.log("REST call failed");
         console.log(error);
 
         resp.cbContext = context;
@@ -222,8 +222,6 @@ Actions.login.listen(function(loginData, formData) {
 });
 
 Actions.loginEmail.listen(function(loginData) {
-    console.log("login api ");
-    console.log(loginData);
     postRestCall(loginData, "/login/email", true, this);
 });
 
@@ -316,8 +314,6 @@ Actions.publicPostAds.listen(function(data) {
 });
 
 Actions.getPublishAds.listen(function(data) {
-    console.log("Request ad uuids");
-    console.log(data);
     postRestCall(data, "/public/get-ads", true, this, false, "getPublishAds");
 });
 
@@ -387,7 +383,6 @@ Actions.getPublicJson.listen(function(url) {
  * Admin actions.
  */
 Actions.listUsers.listen(function() {
-    console.log("Request admin get users");
     getJSON("/admin/list-users", this, true, "listUsers");
 });
 

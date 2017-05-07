@@ -25,11 +25,11 @@ class ErrorResp {
     }
 
     getContext() {
-        return this.resp.cbContext;
+        return this.resp != null ? this.resp.cbContext : null;
     }
 
     getErrorCode() {
-        return this.resp.status;
+        return this.resp != null ? this.resp.status : "0";
     }
 
     getErrorCodeText() {
@@ -44,12 +44,17 @@ class ErrorResp {
         return this.userHelp;
     }
 
+    getFormatStyle() {
+        return this.messageStyle != null ? this.messageStyle : "alert alert-danger";
+    }
+
     hasError() {
         return (this.error != null);
     }
 
     clearError() {
         this.error = null;
+        this.messageStyle = null;
     }
 
     updateUserText(userText, userHelp) {
@@ -60,6 +65,13 @@ class ErrorResp {
                 this.error = this.userText;
             }
         }
+    }
+
+    updateMessage(header, style, message) {
+        this.resp = null;
+        this.errorCodeText = header;
+        this.messageStyle  = style;
+        this.userText = this.error = message;
     }
 
     updateError(resp, userText, userHelp) {
@@ -119,6 +131,19 @@ let ErrorStore = Reflux.createStore({
         return this.data.userReport;
     },
 
+    /**
+     * Trigger the error when we know the error object.
+     */
+    triggerError: function(id, err) {
+        if (id == null || err == null) {
+            return;
+        }
+        err.errorId   = id;
+        this.data[id] = err;
+        this.trigger(this.data, err);
+        return err;
+    },
+
     reportErrMesg: function(id, text, helpText) {
         if (id == null) {
             return;
@@ -129,6 +154,23 @@ let ErrorStore = Reflux.createStore({
             err = this.data[id];
         }
         err.updateUserText(text, helpText);
+        this.trigger(this.data, err);
+        return err;
+    },
+
+    /**
+     * Report message to hidden Error dialog matching with the id.
+     */
+    reportMesg: function(id, header, style, mesg) {
+        if (id == null) {
+            return;
+        }
+        let err = this.data[id];
+        if (err == null) {
+            this.data[id] = new ErrorResp(id, null, mesg, null);
+            err = this.data[id];
+        }
+        err.updateMessage(header, style, mesg);
         this.trigger(this.data, err);
         return err;
     },

@@ -97,8 +97,6 @@ class FeatureAds extends React.Component
     }
 
     _onSelected(entry, val) {
-        console.log("select entry " + entry.index + " val " + val);
-        console.log(val);
         this.setState({
             currentTag: val
         });

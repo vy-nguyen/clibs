@@ -374,10 +374,8 @@ class RegisterForm extends React.Component
         let form = $('#smart-form-register'),
             authErr = data.authError;
 
-        console.log("Result ");
-        console.log(data);
         form.find('input').prop('disabled', false);
-        switch(data.authCode) {
+        switch (data.authCode) {
         case "reg-done":
             ErrorStore.reportErrMesg("reg-ok", authError.userText);
             break;
@@ -415,7 +413,6 @@ class RegisterForm extends React.Component
             break;
 
         default:
-            console.log(data);
             ErrorStore.reportErrMesg("reg-error", data.authMesg);
         }
         this._resetRefs();

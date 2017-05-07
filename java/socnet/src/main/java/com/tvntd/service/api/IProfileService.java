@@ -81,6 +81,7 @@ public interface IProfileService
         private ObjStore objStore;
 
         private String role;
+        private String startPage;
         private Long roleMask;
 
         private ArticleDTO             pendPost;
@@ -580,6 +581,20 @@ public interface IProfileService
          */
         public String getRole() {
             return role;
+        }
+
+        /**
+         * @return the startPage
+         */
+        public String getStartPage() {
+            return startPage;
+        }
+
+        /**
+         * @param startPage the startPage to set
+         */
+        public void setStartPage(String startPage) {
+            this.startPage = startPage;
         }
 
         /**

@@ -140,8 +140,8 @@ public class IndexPath
                     Authentication auth =
                         emailAuthentication(user, vtoken.getToken(), authorities);
 
-                    urlAuthenticationSuccessHandler
-                        .setupLoginSession(user, session, request, response, auth);
+                    urlAuthenticationSuccessHandler.setupLoginSession(user,
+                            "profile", session, request, response, auth);
 
                     response.sendRedirect("/");
                 }

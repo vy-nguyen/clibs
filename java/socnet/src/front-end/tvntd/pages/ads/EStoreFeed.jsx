@@ -62,7 +62,6 @@ class StoreFeed extends React.Component
     }
 
     _updateState(data, post, status) {
-        console.log("Update ads store");
         console.log(data);
     }
 

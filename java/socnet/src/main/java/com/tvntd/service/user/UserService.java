@@ -28,6 +28,8 @@ package com.tvntd.service.user;
 
 import java.util.Arrays;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
 
 import javax.transaction.Transactional;
 
@@ -39,6 +41,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.tvntd.error.EmailExistsException;
+import com.tvntd.exports.LibModule;
 import com.tvntd.forms.RegisterForm;
 import com.tvntd.dao.PasswordResetTokenRepository;
 import com.tvntd.dao.RoleRepository;
@@ -116,7 +119,10 @@ public class UserService implements IUserService
         mesg.setSubject(s_loginMail);
         mesg.setText(s_loginLink + "\n" + link);
         mesg.setFrom(env.getProperty("support.email"));
-        mailSender.send(mesg);
+
+        ExecutorService exec = LibModule.getExecutorService();
+        exec.submit(new SendEmailTask(mesg));
+        // mailSender.send(mesg);
     }
 
     @Override
@@ -218,5 +224,20 @@ public class UserService implements IUserService
             return true;
         }
         return false;
+    }
+
+    class SendEmailTask implements Callable<Boolean>
+    {
+        protected SimpleMailMessage mesg;
+
+        SendEmailTask(SimpleMailMessage email) {
+            mesg = email;
+        }
+
+        public Boolean call()
+        {
+            mailSender.send(mesg);
+            return true;
+        }
     }
 }

@@ -53,10 +53,10 @@ public class StartupResponse
     private ArtTagList             publicTags;
 
     public StartupResponse(ProfileDTO profile,
-            HttpServletRequest reqt, HttpSession session)
+            HttpServletRequest reqt, HttpSession session, boolean annon)
     {
         initLanguages();
-        userDTO = new LoginResponse(profile, reqt, session);
+        userDTO = new LoginResponse(profile, reqt, session, annon);
     }
 
     protected void initLanguages()

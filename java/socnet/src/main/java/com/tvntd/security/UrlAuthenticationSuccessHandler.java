@@ -71,25 +71,25 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
-            HttpServletResponse response, Authentication authentication)
+            HttpServletResponse response, Authentication auth)
         throws IOException
     {
         HttpSession session = request.getSession(false);
         if (session != null) {
-            User user = userRepository.findByEmail(authentication.getName());
+            User user = userRepository.findByEmail(auth.getName());
             if (user == null) {
                 return;
             }
-            setupLoginSession(user, session, request, response, authentication);
+            setupLoginSession(user, null, session, request, response, auth);
         }
-        handle(request, response, authentication);
+        handle(request, response, auth);
         clearAuthenticationAttributes(request);
     }
 
     /**
      * Setup login session after successful authentication.
      */
-    public void setupLoginSession(User user,
+    public void setupLoginSession(User user, String startPage,
             HttpSession session, HttpServletRequest request,
             HttpServletResponse response, Authentication auth)
     {
@@ -98,6 +98,7 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
 
         ProfileDTO profile = profileSvc.getProfile(user);
         if (profile != null) {
+            profile.setStartPage(startPage);
             session.setAttribute("profile", profile);
             user.setLastLogin(new Date());
             userRepository.save(user);

@@ -35,7 +35,7 @@
   </span>
   <div id="tvntd-root"></div>
   <!-- <script async src="//cdn.tinymce.com/4/tinymce.min.js"></script> -->
-  <script async src="/rs/js/tinymce/tinymce.min.js"></script>
+  <script src="/rs/js/tinymce/tinymce.min.js"></script>
   <script src="/rs/client/tvntd-vendor-bundle.js"></script>
   <script src="/rs/client/tvntd-bundle.js"></script>
 </body>

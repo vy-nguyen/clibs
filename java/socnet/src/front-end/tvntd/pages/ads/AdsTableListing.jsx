@@ -27,7 +27,6 @@ class AdsTableListing extends React.Component
     }
 
     _readAds(ads) {
-        console.log("Click read ads");
         if (this._isActive(ads)) {
             this.setState({
                 currAds: null

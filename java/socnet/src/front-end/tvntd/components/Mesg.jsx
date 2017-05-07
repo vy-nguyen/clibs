@@ -3,7 +3,9 @@
  */
 'use strict';
 
+import _       from 'lodash';
 import React   from 'react-mod';
+
 import LanguageStore from 'vntd-root/stores/LanguageStore.jsx';
 
 class Mesg extends React.Component
@@ -32,7 +34,17 @@ class Mesg extends React.Component
     }
 
     render() {
-        return <span>{this.state.phrases[this.props.text] || this.props.text}</span>
+        let text = this.props.text, trans = this.state.phrases;
+
+        if (text.constructor !== Array) {
+            return <span>{trans[text] || text}</span>;
+        }
+        let out = [];
+        _.forEach(text, function(t) {
+            out.push(<span key={_.uniqueId('mesg-')}>{trans[t] || t}</span>);
+            out.push(<br/>);
+        });
+        return <div>{out}</div>
     }
 }
 

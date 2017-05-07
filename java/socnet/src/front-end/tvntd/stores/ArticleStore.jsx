@@ -82,8 +82,6 @@ let AdsStore = Reflux.createStore({
     },
 
     onPublicPostAdsCompleted: function(res) {
-        console.log("Publish ads");
-        console.log(res);
         this.store.onPublishItemCompleted(res, this);
     },
 
@@ -96,8 +94,6 @@ let AdsStore = Reflux.createStore({
     },
 
     onGetPublishAdsCompleted: function(data) {
-        console.log("Get published ads");
-        console.log(data);
         this.store.onGetPublishItemCompleted(data, 'ads', this);
     },
 

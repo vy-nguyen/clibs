@@ -151,13 +151,11 @@ let ArticleTagStore = Reflux.createStore({
     addToPublicTag: function(tagName, tagKind, uuid) {
         let tag = this.data.pubTagIndex[tagName];
         if (tag != null) {
-            console.log("add to public tag " + tag);
             if (tag.tagKind === tagKind) {
                 console.log("same tag kind " + tagKind);
             }
             tag.articleRank.push(uuid);
         }
-        console.log(tag);
     },
 
     updatePublicTags: function(tagRanks, tagMgr) {

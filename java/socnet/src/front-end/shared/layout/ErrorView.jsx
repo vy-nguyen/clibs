@@ -58,8 +58,7 @@ class ErrorView extends React.Component
     }
 
     render() {
-        let error = this.state.error,
-            codeText, userText, userHelp;
+        let error = this.state.error, style, errCode, codeText, userText, userHelp;
 
         if (error == null) {
             return null;
@@ -69,33 +68,42 @@ class ErrorView extends React.Component
             if (this.props.mesg === true) {
                 return this._errorMesg(userText);
             }
-            userText = <p><Mesg text="Reason"/>: {userText}</p>;
+            userText = <Mesg text={userText}/>;
         }
         userHelp = error.getUserHelp();
         if (userHelp != null) {
-            userHelp = <p>{userHelp}</p>;
+            userHelp = <Mesg text={userHelp}/>;
         }
+        style    = this.props.className;
         codeText = error.getErrorCodeText();
+
         if (codeText != null) {
-            codeText = (
-                <span>
-                    <Mesg text="Status"/> {error.getErrorCode()}: {codeText}
-                </span>
-            );
+            errCode = error.getErrorCode();
+            if (errCode === "0") {
+                style    = error.getFormatStyle();
+                codeText = <Mesg text={codeText}/>;
+            } else {
+                codeText = (
+                    <span>
+                        <Mesg text="Status"/> {errCode}: {codeText}
+                    </span>
+                );
+            }
         } else {
             codeText = <span>Error</span>
         }
         return (
-            <div className={this.props.className}>
+            <div className={style}>
                 <div className="page-header">
-                    <button type="button" aria-label="close" className="close"
-                        onClick={this._onCloseError}>
+                    <button type="button" aria-label="close"
+                        className="close" onClick={this._onCloseError}>
                         <i className="fa fa-times"/>
                     </button>
                     {codeText}
                 </div>
                 <div className="message-text">
                     <i>{userHelp}</i>
+                    <br/>
                     <strong>{userText}</strong>
                 </div>
                 <div className="row">
