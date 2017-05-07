@@ -9,6 +9,7 @@ import React  from 'react-mod';
 import {Link} from 'react-router';
 import {Dropdown, MenuItem} from 'react-bootstrap';
 
+import History            from 'vntd-shared/utils/History.jsx';
 import UserStore          from 'vntd-shared/stores/UserStore.jsx';
 import NavigationStore    from 'vntd-shared/stores/NavigationStore.jsx';
 import ToggleMenu         from 'vntd-shared/layout/ToggleMenu.jsx';
@@ -183,12 +184,18 @@ class Header extends React.Component
         }
     }
 
-    _updateState(data) {
+    _updateState(data, startPage) {
         if (this.state.login === false && UserStore.isLogin()) {
             this.setState({
                 login: true,
                 searchText: LanguageStore.translate("Search")
             });
+        }
+        let self = UserStore.getSelf();
+        console.log("header listen " + self.startPage);
+        if (self.loadStart == null) {
+            self.loadStart = true;
+            History.pushState(null, "/user/profile");
         }
     }
 

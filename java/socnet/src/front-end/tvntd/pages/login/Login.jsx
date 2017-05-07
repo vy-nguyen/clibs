@@ -185,7 +185,7 @@ class LoginForm extends React.Component
         }
     }
 
-    _onAuthChange(data) {
+    _onAuthChange(data, startPage) {
         let form = $('#login-form'), retry = this.state.emailSent;
         form.find('input').prop('disabled', false);
 
@@ -221,7 +221,12 @@ class LoginForm extends React.Component
         this._clearRefs();
         if (data.authError == null) {
             Actions.startup("/api/user");
-            History.pushState(null, "/");
+        }
+        console.log("Auth change " + startPage);
+
+        if (startPage != null) {
+            console.log("Goto " + startPage);
+            History.pushState(null, "/user/profile");
         }
     }
 
