@@ -199,10 +199,10 @@ public class ProfileService implements IProfileService
     }
 
     @Override
-    public void createProfile(User user)
+    public void createProfile(User user, String uuid)
     {
         if (profileRepo.findByUserId(user.getId()) == null) {
-            Profile profile = Profile.createProfile(user);
+            Profile profile = Profile.createProfile(user, uuid);
 
             profileRepo.save(profile);
             authorSvc.saveAuthor(Author.fromUserUuid(profile.getUserUuid()));

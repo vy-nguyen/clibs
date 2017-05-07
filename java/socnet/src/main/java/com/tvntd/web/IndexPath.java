@@ -46,7 +46,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.WebAttributes;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.web
+    .authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -66,6 +67,8 @@ import com.tvntd.security.AuthenticationHandler;
 import com.tvntd.security.ServiceUser;
 import com.tvntd.security.UrlAuthenticationSuccessHandler;
 import com.tvntd.service.api.GenericResponse;
+import com.tvntd.service.api.IAnnonService;
+import com.tvntd.service.api.IAnnonService.AnnonUserDTO;
 import com.tvntd.service.api.IUserService;
 
 @Controller
@@ -82,6 +85,9 @@ public class IndexPath
 
     @Autowired
     protected IUserService userService;
+
+    @Autowired
+    protected IAnnonService annonSvc;
 
     @Autowired
     protected PrivilegeRepository privilegeRepo;
@@ -168,14 +174,17 @@ public class IndexPath
             consumes = "application/json", method = RequestMethod.POST)
     @JsonIgnoreProperties(ignoreUnknown = true)
     @ResponseBody
-    public GenericResponse login(Locale locale, @RequestBody ProfileForm login,
+    public GenericResponse login(Locale locale,
+            @RequestBody ProfileForm login, HttpSession session,
             HttpServletRequest request, HttpServletResponse response)
     {
         String email = login.getEmail();
         RegisterForm register = new RegisterForm(email);
         String token = register.getPassword0();
         try {
-            User user = userService.registerNewUserAccount(register);
+            AnnonUserDTO anon = annonSvc.getAnnonUser(request, response, session);
+            User user = userService.registerNewUserAccount(register, anon.getUserUuid());
+
             if (user == null) {
                 s_log.info("Failed to create user " + email);
                 return null;

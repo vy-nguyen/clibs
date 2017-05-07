@@ -31,6 +31,7 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -52,6 +53,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.tvntd.service.api.GenericRequest.VerifyToken;
 import com.tvntd.service.api.GenericResponse;
+import com.tvntd.service.api.IAnnonService;
+import com.tvntd.service.api.IAnnonService.AnnonUserDTO;
 import com.tvntd.service.api.IUserService;
 import com.tvntd.service.api.LoginResponse;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -66,6 +69,9 @@ public class RegisterPath
 {
     static private Logger s_log = LoggerFactory.getLogger(RegisterPath.class);
 
+    @Autowired
+    protected IAnnonService annonSvc;
+    
     @Autowired
     private IUserService userService;
 
@@ -83,12 +89,14 @@ public class RegisterPath
     @JsonIgnoreProperties(ignoreUnknown = true)
     @ResponseBody
     public GenericResponse
-    register(@Valid @RequestBody RegisterForm reg, Locale locale,
+    register(@Valid @RequestBody RegisterForm reg,
+            Locale locale, HttpSession session,
             HttpServletRequest request, HttpServletResponse response)
     {
         s_log.debug("Register for " + reg.getEmail());
         try {
-            User user = userService.registerNewUserAccount(reg);
+            AnnonUserDTO annon = annonSvc.getAnnonUser(request, response, session);
+            User user = userService.registerNewUserAccount(reg, annon.getUserUuid());
             RegistrationEvent event = new RegistrationEvent(user, request);
 
             s_log.debug("OK, send email " + event.toString());

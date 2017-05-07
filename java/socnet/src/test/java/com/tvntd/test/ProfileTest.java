@@ -345,7 +345,7 @@ public class ProfileTest
 
         public static Profile createProfile(User user)
         {
-            Profile profile = Profile.createProfile(user);
+            Profile profile = Profile.createProfile(user, null);
 
             profile.setConnectList(new LinkedList<String>());
             profile.setFollowList(new LinkedList<String>());

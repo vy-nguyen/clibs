@@ -34,7 +34,9 @@ import com.tvntd.models.VerificationToken;
 
 public interface IUserService
 {
-    User registerNewUserAccount(RegisterForm reg) throws EmailExistsException;
+    User registerNewUserAccount(RegisterForm reg, String uuid)
+        throws EmailExistsException;
+
     User getUser(String verificationToken);
 
     void saveRegisteredUser(User user);

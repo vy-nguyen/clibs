@@ -66,7 +66,7 @@ public interface IProfileService
     public void saveProfile(ProfileDTO profile);
     public void saveProfiles(List<ProfileDTO> profiles);
     public void saveUserImgUrl(ProfileDTO profile, ObjectId oid);
-    public void createProfile(User user);
+    public void createProfile(User user, String uuid);
     public void deleteProfile(Long userId);
     public void deleteProfile(String userUuid);
 

@@ -89,13 +89,11 @@ public class UserService implements IUserService
     // API
 
     @Override
-    public User registerNewUserAccount(RegisterForm account)
+    public User registerNewUserAccount(RegisterForm account, String uuid)
         throws EmailExistsException
     {
         if (emailExist(account.getEmail())) {
-            throw new EmailExistsException(
-                    "There is an account with that email adress: "
-                    + account.getEmail());
+            throw new EmailExistsException(account.getEmail() + " already exists");
         }
         User user = new User();
 
@@ -106,7 +104,7 @@ public class UserService implements IUserService
 
         user.setRoles(Arrays.asList(roleRepository.findByName(Role.AuthUser)));
         user = repository.save(user);
-        profileSvc.createProfile(user);        
+        profileSvc.createProfile(user, uuid);
         return user;
     }
 

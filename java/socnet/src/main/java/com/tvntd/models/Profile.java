@@ -139,21 +139,22 @@ public class Profile
         return prof;
     }
 
-    public static Profile createProfile(User user)
+    public static Profile createProfile(User user, String uuid)
     {
         Profile prof = new Profile();
       
         prof.locale = "VI";
         prof.userId = user.getId();
-        prof.email = user.getEmail();
+        prof.email  = user.getEmail();
         prof.firstName = user.getFirstName();
         prof.lastName = user.getLastName();
-        prof.userUuid = UUID.randomUUID().toString();
+        prof.userUuid = uuid == null ? UUID.randomUUID().toString() : uuid;
 
         prof.coverImg0 = null;
         prof.coverImg1 = null;
         prof.coverImg2 = null;
         prof.userImgUrl = null;
+
         return prof;
     }
 
