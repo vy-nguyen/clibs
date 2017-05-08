@@ -7,6 +7,7 @@
 import Reflux        from 'reflux';
 import UserStore     from 'vntd-shared/stores/UserStore.jsx';
 import ErrorStore    from 'vntd-shared/stores/ErrorStore.jsx';
+//import ErrorView     from 'vntd-shared/layout/ErrorView.jsx';
 
 const completedFn = {
     children: ['completed']

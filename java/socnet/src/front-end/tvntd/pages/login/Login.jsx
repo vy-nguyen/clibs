@@ -219,15 +219,7 @@ class LoginForm extends React.Component
             return;
         };
         this._clearRefs();
-        if (data.authError == null) {
-            Actions.startup("/api/user");
-        }
         console.log("Auth change " + startPage);
-
-        if (startPage != null) {
-            console.log("Goto " + startPage);
-            History.pushState(null, "/user/profile");
-        }
     }
 
     _clearRefs() {

@@ -58,6 +58,7 @@ class Editor extends React.Component
 
     render() {
         // customize css rules here
+        const cmd = 'formatBlock', font = 'fontSize', jsref = "javascript:;";
         var buttonSpacing = {marginRight: 2},
             toolbarStyle = {marginBottom: 3};
 
@@ -69,45 +70,54 @@ class Editor extends React.Component
             <div>
                 <div style={toolbarStyle}>
                     <div className="btn-group" style={buttonSpacing}>
-                        <button 
-                            className="btn btn-default btn-xs dropdown-toggle" 
+                        <button className="btn btn-default btn-xs dropdown-toggle" 
                             type="button" data-toggle="dropdown" 
                             aria-expanded="true">
-                            <i className="fa fa-paragraph"></i> <i className="fa fa-caret-down"></i>
+                            <i className="fa fa-paragraph"></i>
+                            <i className="fa fa-caret-down"></i>
                         </button>
                         <ul className="dropdown-menu" role="menu">
                             <li>
-                                <a href="javascript:;" onClick={this.execCommand.bind(this, 'formatBlock', 'P')}>
+                                <a href={jsref}
+                                    onClick={this.execCommand.bind(this, cmd, 'P')}>
                                     Paragraph
                                 </a>
-                                <a href="javascript:;"
-                                    onClick={this.execCommand.bind(this, 'formatBlock', 'BLOCKQUOTE')}>
+                                <a href={jsref}
+                                    onClick={this.execCommand.bind(this, cmd, 'BLOCKQUOTE')}>
                                     Block Quote
                                 </a>
-                                <a href="javascript:;" onClick={this.execCommand.bind(this, 'formatBlock', 'H1')}>
+                                <a href={jsref}
+                                    onClick={this.execCommand.bind(this, cmd, 'H1')}>
                                     Header 1
                                 </a>
-                                <a href="javascript:;" onClick={this.execCommand.bind(this, 'formatBlock', 'H2')}>
+                                <a href={jsref}
+                                    onClick={this.execCommand.bind(this, cmd, 'H2')}>
                                     Header 2
                                 </a>
-                                <a href="javascript:;" onClick={this.execCommand.bind(this, 'formatBlock', 'H3')}>
+                                <a href={jsref}
+                                    onClick={this.execCommand.bind(this, cmd, 'H3')}>
                                     Header 3
                                 </a>
-                                <a href="javascript:;" onClick={this.execCommand.bind(this, 'formatBlock', 'H4')}>
+                                <a href={jsref}
+                                    onClick={this.execCommand.bind(this, cmd, 'H4')}>
                                     Header 4
                                 </a>
-                                <a href="javascript:;" onClick={this.execCommand.bind(this, 'formatBlock', 'H5')}>
+                                <a href={jsref} 
+                                    onClick={this.execCommand.bind(this, cmd, 'H5')}>
                                     Header 5
                                 </a>
-                                <a href="javascript:;" onClick={this.execCommand.bind(this, 'formatBlock', 'H6')}>
+                                <a href={jsref} 
+                                    onClick={this.execCommand.bind(this, cmd, 'H6')}>
                                     Header 6
                                 </a>
                             </li>
                         </ul>
                     </div>
 
-                    <div className="btn-group btn-group-xs" role="group" style={buttonSpacing}>
-                        <button type="button" className="btn btn-default" onClick={this.execCommand.bind(this, 'bold')}>
+                    <div className="btn-group btn-group-xs"
+                        role="group" style={buttonSpacing}>
+                        <button type="button" className="btn btn-default"
+                            onClick={this.execCommand.bind(this, 'bold')}>
                             <i className="fa fa-bold"></i>
                         </button>
                         <button type="button" className="btn btn-default"
@@ -128,41 +138,52 @@ class Editor extends React.Component
                                 className="btn btn-default btn-xs dropdown-toggle" 
                                 type="button" data-toggle="dropdown" 
                                 aria-expanded="true">
-                                <i className="fa fa-text-height"></i> <i className="fa fa-caret-down"></i>
+                                <i className="fa fa-text-height"></i>
+                                <i className="fa fa-caret-down"></i>
                             </button>
                             <ul className="dropdown-menu" role="menu">
                                 <li>
-                                    <a href="javascript:;" onClick={this.execCommand.bind(this, 'fontSize', 1)}>1</a>
+                                    <a href={jsref}
+                                        onClick={this.execCommand.bind(this, font, 1)}>1</a>
                                 </li>
                                 <li>
-                                    <a href="javascript:;" onClick={this.execCommand.bind(this, 'fontSize', 2)}>2</a>
+                                    <a href={jsref} 
+                                        onClick={this.execCommand.bind(this, font, 2)}>2</a>
                                 </li>
                                 <li>
-                                    <a href="javascript:;" onClick={this.execCommand.bind(this, 'fontSize', 3)}>3</a>
+                                    <a href={jsref} 
+                                        onClick={this.execCommand.bind(this, font, 3)}>3</a>
                                 </li>
                                 <li>
-                                    <a href="javascript:;" onClick={this.execCommand.bind(this, 'fontSize', 4)}>4</a>
+                                    <a href={jsref} 
+                                        onClick={this.execCommand.bind(this, font, 4)}>4</a>
                                 </li>
                                 <li>
-                                    <a href="javascript:;" onClick={this.execCommand.bind(this, 'fontSize', 5)}>5</a>
+                                    <a href={jsref} 
+                                        onClick={this.execCommand.bind(this, font, 5)}>5</a>
                                 </li>
                                 <li>
-                                    <a href="javascript:;" onClick={this.execCommand.bind(this, 'fontSize', 6)}>6</a>
+                                    <a href={jsref} 
+                                        onClick={this.execCommand.bind(this, font, 6)}>6</a>
                                 </li>
                                 <li>
-                                    <a href="javascript:;" onClick={this.execCommand.bind(this, 'fontSize', 7)}>7</a>
+                                    <a href={jsref} 
+                                        onClick={this.execCommand.bind(this, font, 7)}>7</a>
                                 </li>
                             </ul>
                         </div>
                     </div>
 
-                    <div className="btn-group btn-group-xs" role="group" style={buttonSpacing}>
+                    <div className="btn-group btn-group-xs"
+                        role="group" style={buttonSpacing}>
                         <button type="button"
-                            className="btn btn-default" onClick={this.execCommand.bind(this, 'insertOrderedList')}>
+                            className="btn btn-default" 
+                            onClick={this.execCommand.bind(this, 'insertOrderedList')}>
                             <i className="fa fa-list-ol"></i>
                         </button>
                         <button type="button"
-                            className="btn btn-default" onClick={this.execCommand.bind(this, 'insertUnorderedList')}>
+                            className="btn btn-default" 
+                            onClick={this.execCommand.bind(this, 'insertUnorderedList')}>
                             <i className="fa fa-list-ul"></i>
                         </button>
                     </div>
@@ -170,26 +191,31 @@ class Editor extends React.Component
                     <div className="btn-group" style={buttonSpacing}>
                         <button className="btn btn-default btn-xs dropdown-toggle"
                             type="button" data-toggle="dropdown" aria-expanded="false">
-                            <i className="fa fa-align-left"></i> <i className="fa fa-caret-down"></i>
+                            <i className="fa fa-align-left"></i>
+                            <i className="fa fa-caret-down"></i>
                         </button>
                         <ul className="dropdown-menu" role="menu">
                             <li>
-                                <a href="javascript:;" onClick={this.execCommand.bind(this, 'justifyLeft')}>
+                                <a href={jsref}
+                                    onClick={this.execCommand.bind(this, 'justifyLeft')}>
                                     Align Left
                                 </a>
                             </li>
                             <li>
-                                <a href="javascript:;" onClick={this.execCommand.bind(this, 'justifyRight')}>
+                                <a href={jsref} 
+                                    onClick={this.execCommand.bind(this, 'justifyRight')}>
                                     Align Right
                                 </a>
                             </li>
                             <li>
-                                <a href="javascript:;" onClick={this.execCommand.bind(this, 'justifyCenter')}>
+                                <a href={jsref} 
+                                    onClick={this.execCommand.bind(this, 'justifyCenter')}>
                                     Align Center
                                 </a>
                             </li>
                             <li>
-                                <a href="javascript:;" onClick={this.execCommand.bind(this, 'justifyFull')}>
+                                <a href={jsref}
+                                    onClick={this.execCommand.bind(this, 'justifyFull')}>
                                     Align Justify
                                 </a>
                             </li>
@@ -197,7 +223,8 @@ class Editor extends React.Component
                     </div>
 
                     <button type="button"
-                        className="btn btn-default btn-xs" onClick={this.execCommand.bind(this, 'removeFormat')}>
+                        className="btn btn-default btn-xs" 
+                        onClick={this.execCommand.bind(this, 'removeFormat')}>
                         <i className="fa fa-eraser"></i>
                     </button>
                 </div>
@@ -233,7 +260,8 @@ class EditorEntry extends React.Component
     }
 
     _onChange(e) {
-        let content = NestableStore.storeItemIndex(this.props.entry.id, e.target.getContent(), true);
+        let content = NestableStore
+            .storeItemIndex(this.props.entry.id, e.target.getContent(), true);
         if (this.props.onChange != null) {
             this.props.onChange(content);
         }
@@ -294,7 +322,9 @@ class EditorEntry extends React.Component
     }
 
     render() {
-        const entry = this.props.entry;
+        const entry = this.props.entry,
+            tfull = 'undo|bold italic|styleselect|image|alignleft aligncenter alignright',
+            tshrt = 'undo|bold italic|styleselect|alignleft aligncenter alignright';
         let toolbar, config, menubar = false;
 
         if (entry.menu === "short") {
@@ -304,21 +334,22 @@ class EditorEntry extends React.Component
         }
         if (entry.uploadUrl != null) {
             config = {
-                toolbar: 'undo | bold italic | styleselect | image | alignleft aligncenter alignright',
+                toolbar: tfull,
                 automatic_uploads    : true,
                 images_upload_handler: this._uploadCall,
                 file_picker_callback : this._filePicker,
             };
         } else {
             config = {
-                toolbar: 'undo | bold italic | styleselect | alignleft aligncenter alignright'
+                toolbar: tshrt
             };
         }
         config.plugins = 'autoresize autolink link image lists print preview';
         config.menubar = menubar;
 
         return (
-            <TinyMCE id={entry.id} content={entry.inpDefVal} config={config} onChange={this._onChange}/>
+            <TinyMCE id={entry.id} content={entry.inpDefVal}
+                config={config} onChange={this._onChange}/>
         );
     }
 }

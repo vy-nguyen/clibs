@@ -233,10 +233,12 @@ let UserStore = Reflux.createStore({
     onLoginCompleted: function(response, status) {
         this._changedData(response);
         this.data.loginReady = true;
+        Actions.startup("/api/user");
     },
 
     onLoginEmailCompleted: function(response) {
         this._changedData(response);
+        Actions.startup("/api/user");
     },
 
     onLoginFailed: function(xhdr, text, error) {

@@ -192,10 +192,14 @@ class Header extends React.Component
             });
         }
         let self = UserStore.getSelf();
-        console.log("header listen " + self.startPage);
         if (self.loadStart == null) {
             self.loadStart = true;
-            History.pushState(null, "/user/profile");
+            console.log(">>> do start page " + self.startPage);
+            if (self.startPage == null) {
+                History.pushState(null, "/");
+            } else {
+                History.pushState(null, "/user/profile");
+            }
         }
     }
 
