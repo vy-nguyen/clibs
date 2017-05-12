@@ -6,6 +6,7 @@
 
 import React            from 'react-mod';
 import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
+import Mesg             from 'vntd-root/components/Mesg.jsx';
 
 class StateButton extends React.Component
 {
@@ -53,42 +54,52 @@ class StateButton extends React.Component
         return (
             <button className={className}
                 onClick={this._btnClick} disabled={btnState.isDisabled()}>
-                {btnState.getText()}
+                <Mesg text={btnState.getText()}/>
             </button>
         );
     }
 
     static saveButtonFsm(success, needSave, done, fail, saving) {
+        return StateButton.saveButtonFsmFull(
+            { text: success,    format: "btn btn-primary" },
+            { text: needSave,   format: "btn btn-danger"  },
+            { text: done,       format: "btn btn-success" },
+            { text: fail,       format: "btn btn-danger"  },
+            { text: saving,     format: "btn btn-info"    }
+        );
+    }
+
+    static saveButtonFsmFull(success, needSave, done, fail, saving) {
         return {
             success: {
-                text     : success,
+                text     : success.text,
                 disabled : true,
                 nextState: "saving",
-                className: "btn btn-primary"
+                className: success.format
             },
             failure: {
-                text     : fail != null ? fail : "Saved Failed",
+                text     : fail.text || "Saved Failed",
                 disabled : false,
                 nextState: "success",
-                className: "btn btn-danger"
+                className: fail.format
             },
             needSave: {
-                text     : needSave,
+                text     : needSave.text,
                 disabled : false,
                 nextState: "needSave",
-                className: "btn btn-danger"
+                className: needSave.format
             },
             saving: {
-                text     : saving != null ? saving : "Saving...",
+                text     : saving.text || "Saving...",
                 disabled : true,
                 nextState: "saved",
-                className: "btn btn-info"
+                className: saving.format
             },
             saved: {
-                text     : done,
+                text     : done.text,
                 disabled : true,
                 nextState: "success",
-                className: "btn btn-success"
+                className: done.format
             }
         };
     }

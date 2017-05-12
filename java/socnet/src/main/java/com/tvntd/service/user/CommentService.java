@@ -104,15 +104,11 @@ public class CommentService implements ICommentService
     @Override
     public void saveComment(CommentDTO comment)
     {
-        System.out.println("Save comment art uuid " + comment.getArticleUuid() +
-                ", user " + comment.getUserUuid());
         commentRepo.save(comment.fetchComment());
     }
 
     @Override
     public Comment saveComment(Comment comment) {
-        System.out.println("Save comment art uuid " + comment.getArticleUuid() +
-                ", user " + comment.getUserUuid());
         return  commentRepo.save(comment);
     }
 

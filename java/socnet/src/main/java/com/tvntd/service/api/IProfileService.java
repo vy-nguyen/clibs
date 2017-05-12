@@ -26,6 +26,7 @@
  */
 package com.tvntd.service.api;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -83,6 +84,11 @@ public interface IProfileService
         private String role;
         private String startPage;
         private Long roleMask;
+        private String firstName;
+        private String lastName;
+        private String homeTown;
+        private String state;
+        private String country;
 
         private ArticleDTO             pendPost;
         private LinkedList<ArticleDTO> publishedArts;
@@ -106,6 +112,7 @@ public interface IProfileService
 
             role = Role.User;
             roleMask = Constants.Role_User;
+            convertUTF();
         }
 
         public ProfileDTO(Profile prof, User user)
@@ -127,6 +134,34 @@ public interface IProfileService
                 }
             }
             role = sb.toString();
+            convertUTF();
+        }
+
+        protected void convertUTF()
+        {
+            try {
+                byte[] str = profile.getFirstName();
+                if (str != null) {
+                    firstName = new String(str, "UTF-8");
+                }
+                str = profile.getLastName();
+                if (str != null) {
+                    lastName = new String(str, "UTF-8");
+                }
+                str = profile.getHomeTown();
+                if (str != null) {
+                    homeTown = new String(str, "UTF-8");
+                }
+                str = profile.getState();
+                if (str != null) {
+                    state = new String(str, "UTF-8");
+                }
+                str = profile.getCountry();
+                if (str != null) {
+                    country = new String(str, "UTF-8");
+                }
+            } catch(UnsupportedEncodingException e) {
+            }
         }
 
         public boolean isAdmin() {
@@ -441,30 +476,81 @@ public interface IProfileService
          * @return the firstName
          */
         public String getFirstName() {
-            return profile.getFirstName();
+            return firstName;
         }
 
         /**
          * @param firstName the firstName to set
          */
         public void setFirstName(String firstName) {
-            profile.setFirstName(firstName);
+            try {
+                this.firstName = firstName;
+                profile.setFirstName(firstName.getBytes("UTF-8"));
+            } catch(UnsupportedEncodingException e) {}
         }
 
         /**
          * @return the lastName
          */
         public String getLastName() {
-            return profile.getLastName();
+            return lastName;
         }
 
         /**
          * @param lastName the lastName to set
          */
         public void setLastName(String lastName) {
-            profile.setLastName(lastName);
+            try {
+                this.lastName = lastName;
+                profile.setLastName(lastName.getBytes("UTF-8"));
+            } catch(UnsupportedEncodingException e) {}
         }
 
+        public String getHomeTown() {
+            return homeTown;
+        }
+
+        public void setHomeTown(String homeTown) {
+            try {
+                this.homeTown = homeTown;
+                profile.setHomeTown(homeTown.getBytes("UTF-8"));
+            } catch(UnsupportedEncodingException e) {}
+        }
+
+        /**
+         * @return the state
+         */
+        public String getState() {
+            return state;
+        }
+
+        /**
+         * @param state the state to set
+         */
+        public void setState(String state) {
+            try {
+                this.state = state;
+                profile.setState(state.getBytes("UTF-8"));
+            } catch(UnsupportedEncodingException e) {}
+        }
+
+        /**
+         * @return the country
+         */
+        public String getCountry() {
+            return country;
+        }
+
+        /**
+         * @param country the country to set
+         */
+        public void setCountry(String country) {
+            try {
+                this.country = country;
+                profile.setCountry(country.getBytes("UTF-8"));
+            } catch(UnsupportedEncodingException e) {}
+        }
+ 
         /**
          * @return the userStatus
          */
@@ -604,7 +690,7 @@ public interface IProfileService
             return roleMask;
         }
 
-        /**
+       /**
          * @return the pendAds
          */
         public AdsPostDTO getPendAds() {

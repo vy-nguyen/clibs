@@ -41,6 +41,14 @@ class User {
     isFollower() {
         return this.connectState === "follower";
     }
+
+    updateProfile(self) {
+        this.firstName = self.firstName;
+        this.lastName  = self.lastName;
+        this.homeTown  = self.homeTown;
+        this.state     = self.state;
+        this.country   = self.country;
+    }
 }
 
 let UserStore = Reflux.createStore({
@@ -264,6 +272,16 @@ let UserStore = Reflux.createStore({
 
     onVerifyAccountFailed: function(xhdr, text, error) {
         this._changedDataFailure(xhdr, text, error);
+    },
+
+    onUpdateProfileCompleted: function(response) {
+        console.log("Done with update profile");
+        console.log(response);
+        let self = this.data.userSelf;
+        if (self.userUuid === response.userSelf.userUuid) {
+            self.updateProfile(response.userSelf);
+        }
+        this.trigger(this.data, "update-profile");
     },
 
     /* Logout actions. */

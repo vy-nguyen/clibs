@@ -129,7 +129,7 @@ public class IndexPath
     public String 
     loginLink(@PathVariable(value = "email") String email,
             @PathVariable(value = "token") String token,
-            HttpSession session, HttpServletRequest request, HttpServletResponse response)
+            HttpSession session, HttpServletRequest request, HttpServletResponse resp)
     {
         try {
             User user = userService.findUserByEmail(email);
@@ -147,9 +147,9 @@ public class IndexPath
                         emailAuthentication(user, vtoken.getToken(), authorities);
 
                     urlAuthenticationSuccessHandler.setupLoginSession(user,
-                            "profile", session, request, response, auth);
+                            "profile", session, request, resp, auth);
 
-                    response.sendRedirect("/");
+                    resp.sendRedirect("/");
                 }
             }
         } catch(Exception e) {

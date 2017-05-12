@@ -63,6 +63,7 @@ import com.tvntd.forms.TagForm;
 import com.tvntd.forms.TagForm.TagArtRank;
 import com.tvntd.forms.TagForm.TagOrderResponse;
 import com.tvntd.forms.TagForm.TagRank;
+import com.tvntd.forms.UserProfile;
 import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.ObjectId;
 import com.tvntd.models.Article;
@@ -86,6 +87,7 @@ import com.tvntd.service.api.IProductService.ProductDTO;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.ITimeLineService;
+import com.tvntd.service.api.IUserService;
 import com.tvntd.service.api.ImageUploadResp;
 import com.tvntd.service.api.LoginResponse;
 import com.tvntd.service.api.UuidResponse;
@@ -107,6 +109,9 @@ public class UserPath
     static public GenericResponse s_invalidArticle =
         new GenericResponse("Could not retrieve article", "Invalid UUID");
 
+    static public GenericResponse s_badInput =
+        new GenericResponse("Bad input value", "Missing or invalid input values");
+
     @Autowired
     private IArticleService articleSvc;
 
@@ -115,6 +120,9 @@ public class UserPath
 
     @Autowired
     private IProfileService profileSvc;
+
+    @Autowired
+    private IUserService userService;
 
     @Autowired
     private ITimeLineService timeLineSvc;
@@ -791,5 +799,74 @@ public class UserPath
             articleSvc.saveArtRank(artRank);
         }
         return resp;
+    }
+
+    /**
+     */
+    @RequestMapping(value = "/user/update-profile",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    updateProfile(@RequestBody UserProfile form,
+            HttpServletRequest request, HttpSession session)
+    {
+        if (form.cleanInput() == false) {
+            System.out.println("Bad clean input");
+            return s_badInput;
+        }
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
+        String uuid = form.getUserUuid();
+        if (!profile.getUserUuid().equals(uuid)) {
+            s_log.info("Not author " + profile.getUserUuid() + " request " + uuid);
+            return s_noProfile;
+        }
+        boolean save = false, passwdChg = false;
+        String name = form.getFirstName();
+
+        if (name != null) {
+            save = true;
+            profile.setFirstName(name);
+        }
+        name = form.getLastName();
+        if (name != null) {
+            save = true;
+            profile.setLastName(name);
+        }
+        name = form.getHomeTown();
+        if (name != null) {
+            save = true;
+            profile.setHomeTown(name);
+        }
+        name = form.getState();
+        if (name != null) {
+            save = true;
+            profile.setState(name);
+        }
+        name = form.getCountry();
+        if (name != null) {
+            save = true;
+            profile.setCountry(name);
+        }
+        if (save == true) {
+            profileSvc.saveProfile(profile);
+        }
+        name = form.getPassword0();
+        if (name != null) {
+            String verf = form.getPassword1();
+            if (verf == null || !verf.equals(name)) {
+                return s_badInput;
+            }
+            passwdChg = true;
+            userService.changePassword(profile.fetchUserId(), form.getCurPasswd(), name);
+        }
+        LoginResponse res = new LoginResponse(profile, request, session, false);
+        if (passwdChg == true) {
+            res.setMessage("Changed password");
+        }
+        return res;
     }
 }

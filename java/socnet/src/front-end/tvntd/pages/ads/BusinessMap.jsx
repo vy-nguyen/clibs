@@ -21,6 +21,8 @@ class BusinessMap extends React.Component
     }
 
     render() {
+        return null;
+
         let adsRec = this.props.adsRec,
             ads    = adsRec.artObj,
             userUuid = this.props.userUuid;

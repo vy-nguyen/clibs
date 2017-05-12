@@ -386,16 +386,18 @@ public class PublicPath
     publishAds(@RequestBody AdsForm form,
             HttpServletRequest reqt, HttpServletResponse resp, HttpSession session)
     {
-        AdsPostDTO ads;
+        AdsPostDTO ads = null;
         AnnonUserDTO user = null;
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
 
         if (profile == null) {
-            // Annon user can only have 1 ad/cookie.
-            //
             user = annonSvc.getAnnonUser(reqt, resp, session);
-            adsSvc.deleteAnnonAds(user.getUserUuid());
-
+            profile = profileSvc.getProfile(user.getUserUuid());
+            if (profile == null) {
+                // Annon user can only have 1 ad/cookie.
+                //
+                adsSvc.deleteAnnonAds(user.getUserUuid());
+            }
             ads = user.genPendAds();
         } else {
             ads = profile.genPendAds();

@@ -5,12 +5,20 @@
 'use strict';
 
 import React              from 'react-mod';
+import _                  from 'lodash';
 
+import History            from 'vntd-shared/utils/History.jsx';
+import StateButton        from 'vntd-shared/utils/StateButton.jsx';
 import TabPanel           from 'vntd-shared/layout/TabPanel.jsx';
 import UserStore          from 'vntd-shared/stores/UserStore.jsx';
+import ErrorStore         from 'vntd-shared/stores/ErrorStore.jsx';
+import InputStore         from 'vntd-shared/stores/NestableStore.jsx';
+import StateButtonStore   from 'vntd-shared/stores/StateButtonStore.jsx';
 import Panel              from 'vntd-shared/widgets/Panel.jsx';
 import GenericForm        from 'vntd-shared/forms/commons/GenericForm.jsx';
 import Lang               from 'vntd-root/stores/LanguageStore.jsx';
+import Mesg               from 'vntd-root/components/Mesg.jsx';
+import Actions            from 'vntd-root/actions/Actions.jsx';
 import Friends            from './Friends.jsx';
 import Messages           from './Messages.jsx';
 import TaskTimeline       from './TaskTimeline.jsx';
@@ -21,91 +29,56 @@ import UserTags           from './UserTags.jsx';
 class UserInfo extends React.Component
 {
     constructor(props) {
+        let self = UserStore.getSelf();
+
         super(props);
+        this._assignState   = this._assignState.bind(this);
         this._updateState   = this._updateState.bind(this);
         this._onLineStatus  = this._onLineStatus.bind(this);
         this._offLineStatus = this._offLineStatus.bind(this);
         this._saveProfile   = this._saveProfile.bind(this);
         this._cancelSave    = this._cancelSave.bind(this);
+        this._focusInput    = this._focusInput.bind(this);
 
-        this.state = {
-            self: UserStore.getSelf()
-        };
         this._profileMenu = {
             iconFmt  : 'btn-xs btn-success',
-            titleText: Lang.translate('Status'),
+            titleText: 'Status',
             itemFmt  : 'pull-right js-status-update',
             menuItems: [ {
-                itemFmt : 'fa fa-circle txt-color-green',
-                itemText: Lang.translate('Online'),
+                itemFmt    : 'fa fa-circle txt-color-green',
+                itemText   : 'Online',
                 itemHandler: this._onLineStatus
             }, {
-                itemFmt : 'fa fa-circle txt-color-red',
-                itemText: Lang.translate('Offline'),
+                itemFmt    : 'fa fa-circle txt-color-red',
+                itemText   : 'Offline',
                 itemHandler: this._offLineStatus
             } ]
         };
         this._panelData = {
-            icon   : 'fa fa-book',
-            header : Lang.translate('My Basic Information'),
+            icon       : 'fa fa-book',
+            header     : 'My Basic Information',
             headerMenus: [this._profileMenu]
         };
-        this._profileForm = {
-            formFmt: "client-form",
-            hiddenHead: null,
-            hiddenTail: null,
-            formEntries: [ {
-                legend: Lang.translate("About Me"),
-                entries: [ {
-                    labelTxt: Lang.translate("First Name"),
-                    inpName : "firstName",
-                    inpHolder: self.firstName
-                }, {
-                    labelTxt: Lang.translate("Last Name"),
-                    inpName : "lastName",
-                    inpHolder: self.lastName
-                }, {
-                    labelTxt: Lang.translate("Home Town"),
-                    inpName : "homeTown",
-                    inpHolder: Lang.translate("Home Town")
-                }, {
-                    labelTxt: Lang.translate("Country"),
-                    inpName : "country",
-                    inpHolder: Lang.translate("Country")
-                } ]
-            }, {
-                legend: Lang.translate("My interests"),
-                entries: [ {
-                    labelTxt: Lang.translate("Favorite tags"),
-                    inpName : "favTags",
-                    inpHolder: Lang.translate("Your interest tags")
-                } ]
-            }, {
-                legend: Lang.translate("My security preferences"),
-                entries: [ {
-                    labelTxt: "Something here",
-                    inpName : "favTags",
-                    inpHolder: "Something in here"
-                } ]
-            }, {
-                legend: Lang.translate("My work"),
-                entries: [ {
-                    labelTxt: "Something here",
-                    inpName : "favTags",
-                    inpHolder: "Something in here"
-                } ]
-            } ],
-            buttons: [ {
-                btnFmt : "btn btn-lg btn-default",
-                btnText: Lang.translate("Cancel"),
-                onClick: this._cancelSave
-            }, {
-                btnFmt : "btn btn-lg btn-primary",
-                btnText: Lang.translate("Save"),
-                onClick: this._saveProfile
-            } ]
-        };
 
+        this.state      = this._assignState(self);
+        this._submitId  = "prof-submit-id";
+        this._submitBtn = StateButtonStore.createButton(this._submitId, function() {
+            return StateButton.saveButtonFsmFull(
+                { text: "Ok",              format: "btn btn-lg btn-primary" },
+                { text: "Submit Change",   format: "btn btn-lg btn-danger"  },
+                { text: "Changed Profile", format: "btn btn-lg btn-success" },
+                { text: "Update Failed",   format: "btn btn-lg btn-danger"  },
+                { text: "Submitting...",   format: "btn btn-lg btn-info" }
+            );
+        });
+        this._lastNameId   = "prof-lastName";
+        this._firstNameId  = "prof-firstName";
+        this._hometownId   = "prof-hometown";
+        this._stateId      = "prof-state";
+        this._countryId    = "prof-country";
+        this._currPasswdId = "prof-curr-passwd";
+        this._passwordId0  = "prof-password0";
+        this._passwordId1  = "prof-password1";
     }
 
     componentDidMount() {
@@ -119,10 +92,32 @@ class UserInfo extends React.Component
         }
     }
 
-    _updateState(data) {
-        this.setState({
-            self: UserStore.getSelf()
-        });
+    _focusInput(entry) {
+        StateButtonStore.setButtonStateObj(this._submitBtn, "needSave");
+    }
+
+    _assignState(self) {
+        let firstName, lastName  = self.lastName;
+
+        firstName = lastName != null ? self.firstName : null;
+        return {
+            self     : self,
+            lastName : lastName,
+            firstName: firstName,
+            homeTown : self.homeTown,
+            state    : self.state,
+            country  : self.country
+        };
+    }
+
+    _updateState(data, status) {
+        if (status !== "update-profile") {
+            return;
+        }
+        this.setState(this._assignState(this.state.self));
+        InputStore.clearItemIndex(this._currPasswdId);
+        InputStore.clearItemIndex(this._passwordId0);
+        InputStore.clearItemIndex(this._passwordId1);
     }
 
     _onLineStatus() {
@@ -133,12 +128,25 @@ class UserInfo extends React.Component
         console.log("offline status");
     }
 
-    _saveProfile(a, b) {
-        console.log("Save profile");
+    _saveProfile(data, btn, hasError) {
+        if (hasError === true) {
+            return;
+        }
+        Actions.updateProfile({
+            userUuid : this.state.self.userUuid,
+            firstName: data[this._firstNameId],
+            lastName : data[this._lastNameId],
+            homeTown : data[this._hometownId],
+            state    : data[this._stateId],
+            country  : data[this._countryId],
+            curPasswd: data[this._currPasswdId],
+            password0: data[this._passwordId0],
+            password1: data[this._passwordId1]
+        });
     }
 
-    _cancelSave(a, b) {
-        console.log("Cancel Save");
+    _cancelSave(data, btn) {
+        History.pushState(null, "/");
     }
 
     render() {
@@ -146,9 +154,109 @@ class UserInfo extends React.Component
         if (self == null) {
             return null;
         }
+        let defFirst = Lang.translate("Your first name"),
+            defLast  = Lang.translate("Your last name"),
+        profileInp = [ {
+            onFocus  : this._focusInput,
+            labelTxt : "First Name",
+            inpHolder: defFirst,
+            inpDefVal: this.state.firstName,
+            inpName  : this._firstNameId,
+            errorId  : this._firstNameId,
+            errorFlag: false
+        }, {
+            onFocus  : this._focusInput,
+            labelTxt : "Last Name",
+            inpHolder: defLast,
+            inpDefVal: this.state.lastName,
+            inpName  : this._lastNameId,
+            errorId  : this._lastNameId,
+            errorFlag: false
+        }, {
+            onFocus  : this._focusInput,
+            labelTxt : "Home Town",
+            inpName  : this._hometownId,
+            inpDefVal: this.state.self.homeTown,
+            inpHolder: Lang.translate("Home Town")
+        }, {
+            onFocus  : this._focusInput,
+            labelTxt : "State",
+            inpName  : this._stateId,
+            inpDefVal: this.state.self.state,
+            inpHolder: Lang.translate("Home Town")
+        }, {
+            onFocus  : this._focusInput,
+            labelTxt : "Country",
+            inpName  : this._countryId,
+            inpDefVal: this.state.self.country,
+            inpHolder: Lang.translate("Country")
+        } ],
+        securityInp = [ {
+            onFocus  : this._focusInput,
+            labelTxt : "New Password",
+            inpHolder: Lang.translate("Change your password"),
+            inpType  : "password",
+            inpName  : this._passwordId0,
+            errorId  : this._passwordId0,
+            errorFlag: false,
+            inpValidate: function(data, entry) {
+                // Allow empty password for email login.
+                return null;
+            }
+        }, {
+            onFocus  : this._focusInput,
+            labelTxt : "Verify Password",
+            inpHolder: Lang.translate("Verify password changes"),
+            inpType  : "password",
+            inpName  : this._passwordId1,
+            errorId  : this._passwordId1,
+            errorFlag: false,
+            inpValidate: function(data, entry) {
+                if (data[this._passwordId0] !== data[this._passwordId1]) {
+                    return "Miss match passwords";
+                }
+                return null;
+            }.bind(this)
+        } ];
+        if (self.secureAcct === true) {
+            securityInp.push({
+                onFocus  : this._focusInput,
+                labelTxt : "Current Password",
+                inpHolder: Lang.translate("Enter your current password"),
+                inpType  : "password",
+                inpName  : this._currPasswdId,
+                errorId  : this._currPasswdId,
+                errorFlag: false,
+                inpValidate: function(data, entry) {
+                    return null;
+                }
+            });
+        }
+        let profileForm = {
+            formFmt    : "client-form",
+            hiddenHead : null,
+            hiddenTail : null,
+            formEntries: [ {
+                legend : "About Me",
+                entries: profileInp
+            }, {
+                legend : "Security Preferences",
+                entries: securityInp
+            } ],
+            buttons: [ {
+                btnFmt  : "btn btn-lg btn-info",
+                btnText : "Cancel",
+                callOnly: true,
+                onClick :  this._cancelSave
+            }, {
+                btnFmt : "btn btn-lg btn-primary",
+                stateId: this._submitId,
+                onClick: this._saveProfile
+            } ]
+        };
         return (
             <Panel context={this._panelData} className="well no-padding">
-                <GenericForm form={this._profileForm}/>
+                <GenericForm form={profileForm}/>
             </Panel>
         );
     }

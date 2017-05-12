@@ -98,8 +98,12 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
 
         ProfileDTO profile = profileSvc.getProfile(user);
         if (profile != null) {
-            profile.setStartPage(startPage);
+            if (profile.getLastName() == null) {
+                profile.setStartPage(startPage);
+            }
             session.setAttribute("profile", profile);
+            user.setFirstName(profile.getFirstName());
+            user.setLastName(profile.getLastName());
             user.setLastLogin(new Date());
             userRepository.save(user);
             newsFeedSvc.generateNewsFeed(profile, profile.getUserUuid());

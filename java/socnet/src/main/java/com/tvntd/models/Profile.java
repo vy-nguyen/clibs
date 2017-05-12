@@ -26,6 +26,7 @@
  */
 package com.tvntd.models;
 
+import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -55,9 +56,24 @@ public class Profile
     private Long profileItemId;
 
     private String locale;
+
+    @Column(length = 128)
     private String email;
-    private String firstName;
-    private String lastName;
+
+    @Column(length = 64)
+    private byte[] firstName;
+
+    @Column(length = 64)
+    private byte[] lastName;
+
+    @Column(length = 64)
+    private byte[] homeTown;
+
+    @Column(length = 64)
+    private byte[] state;
+
+    @Column(length = 64)
+    private byte[] country;
 
     @Column(length = 64)
     private String coverImg0;
@@ -129,13 +145,16 @@ public class Profile
         Profile prof = new Profile();
 
         prof.userUuid = Constants.PublicUuid;
-        prof.firstName = "Guest";
-        prof.lastName = "Guest";
         prof.connectList = new LinkedList<>();
         prof.followList = new LinkedList<>();
         prof.followerList = new LinkedList<>();
         prof.chainLinks = new LinkedList<>();
         prof.authToken = null;
+        try {
+            prof.firstName = "Guest".getBytes("UTF-8");
+            prof.lastName = "Guest".getBytes("UTF-8");
+        } catch(UnsupportedEncodingException e) {
+        }
         return prof;
     }
 
@@ -146,8 +165,6 @@ public class Profile
         prof.locale = "VI";
         prof.userId = user.getId();
         prof.email  = user.getEmail();
-        prof.firstName = user.getFirstName();
-        prof.lastName = user.getLastName();
         prof.userUuid = uuid == null ? UUID.randomUUID().toString() : uuid;
 
         prof.coverImg0 = null;
@@ -155,6 +172,11 @@ public class Profile
         prof.coverImg2 = null;
         prof.userImgUrl = null;
 
+        try {
+            prof.firstName = user.getFirstName().getBytes("UTF-8");
+            prof.lastName = user.getLastName().getBytes("UTF-8");
+        } catch(UnsupportedEncodingException e) {
+        }
         return prof;
     }
 
@@ -231,29 +253,71 @@ public class Profile
     /**
      * @return the firstName
      */
-    public String getFirstName() {
+    public byte[] getFirstName() {
         return firstName;
     }
 
     /**
      * @param firstName the firstName to set
      */
-    public void setFirstName(String firstName) {
+    public void setFirstName(byte[] firstName) {
         this.firstName = firstName;
     }
 
     /**
      * @return the lastName
      */
-    public String getLastName() {
+    public byte[] getLastName() {
         return lastName;
     }
 
     /**
      * @param lastName the lastName to set
      */
-    public void setLastName(String lastName) {
+    public void setLastName(byte[] lastName) {
         this.lastName = lastName;
+    }
+
+    /**
+     * @return the homeTown
+     */
+    public byte[] getHomeTown() {
+        return homeTown;
+    }
+
+    /**
+     * @param homeTown the homeTown to set
+     */
+    public void setHomeTown(byte[] homeTown) {
+        this.homeTown = homeTown;
+    }
+
+    /**
+     * @return the state
+     */
+    public byte[] getState() {
+        return state;
+    }
+
+    /**
+     * @param state the state to set
+     */
+    public void setState(byte[] state) {
+        this.state = state;
+    }
+
+    /**
+     * @return the country
+     */
+    public byte[] getCountry() {
+        return country;
+    }
+
+    /**
+     * @param country the country to set
+     */
+    public void setCountry(byte[] country) {
+        this.country = country;
     }
 
     /**

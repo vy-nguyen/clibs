@@ -37,6 +37,7 @@ const Actions = Reflux.createActions({
     resendRegister:  completedFailedFn,
     verifyAccount:   completedFailedFn,
     resetPassword:   completedFailedAlwaysFn,
+    updateProfile:   completedFailedFn,
 
     changeUsers:     completedFailedFn,
     saveUserPost:    completedFailedFn,
@@ -105,6 +106,7 @@ function postRestCall(formData, url, json, cbObj, authReq, id, context) {
         data = JSON.stringify(formData);
         content = "application/json; charset=utf-8";
     }
+    console.log("Post request " + url);
     $.ajax({
         type: "POST",
         url : url,
@@ -117,11 +119,13 @@ function postRestCall(formData, url, json, cbObj, authReq, id, context) {
             xhdr.setRequestHeader(header, token);
         }
     }).done(function(resp, text, error) {
+        console.log("REST call ok " + url);
+        console.log(resp);
         resp.cbContext = context;
         cbObj.completed(resp, context);
 
     }).fail(function(resp, text, error) {
-        console.log("REST call failed");
+        console.log("REST call failed " + url);
         console.log(error);
 
         resp.cbContext = context;
@@ -245,6 +249,10 @@ Actions.verifyAccount.listen(function(regData) {
 
 Actions.resetPassword.listen(function(resetData) {
     postRestCall(resetData, "/", true, this);
+});
+
+Actions.updateProfile.listen(function(data) {
+    postRestCall(data, "/user/update-profile", true, this);
 });
 
 Actions.preload.listen(function() {

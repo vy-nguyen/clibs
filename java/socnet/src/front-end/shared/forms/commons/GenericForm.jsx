@@ -12,8 +12,10 @@ import DropzoneComponent from 'react-dropzone-component';
 
 import Mesg              from 'vntd-root/components/Mesg.jsx';
 import {EditorEntry}     from 'vntd-shared/forms/editors/Editor.jsx';
+import StateButton       from 'vntd-shared/utils/StateButton.jsx';
 import ErrorView         from 'vntd-shared/layout/ErrorView.jsx';
 import InputStore        from 'vntd-shared/stores/NestableStore.jsx';
+import ErrorStore        from 'vntd-shared/stores/ErrorStore.jsx';
 
 class SelectWrap extends React.Component
 {
@@ -169,21 +171,40 @@ class InputWrap extends React.Component
 {
     constructor(props) {
         super(props);
-        this._onBlur = this._onBlur.bind(this);
+        this._onBlur  = this._onBlur.bind(this);
+        this._onFocus = this._onFocus.bind(this);
     }
 
-    _onBlur(event) {
+    _onBlur() {
         let val, { entry, onBlur } = this.props;
 
         val = this.refs[entry.inpName].value;
+        if (entry.errorFlag === true) {
+            entry.errorFlag = false;
+            ErrorStore.clearError(entry.errorId);
+        }
         InputStore.storeItemIndex(entry.inpName, val, true);
+
         if (onBlur != null) {
             onBlur(entry, val);
         }
     }
 
+    _onFocus() {
+        let entry = this.props.entry;
+
+        if (entry.errorFlag === true) {
+            entry.errorFlag = false;
+            ErrorStore.clearError(entry.errorId);
+        }
+        if (entry.onFocus != null) {
+            entry.onFocus(entry);
+        }
+    }
+
     render() {
-        let { entry, bind, onBlur, onSelected } = this.props;
+        let { entry, bind, onBlur, onSelected } = this.props,
+            type = entry.inpType != null ? entry.inpType : "text";
 
         if (entry.typeAhead === true) {
             return <TAWrap entry={entry}/>
@@ -216,6 +237,7 @@ class InputWrap extends React.Component
             return (
                 <div className={"input-group " + entry.inpClass}>
                     <input id={entry.inpName} type="text" className="form-control"
+                        onFocus={this._onFocus}
                         onBlur={this._onBlur} ref={entry.inpName}
                         defaultValue={entry.inpDefVal} placeholder={entry.inpHolder}
                     />
@@ -229,8 +251,8 @@ class InputWrap extends React.Component
             );
         }
         return  (
-            <input id={entry.inpName} type="text" className="form-control"
-                onBlur={this._onBlur} ref={entry.inpName}
+            <input id={entry.inpName} type={type} className="form-control"
+                onBlur={this._onBlur} ref={entry.inpName} onFocus={this._onFocus}
                 defaultValue={entry.inpDefVal} placeholder={entry.inpHolder}/>
         );
     }
@@ -363,24 +385,70 @@ class GenericForm extends React.Component
 {
     constructor(props) {
         super(props);
+        this.state = {
+            hasError: false
+        };
     }
 
-    _btnClick(button, event) {
-        let dataRefs = {},
+    componentWillUnmount() {
+        console.log("Umount gen form, clear inputstore");
+    }
+
+    _btnClick(button) {
+        let hasError = false, dataRefs = {},
             entries = this.props.form.formEntries;
 
-        event.preventDefault();
-        _.forEach(entries, function(section) {
-            GenericForm.readContent(section.entries, dataRefs);
+        if (button.callOnly === true) {
+            hasError = button.onClick(dataRefs, button, hasError);
+        } else {
+            _.forEach(entries, function(section) {
+                hasError = GenericForm.readContent(section.entries, dataRefs);
+            });
+        }
+        hasError = button.onClick(dataRefs, button, hasError);
+        this.setState({
+            hasError: hasError || false
         });
-        button.onClick(dataRefs, button);
+    }
+
+    static validateInput(dataRefs, entry) {
+        let out = null;
+
+        if (entry.errorId == null || entry.errorFlag == null) {
+            return false;
+        }
+        if (entry.inpValidate != null) {
+            out = entry.inpValidate(dataRefs, entry);
+
+        } else if (_.isEmpty(dataRefs[entry.inpName])) {
+            out = "This field is required";
+        }
+        if (out != null) {
+            entry.errorFlag = true;
+            ErrorStore.reportErrMesg(entry.errorId, out, null);
+            return true;
+        } else {
+            entry.errorFlag = false;
+        }
+        return false;
     }
 
     static readContent(entries, dataRefs) {
+        let hasError = false;
+
         _.forEach(entries, function(item) {
+            if (InputStore.getItemIndex(item.inpName) == null) {
+                InputStore.storeItemIndex(item.inpName, item.inpDefVal);
+            }
             dataRefs[item.inpName] = InputStore.getItemIndex(item.inpName);
+            item.inpDefVal = dataRefs[item.inpName];
         });
-        return dataRefs;
+        _.forEach(entries, function(item) {
+            if (GenericForm.validateInput(dataRefs, item) === true) {
+                hasError = true;
+            }
+        });
+        return hasError;
     }
 
     static getDjsConfig() {
@@ -403,11 +471,16 @@ class GenericForm extends React.Component
 
         if (form.buttons != null) {
             let buttons = form.buttons.map(function(item, idx) {
+                if (item.stateId != null) {
+                    return (
+                        <StateButton btnId={item.stateId} className={item.btnFmt}
+                            onClick={this._btnClick.bind(this, item)}/>
+                    );
+                }
                 return (
-                    <button key={_.uniqueId('form-btn-')} type={"button"}
-                        className={item.btnFormat}
-                        onClick={this._btnClick.bind(this, item)}>
-                        {item.btnText}
+                    <button key={_.uniqueId('form-btn-')} type="button"
+                        className={item.btnFmt} onClick={this._btnClick.bind(this, item)}>
+                        <Mesg text={item.btnText}/>
                     </button>
                 );
             }.bind(this));
@@ -428,11 +501,13 @@ class GenericForm extends React.Component
                     return <InputBox entry={entry}/>;
                 }
                 return <InputInline entry={entry}/>
-            }.bind(this));
+            }.bind(this)),
+            legend = item.legend != null ?
+                <legend><Mesg text={item.legend}/></legend> : null;
 
             return (
                 <div key={_.uniqueId('form-fields')}>
-                    {item.legend != null ? <legend>{item.legend}</legend> : null}
+                    {legend}
                     <fieldset>
                         {entries}
                     </fieldset>

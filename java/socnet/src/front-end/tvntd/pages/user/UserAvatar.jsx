@@ -78,7 +78,8 @@ class UserAvatar extends React.Component
         if (this.props.data.doFileDrop == true) {
             file_drop = (
                 <DropzoneComponent className="col-sm-3 col-md-3 col-lg-2 profile-pic"
-                    config={componentConfig} eventHandlers={eventHandlers} djsConfig={djsConfig}>
+                    config={componentConfig}
+                    eventHandlers={eventHandlers} djsConfig={djsConfig}>
                     <img src={self.userImgUrl}/>
                 </DropzoneComponent>
             );
@@ -114,18 +115,30 @@ class UserAvatar extends React.Component
                         <div className="col-sm-6">
                             <h1><small><Mesg text="Connections"/></small></h1>
                             <ul className="list-inline friends-list">
-                                <li><img src="/rs/img/avatars/2.png" alt="friend-2"/></li>
-                                <li><img src="/rs/img/avatars/3.png" alt="friend-3"/></li>
-                                <li><img src="/rs/img/avatars/4.png" alt="friend-4"/></li>
-                                <li><img src="/rs/img/avatars/5.png" alt="friend-5"/></li>
-                                <li><img src="/rs/img/avatars/male.png" alt="friend-6"/></li>
+                                <li>
+                                    <img src="/rs/img/avatars/2.png" alt="friend-2"/>
+                                </li>
+                                <li>
+                                    <img src="/rs/img/avatars/3.png" alt="friend-3"/>
+                                </li>
+                                <li>
+                                    <img src="/rs/img/avatars/4.png" alt="friend-4"/>
+                                </li>
+                                <li>
+                                    <img src="/rs/img/avatars/5.png" alt="friend-5"/>
+                                </li>
+                                <li>
+                                    <img src="/rs/img/avatars/male.png" alt="friend-6"/>
+                                </li>
                                 <li><a href-void>420 <Mesg text="more"/></a></li>
                             </ul>
                         </div>
                         <div className="col-sm-6">
                             <h1><small><Mesg text="Recent Visitors"/></small></h1>
                             <ul className="list-inline friends-list">
-                                <li><img src="/rs/img/avatars/male.png" alt="friend-7"/></li>
+                                <li>
+                                    <img src="/rs/img/avatars/male.png" alt="friend-7"/>
+                                </li>
                                 <li>
                                     <img src="/rs/img/avatars/female.png" alt="friend-8"/>
                                 </li>

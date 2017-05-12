@@ -60,7 +60,8 @@ public class UserService implements IUserService
 {
     private static final String s_loginMail = "Your Login Link";
     private static final String s_loginLink =
-        "We created email login account for you, click on the link to login";
+        "We created email login account for you, click on the link to login.\n" +
+        "Note that you may have to click the link twice to get into your account.\n";
 
     @Autowired
     private UserRepository repository;
@@ -207,6 +208,13 @@ public class UserService implements IUserService
     {
         user.setPassword(passwordEncoder.encode(password));
         repository.save(user);
+    }
+
+    @Override
+    public void changePassword(Long userId, String oldPass, String newPass)
+    {
+        System.out.println("Change passwd " + userId + ", old " + oldPass +
+                " new " + newPass);
     }
 
     @Override

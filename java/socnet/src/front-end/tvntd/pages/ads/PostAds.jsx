@@ -154,15 +154,17 @@ class PostAds extends React.Component
     }
 
     _postAdClick() {
+        const formEntries = [
+            "busCat", "busName", "busHour", "busDesc", "busPhone",
+            "busStreet", "busCity", "busState", "busZip", "busWeb",
+            "busEmail"
+        ];
         let ad, helpText, errText = null, errFlags = {}, defAd = this.props.ads;
 
         ad = this._getAdData();
         helpText = Lang.translate("Enter values in highlighted fields");
-        [
-            "busCat", "busName", "busHour", "busDesc", "busPhone",
-            "busStreet", "busCity", "busState", "busZip", "busWeb",
-            "busEmail"
-        ].forEach(function(field) {
+
+        formEntries.forEach(function(field) {
             if (defAd != null && defAd[field] != null && _.isEmpty(ad[field])) {
                 ad[field] = defAd[field];
             }

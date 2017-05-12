@@ -31,13 +31,16 @@ class ProfileCover extends React.Component
         cover_hdr = imgList.map(function(item, index) {
             let id = _.uniqueId('prof-cover-img-');
             if (index == active) {
-                return <li key={id} data-target={'#' + imageId} data-slide-to={index.toString()} className='active'></li>;
+                return <li key={id} data-target={'#' + imageId}
+                            data-slide-to={index.toString()} className='active'></li>;
             }
-            return <li key={id} data-target={'#' + imageId} data-slide-to={index.toString()} className=''></li>;
+            return <li key={id} data-target={'#' + imageId}
+                        data-slide-to={index.toString()} className=''></li>;
         });
         cover_img = imgList.map(function(item, index) {
             return (
-                <div key={_.uniqueId('prof-cover-img-')} className={index == active ? "item active" : "item"}>
+                <div key={_.uniqueId('prof-cover-img-')}
+                    className={index == active ? "item active" : "item"}>
                     <img src={item} alt="Cover Image"/>
                 </div>
             );
@@ -49,7 +52,8 @@ class ProfileCover extends React.Component
             if (self.isInConnection()) {
                 connectFmt = (
                     <button className="btn btn-sm txt-color-white bg-color-pinkDark">
-                        <i className="fa fa-link"/><Mesg text=" Connected "/><i className="fa fa-check"/>
+                        <i className="fa fa-link"/><Mesg text=" Connected "/>
+                        <i className="fa fa-check"/>
                     </button>
                 );
             } else if (self.isInFollowed()) {

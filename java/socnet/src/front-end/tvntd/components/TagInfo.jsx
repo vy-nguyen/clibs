@@ -62,16 +62,16 @@ class TagInfo extends React.Component
                 hiddenHead: null,
                 hiddenTail: null,
                 formEntries: [ {
-                    legend: Lang.translate("Enter new tag"),
+                    legend: "Enter new tag",
                     entries: [ {
                         labelFmt: labelFmt,
-                        labelTxt: Lang.translate("Parent tag"),
+                        labelTxt: "Parent tag",
                         inpName : "parentTag",
                         inputFmt: inputFmt,
                         inpHolder: null
                     }, {
                         labelFmt : labelFmt,
-                        labelTxt : Lang.translate("Kind"),
+                        labelTxt : "Kind",
                         inpName  : "tagKind",
                         inputFmt : inputFmt,
                         inpHolder: "blog",
@@ -79,13 +79,13 @@ class TagInfo extends React.Component
                         selectOpt: tagKinds
                     }, {
                         labelFmt: labelFmt,
-                        labelTxt: Lang.translate("Tag name"),
+                        labelTxt: "Tag name",
                         inpName : "tagName",
                         inputFmt: inputFmt,
                         inpHolder: null
                     }, {
                         labelFmt: labelFmt,
-                        labelTxt: Lang.translate("Tag rank"),
+                        labelTxt: "Tag rank",
                         inpName : "rankScore",
                         inputFmt: inputFmt,
                         inpHolder: null

@@ -196,8 +196,10 @@ class Header extends React.Component
             self.loadStart = true;
             console.log(">>> do start page " + self.startPage);
             if (self.startPage == null) {
+                self.secureAcct = true;
                 History.pushState(null, "/");
             } else {
+                self.secureAcct = false;
                 History.pushState(null, "/user/profile");
             }
         }
