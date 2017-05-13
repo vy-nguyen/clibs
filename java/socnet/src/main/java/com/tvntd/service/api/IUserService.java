@@ -58,5 +58,5 @@ public interface IUserService
 
     void changeUserPassword(User user, String password);
     boolean checkIfValidOldPassword(User user, String password);
-    void changePassword(Long userId, String oldPass, String newPass);
+    String changePassword(Long userId, String oldPass, String newPass);
 }

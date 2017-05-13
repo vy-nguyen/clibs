@@ -114,10 +114,13 @@ class UserInfo extends React.Component
         if (status !== "update-profile") {
             return;
         }
+        console.log(data);
+
         this.setState(this._assignState(this.state.self));
         InputStore.clearItemIndex(this._currPasswdId);
         InputStore.clearItemIndex(this._passwordId0);
         InputStore.clearItemIndex(this._passwordId1);
+        StateButtonStore.setButtonStateObj(this._submitBtn, "saved");
     }
 
     _onLineStatus() {
@@ -143,6 +146,7 @@ class UserInfo extends React.Component
             password0: data[this._passwordId0],
             password1: data[this._passwordId1]
         });
+        StateButtonStore.setButtonStateObj(this._submitBtn, "saving");
     }
 
     _cancelSave(data, btn) {

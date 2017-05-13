@@ -68,6 +68,7 @@ public class LoginResponse extends GenericResponse
         }
         if (annon == true) {
             annonUser = (AnnonUserDTO) session.getAttribute("annon-user");
+            profile.setStartPage((String) session.getAttribute("startPage"));
         }
     }
 

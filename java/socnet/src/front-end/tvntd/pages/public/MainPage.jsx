@@ -15,6 +15,7 @@ import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import AboutUsStore     from 'vntd-root/stores/AboutUsStore.jsx';
 import Lang             from 'vntd-root/stores/LanguageStore.jsx';
 import NewsFeed         from '../news-feed/NewsFeed.jsx';
+import ErrorNotify      from './ErrorNotify.jsx';
 
 class PriceBox extends React.Component
 {
@@ -22,16 +23,21 @@ class PriceBox extends React.Component
         let textList = [];
         _.forOwn(this.props.textList, function(it, idx) {
             textList.push(
-                <li key={_.uniqueId("price-list-")} dangerouslySetInnerHTML={{__html: it}}></li>
+                <li key={_.uniqueId("price-list-")}
+                    dangerouslySetInnerHTML={{__html: it}}></li>
             );
         });
         return (
             <div className="col-xs-12 col-sm-6 col-md-3">
                 <div className="panel panel-success pricing-big">
                     {this.props.headerImg}
-                    <div className="panel-heading" dangerouslySetInnerHTML={{__html: this.props.headerText}}></div>
+                    <div className="panel-heading"
+                        dangerouslySetInnerHTML={{__html: this.props.headerText}}>
+                    </div>
                     <div className="panel-body no-padding text-align-center">
-                        <div className="the-price" dangerouslySetInnerHTML={{__html: this.props.headerDetail}}></div>
+                        <div className="the-price"
+                            dangerouslySetInnerHTML={{__html: this.props.headerDetail}}>
+                        </div>
                         <div className="price-features">
                             <ul className="list-unstyled text-left">
                                 {textList}
@@ -60,7 +66,8 @@ class TeamBio extends React.Component
                         <h3>{this.props.name}</h3>
                         <p className="subtitle"><strong>{this.props.title}</strong></p>
                         <div className="avatar">
-                            <img src={this.props.avatar} alt="" className="img-responsive"/>
+                            <img src={this.props.avatar}
+                                alt="" className="img-responsive"/>
                         </div>
                         <p>{this.props.teamDesc}</p>
                     </div>
@@ -104,7 +111,9 @@ class FeatureSection extends React.Component
                                         <h1><strong>{this.props.title}</strong></h1>
                                     </div>
                                     <br/>
-                                    <p style={{fontSize: "140%"}}>{this.props.titleDetail}</p>
+                                    <p style={{fontSize: "140%"}}>
+                                        {this.props.titleDetail}
+                                    </p>
                                     <br/>
                                     <br/>
                                 </div>
@@ -130,12 +139,16 @@ class TimeLineCenter extends React.Component
             entries.push(
                 <article className={"timeline-entry" + event.entryFormat}>
                     <div className="timeline-entry-inner">
-                        <time className="timeline-time" datetime={event.datetime}>{event.timeMarker}</time>
+                        <time className="timeline-time" datetime={event.datetime}>
+                            {event.timeMarker}
+                        </time>
                         <div className={"timeline-icon " + event.iconFormat}>
                             <i className={event.icon}></i>
                         </div>
                         <div className="timeline-label">
-                            <h2><a href="#">{event.eventTitle}</a><span>{event.eventBrief}</span></h2>
+                            <h2><a href="#">{event.eventTitle}</a>
+                                <span>{event.eventBrief}</span>
+                            </h2>
                             {event.eventText}
                         </div>
                     </div>
@@ -261,7 +274,8 @@ class AboutUs extends React.Component
         });
         if (screen != null) {
             screenBox = (
-                <FeatureSection title={this.state.screen.title} titleDetail={this.state.screen.titleDetail}>
+                <FeatureSection title={this.state.screen.title}
+                    titleDetail={this.state.screen.titleDetail}>
                     <Gallery imageList={this.state.screen.images}/>
                 </FeatureSection>
             );
@@ -270,7 +284,9 @@ class AboutUs extends React.Component
         }
         return (
             <div id="content">
-                <FeatureSection title={welcome.title} titleDetail={welcome.titleDetail} format="bg-gray">
+                <ErrorNotify errorId="main-error"/>
+                <FeatureSection title={welcome.title}
+                    titleDetail={welcome.titleDetail} format="bg-gray">
                     <div className="panel-footer text-align-center">
                         <ModalHtml className="btn btn-primary btn-block"
                             modalTitle={Lang.translate("About This Project")}
@@ -282,13 +298,15 @@ class AboutUs extends React.Component
                     {goalBoxes}
                 </FeatureSection>
 
-                <FeatureSection title={features.title} titleDetail={features.titleDetail} format="bg-gray">
+                <FeatureSection title={features.title}
+                    titleDetail={features.titleDetail} format="bg-gray">
                     {featureBoxes}
                 </FeatureSection>
 
                 {screenBox}
 
-                <FeatureSection title={this.state.team.title} titleDetail={this.state.team.titleDetail} format="bg-gray">
+                <FeatureSection title={this.state.team.title}
+                    titleDetail={this.state.team.titleDetail} format="bg-gray">
                     {teamBoxes}
                 </FeatureSection>
 
@@ -298,7 +316,8 @@ class AboutUs extends React.Component
 
                 <section className="home-section text-center">
                     <div className="container">
-                        <Link to="/register/form" style={{fontSize: "250%"}} className="btn btn-primary">
+                        <Link to="/register/form" style={{fontSize: "250%"}}
+                            className="btn btn-primary">
                             {this.state.register.text}
                         </Link>
                     </div>

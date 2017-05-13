@@ -824,7 +824,7 @@ public class UserPath
             s_log.info("Not author " + profile.getUserUuid() + " request " + uuid);
             return s_noProfile;
         }
-        boolean save = false, passwdChg = false;
+        boolean save = false;
         String name = form.getFirstName();
 
         if (name != null) {
@@ -854,18 +854,19 @@ public class UserPath
         if (save == true) {
             profileSvc.saveProfile(profile);
         }
+        LoginResponse res = new LoginResponse(profile, request, session, false);
         name = form.getPassword0();
         if (name != null) {
             String verf = form.getPassword1();
             if (verf == null || !verf.equals(name)) {
-                return s_badInput;
+                res.setMessage("Password verification failed");
+            } else {
+                String mesg = userService.changePassword(
+                        profile.fetchUserId(), form.getCurPasswd(), name);
+                res.setMessage(mesg);
             }
-            passwdChg = true;
-            userService.changePassword(profile.fetchUserId(), form.getCurPasswd(), name);
-        }
-        LoginResponse res = new LoginResponse(profile, request, session, false);
-        if (passwdChg == true) {
-            res.setMessage("Changed password");
+        } else {
+            res.setMessage("ok");
         }
         return res;
     }

@@ -9,7 +9,6 @@ import React  from 'react-mod';
 import {Link} from 'react-router';
 import {Dropdown, MenuItem} from 'react-bootstrap';
 
-import History            from 'vntd-shared/utils/History.jsx';
 import UserStore          from 'vntd-shared/stores/UserStore.jsx';
 import NavigationStore    from 'vntd-shared/stores/NavigationStore.jsx';
 import ToggleMenu         from 'vntd-shared/layout/ToggleMenu.jsx';
@@ -19,6 +18,7 @@ import AboutUsStore       from 'vntd-root/stores/AboutUsStore.jsx';
 import LanguageStore      from 'vntd-root/stores/LanguageStore.jsx';
 import LangMenu           from 'vntd-root/components/LangMenu.jsx';
 import Mesg               from 'vntd-root/components/Mesg.jsx';
+import Startup            from 'vntd-root/pages/login/Startup.jsx';
 import LoginRegDropDown   from './LoginRegDropDown.jsx';
 
 class HeaderBtn extends React.Component
@@ -187,22 +187,11 @@ class Header extends React.Component
     _updateState(data, startPage) {
         if (this.state.login === false && UserStore.isLogin()) {
             this.setState({
-                login: true,
+                login     : true,
                 searchText: LanguageStore.translate("Search")
             });
         }
-        let self = UserStore.getSelf();
-        if (self.loadStart == null) {
-            self.loadStart = true;
-            console.log(">>> do start page " + self.startPage);
-            if (self.startPage == null) {
-                self.secureAcct = true;
-                History.pushState(null, "/");
-            } else {
-                self.secureAcct = false;
-                History.pushState(null, "/user/profile");
-            }
-        }
+        Startup.mainStartup();
     }
 
     _updateLang(data) {

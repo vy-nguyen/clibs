@@ -13,7 +13,6 @@ import ModalButton       from 'vntd-shared/layout/ModalButton.jsx';
 import InputStore        from 'vntd-shared/stores/NestableStore.jsx';
 import Lang              from 'vntd-root/stores/LanguageStore.jsx';
 import Mesg              from 'vntd-root/components/Mesg.jsx';
-import { ModalChoice }   from 'vntd-shared/forms/commons/ModalConfirm.jsx';
 
 import {
     InputWrap, renderHtmlInput

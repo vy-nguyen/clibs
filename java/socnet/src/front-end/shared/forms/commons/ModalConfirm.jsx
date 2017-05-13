@@ -25,7 +25,7 @@ let modalStyle = {
     }
 };
 
-const dialogStyle = {
+let dialogStyle = {
     content: {
         top        : '50%',
         left       : '50%',
@@ -88,8 +88,14 @@ class ModalChoice extends React.Component
 
     render() {
         const fmt = "btn btn-primary pull-right";
-        let mesg = this.props.closeWarning != null ? this.props.closeWarning :
-            "You may loose unsaved data, ok to close?";
+        let mesg = this.props.closeWarning != null ?
+            this.props.closeWarning :
+            "You may loose unsaved data, ok to close?",
+
+        cancelBtn = this.props.cancelFn == null ? null :
+            <button className={fmt} onClick={this._cancelClick}>
+                <Mesg text="Cancel"/>
+            </button>;
 
         return (
             <Modal ref="modal" style={dialogStyle} isOpen={this.state.modalIsOpen}
@@ -104,9 +110,7 @@ class ModalChoice extends React.Component
                         <button className={fmt} onClick={this._okClick}>
                             <Mesg text="OK"/> 
                         </button>
-                        <button className={fmt} onClick={this._cancelClick}>
-                            <Mesg text="Cancel"/>
-                        </button>
+                        {cancelBtn}
                     </div>
                 </div>
             </Modal>
@@ -189,9 +193,9 @@ class ModalConfirm extends React.Component
                                 className="close" onClick={this.closeModal}>
                                 <i className="fa fa-times"/>
                             </button>
-                            <h3 className="modal-title">
+                            <h2 className="modal-title">
                                 <Mesg text={this.props.modalTitle}/>
-                            </h3>
+                            </h2>
                         </div>
                         {choice}
                         {this.props.children}
@@ -202,5 +206,5 @@ class ModalConfirm extends React.Component
     }
 };
 
-export { ModalConfirm, ModalChoice }
+export { ModalConfirm, ModalChoice, modalStyle, dialogStyle }
 export default ModalConfirm;

@@ -32,6 +32,10 @@ class ErrorResp {
         return this.resp != null ? this.resp.status : "0";
     }
 
+    getErrorHeader() {
+        return this.errorCodeText;
+    }
+
     getErrorCodeText() {
         return this.errorCodeText;
     }

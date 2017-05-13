@@ -159,7 +159,8 @@ public class UserService implements IUserService
     }
 
     @Override
-    public void createVerificationTokenForUser(User user, String token, boolean noexpiry)
+    public void
+    createVerificationTokenForUser(User user, String token, boolean noexpiry)
     {
         final VerificationToken myToken = new VerificationToken(token, user, noexpiry);
         tokenRepository.save(myToken);
@@ -211,10 +212,36 @@ public class UserService implements IUserService
     }
 
     @Override
-    public void changePassword(Long userId, String oldPass, String newPass)
+    public String changePassword(Long userId, String oldPass, String newPass)
     {
         System.out.println("Change passwd " + userId + ", old " + oldPass +
                 " new " + newPass);
+        String encrypt;
+        User user = repository.findById(userId);
+
+        if (user == null) {
+            return "User not found";
+        }
+        if (oldPass != null) {
+            encrypt = passwordEncoder.encode(oldPass);
+            // if (!encrypt.equals(user.getPassword())) {
+                System.out.println("Missmatch " + encrypt + " on file " +
+                        user.getPassword());
+                // return "Old password doesn't match";
+            // }
+        }
+        VerificationToken vtoken = getVerificationToken(user, false);
+        if (vtoken == null) {
+            return "Could not find the authentication token";
+        }
+        encrypt = passwordEncoder.encode(newPass);
+        System.out.println("New pass encrypt " + encrypt);
+        vtoken.setToken(encrypt);
+        user.setPassword(encrypt);
+
+        repository.save(user);
+        tokenRepository.save(vtoken);
+        return "Changed password";
     }
 
     @Override

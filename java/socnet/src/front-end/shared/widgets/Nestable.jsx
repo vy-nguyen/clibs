@@ -6,7 +6,6 @@
 import _             from 'lodash';
 import React         from 'react-mod';
 import ReactDOM      from 'react-dom';
-// import {findDOMNode} from 'react-dom';
 
 import NestableStore    from 'vntd-shared/stores/NestableStore.jsx';
 import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
@@ -180,13 +179,15 @@ class NestableItem extends React.Component
         let removeBtn = null;
         if (item.canRemove === true) {
             removeBtn = (
-                <button className='btn btn-danger btn-xs' onClick={this._rmItem.bind(this, elm)}>Remove x</button>
+                <button className='btn btn-danger btn-xs'
+                    onClick={this._rmItem.bind(this, elm)}>Remove x</button>
             );
         }
         let addSubBtn = null;
         if (item.itemSub === true) {
             addSubBtn = (
-                <button className='btn btn-primary btn-xs' onClick={this._addItem}>Add +</button>
+                <button className='btn btn-primary btn-xs'
+                    onClick={this._addItem}>Add +</button>
             );
         }
         buttons = (
@@ -197,7 +198,8 @@ class NestableItem extends React.Component
             </span>
         );
         output.push(
-            <li key={_.uniqueId('nest-item-')} className={"dd-item " + item.itemFmt} data-id={item.itemId}>
+            <li key={_.uniqueId('nest-item-')}
+                className={"dd-item " + item.itemFmt} data-id={item.itemId}>
                 <div className='dd-handle dd3-handle'></div>
                 <div className={item.contentFmt}>
                     {item.itemContent}
@@ -230,7 +232,8 @@ class NestableSelect extends React.Component
         this._applyChangedItem = this._applyChangedItem.bind(this);
 
         this.state = this._initState(props, false);
-        this.saveBtn = StateButtonStore.createButton('save-tag-' + props.id, this._createSaveBtn);
+        this.saveBtn = StateButtonStore
+            .createButton('save-tag-' + props.id, this._createSaveBtn);
     }
 
     _createSaveBtn() {
@@ -300,7 +303,8 @@ class NestableSelect extends React.Component
             let subItems = [];
 
             _.forEach(item.children, function(child) {
-                NestableSelect._indexTree(child, nestItem, indexTree, subItems, ++subOrder);
+                NestableSelect._indexTree(child, nestItem,
+                                          indexTree, subItems, ++subOrder);
             });
             nestItem.setChildren(subItems);
         }
@@ -476,15 +480,18 @@ class NestableSelect extends React.Component
         }
         let saveBtnId = this.saveBtn.getBtnId();
         let renderItems = items.map(function(it) {
-            return <NestableItem item={it} key={_.uniqueId('nest-item-')} onAdd={this._addTag} onRm={this._rmTag}/>
+            return <NestableItem item={it} key={_.uniqueId('nest-item-')}
+                        onAdd={this._addTag} onRm={this._rmTag}/>
         }.bind(this));
 
         return (
             <div>
                 <div className='row'>
                     <div className='btn-group' role='group'>
-                        <button type='button' className='btn btn-danger' onClick={this._cancelItems}>Cancel</button>
-                        <StateButton btnId={saveBtnId} onClick={this._saveItems.bind(this, saveBtnId)}/>
+                        <button type='button' className='btn btn-danger'
+                            onClick={this._cancelItems}>Cancel</button>
+                        <StateButton btnId={saveBtnId} 
+                            onClick={this._saveItems.bind(this, saveBtnId)}/>
                     </div>
                 </div>
                 <div className='row'>
