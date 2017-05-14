@@ -5,95 +5,93 @@
     },
     "goals": {
         "title": "Mục Đích của Dự Án",
-        "titleDetail": "Tạo niềm tin giữa mọi người bằng quyền lợi liên kết.  Tạo môi trường minh bạch bằng kỹ thuật điện toán để nhiều người có lòng tin cùng cộng tác.  Tạo phương tiện để những ai quan tâm đến Việt Nam có khả năng đóng góp công sức của mình và được ghi nhận trung thực.  Lập định chế chịu trách nhiệm với luật pháp Hoa Kỳ để biến dự án này trở thành một phần của động lực lớn mang Tự Do, Dân Chủ đến với Việt Nam.",
+        "titleDetail": "Dùng kỹ thuật tạo môi trường tin cậy, minh bạch, bảo mật kết nối nhu cầu của nhiều người với quyền lợi của mỗi người để xây dựng niềm tin giữa mọi nguời Việt toàn cầu.",
         "panes": [ {
             "header"  : "<h1 class='panel-title'>Kết Nối</h1>",
-            "headerHL": "<h3>Xây Dựng Thành Niềm Tin<h3>",
+            "headerHL": "<h3>Xây Dựng Niềm Tin<h3>",
             "bodyText": [
-                "<span><i class='fa fa-chevron-right'></i> Mạng xã hội gần giống như Facebook.</span>",
-                "<span><i class='fa fa-chevron-right'></i> Nơi sinh hoạt của người Việt yêu <strong>Tự Do</strong>.</span>",
-                "<span><i class='fa fa-chevron-right'></i> <strong>Làm chủ</strong> 100% kỹ thuật, vốn.</span>",
-                "<span><i class='fa fa-chevron-right'></i> Chú trọng vào người/nhóm bạn quan tâm.</span>",
-                "<span><i class='fa fa-chevron-right'></i> Kết nối để xây dựng <strong>niềm tin</strong>.</span>",
-                "<span><i class='fa fa-chevron-right'></i> Kết nối để góp phần <strong>thực hiện</strong> những việc mình quan tâm.</span>"
+                "<span><i class='fa fa-caret-right'></i> Mạng xã hội đơn giản mô phỏng theo Facebook.</span>",
+                "<span><i class='fa fa-caret-right'></i> <strong>Làm chủ</strong> 100% kỹ thuật, vốn.</span>",
+                "<span><i class='fa fa-caret-right'></i> Chọn lọc xuất bản thư viện kiến thức, truyền thông, giáo ddục, thương mại.</span>",
+                "<span><i class='fa fa-caret-right'></i> Tham gia để cùng tạo điều lệ sinh hoạt riêng phù hợp với cộng đồng người Việt yêu chuộng <strong>Tự Do</strong>.</span>",
+                "<span><i class='fa fa-caret-right'></i> Kết nối để góp phần <strong>thực hiện</strong> những vấn đề mà mình quan tâm.</span>"
             ],
-            "footer"  : "Tìm Hiểu Chi Tiết",
-
-            "modalTitle": "Kết Nối",
+            "footer"    : "Tìm Hiểu Chi Tiết",
+            "modalTitle": "Nhu Cầu Kết Nối",
             "modalUrl"  : "/public/get-html/ketnoi"
         }, {
             "header"  : "<h1 class='panel-title'>Tài Trợ</h1>",
-            "headerHL": "<h3>Niềm Tin Tạo Thành Tựu</h3>",
+            "headerHL": "<h3>Kết Tạo Thành Tựu</h3>",
             "bodyText": [
-                "<span><i class='fa fa-chevron-right'></i> <strong>100% tiền quảng cáo</strong> dùng tài trợ phong trào Dân Chủ tại Việt Nam.</span>",
-                "<span><i class='fa fa-chevron-right'></i> Là nơi tin cậy cho người Việt tìm đến quảng cáo/rao vặt.</span>",
-                "<span><i class='fa fa-chevron-right'></i> 1.000 chủ tiệm nhỏ, người lao động cần quảng cáo/rao vặt, sẽ có được <strong>$10K/tháng USD</strong> ngân sách tài trợ cho Việt Nam.</span>",
-                "<span><i class='fa fa-chevron-right'></i> 10.000 người có nhu cầu thương mại tương đương, sẽ có được <strong>$100K/tháng USD</strong> ngân sách tài trợ.</span>",
-                "<span><i class='fa fa-chevron-right'></i> Người tham gia mạng xã hội bỏ phiếu cho <strong>nhóm đại diện</strong> quyết định chi tiêu ngân sách tài trợ theo nhiệm kỳ ngắn hạn/dài hạn</span>" ,
-                "<span><i class='fa fa-chevron-right'></i> Mục đích là <strong>không gởi ngoại tệ</strong> về VN mà ghi nhận bằng tiền điện tử bảo mật.</span>"
+                "<span><i class='fa fa-caret-right'></i> <strong>100% tiền quảng cáo</strong> dùng tài trợ phong trào Dân Chủ tại Việt Nam.</span>",
+                "<span><i class='fa fa-caret-right'></i> Là nơi tin cậy cho người Việt tìm đến quảng cáo/rao vặt.</span>",
+                "<span><i class='fa fa-caret-right'></i> 1.000 chủ tiệm nhỏ, người lao động cần quảng cáo/rao vặt, sẽ có được <strong>$10K/tháng USD</strong> ngân sách tài trợ cho Việt Nam.</span>",
+                "<span><i class='fa fa-caret-right'></i> 10.000 người có nhu cầu thương mại tương đương, sẽ có được <strong>$100K/tháng USD</strong> ngân sách tài trợ.</span>",
+                "<span><i class='fa fa-caret-right'></i> Người tham gia mạng xã hội bỏ phiếu cho <strong>nhóm đại diện</strong> quyết định chi tiêu ngân sách tài trợ theo nhiệm kỳ ngắn hạn/dài hạn</span>" ,
+                "<span><i class='fa fa-caret-right'></i> <strong>Không gởi ngoại tệ</strong> về VN mà ghi nhận bằng tiền điện tử bảo mật.</span>"
             ],
-            "footer"  : "Tìm Hiểu Chi Tiết",
-
-            "modalTitle": "Tài Trợ",
+            "footer"    : "Tìm Hiểu Chi Tiết",
+            "modalTitle": "Tài Trợ Hiệu Quả",
             "modalUrl"  : "/public/get-html/taitro"
         }, {
             "header"  : "<h1 class='panel-title'>Cộng Tác</h1>",
-            "headerHL": "<h3>Thành Tựu Lập Sức Mạnh</h3>",
+            "headerHL": "<h3>Thiết Lập Sức Mạnh</h3>",
             "bodyText": [
-                "<span><i class='fa fa-chevron-right'></i> Thiết lập tiệm bán trực tuyến miễn phí để mọi người <strong>dễ buôn bán</strong> dễ dàng bằng tiền điện tử.</span>",
-                "<span><i class='fa fa-chevron-right'></i> <strong>Tài trợ</strong> giúp các nhóm dân sự ở Việt Nam khỏi bị cô lập kinh tế.</span>",
-                "<span><i class='fa fa-chevron-right'></i> Tạo môi trường pháp lý cho các <strong>dự án thương mại</strong> tầm cỡ lớn hơn.</span>",
-                "<span><i class='fa fa-chevron-right'></i> Huy động vốn crowd funding bằng uy tín đã xây dựng trên mạng xã hội.</span>",
-                "<span><i class='fa fa-chevron-right'></i> Tạo mô hình <strong>tìm người cộng tác</strong> và chia phần từ lợi nhuận khi thành công.</span>",
-                "<span><i class='fa fa-chevron-right'></i> Phát triển các dự án dùng tiền điện tử:</span>",
+                "<span><i class='fa fa-caret-right'></i> Thiết lập tiệm bán trực tuyến miễn phí để mọi người <strong>buôn bán</strong> dễ dàng bằng tiền điện tử.</span>",
+                "<span><i class='fa fa-caret-right'></i> Tạo môi trường xây dựng <strong>thương hiệu riêng</strong>, giúp các nhóm dân sự ở Việt Nam khỏi bị cô lập kinh tế.</span>",
+                "<span><i class='fa fa-caret-right'></i> Tạo môi trường pháp lý cho các <strong>dự án thương mại</strong> tầm cỡ lớn hơn.</span>",
+                "<span><i class='fa fa-caret-right'></i> Huy động vốn crowd funding bằng uy tín đã xây dựng trên mạng xã hội.</span>",
+                "<span><i class='fa fa-caret-right'></i> Tạo mô hình <strong>tìm người cộng tác</strong> và chia phần từ lợi nhuận khi thành công.</span>",
+                "<span><i class='fa fa-caret-right'></i> Phát triển các dự án dùng tiền điện tử:</span>",
                 "<span><i class='fa fa-check'></i>   Các chương trình <strong>giáo dục</strong> khai phóng, đào tạo kỹ năng thực tế.</span>",
                 "<span><i class='fa fa-check'></i>   Khả năng <strong>chi trả tiền điện tử</strong> ở Việt Nam bằng smartphone.</span>"
             ],
-            "footer"  : "Tìm Hiểu Chi Tiết",
-
-            "modalTitle": "Cộng Tác",
+            "footer"    : "Tìm Hiểu Chi Tiết",
+            "modalTitle": "Cộng Tác Tạo Sức Mạnh",
             "modalUrl"  : "/public/get-html/congtac"
         }, {
             "header"  : "<h1 class='panel-title'>Phát Triển</h1>",
-            "headerHL": "<h3>Sức Mạnh Làm Thay Đổi</h3>",
+            "headerHL": "<h3>Động Lực Thay Đổi</h3>",
             "bodyText": [
-                "<span><i class='fa fa-chevron-right'></i> Lập công ty chịu <strong>trách nhiệm</strong> trước luật pháp Hoa Kỳ.</span>",
-                "<span><i class='fa fa-chevron-right'></i> Đặt dưới dự <strong>giám sát</strong> của các định chế tài chính của Hoa Kỳ.</span>",
-                "<span><i class='fa fa-chevron-right'></i> Hợp thức hoá cổ phiếu bảo đảm quyền lợi của những người đã đóng góp.</span>",
-                "<span><i class='fa fa-chevron-right'></i> Thu hút nhiều người tài cộng tác ở nhiều lĩnh vực.</span>",
-                "<span><i class='fa fa-chevron-right'></i> Mở rộng nhiều dự án thương mại.</span>",
-                "<span><i class='fa fa-chevron-right'></i> Mở rộng khả năng chi trả tiền điện tử trong nước.</i></span>",
-                "<span><i class='fa fa-chevron-right'></i> Hạn chế nguồn kinh tế nuôi đảng Cộng Sản.</span>",
-                "<span><i class='fa fa-chevron-right'></i> Tổng hợp sức mạnh để <strong>thay đổi Việt Nam</strong> theo nguyện vọng của đa số dân.</span>"
+                "<span><i class='fa fa-caret-right'></i> Lập công ty chịu <strong>trách nhiệm</strong> trước luật pháp Hoa Kỳ.</span>",
+                "<span><i class='fa fa-caret-right'></i> Đặt dưới dự <strong>giám sát</strong> của các định chế tài chính Hoa Kỳ.</span>",
+                "<span><i class='fa fa-caret-right'></i> Hợp thức hoá cổ phiếu bảo đảm <strong>quyền lợi</strong> của những người đã cộng tác đóng góp.</span>",
+                "<span><i class='fa fa-caret-right'></i> Thu hút nhiều người tài cộng tác ở nhiều lĩnh vực.</span>",
+                "<span><i class='fa fa-caret-right'></i> Mở rộng thêm nhiều dự án thương mại.</span>",
+                "<span><i class='fa fa-caret-right'></i> Mở rộng khả năng chi trả tiền điện tử trong nước.</i></span>",
+                "<span><i class='fa fa-caret-right'></i> Tổng hợp sức mạnh để <strong>thay đổi Việt Nam</strong> theo nguyện vọng của đa số người dân.</span>"
             ],
-            "footer"  : "Tìm Hiểu Chi Tiết",
-
-            "modalTitle": "Phát Triển",
+            "footer"    : "Tìm Hiểu Chi Tiết",
+            "modalTitle": "Sức Mạnh Tạo Thay Đổi",
             "modalUrl"  : "/public/get-html/phattrien"
         } ]
     },
     "features": {
         "title"      : "Nền Tảng Của Dự Án",
-        "titleDetail": "Xây dựng dự án bằng các nguyên tắc: trách nhiệm - bảo mật - an toàn - minh bạch.  Lập công ty hoạt động theo luật pháp Hoa Kỳ, đặt quyền lợi của khách hàng, người dùng mạng xã hội làm ưu tiên hàng đầu.  Áp dụng kỹ thuật đã được hệ thống Bitcoin sử dụng để bảo mật danh tính và quyền riêng tư của người dùng.  Tiền điện tử được bảo chứng tỉ lệ 1/1 USD có khả năng truy cập nguồn gốc được giữ trong trương mục ngân hàng tại Hoa Kỳ.",
+        "titleDetail": "Xây dựng dự án tuân theo nguyên tắc: trách nhiệm - bảo mật - an toàn - minh bạch.  Lập công ty hoạt động theo luật pháp Hoa Kỳ, đặt quyền lợi của khách hàng, người dùng mạng xã hội làm ưu tiên hàng đầu.  Áp dụng kỹ thuật đã được hệ thống Bitcoin sử dụng để bảo mật danh tính và quyền riêng tư của người dùng.  Tiền điện tử được bảo chứng tỉ lệ 1/1 USD có khả năng truy cập minh bạch nguồn gốc được giữ trong trương mục ngân hàng tại Hoa Kỳ.",
         "features"   : [ {
             "icon" : "fa fa-anchor",
             "title": "Trách Nhiệm",
             "text" : [
+                "Đặt công ty dưới sự giám sát của các định chế tài chính Hoa Kỳ."
             ]
         }, {
             "icon" : "fa fa-cog",
             "title": "Bảo Mật",
             "text" : [
+                "Mã hoá danh tính, thông tin cá nhân của người dùng từ đầu đến cuối (end-to-end) trong các giao dịch tư."
             ]
         }, {
             "icon" : "fa fa-money",
             "title": "An Toàn",
             "text" : [
+                "Áp dụng nhiều tầng chứng thực để xác minh danh tính, quyền sở hữu."
             ]
         }, {
             "icon" : "fa fa-sun-o",
             "title": "Minh Bạch",
             "text" : [
+                "Truy cập tận gốc từng đơn vị tiền của mọi giao dịch công."
             ]
         } ]
     },
@@ -119,7 +117,7 @@
             "name"    : "Bạn",
             "title"   : "Finance/Kế Toán",
             "avatar"  : "/rs/img/avatars/female.png",
-            "teamDesc": "Đảm nhận các vấn dề kế toán, thuế để hoạt động đúng luật pháp Hoa Kỳ"
+            "teamDesc": "Đảm nhận các vấn dề kế toán, thuế để hoạt động theo luật pháp Hoa Kỳ"
         }, {
             "name"    : "Bạn",
             "title"   : "Business/Kinh Doanh",
@@ -139,7 +137,7 @@
             "name"    : "Bạn",
             "title"   : "Marketing/Tiếp Thị",
             "avatar"  : "/rs/img/avatars/female.png",
-            "teamDesc": ""
+            "teamDesc": "Phát triển các ứng dụng của tiền điện tử"
         } ]
     },
     "plan": {
@@ -152,35 +150,35 @@
             "icon"       : "entypo-feather",
             "iconFormat" : "bg-success",
             "eventTitle" : "Phiên bản đầu tiên alpha cho mạng xã hội",
-            "eventBrief" : "Giới thiệu dự án cho bạn bè thân hữu, những người quan tâm đến tương lai Việt Nam"
+            "eventBrief" : "Giới thiệu dự án cho bạn bè thân hữu, nhờ sức mạnh mạng xã hội phổ biến rộng rãi"
         }, {
             "entryFormat": "",
             "dateTime"   : "",
-            "timeMarker" : "1.000 thành viên/thân hữu",
+            "timeMarker" : "1K thành viên/thân hữu",
             "icon"       : "entypo-feather",
             "iconFormat" : "bg-success",
             "eventTitle" : "Phiên bản beta mạng xã hội, cung cấp dịch vụ quảng cáo, rao vặt",
-            "eventBrief" : "Phát triển dựa theo góp ý của thành viên, giới thiệu mạng cho nhiều người trong cộng đồng mạng.  Tìm cơ cở thương mại của người Việt ngoài nước cần quảng cáo, rao vặt.  Quảng cáo miễn phí đến khi phát triển được tiền điện tử"
+            "eventBrief" : "Phát triển dựa theo góp ý của thành viên, giới thiệu mạng cho nhiều người trong cộng đồng mạng.  Tìm người cộng tác đóng góp bài viết, kinh nghiệm, kiến thức để thu hút người đọc và thân chủ quảng cáo. Tìm cơ cở thương mại của người Việt ngoài nước cần quảng cáo, rao vặt.  Quảng cáo căn bản miễn phí, cơ sở thương mại có nhu cầu sẽ được ưu đãi khi tài trợ cho mạng xã hội"
         }, {
             "entryFormat": "",
             "dateTime"   : "",
-            "timeMarker" : "10.000 thành viên/thân hữu",
+            "timeMarker" : "10K thành viên/thân hữu",
             "icon"       : "entypo-feather",
             "iconFormat" : "bg-success",
             "eventTitle" : "Phiên bản alpha cho tiền điện tử",
-            "eventBrief" : "Thành viên thử buôn bán, giao dịch bằng tiền điện tử không bảo chứng.  Thành viên phát triển dự thảo điều luật cho mạng xã hội, quan trọng nhất là thể thức chọn lựa cách chi tiêu thu nhập từ tiền quảng cáo cho phong trào dân chủ tại Việt Nam"
+            "eventBrief" : "Thành viên thử buôn bán, giao dịch bằng tiền điện tử không bảo chứng.  Thành viên phát triển dự thảo các điều luật cho mạng xã hội"
         }, {
             "entryFormat": "",
             "dateTime"   : "",
-            "timeMarker" : "20.000 thành viên",
+            "timeMarker" : "25K thành viên",
             "icon"       : "entypo-feather",
             "iconFormat" : "bg-success",
             "eventTitle" : "Phiên bản beta cho tiền điện tử",
-            "eventBrief" : "Lưu hành tiền điện tử bảo chứng bằng thu nhập từ quảng cáo, rao vặt.  Nếu tìm được người tại Việt Nam có nhu cầu tiêu xài, ký gởi USD ngoài Việt Nam thì không cần phải chuyển tiền về Việt Nam.  Người trong nước có khả năng đổi tiền điện tử sang tiền đồng (tiền điện tủ đương nhiên sẽ bất hợp pháp tại Việt Nam ngay từ đầu).  Những người cần dùng nó đều có nhu cầu không thể đáp ứng được bằng các phương tiện hợp pháp đối với chính quyền Việt Nam hiện tại"
+            "eventBrief" : "Lưu hành tiền điện tử bảo chứng bằng thu nhập từ quảng cáo, rao vặt.  Phát triển ứng dụng micropaymet để trả công người viết, liên kết với dropshipping phát triển công cụ cho thành viên xây dựng thương hiệu riêng"
         }, {
             "entryFormat": "",
             "dateTime"   : "",
-            "timeMarker" : "100.000 thành viên",
+            "timeMarker" : "100K thành viên",
             "icon"       : "entypo-feather",
             "iconFormat" : "bg-success",
             "eventTitle" : "Huy động vốn phát triển công ty",
@@ -188,7 +186,7 @@
         }, {
             "entryFormat": "",
             "dateTime"   : "",
-            "timeMarker" : "1.000.000 thành viên",
+            "timeMarker" : "1 triệu thành viên",
             "icon"       : "entypo-feather",
             "iconFormat" : "bg-success",
             "eventTitle" : "Phát triển mobile payment tại Việt Nam",
@@ -200,11 +198,11 @@
     },
     "login": {
         "headerBar" : "Việt Nam Tự Do",
-        "headerText": "Lưu ý, đây là phiên bản Beta; Dữ liệu của bạn có thể bị đánh cắp.  Disclaimer, this is Beta version; your data may be lost or stolen when using this site.",
+        "headerText": "Lưu ý, đây là phiên bản Beta, mong các bạn giúp phát hiện lỗi khi sử dụng.",
         "tourButton" : "Chi tiết mạng xã hội",
         "aboutButton": "Tìm Hiểu về chúng tôi",
         "aboutBrief" : "Tìm Hiểu Về Tiền Việt Nam Tự Do",
-        "aboutText"  : "Mạng ứng dụng cho tiền điện tử với mục đích hỗ trợ công cuộc đấu tranh dân chủ tại Việt Nam",
+        "aboutText"  : "Mạng ứng dụng cho tiền điện tử với mục đích cho nhu cầu buôn bán, giao dịch của người Việt toàn cầu",
         "siteBrief"  : "Không phải là mạng xã hội bình thường",
         "siteText"   : "Với ứng dụng đã được chứng minh từ mạng Bitcoin, tiền điện tử cho người Việt Nam sẽ là chất keo hàn gắn quyền lợi giữa những người Việt yêu chuộng tự do"
     }
