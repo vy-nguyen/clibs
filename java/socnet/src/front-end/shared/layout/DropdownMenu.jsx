@@ -17,7 +17,8 @@ class DropdownMenu extends React.Component
         }
         let menuItems = menu.menuItems.map(function(item, idx) {
             return (
-                <MenuItem key={_.uniqueId('dropdown-menu-')} eventKey={idx} onClick={item.itemHandler}>
+                <MenuItem key={_.uniqueId('dropdown-menu-')}
+                    eventKey={idx} onClick={item.itemHandler}>
                     <i className={item.itemFmt}/>{item.itemText}
                 </MenuItem>
             )
@@ -25,7 +26,9 @@ class DropdownMenu extends React.Component
 
         return (
             <Dropdown id={menu.domId}>
-                <Dropdown.Toggle className={menu.iconFmt}>{menu.titleText}</Dropdown.Toggle>
+                <Dropdown.Toggle className={menu.iconFmt}>
+                    {menu.titleText}
+                </Dropdown.Toggle>
                 <Dropdown.Menu className={menu.itemFmt}>
                     {menuItems}
                 </Dropdown.Menu>

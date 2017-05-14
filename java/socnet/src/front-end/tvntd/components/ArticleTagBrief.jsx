@@ -209,9 +209,27 @@ class ArticleTagBrief extends React.Component
         return output;
     }
 
-    static renderPublicTags() {
-        let output = [];
-        let tags = ArticleTagStore.getAllPublicTags(true);
+    static renderPublicTags(pubMode) {
+        let output = [],
+            tags = ArticleTagStore.getAllPublicTags(true, pubMode);
+
+        if (tags != null) {
+            _.forOwn(tags, function(tag) {
+                output.push(
+                    <div className="row" key={_.uniqueId('art-tag-brief-')}>
+                        <h1>{tag.tagName}</h1>
+                        <ArticleTagBrief key={_.uniqueId('art-pub-tag-')} tag={tag}/>
+                    </div>
+                );
+            });
+        }
+        return output;
+    }
+
+    static renderModifyPublicTags() {
+        let output = [],
+            tags = ArticleTagStore.getModifiedPubTags(false);
+
         if (tags != null) {
             _.forOwn(tags, function(tag) {
                 output.push(

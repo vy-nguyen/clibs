@@ -288,7 +288,7 @@ class AboutUs extends React.Component
                 <FeatureSection title={welcome.title}
                     titleDetail={welcome.titleDetail} format="bg-gray">
                     <div className="panel-footer text-align-center">
-                        <ModalHtml className="btn btn-primary btn-block"
+                        <ModalHtml buttonFmt="btn btn-lg btn-primary"
                             modalTitle={Lang.translate("About This Project")}
                             buttonText="Read More" url="/public/get-html/vision"/>
                     </div>

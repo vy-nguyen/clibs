@@ -465,7 +465,7 @@ class DynamicTable extends React.Component
                                 <h2>{this.props.tableTitle}</h2>
 
                                 <ModalButton ref="rowModal" divClass="widget-toolbar"
-                                    className="btn btn-sm btn-primary"
+                                    buttonFmt="btn btn-sm btn-primary"
                                     closeWarning="You will loose unsaved data"
                                     buttonText="Add Row">
                                     {this._renderInputModal()}

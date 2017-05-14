@@ -14,8 +14,12 @@ class LoadHtml extends React.Component
     }
 
     render() {
+        const style = {
+            overflow : "auto",
+            maxHeight: "80vh"
+        };
         return (
-            <div ref="viewport" />
+            <div ref="viewport" className="row content" style={style}/>
         )
     }
 

@@ -101,31 +101,6 @@ class SetTags extends React.Component
             )
         }.bind(this));
 
-        let pubTagRender = [];
-        let pubTagList = ArticleTagStore.getAllPublicTags(false);
-        let length = pubTagList.length;
-
-        for (let i = 0; i < length; i++) {
-            let oneTag = this._renderTagInfo(pubTagList[i]);
-            let twoTag = null;
-            let threeTag = null;
-
-            if ((i + 1) < length) {
-                i++;
-                twoTag = this._renderTagInfo(pubTagList[i]);
-            }
-            if ((i + 1) < length) {
-                i++;
-                threeTag = this._renderTagInfo(pubTagList[i]);
-            }
-            pubTagRender.push(
-                <div className="row" key={_.uniqueId('pub-tag-')}>
-                    {oneTag}
-                    {twoTag}
-                    {threeTag}
-                </div>
-            );
-        }
         return (
             <div id="content">
                 <section id="widget-grid" className="">
@@ -134,23 +109,7 @@ class SetTags extends React.Component
                     </div>
                 </section>
                 <ListTags tagKind={null}/>
-                {/*
-                <div className="row">
-                    {!_.isEmpty(pubTagRender) ? pubTagRender : null}
-                </div>
-                <div className="row">
-                    <div className="col-sm-4 col-md-4 col-lg-4">
-                        <TagInfo artTag={null}/>
-                    </div>
-                    <footer>
-                        <button className="btn btn-primary"
-                            onClick={this._submitSetTag}>
-                            <Mesg text="Save Changes"/>
-                        </button>
-                    </footer>
-                </div>
-                    */}
-                {ArticleTagBrief.renderPublicTags()}
+                {ArticleTagBrief.renderModifyPublicTags()}
             </div>
         );
     }

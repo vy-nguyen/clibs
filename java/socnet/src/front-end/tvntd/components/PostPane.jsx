@@ -20,6 +20,7 @@ import JarvisWidget from 'vntd-shared/widgets/JarvisWidget.jsx';
 import ModalConfirm from 'vntd-shared/forms/commons/ModalConfirm.jsx';
 import EditorPost   from 'vntd-shared/forms/commons/EditorPost.jsx';
 
+import ArticleTagStore  from 'vntd-root/stores/ArticleTagStore.jsx';
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
 import StateButton      from 'vntd-shared/utils/StateButton.jsx';
@@ -70,7 +71,8 @@ class TagPost extends React.Component
             postInfo.title = this.refs.title.value;
         }
         StateButtonStore.getButtonState(btnId).setNextState();
-        artRank = AuthorStore.getArticleRank(this.props.authorUuid, this.props.articleUuid);
+        artRank = AuthorStore.getArticleRank(this.props.authorUuid,
+                                             this.props.articleUuid);
         AuthorStore.updateAuthorTag(tagInfo, artRank);
     }
 
@@ -164,6 +166,9 @@ class PostPane extends React.Component {
                 editMode: false
             }
         }
+        if (ArticleTagStore.hasPublishedArticle(props.data.articleUuid)) {
+            this.state.publish = true;
+        }
         this._deletePost     = this._deletePost.bind(this);
         this._cancelDel      = this._cancelDel.bind(this);
         this._editArticle    = this._editArticle.bind(this);
@@ -224,14 +229,29 @@ class PostPane extends React.Component {
             return <EditorPost article={article}/>
         }
         if (UserStore.amIAdmin() == true) {
-            adminItem = [ {
-                itemFmt : 'fa fa-circle txt-color-blue',
-                itemText: 'Publish Post',
-                itemHandler: function(e, pane) {
-                    e.preventDefault();
-                    AdminStore.addPublicArticle(article.articleUuid);
-                }.bind(this)
-            } ];
+            if (this.state.publish === true) {
+                adminItem = [ {
+                    itemFmt : 'fa fa-check txt-color-green',
+                    itemText: 'Withdraw Publishing Post',
+                    itemHandler: function(e, pane) {
+                        this.setState({
+                            publish: false
+                        });
+                    }.bind(this)
+                } ];
+            } else {
+                adminItem = [ {
+                    itemFmt : 'fa fa-circle txt-color-blue',
+                    itemText: 'Publish Post',
+                    itemHandler: function(e, pane) {
+                        e.preventDefault();
+                        AdminStore.addPublicArticle(article.articleUuid);
+                        this.setState({
+                            publish: true
+                        });
+                    }.bind(this)
+                } ];
+            }  
         }
         if (UserStore.isUserMe(article.authorUuid)) {
             ownerItem = [ {
@@ -281,10 +301,16 @@ class PostPane extends React.Component {
             labelIcon: 'label label-warning',
             labelText: article.creditEarned
         } ];
-        if (this.state.favorite == true) {
+        if (this.state.favorite === true) {
+            panelLabel.push({
+                labelIcon: 'label label-primary',
+                labelText: Lang.translate('Fav')
+            });
+        }
+        if (this.state.publish === true) {
             panelLabel.push({
                 labelIcon: 'label label-info',
-                labelText: Lang.translate('Mark Favorite')
+                labelText: Lang.translate('Public')
             });
         }
         const panelData = {

@@ -26,6 +26,8 @@ import ProfileCover       from './ProfileCover.jsx';
 import UserAvatar         from './UserAvatar.jsx';
 import UserTags           from './UserTags.jsx';
 
+import {noOpRetNull}      from 'vntd-shared/utils/Enum.jsx';
+
 class UserInfo extends React.Component
 {
     constructor(props) {
@@ -203,10 +205,7 @@ class UserInfo extends React.Component
             inpName  : this._passwordId0,
             errorId  : this._passwordId0,
             errorFlag: false,
-            inpValidate: function(data, entry) {
-                // Allow empty password for email login.
-                return null;
-            }
+            inpValidate: noOpRetNull
         }, {
             onFocus  : this._focusInput,
             labelTxt : "Verify Password",
@@ -231,9 +230,7 @@ class UserInfo extends React.Component
                 inpName  : this._currPasswdId,
                 errorId  : this._currPasswdId,
                 errorFlag: false,
-                inpValidate: function(data, entry) {
-                    return null;
-                }
+                inpValidate: noOpRetNull
             });
         }
         let profileForm = {

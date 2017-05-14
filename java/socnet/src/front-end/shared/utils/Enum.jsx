@@ -234,8 +234,12 @@ function getCookie(cname) {
     return "";
 }
 
+function noOpRetNull() {
+    return null;
+}
+
 export {
     Enum, safeStringify, insertUnique, insertSorted, insertSortedUnique, toDateString,
     preend, getRandomInt, removeArray, findSorted, findUuid, compareUuid, choose,
-    setCookie, getCookie
+    setCookie, getCookie, noOpRetNull
 }

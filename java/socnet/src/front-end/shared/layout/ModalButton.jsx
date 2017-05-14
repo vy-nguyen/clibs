@@ -8,6 +8,7 @@ import Modal      from 'react-modal';
 import Mesg       from 'vntd-root/components/Mesg.jsx';
 import InputStore from 'vntd-shared/stores/NestableStore.jsx';
 import { ModalChoice } from 'vntd-shared/forms/commons/ModalConfirm.jsx';
+import { noOpRetNull } from 'vntd-shared/utils/Enum.jsx';
 
 const modalStyle = {
     content: {
@@ -99,23 +100,25 @@ class ModalButton extends React.Component
                         defaultValue={entry.inpDefVal} placeholder={entry.inpHolder}
                     />
                     <span className="input-group-btn">
-                        <a className={this.props.className} onClick={this.openModal}>
+                        <button type="button" className={this.props.buttonFmt}
+                            onClick={this.openModal}>
                             <Mesg text={this.props.buttonText}/>
-                        </a>
+                        </button>
                     </span>
                 </div>
             );
         } else {
             input = (
-                <a className={this.props.className} onClick={this.openModal}>
+                <button type="button"
+                    className={this.props.buttonFmt} onClick={this.openModal}>
                     <Mesg text={this.props.buttonText}/>
-                </a>
+                </button>
             );
         }
         if (this.props.closeWarning != null) {
             choice = (
                 <ModalChoice ref="choice" okFn={this._okModalClose}
-                    closeWarning={this.props.closeWarning}/>
+                    cancelFn={noOpRetNull} closeWarning={this.props.closeWarning}/>
             );
         }
         return (
