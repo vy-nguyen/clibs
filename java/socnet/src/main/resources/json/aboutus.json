@@ -149,7 +149,7 @@
             "timeMarker" : "Hiện Tại",
             "icon"       : "entypo-feather",
             "iconFormat" : "bg-success",
-            "eventTitle" : "Phiên bản đầu tiên alpha cho mạng xã hội",
+            "eventTitle" : "Phiên bản đầu tiên Beta cho mạng xã hội",
             "eventBrief" : "Giới thiệu dự án cho bạn bè thân hữu, nhờ sức mạnh mạng xã hội phổ biến rộng rãi"
         }, {
             "entryFormat": "",
@@ -165,7 +165,7 @@
             "timeMarker" : "10K thành viên/thân hữu",
             "icon"       : "entypo-feather",
             "iconFormat" : "bg-success",
-            "eventTitle" : "Phiên bản alpha cho tiền điện tử",
+            "eventTitle" : "Phiên bản Alpha cho tiền điện tử",
             "eventBrief" : "Thành viên thử buôn bán, giao dịch bằng tiền điện tử không bảo chứng.  Thành viên phát triển dự thảo các điều luật cho mạng xã hội"
         }, {
             "entryFormat": "",
@@ -173,7 +173,7 @@
             "timeMarker" : "25K thành viên",
             "icon"       : "entypo-feather",
             "iconFormat" : "bg-success",
-            "eventTitle" : "Phiên bản beta cho tiền điện tử",
+            "eventTitle" : "Phiên bản Beta cho tiền điện tử",
             "eventBrief" : "Lưu hành tiền điện tử bảo chứng bằng thu nhập từ quảng cáo, rao vặt.  Phát triển ứng dụng micropaymet để trả công người viết, liên kết với dropshipping phát triển công cụ cho thành viên xây dựng thương hiệu riêng"
         }, {
             "entryFormat": "",
