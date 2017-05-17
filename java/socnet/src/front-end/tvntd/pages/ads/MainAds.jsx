@@ -80,12 +80,12 @@ class MainAds extends React.Component
             setActivePane: this._setActivePane,
 
             tabItems: [ {
-                domId  : 'ad-feature',
-                tabText: 'Feature Ads',
-                tabIdx : 0
-            }, {
                 domId  : 'ad-list',
                 tabText: 'Yellow Page',
+                tabIdx : 0
+            }, {
+                domId  : 'ad-feature',
+                tabText: 'Feature Ads',
                 tabIdx : 1
             }, {
                 domId  : 'post-ads',
@@ -114,8 +114,8 @@ class MainAds extends React.Component
                 <div className="row">
                     <div className="col-sm-12 col-md-12 col-lg-12">
                         <TabPanel className="padding-top-10" context={tabData}>
-                            {this._renderFeatureAds()}
                             {this._renderYellowPage()}
+                            {this._renderFeatureAds()}
                             {this._renderPostAds()}
                         </TabPanel>
                     </div>

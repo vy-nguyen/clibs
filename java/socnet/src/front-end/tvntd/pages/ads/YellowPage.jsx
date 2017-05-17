@@ -135,9 +135,11 @@ class YellowPage extends React.Component
     }
 
     _onSelected(entry, val) {
-        this.setState({
-            currentTag: val
-        });
+        if (val != null) {
+            this.setState({
+                currentTag: [val]
+            });
+        }
     }
 
     _clickLabel(label, entry) {
