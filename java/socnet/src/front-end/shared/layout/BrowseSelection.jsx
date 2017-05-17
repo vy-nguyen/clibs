@@ -109,6 +109,7 @@ class BrowseSelection extends React.Component
                         <SelectWrap entry={select} value={select.inpDefVal}
                             onSelected={this._onSelected}/>
                     </div>
+                    {/*
                     <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                         <div className="input-group">
                             <TAWrap entry={search}
@@ -121,6 +122,7 @@ class BrowseSelection extends React.Component
                             </span>
                         </div>
                     </div>
+                    */}
                 </div>
             </SparklineContainer>
         );
