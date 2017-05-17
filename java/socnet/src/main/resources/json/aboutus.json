@@ -16,7 +16,7 @@
                 "<span><i class='fa fa-caret-right'></i> Tham gia để cùng tạo điều lệ sinh hoạt riêng phù hợp với cộng đồng người Việt yêu chuộng <strong>Tự Do</strong>.</span>",
                 "<span><i class='fa fa-caret-right'></i> Kết nối để góp phần <strong>thực hiện</strong> những vấn đề mà mình quan tâm.</span>"
             ],
-            "footer"    : "Tìm Hiểu Chi Tiết",
+            "footer"    : "Đọc Thêm",
             "modalTitle": "Nhu Cầu Kết Nối",
             "modalUrl"  : "/public/get-html/ketnoi"
         }, {
@@ -30,7 +30,7 @@
                 "<span><i class='fa fa-caret-right'></i> Người tham gia mạng xã hội bỏ phiếu cho <strong>nhóm đại diện</strong> quyết định chi tiêu ngân sách tài trợ theo nhiệm kỳ ngắn hạn/dài hạn</span>" ,
                 "<span><i class='fa fa-caret-right'></i> <strong>Không gởi ngoại tệ</strong> về VN mà ghi nhận bằng tiền điện tử bảo mật.</span>"
             ],
-            "footer"    : "Tìm Hiểu Chi Tiết",
+            "footer"    : "Đọc Thêm",
             "modalTitle": "Tài Trợ Hiệu Quả",
             "modalUrl"  : "/public/get-html/taitro"
         }, {
@@ -46,7 +46,7 @@
                 "<span><i class='fa fa-check'></i>   Các chương trình <strong>giáo dục</strong> khai phóng, đào tạo kỹ năng thực tế.</span>",
                 "<span><i class='fa fa-check'></i>   Khả năng <strong>chi trả tiền điện tử</strong> ở Việt Nam bằng smartphone.</span>"
             ],
-            "footer"    : "Tìm Hiểu Chi Tiết",
+            "footer"    : "Đọc Thêm",
             "modalTitle": "Cộng Tác Tạo Sức Mạnh",
             "modalUrl"  : "/public/get-html/congtac"
         }, {
@@ -61,7 +61,7 @@
                 "<span><i class='fa fa-caret-right'></i> Mở rộng khả năng chi trả tiền điện tử trong nước.</i></span>",
                 "<span><i class='fa fa-caret-right'></i> Tổng hợp sức mạnh để <strong>thay đổi Việt Nam</strong> theo nguyện vọng của đa số người dân.</span>"
             ],
-            "footer"    : "Tìm Hiểu Chi Tiết",
+            "footer"    : "Đọc Thêm",
             "modalTitle": "Sức Mạnh Tạo Thay Đổi",
             "modalUrl"  : "/public/get-html/phattrien"
         } ]

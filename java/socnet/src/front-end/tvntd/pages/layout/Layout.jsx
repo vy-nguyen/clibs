@@ -29,7 +29,7 @@ class Layout extends React.Component
             <div className="minified fixed-navigation fixed-header">
                 <Header/>
                 <Navigation/>
-                <Shortcut/>
+                {/*<Shortcut/>*/}
                 <div className="container" id="main" role="main">
                     {this.props.children}
                 </div>

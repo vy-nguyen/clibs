@@ -56,6 +56,9 @@ class BrowseSelection extends React.Component
         this.setState({
             select: entry
         });
+        if (this.props.onClick != null) {
+            this.props.onClick(label, entry);
+        }
     }
 
     _onSelected(entry, val) {

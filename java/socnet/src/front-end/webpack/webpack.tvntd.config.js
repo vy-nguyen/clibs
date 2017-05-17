@@ -9,7 +9,7 @@ var app_main   = {
     "tvntd-bundle": path.resolve(__dirname, '../tvntd/main.jsx')
 };
 
-var config =  _.merge( baseConfig, {
+var config =  _.merge(baseConfig, {
     entry: _.merge(app_main, scripts.chunks),
 
     output: {

@@ -54,6 +54,7 @@ class YellowPage extends React.Component
         let index;
 
         super(props);
+        this._clickLabel    = this._clickLabel.bind(this);
         this._onSelected    = this._onSelected.bind(this);
         this._updateArtTags = this._updateArtTags.bind(this);
 
@@ -114,7 +115,7 @@ class YellowPage extends React.Component
     }
 
     _updateArtTags() {
-        let label, select, defTag = null,
+        let label, select, defTag = [],
             buckets = ArticleTagStore.getFilterTag("ads", filterTagBuckets);
 
         _.forEach(buckets, function(item, key) {
@@ -122,9 +123,7 @@ class YellowPage extends React.Component
             select = [];
 
             _.forEach(item, function(tag) {
-                if (defTag == null) {
-                    defTag = tag.tagName;
-                }
+                defTag.push(tag.tagName);
                 select.push({
                     label: tag.tagName,
                     value: tag.tagName
@@ -141,22 +140,33 @@ class YellowPage extends React.Component
         });
     }
 
-    render() {
-        return YellowPage.renderAds(this.browse, this.state.currentTag);
+    _clickLabel(label, entry) {
+        let currTag = [];
+        _.forEach(entry.selectOpt, function(item) {
+            currTag.push(item.value);
+        });
+        this.setState({
+            currentTag: currTag
+        });
     }
 
-    static renderAds(browse, currentTag) {
+    render() {
+        return YellowPage.renderAds(this.browse,
+                                    this.state.currentTag, this._clickLabel);
+    }
+
+    static renderAds(browse, currentTag, onClickFn) {
         let search = ArticleTagStore.getAllPublicTagsString(false, "ads"),
             searchHolder = "Category Search";
 
         return (
             <div className="padding-top-10">
-                <BrowseSelection labels={browse}
+                <BrowseSelection labels={browse} onClick={onClickFn}
                     searchItems={search} searchHolder={searchHolder}/>
 
                 <div className="row">
                     <div className="panel-body">
-                        <AdsTableListing tagName={currentTag}/>
+                        <AdsTableListing tagList={currentTag}/>
                     </div>
                 </div>
             </div>
