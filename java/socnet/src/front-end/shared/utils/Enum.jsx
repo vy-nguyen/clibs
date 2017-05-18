@@ -115,6 +115,10 @@ function insertUnique(elm, array, compareFn) {
     return array.length;
 }
 
+function stringCmp(s1, s2) {
+    return s1.attr.localeCompare(s2.attr);
+}
+
 function insertSorted(elm, array, compareFn) {
     if (array.length === 0) {
         return array.splice(0, 0, elm);
@@ -241,5 +245,5 @@ function noOpRetNull() {
 export {
     Enum, safeStringify, insertUnique, insertSorted, insertSortedUnique, toDateString,
     preend, getRandomInt, removeArray, findSorted, findUuid, compareUuid, choose,
-    setCookie, getCookie, noOpRetNull
+    setCookie, getCookie, noOpRetNull, stringCmp
 }

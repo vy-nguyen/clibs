@@ -9,8 +9,11 @@ import Reflux    from 'reflux';
 import Actions   from 'vntd-root/actions/Actions.jsx';
 
 import {tagKinds}                  from 'vntd-root/components/TagInfo.jsx';
-import {insertSorted, removeArray} from 'vntd-shared/utils/Enum.jsx';
 import {cloneInputEntry}           from 'vntd-shared/forms/commons/GenericForm.jsx';
+import {
+    insertSorted, removeArray, stringCmp
+} from 'vntd-shared/utils/Enum.jsx';
+
 import {
     EProductStore, AdsStore
 } from 'vntd-root/stores/ArticleStore.jsx';
@@ -273,9 +276,11 @@ let ArticleTagStore = Reflux.createStore({
         let result = [];
         _.forOwn(this.data.sortedIdxTags, function(tag) {
             if (kind == null || tag.tagKind === kind) {
-                result.push({
+                insertSorted({
                     value: tag.tagName,
                     label: tag.tagName
+                }, result, function(t1, t2) {
+                    return t1.value.localeCompare(t2.value);
                 });
             }
         });
