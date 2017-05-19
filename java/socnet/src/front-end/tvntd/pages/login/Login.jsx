@@ -287,7 +287,7 @@ class LoginForm extends React.Component
             <div className="well no-padding">
                 <div id="smart-form-register" className="smart-form client-form">
                     <header>
-                        <Mesg text="Email Sign In"/>
+                        <Mesg text="We will mail you a login link"/>
                     </header>
                     <fieldset>
                         <section>
