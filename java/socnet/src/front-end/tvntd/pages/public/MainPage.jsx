@@ -46,7 +46,7 @@ class PriceBox extends React.Component
                         </div>
                     </div>
                     <div className="panel-footer text-align-center">
-                        <ModalHtml divClass="btn btn-block btn-primary"
+                        <ModalHtml buttonFmt="btn btn-block btn-primary"
                             modalTitle={this.props.modalTitle}
                             buttonText={this.props.footerText} url={this.props.modalUrl}/>
                         <div><i>{this.props.footerDetail}</i></div>
