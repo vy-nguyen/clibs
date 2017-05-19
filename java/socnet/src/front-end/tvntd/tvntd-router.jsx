@@ -31,7 +31,7 @@ import {MainPage, AboutUs}  from './pages/public/MainPage.jsx';
 const Routes = (
     <Route>
         <Route path="/" component={Layout} url={"/public/start"}>
-            <IndexRoute component={MainAds}/>
+            <IndexRoute component={MainPage}/>
             <Redirect from="/" to ="public"/>
             <Route path="public">
                 <Route path="aboutus" component={AboutUs}/>
