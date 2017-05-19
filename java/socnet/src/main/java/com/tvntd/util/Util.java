@@ -29,8 +29,10 @@ package com.tvntd.util;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.jsoup.Jsoup;
@@ -152,6 +154,82 @@ public final class Util
                 break;
             }
         }
+    }
+
+    static Map<Character, Character> utf8Mapper = new HashMap<>();
+    static {
+        utf8Mapper.put('á', 'a');
+        utf8Mapper.put('à', 'a');
+        utf8Mapper.put('ả', 'a');
+        utf8Mapper.put('ã', 'a');
+        utf8Mapper.put('ạ', 'a');
+        utf8Mapper.put('â', 'a');
+        utf8Mapper.put('ấ', 'a');
+        utf8Mapper.put('ầ', 'a');
+        utf8Mapper.put('ẩ', 'a');
+        utf8Mapper.put('ẫ', 'a');
+        utf8Mapper.put('ậ', 'a');
+        utf8Mapper.put('ă', 'a');
+        utf8Mapper.put('ắ', 'a');
+        utf8Mapper.put('ằ', 'a');
+        utf8Mapper.put('ẳ', 'a');
+        utf8Mapper.put('ẵ', 'a');
+        utf8Mapper.put('ặ', 'a');
+        utf8Mapper.put('é', 'e');
+        utf8Mapper.put('è', 'e');
+        utf8Mapper.put('ẻ', 'e');
+        utf8Mapper.put('ẽ', 'e');
+        utf8Mapper.put('ẹ', 'e');
+        utf8Mapper.put('ê', 'e');
+        utf8Mapper.put('ế', 'e');
+        utf8Mapper.put('ề', 'e');
+        utf8Mapper.put('ể', 'e');
+        utf8Mapper.put('ễ', 'e');
+        utf8Mapper.put('ệ', 'e');
+        utf8Mapper.put('í', 'i');
+        utf8Mapper.put('ì', 'i');
+        utf8Mapper.put('ỉ', 'i');
+        utf8Mapper.put('ĩ', 'i');
+        utf8Mapper.put('ị', 'i');
+        utf8Mapper.put('ó', 'o');
+        utf8Mapper.put('ò', 'o');
+        utf8Mapper.put('ỏ', 'o');
+        utf8Mapper.put('õ', 'o');
+        utf8Mapper.put('ọ', 'o');
+        utf8Mapper.put('ô', 'o');
+        utf8Mapper.put('ố', 'o');
+        utf8Mapper.put('ồ', 'o');
+        utf8Mapper.put('ổ', 'o');
+        utf8Mapper.put('ỗ', 'o');
+        utf8Mapper.put('ộ', 'o');
+        utf8Mapper.put('ơ', 'o');
+        utf8Mapper.put('ớ', 'o');
+        utf8Mapper.put('ờ', 'o');
+        utf8Mapper.put('ở', 'o');
+        utf8Mapper.put('ỡ', 'o');
+        utf8Mapper.put('ợ', 'o');
+        utf8Mapper.put('ú', 'u');
+        utf8Mapper.put('ù', 'u');
+        utf8Mapper.put('ủ', 'u');
+        utf8Mapper.put('ũ', 'u');
+        utf8Mapper.put('ụ', 'u');
+        utf8Mapper.put('ư', 'u');
+        utf8Mapper.put('ứ', 'u');
+        utf8Mapper.put('ừ', 'u');
+        utf8Mapper.put('ử', 'u');
+        utf8Mapper.put('ữ', 'u');
+        utf8Mapper.put('ự', 'u');
+        utf8Mapper.put('đ', 'd');
+        utf8Mapper.put('ý', 'y');
+        utf8Mapper.put('ỳ', 'y');
+        utf8Mapper.put('ỷ', 'y');
+        utf8Mapper.put('ỹ', 'y');
+        utf8Mapper.put('ỵ', 'y');
+    }
+
+    public static String utf8ToAscii(byte[] utf)
+    {
+        return null;
     }
 
     private Util() {}

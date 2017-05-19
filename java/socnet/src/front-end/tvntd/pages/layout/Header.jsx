@@ -262,7 +262,9 @@ class Header extends React.Component
         logoBlock = (
             <div id="logo-group">
                 <span id="logo" className="pull-left">
-                    <Link to="/" title={titleText}><span><b>{titleText}</b></span></Link>
+                    <Link to="/public/aboutus" title={titleText}>
+                        <span><b>{titleText}</b></span>
+                    </Link>
                 </span>
                 {loginMenu}
             </div>

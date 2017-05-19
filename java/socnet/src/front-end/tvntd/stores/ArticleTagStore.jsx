@@ -106,6 +106,10 @@ let ArticleTagStore = Reflux.createStore({
         AdsStore.requestAds();
     },
 
+    onGetPublishAdsCompleted: function(data) {
+        this.trigger(this.data);
+    },
+
     /* Public methods. */
     addTagInput: function(tag) {
         this._addTag(new ArtTag(tag));

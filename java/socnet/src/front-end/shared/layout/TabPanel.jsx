@@ -67,6 +67,9 @@ class TabPanel extends React.Component
             )
         }.bind(this));
 
+        if (activeIdx == null) {
+            activeIdx = 0;
+        }
         tabList = this.props.children;
         tabClsn = this.props.className;
         tabContent = tab.tabItems.map(function(item, idx) {
