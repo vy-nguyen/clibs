@@ -156,80 +156,113 @@ public final class Util
         }
     }
 
-    static Map<Character, Character> utf8Mapper = new HashMap<>();
+    static Map<Character, Character> s_utf8Mapper = new HashMap<>();
     static {
-        utf8Mapper.put('á', 'a');
-        utf8Mapper.put('à', 'a');
-        utf8Mapper.put('ả', 'a');
-        utf8Mapper.put('ã', 'a');
-        utf8Mapper.put('ạ', 'a');
-        utf8Mapper.put('â', 'a');
-        utf8Mapper.put('ấ', 'a');
-        utf8Mapper.put('ầ', 'a');
-        utf8Mapper.put('ẩ', 'a');
-        utf8Mapper.put('ẫ', 'a');
-        utf8Mapper.put('ậ', 'a');
-        utf8Mapper.put('ă', 'a');
-        utf8Mapper.put('ắ', 'a');
-        utf8Mapper.put('ằ', 'a');
-        utf8Mapper.put('ẳ', 'a');
-        utf8Mapper.put('ẵ', 'a');
-        utf8Mapper.put('ặ', 'a');
-        utf8Mapper.put('é', 'e');
-        utf8Mapper.put('è', 'e');
-        utf8Mapper.put('ẻ', 'e');
-        utf8Mapper.put('ẽ', 'e');
-        utf8Mapper.put('ẹ', 'e');
-        utf8Mapper.put('ê', 'e');
-        utf8Mapper.put('ế', 'e');
-        utf8Mapper.put('ề', 'e');
-        utf8Mapper.put('ể', 'e');
-        utf8Mapper.put('ễ', 'e');
-        utf8Mapper.put('ệ', 'e');
-        utf8Mapper.put('í', 'i');
-        utf8Mapper.put('ì', 'i');
-        utf8Mapper.put('ỉ', 'i');
-        utf8Mapper.put('ĩ', 'i');
-        utf8Mapper.put('ị', 'i');
-        utf8Mapper.put('ó', 'o');
-        utf8Mapper.put('ò', 'o');
-        utf8Mapper.put('ỏ', 'o');
-        utf8Mapper.put('õ', 'o');
-        utf8Mapper.put('ọ', 'o');
-        utf8Mapper.put('ô', 'o');
-        utf8Mapper.put('ố', 'o');
-        utf8Mapper.put('ồ', 'o');
-        utf8Mapper.put('ổ', 'o');
-        utf8Mapper.put('ỗ', 'o');
-        utf8Mapper.put('ộ', 'o');
-        utf8Mapper.put('ơ', 'o');
-        utf8Mapper.put('ớ', 'o');
-        utf8Mapper.put('ờ', 'o');
-        utf8Mapper.put('ở', 'o');
-        utf8Mapper.put('ỡ', 'o');
-        utf8Mapper.put('ợ', 'o');
-        utf8Mapper.put('ú', 'u');
-        utf8Mapper.put('ù', 'u');
-        utf8Mapper.put('ủ', 'u');
-        utf8Mapper.put('ũ', 'u');
-        utf8Mapper.put('ụ', 'u');
-        utf8Mapper.put('ư', 'u');
-        utf8Mapper.put('ứ', 'u');
-        utf8Mapper.put('ừ', 'u');
-        utf8Mapper.put('ử', 'u');
-        utf8Mapper.put('ữ', 'u');
-        utf8Mapper.put('ự', 'u');
-        utf8Mapper.put('đ', 'd');
-        utf8Mapper.put('ý', 'y');
-        utf8Mapper.put('ỳ', 'y');
-        utf8Mapper.put('ỷ', 'y');
-        utf8Mapper.put('ỹ', 'y');
-        utf8Mapper.put('ỵ', 'y');
+        s_utf8Mapper.put('á', 'a');
+        s_utf8Mapper.put('à', 'a');
+        s_utf8Mapper.put('ả', 'a');
+        s_utf8Mapper.put('ã', 'a');
+        s_utf8Mapper.put('ạ', 'a');
+        s_utf8Mapper.put('â', 'a');
+        s_utf8Mapper.put('ấ', 'a');
+        s_utf8Mapper.put('ầ', 'a');
+        s_utf8Mapper.put('ẩ', 'a');
+        s_utf8Mapper.put('ẫ', 'a');
+        s_utf8Mapper.put('ậ', 'a');
+        s_utf8Mapper.put('ă', 'a');
+        s_utf8Mapper.put('ắ', 'a');
+        s_utf8Mapper.put('ằ', 'a');
+        s_utf8Mapper.put('ẳ', 'a');
+        s_utf8Mapper.put('ẵ', 'a');
+        s_utf8Mapper.put('ặ', 'a');
+        s_utf8Mapper.put('é', 'e');
+        s_utf8Mapper.put('è', 'e');
+        s_utf8Mapper.put('ẻ', 'e');
+        s_utf8Mapper.put('ẽ', 'e');
+        s_utf8Mapper.put('ẹ', 'e');
+        s_utf8Mapper.put('ê', 'e');
+        s_utf8Mapper.put('ế', 'e');
+        s_utf8Mapper.put('ề', 'e');
+        s_utf8Mapper.put('ể', 'e');
+        s_utf8Mapper.put('ễ', 'e');
+        s_utf8Mapper.put('ệ', 'e');
+        s_utf8Mapper.put('í', 'i');
+        s_utf8Mapper.put('ì', 'i');
+        s_utf8Mapper.put('ỉ', 'i');
+        s_utf8Mapper.put('ĩ', 'i');
+        s_utf8Mapper.put('ị', 'i');
+        s_utf8Mapper.put('ó', 'o');
+        s_utf8Mapper.put('ò', 'o');
+        s_utf8Mapper.put('ỏ', 'o');
+        s_utf8Mapper.put('õ', 'o');
+        s_utf8Mapper.put('ọ', 'o');
+        s_utf8Mapper.put('ô', 'o');
+        s_utf8Mapper.put('ố', 'o');
+        s_utf8Mapper.put('ồ', 'o');
+        s_utf8Mapper.put('ổ', 'o');
+        s_utf8Mapper.put('ỗ', 'o');
+        s_utf8Mapper.put('ộ', 'o');
+        s_utf8Mapper.put('ơ', 'o');
+        s_utf8Mapper.put('ớ', 'o');
+        s_utf8Mapper.put('ờ', 'o');
+        s_utf8Mapper.put('ở', 'o');
+        s_utf8Mapper.put('ỡ', 'o');
+        s_utf8Mapper.put('ợ', 'o');
+        s_utf8Mapper.put('ú', 'u');
+        s_utf8Mapper.put('ù', 'u');
+        s_utf8Mapper.put('ủ', 'u');
+        s_utf8Mapper.put('ũ', 'u');
+        s_utf8Mapper.put('ụ', 'u');
+        s_utf8Mapper.put('ư', 'u');
+        s_utf8Mapper.put('ứ', 'u');
+        s_utf8Mapper.put('ừ', 'u');
+        s_utf8Mapper.put('ử', 'u');
+        s_utf8Mapper.put('ữ', 'u');
+        s_utf8Mapper.put('ự', 'u');
+        s_utf8Mapper.put('đ', 'd');
+        s_utf8Mapper.put('ý', 'y');
+        s_utf8Mapper.put('ỳ', 'y');
+        s_utf8Mapper.put('ỷ', 'y');
+        s_utf8Mapper.put('ỹ', 'y');
+        s_utf8Mapper.put('ỵ', 'y');
     }
 
-    public static String utf8ToAscii(byte[] utf)
+    public static boolean isPunctuation(char c)
     {
-        return null;
+        return
+            c == '.' || c == ',' || c == '/' || c == '\\' ||
+            c == ';' || c == ':' || c == '"' || c == '\'' ||
+            c == '{' || c == '}' || c == '[' || c == ']' ||
+            c == '?' || c == '~' || c == '<' || c == '>' ||
+            c == '`' || c == '!' || c == '@' || c == '#' ||
+            c == '$' || c == '%' || c == '^' || c == '&' ||
+            c == '*' || c == '(' || c == ')' || c == '+' ||
+            c == '=' || c == '|';
+    }
+
+    public static String utf8ToUrlString(String utf)
+    {
+        if (utf == null) {
+            return null;
+        }
+        StringBuilder out = new StringBuilder();
+
+        for (int i = 0; i < utf.length(); i++) {
+            char ch = utf.charAt(i);
+            if (ch <= 127) {
+                if (ch == ' ' || isPunctuation(ch)) {
+                    out.append('-');
+                } else {
+                    out.append(Character.toLowerCase(ch));
+                }
+            } else {
+                Character c = s_utf8Mapper.get(ch);
+                if (c != null) {
+                    out.append(c.charValue());
+                }
+            }
+        }
+        return out.toString();
     }
 
     private Util() {}

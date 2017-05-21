@@ -30,6 +30,7 @@ import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 
 import javax.transaction.Transactional;
 
@@ -44,6 +45,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import com.tvntd.config.ConfigTest;
+import com.tvntd.util.Util;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
@@ -79,12 +81,38 @@ public class SideBarTest
     public void testHello()
     {
         System.out.println("Run hello test");
-        assertEquals("Run hello test", outContent.toString());
+        // assertEquals("Run hello test", outContent.toString());
     }
 
     @Test
     public void testUniToAscii()
     {
+        String[] cases = {
+            "abc def háh hàge hả hãiw hạdư hâ hấ hầ hẩ hẫ hậ hă hắ hằ hẳ hẵ hặn dèf",
+            "ade def ded hé hè hẻ hẽ hẹm hím hìm hỉm hĩm hịm đừ ded định nhứt",
+            "1/2/4 định đánh đờn địch hó hò hỏ hõ họ hố hồ hổ hỗ hộ",
+            "húm hùm hủm hũm hụm hứ hừ hử hữ hựm đứng nằm ngồi đým đỳm đỷm đỹm đỵm",
+            "đố đồ đổ đỗ độ đế đề để đễ đệm dứt dây sóng thần"
+        };
+        String[] verification = {
+            "abc-def-hah-hage-ha-haiw-hadu-ha-ha-ha-ha-ha-ha-ha-ha-ha-ha-ha-han-def",
+            "ade-def-ded-he-he-he-he-hem-him-him-him-him-him-du-ded-dinh-nhut",
+            "1-2-4-dinh-danh-don-dich-ho-ho-ho-ho-ho-ho-ho-ho-ho-ho",
+            "hum-hum-hum-hum-hum-hu-hu-hu-hu-hum-dung-nam-ngoi-dym-dym-dym-dym-dym",
+            "do-do-do-do-do-de-de-de-de-dem-dut-day-song-than"
+        };
+
         s_log.info("Run test Unicode to ASCII conversion");
+        int i = 0;
+        for (String s : cases) {
+            String url = Util.utf8ToUrlString(s);
+
+            s_log.info("Convert " + i + ": " + url);
+            if (!url.equals(verification[i])) {
+                s_log.info(url + " vs " + verification[i]);
+            }
+            assertEquals(url, verification[i]);
+            i++;
+        }
     }
 }

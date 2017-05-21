@@ -24,50 +24,20 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.key;
+package com.tvntd.service.api;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
-import com.tvntd.lib.Constants;
-import com.tvntd.lib.DigestUtil;
-import com.tvntd.lib.ObjectId;
+import com.tvntd.models.PublicUrl;
 
-public class HashKey
+public interface IPublicUrlService
 {
-    public static String toSha1Key(String key)
-    {
-        byte[] raw = DigestUtil.digestString(key, Constants.HashFunction);
-        ObjectId oid = ObjectId.fromRaw(raw);
-        return oid.name();
-    }
+    PublicUrl getPublicUrl(String tag, String title);
+    PublicUrl savePublicUrl(String authorUuid,
+            String articleUuid, String tag, String title);
 
-    public static String toSha1Key(byte[] key, String uuid)
-    {
-        try {
-            MessageDigest md = MessageDigest.getInstance(Constants.HashFunction);
-            md.reset();
-            md.update(key);
-            md.update(uuid.getBytes("UTF-8"));
-            return ObjectId.fromRaw(md.digest()).name();
+    List<PublicUrl> getUserPublicUrl(String authorUuid);
 
-        } catch(UnsupportedEncodingException | NoSuchAlgorithmException e) {
-        }
-        return " ";
-    }
-
-    public static String toSha1Key(String s1, String s2)
-    {
-        try {
-            MessageDigest md = MessageDigest.getInstance(Constants.HashFunction);
-            md.reset();
-            md.update(s1.getBytes("UTF-8"));
-            md.update(s2.getBytes("UTF-8"));
-            return ObjectId.fromRaw(md.digest()).name();
-
-        } catch(UnsupportedEncodingException | NoSuchAlgorithmException e) {
-        }
-        return "";
-    }
+    void deletePublicUrl(PublicUrl url);
+    void deletePublicUrl(String tag, String title);
 }

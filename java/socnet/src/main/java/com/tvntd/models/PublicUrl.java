@@ -24,50 +24,70 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.key;
+package com.tvntd.models;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Table;
 
-import com.tvntd.lib.Constants;
-import com.tvntd.lib.DigestUtil;
-import com.tvntd.lib.ObjectId;
-
-public class HashKey
+@Entity
+@Table(indexes = {
+    @Index(columnList = "authorUuid", name = "authorUuid", unique = false)
+})
+public class PublicUrl
 {
-    public static String toSha1Key(String key)
+    @Id
+    @Column(length = 64)
+    private String urlOid;
+
+    @Column(length = 64)
+    private String authorUuid;
+
+    @Column(length = 64)
+    private String articleUuid;
+
+    public PublicUrl(String urlOid, String authorUuid, String artUuid)
     {
-        byte[] raw = DigestUtil.digestString(key, Constants.HashFunction);
-        ObjectId oid = ObjectId.fromRaw(raw);
-        return oid.name();
+        this.urlOid      = urlOid;
+        this.authorUuid  = authorUuid;
+        this.articleUuid = artUuid;
     }
 
-    public static String toSha1Key(byte[] key, String uuid)
-    {
-        try {
-            MessageDigest md = MessageDigest.getInstance(Constants.HashFunction);
-            md.reset();
-            md.update(key);
-            md.update(uuid.getBytes("UTF-8"));
-            return ObjectId.fromRaw(md.digest()).name();
-
-        } catch(UnsupportedEncodingException | NoSuchAlgorithmException e) {
-        }
-        return " ";
+    /**
+     * @return the urlOid
+     */
+    public String getUrlOid() {
+        return urlOid;
     }
 
-    public static String toSha1Key(String s1, String s2)
-    {
-        try {
-            MessageDigest md = MessageDigest.getInstance(Constants.HashFunction);
-            md.reset();
-            md.update(s1.getBytes("UTF-8"));
-            md.update(s2.getBytes("UTF-8"));
-            return ObjectId.fromRaw(md.digest()).name();
-
-        } catch(UnsupportedEncodingException | NoSuchAlgorithmException e) {
-        }
-        return "";
+    /**
+     * @return the authorUuid
+     */
+    public String getAuthorUuid() {
+        return authorUuid;
     }
+
+    /**
+     * @param authorUuid the authorUuid to set
+     */
+    public void setAuthorUuid(String authorUuid) {
+        this.authorUuid = authorUuid;
+    }
+
+    /**
+     * @return the articleUuid
+     */
+    public String getArticleUuid() {
+        return articleUuid;
+    }
+
+    /**
+     * @param articleUuid the articleUuid to set
+     */
+    public void setArticleUuid(String articleUuid) {
+        this.articleUuid = articleUuid;
+    }
+
 }

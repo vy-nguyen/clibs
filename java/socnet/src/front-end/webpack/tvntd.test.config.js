@@ -2,11 +2,12 @@ var _          = require('lodash');
 var path       = require('path');
 var root_dir   = path.resolve(__dirname, '../../../');
 var scripts    = require(path.resolve(__dirname + '/scripts'));
+var baseConfig = require('./tvntd.base.config.js');
 var app_test   = {
-    "tvntd-test": path.resolve(__dirname, '../tests/main.jsx')
+    "tvntd-test": path.resolve(__dirname, '../tests/main.js')
 };
 
-module.exports = {
+module.exports = _.merge(baseConfig, {
     context: root_dir,
     entry  : _.merge(app_test, scripts.chunks),
     resolve: {
@@ -18,4 +19,4 @@ module.exports = {
         path    : path.resolve(__dirname, '../dist'),
         filename: '[name].js'
     }
-};
+});

@@ -47,6 +47,7 @@ import com.tvntd.models.Profile;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.user.ArticleService;
+import com.tvntd.util.Util;
 
 public interface IArticleService
 {
@@ -175,6 +176,14 @@ public interface IArticleService
 
             } catch(UnsupportedEncodingException e) {
                 s_log.error(e.toString());
+            }
+            if (rank != null) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("https://www.tvntd.com/public/article/")
+                    .append(Util.utf8ToUrlString(rank.getTag()))
+                    .append("/")
+                    .append(Util.utf8ToUrlString(topic));
+                articleUrl = sb.toString();
             }
         }
 

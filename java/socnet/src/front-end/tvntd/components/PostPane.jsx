@@ -334,6 +334,9 @@ class PostPane extends React.Component {
         }
         return (
             <Panel className="well no-padding" context={panelData}>
+                <div style={{fontSize: "120%"}}>
+                    {article.articleUrl}
+                </div>
                 {tagPost}
                 {modal}
                 <PostItem data={article.pictureUrl}/>

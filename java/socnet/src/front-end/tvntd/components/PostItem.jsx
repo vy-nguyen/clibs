@@ -62,7 +62,8 @@ class PostItem extends React.Component
                 onRequestClose={this._closeModal}>
 
                 <div className="form-group alert">
-                    <a className="close" aria-label="close" onClick={this._closeModal}>x</a>
+                    <a className="close" aria-label="close"
+                        onClick={this._closeModal}>x</a>
                 </div>
                 <ImageCarousel imageList={picList} select={this.state.imageSelected}/>
              </Modal>

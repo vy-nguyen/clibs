@@ -24,50 +24,18 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.key;
+package com.tvntd.dao;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
-import com.tvntd.lib.Constants;
-import com.tvntd.lib.DigestUtil;
-import com.tvntd.lib.ObjectId;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public class HashKey
+import com.tvntd.models.PublicUrl;
+
+public interface PublicUrlRepo extends JpaRepository<PublicUrl, String>
 {
-    public static String toSha1Key(String key)
-    {
-        byte[] raw = DigestUtil.digestString(key, Constants.HashFunction);
-        ObjectId oid = ObjectId.fromRaw(raw);
-        return oid.name();
-    }
+    PublicUrl findByUrlOid(String urlOid);
+    void deleteByUrlOid(String urlOid);
 
-    public static String toSha1Key(byte[] key, String uuid)
-    {
-        try {
-            MessageDigest md = MessageDigest.getInstance(Constants.HashFunction);
-            md.reset();
-            md.update(key);
-            md.update(uuid.getBytes("UTF-8"));
-            return ObjectId.fromRaw(md.digest()).name();
-
-        } catch(UnsupportedEncodingException | NoSuchAlgorithmException e) {
-        }
-        return " ";
-    }
-
-    public static String toSha1Key(String s1, String s2)
-    {
-        try {
-            MessageDigest md = MessageDigest.getInstance(Constants.HashFunction);
-            md.reset();
-            md.update(s1.getBytes("UTF-8"));
-            md.update(s2.getBytes("UTF-8"));
-            return ObjectId.fromRaw(md.digest()).name();
-
-        } catch(UnsupportedEncodingException | NoSuchAlgorithmException e) {
-        }
-        return "";
-    }
+    List<PublicUrl> findAllByAuthorUuid(String authorUuid);
 }

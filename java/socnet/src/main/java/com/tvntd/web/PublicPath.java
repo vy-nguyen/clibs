@@ -134,6 +134,7 @@ public class PublicPath
             StartupResponse result = new StartupResponse(profile, reqt, session, false);
             ApiPath.fillStartupResponse(result, profile,
                     profileSvc, authorSvc, articleSvc, artTagSvc);
+            session.removeAttribute("startPage");
             return result;
         }
         if (s_publicDto == null) {
@@ -142,6 +143,7 @@ public class PublicPath
         annonSvc.getAnnonUser(reqt, resp, session);
         StartupResponse result = new StartupResponse(s_publicDto, reqt, session, true);
         fillStartupPublicResponse(result, s_publicDto);
+        session.removeAttribute("startPage");
         return result;
     }
 
@@ -448,6 +450,19 @@ public class PublicPath
         }
         CommentDTOResponse co = commentSvc.getCommentPost(artUuids);
         return new AdsPostDTOResponse(ads, co.getComments());
+    }
+
+    /**
+     * Get a public URL article.
+     */
+    @RequestMapping(value = "/public/article/{tag}/{title}", method = RequestMethod.GET)
+    public String
+    getPublicUrl(@PathVariable(value = "tag") String tag,
+            @PathVariable(value = "title") String title,
+            HttpSession session, HttpServletRequest request, HttpServletResponse resp)
+    {
+        session.setAttribute("startPage", "load tag=" + tag + " title=" + title);
+        return "tvntd";
     }
 
     /**
