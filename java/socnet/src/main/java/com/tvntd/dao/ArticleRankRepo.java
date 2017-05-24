@@ -36,6 +36,7 @@ public interface ArticleRankRepo extends JpaRepository<ArticleRank, Long>
 {
     ArticleRank findByArticleUuid(String uuid);
     ArticleRank findByTagHash(String tagHash);
+    ArticleRank findByPublicUrlOid(String urlOid);
 
     List<ArticleRank> findByAuthorUuid(String uuid);
 

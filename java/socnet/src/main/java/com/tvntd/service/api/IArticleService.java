@@ -55,6 +55,7 @@ public interface IArticleService
     Article getArticle(String artUuid);
 
     ArticleRank getRank(String artUuid);
+    ArticleRank getRank(String tagName, String title);
     List<ArticleRank> getArtRank(String[] artUuids);
     void saveRank(ArticleRank rank);
 
@@ -178,12 +179,15 @@ public interface IArticleService
                 s_log.error(e.toString());
             }
             if (rank != null) {
-                StringBuilder sb = new StringBuilder();
-                sb.append("https://www.tvntd.com/public/article/")
-                    .append(Util.utf8ToUrlString(rank.getTag()))
-                    .append("/")
-                    .append(Util.utf8ToUrlString(topic));
-                articleUrl = sb.toString();
+                String urlTag = rank.getUrlTag();
+                if (urlTag != null) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("https://www.tvntd.com/public/article/")
+                        .append(Util.utf8ToUrlString(rank.getUrlTag()))
+                        .append("/")
+                        .append(Util.utf8ToUrlString(topic));
+                    articleUrl = sb.toString();
+                }
             }
         }
 
@@ -340,6 +344,10 @@ public interface IArticleService
 
         public void setRank(ArticleRank rank, AuthorTag tag) {
             artRank = rank;
+        }
+
+        public boolean setPublicUrl(String publicTag) {
+            return artRank.setPublicUrl(publicTag);
         }
 
         /**

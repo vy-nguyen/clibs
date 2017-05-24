@@ -50,6 +50,7 @@ import com.tvntd.dao.ArticleRepository;
 import com.tvntd.forms.CommentChangeForm;
 import com.tvntd.forms.PostForm;
 import com.tvntd.forms.UuidForm;
+import com.tvntd.key.HashKey;
 import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.service.api.IArtTagService;
@@ -151,6 +152,15 @@ public class ArticleService implements IArticleService
     }
 
     @Override
+    public ArticleRank getRank(String tagName, String title)
+    {
+        String asciiTag = Util.utf8ToUrlString(tagName);
+        String asciiTitle = Util.utf8ToUrlString(title);
+
+        return artRankRepo.findByPublicUrlOid(HashKey.toSha1Key(asciiTag, asciiTitle));
+    }
+
+    @Override
     public void saveRank(ArticleRank rank) {
         artRankRepo.save(rank);
     }
@@ -228,6 +238,7 @@ public class ArticleService implements IArticleService
             form.setAmount(val);
 
         } else if (kind.equals("fav")) {
+            System.out.println("Set fav " + rank);
         }
         if (save == true) {
             artRankRepo.save(rank);

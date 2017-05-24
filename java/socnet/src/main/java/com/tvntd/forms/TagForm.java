@@ -120,6 +120,7 @@ public class TagForm
         private String parent;
         private Long rank;
         private boolean pubTag;
+        private boolean favorite;
         private boolean article;
 
         @Override
@@ -160,6 +161,20 @@ public class TagForm
          */
         public boolean isPubTag() {
             return pubTag;
+        }
+
+        /**
+         * @return the favorite
+         */
+        public boolean isFavorite() {
+            return favorite;
+        }
+
+        /**
+         * @param favorite the favorite to set
+         */
+        public void setFavorite(boolean favorite) {
+            this.favorite = favorite;
         }
 
         /**

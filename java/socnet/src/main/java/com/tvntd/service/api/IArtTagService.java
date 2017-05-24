@@ -30,6 +30,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -49,7 +50,7 @@ public interface IArtTagService
     ArtTagList getUserTagsDTO(String uuid);
     void deleteTag(String tag, String uuid);
 
-    void addPublicTagPost(String pubTag, String uuid);
+    ArtTagDTO addPublicTagPost(String pubTag, String uuid);
     void deletePublicTagPost(String pubTag, String uuid);
     void deletePublicTagPost(byte[] pubTag, String uuid);
 
@@ -67,6 +68,13 @@ public interface IArtTagService
             this();
             this.publicTags = pubList;
             this.deletedTags = delList;
+        }
+
+        public ArtTagList(ArtTagDTO update)
+        {
+            this();
+            publicTags = new ArrayList<>();
+            publicTags.add(update);
         }
 
         /**

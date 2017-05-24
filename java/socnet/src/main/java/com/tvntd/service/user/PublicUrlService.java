@@ -52,6 +52,9 @@ public class PublicUrlService implements IPublicUrlService
         String asciiTag = Util.utf8ToUrlString(tag);
         String asciiTitle = Util.utf8ToUrlString(title);
 
+        System.out.println("Get Tag " + asciiTag + " title " + asciiTitle + ", key " +
+                HashKey.toSha1Key(asciiTag, asciiTitle));
+
         return urlRepo.findByUrlOid(HashKey.toSha1Key(asciiTag, asciiTitle));
     }
 
@@ -64,6 +67,8 @@ public class PublicUrlService implements IPublicUrlService
         PublicUrl url =
             new PublicUrl(HashKey.toSha1Key(asciiTag, asciiTitle), author, article);
 
+        System.out.println("Save Tag " + asciiTag + " title " + asciiTitle + ", key " +
+                url.getUrlOid());
         urlRepo.save(url);
         return url;
     }

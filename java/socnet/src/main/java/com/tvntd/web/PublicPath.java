@@ -134,6 +134,7 @@ public class PublicPath
             StartupResponse result = new StartupResponse(profile, reqt, session, false);
             ApiPath.fillStartupResponse(result, profile,
                     profileSvc, authorSvc, articleSvc, artTagSvc);
+
             session.removeAttribute("startPage");
             return result;
         }
@@ -461,7 +462,13 @@ public class PublicPath
             @PathVariable(value = "title") String title,
             HttpSession session, HttpServletRequest request, HttpServletResponse resp)
     {
-        session.setAttribute("startPage", "load tag=" + tag + " title=" + title);
+        ArticleRank rank = articleSvc.getRank(tag, title);
+        if (rank != null) {
+            session.setAttribute("startPage", "load author=" +
+                    rank.getAuthorUuid() + " articleUuid=" + rank.getArticleUuid());
+        } else {
+            session.setAttribute("startPage", "load author=0 articleUuid=0");
+        }
         return "tvntd";
     }
 

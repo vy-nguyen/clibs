@@ -48,6 +48,8 @@ public class PublicUrl
     @Column(length = 64)
     private String articleUuid;
 
+    public PublicUrl() {}
+
     public PublicUrl(String urlOid, String authorUuid, String artUuid)
     {
         this.urlOid      = urlOid;

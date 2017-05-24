@@ -61,6 +61,7 @@ public class LoginResponse extends GenericResponse
         this.userSelf = profile;
         this.authToken = profile.toProfile().getAuthToken();
         CsrfToken token = (CsrfToken) reqt.getAttribute("_csrf");
+        profile.setStartPage((String) session.getAttribute("startPage"));
 
         if (token != null) {
             csrfToken = token.getToken();
@@ -68,7 +69,6 @@ public class LoginResponse extends GenericResponse
         }
         if (annon == true) {
             annonUser = (AnnonUserDTO) session.getAttribute("annon-user");
-            profile.setStartPage((String) session.getAttribute("startPage"));
         }
     }
 

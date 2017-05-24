@@ -44,13 +44,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.tvntd.forms.ArtTagForm;
+import com.tvntd.models.Article;
+import com.tvntd.models.ArticleRank;
 import com.tvntd.service.api.GenericResponse;
 import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArtTagService.ArtTagDTO;
 import com.tvntd.service.api.IArtTagService.ArtTagList;
+import com.tvntd.service.api.IArticleService;
+import com.tvntd.service.api.IArticleService.ArticleDTO;
+import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
+import com.tvntd.service.api.IPublicUrlService;
 import com.tvntd.service.api.LoginResponse;
 import com.tvntd.service.user.ArtTagService;
 import com.tvntd.util.Constants;
@@ -68,6 +75,12 @@ public class AdminPath
 
     @Autowired
     protected IArtTagService artTagSvc;
+
+    @Autowired
+    protected IArticleService articleSvc;
+
+    @Autowired
+    protected IPublicUrlService urlSvc;
 
     @Secured({"ROLE_Admin"})
     @RequestMapping(value = "/admin", params = {"user"}, method = RequestMethod.GET)
@@ -131,5 +144,35 @@ public class AdminPath
             }
         }
         return UserPath.s_genOkResp;
+    }
+
+    @Secured({"ROLE_Admin"})
+    @RequestMapping(value = "/admin/change-art-tag",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    changeArtTag(@RequestBody ArtTagForm form, HttpSession session)
+    {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return UserPath.s_noProfile;
+        }
+        s_log.debug("Got change article tag request");
+
+        String artUuid = form.getArticleUuid();
+        ArticleDTO article = articleSvc.getArticleDTO(artUuid);
+        if (article == null || !form.getAuthorUuid().equals(article.getAuthorUuid())) {
+            return UserPath.s_invalidArticle;
+        }
+        ArtTagDTO pubTag = artTagSvc.addPublicTagPost(form.getPublicTag(), artUuid);
+        if (pubTag == null) {
+            return UserPath.s_invalidArticle;
+        }
+        ArticleRankDTO rank = article.getRank();
+        rank.setPublicUrl(form.getPublicTag());
+        articleSvc.saveRank(rank.fetchArtRank());
+
+        return new ArtTagList(pubTag);
     }
 }

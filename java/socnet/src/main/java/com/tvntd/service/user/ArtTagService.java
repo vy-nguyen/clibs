@@ -213,18 +213,19 @@ public class ArtTagService implements IArtTagService
     }
 
     @Override
-    public synchronized void addPublicTagPost(String pubTag, String uuid)
+    public synchronized ArtTagDTO addPublicTagPost(String pubTag, String uuid)
     {
         if (pubTag == null || uuid == null) {
-            return;
+            return null;
         }
         ArtTagDTO pub = getTag(pubTag, Constants.PublicUuid);
         if (pub != null) {
             pub.addArtRank(uuid);
             saveTag(pub);
-        } else {
-            s_log.info("Public tag " + pubTag + " doesn't exist");
+            return pub;
         }
+        s_log.info("Public tag " + pubTag + " doesn't exist");
+        return null;
     }
 
     @Override

@@ -50,7 +50,8 @@ import com.tvntd.util.Util;
 
 @Entity
 @Table(indexes = {
-    @Index(columnList = "authorUuid", unique = false)
+    @Index(columnList = "authorUuid", unique = false),
+    @Index(columnList = "publicUrlOid", unique = false)
 })
 public class ArticleRank
 {
@@ -69,6 +70,12 @@ public class ArticleRank
 
     @Column(length = 64)
     private String authorUuid;
+
+    @Column(length = 64)
+    private String publicUrlOid;
+
+    @Column(length = 64)
+    private String urlTag;
 
     @Column(length = 128)
     private byte[] artTitle;
@@ -201,6 +208,21 @@ public class ArticleRank
         }
     }
 
+    public boolean setPublicUrl(String publicTag)
+    {
+        if (artTitle == null) {
+            return false;
+        }
+        urlTag = Util.utf8ToUrlString(publicTag);
+        try {
+            String title = Util.utf8ToUrlString(new String(artTitle, "UTF-8"));
+            publicUrlOid = HashKey.toSha1Key(urlTag, title);
+
+        } catch(UnsupportedEncodingException e) {
+        }
+        return false;
+    }
+
     /**
      * @return the articleId
      */
@@ -246,6 +268,34 @@ public class ArticleRank
      */
     public void setAuthorUuid(String authorUuid) {
         this.authorUuid = authorUuid;
+    }
+
+    /**
+     * @return the publicUrlOid
+     */
+    public String getPublicUrlOid() {
+        return publicUrlOid;
+    }
+
+    /**
+     * @param publicUrlOid the publicUrlOid to set
+     */
+    public void setPublicUrlOid(String publicUrlOid) {
+        this.publicUrlOid = publicUrlOid;
+    }
+
+    /**
+     * @return the urlTag
+     */
+    public String getUrlTag() {
+        return urlTag;
+    }
+
+    /**
+     * @param urlTag the urlTag to set
+     */
+    public void setUrlTag(String urlTag) {
+        this.urlTag = urlTag;
     }
 
     /**
