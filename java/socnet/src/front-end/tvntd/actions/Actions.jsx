@@ -89,6 +89,7 @@ const Actions = Reflux.createActions({
 
     // Admin actions
     listUsers:       completedFailedFn,
+    changeTagArt:    completedFailedFn,
     setTags:         completedFailedFn
 });
 
@@ -106,7 +107,6 @@ function postRestCall(formData, url, json, cbObj, authReq, id, context) {
         data = JSON.stringify(formData);
         content = "application/json; charset=utf-8";
     }
-    console.log("Post request " + url);
     $.ajax({
         type: "POST",
         url : url,
@@ -119,8 +119,6 @@ function postRestCall(formData, url, json, cbObj, authReq, id, context) {
             xhdr.setRequestHeader(header, token);
         }
     }).done(function(resp, text, error) {
-        console.log("REST call ok " + url);
-        console.log(resp);
         resp.cbContext = context;
         cbObj.completed(resp, context);
 
@@ -397,6 +395,12 @@ Actions.listUsers.listen(function() {
 
 Actions.setTags.listen(function(data) {
     postRestCall(data, "/admin/set-tags", true, this, true, "setTags");
+});
+
+Actions.changeTagArt.listen(function(data) {
+    console.log("publish tag");
+    console.log(data);
+    postRestCall(data, "/admin/change-art-tag", true, this, true, "changeTagArt");
 });
 
 /**

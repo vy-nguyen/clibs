@@ -44,6 +44,7 @@ class Startup
         }
         console.log(">>> do start page " + self.startPage);
         start = Startup.parseStartup(self.startPage);
+        console.log(start);
         switch (start.startLink) {
             case "profile":
                 History.pushState(null, "/user/profile");
@@ -56,11 +57,19 @@ class Startup
                 break;
 
             case "load":
-                console.log("tag " + start.tag);
-                console.log("title " + start.title);
+                if (start.authorUuid == null || start.authorUuid == "0") {
+                    History.pushState(null, "/");
+                    ErrorStore.reportMesg("main-error", "Could not find the article",
+                            null, "The link you're looking for doesn't exist.");
+                    return; 
+                }
+                console.log("author     : " + start.author);
+                console.log("articleUuid: " + start.articleUuid);
                 break;
 
             default:
+                console.log("Unknown command");
+                console.log(start);
         }
     }
 }

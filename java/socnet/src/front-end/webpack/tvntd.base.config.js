@@ -18,7 +18,7 @@ var aliases = _.mapValues(scripts.aliases, function(scriptPath) {
 });
 
 var babel_args =
-    'babel?compact=false&presets[]=es2015&presets[]=react&plugins[]=transform-object-rest-spread';
+    'babel?compact=true&presets[]=es2015&presets[]=react&plugins[]=transform-object-rest-spread';
 
 module.exports = {
     context: rootDir,

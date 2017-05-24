@@ -16,7 +16,6 @@ import AboutUsStore     from 'vntd-root/stores/AboutUsStore.jsx';
 import Lang             from 'vntd-root/stores/LanguageStore.jsx';
 import NewsFeed         from '../news-feed/NewsFeed.jsx';
 import MainAds          from '../ads/MainAds.jsx';
-import ErrorNotify      from './ErrorNotify.jsx';
 
 class PriceBox extends React.Component
 {
@@ -285,7 +284,6 @@ class AboutUs extends React.Component
         }
         return (
             <div id="content">
-                <ErrorNotify errorId="main-error"/>
                 <FeatureSection title={welcome.title}
                     titleDetail={welcome.titleDetail} format="bg-gray">
                     <div className="panel-footer text-align-center">

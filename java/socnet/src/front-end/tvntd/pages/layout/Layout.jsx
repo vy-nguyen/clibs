@@ -11,6 +11,7 @@ import Shortcut    from './Shortcut.jsx';
 import Navigation  from './Navigation.jsx';
 import Actions     from 'vntd-root/actions/Actions.jsx';
 import UserStore   from 'vntd-shared/stores/UserStore.jsx';
+import ErrorNotify from '../public/ErrorNotify.jsx';
 
 require('vntd-shared/less/layout.less');
 
@@ -29,6 +30,7 @@ class Layout extends React.Component
             <div className="minified fixed-navigation fixed-header">
                 <Header/>
                 <Navigation/>
+                <ErrorNotify errorId="main-error"/>
                 {/*<Shortcut/>*/}
                 <div className="container" id="main" role="main">
                     {this.props.children}

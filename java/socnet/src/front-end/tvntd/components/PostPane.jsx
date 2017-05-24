@@ -19,6 +19,7 @@ import WidgetGrid   from 'vntd-shared/widgets/WidgetGrid.jsx';
 import JarvisWidget from 'vntd-shared/widgets/JarvisWidget.jsx';
 import ModalConfirm from 'vntd-shared/forms/commons/ModalConfirm.jsx';
 import EditorPost   from 'vntd-shared/forms/commons/EditorPost.jsx';
+import InputStore   from 'vntd-shared/stores/NestableStore.jsx'; 
 
 import ArticleTagStore  from 'vntd-root/stores/ArticleTagStore.jsx';
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
@@ -27,6 +28,7 @@ import StateButton      from 'vntd-shared/utils/StateButton.jsx';
 
 import Panel            from 'vntd-shared/widgets/Panel.jsx'; 
 import { toDateString } from 'vntd-shared/utils/Enum.jsx';
+import { InputInline }  from 'vntd-shared/forms/commons/GenericForm.jsx';
 
 class TagPost extends React.Component
 {
@@ -143,6 +145,69 @@ class TagPost extends React.Component
     }
 };
 
+class PublishArticle extends React.Component {
+    constructor(props) {
+        super(props);
+        this._cancelPublish = this._cancelPublish.bind(this);
+        this._submitArticle = this._submitArticle.bind(this);
+    }
+
+    _cancelPublish() {
+        this.props.doneFn();
+    }
+
+    _submitArticle() {
+        let article = this.props.article, rank = article.rank;
+
+        Actions.changeTagArt({
+            articleUuid: article.articleUuid,
+            authorUuid : article.authorUuid,
+            rank       : rank.rank,
+            score      : rank.score,
+            favorite   : rank.favorite,
+            privTag    : rank.tagName,
+            publicTag  : InputStore.getIndexString("pub-article"),
+            published  : article.published
+        });
+        this.props.doneFn();
+    }
+
+    render() {
+        const fmt = "btn btn-primary pull-right";
+        let selOpt = ArticleTagStore.getPublicTagsSelOpt("blog"),
+            selDef = !_.isEmpty(selOpt) ? selOpt[0].label : null,
+        pubCat = {
+            select   : true,
+            inpName  : "pub-article",
+            inpDefVal: selDef,
+            inpHolder: selDef,
+            selectOpt: selOpt,
+            onSelect : null,
+            errorId  : "pub-article",
+            errorFlag: null,
+            labelTxt : "Category",
+            labelFmt : 'control-label col-sx-2 col-sm-2 col-md-2 col-lg-2',
+            inputFmt : 'control-label col-sx-10 col-sm-10 col-md-10 col-lg-10'
+        };
+
+        return (
+            <div className="product-deatil">
+                <div className="row">
+                    <InputInline entry={pubCat}/>
+                </div>
+                <div className="modal-footer">
+                    <button className={fmt} onClick={this._submitArticle}>
+                        <Mesg text="Submit"/>
+                    </button>
+                    <button className={fmt} onClick={this._cancelPublish}>
+                        <Mesg text="Cancel"/>
+                    </button>
+                </div>
+            </div>
+        );
+    }
+};
+
 class PostPane extends React.Component {
 
     constructor(props) {
@@ -173,6 +238,22 @@ class PostPane extends React.Component {
         this._cancelDel      = this._cancelDel.bind(this);
         this._editArticle    = this._editArticle.bind(this);
         this._toggleFavorite = this._toggleFavorite.bind(this);
+        this._donePublish    = this._donePublish.bind(this);
+        this._updateState    = this._updateState.bind(this);
+    }
+
+    componentDidMount() {
+        this.unsub = ArticleTagStore.listen(this._updateState);
+    }
+
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    _updateState() {
     }
 
     _rawMarkup() {
@@ -200,6 +281,10 @@ class PostPane extends React.Component {
         });
     }
 
+    _donePublish() {
+        this.refs.publish.closeModal();
+    }
+
     _editArticle() {
         this.setState({
             editMode: true
@@ -211,7 +296,7 @@ class PostPane extends React.Component {
         let adminItem = null,
             ownerItem = null,
             article = this.props.data,
-            modal = (
+        modal = (
             <ModalConfirm ref="modal" height="auto"
                 modalTitle="Delete this article post?">
                 <div className="modal-footer">
@@ -222,6 +307,11 @@ class PostPane extends React.Component {
                         <Mesg text="Cancel"/>
                     </button>
                 </div>
+            </ModalConfirm>
+        ),
+        publishModal = (
+            <ModalConfirm ref="publish" height="auto" modalTitle="Publish Article">
+                <PublishArticle article={article} doneFn={this._donePublish}/>
             </ModalConfirm>
         );
 
@@ -249,6 +339,7 @@ class PostPane extends React.Component {
                         this.setState({
                             publish: true
                         });
+                        this.refs.publish.openModal();
                     }.bind(this)
                 } ];
             }  
@@ -339,6 +430,7 @@ class PostPane extends React.Component {
                 </div>
                 {tagPost}
                 {modal}
+                {publishModal}
                 <PostItem data={article.pictureUrl}/>
                 <div style={divStyle} dangerouslySetInnerHTML={this._rawMarkup()}/>
                 <PostComment articleUuid={article.articleUuid}/>

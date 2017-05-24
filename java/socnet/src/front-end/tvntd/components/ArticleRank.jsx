@@ -86,7 +86,8 @@ class ArticleRank extends React.Component
 
         if (this.props.noBtn == null) {
             readBtn = (
-                <StateButton btnId={this.artBtnId} className="btn btn-success" onClick={this._toggleFullArticle}/>
+                <StateButton btnId={this.artBtnId} className="btn btn-success"
+                    onClick={this._toggleFullArticle}/>
             );
         }
         if (this.state.article != null && this.state.fullArt === "fullArt") {
