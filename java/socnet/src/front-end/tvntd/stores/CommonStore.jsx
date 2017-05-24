@@ -355,4 +355,5 @@ class CommonStore {
     }
 }
 
+export {CommonStore, Article}
 export default CommonStore;

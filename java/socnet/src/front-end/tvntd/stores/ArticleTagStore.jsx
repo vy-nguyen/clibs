@@ -15,7 +15,7 @@ import {
 } from 'vntd-shared/utils/Enum.jsx';
 
 import {
-    EProductStore, AdsStore
+    EProductStore, AdsStore, ArticleStore
 } from 'vntd-root/stores/ArticleStore.jsx';
 
 class ArtTag {
@@ -28,7 +28,11 @@ class ArtTag {
         if (_.isEmpty(this.parentTag)) {
             this.parentTag = null;
         }
+        this.restoreArticle();
         return this;
+    }
+
+    restoreArticle() {
     }
 
     addSubTag(sub) {
@@ -108,6 +112,11 @@ let ArticleTagStore = Reflux.createStore({
 
     onGetPublishAdsCompleted: function(data) {
         this.trigger(this.data);
+    },
+
+    onChangeTagArtCompleted: function(data) {
+        console.log("update tag done");
+        console.log(data);
     },
 
     /* Public methods. */
