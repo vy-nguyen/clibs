@@ -4,16 +4,17 @@
  */
 'use strict';
 
-import Reflux       from 'reflux';
-import Actions      from 'vntd-root/actions/Actions.jsx';
-import CommonStore  from 'vntd-root/stores/CommonStore.jsx';
+import Reflux         from 'reflux';
+import Actions        from 'vntd-root/actions/Actions.jsx';
+import CommonStore    from 'vntd-root/stores/CommonStore.jsx';
 
 let EProductStore = Reflux.createStore({
     store: {},
     listenables: Actions,
 
     init: function() {
-        this.store = new CommonStore('estore');
+        this.store = new CommonStore();
+        this.store.init('estore');
     },
 
     getProductsByAuthor: function(uuid) {
@@ -74,7 +75,8 @@ let AdsStore = Reflux.createStore({
     listenables: Actions,
 
     init: function() {
-        this.store = new CommonStore('adstore');
+        this.store = new CommonStore();
+        this.store.init('adstore');
     },
 
     getAdsByUuid: function(uuid) {
@@ -119,7 +121,8 @@ let ArticleStore = Reflux.createStore({
     listenables: Actions,
 
     init: function() {
-        this.store = new CommonStore('blog');
+        this.store = new CommonStore();
+        this.store.init('blog');
     },
 
     /**
@@ -233,5 +236,5 @@ let ArticleStore = Reflux.createStore({
     },
 });
 
-export { EProductStore, ArticleStore, AdsStore };
+export { EProductStore, ArticleStore, AdsStore }
 export default ArticleStore;
