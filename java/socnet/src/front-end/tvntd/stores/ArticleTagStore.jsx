@@ -18,6 +18,16 @@ import {
     EProductStore, AdsStore, ArticleStore
 } from 'vntd-root/stores/ArticleStore.jsx';
 
+function sortArticle(pivot, article) {
+    if (pivot.createdDate > article.createdDate) {
+        return 1;
+
+    } else if (pivot.createdDate == article.createdDate) {
+        return -1;
+    }
+    return 0;
+}
+
 class ArtTag {
     constructor(data) {
         this._id  = _.uniqueId('id-art-tag-');
@@ -33,6 +43,28 @@ class ArtTag {
     }
 
     restoreArticle() {
+        let sortedArts = [], resolveArts = [], store = null;
+
+        if (this.tagKind === "ads") {
+            store = AdsStore.store;
+        } else if (this.tagKind == "estore") {
+            store = EProductStore.store;
+        } else {
+            store = ArticleStore.store;
+        }
+
+        _.forEach(this.articleRank, function(artUuid) {
+            let article = store.getItemByUuid(artUuid);
+
+            if (article == null) {
+                resolveArts.push(artUuid);
+            } else {
+                insertSorted(article, sortedArts, sortArticle);
+            }
+        });
+        console.log(sortedArts);
+        console.log("unresolve -------------");
+        console.log(resolveArts);
     }
 
     addSubTag(sub) {

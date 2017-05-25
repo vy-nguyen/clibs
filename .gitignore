@@ -52,6 +52,7 @@ java/socnet/src/main/webapp/client
 java/socnet/.classpath
 java/socnet/.settings/*
 java/socnet/tvntd-*.log
+java/socnet/src/front-end/vntd-*
 foss/**
 include/foss/*
 */include/*-def.cpp
