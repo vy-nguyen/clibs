@@ -13,8 +13,7 @@ let EProductStore = Reflux.createStore({
     listenables: Actions,
 
     init: function() {
-        this.store = new CommonStore();
-        this.store.init('estore');
+        this.store = new CommonStore('estore');
     },
 
     getProductsByAuthor: function(uuid) {
@@ -61,6 +60,10 @@ let EProductStore = Reflux.createStore({
         this.store.updateMissingUuid(uuids);
     },
 
+    updatePublicTags: function(tags) {
+        this.store.updatePublicTags(tags, Actions.getPublishProds);
+    },
+
     requestProducts: function() {
         this.store.requestItems(Actions.getPublishProds);
     },
@@ -75,8 +78,7 @@ let AdsStore = Reflux.createStore({
     listenables: Actions,
 
     init: function() {
-        this.store = new CommonStore();
-        this.store.init('adstore');
+        this.store = new CommonStore('adstore');
     },
 
     getAdsByUuid: function(uuid) {
@@ -107,6 +109,10 @@ let AdsStore = Reflux.createStore({
         this.store.updateMissingUuid(uuids);
     },
 
+    updatePublicTags: function(tags) {
+        this.store.updatePublicTags(tags, Actions.getPublishAds);
+    },
+
     requestAds: function() {
         this.store.requestItems(Actions.getPublishAds);
     },
@@ -121,8 +127,7 @@ let ArticleStore = Reflux.createStore({
     listenables: Actions,
 
     init: function() {
-        this.store = new CommonStore();
-        this.store.init('blog');
+        this.store = new CommonStore('blog');
     },
 
     /**
@@ -167,6 +172,10 @@ let ArticleStore = Reflux.createStore({
     },
 
     sortArticlesByScore: function(articles) {
+    },
+
+    updatePublicTags: function(tags) {
+        // this.store.updatePublicTags(tags, Actions.getPublishAds);
     },
 
     dumpData: function(header) {
@@ -236,5 +245,16 @@ let ArticleStore = Reflux.createStore({
     },
 });
 
-export { EProductStore, ArticleStore, AdsStore }
+function getStoreKind(kind, spec) {
+    let out = ArticleStore;
+
+    if (kind === "ads") {
+        return out = AdsStore;
+    } else if (kind === "estore") {
+        return out = EProductStore;
+    }
+    return spec == null ? out.store : out;
+}
+
+export { EProductStore, ArticleStore, AdsStore, getStoreKind }
 export default ArticleStore;

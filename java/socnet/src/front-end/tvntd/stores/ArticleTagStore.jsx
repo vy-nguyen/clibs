@@ -9,14 +9,12 @@ import Reflux    from 'reflux';
 import Actions   from 'vntd-root/actions/Actions.jsx';
 
 import {tagKinds}                  from 'vntd-root/components/TagInfo.jsx';
+import {getStoreKind}              from 'vntd-root/stores/ArticleStore.jsx';
 import {cloneInputEntry}           from 'vntd-shared/forms/commons/GenericForm.jsx';
 import {
     insertSorted, removeArray, stringCmp
 } from 'vntd-shared/utils/Enum.jsx';
 
-import {
-    EProductStore, AdsStore, ArticleStore
-} from 'vntd-root/stores/ArticleStore.jsx';
 
 function sortArticle(pivot, article) {
     if (pivot.createdDate > article.createdDate) {
@@ -38,33 +36,34 @@ class ArtTag {
         if (_.isEmpty(this.parentTag)) {
             this.parentTag = null;
         }
-        this.restoreArticle();
         return this;
     }
 
-    restoreArticle() {
-        let sortedArts = [], resolveArts = [], store = null;
+    sortArticles() {
+        let sortedArts, unResolved, store = getStoreKind(this.tagKind);
 
-        if (this.tagKind === "ads") {
-            store = AdsStore.store;
-        } else if (this.tagKind == "estore") {
-            store = EProductStore.store;
-        } else {
-            store = ArticleStore.store;
+        if (this.sortedArts != null) {
+            return;
         }
+        sortedArts = [];
+        unResolved = [];
 
         _.forEach(this.articleRank, function(artUuid) {
             let article = store.getItemByUuid(artUuid);
 
             if (article == null) {
-                resolveArts.push(artUuid);
+                console.log("store kind " + store.storeKind +
+                            " article " + artUuid);
+                unResolved.push(artUuid);
             } else {
                 insertSorted(article, sortedArts, sortArticle);
             }
         });
-        console.log(sortedArts);
-        console.log("unresolve -------------");
-        console.log(resolveArts);
+        this.sortedArts  = sortedArts;
+        this.unuResolved = unResolved;
+        this.articleRank = sortedArts.map(function(art) {
+            return art.articleUuid;
+        });
     }
 
     addSubTag(sub) {
@@ -127,19 +126,12 @@ let ArticleTagStore = Reflux.createStore({
 
     /* Signal to sync up data with server. */
     onSyncServerCompleted: function() {
-        let pubTags = this.data.sortedTagKind["estore"];
+        let store, data = this.data, kind = [ "estore", "ads" ];
 
-        _.forEach(pubTags, function(tag) {
-            EProductStore.updateMissingUuid(tag.articleRank);
+        _.forEach(kind, function(k) {
+            store = getStoreKind(k, true);
+            store.updatePublicTags(data.sortedTagKind[k]);
         });
-        EProductStore.requestProducts();
-
-        // Add to ads store.
-        pubTags = this.data.sortedTagKind["ads"];
-        _.forEach(pubTags, function(tag) {
-            AdsStore.updateMissingUuid(tag.articleRank);
-        });
-        AdsStore.requestAds();
     },
 
     onGetPublishAdsCompleted: function(data) {

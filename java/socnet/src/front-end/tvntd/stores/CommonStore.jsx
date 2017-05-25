@@ -244,6 +244,14 @@ class CommonStore {
         }.bind(this));
     }
 
+    updatePublicTags(tags, actionFn) {
+        _.forEach(tags, function(t) {
+            this.updateMissingUuid(t.articleRank);
+        }.bind(this));
+
+        this.requestItems(actionFn);
+    }
+
     requestItems(actionFn) {
         if (this.data.requestdUuids != null || this.data.missingUuids == null) {
             return;
