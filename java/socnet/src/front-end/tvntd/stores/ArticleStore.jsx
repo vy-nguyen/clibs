@@ -249,9 +249,9 @@ function getStoreKind(kind, spec) {
     let out = ArticleStore;
 
     if (kind === "ads") {
-        return out = AdsStore;
+        out = AdsStore;
     } else if (kind === "estore") {
-        return out = EProductStore;
+        out = EProductStore;
     }
     return spec == null ? out.store : out;
 }

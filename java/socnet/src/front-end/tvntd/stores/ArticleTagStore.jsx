@@ -122,6 +122,10 @@ let ArticleTagStore = Reflux.createStore({
             this._updateParents();
             this.trigger(this.data, tagData);
         }
+        _.forEach([ "blog", "estore", "ads" ], function(kind) {
+            let store = getStoreKind(kind);
+            store.listenChanges("tagStore", this);
+        }.bind(this));
     },
 
     /* Signal to sync up data with server. */
@@ -132,6 +136,11 @@ let ArticleTagStore = Reflux.createStore({
             store = getStoreKind(k, true);
             store.updatePublicTags(data.sortedTagKind[k]);
         });
+    },
+
+    onItemsChanged: function(storeKind, code, changeList) {
+        console.log("Change in " + code + ", store " + storeKind);
+        console.log(changeList);
     },
 
     onGetPublishAdsCompleted: function(data) {

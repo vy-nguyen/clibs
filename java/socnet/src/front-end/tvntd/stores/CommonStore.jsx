@@ -10,7 +10,7 @@ import Actions      from 'vntd-root/actions/Actions.jsx';
 import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
 import CommentStore from 'vntd-root/stores/CommentStore.jsx';
 import UserStore    from 'vntd-shared/stores/UserStore.jsx';
-import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
+//import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 
 import {insertSorted, preend, removeArray} from 'vntd-shared/utils/Enum.jsx';
 
@@ -115,9 +115,22 @@ class CommonStore {
             errorText    : "",
             errorResp    : null,
             itemKinds    : {},
-            storeKind    : kind
+            storeKind    : kind,
+            listenChanges: {}
         }
         return this.data;
+    }
+
+    listenChanges(key, listener) {
+        this.data.listenChanges[key] = listener;
+    }
+
+    _notifyListeners(code, changeList) {
+        let storeKind = this.data.storeKind;
+
+        _.forOwn(this.data.listenChanges, function(list) {
+            list.onItemsChanged(storeKind, code, changeList);
+        });
     }
 
     getItemsByAuthor(uuid, fetch) {
@@ -199,7 +212,8 @@ class CommonStore {
             pubTag = it.publicTag;
 
         this.data.myItemPost = it;
-        ArticleTagStore.addToPublicTag(pubTag, this.storeKind, it.articleUuid);
+        this._notifyListeners("add", [it]);
+        // ArticleTagStore.addToPublicTag(pubTag, this.storeKind, it.articleUuid);
         store.trigger(this.data, [it], "postOk", true, it.authorUuid);
     }
 
@@ -217,6 +231,9 @@ class CommonStore {
 
         this.data.requestUuids = null;
         this.requestItems();
+        if (!_.isEmpty(items)) {
+            this._notifyListeners("add", items);
+        }
         store.trigger(this.data, items, "getOk", !_.isEmpty(items), null);
     }
 
@@ -225,7 +242,9 @@ class CommonStore {
     }
 
     onDeleteItemCompleted(data, store) {
-        this._removeItemStore(data.uuids, data.authorUuid);
+        let out = this._removeItemStore(data.uuids, data.authorUuid);
+
+        this._notifyListeners("remove", out);
         store.trigger(this.data, [data], "delOk", true, data.authorUuid);
     }
 
@@ -248,7 +267,6 @@ class CommonStore {
         _.forEach(tags, function(t) {
             this.updateMissingUuid(t.articleRank);
         }.bind(this));
-
         this.requestItems(actionFn);
     }
 
@@ -305,16 +323,18 @@ class CommonStore {
     }
 
     _removeItemStore(itemUuids, authorUuid, silent) {
-        let item, anchor = this.getItemOwner(authorUuid);
+        let item, result = [], anchor = this.getItemOwner(authorUuid);
 
         _.forEach(itemUuids, function(articleUuid) {
             anchor.removeArticle(articleUuid);
+            item = this.data.itemsByUuid[articleUuid];
+            result.push(item);
             if (silent == true) {
-                item = this.data.itemsByUuid[articleUuid];
                 AuthorStore.removeArticleRank(item, silent);
             }
             delete this.data.itemsByUuid[articleUuid];
         }.bind(this));
+        return result;
     }
 
     _triggerStore(store, item, code) {
