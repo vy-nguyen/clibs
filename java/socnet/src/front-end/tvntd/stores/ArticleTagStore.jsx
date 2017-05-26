@@ -9,8 +9,12 @@ import Reflux    from 'reflux';
 import Actions   from 'vntd-root/actions/Actions.jsx';
 
 import {tagKinds}                  from 'vntd-root/components/TagInfo.jsx';
-import {getStoreKind}              from 'vntd-root/stores/ArticleStore.jsx';
 import {cloneInputEntry}           from 'vntd-shared/forms/commons/GenericForm.jsx';
+
+import {
+    GetStoreKind, LookupArticle
+} from 'vntd-root/stores/ArticleStore.jsx';
+
 import {
     insertSorted, removeArray, stringCmp
 } from 'vntd-shared/utils/Enum.jsx';
@@ -36,11 +40,14 @@ class ArtTag {
         if (_.isEmpty(this.parentTag)) {
             this.parentTag = null;
         }
+        if (this.articleRank == null) {
+            this.articleRank = [];
+        }
         return this;
     }
 
     sortArticles(unResolved) {
-        let sortedArts, store = getStoreKind(this.tagKind);
+        let sortedArts, store = GetStoreKind(this.tagKind);
 
         if (this.sortedArts != null) {
             return;
@@ -73,6 +80,22 @@ class ArtTag {
             return;
         }
         insertSorted(article, this.sortedArts, sortArticle);
+    }
+
+    addArticle(unResolved, artUuid) {
+        if (artUuid == null) {
+            return;
+        }
+        article = LookupArticle(artUuid);
+        if (article == null) {
+            unResolved[artUuid] = this;
+        }
+        if (this.articleRank.indexOf(artUuid) < 0) {
+            this.articleRank.push(artUuid);
+            if (article != null) {
+                this.resolveArticle(null, article);
+            }
+        }
     }
 
     addSubTag(sub) {
@@ -133,7 +156,7 @@ let ArticleTagStore = Reflux.createStore({
             this.trigger(this.data, tagData);
         }
         _.forEach([ "blog", "estore", "ads" ], function(kind) {
-            let store = getStoreKind(kind);
+            let store = GetStoreKind(kind);
             store.listenChanges(this, 'onItemsChanged');
         }.bind(this));
     },
@@ -143,7 +166,7 @@ let ArticleTagStore = Reflux.createStore({
         let store, data = this.data, kind = [ "estore", "ads" ];
 
         _.forEach(kind, function(k) {
-            store = getStoreKind(k, true);
+            store = GetStoreKind(k, true);
             store.updatePublicTags(data.sortedTagKind[k]);
         });
     },
@@ -190,12 +213,8 @@ let ArticleTagStore = Reflux.createStore({
             this._addNewPublicTag(artRank, parentTag, articleUuid);
             this.trigger(this.data);
 
-        } else if (tag.articleRank != null) {
-            let artRank = tag.articleRank;
-            if (artRank.indexOf(articleUuid) < 0) {
-                artRank.push(articleUuid);
-                this.trigger(this.data);
-            }
+        } else {
+            tag.addArticle(this.data.unResolved, articleUuid);
         }
         this.data.pendArtPubTag[artRank.tagName] = tag;
     },
@@ -372,33 +391,11 @@ let ArticleTagStore = Reflux.createStore({
             parentTag: parentTag,
             tagKind  : artRank.tagKind,
             subTags  : [],
-            articleRank: (articleUuid != null ? [ articleUuid ] : [])
+            articleRank: []
         });
+        tag.addArticle(this.data.unResolved, articleUuid);
         this._addTag(tag);
         return tag;
-    },
-
-    _toTagArray: function(array, tagMgr) {
-        _.forOwn(tagMgr, function(tag) {
-            this._flatTagArray(array, tag);
-        }.bind(this));
-        return array;
-    },
-
-    _flatTagArray: function(array, tag) {
-        if (tag.subTags != null) {
-            _.forEach(tag.subTags, function(sub) {
-                this._flatTagArray(array, sub);
-            }.bind(this));
-        }
-        array.push({
-            tagName  : tag.tagName,
-            rankScore: tag.rankScore != null ? tag.rankScore : 50,
-            parentTag: tag.parentTag,
-            tagKind  : tag.tagKind,
-            subTags  : [],
-            articleRank: tag.articleRank != null ? tag.articleRank : []
-        });
     },
 
     /**
@@ -505,30 +502,21 @@ let ArticleTagStore = Reflux.createStore({
     /*
      * @return list of article uuids under the given tag.
      */
-    getPublishedArticles: function(tagName, artUuids, store) {
+    getPublishedArticles: function(tagName, artUuids) {
         let artObj, tag = this.data.pubTagIndex[tagName];
 
         if (tag != null) {
-            _.forOwn(tag.articleRank, function(uuid) {
-                if (store != null) {
-                    artObj = store.getItemByUuid(uuid);
-                    if (artObj != null) {
-                        artUuids.push({
-                            artUuid: uuid,
-                            artTag : tag,
-                            artObj : artObj
-                        });
-                    }
-                } else {
-                    artUuids.push({
-                        artUuid: uuid,
-                        artTag : tag
-                    });
-                }
+            _.forOwn(tag.sortedArts, function(artObj) {
+                artObj.publishTag = tag;
+                artUuids.push({
+                    artUuid: artObj.articleUuid,
+                    artTag : tag,
+                    artObj : artObj
+                });
             });
             if (tag.subTags != null) {
                 _.forOwn(tag.subTags, function(sub) {
-                    this.getPublishedArticles(sub.tagName, artUuids, store);
+                    this.getPublishedArticles(sub.tagName, artUuids);
                 }.bind(this));
             }
         }
@@ -539,20 +527,8 @@ let ArticleTagStore = Reflux.createStore({
      * @return true if the given uuid is listed in this store.
      */
     hasPublishedArticle: function(artUuid) {
-        let ret = false;
-        let tags = this.data.pubTagIndex;
-        _.forOwn(tags, function(t) {
-            _.forOwn(t.articleRank, function(uuid) {
-                if (uuid === artUuid) {
-                    ret = true;
-                    return false; // bail out early.
-                }
-            });
-            if (ret == true) {
-                return false;
-            }
-        });
-        return ret;
+        let article = LookupArticle(artUuid);
+        return article.publishTag != null;
     },
 
     getTagTableData: function(edit, kind, ownerUuid) {

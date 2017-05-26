@@ -67,7 +67,7 @@ class AdsTableListing extends React.Component
         let adsList = [], tagList = this.props.tagList;
 
         _.forEach(tagList, function(tagName) {
-            ArticleTagStore.getPublishedArticles(tagName, adsList, AdsStore.store);
+            ArticleTagStore.getPublishedArticles(tagName, adsList);
         });
         return (
             <section id='widget-grid'>

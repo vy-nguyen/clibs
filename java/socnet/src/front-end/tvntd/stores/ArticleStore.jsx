@@ -245,7 +245,7 @@ let ArticleStore = Reflux.createStore({
     },
 });
 
-function getStoreKind(kind, spec) {
+function GetStoreKind(kind, spec) {
     let out = ArticleStore;
 
     if (kind === "ads") {
@@ -256,5 +256,17 @@ function getStoreKind(kind, spec) {
     return spec == null ? out.store : out;
 }
 
-export { EProductStore, ArticleStore, AdsStore, getStoreKind }
+function LookupArticle(artUuid) {
+    const stores = [ ArticleStore.store, EProductStore.store, AdsStore.store ];
+
+    for (let i = 0; i < stores.length; i++) {
+        let article = stores[i].getItemByUuid(artUuid);
+        if (article != null) {
+            return article;
+        }
+    }
+    return null;
+}
+
+export { EProductStore, ArticleStore, AdsStore, GetStoreKind, LookupArticle }
 export default ArticleStore;
