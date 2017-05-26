@@ -39,31 +39,40 @@ class ArtTag {
         return this;
     }
 
-    sortArticles() {
-        let sortedArts, unResolved, store = getStoreKind(this.tagKind);
+    sortArticles(unResolved) {
+        let sortedArts, store = getStoreKind(this.tagKind);
 
         if (this.sortedArts != null) {
             return;
         }
         sortedArts = [];
-        unResolved = [];
-
         _.forEach(this.articleRank, function(artUuid) {
             let article = store.getItemByUuid(artUuid);
 
             if (article == null) {
-                console.log("store kind " + store.storeKind +
-                            " article " + artUuid);
-                unResolved.push(artUuid);
+                unResolved[artUuid] = this;
             } else {
                 insertSorted(article, sortedArts, sortArticle);
             }
-        });
-        this.sortedArts  = sortedArts;
-        this.unuResolved = unResolved;
-        this.articleRank = sortedArts.map(function(art) {
-            return art.articleUuid;
-        });
+        }.bind(this));
+
+        if (!_.isEmpty(sortedArts)) {
+            this.sortedArts  = sortedArts;
+            this.articleRank = sortedArts.map(function(art) {
+                return art.articleUuid;
+            });
+        }
+    }
+
+    resolveArticle(unResolved, article) {
+        if (unResolved != null) {
+            delete unResolved[article.articleUuid];
+        }
+        if (this.sortedArts == null) {
+            this.sortedArts = [article];
+            return;
+        }
+        insertSorted(article, this.sortedArts, sortArticle);
     }
 
     addSubTag(sub) {
@@ -108,7 +117,8 @@ let ArticleTagStore = Reflux.createStore({
             sortedPubTags: [],
             sortedIdxTags: [],
             sortedTagKind: {},
-            pendArtPubTag: {}
+            pendArtPubTag: {},
+            unResolved   : {}
         };
     },
 
@@ -124,7 +134,7 @@ let ArticleTagStore = Reflux.createStore({
         }
         _.forEach([ "blog", "estore", "ads" ], function(kind) {
             let store = getStoreKind(kind);
-            store.listenChanges("tagStore", this);
+            store.listenChanges(this, 'onItemsChanged');
         }.bind(this));
     },
 
@@ -139,8 +149,24 @@ let ArticleTagStore = Reflux.createStore({
     },
 
     onItemsChanged: function(storeKind, code, changeList) {
+        let data = this.data, unResolved = data.unResolved;
+
         console.log("Change in " + code + ", store " + storeKind);
-        console.log(changeList);
+        _.forEach(changeList, function(article) {
+            let tagName, tag = unResolved[article.articleUuid];
+
+            if (tag != null) {
+                tag.resolveArticle(unResolved, article);
+            } else {
+                tagName = article.getTagName();
+                if (tagName != null) {
+                    tag = data.pubTagIndex[tagName];
+                    if (tag != null && tag.tagKind === storeKind) {
+                        tag.resolveArticle(null, article);
+                    }
+                }
+            }
+        });
     },
 
     onGetPublishAdsCompleted: function(data) {
@@ -195,16 +221,6 @@ let ArticleTagStore = Reflux.createStore({
             return tag;
         }
         return this.data.publicTags[tagName];
-    },
-
-    addToPublicTag: function(tagName, tagKind, uuid) {
-        let tag = this.data.pubTagIndex[tagName];
-        if (tag != null) {
-            if (tag.tagKind === tagKind) {
-                console.log("same tag kind " + tagKind);
-            }
-            tag.articleRank.push(uuid);
-        }
     },
 
     updatePublicTags: function(tagRanks, tagMgr) {
@@ -426,6 +442,7 @@ let ArticleTagStore = Reflux.createStore({
             insertSorted(tagObj, this.data.sortedPubTags, this._compareTags);
         }
         this._addSortedTagKind(tagObj);
+        tagObj.sortArticles(this.data.unResolved);
     },
 
     _addSortedTagKind: function(tagObj) {

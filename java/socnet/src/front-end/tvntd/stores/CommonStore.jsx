@@ -10,7 +10,6 @@ import Actions      from 'vntd-root/actions/Actions.jsx';
 import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
 import CommentStore from 'vntd-root/stores/CommentStore.jsx';
 import UserStore    from 'vntd-shared/stores/UserStore.jsx';
-//import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 
 import {insertSorted, preend, removeArray} from 'vntd-shared/utils/Enum.jsx';
 
@@ -29,6 +28,19 @@ class Article {
             CommentStore.addArtAttr(data.rank);
         }
         return this;
+    }
+
+    getTagName() {
+        if (this.rank != null) {
+            return this.rank.tagName;
+        }
+        if (this.adsRank != null) {
+            return this.adsRank.tagName;
+        }
+        if (this.publicTag != null) {
+            return this.publicTag;
+        }
+        return null;
     }
 }
 
@@ -121,15 +133,15 @@ class CommonStore {
         return this.data;
     }
 
-    listenChanges(key, listener) {
+    listenChanges(listener, key) {
         this.data.listenChanges[key] = listener;
     }
 
     _notifyListeners(code, changeList) {
         let storeKind = this.data.storeKind;
 
-        _.forOwn(this.data.listenChanges, function(list) {
-            list.onItemsChanged(storeKind, code, changeList);
+        _.forOwn(this.data.listenChanges, function(callback, key) {
+            callback[key](storeKind, code, changeList);
         });
     }
 
@@ -213,7 +225,6 @@ class CommonStore {
 
         this.data.myItemPost = it;
         this._notifyListeners("add", [it]);
-        // ArticleTagStore.addToPublicTag(pubTag, this.storeKind, it.articleUuid);
         store.trigger(this.data, [it], "postOk", true, it.authorUuid);
     }
 

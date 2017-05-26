@@ -78,7 +78,7 @@ let AdsStore = Reflux.createStore({
     listenables: Actions,
 
     init: function() {
-        this.store = new CommonStore('adstore');
+        this.store = new CommonStore('ads');
     },
 
     getAdsByUuid: function(uuid) {
