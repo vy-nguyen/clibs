@@ -21,13 +21,7 @@ import {
 
 
 function sortArticle(pivot, article) {
-    if (pivot.createdDate > article.createdDate) {
-        return 1;
-
-    } else if (pivot.createdDate == article.createdDate) {
-        return -1;
-    }
-    return 0;
+    return article.createdDate - pivot.createdDate;
 }
 
 class ArtTag {
@@ -69,6 +63,7 @@ class ArtTag {
                 return art.articleUuid;
             });
         }
+        this.debugPrint();
     }
 
     resolveArticle(unResolved, article) {
@@ -95,6 +90,15 @@ class ArtTag {
             if (article != null) {
                 this.resolveArticle(null, article);
             }
+        }
+    }
+
+    debugPrint() {
+        if (!_.isEmpty(this.sortedArts)) {
+            console.log("Tag " + this.tagName);
+            _.forEach(this.sortedArts, function(article) {
+                console.log("[" + article.createdDate + "] " + article.topic);
+            });
         }
     }
 

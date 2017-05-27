@@ -13,41 +13,58 @@ const testParams = {
     insertSorted: [ 100, 1000, 10000, 10000 ]
 };
 
-describe('Test Sorted Functions', function() {
-    it('Insert sorted', function() {
-        let cmpFn = function(a, b) {
-            return a - b;
-        };
-        let verifySorted = function(array) {
-            let verify = [];
-            let length = array.length - 1;
+function verifySorted(array, cmpFn) {
+    let verify = [];
+    let length = array.length - 1;
 
-            for (let i = 0; i < length; i++) {
-                assert(array[i] <= array[i + 1], "Wrong sorted element at " + i);
-                verify.push({
-                    index: i,
-                    value: array[i]
-                });
-            }
-            for (let i = 0; i < length; i++) {
-                let idx = findSorted(verify[i].value, array, cmpFn);
-                assert(idx !== -1, "Failed to locate back the element");
-                assert(idx === verify[i].index || array[idx] == verify[i].value,
-                       "Wrong lookup recheck at " + idx);
-            }
-        };
+    for (let i = 0; i < length; i++) {
+        assert(array[i] <= array[i + 1], "Wrong sorted element at " + i);
+        verify.push({
+            index: i,
+            value: array[i]
+        });
+    }
+    for (let i = 0; i < length; i++) {
+        let idx = findSorted(verify[i].value, array, cmpFn);
+        assert(idx !== -1, "Failed to locate back the element");
+        assert(idx === verify[i].index || array[idx] == verify[i].value,
+               "Wrong lookup recheck at " + idx);
+    }
+}
+
+function sortCompare(a, b) {
+    return a - b;
+}
+
+describe('Test Insert Sort Functions', function() {
+    it('Insert sorted', function() {
         let sortTest = function(loop) {
             let array = [];
             for (let i = 0; i < loop; i++) {
                 let num = getRandomInt(0, 100000);
-                insertSorted(num, array, cmpFn);
+                insertSorted(num, array, sortCompare);
             }
-            verifySorted(array);
+            verifySorted(array, sortCompare);
         }
         _.forEach(testParams.insertSorted, function(it) {
             sortTest(it);
             console.log("Tested insertSorted with " + it + " elements");
         });
+    });
+});
+
+describe('Test Sort Funciton', function() {
+    it('Sort Array', function() {
+        const data = [
+            1488453240000, 1494196620000, 1488181980000, 1489947660000, 1489902120000, 
+            1488177600000, 1487006220000, 1486801860000, 1486577100000, 1483333020000,
+            1491022620000, 1491027600000, 1491028800000, 1495780200000, 1487006220000
+        ];
+        let sort = [];
+        _.forEach(data, function(item) {
+            insertSorted(item, sort, sortCompare);
+        });
+        verifySorted(sort, sortCompare);
     });
 });
 
