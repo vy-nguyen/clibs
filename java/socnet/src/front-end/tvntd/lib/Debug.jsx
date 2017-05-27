@@ -43,6 +43,7 @@ class Debug extends React.Component {
     debugArticleStore() {
         ArticleStore.dumpData("Article Store Content");
         EProductStore.dumpData("Product Store Content");
+        AdsStore.dumpData("Ads Store Content");
     }
 
     debugAuthorStore() {

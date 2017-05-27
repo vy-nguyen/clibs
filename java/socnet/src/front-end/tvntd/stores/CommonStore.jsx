@@ -31,16 +31,51 @@ class Article {
     }
 
     getTagName() {
-        if (this.rank != null) {
-            return this.rank.tagName;
+        return this.rank.tagName;
+    }
+
+    getTitle() {
+        return this.topic;        
+    }
+
+    static newInstance(kind, data) {
+        if (kind === "blog") {
+            return new Article(data);
         }
-        if (this.adsRank != null) {
-            return this.adsRank.tagName;
+        if (kind === "estore") {
+            return new Product(data);
         }
-        if (this.publicTag != null) {
-            return this.publicTag;
-        }
-        return null;
+        return new AdsItem(data);
+    }
+}
+
+class Product extends Article {
+    constructor(data) {
+        super(data);
+    }
+
+    getTagName() {
+        console.log("product get tag");
+        return this.publicTag;
+    }
+
+    getTitle() {
+        return this.prodTitle;
+    }
+}
+
+class AdsItem extends Article {
+    constructor(data) {
+        super(data);
+    }
+
+    getTagName() {
+        console.log("ads get tag");
+        return this.adsRank.tagName;
+    }
+
+    getTitle() {
+        return this.busName;
     }
 }
 
@@ -315,7 +350,7 @@ class CommonStore {
     }
 
     _addItemStore(item, saved) {
-        let anchor, authorTagMgr, it = new Article(item);
+        let anchor, authorTagMgr, it = Article.newInstance(this.data.storeKind, item);
 
         if (saved === true) {
             this.data.mySavedItems = preend(it, this.data.mySavedItems);
@@ -353,11 +388,11 @@ class CommonStore {
     }
 
     addFromJson(items, key, index) {
-        let itemsByKey = this.data[key];
+        let itemsByKey = this.data[key], kind = this.data.storeKind;
 
         items && _.forOwn(items, function(it, k) {
             if (itemsByKey[it.articleUuid] == null) {
-                itemsByKey[it.articleUuid] = new Article(it);
+                itemsByKey[it.articleUuid] = Article.newInstance(kind, it);
             }
         }.bind(this));
 

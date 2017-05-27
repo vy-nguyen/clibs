@@ -63,7 +63,6 @@ class ArtTag {
                 return art.articleUuid;
             });
         }
-        this.debugPrint();
     }
 
     resolveArticle(unResolved, article) {
@@ -97,7 +96,7 @@ class ArtTag {
         if (!_.isEmpty(this.sortedArts)) {
             console.log("Tag " + this.tagName);
             _.forEach(this.sortedArts, function(article) {
-                console.log("[" + article.createdDate + "] " + article.topic);
+                console.log("[" + article.createdDate + "] " + article.getTitle());
             });
         }
     }
