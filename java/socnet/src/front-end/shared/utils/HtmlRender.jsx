@@ -15,7 +15,9 @@ class HtmlRender extends React.Component
 
     render() {
         return (
-            this.props.html ? <div {...this.props} dangerouslySetInnerHTML={this.rawMarkup()}></div> : null
+            this.props.html ? 
+            <div {...this.props} dangerouslySetInnerHTML={this.rawMarkup()}></div> :
+            null
         )
     }
 }

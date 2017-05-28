@@ -79,7 +79,10 @@ class BlogItem extends React.Component
                         </h3>
                         {arg.brief}
                         <hr/>
-                        <a className={btnFmt.className} onClick={ctx.clickHandler}>{btnFmt.buttonText}</a>
+                            <a className={btnFmt.className}
+                                onClick={ctx.clickHandler}>
+                                {btnFmt.buttonText}
+                            </a>
                     </div>
                 </div>
             </div>
@@ -150,11 +153,13 @@ class Blog extends React.Component
             getBtnFormat: this._getBtnFormat.bind(this, articleUuid),
             clickHandler: this._readArticle.bind(this, articleUuid)
         };
-        return <BlogItem authorUuid={authorUuid} articleUuid={articleUuid} context={clickCb}/>;
+        return <BlogItem authorUuid={authorUuid}
+                    articleUuid={articleUuid} context={clickCb}/>;
     }
 
     _renderFull(articleUuid, article, artRank) {
-        if ((this.state.articleUuid == null) || (this.state.articleUuid !== articleUuid)) {
+        if ((this.state.articleUuid == null) ||
+            (this.state.articleUuid !== articleUuid)) {
             return null;
         }
         if (article != null) {

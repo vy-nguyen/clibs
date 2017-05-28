@@ -53,7 +53,8 @@ class CommentBox extends React.Component
     componentDidMount() {
         this.unsub = CommentStore.listen(this._updateState);
         $('#' + this.state.cmtBoxId).on('input', function() {
-            $(this).css({'height': 'auto', 'overflow-y': 'hidden'}).height(this.scrollHeight);
+            $(this).css({'height': 'auto', 'overflow-y': 'hidden'})
+                .height(this.scrollHeight);
         });
     }
 
@@ -186,8 +187,8 @@ class CommentBox extends React.Component
         btnFmt = "btn btn-link profile-link-btn";
         btnRows = (
             <div className="margin-top-10">
-                <button className={submitFmt} type="submit" disabled={this.state.submiting}
-                    onClick={this._submitComment}>
+                <button className={submitFmt} type="submit"
+                    disabled={this.state.submiting} onClick={this._submitComment}>
                     <Mesg text="Post"/>
                 </button>
                 <a href-void className={btnFmt}
@@ -241,7 +242,8 @@ class CommentBox extends React.Component
                     acceptCharset="utf-8" className="form-horizontal">
                     <div className="row">
                         <div className="col-sm-12">
-                            <textarea rows="2" ref="comment" className="form-control input-sm"
+                            <textarea rows="2" ref="comment"
+                                className="form-control input-sm"
                                 id={this.state.cmtBoxId} placeholder={placeHolder}/>
                             {btnRows}
                         </div>
@@ -377,7 +379,8 @@ class CommentItem extends React.Component {
                 <UserIcon className="username"
                     userUuid={user.userUuid} width="40" height="40"/>
                 <span className="message-text">
-                    <a href-void className="username">{user.lastName + ' ' + user.firstName}
+                    <a href-void className="username">
+                        {user.lastName + ' ' + user.firstName}
                         <small className="pull-right text-info">  {comment.moment}</small>
                     </a>
                     {comment.comment}
@@ -500,9 +503,11 @@ class PostComment extends React.Component
         return (
             <div className="row">
                 <div className="col-sm-12 col-md-12 col-lg-12">
-                    <CommentBox articleUuid={this.props.articleUuid} cmtCount={cmtCount} cmtShow={showComment}/>
+                    <CommentBox articleUuid={this.props.articleUuid}
+                        cmtCount={cmtCount} cmtShow={showComment}/>
                 </div>
-                <div id={"comment-" + this.props.articleUuid} style={styleFmt} className="col-sm-12 col-md-12 col-lg-12">
+                <div id={"comment-" + this.props.articleUuid}
+                    style={styleFmt} className="col-sm-12 col-md-12 col-lg-12">
                     <div className="row no-margin no-padding">
                         {favColumn}
                         {norColumn}

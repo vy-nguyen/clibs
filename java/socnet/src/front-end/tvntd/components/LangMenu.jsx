@@ -49,9 +49,11 @@ class LangMenu extends React.Component
         let languages = this.state.languages;
         let langChoices = languages.map(function(lang, idx) {
             return (
-                <li key={'lang-' + idx} className={classnames({active: lang.key == langInUse.key})}>
+                <li key={'lang-' + idx}
+                    className={classnames({active: lang.key == langInUse.key})}>
                     <a onClick={this._selectLanguage.bind(this, lang)}>
-                        <img src={this._getFlagIcon(lang)} alt={langInUse.alt}/><span> {lang.title}</span>
+                        <img src={this._getFlagIcon(lang)} alt={langInUse.alt}/>
+                        <span> {lang.title}</span>
                     </a>
                 </li>
             );

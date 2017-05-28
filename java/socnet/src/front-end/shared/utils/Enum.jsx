@@ -14,7 +14,7 @@ function Enum() {
         kv[args[i]] = i;
     }
     return kv;
-};
+}
 
 // A utility function to safely escape JSON for embedding in a <script> tag
 function safeStringify(str) {
@@ -105,7 +105,7 @@ function _locationOf(elm, array, compareFn) {
 }
 
 function insertUnique(elm, array, compareFn) {
-    let len = array.length;
+    let length = array.length;
     for (let i = 0; i < length; i++) {
         if (compareFn(array[i], elm) == 0) {
             return -1;
@@ -195,7 +195,12 @@ function compareUuid(uuid, elm, field) {
 
 function findUuid(array, field, uuid) {
     if (array != null) {
-        return _.findIndex(array, compareUuid);
+        return _.findIndex(array, function(elm) {
+            if (field != null) {
+                return elm[field] === uuid;
+            }
+            return elm === uuid;
+        });
     }
     return -1;
 }

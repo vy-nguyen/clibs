@@ -80,7 +80,7 @@ class ArtTag {
         if (artUuid == null) {
             return;
         }
-        article = LookupArticle(artUuid);
+        let article = LookupArticle(artUuid);
         if (article == null) {
             unResolved[artUuid] = this;
         }
@@ -90,6 +90,12 @@ class ArtTag {
                 this.resolveArticle(null, article);
             }
         }
+    }
+
+    updateArticles(unResolved, articles) {
+        _.forEach(articles, function(artUuid) {
+            this.addArticle(unResolved, artUuid);
+        }.bind(this));
     }
 
     debugPrint() {
@@ -177,7 +183,6 @@ let ArticleTagStore = Reflux.createStore({
     onItemsChanged: function(storeKind, code, changeList) {
         let data = this.data, unResolved = data.unResolved;
 
-        console.log("Change in " + code + ", store " + storeKind);
         _.forEach(changeList, function(article) {
             let tagName, tag = unResolved[article.articleUuid];
 
@@ -202,6 +207,17 @@ let ArticleTagStore = Reflux.createStore({
     onChangeTagArtCompleted: function(data) {
         console.log("update tag done");
         console.log(data);
+        let root = this.data;
+        _.forEach(data.publicTags, function(raw) {
+            let tagObj = root.pubTagIndex[raw.tagName];
+            console.log("lookup " + raw.tagName);
+            console.log(tagObj);
+
+            if (tagObj == null) {
+
+            }
+            tagObj.updateArticles(root.unResolved, raw.articleRank);
+        });
     },
 
     /* Public methods. */
