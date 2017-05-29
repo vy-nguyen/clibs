@@ -11,9 +11,9 @@ import UserStore from 'vntd-shared/stores/UserStore.jsx';
 class UserIcon extends React.Component
 {
     render() {
-        let user   = UserStore.getUserByUuid(this.props.userUuid);
-        let width  = this.props.width === undefined ? "40" : this.props.width;
-        let height = this.props.height === undefined ? "40" : this.props.height;
+        let user   = UserStore.getUserByUuid(this.props.userUuid),
+            width  = this.props.width == null ? "40" : this.props.width,
+            height = this.props.height == null ? "40" : this.props.height;
 
         if (user === null) {
             return null;

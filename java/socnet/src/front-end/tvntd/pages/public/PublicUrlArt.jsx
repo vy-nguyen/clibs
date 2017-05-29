@@ -25,12 +25,12 @@ class PublicUrlArt extends React.Component
     render() {
         let article, {author, articleUuid} = this.props.params;
         console.log("PublicUrlArt render " + author + ", " + articleUuid);
-        console.log(this.props);
 
         article = LookupArticle(articleUuid);
         if (article == null) {
             return <h1>Not found</h1>;
         }
+        console.log(article);
         return (
             <AuthorFeed authorUuid={author} articles={[article]}/>
         );

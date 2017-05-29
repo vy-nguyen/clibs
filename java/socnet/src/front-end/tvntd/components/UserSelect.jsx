@@ -4,6 +4,7 @@
 'use strict';
 
 import _                from 'lodash';
+import $                from 'jquery';
 import React            from 'react-mod';
 import {renderToString} from 'react-dom-server';
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
@@ -197,6 +198,8 @@ var UserSelect = function() {
                 break;
             case 'unBlock':
                 row.unBlock = arg.unBlockFmt;
+                break;
+            default:
                 break;
             }
         });

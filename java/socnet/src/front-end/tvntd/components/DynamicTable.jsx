@@ -4,6 +4,7 @@
 'use strict';
 
 import _                  from 'lodash';
+import $                  from 'jquery';
 import React, {PropTypes} from 'react-mod';
 
 import WidgetGrid        from 'vntd-shared/widgets/WidgetGrid.jsx';

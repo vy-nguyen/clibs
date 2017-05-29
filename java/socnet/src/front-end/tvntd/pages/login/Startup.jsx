@@ -63,9 +63,6 @@ class Startup
                     return;
                 }
                 url = "/public/article/" + start.author + "/" + start.articleUuid;
-                console.log("author     : " + start.author);
-                console.log("articleUuid: " + start.articleUuid);
-                console.log("url        : " + url);
                 History.pushState(null, url);
                 break;
 

@@ -18,7 +18,11 @@ class UserTable extends React.Component
 
         _.forEach(this.props.tableFormat, function(value, key) {
             columns.push({data: value.key});
-            tableFmt.push(<th key={_.uniqueId("user-table-")}><i className={value.format}/>{value.header}</th>);
+            tableFmt.push(
+                <th key={_.uniqueId("user-table-")}>
+                    <i className={value.format}/>{value.header}
+                </th>
+            );
         });
 
         let table = (
@@ -42,7 +46,9 @@ class UserTable extends React.Component
                     <article className="col-sm-12">
                         <JarvisWidget editbutton={false} color="darken">
                             <header>
-                                <span className="widget-icon"><i className="fa fa-table"/></span>
+                                <span className="widget-icon">
+                                    <i className="fa fa-table"/>
+                                </span>
                                 <h2>{this.props.tableTitle}</h2>
                             </header>
                             <div>

@@ -18,7 +18,6 @@ import AboutUsStore       from 'vntd-root/stores/AboutUsStore.jsx';
 import LanguageStore      from 'vntd-root/stores/LanguageStore.jsx';
 import LangMenu           from 'vntd-root/components/LangMenu.jsx';
 import Mesg               from 'vntd-root/components/Mesg.jsx';
-import Startup            from 'vntd-root/pages/login/Startup.jsx';
 import LoginRegDropDown   from './LoginRegDropDown.jsx';
 
 class HeaderBtn extends React.Component
@@ -191,7 +190,6 @@ class Header extends React.Component
                 searchText: LanguageStore.translate("Search")
             });
         }
-        Startup.mainStartup();
     }
 
     _updateLang(data) {

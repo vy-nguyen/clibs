@@ -105,7 +105,8 @@ class TagPost extends React.Component
             },
             savedInfo: {
                 artRank  : artRank,
-                tagName  : artRank != null ? artRank.tagName : Lang.translate("My Post"),
+                tagName  : artRank != null ?
+                    artRank.tagName : Lang.translate("My Post"),
                 title    : this.props.artTitle
             }
         };
@@ -121,7 +122,8 @@ class TagPost extends React.Component
         let allTags = AuthorStore.getTagsByAuthorUuid(this.props.authorUuid);
 
         return (
-            <form enclType="form-data" acceptCharset="utf-8" className="form-horizontal">
+            <form enclType="form-data"
+                acceptCharset="utf-8" className="form-horizontal">
                 <div className="row">
                     <div className="col-xs-10 col-sm-10 col-md-10 col-lg-10">
                         <TA.Typeahead options={allTags} maxVisible={6}
@@ -142,7 +144,7 @@ class TagPost extends React.Component
             </form>
         );
     }
-};
+}
 
 class PublishArticle extends React.Component {
     constructor(props) {
@@ -205,7 +207,7 @@ class PublishArticle extends React.Component {
             </div>
         );
     }
-};
+}
 
 class PostPane extends React.Component {
 

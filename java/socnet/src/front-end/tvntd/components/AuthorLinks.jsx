@@ -5,6 +5,7 @@
 'use strict';
 
 import _         from 'lodash';
+import $         from 'jquery';
 import React     from 'react-mod';
 
 import TreeView      from 'vntd-shared/layout/TreeView.jsx';

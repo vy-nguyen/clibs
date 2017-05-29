@@ -5,6 +5,7 @@
 'use strict';
 
 import _        from 'lodash';
+import $        from 'jquery';
 import React    from 'react-mod';
 import {renderToString} from 'react-dom-server';
 
@@ -179,7 +180,10 @@ class CommentBox extends React.Component
             let likedList = artAttr.getUserLiked();
             if (likedList != null) {
                 userLiked = (
-                    <p><br/><i className="fa fa-thumbs-up text-danger"></i> {likedList}</p>
+                    <p>
+                        <br/>
+                        <i className="fa fa-thumbs-up text-danger"></i> {likedList}
+                    </p>
                 );
             }
         }
@@ -195,7 +199,8 @@ class CommentBox extends React.Component
                     rel="tooltip" data-placement="bottom" title="Add Location">
                     <i className="fa fa-location-arrow"></i>
                 </a>
-                <a href-void className={btnFmt} data-placement="bottom" title="Add Photo">
+                <a href-void className={btnFmt}
+                    data-placement="bottom" title="Add Photo">
                     <i className="fa fa-camera"></i>
                 </a>
                 <a href-void className={btnFmt} rel="tooltip"
@@ -338,10 +343,11 @@ class CommentItem extends React.Component {
         if (user == null) {
             return null;
         }
-        let favBtn    = null;
-        let likeBtnId = this._getLikeBtnId();
-        let comment   = this.props.data;
-        let userLiked = comment.getUserLiked();
+        let likeList,
+            favBtn    = null,
+            likeBtnId = this._getLikeBtnId(),
+            comment   = this.props.data,
+            userLiked = comment.getUserLiked();
 
         if (comment.amIArticleAuthor()) {
             let favBtnText   = LanguageStore.translate("Favorites");
@@ -359,13 +365,13 @@ class CommentItem extends React.Component {
             );
         }
         if (userLiked == null || userLiked.length == 0) {
-            var likeList = (
+            likeList = (
                 <span className="text-info">
                     <i className="fa fa-thumbs-up"></i>(0) <Mesg text="Likes"/>
                 </span>
             );
         } else {
-            var likeList = (
+            likeList = (
                 <span className="text-info">
                     <a href-void rel="tooltip" title={comment.getUserLikedList()}>
                         <i className="fa fa-thumbs-up"></i>({userLiked.length})
@@ -396,7 +402,7 @@ class CommentItem extends React.Component {
             </li>
         )
     }
-};
+}
 
 class PostComment extends React.Component
 {
@@ -424,7 +430,8 @@ class PostComment extends React.Component
 
     _updateState(data, cmtArt) {
         let commentArt = CommentStore.getByArticleUuid(this.props.articleUuid);
-        if (commentArt == null || cmtArt == null || commentArt.articleUuid !== cmtArt.articleUuid) {
+        if (commentArt == null || cmtArt == null ||
+            commentArt.articleUuid !== cmtArt.articleUuid) {
             return;
         }
         this.setState({

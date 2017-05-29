@@ -7,6 +7,7 @@
 import Reflux         from 'reflux';
 import Actions        from 'vntd-root/actions/Actions.jsx';
 import CommonStore    from 'vntd-root/stores/CommonStore.jsx';
+import Startup        from 'vntd-root/pages/login/Startup.jsx';
 
 let EProductStore = Reflux.createStore({
     store: {},
@@ -202,10 +203,13 @@ let ArticleStore = Reflux.createStore({
     },
 
     onStartupCompleted: function(data) {
+        console.log("article store startup beg " + data.articles);
         if (data.articles) {
             let out = this.store.addFromJson(data.articles, 'itemsByUuid', true);
             this.trigger(out, null, "startup", true, null);
         }
+        Startup.mainStartup();
+        console.log("article store startup end ");
     },
 
     /**
