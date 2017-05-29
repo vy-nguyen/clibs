@@ -31,7 +31,7 @@ class Startup
     }
 
     static mainStartup() {
-        let start, self = UserStore.getSelf();
+        let url, start, self = UserStore.getSelf();
 
         if (self.loadStart != null) {
             return;
@@ -44,7 +44,6 @@ class Startup
         }
         console.log(">>> do start page " + self.startPage);
         start = Startup.parseStartup(self.startPage);
-        console.log(start);
         switch (start.startLink) {
             case "profile":
                 History.pushState(null, "/user/profile");
@@ -57,14 +56,17 @@ class Startup
                 break;
 
             case "load":
-                if (start.authorUuid == null || start.authorUuid == "0") {
+                if (start.author == null || start.articleUuid == "0") {
                     History.pushState(null, "/");
                     ErrorStore.reportMesg("main-error", "Could not find the article",
                             null, "The link you're looking for doesn't exist.");
-                    return; 
+                    return;
                 }
+                url = "/public/article/" + start.author + "/" + start.articleUuid;
                 console.log("author     : " + start.author);
                 console.log("articleUuid: " + start.articleUuid);
+                console.log("url        : " + url);
+                History.pushState(null, url);
                 break;
 
             default:

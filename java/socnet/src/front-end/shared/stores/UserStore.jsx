@@ -5,9 +5,9 @@
 'use strict';
 
 import _        from 'lodash';
+import $        from 'jquery';
 import Reflux   from 'reflux';
 
-import History      from 'vntd-shared/utils/History.jsx';
 import ErrorStore   from 'vntd-shared/stores/ErrorStore.jsx';
 import Actions      from 'vntd-root/actions/Actions.jsx';
 
@@ -192,7 +192,7 @@ let UserStore = Reflux.createStore({
         } else {
             _.forOwn(uuidList, function(uuid, key) {
                 let usr = this.data.userMap[uuid];
-                if (usr !== undefined && usr !== null) {
+                if (usr != null) {
                     func(usr, key);
                 }
             }.bind(this));
@@ -336,7 +336,7 @@ let UserStore = Reflux.createStore({
 
     _updateLogin: function(user) {
         if (user != null) {
-            if ((user.csrfHeader !== null) && (user.csrfHeader !== undefined)) {
+            if (user.csrfHeader != null) {
                 $("meta[name='_csrf']").attr("content", user.csrfToken);
                 $("meta[name='_csrf_header']").attr("content", user.csrfHeader);
             }
@@ -368,7 +368,6 @@ let UserStore = Reflux.createStore({
             }
         }
         this.trigger(this.data, startPage);
-            // History.pushState(null, "/user");
     },
 
     _addFromJson: function(items) {
@@ -391,7 +390,7 @@ let UserStore = Reflux.createStore({
     },
 
     _setFriendStatus: function(uuids, status) {
-        if (uuids !== null && uuids !== undefined) {
+        if (uuids != null) {
             uuids.map(function(uuid) {
                 let user = this.data.userMap[uuid];
                 if (user) {

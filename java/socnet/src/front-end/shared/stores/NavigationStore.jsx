@@ -20,7 +20,7 @@ let NavigationStore = Reflux.createStore({
 
     init: function() {
         this.data = {
-            item      : undefined,
+            item      : null,
             items     : [],
             currMqIdx : null,
             currMqMode: 'xs',
@@ -64,7 +64,7 @@ let NavigationStore = Reflux.createStore({
 
     replaceMenuItems: function(json) {
         this.data.items = null;
-        this.data.item  = undefined;
+        this.data.item  = null;
         this.addRawItems(json);
         this.trigger(this.data);
     },

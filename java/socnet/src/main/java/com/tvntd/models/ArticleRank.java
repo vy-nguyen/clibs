@@ -42,6 +42,9 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.tvntd.forms.ArticleForm;
 import com.tvntd.forms.CommentChangeForm;
 import com.tvntd.key.HashKey;
@@ -57,6 +60,7 @@ public class ArticleRank
 {
     public static int MaxTitleLength = 128;
     public static int MaxContentLength = 250;
+    static private Logger s_log = LoggerFactory.getLogger(ArticleRank.class);
 
     @Id
     @Column(length = 64)
@@ -217,6 +221,7 @@ public class ArticleRank
         try {
             String title = Util.utf8ToUrlString(new String(artTitle, "UTF-8"));
             publicUrlOid = HashKey.toSha1Key(urlTag, title);
+            s_log.debug("Convert " + urlTag + ", " + title + ": " + publicUrlOid);
 
         } catch(UnsupportedEncodingException e) {
         }

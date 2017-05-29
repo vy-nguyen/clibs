@@ -45,8 +45,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tvntd.forms.ArtTagForm;
-import com.tvntd.models.Article;
-import com.tvntd.models.ArticleRank;
 import com.tvntd.service.api.GenericResponse;
 import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArtTagService.ArtTagDTO;

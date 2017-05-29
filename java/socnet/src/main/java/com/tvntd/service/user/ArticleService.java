@@ -156,8 +156,10 @@ public class ArticleService implements IArticleService
     {
         String asciiTag = Util.utf8ToUrlString(tagName);
         String asciiTitle = Util.utf8ToUrlString(title);
+        String key = HashKey.toSha1Key(asciiTag, asciiTitle);
 
-        return artRankRepo.findByPublicUrlOid(HashKey.toSha1Key(asciiTag, asciiTitle));
+        s_log.info("Lookup " + asciiTag + ", " + asciiTitle + ": " + key);
+        return artRankRepo.findByPublicUrlOid(key);
     }
 
     @Override

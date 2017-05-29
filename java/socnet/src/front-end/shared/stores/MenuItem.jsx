@@ -2,6 +2,8 @@
  * Created by griga on 12/23/15.
  * Modified by Vy Nguyen
  */
+import _ from 'lodash';
+
 export default class MenuItem {
 
     constructor(data, parent) {

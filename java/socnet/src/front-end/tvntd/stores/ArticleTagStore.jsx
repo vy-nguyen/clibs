@@ -306,7 +306,7 @@ let ArticleTagStore = Reflux.createStore({
             }
             return self.tagName;
         }
-        return curName;
+        return data.curTag;
     },
 
     removePublicTag: function(tagName) {
@@ -505,7 +505,7 @@ let ArticleTagStore = Reflux.createStore({
      * @return list of article uuids under the given tag.
      */
     getPublishedArticles: function(tagName, artUuids) {
-        let artObj, tag = this.data.pubTagIndex[tagName];
+        let tag = this.data.pubTagIndex[tagName];
 
         if (tag != null) {
             _.forOwn(tag.sortedArts, function(artObj) {

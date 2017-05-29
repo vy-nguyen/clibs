@@ -72,6 +72,7 @@ class CommentAttr {
                 ret = true;
                 return false;
             }
+            return true;
         });
         return ret;
     }
@@ -203,6 +204,7 @@ class ArticleComment {
                 this.normals[data.commentId] = new CommentText(data, this);
             }
         }
+        return true;
     }
 
     toggleFavComment(id) {
@@ -248,7 +250,8 @@ class ArticleComment {
             return true;
         }
         if (this.articleUuid === old.articleUuid) {
-            if (this.favorites.length !== old.favorites.length || this.normals.length !== old.normals.length) {
+            if (this.favorites.length !== old.favorites.length ||
+                this.normals.length !== old.normals.length) {
                 return true;
             }
         }

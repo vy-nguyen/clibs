@@ -145,6 +145,7 @@ class AuthorTag {
                 this.sortedArts.splice(idx, 1);
                 return false;
             }
+            return true;
         }.bind(this));
     }
 
@@ -224,6 +225,7 @@ class AuthorTagMgr {
                 this.sortedTags.splice(idx, 1);
                 return false;
             }
+            return true;
         }.bind(this));
     }
 
@@ -278,6 +280,7 @@ class AuthorTagMgr {
             if (rank != null) {
                 return false;
             }
+            return true;
         });
         return rank;
     }
@@ -331,7 +334,8 @@ class AuthorTagMgr {
             };
             artList.push(tagRank);
             let authorTag = this.authorTags[key];
-            let sortedArts = authorTag != null ? authorTag.getSortedArticleRank() : null;
+            let sortedArts = authorTag != null ?
+                authorTag.getSortedArticleRank() : null;
 
             _.forEach(category, function(it, idx) {
                 tagRank.artUuid.push(it.id);
@@ -451,7 +455,8 @@ let AuthorStore = Reflux.createStore({
 
     updateAuthorTag: function(tagInfo, artRank) {
         let authorTagMgr = this.getAuthorTagMgr(tagInfo.userUuid);
-        let authorTag = authorTagMgr.getAuthorTag(tagInfo.tagName, tagInfo.tagRank, tagInfo.favorite);
+        let authorTag = authorTagMgr.getAuthorTag(tagInfo.tagName,
+                            tagInfo.tagRank, tagInfo.favorite);
 
         if (artRank == null) {
             let article = ArticleStore.getArticleByUuid(tagInfo.articleUuid);
@@ -470,7 +475,8 @@ let AuthorStore = Reflux.createStore({
 
     updateAuthorEStoreTag: function(tagInfo, artRank) {
         let estoreMgr = this.getAuthorEStoreMgr(tagInfo.userUuid);
-        let estoreTag = estoreMgr.getAuthorTag(tagInfo.tagName, tagInfo.tagRank, tagInfo.favorite);
+        let estoreTag = estoreMgr.getAuthorTag(tagInfo.tagName,
+                            tagInfo.tagRank, tagInfo.favorite);
 
         if (artRank == null) {
             let prod = EProductStore.getProductByUuid(tagInfo.articleUuid);
@@ -557,10 +563,6 @@ let AuthorStore = Reflux.createStore({
         this.reset();
     },
 
-    onUpdateArtRankCompleted: function(data) {
-        this._updateArticleRank(data);
-    },
-
     onPostArticleSelectCompleted: function(data) {
         this._updateArticleRank(data);
     },
@@ -599,7 +601,8 @@ let AuthorStore = Reflux.createStore({
 
     onUpdateArtRankCompleted: function(data) {
         let btnId = data.cbContext;
-        NavActions.buttonChange(tagMgr.btnId);
+        NavActions.buttonChange(btnId);
+        this._updateArticleRank(data);
     },
 
     onStartupCompleted: function(data) {

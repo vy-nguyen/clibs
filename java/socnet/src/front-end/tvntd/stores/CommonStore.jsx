@@ -388,7 +388,7 @@ class CommonStore {
     addFromJson(items, key, index) {
         let itemsByKey = this.data[key], kind = this.data.storeKind;
 
-        items && _.forOwn(items, function(it, k) {
+        _.forOwn(items, function(it, k) {
             if (itemsByKey[it.articleUuid] == null) {
                 itemsByKey[it.articleUuid] = Article.newInstance(kind, it);
             }
@@ -404,7 +404,7 @@ class CommonStore {
         let itemsByUuid = this.data.itemsByUuid,
             itemsByAuthor = this.data.itemsByAuthor;
 
-        items && _.forOwn(items, function(jsonItem, key) {
+        _.forOwn(items, function(jsonItem, key) {
             let anchor, item = itemsByUuid[jsonItem.articleUuid];
             if (item == null) {
                 return;

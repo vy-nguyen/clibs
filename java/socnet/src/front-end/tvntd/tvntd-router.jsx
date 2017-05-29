@@ -13,7 +13,6 @@ import Logout        from './pages/login/Logout.jsx';
 import Register      from './pages/login/Register.jsx';
 import RecoverAcct   from './pages/login/Forgot.jsx';
 import Timeline      from './pages/blog/Timeline.jsx';
-import NewsFeed      from './pages/news-feed/NewsFeed.jsx';
 import SocialWall    from './pages/wall/SocialWall.jsx';
 import UserHome      from './pages/user/UserHome.jsx';
 import UserAccount   from './pages/user/UserAccount.jsx';
@@ -24,6 +23,7 @@ import ListUsers     from './pages/admin/ListUsers.jsx';
 import SetTags       from './pages/admin/SetTags.jsx';
 import MainBlog      from './pages/blog/MainBlog.jsx';
 import MainAds       from './pages/ads/MainAds.jsx';
+import PublicUrlArt  from './pages/public/PublicUrlArt.jsx';
 import LoginRequired from 'vntd-shared/utils/LoginRequired.jsx';
 
 import {MainPage, AboutUs}  from './pages/public/MainPage.jsx';
@@ -35,6 +35,7 @@ const Routes = (
             <Redirect from="/" to ="public"/>
             <Route path="public">
                 <Route path="aboutus" component={AboutUs}/>
+                <Route path="article/:author/:articleUuid" component={PublicUrlArt}/>
                 <Route path="ads" component={MainAds} subHeader={false}/>
                 <Route path=":blog" component={MainBlog} subHeader={true}/>
                 <Route path=":estore" component={MainBlog} subHeader={true}/>
@@ -48,6 +49,7 @@ const Routes = (
                 <IndexRoute component={SocialWall}/>
                 <Route path="timeline" component={Timeline} subHeader={true}/>
                 <Route path="wall" component={SocialWall} subHeader={true}/>
+                 
             </Route>
 
             <Redirect from="/" to="login"/>

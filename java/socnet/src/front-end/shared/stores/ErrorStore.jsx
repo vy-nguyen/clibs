@@ -140,7 +140,7 @@ let ErrorStore = Reflux.createStore({
      */
     triggerError: function(id, err) {
         if (id == null || err == null) {
-            return;
+            return null;
         }
         err.errorId   = id;
         this.data[id] = err;
@@ -150,7 +150,7 @@ let ErrorStore = Reflux.createStore({
 
     reportErrMesg: function(id, text, helpText) {
         if (id == null) {
-            return;
+            return null;
         }
         let err = this.data[id];
         if (err == null) {
@@ -167,7 +167,7 @@ let ErrorStore = Reflux.createStore({
      */
     reportMesg: function(id, header, style, mesg) {
         if (id == null) {
-            return;
+            return null;
         }
         let err = this.data[id];
         if (err == null) {
