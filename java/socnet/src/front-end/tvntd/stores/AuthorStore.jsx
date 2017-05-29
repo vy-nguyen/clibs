@@ -12,6 +12,7 @@ import Actions          from 'vntd-root/actions/Actions.jsx';
 import NavActions       from 'vntd-shared/actions/NavigationActions.jsx';
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import ArticleTagStore  from 'vntd-root/stores/ArticleTagStore.jsx';
+import Startup          from 'vntd-root/pages/login/Startup.jsx';
 
 import {ArticleStore, EProductStore} from 'vntd-root/stores/ArticleStore.jsx';
 import {insertSorted, insertUnique, compareUuid} from 'vntd-shared/utils/Enum.jsx';
@@ -617,6 +618,7 @@ let AuthorStore = Reflux.createStore({
         if (data.articles != null) {
             this._updateArtRankFromArticles(data.articles);
         }
+        Startup.mainStartup();
     },
 
     statics: {
