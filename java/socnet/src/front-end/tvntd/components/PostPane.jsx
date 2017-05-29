@@ -11,7 +11,6 @@ import TA           from 'react-typeahead';
 import Actions      from 'vntd-root/actions/Actions.jsx';
 import Lang         from 'vntd-root/stores/LanguageStore.jsx';
 import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
-import AdminStore   from 'vntd-root/stores/AdminStore.jsx';
 import Mesg         from 'vntd-root/components/Mesg.jsx'
 import PostItem     from 'vntd-root/components/PostItem.jsx';
 import PostComment  from 'vntd-root/components/PostComment.jsx';
@@ -335,7 +334,6 @@ class PostPane extends React.Component {
                     itemText: 'Publish Post',
                     itemHandler: function(e, pane) {
                         e.preventDefault();
-                        AdminStore.addPublicArticle(article.articleUuid);
                         this.setState({
                             publish: true
                         });

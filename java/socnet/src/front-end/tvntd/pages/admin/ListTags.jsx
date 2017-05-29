@@ -8,7 +8,6 @@ import React, {PropTypes} from 'react-mod';
 
 import Actions         from 'vntd-root/actions/Actions.jsx';
 import DynamicTable    from 'vntd-root/components/DynamicTable.jsx';
-import AdminStore      from 'vntd-root/stores/AdminStore.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 import Lang            from 'vntd-root/stores/LanguageStore.jsx';
 import Mesg            from 'vntd-root/components/Mesg.jsx';
@@ -65,22 +64,9 @@ class ListTags extends React.Component
     }
 
     _submitChanges(changes) {
-        let i, tag, mod, reqt, modTags = ArticleTagStore.getModifiedPubTags(true);
+        let i, tag, mod, reqt;
 
         reqt = this._convertToReqt(changes);
-        if (!_.isEmpty(modTags)) {
-            for (i = 0; i < reqt.length; i++) {
-                tag = reqt[i];
-                mod = modTags[tag.tagName];
-                if (mod != null) {
-                    reqt[i].articleRank = mod.articleRank;
-                    delete modTags[tag.tagName];
-                }
-            }
-            _.forOwn(modTags, function(tag) {
-                reqt.push(tag);
-            });
-        }
         ArticleTagStore.addPubListTags(reqt);
         Actions.setTags({
             publicTags : reqt,

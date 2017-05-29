@@ -9,7 +9,6 @@ import React           from 'react-mod'
 import Actions         from 'vntd-root/actions/Actions.jsx';
 import TabPanel        from 'vntd-shared/layout/TabPanel.jsx';
 import DynamicTable    from 'vntd-root/components/DynamicTable.jsx';
-import AdminStore      from 'vntd-root/stores/AdminStore.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 import Mesg            from 'vntd-root/components/Mesg.jsx';
 import YellowPage      from './YellowPage.jsx';

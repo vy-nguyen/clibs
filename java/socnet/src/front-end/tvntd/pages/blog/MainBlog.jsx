@@ -7,7 +7,6 @@
 import _               from 'lodash';
 import React           from 'react-mod'
 import TabPanel        from 'vntd-shared/layout/TabPanel.jsx';
-import AdminStore      from 'vntd-root/stores/AdminStore.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 import ArticleTagBrief from 'vntd-root/components/ArticleTagBrief.jsx';
 

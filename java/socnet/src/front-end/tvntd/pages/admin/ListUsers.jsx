@@ -5,7 +5,6 @@
 
 import React          from 'react-mod';
 import Actions        from 'vntd-root/actions/Actions.jsx';
-import AdminStore     from 'vntd-root/stores/AdminStore.jsx';
 
 class ListUsers extends React.Component
 {

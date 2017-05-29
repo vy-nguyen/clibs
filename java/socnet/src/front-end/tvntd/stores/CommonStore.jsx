@@ -55,7 +55,6 @@ class Product extends Article {
     }
 
     getTagName() {
-        console.log("product get tag");
         return this.publicTag;
     }
 
@@ -70,7 +69,6 @@ class AdsItem extends Article {
     }
 
     getTagName() {
-        console.log("ads get tag");
         return this.adsRank.tagName;
     }
 

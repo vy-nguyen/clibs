@@ -149,7 +149,6 @@ let ArticleTagStore = Reflux.createStore({
             sortedPubTags: [],
             sortedIdxTags: [],
             sortedTagKind: {},
-            pendArtPubTag: {},
             unResolved   : {}
         };
     },
@@ -205,19 +204,15 @@ let ArticleTagStore = Reflux.createStore({
     },
 
     onChangeTagArtCompleted: function(data) {
-        console.log("update tag done");
-        console.log(data);
         let root = this.data;
         _.forEach(data.publicTags, function(raw) {
             let tagObj = root.pubTagIndex[raw.tagName];
-            console.log("lookup " + raw.tagName);
-            console.log(tagObj);
 
             if (tagObj == null) {
-
+                tagObj = this.addPublicTag(raw, raw.parentTag, null);
             }
             tagObj.updateArticles(root.unResolved, raw.articleRank);
-        });
+        }.bind(this));
     },
 
     /* Public methods. */
@@ -231,19 +226,9 @@ let ArticleTagStore = Reflux.createStore({
         if (tag == null) {
             this._addNewPublicTag(artRank, parentTag, articleUuid);
             this.trigger(this.data);
-
         } else {
             tag.addArticle(this.data.unResolved, articleUuid);
         }
-        this.data.pendArtPubTag[artRank.tagName] = tag;
-    },
-
-    getModifiedPubTags: function(clear) {
-        let ret = this.data.pendArtPubTag;
-        if (clear === true) {
-            this.data.pendArtPubTag = {};
-        }
-        return ret;
     },
 
     getFilterTag: function(kind, filterFn, arg) {
@@ -341,7 +326,6 @@ let ArticleTagStore = Reflux.createStore({
 
     removePubListTags: function(tags) {
         let rec;
-
         _.forEach(tags, function(tag) {
             rec = this.data.pubTagIndex[tag.tagName];
             if (rec != null) {
@@ -399,7 +383,6 @@ let ArticleTagStore = Reflux.createStore({
 
     _addNewPublicTag: function(artRank, parentTag, articleUuid) {
         let tag = this.data.pubTagIndex[artRank.tagName];
-
         if (tag != null) {
             return tag;
         }
