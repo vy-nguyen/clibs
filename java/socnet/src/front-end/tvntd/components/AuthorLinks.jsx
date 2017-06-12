@@ -64,6 +64,8 @@ class AuthorLinks extends React.Component
     }
 
     _showItem(item) {
+        console.log("Click....");
+        console.log($('#tab-panel-all-' + item.authorUuid));
         $('#tab-panel-all-' + item.authorUuid).trigger('click');
         $('#art-rank-full-' + item.articleUuid).trigger('click');
     }

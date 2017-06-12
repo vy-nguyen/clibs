@@ -81,6 +81,15 @@ public class ArticleRank
     @Column(length = 64)
     private String urlTag;
 
+    @Column(length = 64)
+    private String prevArticle;
+
+    @Column(length = 64)
+    private String nextArticle;
+
+    @Column(length = 64)
+    private String topArticle;
+
     @Column(length = 128)
     private byte[] artTitle;
 
@@ -301,6 +310,48 @@ public class ArticleRank
      */
     public void setUrlTag(String urlTag) {
         this.urlTag = urlTag;
+    }
+
+    /**
+     * @return the prevArticle
+     */
+    public String getPrevArticle() {
+        return prevArticle;
+    }
+
+    /**
+     * @param prevArticle the prevArticle to set
+     */
+    public void setPrevArticle(String prevArticle) {
+        this.prevArticle = prevArticle;
+    }
+
+    /**
+     * @return the nextArticle
+     */
+    public String getNextArticle() {
+        return nextArticle;
+    }
+
+    /**
+     * @param nextArticle the nextArticle to set
+     */
+    public void setNextArticle(String nextArticle) {
+        this.nextArticle = nextArticle;
+    }
+
+    /**
+     * @return the topArticle
+     */
+    public String getTopArticle() {
+        return topArticle;
+    }
+
+    /**
+     * @param topArticle the topArticle to set
+     */
+    public void setTopArticle(String topArticle) {
+        this.topArticle = topArticle;
     }
 
     /**

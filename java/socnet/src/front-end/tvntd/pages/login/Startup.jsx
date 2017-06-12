@@ -69,7 +69,7 @@ class Startup
                     return;
                 }
                 url = "/public/article/" + start.author + "/" + start.articleUuid;
-                History.pushState(null, url);
+                History.push(url);
                 break;
 
             default:

@@ -520,15 +520,16 @@ let AuthorStore = Reflux.createStore({
     },
 
     _addAuthorList: function(authorList) {
+        let authorMap = this.data.authorMap, authorUuids = this.data.authorUuids;
+
         _.forOwn(authorList, function(author, key) {
             let uuid = author.authorUuid;
-            if (this.data.authorMap[uuid] == null) {
-                this.data.authorMap[uuid] = new Author(author);
-                insertUnique(uuid, this.data.authorUuids, compareUuid);
+            if (authorMap[uuid] == null) {
+                authorMap[uuid] = new Author(author);
+                insertUnique(uuid, authorUuids, compareUuid);
             }
             this.getAuthorTagMgr(uuid).addAuthorTagList(author.authorTags);
         }.bind(this));
-
         this.trigger(this.data);
     },
 

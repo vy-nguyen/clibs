@@ -107,7 +107,7 @@ function _locationOf(elm, array, compareFn) {
 function insertUnique(elm, array, compareFn) {
     let length = array.length;
     for (let i = 0; i < length; i++) {
-        if (compareFn(array[i], elm) == 0) {
+        if (compareFn(array[i], elm) === true) {
             return -1;
         }
     }
@@ -188,9 +188,9 @@ function removeArray(array, elm, fromIdx, cmp) {
 
 function compareUuid(uuid, elm, field) {
     if (field != null) {
-        return elm[field] === uuid;
+        return elm[field] === uuid ? true : false;
     }
-    return elm === uuid;
+    return elm === uuid ? true : false;
 }
 
 function findUuid(array, field, uuid) {
