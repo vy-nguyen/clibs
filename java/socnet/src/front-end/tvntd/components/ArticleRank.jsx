@@ -7,6 +7,7 @@
 import React  from 'react-mod';
 
 import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
+import InputStore       from 'vntd-shared/stores/NestableStore.jsx';
 import StateButton      from 'vntd-shared/utils/StateButton.jsx';
 
 import Actions      from 'vntd-root/actions/Actions.jsx';
@@ -20,14 +21,14 @@ class ArticleRank extends React.Component
     constructor(props) {
         super(props);
         this.artBtnId = "art-rank-btn-" + props.articleUuid;
-        this._getArticleResult = this._getArticleResult.bind(this);
+        this._getArticleResult  = this._getArticleResult.bind(this);
         this._toggleFullArticle = this._toggleFullArticle.bind(this);
-        this._createReadButton = this._createReadButton.bind(this);
+        this._createReadButton  = this._createReadButton.bind(this);
 
         let artBtn = StateButtonStore.createButton(this.artBtnId, this._createReadButton);
         this.state = {
-            fullArt: artBtn.getStateCode(),
-            article: ArticleStore.getArticleByUuid(props.articleUuid)
+            fullArt : artBtn.getStateCode(),
+            article : ArticleStore.getArticleByUuid(props.articleUuid)
         };
     }
 
@@ -39,6 +40,14 @@ class ArticleRank extends React.Component
         if (this.unsub != null) {
             this.unsub();
             this.unsub = null;
+        }
+    }
+
+    componentWillMount() {
+        let active = this.props.active;
+        if (active != null && InputStore.getItemIndex(active) != null) {
+            this._toggleFullArticle();
+            InputStore.freeItemIndex(active);
         }
     }
 
@@ -69,8 +78,9 @@ class ArticleRank extends React.Component
     }
 
     _toggleFullArticle() {
-        let artBtn = StateButtonStore.goNextState(this.artBtnId);
-        let newState = artBtn.getStateCode();
+        let artBtn = StateButtonStore.goNextState(this.artBtnId),
+            newState = artBtn.getStateCode();
+
         if (newState !== this.state.fullArt) {
             this.setState({
                 fullArt: newState,
@@ -80,9 +90,7 @@ class ArticleRank extends React.Component
     }
 
     render() {
-        let artPane = null;
-        let readBtn = null;
-        let rank = this.props.rank;
+        let likeStat, artPane = null, readBtn = null, rank = this.props.rank;
 
         if (this.props.noBtn == null) {
             readBtn = (
@@ -97,7 +105,7 @@ class ArticleRank extends React.Component
                 </div>
             );
         }
-        let likeStat = {
+        likeStat = {
             dateString: "1/1/1970",
             commentCount: 0,
             likesCount  : 0,
@@ -123,8 +131,8 @@ class ArticleRank extends React.Component
         )
     }
 
-    static renderArtRank(rank, refName, expanded) {
-        return <ArticleRank rank={rank} articleUuid={rank.articleUuid}/>
+    static renderArtRank(rank, refName, active) {
+        return <ArticleRank rank={rank} articleUuid={rank.articleUuid} active={active}/>
     }
 
     static renderNoButton(rank, relName, expanded) {

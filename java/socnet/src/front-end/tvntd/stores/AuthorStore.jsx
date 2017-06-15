@@ -385,10 +385,10 @@ let AuthorStore = Reflux.createStore({
 
     reset: function() {
         this.data = {
-            authorMap: {},
-            authorTagMgr: {},
+            authorMap      : {},
+            authorTagMgr   : {},
             authorEStoreMgr: {},
-            authorUuids: []
+            authorUuids    : []
         };
     },
 

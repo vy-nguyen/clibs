@@ -49,10 +49,10 @@ class StateButton extends React.Component
     }
 
     render() {
-        let btnState = this.state.btnState;
-        let className = btnState.getClassFmt();
+        let btnState = this.state.btnState, className = btnState.getClassFmt();
+
         return (
-            <button className={className}
+            <button className={className} id={this.props.btnId}
                 onClick={this._btnClick} disabled={btnState.isDisabled()}>
                 <Mesg text={btnState.getText()}/>
             </button>
@@ -103,6 +103,6 @@ class StateButton extends React.Component
             }
         };
     }
-};
+}
 
 export default StateButton;

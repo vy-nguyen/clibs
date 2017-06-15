@@ -10,15 +10,38 @@ import 'style!css!rc-collapse/assets/index.css';
 import Collapse, { Panel } from 'rc-collapse';
 
 import TreeView    from 'vntd-shared/layout/TreeView.jsx';
+import InputStore  from 'vntd-shared/stores/NestableStore.jsx';
 
 class AccordionView extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            activeKey: null
+            activeKey: props.activeKey
         };
-        this._onChange = this._onChange.bind(this);
+        this._onChange    = this._onChange.bind(this);
+        this._updateState = this._updateState.bind(this);
+    }
+
+    componentDidMount() {
+        this.unsub = InputStore.listen(this._updateState);
+    }
+
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    _updateState(item) {
+        if (item.keyId == null ||
+            item.viewId == null || item.viewId !== this.props.viewId) {
+            return;
+        }
+        this.setState({
+            activeKey: item.keyId
+        });
     }
 
     _onChange(activeKey) {
@@ -28,8 +51,7 @@ class AccordionView extends React.Component {
     }
 
     render() {
-        let activeKey = this.state.activeKey;
-        let elmView = [];
+        let activeKey = this.state.activeKey, elmView = [], header, content;
 
         _.forOwn(this.props.items, function(item) {
             if (!item.children || !item.children.length) {
@@ -38,9 +60,13 @@ class AccordionView extends React.Component {
             if (activeKey == null) {
                 activeKey = [ item.keyId ];
             }
-            let header = TreeView.renderTreeItem(item, true, null);
-            let content = item.children.map(function(it) {
-                return <div key={_.uniqueId('acc-content-')}>{TreeView.renderTreeItem(it, false, null)}</div>;
+            header = TreeView.renderTreeItem(item, true, null);
+            content = item.children.map(function(it) {
+                return (
+                    <div key={_.uniqueId('acc-content-')}>
+                        {TreeView.renderTreeItem(it, false, null)}
+                    </div>
+                );
             });
             elmView.push(
                 <Panel header={header} key={item.keyId}>

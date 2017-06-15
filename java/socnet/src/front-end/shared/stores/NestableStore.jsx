@@ -19,6 +19,11 @@ let NestableStore = Reflux.createStore({
         return indexTab;
     },
 
+    storeItemTrigger: function(id, item, force) {
+        this.storeItemIndex(id, item, force);
+        this.trigger(item);
+    },
+
     clearItemIndex: function(id) {
         let ret = this.data[id];
         this.data[id] = null;

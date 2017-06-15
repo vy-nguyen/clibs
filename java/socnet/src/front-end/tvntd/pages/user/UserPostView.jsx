@@ -9,6 +9,7 @@ import React        from 'react';
 
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
+import InputStore       from 'vntd-shared/stores/NestableStore.jsx';
 import StateButton      from 'vntd-shared/utils/StateButton.jsx';
 import TreeView         from 'vntd-shared/layout/TreeView.jsx';
 import AccordionView    from 'vntd-shared/layout/AccordionView.jsx';
@@ -29,6 +30,7 @@ class UserPostView extends React.Component
         this.renderTag       = this.renderTag.bind(this);
         this.renderElement   = this.renderElement.bind(this);
 
+        this._authorLinkChg    = this._authorLinkChg.bind(this);
         this._saveUpdate       = this._saveUpdate.bind(this);
         this._updateState      = this._updateState.bind(this);
         this._createSaveBtn    = this._createSaveBtn.bind(this);
@@ -41,6 +43,7 @@ class UserPostView extends React.Component
             .createButton("arrange-btn-" + myUuid, this._createArrangeBtn);
 
         this.state = {
+            active: null,
             status: "init",
             tagMgr: AuthorStore.getAuthorTagMgr(props.userUuid)
         };
@@ -49,14 +52,17 @@ class UserPostView extends React.Component
     componentDidMount() {
         this.unsub = AuthorStore.listen(this._updateState);
         this.unsubBtn = StateButtonStore.listen(this._saveUpdate);
+        this.unsubInp = InputStore.listen(this._authorLinkChg);
     }
 
     componentWillUnmount() {
         if (this.unsub != null) {
             this.unsub();
             this.unsubBtn();
+            this.unsubInp();
             this.unsub = null;
             this.unsubBtn = null;
+            this.unsubInp = null;
         }
     }
 
@@ -64,6 +70,16 @@ class UserPostView extends React.Component
         this.setState({
             status: "store changed",
             tagMgr: AuthorStore.getAuthorTagMgr(this.props.userUuid)
+        });
+    }
+
+    _authorLinkChg(item) {
+        if (item.keyId == null ||
+            item.viewId == null || item.viewId !== this.props.userUuid) {
+            return;
+        }
+        this.setState({
+            active: item
         });
     }
 
@@ -80,17 +96,18 @@ class UserPostView extends React.Component
     }
 
     renderTag(tag, refName, expanded) {
-        let upRank = null;
-        let downRank = null;
+        let upRank = null, downRank = null;
 
         if (UserStore.isUserMe(this.props.userUuid) === true) {
             upRank = (
-                <span className="label label-info" onClick={this.moveUp.bind(this, tag)}>
+                <span className="label label-info"
+                    onClick={this.moveUp.bind(this, tag)}>
                     <i className="fa fa-sort-desc"/><Mesg text="Up"/>
                 </span>
             );
             downRank = (
-                <span className="label label-info" onClick={this.moveDown.bind(this, tag)}>
+                <span className="label label-info"
+                    onClick={this.moveDown.bind(this, tag)}>
                     <i className="fa fa-sort-asc"/><Mesg text="Down"/>
                 </span>
             );
@@ -141,7 +158,8 @@ class UserPostView extends React.Component
     }
 
     renderElement(parent, children, output) {
-        let reorder = false;
+        let active, expand, reorder = false, sub = [], orderSub = null;
+
         if (UserStore.isUserMe(this.props.userUuid) === true) {
             reorder = this.arrangeBtn.isInState("arrange");
         }
@@ -155,12 +173,19 @@ class UserPostView extends React.Component
                 iconClose: "fa fa-lg fa-folder"
             });
         } else {
-            let sub = []; 
+            sub = []; 
+            active = this.state.active;
             _.forOwn(children, function(rank) {
+                expand = null;
+                if (active != null && parent._id === active.keyId &&
+                    active.articleUuid === rank.articleUuid) {
+                    expand = active.keyId;
+                }
                 if (reorder === false) {
                     sub.push({
-                        renderFn : ArticleRank.renderArtRank,
-                        renderArg: rank
+                        renderArg: null,
+                        renderFn : ArticleRank
+                            .renderArtRank.bind(this, rank, null, expand)
                     });
                 } else {
                     sub.push(
@@ -171,8 +196,9 @@ class UserPostView extends React.Component
                         </li>
                     );
                 }
-            });
-            let orderSub = null;
+            }.bind(this));
+
+            orderSub = null;
             if (reorder === true) {
                 orderSub = [ {
                     renderArg: null,
@@ -257,9 +283,8 @@ class UserPostView extends React.Component
     }
 
     render() {
-        let tagMgr = AuthorStore.getAuthorTagMgr(this.props.userUuid);
-        let json = [];
-        let btnCmds = null;
+        let tagMgr = AuthorStore.getAuthorTagMgr(this.props.userUuid),
+            json = [], btnCmds = null;
 
         if (UserStore.isUserMe(this.props.userUuid) === true) {
             let btnId = this.saveBtn.getBtnId();
@@ -280,7 +305,8 @@ class UserPostView extends React.Component
         return (
             <div>
                 {btnCmds}
-                <AccordionView className="no-padding" items={json}/>
+                <AccordionView className="no-padding"
+                    items={json} viewId={this.props.userUuid}/>
             </div>
         );
     }

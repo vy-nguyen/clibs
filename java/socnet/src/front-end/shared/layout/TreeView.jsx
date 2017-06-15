@@ -1,4 +1,6 @@
-
+/*
+ * Written by Vy Nguyen
+ */
 'use strict';
 
 import _             from 'lodash';
@@ -42,17 +44,17 @@ class TreeViewItem extends React.Component
     }
 
     render() {
-        let item = this.props.item;
-        let children = null;
+        let item = this.props.item, className, children = null;
 
         if (item.children && item.children.length) {
             let subClassName = classnames({
                 'smart-treeview-group': true,
                 hidden: !this.state.expanded
             });
-            children = <TreeView className={subClassName} items={item.children} role="group"/>;
+            children =
+                <TreeView className={subClassName} items={item.children} role="group"/>;
         }
-        let className = classnames({
+        className = classnames({
             parent_li: item.children && item.children.length
         });
 
@@ -69,7 +71,8 @@ class TreeViewItem extends React.Component
         let textStyle = item.textStyle || "label label-primary";
         return (
             <span className={textStyle} style={{fontSize: fontSize}}>
-                {expanded ? <i className={item.iconOpen}/> : <i className={item.iconClose}/>}
+                { expanded ?
+                    <i className={item.iconOpen}/> : <i className={item.iconClose}/> }
                 {label}
                 {itemCnt}
             </span>
@@ -97,18 +100,16 @@ class TreeView extends React.Component
     }
 
     render() {
-        let items = this.props.items;
-        //_.forOwn(items, function(it) {
-        //    it.expanded = true;
-        //});
-        let views = items.map(function(it) {
+        let items = this.props.items,
+        views = items.map(function(it) {
             return (
                 <TreeViewItem item={it} key={_.uniqueId('tree-item-')} parent={this}/>
-            )
+            );
         }.bind(this));
 
         return (
-            <ul role={this.props.role ? this.props.role : "tree"} className={this.props.className}>
+            <ul role={this.props.role ? this.props.role : "tree"}
+                className={this.props.className}>
                 {views}
             </ul>
         )

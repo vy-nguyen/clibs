@@ -10,6 +10,7 @@ import React     from 'react-mod';
 
 import TreeView      from 'vntd-shared/layout/TreeView.jsx';
 import AccordionView from 'vntd-shared/layout/AccordionView.jsx';
+import InputStore    from 'vntd-shared/stores/NestableStore.jsx';
 import AuthorStore   from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleStore  from 'vntd-root/stores/ArticleStore.jsx';
 
@@ -64,18 +65,20 @@ class AuthorLinks extends React.Component
     }
 
     _showItem(item) {
-        console.log("Click....");
-        console.log($('#tab-panel-all-' + item.authorUuid));
+        InputStore.storeItemTrigger(item.keyId, item, true);
         $('#tab-panel-all-' + item.authorUuid).trigger('click');
-        $('#art-rank-full-' + item.articleUuid).trigger('click');
     }
 
     _renderLink(item) {
-        let article = ArticleStore.getArticleByUuid(item.articleUuid);
+        let text, parent = item.parent,
+            article = ArticleStore.getArticleByUuid(item.articleUuid);
+
         if (article == null) {
             return null;
         }
-        let text = item.artTitle.substring(0, 40);
+        text = item.artTitle.substring(0, 40);
+        item.keyId   = parent._id;
+        item.viewId  = item.authorUuid;
         this.evenRow = !this.evenRow;
         return (
             <p><a onClick={this._showItem.bind(this, item)}>{text}</a></p>
@@ -84,15 +87,16 @@ class AuthorLinks extends React.Component
 
     _renderElement(parent, children, output) {
         if ((children != null) && !_.isEmpty(children)) {
-            let sub = [];
+            let style, sub = [];
             _.forOwn(children, function(item) {
+                item.parent = parent;
                 sub.push({
                     renderFn : this._renderLink,
                     renderArg: item
                 });
             }.bind(this));
 
-            let style = this.evenRow ? "label label-info" : "label label-primary";
+            style = this.evenRow ? "label label-info" : "label label-primary";
             this.evenRow = !this.evenRow;
             output.push({
                 renderFn : this._renderTag,
