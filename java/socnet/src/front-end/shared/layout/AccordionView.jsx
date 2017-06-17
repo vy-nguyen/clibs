@@ -57,9 +57,6 @@ class AccordionView extends React.Component {
             if (!item.children || !item.children.length) {
                 return;
             }
-            if (activeKey == null) {
-                activeKey = [ item.keyId ];
-            }
             header = TreeView.renderTreeItem(item, true, null);
             content = item.children.map(function(it) {
                 return (

@@ -4,6 +4,7 @@
 'use strict';
 
 import _             from 'lodash';
+import $             from 'jquery';
 import React         from 'react-mod';
 import ReactDOM      from 'react-dom';
 
@@ -28,6 +29,7 @@ class NestItem
                 result = index;
                 return false;
             }
+            return true;
         });
         return result;
     }
@@ -112,10 +114,6 @@ class EnterTag extends React.Component
 
 class NestableItem extends React.Component
 {
-    static propTypes() {
-        item : React.PropTypes.object
-    }
-
     constructor(props) {
         super(props);
         this._addItem   = this._addItem.bind(this);
@@ -129,7 +127,6 @@ class NestableItem extends React.Component
             itemInput  : true,
             itemValue  : value,
             itemContent: value,
-            itemSub    : false,
             itemFmt    : item.itemRef.itemFmt,
             contentFmt : item.itemRef.contentFmt,
             canRemove  : true,
@@ -162,28 +159,24 @@ class NestableItem extends React.Component
     }
 
     render() {
-        let output = [];
-        let content = null;
-        let buttons = null;
-        let childrenItem = null;
-        let elm = this.props.item;
-        let item = elm.itemRef;
-        let children = elm.children;
+        let output = [], content = null, buttons = null, childrenItem = null,
+            elm = this.props.item, item = elm.itemRef, children = elm.children,
+            removeBtn = null, addSubBtn = null;
 
         if (children != null) {
-            childrenItem = children.map(function(item) {
-                return <NestableItem key={_.uniqueId('nest-item-')} item={item}
-                            onAdd={this.props.onAdd} onRm={this.props.onRm}/>
+            childrenItem = children.map(function(it) {
+                return (
+                    <NestableItem key={_.uniqueId('nest-item-')} item={it}
+                        onAdd={this.props.onAdd} onRm={this.props.onRm}/>
+                );
             }.bind(this));
         }
-        let removeBtn = null;
         if (item.canRemove === true) {
             removeBtn = (
                 <button className='btn btn-danger btn-xs'
                     onClick={this._rmItem.bind(this, elm)}>Remove x</button>
             );
         }
-        let addSubBtn = null;
         if (item.itemSub === true) {
             addSubBtn = (
                 <button className='btn btn-primary btn-xs'
@@ -457,7 +450,7 @@ class NestableSelect extends React.Component
     render() {
         let items = this.state.renderTab;
         if (items == null) {
-            return;
+            return null;
         }
         let deletedTags = null;
         if (this.state.delTags != null) {
@@ -480,8 +473,10 @@ class NestableSelect extends React.Component
         }
         let saveBtnId = this.saveBtn.getBtnId();
         let renderItems = items.map(function(it) {
-            return <NestableItem item={it} key={_.uniqueId('nest-item-')}
-                        onAdd={this._addTag} onRm={this._rmTag}/>
+            return (
+                <NestableItem item={it} key={_.uniqueId('nest-item-')}
+                    onAdd={this._addTag} onRm={this._rmTag}/>
+            );
         }.bind(this));
 
         return (
@@ -516,8 +511,7 @@ class Nestable extends React.Component
     }
 
     componentDidMount() {
-        let element = $(ReactDOM.findDOMNode(this));
-        let options = {};
+        let element = $(ReactDOM.findDOMNode(this)), options = {};
 
         if (this.props.group){
             options.group = this.props.group;
@@ -537,4 +531,5 @@ class Nestable extends React.Component
     }
 }
 
+export default Nestable;
 export { Nestable, NestableSelect, NestableItem }

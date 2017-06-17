@@ -584,8 +584,9 @@ let AuthorStore = Reflux.createStore({
         this._updateArticleRank(data);
     },
 
-    onReRankTag: function(tagMgr) {
-        this.trigger(this.data);
+    onReRankTagCompleted: function(tagMgr) {
+        console.log("Complete reRank " + tagMgr.authorUuid);
+        this.trigger(this.data, tagMgr);
     },
 
     onCommitTagRanksCompleted: function(data) {

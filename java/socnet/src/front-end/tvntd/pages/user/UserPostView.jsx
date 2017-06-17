@@ -66,7 +66,7 @@ class UserPostView extends React.Component
         }
     }
 
-    _updateState(data) {
+    _updateState(data, mgr) {
         this.setState({
             status: "store changed",
             tagMgr: AuthorStore.getAuthorTagMgr(this.props.userUuid)

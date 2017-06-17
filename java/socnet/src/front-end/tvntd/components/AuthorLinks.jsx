@@ -42,7 +42,7 @@ class AuthorLinks extends React.Component
         }
     }
 
-    _updateState(data) {
+    _updateState(data, mgr) {
         let tagItems = 0;
         let tagMgr   = this.state.tagMgr;
 
