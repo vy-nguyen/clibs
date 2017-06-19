@@ -350,6 +350,18 @@ public interface IArticleService
             return artRank.setPublicUrl(publicTag);
         }
 
+        public String getPrevArticle() {
+            return artRank.getPrevArticle();
+        }
+
+        public String getNextArticle() {
+            return artRank.getNextArticle();
+        }
+
+        public String getTopArticle() {
+            return artRank.getTopArticle();
+        }
+
         /**
          * @return the articleUuid
          */

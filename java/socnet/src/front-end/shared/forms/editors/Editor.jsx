@@ -59,7 +59,7 @@ class Editor extends React.Component
     render() {
         // customize css rules here
         const cmd = 'formatBlock', font = 'fontSize', jsref = "javascript:;";
-        var buttonSpacing = {marginRight: 2},
+        let buttonSpacing = {marginRight: 2},
             toolbarStyle = {marginBottom: 3};
 
         /**

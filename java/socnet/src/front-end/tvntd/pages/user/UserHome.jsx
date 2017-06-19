@@ -190,13 +190,12 @@ class UserHome extends React.Component
     }
 
     render() {
-        let me, self, postView, saveArticles, tabCtx, articles, editTab;
-        me = true;
-        self = this._getOwner();
+        let me = true, postView, saveArticles, tabCtx, articles, editTab,
+            self = this._getOwner();
 
         if (self == null) {
             History.pushState(null, "/");
-            return;
+            return null;
         }
         postView = null;
         saveArticles = null;

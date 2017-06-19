@@ -13,6 +13,7 @@ import Lang         from 'vntd-root/stores/LanguageStore.jsx';
 import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
 import Mesg         from 'vntd-root/components/Mesg.jsx'
 import PostItem     from 'vntd-root/components/PostItem.jsx';
+import RefLinks     from 'vntd-root/components/RefLinks.jsx';
 import PostComment  from 'vntd-root/components/PostComment.jsx';
 import WidgetGrid   from 'vntd-shared/widgets/WidgetGrid.jsx';
 import JarvisWidget from 'vntd-shared/widgets/JarvisWidget.jsx';
@@ -117,9 +118,9 @@ class TagPost extends React.Component
     }
 
     render() {
-        let btnId = this.state.buttonId;
-        let postInfo = this._getSavedInfo();
-        let allTags = AuthorStore.getTagsByAuthorUuid(this.props.authorUuid);
+        let btnId = this.state.buttonId,
+            postInfo = this._getSavedInfo(),
+            allTags = AuthorStore.getTagsByAuthorUuid(this.props.authorUuid);
 
         return (
             <form enclType="form-data"
@@ -294,9 +295,9 @@ class PostPane extends React.Component {
 
     render() {
         const fmt = "btn btn-primary pull-right";
-        let adminItem = null,
-            ownerItem = null,
+        let adminItem = null, ownerItem = null, tagPost = null, panelLabel = null,
             article = this.props.data,
+
         modal = (
             <ModalConfirm ref="modal" height="auto"
                 modalTitle="Delete this article post?">
@@ -385,7 +386,7 @@ class PostPane extends React.Component {
         if (adminItem != null) {
             Array.prototype.push.apply(ownerPostMenu.menuItems, adminItem);
         }
-        let panelLabel = [ {
+        panelLabel = [ {
             labelIcon: 'label label-success',
             labelText: article.moneyEarned
         }, {
@@ -414,7 +415,6 @@ class PostPane extends React.Component {
             margin: "10px 10px 10px 10px",
             fontSize: "130%"
         };
-        let tagPost = null;
         if (UserStore.isUserMe(article.authorUuid)) {
             tagPost = (
                 <TagPost articleUuid={article.articleUuid}
@@ -433,6 +433,7 @@ class PostPane extends React.Component {
                 {publishModal}
                 <PostItem data={article.pictureUrl}/>
                 <div style={divStyle} dangerouslySetInnerHTML={this._rawMarkup()}/>
+                <RefLinks article={article}/>
                 <PostComment articleUuid={article.articleUuid}/>
             </Panel>
         )
