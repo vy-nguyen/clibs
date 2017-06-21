@@ -43,6 +43,9 @@ public class ArticleForm
     private Long shareInc;
     private String userUuid;
     private String articleUuid;
+    private String prevArticle;
+    private String nextArticle;
+    private String topArticle;
 
     @Size(max = 128)
     private String title;
@@ -175,6 +178,48 @@ public class ArticleForm
      */
     public void setArticleUuid(String articleUuid) {
         this.articleUuid = articleUuid;
+    }
+
+    /**
+     * @return the prevArticle
+     */
+    public String getPrevArticle() {
+        return prevArticle;
+    }
+
+    /**
+     * @param prevArticle the prevArticle to set
+     */
+    public void setPrevArticle(String prevArticle) {
+        this.prevArticle = prevArticle;
+    }
+
+    /**
+     * @return the nextArticle
+     */
+    public String getNextArticle() {
+        return nextArticle;
+    }
+
+    /**
+     * @param nextArticle the nextArticle to set
+     */
+    public void setNextArticle(String nextArticle) {
+        this.nextArticle = nextArticle;
+    }
+
+    /**
+     * @return the topArticle
+     */
+    public String getTopArticle() {
+        return topArticle;
+    }
+
+    /**
+     * @param topArticle the topArticle to set
+     */
+    public void setTopArticle(String topArticle) {
+        this.topArticle = topArticle;
     }
 
     /**

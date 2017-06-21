@@ -31,7 +31,11 @@ let NestableStore = Reflux.createStore({
     },
 
     getItemIndex: function(id) {
-        return this.data[id];
+        let ret = this.data[id];
+        if (ret != null) {
+            return ret;
+        }
+        return null;
     },
 
     getIndexString: function(id) {

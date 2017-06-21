@@ -124,7 +124,8 @@ class AuthorLinks extends React.Component
 
 export default AuthorLinks;
 /*
-    <ModalButton className="btn btn-sm btn-primary" buttonText={item.artTitle} closeCb={clickCb.bind(this, item.authorUuid)}>
+    <ModalButton className="btn btn-sm btn-primary"
+        buttonText={item.artTitle} closeCb={clickCb.bind(this, item.authorUuid)}>
         <PostPane data={article}/>
     </ModalButton>
 */

@@ -729,9 +729,6 @@ public class UserPath
         if (profile == null) {
             return s_noProfile;
         }
-        if (!form.getTitle().isEmpty()) {
-            System.out.println("Change title to " + form.getTitle());
-        }
         ArticleRankDTO rank = new ArticleRankDTO();
         Author author = authorSvc.updateAuthor(profile, form, rank);
         if (author != null) {

@@ -17,15 +17,14 @@ class NewsFeed extends React.Component
 {
     constructor(props) {
         super(props);
-        this._updateState = this._updateState.bind(this);
-        this.state = {
-            authorList: AuthorStore.getAuthorUuidList()
-        }
+        this._updateState   = this._updateState.bind(this);
+        this._updateAuthors = this._updateAuthors.bind(this);
+
+        this.state = this._updateAuthors();
     }
 
     componentDidMount() {
         this.unsub = AuthorStore.listen(this._updateState);
-        this.unsubArt = ArticleStore.listen(this._updateState);
     }
 
     componentWillUnmount() {
@@ -33,21 +32,25 @@ class NewsFeed extends React.Component
             this.unsub();
             this.unsub = null;
         }
-        if (this.unsubArt != null) {
-            this.unsubArt();
-            this.unsubArt = null;
+    }
+
+    _updateAuthors() {
+        let authors = AuthorStore.getAuthorUuidList();
+        return {
+            authorCnt : authors.length,
+            authorList: authors
         }
     }
 
-    _updateState() {
-        this.setState({
-            authorList: AuthorStore.getAuthorUuidList()
-        });
+    _updateState(data, elm, what) {
+        if (AuthorStore.hasDiffAuthor(this.state.authorCnt)) {
+            this.setState(this._updateAuthors());
+        }
     }
 
     renderAuthors() {
-        let output = [];
-        let authorList = this.state.authorList;
+        let output = [], authorList = this.state.authorList;
+
         _.forEach(authorList, function(uuid) {
             output.push(<AuthorFeed key={_.uniqueId("author-feed-")} authorUuid={uuid}/>);
         });

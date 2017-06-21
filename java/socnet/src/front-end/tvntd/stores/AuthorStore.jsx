@@ -79,6 +79,12 @@ class ArticleRank {
         }.bind(this));
 
         this._id = _.uniqueId('id-art-rank-');
+        if (article == null) {
+            article = ArticleStore.getArticleByUuid(this.articleUuid);
+        }
+        if (article != null) {
+            article.rank = this;
+        }
         return this;
     }
 
@@ -93,6 +99,15 @@ class ArticleRank {
         this.authorTag = authorTag;
         this.tagName = authorTag.tagName;
         return authorTag.addArticleRankObj(this);
+    }
+
+    updateArticleRank(tagInfo) {
+        if (tagInfo.prevArticle != null) {
+            this.prevArticle = tagInfo.prevArticle;
+        }
+        if (tagInfo.nextArticle != null) {
+            this.nextArticle = tagInfo.nextArticle;
+        }
     }
 }
 
@@ -304,17 +319,11 @@ class AuthorTagMgr {
     }
 
     getArticleRankByUuid(articleUuid) {
-        let rank = null;
-        _.forOwn(this.authorTags, function(authorTag) {
-            if (rank == null) {
-                rank = authorTag.getArticleRank(articleUuid);
-            }
-            if (rank != null) {
-                return false;
-            }
-            return true;
-        });
-        return rank;
+        let article = ArticleStore.getArticleByUuid(articleUuid);
+        if (article != null) {
+            return article.rank;
+        }
+        return null;
     }
 
     getStringTags() {
@@ -432,6 +441,10 @@ let AuthorStore = Reflux.createStore({
         return this.data.authorUuids;
     },
 
+    hasDiffAuthor: function(curr) {
+        return curr !== this.data.authorUuids.length;
+    },
+
     getAuthorByUuid: function(uuid) {
         return this.data.authorMap[uuid];
     },
@@ -509,9 +522,10 @@ let AuthorStore = Reflux.createStore({
             artRank.detachTag();
         }
         artRank.attachTag(authorTag);
-        this.trigger(this.data, artRank);
+        artRank.updateArticleRank(tagInfo);
 
         Actions.updateArtRank(tagInfo, tagInfo.cbButtonId);
+        this.trigger(this.data, artRank, "update");
     },
 
     updateAuthorEStoreTag: function(tagInfo, artRank) {
@@ -529,7 +543,7 @@ let AuthorStore = Reflux.createStore({
             artRank.detachTag();
         }
         artRank.attachTag(estoreTag);
-        this.trigger(this.data, artRank);
+        this.trigger(this.data, artRank, "update");
     },
 
     removeArticleRank: function(article, silent) {
@@ -570,7 +584,7 @@ let AuthorStore = Reflux.createStore({
             }
             this.getAuthorTagMgr(uuid).addAuthorTagList(author.authorTags);
         }.bind(this));
-        this.trigger(this.data);
+        this.trigger(this.data, null, "authors");
     },
 
     /*
@@ -582,7 +596,7 @@ let AuthorStore = Reflux.createStore({
             this._setArticleRankObj(obj);
         }.bind(this));
 
-        this.trigger(this.data);
+        this.trigger(this.data, null, "update");
     },
 
     /*
@@ -627,7 +641,7 @@ let AuthorStore = Reflux.createStore({
     },
 
     onReRankTagCompleted: function(tagMgr) {
-        this.trigger(this.data, tagMgr);
+        this.trigger(this.data, tagMgr, "reRank");
     },
 
     onCommitTagRanksCompleted: function(data) {

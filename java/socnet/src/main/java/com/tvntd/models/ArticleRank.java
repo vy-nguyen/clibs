@@ -219,6 +219,15 @@ public class ArticleRank
         } else if (shareCnt < 0 && shared > 0) {
             shared--;
         }
+        if (form.getPrevArticle() != null) {
+            prevArticle = form.getPrevArticle();
+        }
+        if (form.getNextArticle() != null) {
+            nextArticle = form.getNextArticle();
+        }
+        if (form.getTopArticle() != null) {
+            topArticle = form.getTopArticle();
+        }
     }
 
     public boolean setPublicUrl(String publicTag)

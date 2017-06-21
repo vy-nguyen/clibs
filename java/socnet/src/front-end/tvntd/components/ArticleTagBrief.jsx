@@ -101,9 +101,8 @@ class ArticleTagBrief extends React.Component
             this.state.articleUuid !== art.artUuid) {
             return null;
         }
-        let artUuid = art.artUuid;
-        let artTag = art.artTag;
-        let article = ArticleStore.getArticleByUuid(artUuid);
+        let artUuid = art.artUuid, artTag = art.artTag,
+            article = ArticleStore.getArticleByUuid(artUuid);
 
         return (
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">

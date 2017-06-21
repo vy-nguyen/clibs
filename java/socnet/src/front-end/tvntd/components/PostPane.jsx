@@ -39,10 +39,10 @@ class TagPost extends React.Component
             buttonId: btnId
         };
         this._onBlur = this._onBlur.bind(this);
-        this._submitUpdate = this._submitUpdate.bind(this);
-        this._getSavedInfo = this._getSavedInfo.bind(this);
+        this._submitUpdate  = this._submitUpdate.bind(this);
+        this._getSavedInfo  = this._getSavedInfo.bind(this);
         this._updateSuccess = this._updateSuccess.bind(this);
-        this._createUpdateBtn = this._createUpdateBtn.bind(this);
+        this._createUpdateBtn  = this._createUpdateBtn.bind(this);
         this._onOptionSelected = this._onOptionSelected.bind(this);
 
         StateButtonStore.createButton(btnId, this._createUpdateBtn);
@@ -58,7 +58,7 @@ class TagPost extends React.Component
     }
 
     _submitUpdate(btnId) {
-        let artRank, postInfo = this._getSavedInfo(),
+        let artRank, artUuid = this.props.articleUuid, postInfo = this._getSavedInfo(),
         tagInfo = {
             tagName    : postInfo.tagName,
             favorite   : this.state.favorite,
@@ -66,9 +66,14 @@ class TagPost extends React.Component
             title      : this.refs.title.value,
             likeInc    : 0,
             shareInc   : 0,
-            articleUuid: this.props.articleUuid,
-            cbButtonId : btnId
+            articleUuid: artUuid,
+            cbButtonId : btnId,
+            prevArticle: InputStore.getItemIndex(RefLinks.getPrevRefArtId(artUuid)),
+            nextArticle: InputStore.getItemIndex(RefLinks.getNextRefArtId(artUuid))
         };
+        console.log("Submit update ");
+        console.log(tagInfo);
+
         if (!_.isEmpty(this.refs.title.value)) {
             postInfo.title = this.refs.title.value;
         }
@@ -297,7 +302,6 @@ class PostPane extends React.Component {
         const fmt = "btn btn-primary pull-right";
         let adminItem = null, ownerItem = null, tagPost = null, panelLabel = null,
             article = this.props.data,
-
         modal = (
             <ModalConfirm ref="modal" height="auto"
                 modalTitle="Delete this article post?">

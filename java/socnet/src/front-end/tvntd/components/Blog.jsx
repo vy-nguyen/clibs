@@ -163,9 +163,11 @@ class Blog extends React.Component
             return null;
         }
         if (article != null) {
+            console.log("Blog postpane " + article.articleUuid);
             return <PostPane data={article}/>;
         }
         if (artRank != null) {
+            console.log("Blog postpane static " + article.articleUuid);
             return PostPane.renderArticleRank(artRank);
         }
         return null;
