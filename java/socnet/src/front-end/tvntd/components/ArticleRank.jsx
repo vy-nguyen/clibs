@@ -99,7 +99,6 @@ class ArticleRank extends React.Component
             );
         }
         if (this.state.article != null && this.state.fullArt === "fullArt") {
-            console.log("Post pane full view " + rank.articleUuid);
             artPane = (
                 <div className="row">
                     <PostPane data={this.state.article} artRank={rank}/>

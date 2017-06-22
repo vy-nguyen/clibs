@@ -21,6 +21,7 @@ import ModalConfirm from 'vntd-shared/forms/commons/ModalConfirm.jsx';
 import EditorPost   from 'vntd-shared/forms/commons/EditorPost.jsx';
 import InputStore   from 'vntd-shared/stores/NestableStore.jsx'; 
 
+import ArticleStore     from 'vntd-root/stores/ArticleStore.jsx';
 import ArticleTagStore  from 'vntd-root/stores/ArticleTagStore.jsx';
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
@@ -33,12 +34,12 @@ import { InputInline }  from 'vntd-shared/forms/commons/GenericForm.jsx';
 class TagPost extends React.Component
 {
     constructor(props) {
-        let btnId = "chg-tag-" + props.articleUuid;
         super(props);
+        let btnId = "chg-tag-" + props.article.articleUuid;
         this.state = {
             buttonId: btnId
         };
-        this._onBlur = this._onBlur.bind(this);
+        this._onBlur        = this._onBlur.bind(this);
         this._submitUpdate  = this._submitUpdate.bind(this);
         this._getSavedInfo  = this._getSavedInfo.bind(this);
         this._updateSuccess = this._updateSuccess.bind(this);
@@ -58,11 +59,12 @@ class TagPost extends React.Component
     }
 
     _submitUpdate(btnId) {
-        let artRank, artUuid = this.props.articleUuid, postInfo = this._getSavedInfo(),
+        let artRank, article = this.props.article, artUuid = article.articleUuid,
+            postInfo = this._getSavedInfo(),
         tagInfo = {
             tagName    : postInfo.tagName,
             favorite   : this.state.favorite,
-            userUuid   : this.props.authorUuid,
+            userUuid   : article.authorUuid,
             title      : this.refs.title.value,
             likeInc    : 0,
             shareInc   : 0,
@@ -71,15 +73,11 @@ class TagPost extends React.Component
             prevArticle: InputStore.getItemIndex(RefLinks.getPrevRefArtId(artUuid)),
             nextArticle: InputStore.getItemIndex(RefLinks.getNextRefArtId(artUuid))
         };
-        console.log("Submit update ");
-        console.log(tagInfo);
-
         if (!_.isEmpty(this.refs.title.value)) {
             postInfo.title = this.refs.title.value;
         }
         StateButtonStore.getButtonState(btnId).setNextState();
-        artRank = AuthorStore.getArticleRank(this.props.authorUuid,
-                                             this.props.articleUuid);
+        artRank = AuthorStore.getArticleRank(article.authorUuid, article.articleUuid);
         AuthorStore.updateAuthorTag(tagInfo, artRank);
     }
 
@@ -87,8 +85,9 @@ class TagPost extends React.Component
     }
 
     _createUpdateBtn() {
-        let artRank = AuthorStore
-            .getArticleRank(this.props.authorUuid, this.props.articleUuid);
+        let article = this.props.article,
+            artRank = AuthorStore
+            .getArticleRank(article.authorUuid, article.articleUuid);
         return {
             success: {
                 text     : Lang.translate("Update"),
@@ -113,7 +112,7 @@ class TagPost extends React.Component
                 artRank  : artRank,
                 tagName  : artRank != null ?
                     artRank.tagName : Lang.translate("My Post"),
-                title    : this.props.artTitle
+                title    : article.topic
             }
         };
     }
@@ -124,12 +123,19 @@ class TagPost extends React.Component
 
     render() {
         let btnId = this.state.buttonId,
-            postInfo = this._getSavedInfo(),
-            allTags = AuthorStore.getTagsByAuthorUuid(this.props.authorUuid);
+            article = this.props.article,
+            postInfo = this._getSavedInfo(), refLink = null,
+            allTags = AuthorStore.getTagsByAuthorUuid(article.authorUuid);
 
+        if (UserStore.isUserMe(article.authorUuid)) {
+            refLink = (
+                <div className="row">
+                    <RefLinks article={article} notifyId={this.props.notifyId}/>
+                </div>
+            );
+        }
         return (
-            <form enclType="form-data"
-                acceptCharset="utf-8" className="form-horizontal">
+            <div>
                 <div className="row">
                     <div className="col-xs-10 col-sm-10 col-md-10 col-lg-10">
                         <TA.Typeahead options={allTags} maxVisible={6}
@@ -138,8 +144,10 @@ class TagPost extends React.Component
                             onBlur={this._onBlur}
                             onOptionSelected={this._onOptionSelected}/>
                     </div>
-                    <StateButton btnId={btnId}
-                        onClick={this._submitUpdate.bind(this, btnId)}/>
+                    <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                        <StateButton btnId={btnId}
+                            onClick={this._submitUpdate.bind(this, btnId)}/>
+                    </div>
                 </div>
                 <div className="row">
                     <div className="col-xs-10 col-sm-10 col-md-10 col-lg-10">
@@ -147,7 +155,8 @@ class TagPost extends React.Component
                             ref="title" placeholder={postInfo.title}/>
                     </div>
                 </div>
-            </form>
+                {refLink}
+            </div>
         );
     }
 }
@@ -215,33 +224,41 @@ class PublishArticle extends React.Component {
     }
 }
 
-class PostPane extends React.Component {
-
+class PostPane extends React.Component
+{
     constructor(props) {
-        let artRank = AuthorStore.getArticleRank(props.data.authorUuid,
-                                                 props.data.articleUuid);
+        let article = props.data, active, artRank;
+
         super(props);
-        if (artRank != null) {
-            if (artRank.publishPost == null) {
-                artRank.publishPost = false;
-            }
-            this.state = {
-                artRank : artRank,
-                favorite: artRank.favorite,
-                publish : artRank.publishPost
+        this._postPaneId = "post-pane-" + article.articleUuid;
+        active = InputStore.getItemIndex(this._postPaneId);
+        if (active == null) {
+            artRank = AuthorStore.getArticleRank(article.authorUuid, article.articleUuid);
+            if (artRank != null) {
+                if (artRank.publishPost == null) {
+                    artRank.publishPost = false;
+                }
+            } else {
+                artRank = {
+                    editMode   : false,
+                    favorite   : false,
+                    publishPost: false
+                };
             }
         } else {
-            this.state = {
-                artRank : {},
-                favorite: false,
-                publish : false,
-                editMode: false
-            }
+            artRank = active.artRank;
+            article = ArticleStore.getArticleByUuid(active.artUuid);
         }
-        if (ArticleTagStore.hasPublishedArticle(props.data.articleUuid)) {
+        this.state = {
+            artRank : artRank,
+            article : article,
+            favorite: artRank.favorite,
+            publish : artRank.publishPost,
+            editMode: artRank.editMode
+        };
+        if (ArticleTagStore.hasPublishedArticle(article.articleUuid)) {
             this.state.publish = true;
         }
-        this._deletePost     = this._deletePost.bind(this);
         this._cancelDel      = this._cancelDel.bind(this);
         this._editArticle    = this._editArticle.bind(this);
         this._toggleFavorite = this._toggleFavorite.bind(this);
@@ -250,7 +267,7 @@ class PostPane extends React.Component {
     }
 
     componentDidMount() {
-        this.unsub = ArticleTagStore.listen(this._updateState);
+        this.unsub = InputStore.listen(this._updateState);
     }
 
     componentWillUnmount() {
@@ -260,18 +277,29 @@ class PostPane extends React.Component {
         }
     }
 
-    _updateState() {
+    _updateState(active, key, what) {
+        let artRank = active.artRank;
+
+        if (key !== this._postPaneId) {
+            return;
+        }
+        this.setState({
+            artRank : active.artRank,
+            article : ArticleStore.getArticleByUuid(active.artUuid),
+            favorite: artRank.favorite,
+            publish : artRank.publishPost
+        });
     }
 
-    _rawMarkup() {
-        return { __html: this.props.data.content };
+    _rawMarkup(article) {
+        return { __html: article.content };
     }
 
-    _deletePost() {
+    _deletePost(article) {
         Actions.deleteUserPost({
             authorUuid: UserStore.getSelfUuid(),
             uuidType  : "article",
-            uuids     : [ this.props.data.articleUuid ]
+            uuids     : [ article.articleUuid ]
         });
         this.refs.modal.closeModal();
     }
@@ -301,12 +329,13 @@ class PostPane extends React.Component {
     render() {
         const fmt = "btn btn-primary pull-right";
         let adminItem = null, ownerItem = null, tagPost = null, panelLabel = null,
-            article = this.props.data,
+            refLink = null, article = this.state.article,
         modal = (
             <ModalConfirm ref="modal" height="auto"
                 modalTitle="Delete this article post?">
                 <div className="modal-footer">
-                    <button className={fmt} onClick={this._deletePost}>
+                    <button className={fmt}
+                        onClick={this._deletePost.bind(this, article)}>
                         <Mesg text="Delete"/>
                     </button>
                     <button className={fmt} onClick={this._cancelDel}>
@@ -420,12 +449,10 @@ class PostPane extends React.Component {
             fontSize: "130%"
         };
         if (UserStore.isUserMe(article.authorUuid)) {
-            tagPost = (
-                <TagPost articleUuid={article.articleUuid}
-                    artTitle={article.topic} authorUuid={article.authorUuid}/>
-            );
+            tagPost = <TagPost article={article} notifyId={this._postPaneId}/>;
         } else {
             tagPost = <h2>{article.topic ? article.topic : Lang.translate("My Post")}</h2>
+            refLink = <RefLinks article={article} notifyId={this._postPaneId}/>
         }
         return (
             <Panel className="well no-padding" context={panelData}>
@@ -436,8 +463,8 @@ class PostPane extends React.Component {
                 {modal}
                 {publishModal}
                 <PostItem data={article.pictureUrl}/>
-                <div style={divStyle} dangerouslySetInnerHTML={this._rawMarkup()}/>
-                <RefLinks article={article}/>
+                <div style={divStyle} dangerouslySetInnerHTML={this._rawMarkup(article)}/>
+                {refLink}
                 <PostComment articleUuid={article.articleUuid}/>
             </Panel>
         )
