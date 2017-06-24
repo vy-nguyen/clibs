@@ -303,7 +303,7 @@ class EditorPost extends React.Component
     }
 
     render() {
-        let article = this.props.article, topic, content, artRank, tagName;
+        let article = this.props.article, topic, content, artRank, tagName, editorEntry;
         if (article != null) {
             topic   = article.topic;
             content = article.content;
@@ -314,10 +314,10 @@ class EditorPost extends React.Component
             tagName = InitState.tags;
             content = '';
         }
-        const editorEntry = {
+        editorEntry = {
             id       : this._getId(),
             editor   : true,
-            inpHolder: content,
+            inpDefVal: content,
             menu     : "full",
             errorId  : this._getId() + "error",
             errorFlag: this.state.errFlags,

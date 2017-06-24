@@ -412,6 +412,7 @@ class PostComment extends React.Component
         this._componentDidUpdate = this._componentDidUpdate.bind(this);
 
         this.state = {
+            artUuid: props.articleUuid,
             comment: CommentStore.getByArticleUuid(props.articleUuid)
         }
     }
@@ -429,12 +430,17 @@ class PostComment extends React.Component
     }
 
     _updateState(data, cmtArt) {
-        let commentArt = CommentStore.getByArticleUuid(this.props.articleUuid);
-        if (commentArt == null || cmtArt == null ||
-            commentArt.articleUuid !== cmtArt.articleUuid) {
+        let commentArt, artUuid = this.props.articleUuid;
+
+        if (cmtArt == null || cmtArt.articleUuid !== artUuid) {
+            return;
+        }
+        commentArt = CommentStore.getByArticleUuid(artUuid);
+        if (commentArt == null || commentArt.articleUuid !== artUuid) {
             return;
         }
         this.setState({
+            artUuid: artUuid,
             comment: commentArt
         });
     }
@@ -454,29 +460,36 @@ class PostComment extends React.Component
     }
 
     render() {
-        let normals = [];
-        let favorites = [];
-        let showComment = false;
-        let commentArt = this.state.comment;
+        let normals = [],
+            norCmnts = [],
+            favCmnts = [],
+            favorites = [],
+            showComment = false,
+            commentArt = this.state.comment,
+            artUuid = this.props.articleUuid, favColumn = null, norColumn = null,
+            favColumnId, norColumnId, cmtCount, styleFmt;
 
+        if (artUuid !== this.state.artUuid) {
+            commentArt = CommentStore.getByArticleUuid(artUuid);
+        }
         if (commentArt != null) {
-            normals = commentArt.getNormals();
-            favorites = commentArt.getFavorites();
+            normals     = commentArt.getNormals();
+            favorites   = commentArt.getFavorites();
             showComment = commentArt.showComment;
         }
-        let favCmnts = [];
         _.forOwn(favorites, function(item, idx) {
-            favCmnts.push(<CommentItem key={_.uniqueId('comment-')}
-                            user={UserStore.getUserByUuid(item.userUuid)} data={item}/>
+            favCmnts.push(
+                <CommentItem key={_.uniqueId('comment-')}
+                    user={UserStore.getUserByUuid(item.userUuid)} data={item}/>
             );
         });
-        let norCmnts = [];
         _.forOwn(normals, function(item, idx) {
-            norCmnts.push(<CommentItem key={_.uniqueId('comment-')}
-                            user={UserStore.getUserByUuid(item.userUuid)} data={item}/>);
+            norCmnts.push(
+                <CommentItem key={_.uniqueId('comment-')}
+                    user={UserStore.getUserByUuid(item.userUuid)} data={item}/>
+            );
         });
-        let favColumn = null;
-        let favColumnId = 'fav-comment-' + this.props.articleUuid;
+        favColumnId = 'fav-comment-' + artUuid;
         if (!_.isEmpty(favorites)) {
             favColumn = (
                 <div className="col-sm-12 col-md-6 col-lg-6 chat-body"
@@ -485,8 +498,7 @@ class PostComment extends React.Component
                 </div>
             );
         }
-        let norColumn = null;
-        let norColumnId = 'nor-comment-' + this.props.articleUuid;
+        norColumnId = 'nor-comment-' + artUuid;
         if (favColumn == null) {
             if (!_.isEmpty(norCmnts)) {
                 norColumn = (
@@ -504,16 +516,16 @@ class PostComment extends React.Component
                 </div>
             );
         }
-        let cmtCount = favCmnts.length + norCmnts.length;
-        let styleFmt = showComment === true ? { height: "auto" } : { display: "none" };
+        cmtCount = favCmnts.length + norCmnts.length;
+        styleFmt = showComment === true ? { height: "auto" } : { display: "none" };
 
         return (
             <div className="row">
                 <div className="col-sm-12 col-md-12 col-lg-12">
-                    <CommentBox articleUuid={this.props.articleUuid}
+                    <CommentBox articleUuid={artUuid}
                         cmtCount={cmtCount} cmtShow={showComment}/>
                 </div>
-                <div id={"comment-" + this.props.articleUuid}
+                <div id={"comment-" + artUuid}
                     style={styleFmt} className="col-sm-12 col-md-12 col-lg-12">
                     <div className="row no-margin no-padding">
                         {favColumn}

@@ -245,6 +245,10 @@ let ArticleStore = Reflux.createStore({
         this.store._removeItemStore(data.uuids, data.authorUuid);
         this.store._triggerStore(this, data, "delOk");
     },
+
+    onDeleteUserPostFailed: function(data) {
+        console.log("Failed to delete user post");
+    }
 });
 
 function GetStoreKind(kind, spec) {
