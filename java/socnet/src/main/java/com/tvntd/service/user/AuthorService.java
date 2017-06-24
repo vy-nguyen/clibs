@@ -241,7 +241,8 @@ public class AuthorService implements IAuthorService
         String authorUuid = me.getUserUuid();
         Author author = getAuthor(authorUuid);
 
-        if (author == null || artUuid == null || artUuid.isEmpty()) {
+        if (author == null || artUuid == null ||
+            artUuid.isEmpty() || form.getTagName() == null) {
             return null;
         }
         Long order = form.getTagRank();

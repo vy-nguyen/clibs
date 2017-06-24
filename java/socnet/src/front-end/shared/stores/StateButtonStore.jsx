@@ -101,14 +101,16 @@ class ButtonState {
         this.currState = state;
 
         if (this[state] != null && this[state].triggerFn != null) {
-            this.trigger = true;
+            this[state].triggerFn(this[state], this.btnId, this.prevState);
         }
     }
 
     callTrigger(callback) {
+        let state;
+
         if (this.trigger === true) {
             this.trigger = false;
-            let state = this[this.currState];
+            state = this[this.currState];
             if (state != null && state.triggerFn != null) {
                 state.triggerFn(callback, this.btnId, this.prevState, state);
             }
@@ -120,6 +122,7 @@ class ButtonState {
         if (state.nextState != null) {
             this.setState(state.nextState);
         }
+        return this;
     }
 }
 

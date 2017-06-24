@@ -59,41 +59,46 @@ class RefLinks extends React.Component
     }
 
     _renderArtRef(article, refUuid, inpSelect, left) {
-        let title, artRank = null, out = null;
+        let title, artRank = null, out = null, edit = this.props.edit;
 
         if (refUuid != null) {
             artRank = AuthorStore.getArticleRankByUuid(refUuid);
         }
         if (artRank != null) {
             title = artRank.artTitle;
-            if (left === true) {
-                out = (
-                    <button type="button" className="btn btn-default btn-lg pull-left"
-                        onClick={this._onClick.bind(this, refUuid, artRank)}>
-                        <i className="fa fa-lg fa-angle-double-left"/>  {title}
-                    </button>
-                );
+            if (edit === false) {
+                if (left === true) {
+                    out = (
+                        <button type="button"
+                            className="btn btn-default btn-lg pull-left"
+                            onClick={this._onClick.bind(this, refUuid, artRank)}>
+                            <i className="fa fa-lg fa-angle-double-left"/>  {title}
+                        </button>
+                    );
+                } else {
+                    out = (
+                        <button type="button"
+                            className="btn btn-default btn-lg pull-right"
+                            onClick={this._onClick.bind(this, refUuid, artRank)}>
+                            {title}  <i className="fa fa-lg fa-angle-double-right"/>
+                        </button>
+                    );
+                }
             } else {
-                out = (
-                    <button type="button" className="btn btn-default btn-lg pull-right"
-                        onClick={this._onClick.bind(this, refUuid, artRank)}>
-                        {title}  <i className="fa fa-lg fa-angle-double-right"/>
-                    </button>
-                );
-            }
-            if (UserStore.isUserMe(article.authorUuid)) {
-                out = (
-                    <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                        <div className="row padding-10">
-                            {out}
+                if (UserStore.isUserMe(article.authorUuid)) {
+                    out = (
+                        <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <div className="row padding-10">
+                                {out}
+                            </div>
+                            <div className="row padding-10">
+                                <SelectWrap entry={inpSelect}/>
+                            </div>
                         </div>
-                        <div className="row padding-10">
-                            <SelectWrap entry={inpSelect}/>
-                        </div>
-                    </div>
-                );
+                    );
+                }
             }
-        } else if (UserStore.isUserMe(article.authorUuid)) {
+        } else if (edit === true && UserStore.isUserMe(article.authorUuid)) {
             out = <InputInline entry={inpSelect}/>
         }
         return out;

@@ -38,55 +38,89 @@ class TagPost extends React.Component
     constructor(props) {
         super(props);
 
+        this._buttonId        = "chg-tag-" + props.notifyId;
         this._setupIds        = this._setupIds.bind(this);
         this._submitUpdate    = this._submitUpdate.bind(this);
         this._updateSuccess   = this._updateSuccess.bind(this);
         this._createUpdateBtn = this._createUpdateBtn.bind(this);
+        this._getTagValue     = this._getTagValue.bind(this);
+        this._getTitleValue   = this._getTitleValue.bind(this);
+        this._getRankValue    = this._getRankValue.bind(this);
 
         this._setupIds(props.article.articleUuid);
         StateButtonStore.createButton(this._buttonId, this._createUpdateBtn);
+        this.state = {
+            editMode: false
+        };
     }
 
     _setupIds(artUuid) {
-        this._buttonId = "chg-tag-" + artUuid;
         this._tagId    = 'tag-post-' + artUuid;
         this._titleId  = 'tag-post-title-' + artUuid;
         this._rankId   = 'tag-post-rank-' + artUuid;
     }
 
     _submitUpdate(btnId) {
-        let artRank, tagInfo, article = this.props.article,
-            artUuid = article.articleUuid;
+        let tagInfo, state, article = this.props.article,
+            artRank = article.rank, artUuid = article.articleUuid;
 
         this._setupIds(artUuid);
         tagInfo = {
-            tagName    : InputStore.getItemIndex(this._tagId),
+            tagName    : this._getTagValue(artRank),
             userUuid   : article.authorUuid,
-            title      : InputStore.getItemIndex(this._titleId),
-            rank       : InputStore.getItemIndex(this._rankId),
+            title      : this._getTitleValue(artRank),
+            rank       : this._getRankValue(artRank),
             likeInc    : 0,
             shareInc   : 0,
             articleUuid: artUuid,
-            cbButtonId : btnId,
+            cbButtonId : this._buttonId,
             prevArticle: InputStore.getItemIndex(RefLinks.getPrevRefArtId(artUuid)),
             nextArticle: InputStore.getItemIndex(RefLinks.getNextRefArtId(artUuid))
         };
-        StateButtonStore.getButtonState(btnId).setNextState();
+        state = StateButtonStore.getButtonState(btnId).setNextState();
         artRank = AuthorStore.getArticleRankByUuid(article.articleUuid);
         AuthorStore.updateAuthorTag(tagInfo, artRank);
+        this._updateSuccess(state, this._buttonId, null);
     }
 
-    _updateSuccess(btnId, prev, curr) {
+    _updateSuccess(state, btnId, prev) {
+        this.setState({
+            editMode: false
+        });
+    }
+
+    _changeMode(btnId) {
+        StateButtonStore.setButtonState(this._buttonId, "update");
+        this.setState({
+            editMode: true
+        });
+    }
+
+    _cancelEdit() {
+        let article = this.props.article, artRank = article.rank;
+
+        InputStore.storeItemIndex(this._tagId, artRank.tagName, true);
+        InputStore.storeItemIndex(this._titleId, artRank.artTitle, true);
+        InputStore.storeItemIndex(this._rankId, artRank.rank || 10);
+        this.setState({
+            editMode: false
+        });
     }
 
     _createUpdateBtn() {
         return {
             success: {
+                text     : Lang.translate("Edit"),
+                disabled : false,
+                nextState: "update",
+                className: "btn btn-primary",
+                triggerFn: this._updateSuccess
+            },
+            update: {
                 text     : Lang.translate("Update"),
                 disabled : false,
                 nextState: "updating",
-                className: "btn btn-primary",
-                triggerFn: this._updateSuccess
+                className: "btn btn-warning"
             },
             failure: {
                 text     : Lang.translate("Update Failed"),
@@ -103,38 +137,63 @@ class TagPost extends React.Component
         };
     }
 
+    _getTagValue(artRank) {
+        return InputStore.getItemIndex(this._tagId) || artRank.tagName || "My Post";
+    }
+
+    _getTitleValue(artRank) {
+        return InputStore.getItemIndex(this._titleId) || artRank.artTitle;
+    }
+
+    _getRankValue(artRank) {
+        return InputStore.getItemIndex(this._rankId) || artRank.rank || 10;
+    }
+
     render() {
         let article = this.props.article, artRank = article.rank, refLink = null,
-            tagVal, tagEntry, titleVal, titleEntry, rankVal, rankEntry;
+            value, tagEntry, titleEntry, rankEntry;
 
         if (!UserStore.isUserMe(article.authorUuid)) {
             return null;
         }
         this._setupIds(article.articleUuid);
-        tagVal   = InputStore.getItemIndex(this._tagId);
-        rankVal  = InputStore.getItemIndex(this._rankId) || artRank.rank || 10;
-        titleVal = InputStore.getItemIndex(this._titleId) || artRank.artTitle;
-
+        refLink = (
+            <RefLinks article={article}
+                edit={this.state.editMode} notifyId={this.props.notifyId}/>
+        );
+        value = this._getTitleValue(artRank);
+        if (this.state.editMode === false) {
+            return (
+                <div>
+                    <div className="row">
+                        <div className="col-xs-10 col-sm-10 col-md-10 col-lg-10">
+                            <h2>{value}</h2>
+                        </div>
+                        <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                            <StateButton btnId={this._buttonId}
+                                onClick={this._changeMode.bind(this, this._buttonId)}/>
+                        </div>
+                    </div>
+                    {refLink}
+                </div>
+            );
+        }
         tagEntry = {
             inpName  : this._tagId,
-            inpHolder: tagVal || artRank.tagName || Lang.translate("My Post"),
+            inpHolder: this._getTagValue(artRank),
             taOptions: AuthorStore.getTagsByAuthorUuid(article.authorUuid)
         };
         titleEntry = {
             inpName  : this._titleId,
-            inpDefVal: titleVal,
-            inpHolder: titleVal
+            inpDefVal: value,
+            inpHolder: value 
         };
+        value = this._getRankValue(artRank);
         rankEntry = {
             inpName  : this._rankId,
-            inpDefVal: rankVal,
-            inpHolder: rankVal
+            inpDefVal: value,
+            inpHolder: value
         };
-        refLink = (
-            <div className="row">
-                <RefLinks article={article} notifyId={this.props.notifyId}/>
-            </div>
-        );
         return (
             <div>
                 <div className="row">
@@ -152,6 +211,12 @@ class TagPost extends React.Component
                     </div>
                     <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2">
                         <InputWrap entry={rankEntry}/>
+                    </div>
+                    <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                        <button className="btn btn-default" type="button"
+                            onClick={this._cancelEdit.bind(this)}>
+                            <Mesg text="Cancel"/>
+                        </button>
                     </div>
                 </div>
                 {refLink}
@@ -451,7 +516,9 @@ class PostPane extends React.Component
             tagPost = <TagPost article={article} notifyId={this._postPaneId}/>;
         } else {
             tagPost = <h2>{article.topic ? article.topic : Lang.translate("My Post")}</h2>
-            refLink = <RefLinks article={article} notifyId={this._postPaneId}/>
+            refLink = (
+                <RefLinks article={article} edit={false} notifyId={this._postPaneId}/>
+            );
         }
         return (
             <Panel className="well no-padding" context={panelData}>
