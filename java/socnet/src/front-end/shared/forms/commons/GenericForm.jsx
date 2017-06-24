@@ -5,6 +5,7 @@
 'use strict';
 
 import _                 from 'lodash';
+import $                 from 'jquery';
 import React             from 'react-mod';
 import TA                from 'react-typeahead';
 import Select            from 'react-select';
@@ -59,8 +60,7 @@ class SelectWrap extends React.Component
     }
 }
 
-function htmlCheckBox(entry)
-{
+function htmlCheckBox(entry) {
     let opt = [
         '<input type="checkbox" value="' + entry.inpHolder +
         '" id="' + entry.inpName + '"' +
@@ -72,8 +72,7 @@ function htmlCheckBox(entry)
     return opt.join('\n');
 }
 
-function htmlSelect(entry)
-{
+function htmlSelect(entry) {
     let opt = [
         '<select id="' + entry.inpName + '">'
     ];
@@ -135,15 +134,13 @@ class TAWrap extends React.Component
     }
 }
 
-function htmlInput(entry)
-{
+function htmlInput(entry) {
     return '<input id="' + entry.inpName +
         '" type="text" class="form-control" value="' + entry.inpDefVal +
         '" placeholder="' + entry.inpHolder + '">';
 }
 
-function renderHtmlInput(entry)
-{
+function renderHtmlInput(entry) {
     if (entry.typeAhead === true) {
         return "";
     }
@@ -156,8 +153,7 @@ function renderHtmlInput(entry)
     return htmlInput(entry);
 }
 
-function cloneInputEntry(entry, base)
-{
+function cloneInputEntry(entry, base) {
     return {
         inpHolder: entry.inpHolder,
         inpDefVal: entry.inpDefVal,
@@ -173,6 +169,13 @@ class InputWrap extends React.Component
         super(props);
         this._onBlur  = this._onBlur.bind(this);
         this._onFocus = this._onFocus.bind(this);
+    }
+
+    componentWillUnmount() {
+        let entry = this.props.entry;
+        if (this.refs[entry.inpName] != null) {
+            this.refs[entry.inpName].value = null;
+        }
     }
 
     _onBlur() {
@@ -199,6 +202,17 @@ class InputWrap extends React.Component
         }
         if (entry.onFocus != null) {
             entry.onFocus(entry);
+        }
+    }
+
+    componentWillUpdate(nextProps) {
+        let next = nextProps.entry,
+            curr = this.props.entry,
+            val  = InputStore.getItemIndex(next.inpName),
+            dom  = this.refs[curr.inpName];
+
+        if (dom != null) {
+            dom.value = val || next.inpDefVal;
         }
     }
 
@@ -250,10 +264,10 @@ class InputWrap extends React.Component
                 </div>
             );
         }
-        return  (
+        return (
             <input id={entry.inpName} type={type} className="form-control"
                 onBlur={this._onBlur} ref={entry.inpName} onFocus={this._onFocus}
-                defaultValue={entry.inpDefVal} placeholder={entry.inpHolder}/>
+                defaultValue={entry.inpDefVal} placeholder={entry.inpDefVal}/>
         );
     }
 }

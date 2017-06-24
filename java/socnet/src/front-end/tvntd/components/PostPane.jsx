@@ -29,43 +29,41 @@ import StateButton      from 'vntd-shared/utils/StateButton.jsx';
 
 import Panel            from 'vntd-shared/widgets/Panel.jsx'; 
 import { toDateString } from 'vntd-shared/utils/Enum.jsx';
-import { InputInline }  from 'vntd-shared/forms/commons/GenericForm.jsx';
+import {
+    InputInline, TAWrap, InputWrap
+}  from 'vntd-shared/forms/commons/GenericForm.jsx';
 
 class TagPost extends React.Component
 {
     constructor(props) {
         super(props);
-        let btnId = "chg-tag-" + props.article.articleUuid;
-        this.state = {
-            buttonId: btnId
-        };
-        this._onBlur        = this._onBlur.bind(this);
-        this._submitUpdate  = this._submitUpdate.bind(this);
-        this._getSavedInfo  = this._getSavedInfo.bind(this);
-        this._updateSuccess = this._updateSuccess.bind(this);
-        this._createUpdateBtn  = this._createUpdateBtn.bind(this);
-        this._onOptionSelected = this._onOptionSelected.bind(this);
 
-        StateButtonStore.createButton(btnId, this._createUpdateBtn);
+        this._setupIds        = this._setupIds.bind(this);
+        this._submitUpdate    = this._submitUpdate.bind(this);
+        this._updateSuccess   = this._updateSuccess.bind(this);
+        this._createUpdateBtn = this._createUpdateBtn.bind(this);
+
+        this._setupIds(props.article.articleUuid);
+        StateButtonStore.createButton(this._buttonId, this._createUpdateBtn);
     }
 
-    _onBlur(val) {
-        this._onOptionSelected(val.target.value);
-    }
-
-    _onOptionSelected(val) {
-        let postInfo = this._getSavedInfo();
-        postInfo.tagName = val;
+    _setupIds(artUuid) {
+        this._buttonId = "chg-tag-" + artUuid;
+        this._tagId    = 'tag-post-' + artUuid;
+        this._titleId  = 'tag-post-title-' + artUuid;
+        this._rankId   = 'tag-post-rank-' + artUuid;
     }
 
     _submitUpdate(btnId) {
-        let artRank, article = this.props.article, artUuid = article.articleUuid,
-            postInfo = this._getSavedInfo(),
+        let artRank, tagInfo, article = this.props.article,
+            artUuid = article.articleUuid;
+
+        this._setupIds(artUuid);
         tagInfo = {
-            tagName    : postInfo.tagName,
-            favorite   : this.state.favorite,
+            tagName    : InputStore.getItemIndex(this._tagId),
             userUuid   : article.authorUuid,
-            title      : this.refs.title.value,
+            title      : InputStore.getItemIndex(this._titleId),
+            rank       : InputStore.getItemIndex(this._rankId),
             likeInc    : 0,
             shareInc   : 0,
             articleUuid: artUuid,
@@ -73,11 +71,8 @@ class TagPost extends React.Component
             prevArticle: InputStore.getItemIndex(RefLinks.getPrevRefArtId(artUuid)),
             nextArticle: InputStore.getItemIndex(RefLinks.getNextRefArtId(artUuid))
         };
-        if (!_.isEmpty(this.refs.title.value)) {
-            postInfo.title = this.refs.title.value;
-        }
         StateButtonStore.getButtonState(btnId).setNextState();
-        artRank = AuthorStore.getArticleRank(article.authorUuid, article.articleUuid);
+        artRank = AuthorStore.getArticleRankByUuid(article.articleUuid);
         AuthorStore.updateAuthorTag(tagInfo, artRank);
     }
 
@@ -85,9 +80,6 @@ class TagPost extends React.Component
     }
 
     _createUpdateBtn() {
-        let article = this.props.article,
-            artRank = AuthorStore
-            .getArticleRank(article.authorUuid, article.articleUuid);
         return {
             success: {
                 text     : Lang.translate("Update"),
@@ -107,52 +99,59 @@ class TagPost extends React.Component
                 disabled : true,
                 nextState: "success",
                 className: "btn btn-default"
-            },
-            savedInfo: {
-                artRank  : artRank,
-                tagName  : artRank != null ?
-                    artRank.tagName : Lang.translate("My Post"),
-                title    : article.topic
             }
         };
     }
 
-    _getSavedInfo() {
-        return StateButtonStore.getButtonStateKey(this.state.buttonId, "savedInfo");
-    }
-
     render() {
-        let btnId = this.state.buttonId,
-            article = this.props.article,
-            postInfo = this._getSavedInfo(), refLink = null,
-            allTags = AuthorStore.getTagsByAuthorUuid(article.authorUuid);
+        let article = this.props.article, artRank = article.rank, refLink = null,
+            tagVal, tagEntry, titleVal, titleEntry, rankVal, rankEntry;
 
-        if (UserStore.isUserMe(article.authorUuid)) {
-            refLink = (
-                <div className="row">
-                    <RefLinks article={article} notifyId={this.props.notifyId}/>
-                </div>
-            );
+        if (!UserStore.isUserMe(article.authorUuid)) {
+            return null;
         }
+        this._setupIds(article.articleUuid);
+        tagVal   = InputStore.getItemIndex(this._tagId);
+        rankVal  = InputStore.getItemIndex(this._rankId) || artRank.rank || 10;
+        titleVal = InputStore.getItemIndex(this._titleId) || artRank.artTitle;
+
+        tagEntry = {
+            inpName  : this._tagId,
+            inpHolder: tagVal || artRank.tagName || Lang.translate("My Post"),
+            taOptions: AuthorStore.getTagsByAuthorUuid(article.authorUuid)
+        };
+        titleEntry = {
+            inpName  : this._titleId,
+            inpDefVal: titleVal,
+            inpHolder: titleVal
+        };
+        rankEntry = {
+            inpName  : this._rankId,
+            inpDefVal: rankVal,
+            inpHolder: rankVal
+        };
+        refLink = (
+            <div className="row">
+                <RefLinks article={article} notifyId={this.props.notifyId}/>
+            </div>
+        );
         return (
             <div>
                 <div className="row">
                     <div className="col-xs-10 col-sm-10 col-md-10 col-lg-10">
-                        <TA.Typeahead options={allTags} maxVisible={6}
-                            placeholder={postInfo.tagName} value={postInfo.tagName}
-                            customClasses={{input: "form-control input-sm"}}
-                            onBlur={this._onBlur}
-                            onOptionSelected={this._onOptionSelected}/>
+                        <TAWrap entry={tagEntry}/>
                     </div>
                     <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                        <StateButton btnId={btnId}
-                            onClick={this._submitUpdate.bind(this, btnId)}/>
+                        <StateButton btnId={this._buttonId}
+                            onClick={this._submitUpdate.bind(this, this._buttonId)}/>
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-xs-10 col-sm-10 col-md-10 col-lg-10">
-                        <input className="form-control input-lg"
-                            ref="title" placeholder={postInfo.title}/>
+                    <div className="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+                        <InputWrap entry={titleEntry}/>
+                    </div>
+                    <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                        <InputWrap entry={rankEntry}/>
                     </div>
                 </div>
                 {refLink}
