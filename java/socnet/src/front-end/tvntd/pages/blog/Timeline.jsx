@@ -4,7 +4,7 @@
  */
 import React from 'react-mod'
 
-let rawItems = require('json!../../mock-json/news-feed-author.json');
+let rawItems = require('json-loader!../../mock-json/news-feed-author.json');
 
 class Timeline extends React.Component
 {

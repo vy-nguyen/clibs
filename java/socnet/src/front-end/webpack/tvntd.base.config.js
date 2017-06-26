@@ -3,7 +3,7 @@ var path    = require('path');
 var argv    = require('yargs').argv;
 var webpack = require('webpack');
 var scripts = require('./scripts');
-var RewirePlugin = require('rewire-webpack')
+// var RewirePlugin = require('rewire-webpack')
 
 var rootDir          = path.resolve(__dirname, '../../../');
 var node_modules     = path.resolve(rootDir, 'node_modules');
@@ -18,7 +18,7 @@ var aliases = _.mapValues(scripts.aliases, function(scriptPath) {
 });
 
 var babel_args =
-    'babel?compact=true&presets[]=es2015&presets[]=react&plugins[]=transform-object-rest-spread';
+    'babel-loader?compact=true&presets[]=es2015&presets[]=react&plugins[]=transform-object-rest-spread';
 
 module.exports = {
     context: rootDir,
@@ -27,7 +27,7 @@ module.exports = {
     },
     module: {
         loaders: [ {
-            test: /\.jsx?$/, // A regexp to test the require path. accepts either js or jsx
+            test: /\.jsx?$/, // Test the require path. accepts either js or jsx
             loaders: (
                 argv.inline && argv.hot ?  [ 'react-hot', babel_args ] : [ babel_args ]
             ),
@@ -38,11 +38,11 @@ module.exports = {
         }, {
             test   : /\.less$/,
             exclude: [/node_modules/],
-            loader : 'style!css!less!autoprefixer-loader?browsers=last 10 versions'
+            loader : 'style-loader!css-loader!less-loader!autoprefixer-loader?browsers=last 10 versions'
         }, {
             test   : /\.css/,
             exclude: [/node_modules/],
-            loader : 'style!css'
+            loader : 'style-loader!css-loader'
         }, {
             test   : /tests.*_test\.jsx?$/,
             loader : 'mocha-loader!babel-loader'
@@ -52,13 +52,17 @@ module.exports = {
         }, {
             test   : /(\.gif|\.png)/,
             exclude: [/node_modules/],
-            loader : 'url?limit=10000'
+            loader : 'url-loader?limit=10000'
         } ],
         noParse: _.values(_.pick(aliases, scripts.noParse))
     },
     plugins: [
         new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-        new webpack.optimize.CommonsChunkPlugin("vendor", "tvntd-vendor-bundle.js", Infinity),
-        new RewirePlugin()
+        new webpack.optimize.CommonsChunkPlugin({
+            name     : "vendor",
+            filename : "tvntd-vendor-bundle.js",
+            minChunks: Infinity
+        })
+        // new RewirePlugin()
     ]
 };

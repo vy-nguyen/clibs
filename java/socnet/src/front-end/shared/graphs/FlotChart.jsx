@@ -1,11 +1,11 @@
-require("script!jquery");
-require("script!flot")
-require("script!flot-resize")
-require("script!flot-fillbetween")
-require("script!flot-orderBar")
-require("script!flot-pie")
-require("script!flot-time")
-require("script!flot-tooltip")
+require("script-loader!jquery");
+require("script-loader!flot")
+require("script-loader!flot-resize")
+require("script-loader!flot-fillbetween")
+require("script-loader!flot-orderBar")
+require("script-loader!flot-pie")
+require("script-loader!flot-time")
+require("script-loader!flot-tooltip")
 
 import React from 'react-mod'
 import _ from 'lodash'

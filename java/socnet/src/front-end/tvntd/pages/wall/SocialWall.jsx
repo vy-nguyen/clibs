@@ -6,7 +6,7 @@
 
 import React from 'react-mod';
 
-let rawItems = require('json!../../mock-json/social-wall.json');
+let rawItems = require('json-loader!../../mock-json/social-wall.json');
 
 class SocialWall extends React.Component
 {

@@ -6,7 +6,7 @@
 import React       from 'react';
 import _           from 'lodash';
 
-import 'style!css!rc-collapse/assets/index.css';
+import 'style-loader!css-loader!rc-collapse/assets/index.css';
 import Collapse, { Panel } from 'rc-collapse';
 
 import TreeView    from 'vntd-shared/layout/TreeView.jsx';

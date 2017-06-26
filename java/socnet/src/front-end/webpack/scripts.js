@@ -120,11 +120,11 @@ var scripts = {
         ],
         "vendor.ui": [
             "select2",
-            "script!summernote",
-            "script!markdown",
-            "script!he",
-            "script!to-markdown",
-            "script!bootstrap-markdown",
+            "script-loader!summernote",
+            "script-loader!markdown",
+            "script-loader!he",
+            "script-loader!to-markdown",
+            "script-loader!bootstrap-markdown",
             "bootstrap-slider",
             "bootstrap-progressbar",
             "jquery-validate",
@@ -155,12 +155,12 @@ var scripts = {
             "datatables.net-responsive.bootstrap"
         ],
         "vendor.graphs": [
-            'script!raphael',
-            'script!morris',
-            'script!dygraphs',
-            'script!chartjs',
-            'script!highcharts',
-            'script!highchartTable'
+            'script-loader!raphael',
+            'script-loader!morris',
+            'script-loader!dygraphs',
+            'script-loader!chartjs',
+            'script-loader!highcharts',
+            'script-loader!highchartTable'
         ]
     },
     noParse: [
