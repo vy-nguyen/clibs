@@ -396,18 +396,38 @@ public class ArticleService implements IArticleService
     public Article deleteArticle(Article art, ProfileDTO owner)
     {
         String uuid = art.getArticleUuid();
+        String author = art.getAuthorUuid();
 
-        if (!uuid.equals(owner.getUserUuid())) {
+        if (!author.equals(owner.getUserUuid())) {
+            s_log.info("Wrong owner " + author + " vs " +
+                    owner.getUserUuid() + " name " + owner.getEmail());
             return null;
         }
         ArticleRank rank = artRankRepo.findByArticleUuid(uuid);
         if (rank != null) {
-            artRankRepo.delete(rank);
+            try {
+                artRankRepo.delete(rank);
+            } catch(Exception e) {
+                s_log.info("Delete rank failed " + uuid + ": " + e.getMessage());
+            }
         }
-        commentSvc.deleteComment(uuid);
-        artTagSvc.deletePublicTagPost(art.getPublicTag(), uuid);
-        articleRepo.delete(uuid);
+        try {
+            commentSvc.deleteComment(uuid);
+        } catch(Exception e) {
+            s_log.info("Delete comments failed " + uuid + ": " + e.getMessage());
+        }
 
+        try {
+            artTagSvc.deletePublicTagPost(art.getPublicTag(), uuid);
+        } catch(Exception e) {
+            s_log.info("Delete pub tag failed " + uuid + ": " + e.getMessage());
+        }
+
+        try {
+            articleRepo.delete(uuid);
+        } catch(Exception e) {
+            s_log.info("Delete article failed " + uuid + ": " + e.getMessage());
+        }
         articleRepo.flush();
         artRankRepo.flush();
         return art;

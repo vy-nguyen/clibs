@@ -26,11 +26,14 @@
  */
 package com.tvntd.service.api;
 
+import java.util.ArrayList;
+
 import com.tvntd.forms.UuidForm;
 
 public class UuidResponse extends GenericResponse
 {
     private UuidForm in;
+    private ArrayList<String> failedUuids;
 
     public UuidResponse(UuidForm in)
     {
@@ -57,5 +60,20 @@ public class UuidResponse extends GenericResponse
      */
     public String[] getUuids() {
         return in.getUuids();
+    }
+
+    /**
+     * @return the failedUuids
+     */
+    public ArrayList<String> getFailedUuids() {
+        return failedUuids;
+    }
+
+    /**
+     * @param failedUuids the failedUuids to set
+     */
+    public UuidResponse setFailedUuids(ArrayList<String> failedUuids) {
+        this.failedUuids = failedUuids;
+        return this;
     }
 }

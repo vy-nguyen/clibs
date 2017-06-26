@@ -26,6 +26,8 @@
  */
 package com.tvntd.forms;
 
+import java.util.ArrayList;
+
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
@@ -109,6 +111,17 @@ public class UuidForm
      */
     public void setUuids(String[] uuids) {
         this.uuids = uuids;
+    }
+
+    public void replaceUuids(ArrayList<String> uuids)
+    {
+        if (uuids != null) {
+            int i = 0;
+            this.uuids = new String[uuids.size()];
+            for (String uid : uuids) {
+                this.uuids[i++] = uid;
+            }
+        }
     }
 
     public static class UserRoleForm

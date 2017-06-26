@@ -420,7 +420,7 @@ class CommonStore {
             }
         }.bind(this));
     }
-
+    
     dumpData(hdr) {
         console.log(hdr);
         console.log(this.data);

@@ -57,7 +57,7 @@ class AuthorFeed extends React.Component
         }
     }
 
-    componentDidUpdate() {
+    componentDidMount() {
         this.unsub = ArticleStore.listen(this._updateState);
     }
 
@@ -68,7 +68,11 @@ class AuthorFeed extends React.Component
         }
     }
 
-    _updateState(data, post, status) {
+    _updateState(data, item, status) {
+        if ((status === "refresh") ||
+            (status === "delOk" && this.props.authorUuid !== item.authorUuid)) {
+            return;
+        }
         this.setState({
             articles: ArticleStore
                 .getSortedArticlesByAuthor(this.props.authorUuid).slice(0, 2)

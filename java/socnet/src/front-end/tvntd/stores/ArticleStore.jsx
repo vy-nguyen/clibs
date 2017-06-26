@@ -199,7 +199,7 @@ let ArticleStore = Reflux.createStore({
     onRefreshArticlesCompleted: function(data) {
         let out = this.store.addFromJson(data.articles, 'itemsByUuid', true);
         this.store.addFromJson(data.pendPosts, 'mySavedItems');
-        this.trigger(out, null, "startup", true, null);
+        this.trigger(out, data.articles, "refresh", true, null);
     },
 
     onStartupCompleted: function(data) {
@@ -242,8 +242,8 @@ let ArticleStore = Reflux.createStore({
     },
 
     onDeleteUserPostCompleted: function(data) {
-        this.store._removeItemStore(data.uuids, data.authorUuid);
-        this.store._triggerStore(this, data, "delOk");
+        this.store._removeItemStore(data.uuids, data.authorUuid, true);
+        this.trigger(this.store, data, "delOk");
     },
 
     onDeleteUserPostFailed: function(data) {

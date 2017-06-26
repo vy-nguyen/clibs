@@ -28,6 +28,7 @@ package com.tvntd.web;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -333,10 +334,27 @@ public class UserPath
             return s_noProfile;
         }
         String[] uuidList = uuids.getUuids();
-        for (String uid : uuidList) {
-            articleSvc.deleteArticle(uid, profile);
+        ArrayList<String> failedUuids = null, okUuids = null;
+
+        for (int idx = 0; idx < uuidList.length; idx++) {
+            String uid = uuidList[idx];
+            if (articleSvc.deleteArticle(uid, profile) == null) {
+                if (failedUuids == null) {
+                    failedUuids = new ArrayList<>();
+                    okUuids = new ArrayList<>();
+                    for (int i = 0; i < idx; i++) {
+                        okUuids.add(uuidList[i]);
+                    }
+                }
+                failedUuids.add(uid);
+            } else if (okUuids != null) {
+                okUuids.add(uid);
+            }
         }
-        return new UuidResponse(uuids);
+        if (okUuids != null) {
+            uuids.replaceUuids(okUuids);
+        }
+        return (new UuidResponse(uuids)).setFailedUuids(failedUuids);
     }
 
     /**
