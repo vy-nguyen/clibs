@@ -230,9 +230,14 @@ let ArticleStore = Reflux.createStore({
     },
 
     onPublishUserPostCompleted: function(post) {
-        this.store.onPendingPostCompleted(post);
-        this.store._addItemStore(post, false);
-        this.store._triggerStore(this, post, "publish");
+        let status = "publish";
+        if (post.error == null) {
+            this.store.onPendingPostCompleted(post);
+            this.store._addItemStore(post, false);
+        } else {
+            status = "publish-failed";
+        }
+        this.store._triggerStore(this, post, status);
     },
 
     onUpdateUserPostCompleted: function(post) {

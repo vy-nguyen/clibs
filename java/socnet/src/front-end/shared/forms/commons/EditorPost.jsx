@@ -77,8 +77,6 @@ class EditorPost extends React.Component
             this.unsub = null;
             this.unsubAuthor = null;
         }
-        StateButtonStore.setButtonState(this._getId('save-main'), "success");
-        StateButtonStore.setButtonState(this._getId('publish-main'), "success");
     }
 
     _getInitState() {
@@ -111,25 +109,16 @@ class EditorPost extends React.Component
     }
 
     _onBlurInput() {
-        ErrorStore.clearError(this._getId('post-error'));
-        StateButtonStore.setButtonState(this._getId('save-main'), "needSave");
-        StateButtonStore.setButtonState(this._getId('publish-main'), "needSave");
-    }
+        let saveId = this._getId('save-main'), publishId = this._getId('publish-main');
 
-    _onPublishResult(store, post, status) {
-            console.log("got publish result " + status);
-            console.log(post);
-        if (status === "publish-failed") {
-            StateButtonStore.setButtonState(this._getId('save-main'), "failure");
-            StateButtonStore.setButtonState(this._getId('publish-main'), "failure");
-
-        } else if (status === "publish") {
-            StateButtonStore.setButtonState(this._getId('save-main'), "saved");
-            StateButtonStore.setButtonState(this._getId('publish-main'), "saved");
-
-            this._clearData();
-            this.setState(this._getInitState());
+        if (_.isEmpty(DataStore.getItemIndex('main-topic'))) {
+            StateButtonStore.setButtonState(saveId, "success");
+            StateButtonStore.setButtonState(publishId, "success");
+            return;
         }
+        ErrorStore.clearError(this._getId('post-error'));
+        StateButtonStore.setButtonState(saveId, "needSave");
+        StateButtonStore.setButtonState(publishId, "needSave");
     }
 
     _updateAuthorTags() {
@@ -183,7 +172,7 @@ class EditorPost extends React.Component
             };
         } else if (imgRec == null) {
             imgRec = {
-                articleUuid: 0,
+                articleUuid: "0",
                 authorUuid : UserStore.getSelf().userUuid
             };
         }
@@ -196,19 +185,56 @@ class EditorPost extends React.Component
         };
     }
 
+    _submitData(actionFn) {
+        let data = this._getData();
+
+        if (data.articleUuid === "0") {
+            if (data.content == null) {
+                ErrorStore.reportErrMesg(this._getId('post-error'),
+                    "You need to upload pictures or post something...",
+                    "No posting data");
+                return;
+            }
+        } else {
+            if (data.content == null) {
+                data.content = "";
+            }
+        }
+        StateButtonStore.setButtonState(this._getId('save-main'), "success");
+        StateButtonStore.setButtonState(this._getId('publish-main'), "saving");
+        actionFn(data);
+    }
+
     _savePost(e) {
         StateButtonStore.setButtonState(this._getId('save-main'), "saving");
         StateButtonStore.setButtonState(this._getId('publish-main'), "success");
-        Actions.saveUserPost(this._getData());
+        this._submitData(Actions.saveUserPost);
     }
 
     _publishPost(e) {
-        StateButtonStore.setButtonState(this._getId('save-main'), "success");
-        StateButtonStore.setButtonState(this._getId('publish-main'), "saving");
         if (this.props.article == null) {
-            Actions.publishUserPost(this._getData());
+            this._submitData(Actions.publishUserPost);
         } else {
-            Actions.updateUserPost(this._getData());
+            this._submitData(Actions.updateUserPost);
+        }
+    }
+
+    _onPublishResult(store, post, status) {
+        let saveId = this._getId('save-main'),
+            publishId = this._getId('publish-main');
+
+        if (status === "publish-failed") {
+            StateButtonStore.setButtonState(saveId, "failure");
+            StateButtonStore.setButtonState(publishId, "failure");
+            ErrorStore.reportErrMesg(this._getId('post-error'), post.error, post.message);
+            console.log("got publish result " + status);
+
+        } else if (status === "publish") {
+            StateButtonStore.setButtonState(saveId, "saved");
+            StateButtonStore.setButtonState(publishId, "saved");
+
+            this._clearData();
+            this.setState(this._getInitState());
         }
     }
 
@@ -222,7 +248,7 @@ class EditorPost extends React.Component
         tagEntry = {
             inpName  : tagId,
             inpDefVal: '',
-            inpHolder: DataStore.getItemIndex(tagId),
+            inpHolder: 'My Post',
             taOptions: this.state.autoTags,
             typeAhead: true,
             errorId  : tagId,
@@ -274,18 +300,6 @@ class EditorPost extends React.Component
                     onClick={this._publishPost}/>
             </div>
         ),
-            /*
-                <div className="row">
-                    <div className="form-group">
-                        <div className={labelFmt} for="textInput">
-                            <Mesg text="Drop Images"/>
-                        </div>
-                        <div className={inputFmt}>
-                            <DropZoneWrap entry={imgDzInfo} eventHandlers={imgDz}/>
-                        </div>
-                    </div>
-                </div>
-             */
         form = (
             <div>
                 <InputBox entry={tagEntry} onBlur={this._onBlurInput}/>
