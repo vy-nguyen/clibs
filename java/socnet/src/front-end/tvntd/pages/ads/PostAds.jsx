@@ -188,8 +188,7 @@ class PostAds extends React.Component
     }
 
     _getAdData() {
-        let imgRec = InputStore.getItemIndex(this.busImgId),
-            ad = this.props.ads;
+        let imgRec = InputStore.getItemIndex(this.busImgId);
 
         if (imgRec == null) {
             imgRec = {

@@ -236,9 +236,14 @@ let ArticleStore = Reflux.createStore({
     },
 
     onUpdateUserPostCompleted: function(post) {
-        this.store._removeItemStore([post.articleUuid], post.authorUuid, true);
-        this.store._addItemStore(post, false);
-        this.store._triggerStore(this, post, "publish");
+        let status = "publish";
+        if (post.error == null) {
+            this.store._removeItemStore([post.articleUuid], post.authorUuid, true);
+            this.store._addItemStore(post, false);
+        } else {
+            status = "pubish-failed";
+        }
+        this.trigger(this.store, post, status);
     },
 
     onDeleteUserPostCompleted: function(data) {

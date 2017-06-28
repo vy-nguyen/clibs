@@ -17,7 +17,6 @@ class PostArticles extends React.Component
     render() {
         let panes = null;
 
-        console.log("log");
         if (this.props.data && !_.isEmpty(this.props.data)) {
             let edit = this.props.edit;
             panes = [];

@@ -218,7 +218,7 @@ class InputWrap extends React.Component
 
     render() {
         let { entry, bind, onBlur, onSelected } = this.props,
-            type = entry.inpType != null ? entry.inpType : "text";
+            handlers, type = entry.inpType != null ? entry.inpType : "text";
 
         if (entry.typeAhead === true) {
             return <TAWrap entry={entry}/>
@@ -240,7 +240,8 @@ class InputWrap extends React.Component
                     }
                 }
             };
-            return <DropZoneWrap entry={entry} eventHandlers={eventHandlers}/>
+            handlers = entry.handlers != null ? entry.handlers : eventHandlers;
+            return <DropZoneWrap entry={entry} eventHandlers={handlers}/>
         }
         if (entry.editor === true) {
             return (

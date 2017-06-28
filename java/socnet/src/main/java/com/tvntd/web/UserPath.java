@@ -245,7 +245,7 @@ public class UserPath
             return s_noProfile;
         }
         if (form.cleanInput() == false) {
-            return s_noProfile;
+            return s_badInput;
         }
         ArticleDTO art = genPendPost(profile, true, form.getArticleUuid());
         Article article = art.fetchArticle();
@@ -291,12 +291,13 @@ public class UserPath
     protected GenericResponse
     updatePost(PostForm form, HttpSession session, boolean publish)
     {
+        System.out.println("Update post " + form);
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
         if (profile == null) {
             return s_noProfile;
         }
         if (form.cleanInput() == false) {
-            return s_noProfile;
+            return s_badInput;
         }
         ArticleDTO art = articleSvc.getArticleDTO(form.getArticleUuid());
         if (art == null) {

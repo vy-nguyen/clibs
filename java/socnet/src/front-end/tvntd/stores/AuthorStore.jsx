@@ -547,7 +547,7 @@ let AuthorStore = Reflux.createStore({
     },
 
     removeArticleRank: function(article, silent) {
-        if (article.rank != null) {
+        if (article && article.rank != null) {
             let tagMgr = this.getAuthorTagMgr(article.authorUuid);
             tagMgr.removeArticleRank(article.rank);
             if (silent !== true) {
