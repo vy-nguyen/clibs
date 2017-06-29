@@ -227,7 +227,6 @@ class EditorPost extends React.Component
             StateButtonStore.setButtonState(saveId, "failure");
             StateButtonStore.setButtonState(publishId, "failure");
             ErrorStore.reportErrMesg(this._getId('post-error'), post.error, post.message);
-            console.log("got publish result " + status);
 
         } else if (status === "publish") {
             StateButtonStore.setButtonState(saveId, "saved");

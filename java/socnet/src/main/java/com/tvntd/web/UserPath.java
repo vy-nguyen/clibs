@@ -291,7 +291,6 @@ public class UserPath
     protected GenericResponse
     updatePost(PostForm form, HttpSession session, boolean publish)
     {
-        System.out.println("Update post " + form);
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
         if (profile == null) {
             return s_noProfile;
@@ -828,7 +827,6 @@ public class UserPath
             HttpServletRequest request, HttpSession session)
     {
         if (form.cleanInput() == false) {
-            System.out.println("Bad clean input");
             return s_badInput;
         }
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
