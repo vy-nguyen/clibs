@@ -4,6 +4,7 @@
 'use strict';
 
 import React          from 'react';
+import $              from 'jquery';
 import TinyMCE        from 'react-tinymce';
 import NestableStore  from 'vntd-shared/stores/NestableStore.jsx';
 import ErrorView      from 'vntd-shared/layout/ErrorView.jsx';
@@ -58,7 +59,10 @@ class Editor extends React.Component
 
     render() {
         // customize css rules here
+        /* eslint-disable */
         const cmd = 'formatBlock', font = 'fontSize', jsref = "javascript:;";
+        /* eslint-enable */
+
         let buttonSpacing = {marginRight: 2},
             toolbarStyle = {marginBottom: 3};
 
@@ -309,13 +313,15 @@ class EditorEntry extends React.Component
         input.setAttribute('type', 'file');
         input.setAttribute('accept', 'image/*');
         input.onchange = function() {
+            /* eslint-disable */
             let file = this.files[0];
             let id = 'img-' + (new Date()).getTime();
             let blobCache = tinymce.activeEditor.editorUpload.blobCache;
             let blobInfo = blobCache.create(id, file);
-            blobCache.add(blobInfo);
+            /* eslint-enable */
 
             // call the callback and populate the Title field with the file name
+            blobCache.add(blobInfo);
             cb(blobInfo.blobUri(), { title: file.name });
         }
         input.click();

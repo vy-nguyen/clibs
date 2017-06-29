@@ -9,6 +9,7 @@ import React              from 'react-mod';
 import AuthorFeed         from 'vntd-root/components/AuthorFeed.jsx';
 
 import SubHeader          from '../layout/SubHeader.jsx';
+import EditorPost         from 'vntd-shared/forms/commons/EditorPost.jsx';
 import BigBreadcrumbs     from 'vntd-shared/layout/BigBreadcrumbs.jsx';
 import AuthorStore        from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleStore       from 'vntd-root/stores/ArticleStore.jsx';
@@ -64,6 +65,7 @@ class NewsFeed extends React.Component
                     <BigBreadcrumbs className="col-xs-12 col-sm-7 col-md-7 col-lg-4"/>
                     <SubHeader/>
                 </div>
+                <EditorPost id="feed-"/>
                 {this.renderAuthors()}
             </div>
         )

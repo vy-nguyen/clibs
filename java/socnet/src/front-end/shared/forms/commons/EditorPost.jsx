@@ -68,19 +68,23 @@ class EditorPost extends React.Component
     componentDidMount() {
         this.unsub = ArticleStore.listen(this._onPublishResult);
         this.unsubAuthor = AuthorStore.listen(this._updateAuthorTags);
+        this.unsubTags   = ArticleTagStore.listen(this._updateAuthorTags);
     }
 
     componentWillUnmount() {
         if (this.unsub != null) {
             this.unsub();
             this.unsubAuthor();
-            this.unsub = null;
+            this.unsubTags();
+            this.unsub       = null;
+            this.unsubTags   = null;
             this.unsubAuthor = null;
         }
     }
 
     _getInitState() {
         return {
+            posted  : false,
             errFlags: {},
             autoTags: this._getAutoTags()
         };
@@ -94,7 +98,10 @@ class EditorPost extends React.Component
 
     _getId(elm) {
         if (this.props.article == null) {
-            return elm;
+            if (this.props.id == null) {
+                return elm;
+            }
+            return this.props.id + elm;
         }
         return elm + this.props.article.articleUuid;
     }
@@ -111,7 +118,7 @@ class EditorPost extends React.Component
     _onBlurInput() {
         let saveId = this._getId('save-main'), publishId = this._getId('publish-main');
 
-        if (_.isEmpty(DataStore.getItemIndex('main-topic'))) {
+        if (_.isEmpty(DataStore.getItemIndex(this._getId('main-topic')))) {
             StateButtonStore.setButtonState(saveId, "success");
             StateButtonStore.setButtonState(publishId, "success");
             return;
@@ -123,7 +130,7 @@ class EditorPost extends React.Component
 
     _updateAuthorTags() {
         this.setState({
-            autoTags: this._getAutoTags
+            autoTags: this._getAutoTags()
         });
     }
 
@@ -202,6 +209,9 @@ class EditorPost extends React.Component
         }
         StateButtonStore.setButtonState(this._getId('save-main'), "success");
         StateButtonStore.setButtonState(this._getId('publish-main'), "saving");
+        this.setState({
+            posted: true
+        });
         actionFn(data);
     }
 
@@ -229,11 +239,17 @@ class EditorPost extends React.Component
             ErrorStore.reportErrMesg(this._getId('post-error'), post.error, post.message);
 
         } else if (status === "publish") {
-            StateButtonStore.setButtonState(saveId, "saved");
-            StateButtonStore.setButtonState(publishId, "saved");
+            StateButtonStore.setButtonState(saveId, "success");
+            StateButtonStore.setButtonState(publishId, "success");
 
             this._clearData();
             this.setState(this._getInitState());
+
+            /* eslint-disable */
+            if (tinymce != null) {
+                tinymce.EditorManager.get(this._getId('main-content')).setContent('');
+            }
+            /* eslint-enable */
         }
     }
 
