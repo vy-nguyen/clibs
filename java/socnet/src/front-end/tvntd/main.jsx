@@ -10,15 +10,7 @@ window.$ = window.jQuery;
 
 require("bootstrap");
 require("smartwidgets");
-require("sparkline");
 require("jquery-nestable");
-
-//require("jquery-ui");
-//require("fastclick");
-//require("moment");
-//require("moment-timezone");
-//require("fullcalendar");
-//require("notification");
 
 import React    from 'react-mod';
 import {render} from 'react-dom';

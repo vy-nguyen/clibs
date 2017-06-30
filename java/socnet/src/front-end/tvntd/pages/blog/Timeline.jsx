@@ -4,12 +4,14 @@
  */
 import React from 'react-mod'
 
-let rawItems = require('json-loader!../../mock-json/news-feed-author.json');
-
 class Timeline extends React.Component
 {
     render() {
-        return (
+        return null;
+    }
+}
+
+/*
     <div className="row">
         <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div className="well well-sm">
@@ -120,8 +122,6 @@ class Timeline extends React.Component
             </div>
         </div>
     </div>
-        )
-    }
-}
 
+*/
 export default Timeline;

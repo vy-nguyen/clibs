@@ -6,12 +6,14 @@
 
 import React from 'react-mod';
 
-let rawItems = require('json-loader!../../mock-json/social-wall.json');
-
 class SocialWall extends React.Component
 {
     render() {
-        return (
+        return null;
+    }
+}
+
+/*
 <div id="content">
     <div className="row">
         <div className="col-xs-12 col-sm-7 col-md-7 col-lg-4">
@@ -311,7 +313,6 @@ class SocialWall extends React.Component
                                 </span>
                                 <a href="javascript:void(0);" className="pull-left"><i className="fa fa-camera fa-fw fa-lg"></i></a>
                             </span>
-                            */}
                         </div>
                     </div>
                 </div>
@@ -321,8 +322,6 @@ class SocialWall extends React.Component
         </div>
     </section>
 </div>
-        )
-    }
-}
+*/
 
 export default SocialWall;

@@ -6,22 +6,12 @@
 
 import React from 'react-mod';
 
-import BigBreadcrumbs     from 'vntd-shared/layout/BigBreadcrumbs.jsx';
-import ChatWidget         from 'vntd-shared/chat/ChatWidget.jsx';
-import WidgetGrid         from 'vntd-shared/widgets/WidgetGrid.jsx';
-import TodoWidget         from 'vntd-shared/widgets/TodoWidget.jsx';
-import UserStore          from 'vntd-shared/stores/UserStore.jsx';
-
-import BirdEyeWidget      from './BirdEyeWidget.jsx';
-import LiveFeeds          from './LiveFeeds.jsx';
-import SubHeader          from '../layout/SubHeader.jsx';
-import NewsFeed           from '../news-feed/NewsFeed.jsx';
-
 let Public = React.createClass({
     render: function () {
-        if (UserStore.isLogin()) {
-            return <NewsFeed/>;
-        }
+        return null;
+    }
+};
+/*
         return (
 <div id="content">
     <div className="row">
@@ -531,7 +521,6 @@ let Public = React.createClass({
     }
 });
 
-/*
 let Public = React.createClass({
     render: function () {
         return (
