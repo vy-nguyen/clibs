@@ -105,12 +105,13 @@ class TagPost extends React.Component
         this.setState({
             editMode: false
         });
+        StateButtonStore.setButtonState(this._buttonId, "success");
     }
 
     _createUpdateBtn() {
         return {
             success: {
-                text     : Lang.translate("Edit"),
+                text     : Lang.translate("Change Header"),
                 disabled : false,
                 nextState: "update",
                 className: "btn btn-primary",
