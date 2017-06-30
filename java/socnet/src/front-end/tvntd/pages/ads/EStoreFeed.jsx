@@ -4,9 +4,7 @@
  */
 'use strict';
 
-import React              from 'react-mod';
-import SparklineContainer from 'vntd-shared/graphs/SparklineContainer.jsx';
-
+import React          from 'react-mod';
 import TabPanel       from 'vntd-shared/layout/TabPanel.jsx';
 import UserStore      from 'vntd-shared/stores/UserStore.jsx';
 import AuthorStore    from 'vntd-root/stores/AuthorStore.jsx';
@@ -122,7 +120,7 @@ class StoreFeed extends React.Component
             context  = this._getAuthorTab(userUuid);
 
         return (
-            <SparklineContainer>
+            <div>
                 <div className="well well-light well-sm">
                     <TabPanel className="padding-top-10" context={context}>
                         <BusinessInfo adsRec={adsRec}/>
@@ -133,7 +131,7 @@ class StoreFeed extends React.Component
                         <EStore userUuid={userUuid}/>
                     </TabPanel>
                 </div>
-            </SparklineContainer>
+            </div>
         )
     }
 }

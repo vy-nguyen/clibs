@@ -8,7 +8,6 @@ import React from 'react-mod';
 import ElementHolder         from 'vntd-root/components/utils/mixins/ElementHolder.jsx';
 import jarvisWidgetsDefaults from 'vntd-root/components/layout/widgets/WidgetDefaults' ;
 import BigBreadcrumbs        from 'vntd-root/components/layout/navigation/components/BigBreadcrumbs.jsx';
-import SparklineContainer    from 'vntd-root/components/graphs/inline/SparklineContainer.jsx';
 import EasyPieChartContainer from 'vntd-root/components/graphs/inline/EasyPieChartContainer.jsx';
 import SubHeader             from '../SubHeader.jsx';
 
@@ -33,10 +32,12 @@ let StaticPageLoader = React.createClass({
                     </div>)}
 
                 <div className="row">
-                    <SparklineContainer><EasyPieChartContainer>
+                    <div>
+                        <EasyPieChartContainer>
                         <div className="col-sm-12" ref="viewport">
                         </div>
-                    </EasyPieChartContainer> </SparklineContainer>
+                        </EasyPieChartContainer>
+                    </div>
                 </div>
             </div>
         )

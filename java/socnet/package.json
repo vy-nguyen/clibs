@@ -80,17 +80,21 @@
     "imports-loader": "0.7.1",
     "autoprefixer-loader": "^3.1.0",
 
+    "sparkline": "0.2.0",
     "jquery": "3.2.0",
     "jquery-ui": "1.12.1",
     "jquery-sparkline": "2.4.0",
     "jquery-validation": "1.15.0",
     "jquery.maskedinput": "1.4.1",
     "jquery-knob": "1.2.11",
+    "jquery-nestable": "0.8.0",
 
     "google-map-react": "0.24.0",
     "datatables": "1.10.13",
     "datatables-buttons": "1.0.3",
     "datatables-responsive": "1.0.7",
+    "datatables.net-responsive-bs": "2.1.1",
+
     "moment": "2.18.1",
     "moment-timezone": "0.5.13",
 

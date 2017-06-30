@@ -6,7 +6,6 @@
 import _                  from 'lodash';
 import React, {PropTypes} from 'react-mod';
 
-import SparklineContainer from 'vntd-shared/graphs/SparklineContainer.jsx';
 import {
     SelectWrap, TAWrap
 } from 'vntd-shared/forms/commons/GenericForm.jsx';
@@ -93,7 +92,7 @@ class BrowseSelection extends React.Component
         }.bind(this));
 
         return (
-            <SparklineContainer>
+            <div>
                 <div className="row">
                     <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                         <div className="btn-group" role="group">
@@ -124,7 +123,7 @@ class BrowseSelection extends React.Component
                     </div>
                     */}
                 </div>
-            </SparklineContainer>
+            </div>
         );
     }
 };

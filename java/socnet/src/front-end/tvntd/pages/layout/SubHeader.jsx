@@ -5,7 +5,6 @@
 
 import React              from 'react-mod';
 import { htmlCodes }      from 'vntd-root/config/constants';
-import SparklineContainer from 'vntd-shared/graphs/SparklineContainer.jsx';
 import Mesg               from 'vntd-root/components/Mesg.jsx';
 
 class SubHeader extends React.Component
@@ -13,7 +12,7 @@ class SubHeader extends React.Component
     render() {
         let {className, ...props} = this.props
         return (
-            <SparklineContainer className="col-xs-12 col-sm-5 col-md-5 col-lg-8">
+            <div>
                 <ul id="sparks" className={className}>
                     <li className="sparks-info">
                         <h5><Mesg text=' My Income '/><span className="txt-color-blue">$47,171</span></h5>
@@ -30,7 +29,7 @@ class SubHeader extends React.Component
                         </div>
                     </li>
                 </ul>
-            </SparklineContainer>
+            </div>
         )
     }
 }

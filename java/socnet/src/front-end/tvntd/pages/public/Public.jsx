@@ -10,7 +10,6 @@ import BigBreadcrumbs     from 'vntd-shared/layout/BigBreadcrumbs.jsx';
 import ChatWidget         from 'vntd-shared/chat/ChatWidget.jsx';
 import WidgetGrid         from 'vntd-shared/widgets/WidgetGrid.jsx';
 import TodoWidget         from 'vntd-shared/widgets/TodoWidget.jsx';
-import SparklineContainer from 'vntd-shared/graphs/SparklineContainer.jsx';
 import UserStore          from 'vntd-shared/stores/UserStore.jsx';
 
 import BirdEyeWidget      from './BirdEyeWidget.jsx';
@@ -31,7 +30,6 @@ let Public = React.createClass({
     </div>
 
     <div className="row">
-        <SparklineContainer>
         <div className="col-sm-12">
             <div className="well well-sm">
                 <div className="row">
@@ -527,7 +525,6 @@ let Public = React.createClass({
                 </div>
             </div>
         </div>
-            </SparklineContainer>
     </div>
 </div>
         )

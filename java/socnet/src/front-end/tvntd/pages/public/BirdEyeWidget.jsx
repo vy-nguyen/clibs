@@ -7,7 +7,6 @@ import React from 'react-mod';
 
 import JarvisWidget       from 'vntd-shared/widgets/JarvisWidget.jsx';
 import VectorMap          from 'vntd-shared//graphs/VectorMap.jsx';
-import SparklineContainer from 'vntd-shared/graphs/SparklineContainer.jsx';
 
 class BirdEyeWidget extends React.Component
 {

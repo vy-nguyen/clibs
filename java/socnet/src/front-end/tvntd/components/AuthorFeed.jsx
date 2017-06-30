@@ -4,9 +4,7 @@
  */
 'use strict';
 
-import React              from 'react-mod';
-import SparklineContainer from 'vntd-shared/graphs/SparklineContainer.jsx';
-
+import React          from 'react-mod';
 import TabPanel       from 'vntd-shared/layout/TabPanel.jsx';
 import UserStore      from 'vntd-shared/stores/UserStore.jsx';
 import Blog           from 'vntd-root/components/Blog.jsx';
@@ -141,7 +139,6 @@ class AuthorFeed extends React.Component
         }
         return (
             <div className="row">
-                <SparklineContainer>
                     <div className="well well-light well-sm">
                         <div className="row">
                             <div className="col-sm-3 col-md-3 col-lg-3">
@@ -160,7 +157,6 @@ class AuthorFeed extends React.Component
                             </div>
                         </div>
                     </div>
-                </SparklineContainer>
             </div>
         )
     }

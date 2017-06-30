@@ -15,22 +15,10 @@ var scripts = {
         "history/lib": "/node_modules/history/umd/History.min.js",
         "jquery": "/node_modules/jquery/dist/jquery.min.js",
 
-        "bootstrap": "/node_modules/bootstrap/dist/js/bootstrap.min.js",
-        "bootstrap-slider": "/node_modules/bootstrap-slider/dist/bootstrap-slider.min.js",
-        "bootstrap-progressbar": "/node_modules/bootstrap-progressbar/bootstrap-progressbar.min.js",
-
         "moment"   : "/node_modules/moment/min/moment-with-locales.min.js",
         "moment-timezone": "/node_modules/moment-timezone/builds/moment-timezone.min.js",
 
         "morris": "/node_modules/morris.js/morris.min.js",
-        "jquery-nestable": "/bower_components/jquery-nestable/jquery.nestable.js",
-
-        "sparkline": "/bower_components/relayfoods-jquery.sparkline/dist/jquery.sparkline.min.js",
-
-        "datatables.net-bs": "/bower_components/datatables/media/js/dataTables.bootstrap.min.js",
-        "datatables.net-responsive": "/bower_components/datatables-responsive/js/dataTables.responsive.js",
-        "datatables.net-responsive.bootstrap": "/bower_components/datatables-responsive/js/responsive.bootstrap.js",
-
         "datatables.net": "/node_modules/datatables/media/js/jquery.dataTables.min.js",
         "datatables.net-buttons": "/node_modules/datatables-buttons/js/dataTables.buttons.js",
         "datatables.net-buttons.bootstrap": "/node_modules/datatables-buttons/js/buttons.bootstrap.js",
@@ -38,8 +26,8 @@ var scripts = {
         "datatables.net-buttons.flash": "/node_modules/datatables-buttons/js/buttons.flash.js",
         "datatables.net-buttons.colVis": "/node_modules/datatables-buttons/js/buttons.colVis.js",
 
-        "he"         : "/node_modules/he/he.js",
-        "clockpicker": "/node_modules/clockpicker/dist/bootstrap-clockpicker.min.js",
+        "he"          : "/node_modules/he/he.js",
+        "clockpicker" : "/node_modules/clockpicker/dist/bootstrap-clockpicker.min.js",
         "smartwidgets": "/src/front-end/smartadmin-plugin/smartwidgets/jarvis.widget.js",
     },
     "chunks": {
@@ -49,24 +37,16 @@ var scripts = {
             "react-bootstrap",
             "react-router",
             "jquery",
-            "moment",
-            "sparkline"
+            "moment"
         ],
         "vendor.ui": [
-            "bootstrap-progressbar",
             "clockpicker",
             "jquery-nestable",
         ],
         "vendor.datatables": [
             "datatables.net",
-            "datatables.net-bs",
-            "datatables.net-buttons",
-            "datatables.net-buttons.bootstrap",
-            "datatables.net-buttons.print",
-            "datatables.net-buttons.flash",
-            "datatables.net-buttons.colVis",
-            "datatables.net-responsive",
-            "datatables.net-responsive.bootstrap"
+            "datatables-responsive",
+            "datatables.net-responsive-bs"
         ],
         "vendor.graphs": [
             'script-loader!morris'
@@ -103,6 +83,17 @@ var scripts = {
         bootstrap-duallistbox": "/bower_components/bootstrap-duallistbox/dist/jquery.bootstrap-duallistbox.min.js",
         bootstrap-timepicker": "/bower_components/bootstrap3-fontawesome-timepicker/js/bootstrap-timepicker.min.js",
         bootstrap-tagsinput": "/bower_components/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js",
+        "bootstrap": "/node_modules/bootstrap/dist/js/bootstrap.min.js",
+        "bootstrap-slider": "/node_modules/bootstrap-slider/dist/bootstrap-slider.min.js",
+        "bootstrap-progressbar": "/node_modules/bootstrap-progressbar/bootstrap-progressbar.min.js",
+
+        jquery-nestable": "/bower_components/jquery-nestable/jquery.nestable.js",
+
+        sparkline": "/bower_components/relayfoods-jquery.sparkline/dist/jquery.sparkline.min.js",
+
+        datatables.net-bs": "/bower_components/datatables/media/js/dataTables.bootstrap.min.js",
+        datatables.net-responsive": "/bower_components/datatables-responsive/js/dataTables.responsive.js",
+        datatables.net-responsive.bootstrap": "/bower_components/datatables-responsive/js/responsive.bootstrap.js",
 
         pace" : "/bower_components/pace/pace.min.js",
         "flot": "/bower_components/Flot/jquery.flot.js",
@@ -223,5 +214,3 @@ var scripts = {
     ]
 };
 */
-
-
