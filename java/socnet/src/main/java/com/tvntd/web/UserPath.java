@@ -776,12 +776,9 @@ public class UserPath
             return s_noProfile;
         }
 
-        System.out.println("User admin " + profile.isAdmin());
         Map<String, TagRank> dict = ArtTagService.fixupTagList(form.getTagRanks());
         for (TagRank r : form.getTagRanks()) {
             if (r.isPubTag() == false && r.isArticle() == false) {
-                System.out.println("Save tag " + r.getTagName() +
-                        ", parent " + r.getParent() + ", rank " + r.getRank());
                 artTagSvc.saveTag(uuid, r.getTagName(), r.getParent(), r.getRank());
             }
         }

@@ -150,25 +150,40 @@ class TagPost extends React.Component
         return InputStore.getItemIndex(this._rankId) || artRank.rank || 10;
     }
 
+    _renderTitle(title, artRank) {
+        return (
+            <div className="row">
+                <div className="col-xs-7 col-sm-7 col-md-7 col-lg-7">
+                    <h2>{title}</h2>
+                </div>
+                <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5">
+                    <span className="label label-success">
+                        {artRank.tagName}
+                    </span>
+                </div>
+            </div>
+        );
+    }
+
     render() {
         let article = this.props.article, artRank = article.rank, refLink = null,
             value, tagEntry, titleEntry, rankEntry;
 
+        value = this._getTitleValue(artRank);
         if (!UserStore.isUserMe(article.authorUuid)) {
-            return null;
+            return this._renderTitle(value, artRank);
         }
         this._setupIds(article.articleUuid);
         refLink = (
             <RefLinks article={article}
                 edit={this.state.editMode} notifyId={this.props.notifyId}/>
         );
-        value = this._getTitleValue(artRank);
         if (this.state.editMode === false) {
             return (
                 <div>
                     <div className="row">
                         <div className="col-xs-10 col-sm-10 col-md-10 col-lg-10">
-                            <h2>{value}</h2>
+                            {this._renderTitle(value, artRank)}
                         </div>
                         <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2">
                             <StateButton btnId={this._buttonId}
@@ -380,6 +395,14 @@ class PostPane extends React.Component
         this.setState({
             favorite: artRank.favorite
         });
+        Actions.updateArtRank({
+            tagName    : artRank.tagName,
+            articleUuid: artRank.articleUuid,
+            userUuid   : artRank.authorUuid,
+            favorite   : artRank.favorite,
+            likeInc    : 0,
+            shareInc   : 0
+        });
     }
 
     _donePublish() {
@@ -394,7 +417,7 @@ class PostPane extends React.Component
 
     render() {
         const fmt = "btn btn-primary pull-right";
-        let adminItem = null, ownerItem = null, tagPost = null, panelLabel = null,
+        let adminItem = null, ownerItem = null, panelLabel = null,
             refLink = null, article = this.state.article,
         modal = (
             <ModalConfirm ref="modal" height="auto"
@@ -446,6 +469,14 @@ class PostPane extends React.Component
         }
         if (UserStore.isUserMe(article.authorUuid)) {
             ownerItem = [ {
+                itemFmt : 'fa fa-thumbs-up txt-color-green',
+                itemText: this.state.favorite ?
+                    Lang.translate("Not Favorite") :
+                    Lang.translate("Mark Favorite"),
+                itemHandler: function() {
+                    this._toggleFavorite();
+                }.bind(this)
+            }, {
                 itemFmt : 'fa fa-circle txt-color-red',
                 itemText: 'Delete Post',
                 itemHandler: function(e, pane) {
@@ -459,20 +490,16 @@ class PostPane extends React.Component
                     this._editArticle();
                 }.bind(this)
             } ];
+        } else {
+            refLink = (
+                <RefLinks article={article} edit={false} notifyId={this._postPaneId}/>
+            );
         }
         let ownerPostMenu = {
             iconFmt  : 'btn-xs btn-success',
             titleText: Lang.translate('Options'),
             itemFmt  : 'pull-right js-status-update',
             menuItems: [ {
-                itemFmt : 'fa fa-thumbs-up txt-color-green',
-                itemText: this.state.favorite ?
-                    Lang.translate("Not Favorite") :
-                    Lang.translate("Mark Favorite"),
-                itemHandler: function() {
-                    this._toggleFavorite();
-                }.bind(this)
-            }, {
                 itemFmt : 'fa fa-circle txt-color-blue',
                 itemText: Lang.translate('Tag Post'),
                 itemHandler: function() {
@@ -514,20 +541,12 @@ class PostPane extends React.Component
             margin: "10px 10px 10px 10px",
             fontSize: "130%"
         };
-        if (UserStore.isUserMe(article.authorUuid)) {
-            tagPost = <TagPost article={article} notifyId={this._postPaneId}/>;
-        } else {
-            tagPost = <h2>{article.topic ? article.topic : Lang.translate("My Post")}</h2>
-            refLink = (
-                <RefLinks article={article} edit={false} notifyId={this._postPaneId}/>
-            );
-        }
         return (
             <Panel className="well no-padding" context={panelData}>
-                <div style={{fontSize: "120%"}}>
+                <TagPost article={article} notifyId={this._postPaneId}/>
+                <p style={{fontSize: "140%"}}>
                     {article.articleUrl}
-                </div>
-                {tagPost}
+                </p>
                 {modal}
                 {publishModal}
                 <PostItem data={article.pictureUrl}/>

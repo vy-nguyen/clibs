@@ -8,6 +8,7 @@ import _             from 'lodash';
 import React         from 'react-mod';
 import Modal         from 'react-modal';
 
+import TextOverImg   from 'vntd-shared/layout/TextOverImg.jsx';
 import ImageCarousel from 'vntd-shared/layout/ImageCarousel.jsx';
 
 const modalStyle = {
@@ -51,11 +52,13 @@ class PostItem extends React.Component
     }
 
     render() {
-        let picList = this.props.data;
-        if (!picList) {
+        const fmt = "col-xs-6 col-sm-6 col-md-6 col-lg-6 no-padding";
+        let modal, pic2, pic3, pic4, pic5, text, picList = this.props.data, picOut = [];
+
+        if (picList == null) {
             return null;
         }
-        let modal = (
+        modal = (
             <Modal style={modalStyle}
                 isOpen={this.state.modalIsOpen}
                 onAfterOpen={this._afterOpenModal}
@@ -68,10 +71,9 @@ class PostItem extends React.Component
                 <ImageCarousel imageList={picList} select={this.state.imageSelected}/>
              </Modal>
         );
-        let picOut = [];
         if (picList.length >= 1) {
             picOut.push(
-                <div key={_.uniqueId("post-item-")} className="col-sm-6">
+                <div key={_.uniqueId("post-item-")} className={fmt}>
                     <a onClick={this._openModal.bind(this, "0")}>
                         <img className='img-responsive' src={picList[0]}/>
                     </a>
@@ -79,35 +81,50 @@ class PostItem extends React.Component
             );
         }
         if (picList.length >= 2) {
+            pic2 = (
+                <a onClick={this._openModal.bind(this, "1")}>
+                    <img className='img-responsive' src={picList[1]}/>
+                </a>
+            );
+            if (picList.length >= 3) {
+                pic3 = (
+                    <a onClick={this._openModal.bind(this, "2")}>
+                        <img className='img-responsive' src={picList[2]}/>
+                    </a>
+                );
+            } else {
+                pic3 = null;
+            }
+            if (picList.length >= 4) {
+                pic4 = (
+                    <a onClick={this._openModal.bind(this, "3")}>
+                        <img className='img-responsive' src={picList[3]}/>
+                    </a>
+                );
+            } else {
+                pic4 = null;
+            }
+            if (picList.length >= 5) {
+                text = "+" + picList.length.toString();
+                pic5 = (
+                    <a onClick={this._openModal.bind(this, "4")}>
+                        <TextOverImg className='img-responsive'
+                            imgUrl={picList[4]} text={text}/>
+                    </a>
+                );
+            } else {
+                pic5 = null;
+            }
             picOut.push(
-                <div key={_.uniqueId("post-item-")} className="col-sm-6">
+                <div key={_.uniqueId("post-item-")} className={fmt}>
                     <div className="row">
-                        <div className="col-sm-6">
-                            <a onClick={this._openModal.bind(this, "1")}>
-                                <img className='img-responsive' src={picList[1]}/>
-                            </a>
-                            <br/>
-                            {
-                                picList.length >= 3 ?
-                                <a onClick={this._openModal.bind(this, "2")}>
-                                    <img className='img-responsive' src={picList[2]}/>
-                                </a> : null
-                            }
+                        <div className={fmt}>
+                            {pic2}
+                            {pic3}
                         </div>
-                        <div className="col-sm-6">
-                            {
-                                picList.length >= 4 ?
-                                <a onClick={this._openModal.bind(this, "3")}>
-                                    <img className='img-responsive' src={picList[3]}/>
-                                </a> : null
-                            }
-                            <br/>
-                            {
-                                picList.length >= 5 ?
-                                <a onClick={this._openModal.bind(this, "4")}>
-                                    <img className='img-responsive' src={picList[4]}/>
-                                </a> : null
-                            }
+                        <div className={fmt}>
+                            {pic4}
+                            {pic5}
                         </div> 
                     </div>
                 </div>
