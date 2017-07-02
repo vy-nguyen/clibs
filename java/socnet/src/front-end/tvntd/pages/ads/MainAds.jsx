@@ -9,7 +9,6 @@ import React           from 'react-mod'
 import Actions         from 'vntd-root/actions/Actions.jsx';
 import TabPanel        from 'vntd-shared/layout/TabPanel.jsx';
 import DynamicTable    from 'vntd-root/components/DynamicTable.jsx';
-import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 import Mesg            from 'vntd-root/components/Mesg.jsx';
 import YellowPage      from './YellowPage.jsx';
 import PostAds         from './PostAds.jsx';
@@ -24,7 +23,6 @@ class MainAds extends React.Component
         this.state = {
             tabIdx : 0,
             pubMode: mode,
-            pubTags: ArticleTagStore.getAllPublicTags(true, mode)
         };
         this._getAdsTab     = this._getAdsTab.bind(this);
         this._updateState   = this._updateState.bind(this);
@@ -34,18 +32,18 @@ class MainAds extends React.Component
         this._renderPostAds    = this._renderPostAds.bind(this);
         this._renderFeatureAds = this._renderFeatureAds.bind(this);
         this._renderYellowPage = this._renderYellowPage.bind(this);
+
+        console.log("Constructor main ads");
     }
 
     componentWillReceiveProps(nextProps) {
         let mode = nextProps.params.blog;
         this.state = {
             pubMode: mode,
-            pubTags: ArticleTagStore.getAllPublicTags(true, mode)
         };
     }
 
     componentDidMount() {
-        this.unsub = ArticleTagStore.listen(this._updateState);
     }
 
     componentWillUnmount() {
@@ -59,7 +57,6 @@ class MainAds extends React.Component
         let mode = this.props.params.blog;
         this.setState({
             pubMode: mode,
-            pubTags: ArticleTagStore.getAllPublicTags(true, mode)
         });
     }
 

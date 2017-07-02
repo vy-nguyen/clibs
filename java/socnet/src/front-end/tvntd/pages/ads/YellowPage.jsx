@@ -11,8 +11,7 @@ import ArticleTagStore    from 'vntd-root/stores/ArticleTagStore.jsx';
 import ArticleTagBrief    from 'vntd-root/components/ArticleTagBrief.jsx';
 import AdsTableListing    from './AdsTableListing.jsx';
 
-function filterLeterTags(tags, letter)
-{
+function filterLeterTags(tags, letter) {
     let first, out = [], lower = letter.toLowerCase();
 
     _.forEach(tags, function(tag) {
@@ -26,8 +25,7 @@ function filterLeterTags(tags, letter)
     return out;
 }
 
-function filterTagBuckets(tags)
-{
+function filterTagBuckets(tags) {
     let index, letter, out = [], first = 65, last = 90;
 
     _.forEach(tags, function(tag) {
@@ -99,8 +97,14 @@ class YellowPage extends React.Component
         }.bind(this));
 
         this.state = {
-            currentTag: this._updateArtTags()
+            currentTag: null
         };
+    }
+
+    componentWillMount() {
+        this.setState({
+            currentTag: this._updateArtTags()
+        });
     }
 
     componentDidMount() {

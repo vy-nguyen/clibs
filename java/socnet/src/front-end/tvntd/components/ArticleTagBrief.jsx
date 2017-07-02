@@ -125,8 +125,8 @@ class ArticleTagBrief extends React.Component
             });
             return EStore.renderProducts(products, null);
         }
-        let articles = [];
-        ArticleTagStore.getPublishedArticles(this.props.tag.tagName, articles);
+        let articles = [], unique = {};
+        ArticleTagStore.getPublishedArticles(this.props.tag.tagName, articles, unique);
 
         return (
             <section id='widget-grid'>

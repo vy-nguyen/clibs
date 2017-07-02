@@ -20,10 +20,48 @@ class AdsTableListing extends React.Component
         this._isActive       = this._isActive.bind(this);
         this._renderAdsBrief = this._renderAdsBrief.bind(this);
         this._renderAdsFull  = this._renderAdsFull.bind(this);
+        this._updateListing  = this._updateListing.bind(this);
 
         this.state = {
-            currAds: null
+            currAds: null,
+            adsList: []
         };
+        console.log("constructor AdsTableListing tagList: " + props.tagList);
+    }
+
+    componentDidMount() {
+        this.unsub = ArticleTagStore.listen(this._updateListing);
+    }
+
+    componentWillMount() {
+        this.setState({
+            adsList: this._getArtListing(this.props.tagList)
+        });
+        console.log("Will mount AdsTableListing tagList: " + this.props.tagList);
+    }
+
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    _updateListing() {
+        let adsList = this._getArtListing(this.props.tagList);
+        if (adsList.length != this.state.adsList) {
+            this.setState({
+                adsList: adsList
+            });
+        }
+    }
+
+    _getArtListing(tagList) {
+        let adsList = [], unique = {};
+        _.forOwn(tagList, function(tagName) {
+            ArticleTagStore.getPublishedArticles(tagName, adsList, unique);
+        });
+        return adsList;
     }
 
     _readAds(ads) {
@@ -64,11 +102,8 @@ class AdsTableListing extends React.Component
     }
 
     render() {
-        let adsList = [], tagList = this.props.tagList;
+        let adsList = this.state.adsList;
 
-        _.forEach(tagList, function(tagName) {
-            ArticleTagStore.getPublishedArticles(tagName, adsList);
-        });
         return (
             <section id='widget-grid'>
                 {ArticleTagBrief.renderArtBox(adsList,

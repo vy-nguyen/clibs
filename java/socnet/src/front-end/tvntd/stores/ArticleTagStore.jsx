@@ -504,21 +504,26 @@ let ArticleTagStore = Reflux.createStore({
     /*
      * @return list of article uuids under the given tag.
      */
-    getPublishedArticles: function(tagName, artUuids) {
-        let tag = this.data.pubTagIndex[tagName];
+    getPublishedArticles: function(tagName, artUuids, uuidDict) {
+        let uuid, tag = this.data.pubTagIndex[tagName];
 
         if (tag != null) {
             _.forOwn(tag.sortedArts, function(artObj) {
                 artObj.publishTag = tag;
-                artUuids.push({
-                    artUuid: artObj.articleUuid,
-                    artTag : tag,
-                    artObj : artObj
-                });
+                uuid = artObj.articleUuid;
+
+                if (uuidDict[uuid] == null) {
+                    uuidDict[uuid] = uuid;
+                    artUuids.push({
+                        artUuid: uuid,
+                        artTag : tag,
+                        artObj : artObj
+                    });
+                }
             });
             if (tag.subTags != null) {
                 _.forOwn(tag.subTags, function(sub) {
-                    this.getPublishedArticles(sub.tagName, artUuids);
+                    this.getPublishedArticles(sub.tagName, artUuids, uuidDict);
                 }.bind(this));
             }
         }
