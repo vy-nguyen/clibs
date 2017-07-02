@@ -26,7 +26,6 @@ class AdsTableListing extends React.Component
             currAds: null,
             adsList: []
         };
-        console.log("constructor AdsTableListing tagList: " + props.tagList);
     }
 
     componentDidMount() {
@@ -37,7 +36,12 @@ class AdsTableListing extends React.Component
         this.setState({
             adsList: this._getArtListing(this.props.tagList)
         });
-        console.log("Will mount AdsTableListing tagList: " + this.props.tagList);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            adsList: this._getArtListing(nextProps.tagList)
+        });
     }
 
     componentWillUnmount() {

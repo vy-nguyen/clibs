@@ -32,8 +32,6 @@ class MainAds extends React.Component
         this._renderPostAds    = this._renderPostAds.bind(this);
         this._renderFeatureAds = this._renderFeatureAds.bind(this);
         this._renderYellowPage = this._renderYellowPage.bind(this);
-
-        console.log("Constructor main ads");
     }
 
     componentWillReceiveProps(nextProps) {
