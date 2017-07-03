@@ -26,6 +26,7 @@
  */
 package com.tvntd.models;
 
+import java.util.Date;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -52,8 +53,14 @@ public class AnnonUser
     @Column(length = 64)
     private String remoteIp;
 
-    public AnnonUser() {
-        userUuid = UUID.randomUUID().toString();
+    private Long visitSessions;
+    private Date lastSession;
+
+    public AnnonUser()
+    {
+        userUuid      = UUID.randomUUID().toString();
+        lastSession   = new Date();
+        visitSessions = 0L;
     }
 
     public AnnonUser(String uuid) {
@@ -154,7 +161,37 @@ public class AnnonUser
     /**
      * @param remoteIp the remoteIp to set
      */
-    public void setRemoteIp(String remoteIp) {
+    public void setRemoteIp(String remoteIp)
+    {
         this.remoteIp = remoteIp;
+        this.visitSessions = this.visitSessions + 1;
+    }
+
+    /**
+     * @return the visitSessions
+     */
+    public Long getVisitSessions() {
+        return visitSessions;
+    }
+
+    /**
+     * @param visitSessions the visitSessions to set
+     */
+    public void setVisitSessions(Long visitSessions) {
+        this.visitSessions = visitSessions;
+    }
+
+    /**
+     * @return the lastSession
+     */
+    public Date getLastSession() {
+        return lastSession;
+    }
+
+    /**
+     * @param lastSession the lastSession to set
+     */
+    public void setLastSession(Date lastSession) {
+        this.lastSession = lastSession;
     }
 }

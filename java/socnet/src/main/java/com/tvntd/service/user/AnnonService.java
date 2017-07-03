@@ -39,6 +39,7 @@ import org.springframework.web.util.WebUtils;
 import com.tvntd.dao.AnnonUserRepo;
 import com.tvntd.lib.ObjectId;
 import com.tvntd.models.AnnonUser;
+import com.tvntd.security.ServiceUser;
 import com.tvntd.service.api.IAnnonService;
 
 @Service
@@ -54,12 +55,15 @@ public class AnnonService implements IAnnonService
     {
         AnnonUser user;
         AnnonUserDTO dto;
+        String ip = ServiceUser.getClientIP(reqt);
         Cookie cookie = WebUtils.getCookie(reqt, annonKey);
 
         if (cookie == null) {
+            System.out.println("Create new cookie for ip " + ip);
             user = new AnnonUser();
             dto = new AnnonUserDTO(user);
 
+            user.setRemoteIp(ip);
             annonRepo.save(user);
             session.setAttribute(annonKey, dto);
 
@@ -75,6 +79,7 @@ public class AnnonService implements IAnnonService
             user = dto.fetchAnnonUser();
             if (!cookie.getValue().equals(user.getUserUuid())) {
                 user.setUserUuid(cookie.getValue());
+                user.setRemoteIp(ip);
                 annonRepo.save(user);
             }
             return dto;
@@ -82,8 +87,10 @@ public class AnnonService implements IAnnonService
         user = annonRepo.findByUserUuid(cookie.getValue());
         if (user == null) {
             user = new AnnonUser(cookie.getValue());
-            annonRepo.save(user);
         }
+        user.setRemoteIp(ip);
+        annonRepo.save(user);
+
         dto = new AnnonUserDTO(user);
         session.setAttribute(annonKey, dto);
         return dto;
