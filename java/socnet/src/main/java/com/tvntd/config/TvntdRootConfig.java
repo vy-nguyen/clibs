@@ -29,14 +29,11 @@ package com.tvntd.config;
 import java.util.Locale;
 import java.util.Properties;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.core.env.Environment;
 import org.springframework.data.mongodb.core.MongoFactoryBean;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -48,12 +45,8 @@ import com.tvntd.util.EmailValidator;
 import com.tvntd.util.PasswordMatchesValidator;
 
 @Configuration
-@PropertySource("classpath:email.properties")
 public class TvntdRootConfig
 {
-    @Autowired
-    private Environment env;
-
     @Bean
     public CommonsMultipartResolver multipartResolver() {
         CommonsMultipartResolver mpart = new CommonsMultipartResolver();

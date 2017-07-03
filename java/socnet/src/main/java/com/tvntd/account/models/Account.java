@@ -24,37 +24,47 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.servlet3;
+package com.tvntd.account.models;
 
-import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
-import com.tvntd.config.TvntdRootConfig;
-import com.tvntd.config.TvntdWebConfig;
-import com.tvntd.config.AccountJPAConfig;
-import com.tvntd.config.CacheConfig;
-import com.tvntd.config.PersistenceJPAConfig;
-import com.tvntd.config.SecurityConfig;
-
-public class WebSevletInit extends AbstractAnnotationConfigDispatcherServletInitializer
+@Entity
+public class Account
 {
-    @Override
-    protected Class<?>[] getRootConfigClasses() {
-        return new Class<?>[] {
-            TvntdRootConfig.class,
-            SecurityConfig.class,
-            PersistenceJPAConfig.class,
-            AccountJPAConfig.class,
-            CacheConfig.class
-        };
+    @Id
+    @Column(length = 64)
+    private String accountUuid;
+
+    @Column(length = 64)
+    private String ownerUuid;
+
+    /**
+     * @return the accountUuid
+     */
+    public String getAccountUuid() {
+        return accountUuid;
     }
 
-    @Override
-    protected Class<?>[] getServletConfigClasses() {
-        return new Class<?>[] { TvntdWebConfig.class };
+    /**
+     * @param accountUuid the accountUuid to set
+     */
+    public void setAccountUuid(String accountUuid) {
+        this.accountUuid = accountUuid;
     }
 
-    @Override
-    protected String[] getServletMappings() {
-        return new String[] { "/" };
+    /**
+     * @return the ownerUuid
+     */
+    public String getOwnerUuid() {
+        return ownerUuid;
+    }
+
+    /**
+     * @param ownerUuid the ownerUuid to set
+     */
+    public void setOwnerUuid(String ownerUuid) {
+        this.ownerUuid = ownerUuid;
     }
 }

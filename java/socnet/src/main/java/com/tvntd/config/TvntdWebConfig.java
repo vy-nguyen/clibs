@@ -44,7 +44,8 @@ import org.springframework.web.servlet.view.JstlView;
     "com.tvntd.web",
     "com.tvntd.security",
     "com.tvntd.events",
-    "com.tvntd.service"
+    "com.tvntd.service",
+    "com.tvntd.account.service"
 })
 public class TvntdWebConfig extends WebMvcConfigurerAdapter
 {
@@ -72,22 +73,6 @@ public class TvntdWebConfig extends WebMvcConfigurerAdapter
     public void addViewControllers(final ViewControllerRegistry registry)
     {
         super.addViewControllers(registry);
-        /*
-        registry.addViewController("/error/bad-user")
-            .setViewName("bad-user");
-        registry.addViewController("/error/invalid-session")
-            .setViewName("invalid-session");
-        registry.addViewController("/error/email-error")
-            .setViewName("email-error");
-        registry.addViewController("/help/expired-account")
-            .setViewName("expired-account");
-        registry.addViewController("/help/forget-password")
-            .setViewName("forget-password");
-        registry.addViewController("/help/update-password")
-            .setViewName("update-password");
-        registry.addViewController("/help/change-password")
-            .setViewName("change-password");
-        */
     }
 
     @Override

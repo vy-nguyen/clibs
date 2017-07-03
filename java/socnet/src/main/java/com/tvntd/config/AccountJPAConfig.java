@@ -38,7 +38,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
@@ -52,30 +51,29 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement
 @PropertySource({ "classpath:persistence.properties" })
-@ComponentScan({ "com.tvntd.models" })
+@ComponentScan({ "com.tvntd.account.models" })
 @EnableJpaRepositories(
-    basePackages = "com.tvntd.dao",
-    entityManagerFactoryRef = "entityManagerFactory",
-    transactionManagerRef = "transactionManager"
+    basePackages = "com.tvntd.account.dao",
+    entityManagerFactoryRef = "accountEntityManager",
+    transactionManagerRef = "accountTransMgr"
 )
-public class PersistenceJPAConfig
+public class AccountJPAConfig
 {
     @Autowired
     private Environment env;
 
-    public PersistenceJPAConfig() {
+    public AccountJPAConfig() {
         super();
     }
 
     @Bean
-    @Primary
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory()
+    public LocalContainerEntityManagerFactoryBean accountEntityManager()
     {
         final LocalContainerEntityManagerFactoryBean em =
             new LocalContainerEntityManagerFactoryBean();
 
-        em.setDataSource(dataSource());
-        em.setPackagesToScan(new String[] { "com.tvntd.models" });
+        em.setDataSource(acctDataSource());
+        em.setPackagesToScan(new String[] { "com.tvntd.account.models" });
 
         final HibernateJpaVendorAdapter vendorAdapter =
             new HibernateJpaVendorAdapter();
@@ -86,28 +84,25 @@ public class PersistenceJPAConfig
     }
 
     @Bean
-    @Primary
-    public DataSource dataSource()
+    public DataSource acctDataSource()
     {
         final DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(env.getProperty("jdbc.driverClassName"));
-        dataSource.setUrl(env.getProperty("jdbc.url"));
+        dataSource.setUrl(env.getProperty("jdbc.vntd.url"));
         dataSource.setUsername(env.getProperty("jdbc.user"));
         dataSource.setPassword(env.getProperty("jdbc.pass"));
         return dataSource;
     }
 
     @Bean
-    @Primary
-    public JpaTransactionManager transactionManager()
+    public JpaTransactionManager accountTransMgr()
     {
         final JpaTransactionManager tm = new JpaTransactionManager();
-        tm.setEntityManagerFactory(entityManagerFactory().getObject());
+        tm.setEntityManagerFactory(accountEntityManager().getObject());
         return tm;
     }
 
     @Bean
-    @Primary
     public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
         return new PersistenceExceptionTranslationPostProcessor();
     }
