@@ -212,6 +212,7 @@ public class IndexPath
         }
         String link = String
             .format("https://www.tvntd.com/login/link/%s/%s\n", email, token);
+            // .format("http://192.168.56.103/login/link/%s/%s\n", email, token);
 
         s_log.info("Send email login " + email + " link " + link);
         userService.sendLoginLink(email, link);
