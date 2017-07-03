@@ -53,6 +53,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.tvntd.config.TestAccountJPAConfig;
 import com.tvntd.config.TestCacheConfig;
 import com.tvntd.config.TestPersistenceJPAConfig;
 import com.tvntd.config.TestSecurityConfig;
@@ -77,6 +78,7 @@ import com.tvntd.util.Constants;
         TestSecurityConfig.class,
         TestTvntdWebConfig.class,
         TestPersistenceJPAConfig.class,
+        TestAccountJPAConfig.class,
         TestTvntdRootConfig.class,
         TestCacheConfig.class
     }

@@ -31,7 +31,6 @@ import static org.junit.Assert.*;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.List;
-import java.util.UUID;
 
 import org.junit.After;
 import org.junit.Before;
@@ -46,12 +45,12 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.tvntd.config.TestAccountJPAConfig;
 import com.tvntd.config.TestCacheConfig;
 import com.tvntd.config.TestPersistenceJPAConfig;
 import com.tvntd.config.TestSecurityConfig;
 import com.tvntd.config.TestTvntdRootConfig;
 import com.tvntd.config.TestTvntdWebConfig;
-import com.tvntd.models.Article;
 import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IMenuItemService;
 import com.tvntd.service.api.IMenuItemService.MenuItemResp;
@@ -65,6 +64,7 @@ import com.tvntd.service.api.UserNotifResponse;
         TestSecurityConfig.class,
         TestTvntdWebConfig.class,
         TestPersistenceJPAConfig.class,
+        TestAccountJPAConfig.class,
         TestTvntdRootConfig.class,
         TestCacheConfig.class
     }

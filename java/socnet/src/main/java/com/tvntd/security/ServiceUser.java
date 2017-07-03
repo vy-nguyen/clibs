@@ -72,7 +72,7 @@ public class ServiceUser implements UserDetailsService
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException
     {
-        String ip = getClientIP();
+        String ip = getClientIP(request);
         if (loginAttemptService.isBlocked(ip)) {
             throw new RuntimeException("blocked");
         }
@@ -124,11 +124,11 @@ public class ServiceUser implements UserDetailsService
         return authorities;
     }
 
-    private String getClientIP()
+    public static String getClientIP(HttpServletRequest request)
     {
         try {
-            String xfHeader = request.getHeader("X-Forwarded-For");
-            if (xfHeader != null) {
+            String xfHeader = request.getHeader("X-FORWARDED-FOR");
+            if (xfHeader != null && !"".equals(xfHeader)) {
                 return xfHeader.split(",")[0];
             }
             return request.getRemoteAddr();

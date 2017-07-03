@@ -24,37 +24,31 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.servlet3;
+package com.tvntd.account.api;
 
-import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+import com.tvntd.account.models.Account;
 
-import com.tvntd.config.TvntdRootConfig;
-import com.tvntd.config.TvntdWebConfig;
-import com.tvntd.config.AccountJPAConfig;
-import com.tvntd.config.CacheConfig;
-import com.tvntd.config.PersistenceJPAConfig;
-import com.tvntd.config.SecurityConfig;
-
-public class WebSevletInit extends AbstractAnnotationConfigDispatcherServletInitializer
+public interface IAccountService
 {
-    @Override
-    protected Class<?>[] getRootConfigClasses() {
-        return new Class<?>[] {
-            TvntdRootConfig.class,
-            SecurityConfig.class,
-            PersistenceJPAConfig.class,
-            AccountJPAConfig.class,
-            CacheConfig.class
-        };
-    }
+    Account getAccount(String accountUuid);
+    Account getAccountByOwner(String ownerUuid);
 
-    @Override
-    protected Class<?>[] getServletConfigClasses() {
-        return new Class<?>[] { TvntdWebConfig.class };
-    }
+    /**
+     *
+     */
+    public static class AccountDTO
+    {
+        private Account account;
 
-    @Override
-    protected String[] getServletMappings() {
-        return new String[] { "/" };
+        public AccountDTO(Account acct) {
+            this.account = acct;
+        }
+
+        /**
+         * @return the account
+         */
+        public Account fetchAccount() {
+            return account;
+        }
     }
 }

@@ -24,37 +24,36 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.servlet3;
+package com.tvntd.account.service;
 
-import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.tvntd.config.TvntdRootConfig;
-import com.tvntd.config.TvntdWebConfig;
-import com.tvntd.config.AccountJPAConfig;
-import com.tvntd.config.CacheConfig;
-import com.tvntd.config.PersistenceJPAConfig;
-import com.tvntd.config.SecurityConfig;
+import com.tvntd.account.api.IAccountService;
+import com.tvntd.account.dao.AccountRepo;
+import com.tvntd.account.models.Account;
 
-public class WebSevletInit extends AbstractAnnotationConfigDispatcherServletInitializer
+@Service
+@Transactional(value = "accountTransMgr")
+@EnableCaching
+public class AccountService implements IAccountService
 {
+    @Autowired
+    protected AccountRepo accountRepo;
+
     @Override
-    protected Class<?>[] getRootConfigClasses() {
-        return new Class<?>[] {
-            TvntdRootConfig.class,
-            SecurityConfig.class,
-            PersistenceJPAConfig.class,
-            AccountJPAConfig.class,
-            CacheConfig.class
-        };
+    public Account getAccount(String uuid)
+    {
+        Account acct = accountRepo.findByAccountUuid(uuid);
+        return acct;
     }
 
     @Override
-    protected Class<?>[] getServletConfigClasses() {
-        return new Class<?>[] { TvntdWebConfig.class };
-    }
-
-    @Override
-    protected String[] getServletMappings() {
-        return new String[] { "/" };
+    public Account getAccountByOwner(String uuid)
+    {
+        Account acct = accountRepo.findByOwnerUuid(uuid);
+        return acct;
     }
 }

@@ -44,6 +44,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import com.tvntd.config.TestAccountJPAConfig;
 import com.tvntd.config.TestCacheConfig;
 import com.tvntd.config.TestPersistenceJPAConfig;
 import com.tvntd.config.TestSecurityConfig;
@@ -70,6 +71,7 @@ import com.tvntd.service.user.ArticleService;
         TestSecurityConfig.class,
         TestTvntdWebConfig.class,
         TestPersistenceJPAConfig.class,
+        TestAccountJPAConfig.class,
         TestTvntdRootConfig.class,
         TestCacheConfig.class
     }
