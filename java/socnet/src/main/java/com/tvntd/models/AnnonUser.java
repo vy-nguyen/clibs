@@ -164,6 +164,9 @@ public class AnnonUser
     public void setRemoteIp(String remoteIp)
     {
         this.remoteIp = remoteIp;
+        if (this.visitSessions == null) {
+            this.visitSessions = 0L;
+        }
         this.visitSessions = this.visitSessions + 1;
     }
 
