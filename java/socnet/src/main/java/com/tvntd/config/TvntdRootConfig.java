@@ -77,7 +77,7 @@ public class TvntdRootConfig
 
         final Properties javaMailProps = new Properties();
         javaMailProps.put("mail.smtp.auth", false);
-        javaMailProps.put("mail.smtp.starttls.enable", false);
+        javaMailProps.put("mail.smtp.starttls.enable", true);
         mailSenderImpl.setJavaMailProperties(javaMailProps);
         return mailSenderImpl;
     }
