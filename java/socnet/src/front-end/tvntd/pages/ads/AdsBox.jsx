@@ -5,7 +5,6 @@
 
 import _               from 'lodash';
 import React           from 'react-mod';
-import StarRating      from 'react-star-rating';
 
 import Panel           from 'vntd-shared/widgets/Panel.jsx';
 import WidgetGrid      from 'vntd-shared/widgets/WidgetGrid.jsx'
@@ -13,10 +12,12 @@ import UserStore       from 'vntd-shared/stores/UserStore.jsx';
 import AuthorStore     from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 import {AdsStore}      from 'vntd-root/stores/ArticleStore.jsx';
-import LikeStat        from 'vntd-root/components/LikeStat.jsx';
+import {RatingInfo}    from 'vntd-root/components/LikeStat.jsx';
 import Mesg            from 'vntd-root/components/Mesg.jsx';
 
-const _adsDefStyle = { maxWidth: "100%" };
+const _adsDefStyle = { maxHeight: "auto", minHeight: "100%" },
+    _adsTitleStyle = { color: "#800000" },
+    _adsTextStyle = { textAlign: "center" };
 
 class AdsBox extends React.Component
 {
@@ -32,28 +33,37 @@ class AdsBox extends React.Component
             <div className="product-content product-wrap" onClick={this.props.onClick}>
                 <div className="row">
                     <div className="col-xs-6 col-sm-6 col-md-4 col-lg-4">
-                            <img src={imgUrl} className="img-responsive"
-                                    style={_adsDefStyle}/>
+                        <div className="product-image" style={_adsDefStyle}>
+                            <img src={imgUrl} className="img-responsive"/>
                             {active}
-                        <LikeStat data={likeStat}/>
-                        <StarRating size={15}
-                                totalStarts={5} rating={4} disabled={true}/>     
+                            <p style={_adsTextStyle}>{ads.busInfo}</p>
+                        </div>
                     </div>
                     <div className="col-xs-6 col-sm-6 col-md-8 col-lg-8">
-                        <h2 className="name">{ads.busName}</h2>
-                        <h4 className="name">{ads.busInfo}</h4>
+                        <div style={_adsTextStyle}> 
+                            <h2 style={_adsTitleStyle}>{ads.busName}</h2>
+                            <p>{AdsBox.businessAddr(ads)}</p>
+                            <h4>{ads.busWeb || ads.busEmail}</h4>
+                            <h2>{ads.busPhone}</h2>
+                        </div>
                     </div>
                 </div>
-                <div className="row">
-                    <h3 className="name">
-                        <span>
-                            {ads.busStreet}<br/>
-                            {ads.busCity}, {ads.busState} {ads.busZip}
-                        </span>
-                    </h3>
-                    <h2 className="name">{ads.busPhone}></h2>
-                </div>
+                <RatingInfo likeStat={likeStat}/>
             </div>
+        );
+    }
+
+    static businessAddr(ads) {
+        let street, city, state, zip;
+
+        street = ads.busStreet ? ads.busStreet.substring(0, 20) : "";
+        city   = ads.busCity ? ads.busCity.substring(0, 20) : "";
+        state  = ads.busState ? ads.busState.substring(0, 20) : "";
+        zip    = ads.busZip ? ads.busZip.substring(0, 8) : "";
+        return (
+            <span>
+                {street}<br/>{city}, {state} {zip}
+            </span>
         );
     }
 
@@ -66,15 +76,7 @@ class AdsBox extends React.Component
             adsTag : adsRec.artTag,
             imgUrl : !_.isEmpty(ads.imageUrl) ?  ads.imageUrl[0] : null,
             active : active === true ? <span className="tag2 hot">Active</span> : null,
-            likeStat: AdsBox.getLikeStat(rank)
-        };
-    }
-
-    static getLikeStat(rank) {
-        return {
-            commentCount: rank.notifCount ? rank.notifCount : 0,
-            likesCount  : rank.likes,
-            sharesCount : rank.shares
+            likeStat: RatingInfo.getLikeStat(rank)
         };
     }
 
@@ -117,19 +119,11 @@ class AdsBox1 extends React.Component
                         </div>
                     </div>
                     <div className="row">
-                        <h4>{ads.busName}</h4>
+                        <h2 style={_adsTitleStyle}>{ads.busName}</h2>
                     </div>
+                    <RatingInfo likeStat={likeStat}/>
                     <div className="row">
-                        <div className="col-xs-7 col-sm-7 col-md-7 col-lg-7">
-                            <LikeStat data={likeStat}/>
-                        </div>
-                        <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5">
-                            <StarRating size={15}
-                                totalStars={5} rating={4} disabled={true}/>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <h4 className="name">{ads.busPhone}</h4>
+                        <h4 style={_adsTextStyle}>{ads.busPhone}</h4>
                         <span>
                             {ads.busStreet}<br/>
                             {ads.busCity}, {ads.busState} {ads.busZip}
@@ -153,15 +147,9 @@ class BusinessInfo extends React.Component
     }
 
     render() {
-        let adsRec = this.props.adsRec,
-            ads    = adsRec.artObj,
-            rank   = ads.adsRank,
-            adsTag = adsRec.artTag,
-            imgUrl = !_.isEmpty(ads.imageUrl) ?  ads.imageUrl[0] : null,
-            likeStat = AdsBox.getLikeStat(rank),
-        city = (
-            <span>{ads.busCity}, {ads.busState} {ads.busZip}</span>
-        ),
+        let { ads, rank, adsTag, imgUrl, active, likeStat } =
+            AdsBox.getAdsInfo(this.props.adsRec, null),
+            address = AdsBox.businessAddr(ads),
         busHour = (
             <div dangerouslySetInnerHTML= {this._rawMarkup(ads.busHour)}/>
         );
@@ -180,23 +168,14 @@ class BusinessInfo extends React.Component
                                 <img src={imgUrl} className="img-responsive"/>
                             </div>
                         </div>
-                        <div className="row">
-                            <div className="col-sx-7 col-sm-7 col-md-7 col-lg-7">
-                                <LikeStat data={likeStat}/>
-                            </div>
-                            <div className="col-sx-5 col-sm-5 col-md-5 col-lg-5">
-                                <StarRating name={_.uniqueId('ads-')} size={20}
-                                    totalStarts={5} rating={4}/>
-                            </div>
-                        </div>
+                        <RatingInfo likeStat={likeStat} starSize={20}/>
                     </div>
                     <div className="col-xs-12 col-sm-12 col-md-8 col-lg-8">
                         <h1>{ads.busName}</h1>
                         {AdsBox.renderKeyValue("Phone", ads.busPhone)}
                         {AdsBox.renderKeyValue("Web",
                             <a href={ads.busWeb}>{ads.busWeb}</a>)}
-                        {AdsBox.renderKeyValue("Address", ads.busStreet)}
-                        {AdsBox.renderKeyValue("City", city)}
+                        {AdsBox.renderKeyValue("Address", address)}
                         {AdsBox.renderKeyValue("Hours", busHour)}
 
                         <div style={divStyle}

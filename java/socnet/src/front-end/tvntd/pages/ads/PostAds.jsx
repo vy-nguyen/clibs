@@ -367,7 +367,7 @@ class PostAds extends React.Component
             inpHolder: 'you@something.com',
             errorId  : this._busEmailId,
             errorFlag: errFlag.busEmail,
-            labelTxt : 'Your email (to claim this ad later)',
+            labelTxt : 'Your email',
             labelFmt : cLabelFmt,
             inputFmt : cInputFmt
         },
