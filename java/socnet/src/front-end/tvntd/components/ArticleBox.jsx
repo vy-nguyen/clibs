@@ -67,7 +67,7 @@ class ArticleBox extends React.Component
                         <LikeStat data={data.likeStat} split={true}/>
                         <StarRating size={15} totalStars={5} rating={4} disabled={true}/>
                     </div>
-                    <div className="col-md-8 col-sm-12 col-xs-12">
+                    <div className="col-lg-8 col-md-8 col-sm-12 col-xs-12">
                         <div className="product-deatil">
                             <h4 className="name">
                                 {data.artTitle}

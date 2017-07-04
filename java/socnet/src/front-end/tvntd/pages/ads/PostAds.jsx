@@ -6,7 +6,6 @@
 import _                  from 'lodash';
 import React, {PropTypes} from 'react-mod';
 
-import {choose}         from 'vntd-shared/utils/Enum.jsx';
 import ErrorView        from 'vntd-shared/layout/ErrorView.jsx';
 import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
 import InputStore       from 'vntd-shared/stores/NestableStore.jsx';
@@ -24,6 +23,21 @@ import {
     GenericForm, SelectWrap, DropZoneWrap, InputBox, InputInline
 } from 'vntd-shared/forms/commons/GenericForm.jsx';
 
+const _defaultAd = {
+    busCat   : null,
+    busName  : null,
+    busInfo  : null,
+    busHour  : null,
+    busDesc  : null,
+    busPhone : null,
+    busStreet: null,
+    busCity  : null,
+    busState : null,
+    busZip   : null,
+    busWeb   : null,
+    busEmail : null
+};
+
 class PostAds extends React.Component
 {
     constructor(props) {
@@ -35,6 +49,7 @@ class PostAds extends React.Component
         this._busCatId    = 'ad-category';
         this._busImgId    = 'ad-main-img';
         this._busNameId   = 'bus-name';
+        this._busInfoId   = 'bus-info';
         this._busHourId   = 'bus-hour';
         this._busDescId   = 'bus-desc';
         this._busPhoneId  = 'bus-phone';
@@ -72,10 +87,11 @@ class PostAds extends React.Component
     componentWillMount() {
         let ad = this.props.ads;
         if (ad == null) {
-            return;
+            ad = _defaultAd;
         }
         InputStore.storeItemIndex(this._busCatId, ad.busCat, false);
         InputStore.storeItemIndex(this._busNameId, ad.busName, false);
+        InputStore.storeItemIndex(this._busInfoId, ad.busInfo, false);
         InputStore.storeItemIndex(this._busHourId, ad.busHour, false);
         InputStore.storeItemIndex(this._busDescId, ad.busDesc, false);
         InputStore.storeItemIndex(this._busPhoneId, ad.busPhone, false);
@@ -122,6 +138,7 @@ class PostAds extends React.Component
         }
         InputStore.freeItemIndex(this._busCatId);
         InputStore.freeItemIndex(this._busNameId);
+        InputStore.freeItemIndex(this._busInfoId);
         InputStore.freeItemIndex(this._busImgId);
         InputStore.freeItemIndex(this._busHourId);
         InputStore.freeItemIndex(this._busDescId);
@@ -155,7 +172,7 @@ class PostAds extends React.Component
 
     _postAdClick() {
         const formEntries = [
-            "busCat", "busName", "busHour", "busDesc", "busPhone",
+            "busCat", "busName", "busInfo", "busHour", "busDesc", "busPhone",
             "busStreet", "busCity", "busState", "busZip", "busWeb",
             "busEmail"
         ];
@@ -184,6 +201,7 @@ class PostAds extends React.Component
             return;
         }
         StateButtonStore.setButtonStateObj(this._postAdBtn, "saving");
+        console.log(ad);
         Actions.publicPostAds(ad);
     }
 
@@ -201,6 +219,7 @@ class PostAds extends React.Component
             authorUuid : 0,
             articleUuid: imgRec.articleUuid,
             busCat     : InputStore.getIndexString(this._busCatId),
+            busInfo    : InputStore.getIndexString(this._busInfoId),
             busName    : InputStore.getIndexString(this._busNameId),
             busHour    : InputStore.getIndexString(this._busHourId),
             busDesc    : InputStore.getIndexString(this._busDescId),
@@ -221,6 +240,10 @@ class PostAds extends React.Component
         let ad = this.props.ads, errFlag = this.state.errFlags,
             adImg, twoCols, adsOpt = ArticleTagStore.getPublicTagsSelOpt("ads"),
             adsOptDef = !_.isEmpty(adsOpt) ? adsOpt[0].label : null,
+            wLabelFmt = 'control-label col-sx-2 col-sm-2 col-md-2 col-lg-2',
+            wInputFmt = 'control-label col-sx-10 col-sm-10 col-md-10 col-lg-10',
+            cLabelFmt = 'control-label col-sx-3 col-sm-3 col-md-3 col-lg-3',
+            cInputFmt = 'control-label col-sx-9 col-sm-9 col-md-9 col-lg-9',
         busCat = {
             select   : true,
             inpName  : this._busCatId,
@@ -231,112 +254,122 @@ class PostAds extends React.Component
             errorId  : this._busCatId,
             errorFlag: errFlag.busCat,
             labelTxt : 'Category',
-            labelFmt : 'control-label col-sx-2 col-sm-2 col-md-2 col-lg-2',
-            inputFmt : 'control-label col-sx-10 col-sm-10 col-md-10 col-lg-10'
+            labelFmt : wLabelFmt,
+            inputFmt : wInputFmt
         },
         busName = {
             inpName  : this._busNameId,
-            inpDefVal: choose(InputStore.getItemIndex(this._busNameId), null),
+            inpDefVal: InputStore.getItemIndex(this._busNameId),
             inpHolder: Lang.translate('ABC Service'),
             errorId  : this._busNameId,
             errorFlag: errFlag.busName,
             labelTxt : 'Business Name',
-            labelFmt : 'control-label col-sx-3 col-sm-3 col-md-3 col-lg-3',
-            inputFmt : 'control-label col-sx-9 col-sm-9 col-md-9 col-lg-9'
+            labelFmt : cLabelFmt,
+            inputFmt : cInputFmt
+        },
+        busInfo = {
+            inpName  : this._busInfoId,
+            inpDefVal: InputStore.getItemIndex(this._busInfoId),
+            inpHolder: Lang.translate('Info about ABC service'),
+            errorId  : this._busInfoId,
+            errorFlag: errFlag.busInfo,
+            labelTxt : 'Business Info',
+            labelFmt : cLabelFmt,
+            inputFmt : cInputFmt
         },
         busHour = {
             id       : this._busHourId,
             inpName  : this._busHourId,
-            inpDefVal: choose(InputStore.getItemIndex(this._busHourId), null),
+            inpDefVal: InputStore.getItemIndex(this._busHourId),
             ipgHolder: Lang.translate('M-F: 9am-5pm'),
             editor   : true,
             errorId  : this._busHourId,
             errorFlag: errFlag.busHour,
             labelTxt : 'Business Hour',
-            labelFmt : 'control-label col-sx-2 col-sm-2 col-md-2 col-lg-2',
-            inputFmt : 'control-label col-sx-10 col-sm-10 col-md-10 col-lg-10'
+            labelFmt : wLabelFmt,
+            inputFmt : wInputFmt
         },
         busDesc = {
             id       : this._busDescId,
             inpName  : this._busDescId,
-            inpDefVal: choose(InputStore.getItemIndex(this._busDescId), null),
+            inpDefVal: InputStore.getItemIndex(this._busDescId),
             ipgHolder: Lang.translate('About your busines'),
             editor   : true,
             errorId  : this._busDescId,
             errorFlag: errFlag.busDesc,
             labelTxt : 'Business Description',
-            labelFmt : 'control-label col-sx-2 col-sm-2 col-md-2 col-lg-2',
-            inputFmt : 'control-label col-sx-10 col-sm-10 col-md-10 col-lg-10'
+            labelFmt : wLabelFmt,
+            inputFmt : wInputFmt
         },
         busPhone = {
             inpName  : this._busPhoneId,
-            inpDefVal: choose(InputStore.getItemIndex(this._busPhoneId), null),
+            inpDefVal: InputStore.getItemIndex(this._busPhoneId),
             inpHolder: Lang.translate('123-123-1234'),
             errorId  : this._busPhoneId,
             errorFlag: errFlag.busPhone,
             labelTxt : 'Phone',
-            labelFmt : 'control-label col-sx-2 col-sm-2 col-md-2 col-lg-2',
-            inputFmt : 'control-label col-sx-10 col-sm-10 col-md-10 col-lg-10'
+            labelFmt : wLabelFmt,
+            inputFmt : wInputFmt
         },
         busStreet = {
             inpName  : this._busStreetId,
-            inpDefVal: choose(InputStore.getItemIndex(this._busStreetId), null),
+            inpDefVal: InputStore.getItemIndex(this._busStreetId),
             inpHolder: Lang.translate('123 Main Street'),
             errorId  : this._busStreetId,
             errorFlag: errFlag.busStreet,
             labelTxt : 'Address',
-            labelFmt : 'control-label col-sx-2 col-sm-2 col-md-2 col-lg-2',
-            inputFmt : 'control-label col-sx-10 col-sm-10 col-md-10 col-lg-10'
+            labelFmt : wLabelFmt,
+            inputFmt : wInputFmt
         },
         busCity = {
             inpName  : this._busCityId,
-            inpDefVal: choose(InputStore.getItemIndex(this._busCityId), null),
+            inpDefVal: InputStore.getItemIndex(this._busCityId),
             inpHolder: Lang.translate('Some City'),
             errorId  : this._busCityId,
             errorFlag: errFlag.busCity,
             labelTxt : 'City',
-            labelFmt : 'control-label col-sx-2 col-sm-2 col-md-2 col-lg-2',
-            inputFmt : 'control-label col-sx-10 col-sm-10 col-md-10 col-lg-10'
+            labelFmt : wLabelFmt,
+            inputFmt : wInputFmt
         },
         busState = {
             inpName  : this._busStateId,
-            inpDefVal: choose(InputStore.getItemIndex(this._busStateId), null),
+            inpDefVal: InputStore.getItemIndex(this._busStateId),
             inpHolder: 'CA',
             errorId  : this._busStateId,
             errorFlag: errFlag.busState,
             labelTxt : 'State',
-            labelFmt : 'control-label col-sx-2 col-sm-2 col-md-2 col-lg-2',
-            inputFmt : 'control-label col-sx-10 col-sm-10 col-md-10 col-lg-10'
+            labelFmt : wLabelFmt,
+            inputFmt : wInputFmt
         },
         busZip = {
             inpName  : this._busZipId,
-            inpDefVal: choose(InputStore.getItemIndex(this._busZipId), null),
+            inpDefVal: InputStore.getItemIndex(this._busZipId),
             inpHolder: '12345',
             errorId  : this._busZipId,
             errorFlag: errFlag.busZip,
             labelTxt : 'Zip',
-            labelFmt : 'control-label col-sx-2 col-sm-2 col-md-2 col-lg-2',
-            inputFmt : 'control-label col-sx-10 col-sm-10 col-md-109 col-lg-10'
+            labelFmt : wLabelFmt,
+            inputFmt : wInputFmt
         },
         busWeb = {
             inpName  : this._busWebId,
-            inpDefVal: choose(InputStore.getItemIndex(this._busWebId), null),
+            inpDefVal: InputStore.getItemIndex(this._busWebId),
             inpHolder: 'https://something.com',
             errorId  : this._busWebId,
             errorFlag: errFlag.busWeb,
             labelTxt : 'Your Web URL',
-            labelFmt : 'control-label col-sx-3 col-sm-3 col-md-3 col-lg-3',
-            inputFmt : 'control-label col-sx-9 col-sm-9 col-md-9 col-lg-9'
+            labelFmt : cLabelFmt,
+            inputFmt : cInputFmt
         },
         email = {
             inpName  : this._busEmailId,
-            inpDefVal: choose(InputStore.getItemIndex(this._busEmailId), null),
+            inpDefVal: InputStore.getItemIndex(this._busEmailId),
             inpHolder: 'you@something.com',
             errorId  : this._busEmailId,
             errorFlag: errFlag.busEmail,
             labelTxt : 'Your email (to claim this ad later)',
-            labelFmt : 'control-label col-sx-3 col-sm-3 col-md-3 col-lg-3',
-            inputFmt : 'control-label col-sx-9 col-sm-9 col-md-9 col-lg-9'
+            labelFmt : cLabelFmt,
+            inputFmt : cInputFmt
         },
         imgDz = {
             sending  : this._dzSend,
@@ -399,6 +432,7 @@ class PostAds extends React.Component
                 <div className="row">
                     <div className="product-deatil">
                         <InputInline entry={busName} onBlur={this._onBlurInput}/>
+                        <InputInline entry={busInfo} onBlur={this._onBlurInput}/>
                         <InputInline entry={email} onBlur={this._onBlurInput}/>
                         <InputInline entry={busWeb} onBlur={this._onBlurInput}/>
                     </div>

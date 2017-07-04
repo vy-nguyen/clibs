@@ -74,6 +74,7 @@ public class AdsPostService implements IAdsPostService
         AdsPost ads = adsDTO.fetchAdPost();
         try {
             ads.setBusName(form.getBusName().getBytes("UTF-8"));
+            ads.setBusInfo(form.getBusInfo().getBytes("UTF-8"));
             ads.setBusCat(form.getBusCat().getBytes("UTF-8"));
             ads.setBusWeb(form.getBusWeb().getBytes("UTF-8"));
             ads.setBusEmail(form.getBusEmail().getBytes("UTF-8"));

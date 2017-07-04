@@ -41,6 +41,9 @@ public class AdsForm
     @Size(max = 128)
     private String busName;
 
+    @Size(max = 128)
+    private String busInfo;
+
     @NotNull
     @Size(max = 64)
     private String articleUuid;
@@ -61,7 +64,6 @@ public class AdsForm
     @Size(max = 128)
     @ValidEmail
     private String busEmail;
-
 
     @NotNull
     @Size(max = 128)
@@ -93,24 +95,58 @@ public class AdsForm
 
     public boolean cleanInput()
     {
-        if (articleUuid == null || busCat == null || busWeb == null ||
-            busEmail == null || busPhone == null || busStreet == null ||
-            busCity == null || busState == null || busZip == null ||
-            busHour == null || busDesc == null || busCat == null) {
+        Whitelist wlist = Util.allowedTags;
+        if (articleUuid == null) {
             return false;
         }
-        Whitelist wlist = Util.allowedTags;
         articleUuid = Jsoup.clean(articleUuid, wlist);
-        busName = Jsoup.clean(busName, wlist);
+        if (busCat == null) {
+            return false;
+        }
         busCat = Jsoup.clean(busCat, wlist);
+        if (busName == null) {
+            return false;
+        }
+        busName = Jsoup.clean(busName, wlist);
+        if (busInfo == null) {
+            return false;
+        }
+        busInfo = Jsoup.clean(busInfo, wlist);
+        if (busWeb == null) {
+            return false;
+        }
         busWeb = Jsoup.clean(busWeb, wlist);
+        if (busEmail == null) {
+            return false;
+        }
         busEmail = Jsoup.clean(busEmail, wlist);
+        if (busPhone == null) {
+            return false;
+        }
         busPhone = Jsoup.clean(busPhone, wlist);
+        if (busStreet == null) {
+            return false;
+        }
         busStreet = Jsoup.clean(busStreet, wlist);
+        if (busCity == null) {
+            return false;
+        }
         busCity = Jsoup.clean(busCity, wlist);
+        if (busState == null) {
+            return false;
+        }
         busState = Jsoup.clean(busState, wlist);
+        if (busZip == null) {
+            return false;
+        }
         busZip = Jsoup.clean(busZip, wlist);
+        if (busHour == null) {
+            return false;
+        }
         busHour = Jsoup.clean(busHour, wlist);
+        if (busDesc == null) {
+            return false;
+        }
         busDesc = Jsoup.clean(busDesc, wlist);
 
         if (authorUuid != null) {
@@ -124,6 +160,20 @@ public class AdsForm
      */
     public String getBusName() {
         return busName;
+    }
+
+    /**
+     * @return the busInfo
+     */
+    public String getBusInfo() {
+        return busInfo;
+    }
+
+    /**
+     * @param busInfo the busInfo to set
+     */
+    public void setBusInfo(String busInfo) {
+        this.busInfo = busInfo;
     }
 
     /**

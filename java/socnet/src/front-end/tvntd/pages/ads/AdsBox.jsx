@@ -16,6 +16,8 @@ import {AdsStore}      from 'vntd-root/stores/ArticleStore.jsx';
 import LikeStat        from 'vntd-root/components/LikeStat.jsx';
 import Mesg            from 'vntd-root/components/Mesg.jsx';
 
+const _adsDefStyle = { maxWidth: "100%" };
+
 class AdsBox extends React.Component
 {
     constructor(props) {
@@ -23,48 +25,49 @@ class AdsBox extends React.Component
     }
 
     render() {
-        const style = { maxWidth: "100%" };
-        let adsRec = this.props.adsRec,
-            ads    = adsRec.artObj,
-            rank   = ads.adsRank,
-            adsTag = adsRec.artTag,
-            imgUrl = !_.isEmpty(ads.imageUrl) ?  ads.imageUrl[0] : null,
-            active = this.props.active === true ?
-                <span className="tag2 hot">Active</span> : null,
-            likeStat = AdsBox.getLikeStat(rank);
+        let { ads, rank, adsTag, imgUrl, active, likeStat } =
+            AdsBox.getAdsInfo(this.props.adsRec, this.props.active);
 
         return (
-            <div className="product-content product-wrap clearfix">
-                <div className="product-deatil" onClick={this.props.onClick}>
-                    <div className="row">
-                        <div className="product-image" style={{height: "100"}}>
+            <div className="product-content product-wrap" onClick={this.props.onClick}>
+                <div className="row">
+                    <div className="col-xs-6 col-sm-6 col-md-4 col-lg-4">
                             <img src={imgUrl} className="img-responsive"
-                                style={style}/>
+                                    style={_adsDefStyle}/>
                             {active}
-                        </div>
+                        <LikeStat data={likeStat}/>
+                        <StarRating size={15}
+                                totalStarts={5} rating={4} disabled={true}/>     
                     </div>
-                    <div className="row">
-                        <h4>{ads.busName}</h4>
+                    <div className="col-xs-6 col-sm-6 col-md-8 col-lg-8">
+                        <h2 className="name">{ads.busName}</h2>
+                        <h4 className="name">{ads.busInfo}</h4>
                     </div>
-                    <div className="row">
-                        <div className="col-xs-7 col-sm-7 col-md-7 col-lg-7">
-                            <LikeStat data={likeStat}/>
-                        </div>
-                        <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5">
-                            <StarRating size={15}
-                                totalStars={5} rating={4} disabled={true}/>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <h4 className="name">{ads.busPhone}</h4>
+                </div>
+                <div className="row">
+                    <h3 className="name">
                         <span>
                             {ads.busStreet}<br/>
                             {ads.busCity}, {ads.busState} {ads.busZip}
                         </span>
-                    </div>
+                    </h3>
+                    <h2 className="name">{ads.busPhone}></h2>
                 </div>
             </div>
-        )
+        );
+    }
+
+    static getAdsInfo(adsRec, active) {
+        let ads = adsRec.artObj, rank = ads.adsRank;
+
+        return {
+            ads    : ads,
+            rank   : rank,
+            adsTag : adsRec.artTag,
+            imgUrl : !_.isEmpty(ads.imageUrl) ?  ads.imageUrl[0] : null,
+            active : active === true ? <span className="tag2 hot">Active</span> : null,
+            likeStat: AdsBox.getLikeStat(rank)
+        };
     }
 
     static getLikeStat(rank) {
@@ -90,6 +93,51 @@ class AdsBox extends React.Component
                 </div>
             </div>
         );
+    }
+}
+
+class AdsBox1 extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        let { ads, rank, adsTag, imgUrl, active, likeStat } =
+            AdsBox.getAdsInfo(this.props.adsRec, this.props.active);
+
+        return (
+            <div className="product-content product-wrap clearfix">
+                <div className="product-deatil" onClick={this.props.onClick}>
+                    <div className="row">
+                        <div className="product-image" style={{height: "100"}}>
+                            <img src={imgUrl} className="img-responsive"
+                                style={_adsDefStyle}/>
+                            {active}
+                        </div>
+                    </div>
+                    <div className="row">
+                        <h4>{ads.busName}</h4>
+                    </div>
+                    <div className="row">
+                        <div className="col-xs-7 col-sm-7 col-md-7 col-lg-7">
+                            <LikeStat data={likeStat}/>
+                        </div>
+                        <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5">
+                            <StarRating size={15}
+                                totalStars={5} rating={4} disabled={true}/>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <h4 className="name">{ads.busPhone}</h4>
+                        <span>
+                            {ads.busStreet}<br/>
+                            {ads.busCity}, {ads.busState} {ads.busZip}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        )
     }
 }
 

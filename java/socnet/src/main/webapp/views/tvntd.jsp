@@ -13,8 +13,7 @@
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/font-awesome.min.css">
 
-    <%-- SmartAdmin Styles : Caution! DO NOT change the order, XXX: merge admin & Admin --%>
-    <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/admin/AdminLTE.min.css"/>
+    <%-- link rel="stylesheet" type="text/css" media="screen" href="/rs/css/admin/AdminLTE.min.css"/> --%>
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/Admin/smartadmin-production-plugins.min.css">
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/Admin/smartadmin-production.min.css">
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/Admin/smartadmin-skins.min.css">

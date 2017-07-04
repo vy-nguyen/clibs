@@ -376,7 +376,6 @@ class PostPane extends React.Component
     }
 
     _deletePost(article) {
-        console.log("delete post " + article.articleUuid);
         Actions.deleteUserPost({
             authorUuid: UserStore.getSelfUuid(),
             uuidType  : "article",

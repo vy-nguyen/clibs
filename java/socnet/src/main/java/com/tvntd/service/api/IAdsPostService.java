@@ -90,6 +90,7 @@ public interface IAdsPostService
         private AdsPost        adPost;
         private ArticleRankDTO adRank;
         private String         busName;
+        private String         busInfo;
         private String         busCat;
         private String         busWeb;
         private String         busEmail;
@@ -114,6 +115,10 @@ public interface IAdsPostService
                 byte[] str = adPost.getBusName();
                 if (str != null) {
                     busName = new String(str, "UTF-8");
+                }
+                str = adPost.getBusInfo();
+                if (str != null) {
+                    busInfo = new String(str, "UTF-8");
                 }
                 str = adPost.getBusCat();
                 if (str != null) {
@@ -235,6 +240,13 @@ public interface IAdsPostService
          */
         public String getBusName() {
             return busName;
+        }
+
+        /**
+         * @return the busInfo
+         */
+        public String getBusInfo() {
+            return busInfo;
         }
 
         /**

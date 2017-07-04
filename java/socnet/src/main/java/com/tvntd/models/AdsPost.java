@@ -80,6 +80,9 @@ public class AdsPost
     private byte[]      busName;
 
     @Column(length = 128)
+    private byte[]      busInfo;
+
+    @Column(length = 128)
     private byte[]      busCat;
 
     @Column(length = 128)
@@ -261,6 +264,20 @@ public class AdsPost
      */
     public void setBusName(byte[] busName) {
         this.busName = busName;
+    }
+
+    /**
+     * @return the busInfo
+     */
+    public byte[] getBusInfo() {
+        return busInfo;
+    }
+
+    /**
+     * @param busInfo the busInfo to set
+     */
+    public void setBusInfo(byte[] busInfo) {
+        this.busInfo = busInfo;
     }
 
     /**
