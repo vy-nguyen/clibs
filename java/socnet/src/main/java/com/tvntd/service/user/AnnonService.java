@@ -59,7 +59,6 @@ public class AnnonService implements IAnnonService
         Cookie cookie = WebUtils.getCookie(reqt, annonKey);
 
         if (cookie == null) {
-            System.out.println("Create new cookie for ip " + ip);
             user = new AnnonUser();
             dto = new AnnonUserDTO(user);
 

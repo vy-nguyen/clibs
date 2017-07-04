@@ -55,7 +55,7 @@ class PostItem extends React.Component
         const fmt = "col-xs-6 col-sm-6 col-md-6 col-lg-6 no-padding";
         let modal, pic2, pic3, pic4, pic5, text, picList = this.props.data, picOut = [];
 
-        if (picList == null) {
+        if (picList == null || _.isEmpty(picList)) {
             return null;
         }
         modal = (
@@ -71,15 +71,23 @@ class PostItem extends React.Component
                 <ImageCarousel imageList={picList} select={this.state.imageSelected}/>
              </Modal>
         );
-        if (picList.length >= 1) {
-            picOut.push(
-                <div key={_.uniqueId("post-item-")} className={fmt}>
+        if (picList.length == 1) {
+            return (
+                <div style={this.props.style}>
                     <a onClick={this._openModal.bind(this, "0")}>
                         <img className='img-responsive' src={picList[0]}/>
                     </a>
+                    {modal}
                 </div>
             );
         }
+        picOut.push(
+            <div key={_.uniqueId("post-item-")} className={fmt}>
+                <a onClick={this._openModal.bind(this, "0")}>
+                    <img className='img-responsive' src={picList[0]}/>
+                </a>
+            </div>
+        );
         if (picList.length >= 2) {
             pic2 = (
                 <a onClick={this._openModal.bind(this, "1")}>

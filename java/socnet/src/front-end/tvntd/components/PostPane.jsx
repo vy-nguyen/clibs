@@ -417,8 +417,8 @@ class PostPane extends React.Component
 
     render() {
         const fmt = "btn btn-primary pull-right";
-        let adminItem = null, ownerItem = null, panelLabel = null,
-            refLink = null, article = this.state.article,
+        let content, imgs, adminItem = null, ownerItem = null, panelLabel = null,
+            pictures, refLink = null, article = this.state.article,
         modal = (
             <ModalConfirm ref="modal" height="auto"
                 modalTitle="Delete this article post?">
@@ -437,7 +437,18 @@ class PostPane extends React.Component
             <ModalConfirm ref="publish" height="auto" modalTitle="Publish Article">
                 <PublishArticle article={article} doneFn={this._donePublish}/>
             </ModalConfirm>
-        );
+        ),
+        ownerPostMenu = {
+            iconFmt  : 'btn-xs btn-success',
+            titleText: Lang.translate('Options'),
+            itemFmt  : 'pull-right js-status-update',
+            menuItems: [ {
+                itemFmt : 'fa fa-circle txt-color-blue',
+                itemText: Lang.translate('Tag Post'),
+                itemHandler: function() {
+                }
+            } ]
+        };
 
         if (this.state.editMode === true) {
             return <EditorPost article={article}/>
@@ -495,17 +506,6 @@ class PostPane extends React.Component
                 <RefLinks article={article} edit={false} notifyId={this._postPaneId}/>
             );
         }
-        let ownerPostMenu = {
-            iconFmt  : 'btn-xs btn-success',
-            titleText: Lang.translate('Options'),
-            itemFmt  : 'pull-right js-status-update',
-            menuItems: [ {
-                itemFmt : 'fa fa-circle txt-color-blue',
-                itemText: Lang.translate('Tag Post'),
-                itemHandler: function() {
-                }
-            } ]
-        };
         if (ownerItem != null) {
             Array.prototype.push.apply(ownerPostMenu.menuItems, ownerItem);
         }
@@ -536,11 +536,34 @@ class PostPane extends React.Component
             header : toDateString(article.createdDate),
             headerMenus: [ownerPostMenu],
             panelLabel : panelLabel
-        };
-        const divStyle = {
+        },
+        divStyle = {
             margin: "10px 10px 10px 10px",
             fontSize: "130%"
         };
+        content = (
+            <div style={divStyle} dangerouslySetInnerHTML={this._rawMarkup(article)}/>
+        );
+        imgs = article.pictureUrl;
+        if (imgs != null) {
+            if (imgs.length == 1) {
+                const imgStyle = {
+                    float  : "left",
+                    width  : "50%",
+                    height : "50%",
+                    padding: "5px"
+                };
+                pictures = <PostItem style={imgStyle} data={imgs}/>
+            } else {
+                pictures = <PostItem data={imgs}/>
+            }
+            content = (
+                <div>
+                    {pictures}
+                    {content}
+                </div>
+            );
+        }
         return (
             <Panel className="well no-padding" context={panelData}>
                 <TagPost article={article} notifyId={this._postPaneId}/>
@@ -549,8 +572,7 @@ class PostPane extends React.Component
                 </p>
                 {modal}
                 {publishModal}
-                <PostItem data={article.pictureUrl}/>
-                <div style={divStyle} dangerouslySetInnerHTML={this._rawMarkup(article)}/>
+                {content}
                 {refLink}
                 <PostComment articleUuid={article.articleUuid}/>
             </Panel>

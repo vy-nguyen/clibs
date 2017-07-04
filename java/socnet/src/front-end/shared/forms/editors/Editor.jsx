@@ -287,7 +287,6 @@ class EditorEntry extends React.Component
         token  = $("meta[name='_csrf']").attr("content");
         xhr.setRequestHeader(header, token);
 
-        ErrorView.stackTrace();
         xhr.onload = function() {
             let json;
             if (xhr.status != 200) {
