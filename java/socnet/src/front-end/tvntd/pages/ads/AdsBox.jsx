@@ -17,7 +17,8 @@ import Mesg            from 'vntd-root/components/Mesg.jsx';
 
 const _adsDefStyle = { maxHeight: "auto", minHeight: "100%" },
     _adsTitleStyle = { color: "#800000" },
-    _adsTextStyle = { textAlign: "center" };
+    _adsBoxStyle   = { border: "1px", marginBottom: "10px", background: "#fff" },
+    _adsTextStyle  = { textAlign: "center", padding: "5px 5px 10px 5px" };
 
 class AdsBox extends React.Component
 {
@@ -30,16 +31,17 @@ class AdsBox extends React.Component
             AdsBox.getAdsInfo(this.props.adsRec, this.props.active);
 
         return (
-            <div className="product-content product-wrap" onClick={this.props.onClick}>
+            <div style={_adsBoxStyle}
+                className="product-wrap" onClick={this.props.onClick}>
                 <div className="row">
-                    <div className="col-xs-6 col-sm-6 col-md-4 col-lg-4">
+                    <div className="col-xs-6 col-sm-6 col-md-4 col-lg-4 no-padding">
                         <div className="product-image" style={_adsDefStyle}>
                             <img src={imgUrl} className="img-responsive"/>
                             {active}
                             <p style={_adsTextStyle}>{ads.busInfo}</p>
                         </div>
                     </div>
-                    <div className="col-xs-6 col-sm-6 col-md-8 col-lg-8">
+                    <div className="col-xs-6 col-sm-6 col-md-8 col-lg-8 no-padding">
                         <div style={_adsTextStyle}> 
                             <h2 style={_adsTitleStyle}>{ads.busName}</h2>
                             <p>{AdsBox.businessAddr(ads)}</p>
@@ -106,10 +108,11 @@ class AdsBigBox extends React.Component
 
     render() {
         let { ads, rank, adsTag, imgUrl, active, likeStat } =
-            AdsBox.getAdsInfo(this.props.adsRec, this.props.active);
+            AdsBox.getAdsInfo(this.props.adsRec, this.props.active),
+            businessAddr = AdsBox.businessAddr(ads);
 
         return (
-            <div className="product-content product-wrap clearfix">
+            <div className="product-content product-wrap">
                 <div className="product-deatil" onClick={this.props.onClick}>
                     <div className="row">
                         <div className="product-image" style={{height: "100"}}>
@@ -123,11 +126,8 @@ class AdsBigBox extends React.Component
                     </div>
                     <RatingInfo likeStat={likeStat}/>
                     <div className="row">
-                        <h4 style={_adsTextStyle}>{ads.busPhone}</h4>
-                        <span>
-                            {ads.busStreet}<br/>
-                            {ads.busCity}, {ads.busState} {ads.busZip}
-                        </span>
+                        <h4>{ads.busPhone}</h4>
+                        {businessAddr}
                     </div>
                 </div>
             </div>
