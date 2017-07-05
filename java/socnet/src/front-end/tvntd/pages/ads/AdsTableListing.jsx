@@ -10,17 +10,19 @@ import ArticleTagBrief from 'vntd-root/components/ArticleTagBrief.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 import Lang            from 'vntd-root/stores/LanguageStore.jsx';
 import {AdsStore}      from 'vntd-root/stores/ArticleStore.jsx';
-import AdsBox          from './AdsBox.jsx';
 import EStoreFeed      from './EStoreFeed.jsx';
+
+import {AdsBox, AdsBigBox} from './AdsBox.jsx';
 
 class AdsTableListing extends React.Component
 {
     constructor(props) {
         super(props);
-        this._isActive       = this._isActive.bind(this);
-        this._renderAdsBrief = this._renderAdsBrief.bind(this);
-        this._renderAdsFull  = this._renderAdsFull.bind(this);
-        this._updateListing  = this._updateListing.bind(this);
+        this._isActive          = this._isActive.bind(this);
+        this._renderAdsBrief    = this._renderAdsBrief.bind(this);
+        this._renderAdsFull     = this._renderAdsFull.bind(this);
+        this._updateListing     = this._updateListing.bind(this);
+        this._renderAdsBriefBig = this._renderAdsBriefBig.bind(this);
 
         this.state = {
             currAds: null,
@@ -51,6 +53,9 @@ class AdsTableListing extends React.Component
         }
     }
 
+    /**
+     * We can optimize this code by passing correct value from the store.
+     */
     _updateListing() {
         let adsList = this._getArtListing(this.props.tagList);
         if (adsList.length != this.state.adsList) {
@@ -95,6 +100,14 @@ class AdsTableListing extends React.Component
         )
     }
 
+    _renderAdsBriefBig(ads) {
+        let act = this._isActive(ads);
+        return (
+            <AdsBigBox adsRec={ads} active={act}
+                onClick={this._readAds.bind(this, ads)}/>
+        );
+    }
+
     _renderAdsFull(ads) {
         if (this._isActive(ads) == false) {
             return null;
@@ -106,12 +119,14 @@ class AdsTableListing extends React.Component
     }
 
     render() {
-        let adsList = this.state.adsList;
+        let adsList = this.state.adsList,
+            fullFn  = this._renderAdsFull,
+            briefFn = this.props.detail === true ?
+                this._renderAdsBriefBig : this._renderAdsBrief;
 
         return (
             <section id='widget-grid'>
-                {ArticleTagBrief.renderArtBox(adsList,
-                    this._renderAdsBrief, this._renderAdsFull, true)}
+                {ArticleTagBrief.renderArtBox(adsList, briefFn, fullFn, true)}
             </section>
         );
     }

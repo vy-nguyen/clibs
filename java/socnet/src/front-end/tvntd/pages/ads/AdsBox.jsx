@@ -98,7 +98,7 @@ class AdsBox extends React.Component
     }
 }
 
-class AdsBox1 extends React.Component
+class AdsBigBox extends React.Component
 {
     constructor(props) {
         super(props);
@@ -187,5 +187,5 @@ class BusinessInfo extends React.Component
     }
 }
 
-export { AdsBox, BusinessInfo };
+export { AdsBox, AdsBigBox, BusinessInfo };
 export default AdsBox;

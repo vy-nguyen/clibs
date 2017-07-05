@@ -9,35 +9,66 @@ import React, {PropTypes} from 'react-mod';
 import BrowseSelection    from 'vntd-shared/layout/BrowseSelection.jsx';
 import ArticleTagStore    from 'vntd-root/stores/ArticleTagStore.jsx';
 import ArticleTagBrief    from 'vntd-root/components/ArticleTagBrief.jsx';
-import YellowPage         from './YellowPage.jsx';
+import AdsTableListing    from './AdsTableListing.jsx';
 
-const sample = [
-    { value: "abc",    label: "abc" },
-    { value: "def",    label: "def" },
-    { value: "img",    label: "img" },
-    { value: "dws",    label: "dws" },
-];
-
-function filterTagBuckets(tags)
+class AdsCategory
 {
-    let index, letter, out = [], first = 65, last = 90;
+    constructor(map, baseName, selectFn) {
+        let dictIndex = {}, index = 0, i, start, end;
 
-    _.forEach(tags, function(tag) {
-        if (tag.tagName != null) {
-            letter = tag.tagName.charCodeAt(0);
-            if (letter > last) {
-                letter = letter - 32;
+        this.browse = map;
+        _.forEach(this.browse, function(it) {
+            it.entry = {
+                index    : index++,
+                select   : true,
+                inpName  : baseName + index,
+                inpDefVal: null,
+                selectOpt: null,
+                onSelect : selectFn
+            };
+            if (it.exact === true) {
+                dictIndex[it.label] = it;
+                _.forEach(it.alias, function(a) {
+                    dictIndex[a] = it;
+                });
+            } else {
+                end   = it.end.charCodeAt(0);
+                start = it.start.charCodeAt(0);
+                if (start >= end) {
+                    console.log("AdsCategory bug!  Need to pass propder value");
+                }
+                for (i = start; i < end; i++) {
+                    dictIndex[String.fromCharCode(i)] = it;
+                }
             }
-            if (first <= letter <= last) {
-                index = letter - first;
+        }.bind(this));
+
+        this.indexMap = dictIndex;
+        this.filterTagBuckets = this.filterTagBuckets.bind(this);
+    }
+
+    filterTagBuckets(tags) {
+        let index, key, rec, out = [];
+
+        _.forEach(tags, function(tag) {
+            if (tag.tagName != null) {
+                rec = this.indexMap[tag.tagName];
+                if (rec == null) {
+                    key = tag.tagName.substring(0, 1);
+                    rec = this.indexMap[key];
+                    if (rec == null) {
+                        return;
+                    }
+                }
+                index = rec.entry.index;
                 if (out[index] == null) {
                     out[index] = [];
                 }
                 out[index].push(tag);
             }
-        }
-    });
-    return out;
+        }.bind(this));
+        return out;
+    }
 }
 
 class FeatureAds extends React.Component
@@ -47,43 +78,99 @@ class FeatureAds extends React.Component
 
         super(props);
         this._onSelected    = this._onSelected.bind(this);
+        this._clickLabel    = this._clickLabel.bind(this);
         this._updateArtTags = this._updateArtTags.bind(this);
+        this._updateArtTagsState = this._updateArtTagsState.bind(this);
 
-        this.browse = [
-            { label: "A-N", entry: {} },
-            { label: "M-Z", entry: {} },
-
-            { label: "Tutoring",     entry: {} },
-            { label: "Doctor",       entry: {} },
-            { label: "Dentist",      entry: {} },
-            { label: "Pharmacy",     entry: {} },
-            { label: "Real Estates", entry: {} },
-            { label: "Legal",        entry: {} },
-            { label: "Loan/Tax",     entry: {} },
-            { label: "Insurance",    entry: {} },
-            { label: "Food",         entry: {} },
-            { label: "Home",         entry: {} },
-            { label: "Car",          entry: {} }
-        ];
-        index = 0;
-        _.forEach(this.browse, function(it) {
-            it.entry = {
-                index    : index++,
-                select   : true,
-                inpName  : 'ads-' + index,
-                inpDefVal: null,
-                selectOpt: null,
-                onSelect : this._onSelected
-            };
-        }.bind(this));
-
+        this._browse = [
+        {
+            label: "A-N",
+            start: 'A',
+            end  : 'N',
+            exact: false,
+            entry: {}
+        }, {
+            label: "M-Z",
+            start: 'N',
+            end  : 'Z',
+            exact: false,
+            entry: {}
+        }, {
+            label: "Tutoring",
+            start: 'T',
+            exact: true,
+            entry: {}
+        }, {
+            label: "Doctor",
+            start: 'D',
+            exact: true,
+            entry: {}
+        }, {
+            label: "Dentist",
+            start: 'D',
+            exact: true,
+            entry: {}
+        }, {
+            label: "Pharmacy",
+            start: 'P',
+            exact: true,
+            entry: {}
+        }, {
+            label: "Real Estates",
+            start: 'R',
+            exact: true,
+            entry: {},
+            alias: [
+                "Realtor"
+            ]
+        }, {
+            label: "Legal",
+            start: 'L',
+            exact: true,
+            entry: {}
+        }, {
+            label: "Loan/Tax",
+            start: 'L',
+            exact: true,
+            entry: {}
+        }, {
+            label: "Insurance",
+            start: 'I',
+            exact: true,
+            entry: {}
+        }, {
+            label: "Food",
+            start: 'F',
+            exact: true,
+            entry: {}
+        }, {
+            label: "Home",
+            start: 'H',
+            exact: true,
+            entry: {}
+        }, {
+            label: "Car",
+            start: 'C',
+            exact: true,
+            entry: {},
+            alias: [
+                "Automobile"
+            ]
+        } ];
+        this._adFilter = new AdsCategory(this._browse, "fea-ads-", this._onSelected);
         this.state = {
-            currentTag: this._updateArtTags()
+            currentTag: null
         };
     }
 
+    componentWillMount() {
+        this.setState({
+            currentTag: this._updateArtTags()
+        });
+    }
+
     componentDidMount() {
-        this.unsub = ArticleTagStore.listen(this._updateArtTags);
+        this.unsub = ArticleTagStore.listen(this._updateArtTagsState);
     }
 
     componentWillUnmount() {
@@ -93,17 +180,65 @@ class FeatureAds extends React.Component
         }
     }
 
+    _updateArtTagsState() {
+        this.setState({
+            currentTag: this._updateArtTags()
+        });
+    }
+
     _updateArtTags() {
+        let label, select, defTag = [],
+            tags = ArticleTagStore.getFilterTag("ads", this._adFilter.filterTagBuckets);
+
+        _.forEach(tags, function(item, key) {
+            label  = this._browse[key];
+            select = [];
+            _.forEach(item, function(tag) {
+                defTag.push(tag.tagName);
+                select.push({
+                    label: tag.tagName,
+                    value: tag.tagName
+                });
+            });
+            label.entry.selectOpt = select;
+        }.bind(this));
+        return defTag;
     }
 
     _onSelected(entry, val) {
+        if (val != null) {
+            this.setState({
+                currentTag: val
+            });
+        }
+    }
+
+    _clickLabel(label, entry) {
+        let currTag = [];
+
+        _.forEach(entry.selectOpt, function(item) {
+            currTag.push(item.value);
+        });
         this.setState({
-            currentTag: val
+            currentTag: currTag
         });
     }
 
     render() {
-        return YellowPage.renderAds(this.browse, this.state.currentTag);
+        let current = this.state.currentTag;
+
+        return (
+            <div className="padding-top-10">
+                <div className="row">
+                    <BrowseSelection labels={this._browse} onClick={this._clickLabel}/>
+                </div>
+                <div className="row">
+                    <div className="panel-body">
+                        <AdsTableListing tagList={current} detail={true}/>
+                    </div>
+                </div>
+            </div>
+        );
     }
 }
 
