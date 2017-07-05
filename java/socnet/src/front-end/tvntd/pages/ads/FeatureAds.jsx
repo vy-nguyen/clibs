@@ -104,7 +104,10 @@ class FeatureAds extends React.Component
             label: "Doctor",
             start: 'D',
             exact: true,
-            entry: {}
+            entry: {},
+            alias: [
+                "Doctors"
+            ]
         }, {
             label: "Dentist",
             start: 'D',
