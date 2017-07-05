@@ -10,92 +10,45 @@ import BrowseSelection    from 'vntd-shared/layout/BrowseSelection.jsx';
 import ArticleTagStore    from 'vntd-root/stores/ArticleTagStore.jsx';
 import ArticleTagBrief    from 'vntd-root/components/ArticleTagBrief.jsx';
 import AdsTableListing    from './AdsTableListing.jsx';
-
-function filterLeterTags(tags, letter) {
-    let first, out = [], lower = letter.toLowerCase();
-
-    _.forEach(tags, function(tag) {
-        if (tag.tagName != null) {
-            first = tag.tagName.charAt(0);
-            if (first === letter || first === lower) {
-                out.push(tag);
-            }
-        }
-    });
-    return out;
-}
-
-function filterTagBuckets(tags) {
-    let index, letter, out = [], first = 65, last = 90;
-
-    _.forEach(tags, function(tag) {
-        if (tag.tagName != null) {
-            letter = tag.tagName.charCodeAt(0);
-            if (letter > last) {
-                letter = letter - 32;
-            }
-            if ((first <= letter) && (letter <= last)) {
-                index = letter - first;
-                if (out[index] == null) {
-                    out[index] = [];
-                }
-                out[index].push(tag);
-            }
-        }
-    });
-    return out;
-}
+import {AdsCategory}      from './FeatureAds.jsx';
 
 class YellowPage extends React.Component
 {
     constructor(props) {
-        let index;
-
         super(props);
         this._clickLabel    = this._clickLabel.bind(this);
         this._onSelected    = this._onSelected.bind(this);
         this._updateArtTags = this._updateArtTags.bind(this);
 
         this.browse = [
-            { label: "A", entry: {} },
-            { label: "B", entry: {} },
-            { label: "C", entry: {} },
-            { label: "D", entry: {} },
-            { label: "E", entry: {} },
-            { label: "F", entry: {} },
-            { label: "G", entry: {} },
-            { label: "H", entry: {} },
-            { label: "I", entry: {} },
-            { label: "J", entry: {} },
-            { label: "K", entry: {} },
-            { label: "L", entry: {} },
-            { label: "M", entry: {} },
-            { label: "N", entry: {} },
-            { label: "O", entry: {} },
-            { label: "P", entry: {} },
-            { label: "Q", entry: {} },
-            { label: "R", entry: {} },
-            { label: "S", entry: {} },
-            { label: "T", entry: {} },
-            { label: "U", entry: {} },
-            { label: "V", entry: {} },
-            { label: "W", entry: {} },
-            { label: "X", entry: {} },
-            { label: "Y", entry: {} },
-            { label: "Z", entry: {} }
+            { label: "A", start: 'A', end: 'A', exact: false, entry: {} },
+            { label: "B", start: 'B', end: 'B', exact: false, entry: {} },
+            { label: "C", start: 'C', end: 'C', exact: false, entry: {} },
+            { label: "D", start: 'D', end: 'D', exact: false, entry: {} },
+            { label: "E", start: 'E', end: 'E', exact: false, entry: {} },
+            { label: "F", start: 'F', end: 'F', exact: false, entry: {} },
+            { label: "G", start: 'G', end: 'G', exact: false, entry: {} },
+            { label: "H", start: 'H', end: 'H', exact: false, entry: {} },
+            { label: "I", start: 'I', end: 'I', exact: false, entry: {} },
+            { label: "J", start: 'J', end: 'J', exact: false, entry: {} },
+            { label: "K", start: 'K', end: 'K', exact: false, entry: {} },
+            { label: "L", start: 'L', end: 'L', exact: false, entry: {} },
+            { label: "M", start: 'M', end: 'M', exact: false, entry: {} },
+            { label: "N", start: 'N', end: 'N', exact: false, entry: {} },
+            { label: "O", start: 'O', end: 'O', exact: false, entry: {} },
+            { label: "P", start: 'P', end: 'P', exact: false, entry: {} },
+            { label: "Q", start: 'Q', end: 'Q', exact: false, entry: {} },
+            { label: "R", start: 'R', end: 'R', exact: false, entry: {} },
+            { label: "S", start: 'S', end: 'S', exact: false, entry: {} },
+            { label: "T", start: 'T', end: 'T', exact: false, entry: {} },
+            { label: "U", start: 'U', end: 'U', exact: false, entry: {} },
+            { label: "V", start: 'V', end: 'V', exact: false, entry: {} },
+            { label: "W", start: 'W', end: 'W', exact: false, entry: {} },
+            { label: "X", start: 'X', end: 'X', exact: false, entry: {} },
+            { label: "Y", start: 'Y', end: 'Y', exact: false, entry: {} },
+            { label: "Z", start: 'Z', end: 'Z', exact: false, entry: {} }
         ];
-        index = 0;
-        _.forEach(this.browse, function(it) {
-            it.entry = {
-                index    : index++,
-                select   : true,
-                inpName  : 'yp-' + index,
-                inpDefVal: null,
-                selectOpt: null,
-                onSelect : this._onSelected
-            };
-        }.bind(this));
-
+        this._adFilter = new AdsCategory(this.browse, "yp-", this._onSelected);
         this.state = {
             currentTag: null
         };
@@ -120,9 +73,9 @@ class YellowPage extends React.Component
 
     _updateArtTags() {
         let label, select, defTag = [],
-            buckets = ArticleTagStore.getFilterTag("ads", filterTagBuckets);
+            tags = ArticleTagStore.getFilterTag("ads", this._adFilter.filterTagBuckets);
 
-        _.forEach(buckets, function(item, key) {
+        _.forEach(tags, function(item, key) {
             label  = this.browse[parseInt(key)];
             select = [];
 

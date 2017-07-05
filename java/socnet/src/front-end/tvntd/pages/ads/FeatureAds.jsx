@@ -35,7 +35,12 @@ class AdsCategory
                 end   = it.end.charCodeAt(0);
                 start = it.start.charCodeAt(0);
                 if (start >= end) {
-                    console.log("AdsCategory bug!  Need to pass propder value");
+                    if (start == end) {
+                        dictIndex[it.start] = it;
+                    } else {
+                        console.log("AdsCategory bug!  Need to pass propder value");
+                    }
+                    return;
                 }
                 for (i = start; i < end; i++) {
                     dictIndex[String.fromCharCode(i)] = it;
@@ -249,3 +254,4 @@ FeatureAds.propTypes = {
 };
 
 export default FeatureAds;
+export { AdsCategory, FeatureAds }
