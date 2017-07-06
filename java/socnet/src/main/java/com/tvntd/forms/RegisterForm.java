@@ -31,7 +31,11 @@ import java.util.UUID;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
+
 import com.tvntd.util.PasswordMatches;
+import com.tvntd.util.Util;
 import com.tvntd.util.ValidEmail;
 import com.tvntd.util.ValidPassword;
 
@@ -85,6 +89,35 @@ public class RegisterForm
         this.firstName = "auto";
         this.lastName  = null;
         this.password0 = UUID.randomUUID().toString();
+    }
+
+    public boolean cleanInput()
+    {
+        if (email == null) {
+            return false;
+        }
+        Whitelist wlist = Util.allowedTags;
+        if (firstName == null) {
+            firstName = "";
+        }
+        firstName = Jsoup.clean(firstName, wlist);
+        if (lastName == null) {
+            lastName = "";
+        }
+        lastName = Jsoup.clean(lastName, wlist);
+        if (password0 == null) {
+            password0 = "";
+        }
+        if (password1 == null) {
+            password1 = "";
+        }
+        if (gender == null) {
+            gender = "Male";
+        }
+        if (okTerm == null) {
+            okTerm = "ok";
+        }
+        return true;
     }
 
     /**
