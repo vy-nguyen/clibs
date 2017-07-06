@@ -16,9 +16,9 @@ import {RatingInfo}    from 'vntd-root/components/LikeStat.jsx';
 import Mesg            from 'vntd-root/components/Mesg.jsx';
 
 const _adsDefStyle = { maxHeight: "auto", minHeight: "100%" },
-    _adsTitleStyle = { color: "#800000" },
+    _adsTitleStyle = { color: "#800000", margin: "10px 0" },
     _adsBoxStyle   = { border: "1px", marginBottom: "10px", background: "#fff" },
-    _adsTextStyle  = { textAlign: "center", padding: "5px 5px 10px 5px" };
+    _adsTextStyle  = { textAlign: "center", padding: "5px 0px 10px 5px" };
 
 class AdsBox extends React.Component
 {
@@ -45,8 +45,8 @@ class AdsBox extends React.Component
                         <div style={_adsTextStyle}> 
                             <h2 style={_adsTitleStyle}>{ads.busName}</h2>
                             <p>{AdsBox.businessAddr(ads)}</p>
-                            <h4>{ads.busWeb || ads.busEmail}</h4>
-                            <h2>{ads.busPhone}</h2>
+                            <p>{ads.busWeb || ads.busEmail}</p>
+                            <h3>{ads.busPhone}</h3>
                         </div>
                     </div>
                 </div>

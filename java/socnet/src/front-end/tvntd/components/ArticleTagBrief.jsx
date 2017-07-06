@@ -20,8 +20,6 @@ class ArticleTagBrief extends React.Component
     constructor(props) {
         super(props);
         this._readArticle    = this._readArticle.bind(this);
-        this._getSubTag      = this._getSubTag.bind(this);
-        this._getSubTagObjs  = this._getSubTagObjs.bind(this);
         this._renderArtBrief = this._renderArtBrief.bind(this);
         this._renderArtFull  = this._renderArtFull.bind(this);
 
@@ -45,37 +43,9 @@ class ArticleTagBrief extends React.Component
         }
     }
 
-    _getSubTag(subTags, tag) {
-        if (tag.subTags == null) {
-            return;
-        }
-        _.forEach(tag.subTags, function(sub) {
-            subTags.push(sub.tagName);
-            if (sub.subTags != null && !_.isEmpty(sub.subTags)) {
-                this._getSubTag(subTags, sub);
-            }
-        }.bind(this));
-    }
-
-    _getSubTagObjs(out, tag) {
-        out.push(tag);
-        if (tag.subTags == null) {
-            return;
-        }
-        _.forEach(tag.subTags, function(sub) {
-            out.push(sub);
-        });
-        _.forEach(tag.subTags, function(sub) {
-            if (sub.subTags != null && !_.isEmpty(sub.subTags)) {
-                this._getSubTagObjs(out, sub);
-            }
-        }.bind(this));
-    }
-
     _renderArtBrief(art) {
-        let artUuid = art.artUuid;
-        let artTag = art.artTag;
-        let clickCb = {
+        let artUuid = art.artUuid, artTag = art.artTag,
+        clickCb = {
             getBtnFormat: function() {
                 if (this.state.articleUuid == null ||
                     this.state.articleUuid !== artUuid) {
@@ -131,7 +101,7 @@ class ArticleTagBrief extends React.Component
         return (
             <section id='widget-grid'>
                 {ArticleTagBrief.renderArtBox(articles,
-                    this._renderArtBrief, this._renderArtFull, false)}
+                    this._renderArtBrief, this._renderArtFull, true)}
             </section>
         );
     }
@@ -141,7 +111,7 @@ class ArticleTagBrief extends React.Component
             length = adsList.length,
             oneBrief, oneFull, twoBrief, twoFull,
             threeBrief, threeFull, fourBrief, fourFull,
-            briefFmt = "col-xs-12 col-sm-6 col-md-4 col-lg-3";
+            briefFmt = "col-xs-12 col-sm-6 col-md-4 col-lg-3 padding-5";
 
         for (let i = 0; i < length; i++) {
             oneFull  = renderFull(adsList[i]);

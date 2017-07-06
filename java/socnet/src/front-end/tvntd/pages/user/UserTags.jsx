@@ -197,7 +197,8 @@ class UserTags extends React.Component
 
     render() {
         return (
-            <NestableSelect items={this.state.tagTree} id={this.props.userUuid} onSave={this._onSaveTags}/>
+            <NestableSelect items={this.state.tagTree}
+                id={this.props.userUuid} onSave={this._onSaveTags}/>
         );
     }
 }

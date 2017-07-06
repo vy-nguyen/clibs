@@ -40,7 +40,6 @@ import com.tvntd.key.HashKey;
 
 @Entity
 @Table(indexes = {
-    @Index(columnList = "tagKey", unique = false),
     @Index(columnList = "authorUuid", unique = false)
 })
 public class AuthorTag
@@ -51,9 +50,6 @@ public class AuthorTag
 
     @Column(length = 64)
     private String authorUuid;
-
-    @Column(length = 64)
-    private String tagKey;
 
     @Column(length = 64)
     private byte[] tagName;
@@ -79,7 +75,6 @@ public class AuthorTag
     {
         this();
         this.authorUuid = author.getAuthorUuid();
-        this.tagKey = name;
         this.tagName = name.getBytes(Charset.forName("UTF-8"));
         this.tagOid = HashKey.toSha1Key(this.tagName, author.getAuthorUuid());
         this.favorite = fav;
@@ -107,7 +102,6 @@ public class AuthorTag
      */
     public void setTag(String tag)
     {
-        this.tagKey = tag;
         this.tagName = tag.getBytes(Charset.forName("UTF-8"));
         this.tagOid = HashKey.toSha1Key(this.tagName, authorUuid);
     }
