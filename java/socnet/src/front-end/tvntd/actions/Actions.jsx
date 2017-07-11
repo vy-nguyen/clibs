@@ -5,6 +5,7 @@
 'use strict';
 
 import Reflux        from 'reflux';
+import $             from 'jquery';
 import UserStore     from 'vntd-shared/stores/UserStore.jsx';
 import ErrorStore    from 'vntd-shared/stores/ErrorStore.jsx';
 //import ErrorView     from 'vntd-shared/layout/ErrorView.jsx';
@@ -94,9 +95,7 @@ const Actions = Reflux.createActions({
 });
 
 function postRestCall(formData, url, json, cbObj, authReq, id, context) {
-    let type = undefined;
-    let data = formData;
-    let content = undefined;
+    let type, content, data = formData;
 
     if ((authReq === true) && !UserStore.isLogin()) {
         Actions.authRequired(id, context);
@@ -125,6 +124,7 @@ function postRestCall(formData, url, json, cbObj, authReq, id, context) {
     }).fail(function(resp, text, error) {
         console.log("REST call failed " + url);
         console.log(error);
+        console.log(resp);
 
         resp.cbContext = context;
         cbObj.failed(ErrorStore.reportFailure(id, resp, text, error));
@@ -135,10 +135,9 @@ function postRestCall(formData, url, json, cbObj, authReq, id, context) {
             cbObj.always(resp, text, error);
         }
     });
-};
+}
 
-function getJSON(url, cbObj, authReq, id, context, syncServer)
-{
+function getJSON(url, cbObj, authReq, id, context, syncServer) {
     if ((authReq === true) && !UserStore.isLogin()) {
         Actions.authRequired(id, context);
         return;
@@ -262,7 +261,7 @@ Actions.preload.listen(function() {
         comments: require('json!../mock-json/comment.json')
     };
     */
-    this.completed(data);
+    this.completed(null);
 });
 
 /**

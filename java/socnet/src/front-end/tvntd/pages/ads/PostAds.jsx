@@ -18,6 +18,7 @@ import ArticleTagStore  from 'vntd-root/stores/ArticleTagStore.jsx';
 import Lang             from 'vntd-root/stores/LanguageStore.jsx';
 import {AdsStore}       from 'vntd-root/stores/ArticleStore.jsx';
 import Mesg             from 'vntd-root/components/Mesg.jsx';
+import AdsRoomRenting   from './AdsRoomRenting.jsx';
 
 import {
     GenericForm, SelectWrap, DropZoneWrap, InputBox, InputInline
@@ -469,6 +470,9 @@ class PostAds extends React.Component
                 </header>
                 <div className="widget-body">
                     {this._editAd()}
+                </div>
+                <div className="widget-body">
+                    <AdsRoomRenting/>
                 </div>
             </JarvisWidget>
         );

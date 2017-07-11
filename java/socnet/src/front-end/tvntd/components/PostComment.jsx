@@ -432,9 +432,11 @@ class PostComment extends React.Component
     _updateState(data, cmtArt) {
         let commentArt, artUuid = this.props.articleUuid;
 
+        /*
         if (cmtArt == null || cmtArt.articleUuid !== artUuid) {
             return;
         }
+         */
         commentArt = CommentStore.getByArticleUuid(artUuid);
         if (commentArt == null || commentArt.articleUuid !== artUuid) {
             return;
