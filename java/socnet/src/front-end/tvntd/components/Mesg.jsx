@@ -34,12 +34,15 @@ class Mesg extends React.Component
     }
 
     render() {
-        let text = this.props.text, trans = this.state.phrases;
+        let out, text = this.props.text, trans = this.state.phrases;
 
+        if (text == null) {
+            return null;
+        }
         if (text.constructor !== Array) {
             return <span>{trans[text] || text}</span>;
         }
-        let out = [];
+        out = [];
         _.forEach(text, function(t) {
             out.push(<span key={_.uniqueId('mesg-')}>{trans[t] || t}</span>);
             out.push(<br/>);

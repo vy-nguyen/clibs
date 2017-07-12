@@ -102,19 +102,25 @@ class FormData
                 this.setImageId(entry.inpName);
                 entry.handlers = dzHandler;
             }
-            InputStore.storeItemIndex(entry.inpName, value[entry.field], false);
+            if (value != null) {
+                InputStore.storeItemIndex(entry.inpName, value[entry.field], false);
+            }
         }.bind(this));
     }
 
     setValues(errFlags) {
+        let val;
         this.iterFormFields(errFlags, null, function(flags, entry, section) {
             if (flags[entry.field] != null) {
                 entry.errorFlag = true;
             } else {
                 entry.errorFlag = null;
             }
-            entry.errorId   = entry.inpName;
-            entry.inpDefVal = InputStore.getItemIndex(entry.inpName);
+            entry.errorId = entry.inpName;
+            val = InputStore.getItemIndex(entry.inpName);
+            if (val != null) {
+                entry.inpDefVal = val;
+            }
             return flags;
         });
     }
@@ -184,17 +190,17 @@ class FormData
         for (let i = 0; i < length; i = i + 2) {
             col2  = null;
             entry = entries[i];
-            if (section.inline !== null) {
-                col1 = <InputBox entry={entry} onBlur={onBlur.bind(entry)}/>;
+            if (section.inline == null) {
+                col1 = <InputBox entry={entry} onBlur={onBlur}/>;
                 if ((i + 1) < length) {
                     entry = entries[i + 1];
-                    col2  = <InputBox entry={entry} onBlur={onBlur.bind(entry)}/>;
+                    col2  = <InputBox entry={entry} onBlur={onBlur}/>;
                 }
             } else {
-                col1 = <InputInline entry={entry} onBlur={onBlur.bind(entry)}/>;
+                col1 = <InputInline entry={entry} onBlur={onBlur}/>;
                 if ((i + 1) < length) {
                     entry = entries[i + 1];
-                    col2  = <InputInline entry={entry} onBlur={onBlur.bind(entry)}/>;
+                    col2  = <InputInline entry={entry} onBlur={onBlur}/>;
                 }
             }
             out.push(
@@ -219,10 +225,10 @@ class FormData
                 entries = this.renderTwoCols(section, onBlur);
             } else {
                 entries = section.entries.map(function(entry) {
-                    if (section.inline !== null) {
-                        return <InputBox entry={entry} onBlur={onBlur.bind(entry)}/>;
+                    if (section.inline == null) {
+                        return <InputBox entry={entry} onBlur={onBlur}/>;
                     }
-                    return <InputInline entry={entry} onBlur={onBlur.bind(entry)}/>;
+                    return <InputInline entry={entry} onBlur={onBlur}/>;
                 }.bind(this));
             }
             legend = section.legend != null ?
@@ -258,7 +264,6 @@ class FormData
     }
 
     onBlur(entry) {
-        console.log("On blur " + entry.inpName);
         this.changeSubmitState("needSave", false);
     }
 
@@ -267,13 +272,17 @@ class FormData
     }
 
     submitNotif(store, data, status) {
-        console.log("Base submit notif " + status);
         this.changeSubmitState("saved", false);
     }
 
     submitAct(data) {
+        let submitFn = this.forms.submitFn;
+
         this.changeSubmitState("saving", true);
-        console.log("Base submit click");
+        if (submitFn != null) {
+            submitFn(data);
+        }
+        console.log("Submit data");
         console.log(data);
     }
 
@@ -356,40 +365,38 @@ class ProcessForm extends React.Component
     }
 
     _onBlurInput(entry) {
-        let context = this.props.form, errFlags = this.state.errFlags;
+        let context = this.props.form;
 
         context.clearError();
         context.onBlur(entry);
-        if (errFlags[entry.field] != null) {
-            errFlags[entry.field] = null;
+        if (!_.isEmpty(this.state.errFlags)) {
             this.setState({
-                errFlags: errFlags
+                errFlags: {}
             });
         }
     }
 
     _imgUploadOk(entry, result) {
-        let form = this.props.form.getData(), img;
+        let context = this.props.form, imgId = context.getImageId(), img;
 
-        if (form.imageId == null) {
+        if (imgId == null) {
             return;
         }
-        img = InputStore.getItemIndex(form.imageId);
+        img = InputStore.getItemIndex(imgId);
         if (img == null) {
             img = {
                 articleUuid: result.articleUuid,
                 authorUuid : result.authorUuid,
                 imgObjId   : result.imgObjId
             };
-            InputStore.storeItemIndex(form.imageId, img, false);
+            InputStore.storeItemIndex(imgId, img, false);
         }
     }
 
     _updateState(store, data, status) {
         let context = this.props.form;
 
-        console.log("notify state " + status);
-        if (status !== "publish") {
+        if (status !== "postOk") {
             return;
         }
         context.submitNotif(store, data, status);
@@ -405,12 +412,7 @@ class ProcessForm extends React.Component
             context = this.props.form,
             errText = null, errFlags = {}, entryInfo = [];
 
-        console.log("click entry info");
-        console.log(this);
         data = context.getData(entryInfo);
-        console.log(entryInfo);
-        console.log(data);
-
         _.forEach(entryInfo, function(info) {
             field = info.field;
             if (info.emptyOk == null && _.isEmpty(data[field])) {

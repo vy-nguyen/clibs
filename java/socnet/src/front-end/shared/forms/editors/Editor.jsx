@@ -330,7 +330,7 @@ class EditorEntry extends React.Component
         const entry = this.props.entry,
             tfull = 'undo|bold italic|styleselect|image|alignleft aligncenter alignright',
             tshrt = 'undo|bold italic|styleselect|alignleft aligncenter alignright';
-        let toolbar, config, menubar = false;
+        let onBlur, toolbar, config, menubar = false;
 
         if (entry.menu === "short") {
             menubar = "file edit insert format";
@@ -349,9 +349,17 @@ class EditorEntry extends React.Component
                 toolbar: tshrt
             };
         }
+        onBlur = this.props.onBlur;
         config.plugins = 'autoresize autolink link image lists print preview';
         config.menubar = menubar;
 
+        if (this.props.onBlur != null) {
+            config.setup = function(ed) {
+                ed.on('blur', function(e) {
+                    onBlur();
+                });
+            };
+        }
         return (
             <TinyMCE id={entry.id} content={entry.inpDefVal}
                 config={config} onChange={this._onChange}/>

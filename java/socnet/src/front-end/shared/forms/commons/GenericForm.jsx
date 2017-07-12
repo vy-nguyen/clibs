@@ -118,6 +118,9 @@ class TAWrap extends React.Component
 
     _defOnBlur(val) {
         this._defOnSelect(val.target.value);
+        if (this.props.onBlur != null) {
+            this.props.onBlur();
+        }
     }
 
     render() {
@@ -181,13 +184,14 @@ class InputWrap extends React.Component
     _onBlur() {
         let val, { entry, onBlur } = this.props;
 
-        val = this.refs[entry.inpName].value;
+        if (this.refs[entry.inpName] != null) {
+            val = this.refs[entry.inpName].value;
+            InputStore.storeItemIndex(entry.inpName, val, true);
+        }
         if (entry.errorFlag === true) {
             entry.errorFlag = false;
             ErrorStore.clearError(entry.errorId);
         }
-        InputStore.storeItemIndex(entry.inpName, val, true);
-
         if (onBlur != null) {
             onBlur(entry, val);
         }
@@ -221,31 +225,34 @@ class InputWrap extends React.Component
             handlers, type = entry.inpType != null ? entry.inpType : "text";
 
         if (entry.typeAhead === true) {
-            return <TAWrap entry={entry}/>
+            return <TAWrap entry={entry} onBlur={onBlur}/>
         }
         if (entry.select === true) {
             return <SelectWrap entry={entry} bind={bind} onSelected={onSelected}/>
         }
         if (entry.dropzone === true) {
-            const eventHandlers = {
-                complete: entry.dzComplete,
-                success : entry.dzSuccess,
-                sending : entry.dzSending,
-                error   : entry.dzError,
-                init    : function(dz) {
-                    if (entry.bind != null) {
-                        entry.bind.dropzone = dz;
-                    } else {
-                        entry.dropzone = dz;
+            if (entry.handlers != null) {
+                handlers = entry.handlers;
+            } else {
+                handlers = {
+                    complete: entry.dzComplete,
+                    success : entry.dzSuccess,
+                    sending : entry.dzSending,
+                    error   : entry.dzError,
+                    init    : function(dz) {
+                        if (entry.bind != null) {
+                            entry.bind.dropzone = dz;
+                        } else {
+                            entry.dropzone = dz;
+                        }
                     }
-                }
-            };
-            handlers = entry.handlers != null ? entry.handlers : eventHandlers;
+                };
+            }
             return <DropZoneWrap entry={entry} eventHandlers={handlers}/>
         }
         if (entry.editor === true) {
             return (
-                <EditorEntry id={entry.id} entry={entry}/>
+                <EditorEntry id={entry.id} entry={entry} onBlur={this._onBlur}/>
             );
         }
         if (entry.button != null) {
@@ -406,7 +413,6 @@ class GenericForm extends React.Component
     }
 
     componentWillUnmount() {
-        console.log("Umount gen form, clear inputstore");
     }
 
     _btnClick(button) {

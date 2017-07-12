@@ -55,13 +55,11 @@ class RoomRenting extends FormData
             hiddenHead : null,
             hiddenTail : null,
             formEntries: [ {
-                // field  : 'owner',
                 twoCols: true,
                 legend : 'Owner Information',
                 sectFmt: 'product-deatil',
                 entries: owerInfo
             }, {
-                // field  : 'property',
                 legend : 'Property Info',
                 sectFmt: 'product-deatil',
                 entries: propertyInfo
@@ -93,19 +91,8 @@ class RoomRenting extends FormData
         return this;
     }
 
-    submitNotif(store, data, status) {
-        super.submitNotif();
-        console.log("Ads room submit notif");
-    }
-
     submitAct(data) {
         super.submitAct();
-        console.log("Ads room submit");
-    }
-
-    render(onBlur, onSubmit) {
-        console.log("Ads room render");
-        return super.render(onBlur, onSubmit);
     }
 }
 
