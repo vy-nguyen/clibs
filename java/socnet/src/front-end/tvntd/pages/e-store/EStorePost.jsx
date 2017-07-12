@@ -64,19 +64,16 @@ class StorePost extends FormData
             inpHolder: 'Include shipping'
         }, {
             field    : 'prodDesc',
-            id       : 'prod-desc-',
             inpName  : 'prod-desc-',
             labelTxt : 'Brief description',
             editor   : true
         }, {
             field    : 'prodDetail',
-            id       : 'prod-detail-',
             inpName  : 'prod-detail-',
             labelTxt : 'Detail description',
             editor   : true
         }, {
             field    : 'prodSpec',
-            id       : 'prod-spec-',
             inpName  : 'prod-spec-',
             labelTxt : 'Product Specification',
             editor   : true
@@ -138,7 +135,7 @@ class StorePost extends FormData
     getData(entryInfo) {
         let data = super.getData(entryInfo), imgRec = data.imageRec;
 
-        data.
+        data.estore     = true;
         data.prodTags   = [];
         data.prodTitle  = data.prodName;
         data.prodImgs   = imgRec.picObjIds;
@@ -153,13 +150,15 @@ class StorePost extends FormData
 class EStorePost extends React.Component
 {
     constructor(props) {
-        let uuid = props.product != null ? props.product.articleUuid : "-store";
-
         super(props);
-        this.data = new StorePost(props, uuid);
     }
 
     render() {
+        let data, props = this.props, product = props.product,
+            uuid = product != null ? product.articleUuid : "-store";
+
+        data = new StorePost(props, uuid);
+        console.log("render product " + uuid);
         return (
             <JarvisWidget id="ads-post" color="purple">
                 <header>
@@ -167,8 +166,7 @@ class EStorePost extends React.Component
                     <h2><Mesg text="Post Your Product"/></h2>
                 </header>
                 <div className="widget-body">
-                    <ProcessForm form={this.data}
-                        store={EProductStore} value={this.props.product}/>
+                    <ProcessForm form={data} store={EProductStore} value={product}/>
                 </div>
             </JarvisWidget>
         );

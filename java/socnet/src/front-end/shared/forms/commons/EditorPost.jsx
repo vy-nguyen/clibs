@@ -283,7 +283,7 @@ class EditorPost extends React.Component
             labelTxt : 'Topic'
         },
         editorEntry = {
-            id       : contentId,
+            inpName  : contentId,
             editor   : true,
             inpDefVal: DataStore.getItemIndex(contentId),
             menu     : "full",

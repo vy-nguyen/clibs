@@ -99,6 +99,7 @@ class FormData
         }
         this.initialized = true;
         this.iterFormFields(null, null, function(sub, entry, section) {
+            entry.inpName = this._getId(entry.inpName);
             if (entry.dropzone === true) {
                 this.setImageId(entry.inpName);
                 entry.handlers = dzHandler;

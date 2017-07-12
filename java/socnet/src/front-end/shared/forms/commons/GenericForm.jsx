@@ -252,7 +252,7 @@ class InputWrap extends React.Component
         }
         if (entry.editor === true) {
             return (
-                <EditorEntry id={entry.id} entry={entry} onBlur={this._onBlur}/>
+                <EditorEntry entry={entry} onBlur={this._onBlur}/>
             );
         }
         if (entry.button != null) {
