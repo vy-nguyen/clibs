@@ -201,6 +201,10 @@ public class ProfileService implements IProfileService
     @Override
     public void createProfile(User user, String uuid)
     {
+        if ((uuid != null) && (profileRepo.findByUserUuid(uuid) != null)) {
+            System.out.println("Ignore already exists profile " + uuid);
+            return;
+        }
         if (profileRepo.findByUserId(user.getId()) == null) {
             Profile profile = Profile.createProfile(user, uuid);
 

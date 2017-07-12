@@ -158,7 +158,6 @@ class EStorePost extends React.Component
             uuid = product != null ? product.articleUuid : "-store";
 
         data = new StorePost(props, uuid);
-        console.log("render product " + uuid);
         return (
             <JarvisWidget id="ads-post" color="purple">
                 <header>
