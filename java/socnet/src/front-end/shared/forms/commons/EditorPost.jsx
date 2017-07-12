@@ -212,8 +212,6 @@ class EditorPost extends React.Component
         this.setState({
             posted: true
         });
-        console.log(">>> Post data");
-        console.log(data);
         actionFn(data);
     }
 

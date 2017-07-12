@@ -255,8 +255,11 @@ class EditorEntry extends React.Component
         this._onChange = this._onChange.bind(this);
         this._uploadCall = this._uploadCall.bind(this);
         this._filePicker = this._filePicker.bind(this);
-
         NestableStore.allocIndexString(props.id, props.entry.inpHolder)
+
+        this.tshrt = 'undo|bold italic|styleselect|alignleft aligncenter alignright';
+        this.tfull =
+            'undo|bold italic|styleselect|image|alignleft aligncenter alignright';
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -327,10 +330,8 @@ class EditorEntry extends React.Component
     }
 
     render() {
-        const entry = this.props.entry,
-            tfull = 'undo|bold italic|styleselect|image|alignleft aligncenter alignright',
-            tshrt = 'undo|bold italic|styleselect|alignleft aligncenter alignright';
-        let onBlur, toolbar, config, menubar = false;
+        const entry = this.props.entry;
+        let onBlur, toolbar, config, menubar = '';
 
         if (entry.menu === "short") {
             menubar = "file edit insert format";
@@ -339,19 +340,18 @@ class EditorEntry extends React.Component
         }
         if (entry.uploadUrl != null) {
             config = {
-                toolbar: tfull,
                 automatic_uploads    : true,
                 images_upload_handler: this._uploadCall,
                 file_picker_callback : this._filePicker,
             };
         } else {
             config = {
-                toolbar: tshrt
+                // toolbar: tshrt
             };
         }
         onBlur = this.props.onBlur;
         config.plugins = 'autoresize autolink link image lists print preview';
-        config.menubar = menubar;
+        config.menubar = '';
 
         if (this.props.onBlur != null) {
             config.setup = function(ed) {

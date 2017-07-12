@@ -74,7 +74,8 @@ class FormData
             authorUuid : 0,
             articleUuid: imgRec.articleUuid,
             adImgs     : imgRec.adImgs,
-            mainImg    : imgRec.mainImg
+            mainImg    : imgRec.mainImg,
+            imageRec   : imgRec
         };
         this.iterFormFields(entryInfo, null, function(einfo, entry, section) {
             retVal[entry.field] = InputStore.getIndexString(entry.inpName);
@@ -106,6 +107,24 @@ class FormData
                 InputStore.storeItemIndex(entry.inpName, value[entry.field], false);
             }
         }.bind(this));
+    }
+
+    uploadImageOk(result) {
+        let imgId = this.getImageId(), img;
+
+        if (imgId == null) {
+            return null;
+        }
+        img = InputStore.getItemIndex(imgId);
+        if (img == null) {
+            img = {
+                articleUuid: result.articleUuid,
+                authorUuid : result.authorUuid,
+                imgObjId   : result.imgObjId
+            };
+            InputStore.storeItemIndex(imgId, img, false);
+        }
+        return img;
     }
 
     setValues(errFlags) {
@@ -377,20 +396,7 @@ class ProcessForm extends React.Component
     }
 
     _imgUploadOk(entry, result) {
-        let context = this.props.form, imgId = context.getImageId(), img;
-
-        if (imgId == null) {
-            return;
-        }
-        img = InputStore.getItemIndex(imgId);
-        if (img == null) {
-            img = {
-                articleUuid: result.articleUuid,
-                authorUuid : result.authorUuid,
-                imgObjId   : result.imgObjId
-            };
-            InputStore.storeItemIndex(imgId, img, false);
-        }
+        this.props.form.uploadImageOk(result);
     }
 
     _updateState(store, data, status) {

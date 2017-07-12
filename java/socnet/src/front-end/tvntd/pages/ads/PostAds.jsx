@@ -167,7 +167,7 @@ class PostAds extends React.Component
 
     render() {
         return (
-            <JarvisWidget id="estore-post" color="purple">
+            <JarvisWidget id="ads-post" color="purple">
                 <header>
                     <span className="widget-icon"><i className="fa fa-pencil"/></span>
                     <h2><Mesg text="Post Your Ads"/></h2>
