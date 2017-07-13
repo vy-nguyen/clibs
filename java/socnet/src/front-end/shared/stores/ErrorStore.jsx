@@ -119,6 +119,21 @@ class ErrorResp {
             }
         }
         this.error = this.errorCodeText;
+
+        switch (this.userText) {
+        case "message.badCredentials":
+            this.userText = "Invalid credentials";
+            this.userHelp = "Use email login if you forgot password";
+            break;
+
+        case "auth.message.disabled":
+            this.userText = "Your account is disabled";
+            this.userHelp = "Check email to activate your account";
+            break;
+
+        default:
+            break;
+        }
     }
 }
 

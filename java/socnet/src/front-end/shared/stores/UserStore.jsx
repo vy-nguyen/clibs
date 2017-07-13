@@ -275,8 +275,6 @@ let UserStore = Reflux.createStore({
     },
 
     onUpdateProfileCompleted: function(response) {
-        console.log("Done with update profile");
-        console.log(response);
         let self = this.data.userSelf;
         if (self.userUuid === response.userSelf.userUuid) {
             self.updateProfile(response.userSelf);
@@ -326,8 +324,8 @@ let UserStore = Reflux.createStore({
 
     _changedDataFailure: function(error) {
         this._changedData({
+            error  : error,
             type   : error.errorCodeText,
-            error  : error.userHelp,
             message: error.userText,
             authToken: null,
             authVerifToken: null
@@ -351,6 +349,7 @@ let UserStore = Reflux.createStore({
         if (resp != null) {
             this.data.authCode  = resp.type;
             this.data.authMesg  = resp.message;
+            this.data.authHelp  = resp.error != null ? resp.error.userHelp : "";
             this.data.authError = resp.error;
             this.data.authToken = resp.authToken;
             this.data.authVerifToken = resp.authVerifToken;

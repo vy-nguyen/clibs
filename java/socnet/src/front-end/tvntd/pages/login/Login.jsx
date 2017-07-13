@@ -4,6 +4,8 @@
  */
 'uses strict';
 
+import $             from 'jquery';
+import _             from 'lodash';
 import React         from 'react-mod';
 import { Link }      from 'react-router';
 
@@ -189,7 +191,7 @@ class LoginForm extends React.Component
         let form = $('#login-form'), retry = this.state.emailSent;
         form.find('input').prop('disabled', false);
 
-        if (data.authCode === "failure") {
+        if (data.authError != null) {
             ErrorStore.triggerError("login-err", data.authError);
             return;
         }
@@ -217,9 +219,8 @@ class LoginForm extends React.Component
                 emailSent: retry + 1
             });
             return;
-        };
+        }
         this._clearRefs();
-        console.log("Auth change " + startPage);
     }
 
     _clearRefs() {

@@ -404,13 +404,13 @@ class RegisterForm extends React.Component
         case "reg-no-user":
             if (this.state.reSend <= 5) {
                 ErrorStore.reportErrMesg("reg-error", data.authMesg,
-                                         data.authError + ": invalid email ");
+                                         data.authHelp + ": invalid email ");
             }
             break;
 
         case "reg-user-exists":
             ErrorStore.reportErrMesg("reg-error", data.authMesg,
-                                     data.authError + ": enter your email to login");
+                                     data.authHelp + ": enter your email to login");
             break;
 
         case "user":

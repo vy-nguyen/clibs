@@ -123,6 +123,7 @@ function postRestCall(formData, url, json, cbObj, authReq, id, context) {
 
     }).fail(function(resp, text, error) {
         console.log("REST call failed " + url);
+        console.log(resp);
 
         resp.cbContext = context;
         cbObj.failed(ErrorStore.reportFailure(id, resp, text, error));
