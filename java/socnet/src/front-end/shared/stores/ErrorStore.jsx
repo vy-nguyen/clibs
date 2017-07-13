@@ -86,34 +86,39 @@ class ErrorResp {
     }
 
     parseError() {
+        let status, json;
+
         if (this.resp == null) {
             return;
         }
-        let status = this.resp.status;
+        json   = this.resp.responseJSON;
+        status = this.resp.status;
         if (status === 0 || (200 <= status && status < 300)) {
             this.error = null;
             return;
         }
-        if (300 <= status && status < 400) {
-            this.errorCodeText = this.resp.statusText;
-            this.userText = "Error 300";
-            this.userHelp = Lang.translate("Refresh the web browser");
-
-        } else if (400 <= status && status < 500) {
-            this.errorCodeText = this.resp.statusText;
-            this.userText = "Error 400";
-            this.userHelp = Lang.translate("Refresh the web browser");
-
+        if (json != null) {
+            this.userText = Lang.translate(json.message);
+            this.userHelp = Lang.translate(json.error);
+            this.errorCodeText = json.type;
         } else {
-            this.errorCodeText = this.resp.statusText;
-            this.userText = "Error 500";
-            this.userHelp = Lang.translate("Refresh the web browser");
+            if (300 <= status && status < 400) {
+                this.errorCodeText = this.resp.statusText;
+                this.userText = "Error 300";
+                this.userHelp = Lang.translate("Refresh the web browser");
+
+            } else if (400 <= status && status < 500) {
+                this.errorCodeText = this.resp.statusText;
+                this.userText = "Error 400";
+                this.userHelp = Lang.translate("Refresh the web browser");
+
+            } else {
+                this.errorCodeText = this.resp.statusText;
+                this.userText = "Error 500";
+                this.userHelp = Lang.translate("Refresh the web browser");
+            }
         }
         this.error = this.errorCodeText;
-        if (this.resp.responseJSON != null) {
-            this.userText = Lang.translate(this.resp.responseJSON.message);
-            this.userHelp = Lang.translate(this.resp.responseJSON.action);
-        }
     }
 }
 

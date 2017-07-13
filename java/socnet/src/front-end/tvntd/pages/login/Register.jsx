@@ -4,6 +4,7 @@
  */
 'use strict';
 
+import $            from 'jquery';
 import React        from 'react-mod';
 import {Link}       from 'react-router';
 
@@ -173,7 +174,8 @@ class RegisterForm extends React.Component
     render() {
         let status = (
             <section>
-                <ErrorView errorId="reg-error" className="form-group alert alert-danger"/>
+                <ErrorView errorId="reg-error"
+                    className="form-group alert alert-danger"/>
                 <ErrorView errorId="reg-ok" className="form-group alert alert-info"/>
             </section>
         ),
@@ -371,13 +373,12 @@ class RegisterForm extends React.Component
     }
 
     _registerResult(data) {
-        let form = $('#smart-form-register'),
-            authErr = data.authError;
+        let form = $('#smart-form-register');
 
         form.find('input').prop('disabled', false);
         switch (data.authCode) {
         case "reg-done":
-            ErrorStore.reportErrMesg("reg-ok", authError.userText);
+            ErrorStore.reportErrMesg("reg-ok", data.authMesg);
             break;
 
         case "reg-verify":
@@ -388,8 +389,7 @@ class RegisterForm extends React.Component
             break;
 
         case "reg-failure":
-            ErrorStore.reportErrMesg("reg-error",
-                                     authErr.userText,
+            ErrorStore.reportErrMesg("reg-error", data.authMesg,
                                      "Try different email address");
             break;
 
@@ -403,10 +403,14 @@ class RegisterForm extends React.Component
 
         case "reg-no-user":
             if (this.state.reSend <= 5) {
-                ErrorStore.reportErrMesg("reg-error",
-                                         data.authMesg,
-                                         "Invalid email " + data.authError);
+                ErrorStore.reportErrMesg("reg-error", data.authMesg,
+                                         data.authError + ": invalid email ");
             }
+            break;
+
+        case "reg-user-exists":
+            ErrorStore.reportErrMesg("reg-error", data.authMesg,
+                                     data.authError + ": enter your email to login");
             break;
 
         case "user":

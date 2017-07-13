@@ -249,8 +249,8 @@ let UserStore = Reflux.createStore({
         Actions.startup("/api/user");
     },
 
-    onLoginFailed: function(xhdr, text, error) {
-        this._changedDataFailure(xhdr, text, error);
+    onLoginFailed: function(error) {
+        this._changedDataFailure(error);
     },
 
     /* Register actions. */
@@ -262,16 +262,16 @@ let UserStore = Reflux.createStore({
         this._changedData(response);
     },
 
-    onRegisterFailed: function(xhdr, text, error) {
-        this._changedDataFailure(xhdr, text, error);
+    onRegisterFailed: function(error) {
+        this._changedDataFailure(error);
     },
 
     onVerifyAccountCompleted: function(response, text) {
         this._changedData(response);
     },
 
-    onVerifyAccountFailed: function(xhdr, text, error) {
-        this._changedDataFailure(xhdr, text, error);
+    onVerifyAccountFailed: function(error) {
+        this._changedDataFailure(error);
     },
 
     onUpdateProfileCompleted: function(response) {
@@ -324,11 +324,11 @@ let UserStore = Reflux.createStore({
         self.userImgUrl = data.imgObjUrl;
     },
 
-    _changedDataFailure: function(xhdr, text, error) {
+    _changedDataFailure: function(error) {
         this._changedData({
-            type   : "failure",
-            error  : ErrorStore.hasError(),
-            message: text,
+            type   : error.errorCodeText,
+            error  : error.userHelp,
+            message: error.userText,
             authToken: null,
             authVerifToken: null
         });
