@@ -5,6 +5,7 @@
 'use strict';
 
 import $            from 'jquery';
+import _            from 'lodash';
 import React        from 'react-mod';
 import {Link}       from 'react-router';
 
@@ -396,8 +397,7 @@ class RegisterForm extends React.Component
         case "reg-email-sent":
             this.setState({
                 stepIdx : 1,
-                stepMesg: data.authMesg,
-                email   : this.refs.email.value
+                stepMesg: data.authMesg
             });
             break;
 
@@ -423,13 +423,13 @@ class RegisterForm extends React.Component
     }
 
     _hasError() {
-        let passwd0 = this.refs.password0.value,
+        let email, passwd0 = this.refs.password0.value,
             passwd1 = this.refs.password1.value;
 
         if (passwd0 != "" && passwd1 != "" && passwd0 !== passwd1) {
             return "Confirmed password doesn't match";
         }
-        let email = this.refs.email.value;
+        email = this.refs.email.value;
         if (email != "") {
             if (validateEmail(email) === false) {
                 return "Invalid email address format";
@@ -463,8 +463,6 @@ class RegisterForm extends React.Component
         let err = this._hasError();
         if (err != null) {
             ErrorStore.reportErrMesg("reg-error", err);
-        }
-        if (this.refs.firstName.value === "") {
         }
     }
 
