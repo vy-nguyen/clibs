@@ -123,6 +123,14 @@ public class PublicPath
     /**
      * Handle public pages.
      */
+    @RequestMapping(value = "/public/letamanh", method = RequestMethod.GET)
+    public String letamanh(Map<String, Object> model, HttpSession session)
+    {
+        s_log.info("Hit letamanh page");
+        model.put("domain", "letamanh");
+        return "tvntd";
+    }
+
     @RequestMapping(value = "/public/start", method = RequestMethod.GET)
     @ResponseBody
     public StartupResponse

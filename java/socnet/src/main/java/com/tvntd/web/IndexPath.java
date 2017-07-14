@@ -96,7 +96,9 @@ public class IndexPath
     UrlAuthenticationSuccessHandler urlAuthenticationSuccessHandler;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String tvntd(Map<String, Object> model, HttpSession session) {
+    public String tvntd(Map<String, Object> model, HttpSession session)
+    {
+        model.put("domain", "tudoviet");
         return "tvntd";
     }
 

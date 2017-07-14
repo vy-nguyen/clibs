@@ -7,13 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <meta name="_csrf" content="${_csrf.token}"/>
     <meta name="_csrf_header" content="${_csrf.headerName}"/>
+    <meta name="_domain" content="${domain}"/>
 
     <%-- #CSS Links --%>
     <%-- <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"> --%>
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/font-awesome.min.css">
 
-    <%-- link rel="stylesheet" type="text/css" media="screen" href="/rs/css/admin/AdminLTE.min.css"/> --%>
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/Admin/smartadmin-production-plugins.min.css">
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/Admin/smartadmin-production.min.css">
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/Admin/smartadmin-skins.min.css">
