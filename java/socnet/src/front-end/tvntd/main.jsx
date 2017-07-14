@@ -16,12 +16,17 @@ import React    from 'react-mod';
 import {render} from 'react-dom';
 import {Router} from 'react-router';
 import History  from 'vntd-shared/utils/History.jsx';
-import Routes   from './tvntd-router.jsx'
+import {Routes, PersonalRoutes} from './tvntd-router.jsx'
 
 require.ensure([], function(require) {
-    var rootInstance = render((
+    let domain = window.$("meta[name='_domain']").attr("content"), routes, rootInstance;
+
+    window.VNDomain = domain;
+    routes = domain === "tudoviet" ? Routes : PersonalRoutes;
+
+    rootInstance = render((
         <Router history={History}>
-            {Routes}
+            {routes}
         </Router>
     ), document.getElementById('tvntd-root'));
 
