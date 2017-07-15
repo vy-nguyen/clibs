@@ -72,6 +72,10 @@ class ButtonState {
 
     getClassFmt() {
         let state = this.getState();
+        if (state == null) {
+            console.log(this);
+            console.log(this.currState);
+        }
         let className = state.className != null ? state.className : "btn btn-default";
 
         if (state.disabled != null && state.disabled == true) {

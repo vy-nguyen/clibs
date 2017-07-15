@@ -14,17 +14,21 @@ import StateButton        from 'vntd-shared/utils/StateButton.jsx';
 import Lang               from 'vntd-root/stores/LanguageStore.jsx';
 import Mesg               from 'vntd-root/components/Mesg.jsx';
 
-import { InputBox, InputInline } from 'vntd-shared/forms/commons/GenericForm.jsx';
+import { InputEntry }     from 'vntd-shared/forms/commons/GenericForm.jsx';
 
 class FormData
 {
     constructor(props, suffix) {
         this.props       = props;
-        this.suffix      = suffix;
+        this.suffix      = suffix || "";
         this.imageId     = null;
         this.buttons     = null;
         this.submitBtn   = null;
         this.initialized = false;
+
+        this.onFocus = this.onFocus.bind(this);
+        this.onBlur  = this.onBlur.bind(this);
+        this.onClick = this.onClick.bind(this);
         return this;
     }
 
@@ -97,16 +101,40 @@ class FormData
         if (this.initialized === true) {
             return;
         }
+        this.defaultVal  = value;
         this.initialized = true;
+
         this.iterFormFields(null, null, function(sub, entry, section) {
             entry.inpName = this._getId(entry.inpName);
             if (entry.dropzone === true) {
                 this.setImageId(entry.inpName);
                 entry.handlers = dzHandler;
             }
-            if (value != null) {
-                InputStore.storeItemIndex(entry.inpName, value[entry.field], false);
+            if (entry.onFocus == null) {
+                entry.onFocus = this.onFocus;
             }
+            this._setDefValue(value, entry);
+        }.bind(this));
+    }
+
+    _setDefValue(value, entry) {
+        let defVal;
+
+        if (value != null && value[entry.field] != null) {
+            defVal = value[entry.field];
+            entry.inpDefVal = defVal;
+
+        } else if (entry.inpDefVal != null) {
+            defVal = entry.inpDefVal;
+        } else {
+            return;
+        }
+        InputStore.storeItemIndex(entry.inpName, defVal, false);
+    }
+
+    _setAllDefValues() {
+        this.iterFormFields(null, null, function(sub, entry, section) {
+            this._setDefValue(this.defaultVal, entry);
         }.bind(this));
     }
 
@@ -130,6 +158,7 @@ class FormData
 
     setValues(errFlags) {
         let val;
+
         this.iterFormFields(errFlags, null, function(flags, entry, section) {
             if (flags[entry.field] != null) {
                 entry.errorFlag = true;
@@ -210,18 +239,11 @@ class FormData
         for (let i = 0; i < length; i = i + 2) {
             col2  = null;
             entry = entries[i];
-            if (section.inline == null) {
-                col1 = <InputBox entry={entry} onBlur={onBlur}/>;
-                if ((i + 1) < length) {
-                    entry = entries[i + 1];
-                    col2  = <InputBox entry={entry} onBlur={onBlur}/>;
-                }
-            } else {
-                col1 = <InputInline entry={entry} onBlur={onBlur}/>;
-                if ((i + 1) < length) {
-                    entry = entries[i + 1];
-                    col2  = <InputInline entry={entry} onBlur={onBlur}/>;
-                }
+
+            col1 = InputEntry.render(entry, onBlur);
+            if ((i + 1) < length) {
+                entry = entries[i + 1];
+                col2  = InputEntry.render(entry, onBlur);
             }
             out.push(
                 <div className="row" key={_.uniqueId('form-col-')}>
@@ -245,11 +267,8 @@ class FormData
                 entries = this.renderTwoCols(section, onBlur);
             } else {
                 entries = section.entries.map(function(entry) {
-                    if (section.inline == null) {
-                        return <InputBox entry={entry} onBlur={onBlur}/>;
-                    }
-                    return <InputInline entry={entry} onBlur={onBlur}/>;
-                }.bind(this));
+                    return InputEntry.render(entry, onBlur);
+                });
             }
             legend = section.legend != null ?
                 <legend><Mesg text={section.legend}/></legend> : null;
@@ -287,12 +306,24 @@ class FormData
         this.changeSubmitState("needSave", false);
     }
 
-    onClick(btn, btnState) {
-        console.log("Base on click is called");
+    onFocus(entry) {
+        ErrorStore.clearError(this.getFormId());
     }
 
-    submitNotif(store, data, status) {
+    onClick(btn, btnState) {
+    }
+
+    validateInput(data, errFlags) {
+        return data;
+    }
+
+    submitNotif(store, result, status) {
         this.changeSubmitState("saved", false);
+    }
+
+    submitFailure(result, status) {
+        this.changeSubmitState("failure", false);
+        this._setAllDefValues();
     }
 
     submitAct(data) {
@@ -302,8 +333,6 @@ class FormData
         if (submitFn != null) {
             submitFn(data);
         }
-        console.log("Submit data");
-        console.log(data);
     }
 
     render(onBlur, onSubmit) {
@@ -313,6 +342,7 @@ class FormData
                 {this.renderForm(onBlur)}
                 <ErrorView errorId={this.getFormId()}/>
                 {this.renderButtons(onSubmit)}
+                {this.renderFooter()}
             </div>
         );
     }
@@ -400,44 +430,43 @@ class ProcessForm extends React.Component
         this.props.form.uploadImageOk(result);
     }
 
-    _updateState(store, data, status) {
+    _updateState(data, status) {
         let context = this.props.form;
 
-        if (status !== "postOk") {
-            return;
-        }
-        context.submitNotif(store, data, status);
+        context.clearData();
+        context.submitNotif(this.props.store, data, status);
+
         if (this._imgDz != null) {
             this._imgDz.removeAllFiles();
         }
-        context.clearData();
         this.setState(this._getInitState());
     }
 
     _submitClick() {
-        let field, helpText, data,
-            context = this.props.form,
-            errText = null, errFlags = {}, entryInfo = [];
+        let field, value, data,
+            context = this.props.form, errFlags = {}, entryInfo = [];
 
         data = context.getData(entryInfo);
         _.forEach(entryInfo, function(info) {
             field = info.field;
-            if (info.emptyOk == null && _.isEmpty(data[field])) {
+            value = data[field];
+            if (info.emptyOk == null && ((value == null) ||
+                (typeof value === 'string' && value === ''))) {
                 errFlags[field] = true;
-                if (errText == null) {
-                    helpText = Lang.translate("Enter values in highlighted fields");
-                    errText  = Lang.translate("Please correct highlighted values");
-                }
+                errFlags.helpText = Lang.translate("Enter values in highlighted fields");
+                errFlags.errText  = Lang.translate("Please correct highlighted values");
             }
         });
-        if (errText != null) {
-            this.setState({
-                errFlags: errFlags
-            });
-            ErrorStore.reportErrMesg(context.getFormId(), errText, helpText);
-        } else {
+        data = context.validateInput(data, errFlags);
+        if (errFlags.errText == null) {
             context.submitAct(data);
+            return;
         }
+        this.setState({
+            errFlags: errFlags
+        });
+        ErrorStore.reportErrMesg(context.getFormId(),
+            errFlags.errText, errFlags.helpText);
     }
 
     render() {

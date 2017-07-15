@@ -243,11 +243,8 @@ class LoginForm extends React.Component
         form.find('input').prop('disabled', true);
         event.preventDefault();
 
-        Actions.login({
-            email   : this.refs.email.value,
-            password: this.refs.password.value,
-            remember: this.refs.remember.value
-        }, formData);
+        console.log(formData);
+        Actions.login(formData);
     }
 
     _emailLogin() {

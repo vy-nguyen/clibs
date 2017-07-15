@@ -217,8 +217,8 @@ Actions.uploadAvataDone.listen(function(data) {
 /**
  * User actions.
  */
-Actions.login.listen(function(loginData, formData) {
-    postRestCall(formData, "/login", false, this);
+Actions.login.listen(function(loginData) {
+    postRestCall(loginData, "/login", false, this);
 });
 
 Actions.loginEmail.listen(function(loginData) {

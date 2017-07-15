@@ -11,6 +11,7 @@ import TA                from 'react-typeahead';
 import Select            from 'react-select';
 import DropzoneComponent from 'react-dropzone-component';
 
+import Lang              from 'vntd-root/stores/LanguageStore.jsx';
 import Mesg              from 'vntd-root/components/Mesg.jsx';
 import {EditorEntry}     from 'vntd-shared/forms/editors/Editor.jsx';
 import StateButton       from 'vntd-shared/utils/StateButton.jsx';
@@ -170,8 +171,9 @@ class InputWrap extends React.Component
 {
     constructor(props) {
         super(props);
-        this._onBlur  = this._onBlur.bind(this);
-        this._onFocus = this._onFocus.bind(this);
+        this._onBlur   = this._onBlur.bind(this);
+        this._onFocus  = this._onFocus.bind(this);
+        this._onChange = this._onChange.bind(this);
     }
 
     componentWillUnmount() {
@@ -206,6 +208,16 @@ class InputWrap extends React.Component
         }
         if (entry.onFocus != null) {
             entry.onFocus(entry);
+        }
+    }
+
+    _onChange() {
+        let entry = this.props.entry;
+
+        entry.inpDefVal = !entry.inpDefVal;
+        InputStore.storeItemIndex(entry.inpName, entry.inpDefVal, true);
+        if (entry.onClick != null) {
+            entry.onClick(entry);
         }
     }
 
@@ -272,10 +284,23 @@ class InputWrap extends React.Component
                 </div>
             );
         }
+        if (entry.checkedBox != null) {
+            return (
+                <section>
+                    <label className="checkbox">
+                        <input type="checkbox" ref={entry.inpName} name={entry.inpName}
+                            defaultChecked={entry.inpDefVal}
+                            onFocus={this._onFocus} onChange={this._onChange}/>
+                        <i/><Mesg text={entry.labelTxt}/>
+                    </label>
+                </section>
+            );
+        }
+        handlers = entry.inpHolder ? Lang.translate(entry.inpHolder) : null;
         return (
             <input id={entry.inpName} type={type} className="form-control"
                 onBlur={this._onBlur} ref={entry.inpName} onFocus={this._onFocus}
-                defaultValue={entry.inpDefVal} placeholder={entry.inpDefVal}/>
+                defaultValue={entry.inpDefVal} placeholder={handlers}/>
         );
     }
 }
@@ -375,6 +400,55 @@ class InputInline extends React.Component
                     </div>
                 </div>
             </div>
+        );
+    }
+}
+
+class InputToolTip extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        let entry = this.props.entry,
+            style = entry.errorFlag == true ? { color: 'red' } : null;
+
+        return (
+            <section>
+                <label className="label"><Mesg text={entry.labelTxt}/></label>
+                <label className="input">
+                    <i className={"icon-append " + entry.labelIcon}/>
+                    <InputWrap entry={entry} onBlur={entry.onBlur}/>
+                    <b className="tooltip tooltip-bottom-right">
+                        <Mesg text={entry.tipText}/>
+                    </b>
+                    <ErrorView mesg={true} errorId={entry.inpName}/>
+                </label>
+            </section>
+        );
+    }
+}
+
+class InputEntry
+{
+    static render(entry, onBlur) {
+        if (entry.inline != null) {
+            return (
+                <InputInline entry={entry} onBlur={onBlur}
+                    onFocus={entry.onFocus} onSelected={entry.onSelect}/>
+            );
+        }
+        if (entry.tipText != null) {
+            entry.onBlur = onBlur;
+            return <InputToolTip entry={entry}/>;
+        }
+        if (entry.checkedBox != null) {
+            return <InputWrap entry={entry}/>;
+        }
+        return (
+            <InputBox entry={entry} onBlur={onBlur}
+                onFocus={entry.onFocus} onSelected={entry.onSelect}/>
         );
     }
 }
@@ -518,11 +592,8 @@ class GenericForm extends React.Component
         }
         let formEntries = form.formEntries.map(function(item) {
             let entries = item.entries.map(function(entry) {
-                if (item.inline !== null) {
-                    return <InputBox entry={entry}/>;
-                }
-                return <InputInline entry={entry}/>
-            }.bind(this)),
+                return InputEntry.render(entry);
+            }),
             legend = item.legend != null ?
                 <legend><Mesg text={item.legend}/></legend> : null;
 
@@ -549,6 +620,6 @@ class GenericForm extends React.Component
 
 export {
     SelectWrap, TAWrap, InputWrap, DropZoneWrap, InputBox, InputInline, GenericForm,
-    renderHtmlInput, cloneInputEntry
+    InputToolTip, InputEntry, renderHtmlInput, cloneInputEntry
 };
 export default GenericForm;
