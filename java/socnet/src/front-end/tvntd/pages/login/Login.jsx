@@ -5,29 +5,30 @@
 'uses strict';
 
 import $             from 'jquery';
-import _             from 'lodash';
 import React         from 'react-mod';
 import { Link }      from 'react-router';
+import { htmlCodes } from 'vntd-root/config/constants.js';
 
-import {htmlCodes}   from 'vntd-root/config/constants.js';
 import Actions       from 'vntd-root/actions/Actions.jsx';
 import AboutUsStore  from 'vntd-root/stores/AboutUsStore.jsx';
-import Lang          from 'vntd-root/stores/LanguageStore.jsx';
 import Mesg          from 'vntd-root/components/Mesg.jsx';
+import Lang          from 'vntd-root/stores/LanguageStore.jsx';
 import UserStore     from 'vntd-shared/stores/UserStore.jsx';
 import ErrorStore    from 'vntd-shared/stores/ErrorStore.jsx';
-import UiValidate    from 'vntd-shared/forms/validation/UiValidate.jsx';
+import InputStore    from 'vntd-shared/stores/NestableStore.jsx';
 import History       from 'vntd-shared/utils/History.jsx';
+import StateButton   from 'vntd-shared/utils/StateButton.jsx';
 import ErrorView     from 'vntd-shared/layout/ErrorView.jsx';
 
-import { validateEmail } from './Register.jsx';
+import { FormData, ProcessForm } from 'vntd-shared/forms/commons/ProcessForm.jsx';
+import { validateEmail } from 'vntd-root/pages/login/Register.jsx';
 
 class LoginHeader extends React.Component
 {
     constructor(props) {
         super(props);
     }
-
+    
     render() {
         return (
             <header id="header" className="animated fadeInDown">
@@ -41,7 +42,7 @@ class LoginHeader extends React.Component
                     <span className="hidden-mobile hiddex-xs">
                         <Mesg text="Need an account?"/>
                     </span>{htmlCodes.spaceNoBreak}
-                    <Link to="/register/form" className="btn btn-danger">
+                    <Link to="/register/form" className="btn btn-danger"> 
                         <Mesg text="Create Account"/>
                     </Link>
                 </span>
@@ -152,58 +153,125 @@ class LoginSocial extends React.Component
     }
 }
 
-class LoginForm extends React.Component
+class LoginLayout extends FormData
 {
-    constructor(props) {
-        super(props);
+    constructor(props, suffix) {
+        super(props, suffix);
+        this.initData();
+        return this;
+    }
 
-        this._onFocus      = this._onFocus.bind(this);
-        this._clearRefs    = this._clearRefs.bind(this);
-        this._onAuthChange = this._onAuthChange.bind(this);
-        this._submitLogin  = this._submitLogin.bind(this);
-        this._emailLogin   = this._emailLogin.bind(this);
-        this._loginByEmail = this._loginByEmail.bind(this);
-
-        this.state = {
-            emailSent: 0
+    initData() {
+        let login = [ {
+            inpName  : 'email',
+            inpType  : 'email',
+            field    : 'email',
+            inpHolder: 'Your email address',
+            labelTxt : 'Email',
+            labelIcon: 'fa fa-user',
+            tipText  : 'Please enter your email address'
+        }, {
+            inpName  : 'password',
+            inpType  : 'password',
+            field    : 'password',
+            inpHolder: 'Your password',
+            labelTxt : 'Password',
+            labelIcon: 'fa fa-lock',
+            tipText  : 'Enter your password'
+        }, {
+            inpName   : 'remember',
+            field     : 'remember',
+            checkedBox: true,
+            labelTxt  : 'Stay signed in'
+        } ];
+        this.forms = {
+            formId    : 'login-cust',
+            formFmt   : 'smart-form client-form',
+            submitFn  : this.submitAction,
+            formEntries: [ {
+                entries: login
+            } ],
+            buttons: [ {
+                btnName  : 'login-cust-submit',
+                btnFmt   : 'btn btn-primary',
+                btnSubmit: true,
+                btnCreate: function() {
+                    return StateButton.saveButtonFsm("Sign In", "Submit",
+                        "Login", "Login Failed", "Signing In...");
+                }
+            } ]
         };
     }
 
-    componentWillMount() {
-        if (UserStore.isLogin()) {
-            this._clearRefs();
-            History.pushState(null, "/public/vietnam");
+    validateInput(data, errFlags) {
+        return LoginLayout.validateEmail(data, errFlags);
+    }
+
+    submitAction(data) {
+        Actions.login($.param(data));
+    }
+
+    submitNotif(store, result, status) {
+        if (LoginLayout.authResult(this.getFormId(), 0, result, status) < 0) {
+            this.submitFailure(result, status);
+        } else {
+            super.submitNotif(store, result, status);
         }
     }
 
-    componentDidMount() {
-        this.unsub = UserStore.listen(this._onAuthChange);
+    renderHeader() {
+        return (
+            <header><Mesg text="Sign In"/></header>
+        );
     }
 
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsub = null;
+    render(onBlur, onSubmit) {
+        return LoginLayout.renderForm(this, onBlur, onSubmit);
+    }
+
+    static renderForm(context, onBlur, onSubmit) {
+        return (
+            <div className={context.forms.formFmt}>
+                {context.renderHeader()}
+                <ErrorView className="padding-10 alert alert-danger"
+                    errorId={context.getFormId()}/>
+
+                {context.renderForm(onBlur)}
+                <footer>
+                    {context.renderButtons(onSubmit)}
+                </footer>
+            </div>
+        );
+    }
+
+    static validateEmail(data, errFlags) {
+        if (validateEmail(data.email) == false) {
+            errFlags.email    = true;
+            errFlags.errText  = Lang.translate("Invalid email address");
+            errFlags.helpText = Lang.translate("You need to enter valid email");
+            return null;
         }
+        return {
+            email: data.email,
+            password: data.password,
+            remember: data.remember
+        };
     }
 
-    _onAuthChange(data, startPage) {
-        let form = $('#login-form'), retry = this.state.emailSent;
-        form.find('input').prop('disabled', false);
+    static authResult(id, retry, data, startPage) {
+        let hdr, style, text;
 
         if (data.authError != null) {
-            ErrorStore.triggerError("login-err", data.authError);
-            return;
+            ErrorStore.triggerError(id, data.authError);
+            return -1;
         }
         if (data.authCode === "reg-email-sent") {
-            let hdr, style, text;
-            
             if (retry < 8) {
                 hdr   = "Notification";
                 style = "alert alert-success";
                 text  = [
                     "We sent login link to your email:",
-                    this.refs.email != null ? this.refs.email.value : "",
+                    InputStore.getIndexString("email"),
                     "Please check the spam folder if you don't receive it."
                 ];
             } else {
@@ -214,166 +282,118 @@ class LoginForm extends React.Component
                     "We may take action to disable this account"
                 ];
             }
-            ErrorStore.reportMesg("login-err", hdr, style, text);
-            this.setState({
-                emailSent: retry + 1
-            });
-            return;
+            ErrorStore.reportMesg(id, hdr, style, text);
+            retry = retry + 1;
         }
-        this._clearRefs();
+        if (data.authCode === "reg-no-user") {
+            ErrorStore.reportMesg(id, "Error", "alert alert-warning",
+                "You need to open an account with us first");
+            return -1;
+        }
+        return retry;
+    }
+}
+
+class EmailLayout extends FormData
+{
+    constructor(props, suffix) {
+        super(props, suffix);
+        this.initData();
+        return this;
     }
 
-    _clearRefs() {
-        if (this.refs != null && this.refs.email != null) {
-            this.refs.email.value    = '';
-            this.refs.password.value = '';
-            this.refs.remember.value = '';
-        }
+    initData() {
+        this.emailSent = 0;
+        this.forms = {
+            formId    : 'login-email',
+            formFmt   : 'smart-form client-form',
+            submitFn  : Actions.loginEmail,
+            formEntries: [ {
+                entries: [ {
+                    inpName  : 'email-login',
+                    inptype  : 'email',
+                    field    : 'email',
+                    inpHolder: 'Your email address',
+                    labelTxt : 'Email',
+                    labelIcon: 'fa fa-user',
+                    tipText  : 'We will mail a login link to your email'
+                } ]
+            } ],
+            buttons: [ {
+                btnName  : 'login-email-submit',
+                btnFmt   : 'btn btn-primary',
+                btnSubmit: true,
+                btnCreate: function() {
+                    return StateButton.saveButtonFsm("Login", "Email Login Link",
+                        "Sent Email", "Email Failed", "Sending...");
+                }
+            } ]
+        };
     }
 
-    _onFocus() {
-        $('#id-login-error').hide();
-        ErrorStore.clearError("login-err");
-    }
-
-    _submitLogin(event) {
-        let form = $('#login-form');
-        let formData = form.serialize();
-        $('#id-login-error').hide();
-        form.find('input').prop('disabled', true);
-        event.preventDefault();
-
-        console.log(formData);
-        Actions.login(formData);
-    }
-
-    _emailLogin() {
-        let email = this.refs.email.value;
-        if (_.isEmpty(email) || validateEmail(email) == false) {
-            ErrorStore.reportErrMesg("login-err", "Please enter valid email");
-            this.refs.email.value = "";
-        } else {
-            Actions.loginEmail({
-                email   : email,
-                password: null,
-                remember: null
-            });
-        }
-    }
-
-    _loginByEmail() {
-        let emailBtn = null, sent = this.state.emailSent,
-            btnText = <Mesg text="Email Login Link"/>;
-
-        if (sent > 0) {
-            btnText = (
-                <span>
-                    <Mesg text="Email Login Link Again"/> ({sent} retries)
-                </span>
-            );
-        }
-        if (sent < 10) {
-            emailBtn = (
-                <footer>
-                    <button className="btn btn-primary" onClick={this._emailLogin}>
-                        {btnText}
-                    </button>
-                </footer>
-            );
-        }
+    renderHeader() {
         return (
-            <div className="well no-padding">
-                <div id="smart-form-register" className="smart-form client-form">
-                    <header>
-                        <Mesg text="We will mail you a login link"/>
-                    </header>
-                    <fieldset>
-                        <section>
-                            <label className="label"><Mesg text="E-mail"/></label>
-                            <label className="input">
-                                <i className="icon-append fa fa-user"/>
-                                <input type="email" name="email" ref="email"
-                                    placeholder={Lang.translate("Your email address")}
-                                    onFocus={this._onFocus}/>
-                                <b className="tooltip tooltip-bottom-right">
-                                    <Mesg text="We will send login link to your email"/>
-                                </b>
-                            </label>
-                        </section>
-                    </fieldset>
-                    {emailBtn}
-                </div>
-            </div>
+            <header><Mesg text="We will mail you a login link"/></header>
         );
+    }
+
+    validateInput(data, errFlags) {
+        return LoginLayout.validateEmail(data, errFlags);
+    }
+
+    submitNotif(store, result, status) {
+        this.emailSent =
+            LoginLayout.authResult(this.getFormId(), this.emailSent, result, status);
+
+        if (0 < this.emailSent && this.emailSent < 9) {
+            this.changeSubmitState("saved", false, "Sent Email " + this.emailSent, false);
+        } else {
+            if (this.emailSent < 0) {
+                this.emailSent = 0;
+            }
+            this.changeSubmitState("failure", false);
+        }
+    }
+
+    render(onBlur, onSubmit) {
+        return LoginLayout.renderForm(this, onBlur, onSubmit);
+    }
+}
+
+class LoginForm extends React.Component
+{
+    constructor(props) {
+        super(props);
+
+        this.data  = new LoginLayout(props, props.suffix);
+        this.email = new EmailLayout(props, props.suffix);
+        this.defValue = {
+            remember: true
+        };
+    }
+
+    componentWillMount() {
+        if (UserStore.isLogin()) {
+            this.data.clearData();
+            this.email.clearData();
+            History.pushState(null, "/public/vietnam");
+        }
     }
 
     render() {
         return (
             <div>
                 <div className="well no-padding">
-                    <form id="login-form" className="smart-form client-form">
-                        <header> <Mesg text="Sign In"/> </header>
-                        <ErrorView errorId={"login-err"} className="alert alert-danger"/>
-                        <fieldset>
-                            <section>
-                                <label className="label"><Mesg text="E-mail"/></label>
-                                <label className="input">
-                                    <i className="icon-append fa fa-user"/>
-                                    <input type="email" name="email" ref="email"
-                                        placeholder={Lang.translate("Your email address")}
-                                        onFocus={this._onFocus}/>
-                                    <b className="tooltip tooltip-top-right">
-                                        <i className="fa fa-user txt-color-teal"/>
-                                        <Mesg text="Please enter your email address"/>
-                                    </b>
-                                </label>
-                            </section>
-                            <section>
-                                <label className="label"><Mesg text="Password"/></label>
-                                <label className="input">
-                                    <i className="icon-append fa fa-lock"/>
-                                    <input type="password" name="password" ref="password"
-                                        placeholder={Lang.translate("Your password")}
-                                        onFocus={this._onFocus}/>
-                                    <b className="tooltip tooltip-top-right">
-                                        <i className="fa fa-lock txt-color-teal"/>
-                                        <Mesg text="Enter your password"/>
-                                    </b>
-                                </label>
-                                <div className="note">
-                                    <Link to="/register/recover">
-                                        <Mesg text="Forgot Password"/>?
-                                    </Link>
-                                </div>
-                            </section>
-                            <section>
-                                <label className="checkbox">
-                                    <input type="checkbox" ref="remember"
-                                        name="remember" defaultChecked={true}/>
-                                    <i/><Mesg text="Stay signed in"/>
-                                </label>
-                            </section>
-                        </fieldset>
-                        <footer>
-                            <button className="btn btn-primary"
-                                onClick={this._submitLogin}>
-                                <Mesg text="Sign in"/>
-                            </button>
-                        </footer>
-                    </form>
+                    <ProcessForm form={this.data}
+                        defValue={this.defValue} store={UserStore}/>
                 </div>
                 <h4 className="text-center">
                     <Mesg text="Or Sign In By Email"/>
                 </h4>
                 <br/>
-                {this._loginByEmail()}
-                {/*
-                <h4 className="text-center">
-                    <Mesg text="Or Sign In Using"/>
-                </h4>
-                <br/>
-                <LoginSocial/>    
-                */}
+                <div className="well no-padding">
+                    <ProcessForm form={this.email} store={UserStore}/>
+                </div>
             </div>
         );
     }

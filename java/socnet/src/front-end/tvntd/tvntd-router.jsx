@@ -9,7 +9,7 @@ import {Route, Redirect, IndexRoute, DefaultRoute} from 'react-router';
 
 import Layout        from './pages/layout/Layout.jsx';
 import {Login}       from './pages/login/Login.jsx';
-import {CustLogin}   from './pages/personal/Login.jsx';
+import CustLogin     from './pages/personal/Login.jsx';
 import Logout        from './pages/login/Logout.jsx';
 import Register      from './pages/login/Register.jsx';
 import RecoverAcct   from './pages/login/Forgot.jsx';
