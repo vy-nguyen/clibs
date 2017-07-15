@@ -292,14 +292,21 @@ class FormData
         return null;
     }
 
-    changeSubmitState(state, click) {
-        let btn = this.submitBtn;
+    changeSubmitState(state, click, text, disable) {
+        let btn = this.submitBtn, btnObj;
         if (btn != null) {
-            StateButtonStore.setButtonStateObj(this.buttons[btn.btnName], state);
+            btnObj = StateButtonStore.setButtonStateObj(this.buttons[btn.btnName], state);
+            if (btnObj != null && text != null) {
+                btnObj.changeStateInfo(text, disable);
+            }
             if (click === true) {
-                this.onClick(btn, this.buttons[btn.btnName]);
+                this.onClick(btn, btnObj);
             }
         }
+    }
+
+    isSubmitting() {
+        return StateButtonStore.isButtonInState(this.submitBtn.btnName, "saving");
     }
 
     onBlur(entry) {
@@ -308,6 +315,9 @@ class FormData
 
     onFocus(entry) {
         ErrorStore.clearError(this.getFormId());
+        if (StateButtonStore.isButtonInState(this.submitBtn.btnName, "failure")) {
+            this.changeSubmitState("needSave", false);
+        }
     }
 
     onClick(btn, btnState) {
@@ -318,6 +328,7 @@ class FormData
     }
 
     submitNotif(store, result, status) {
+        this.clearData();
         this.changeSubmitState("saved", false);
     }
 
@@ -433,13 +444,14 @@ class ProcessForm extends React.Component
     _updateState(data, status) {
         let context = this.props.form;
 
-        context.clearData();
-        context.submitNotif(this.props.store, data, status);
+        if (context.isSubmitting() === true) {
+            context.submitNotif(this.props.store, data, status);
 
-        if (this._imgDz != null) {
-            this._imgDz.removeAllFiles();
+            if (this._imgDz != null) {
+                this._imgDz.removeAllFiles();
+            }
+            this.setState(this._getInitState());
         }
-        this.setState(this._getInitState());
     }
 
     _submitClick() {

@@ -78,6 +78,10 @@ public class IndexPath
 
     protected static GenericResponse s_sentEmail =
         new GenericResponse(GenericResponse.REG_WAIT_EMAIL, "Sent email", null);
+
+    protected static GenericResponse s_noUser =
+        new GenericResponse(GenericResponse.REG_NO_USER, "Register first", null);
+
     protected RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     @Autowired
@@ -187,38 +191,53 @@ public class IndexPath
         String email = login.getEmail();
         RegisterForm register = new RegisterForm(email);
         String token = register.getPassword0();
-        try {
-            AnnonUserDTO anon = annonSvc.getAnnonUser(request, response, session);
-            User user = userService.registerNewUserAccount(register, anon.getUserUuid());
 
-            if (user == null) {
-                s_log.info("Failed to create user " + email);
-                return null;
-            }
-            userService.createVerificationTokenForUser(user, token, true);
+        if (userService.emailExist(email)) {
+            token = getEmailTokenLogin(email);
+        } else {
+            try {
+                AnnonUserDTO anon = annonSvc.getAnnonUser(request, response, session);
+                if (!anon.okLoginEmail()) {
+                    return s_noUser;
+                }
+                User user = userService
+                    .registerNewUserAccount(register, anon.getUserUuid());
 
-        } catch(EmailExistsException e) {
-            User user = userService.findUserByEmail(email);
-            if (user == null) {
-                s_log.info("User was deleted " + email);
-                return null;
-            }
-            VerificationToken vtoken = userService.getVerificationToken(user, false);
-            if (vtoken != null) {
-                token = vtoken.getToken();
+                if (user == null) {
+                    s_log.info("Failed to create user " + email);
+                    return s_noUser;
+                }
+                userService.createVerificationTokenForUser(user, token, true);
+
+            } catch(EmailExistsException e) {
+                token = getEmailTokenLogin(email);
             }
         }
         if (token == null) {
             s_log.info("Failed to locate login token " + email);
-            return null;
+            return s_noUser;
         }
         String link = String
             .format("https://www.tvntd.com/login/link/%s/%s\n", email, token);
-            // .format("http://192.168.56.103/login/link/%s/%s\n", email, token);
 
         s_log.info("Send email login " + email + " link " + link);
         userService.sendLoginLink(email, link);
         return s_sentEmail;
+    }
+
+    private String getEmailTokenLogin(String email)
+    {
+        String token = null;
+        User user = userService.findUserByEmail(email);
+        if (user == null) {
+            s_log.info("User was deleted " + email);
+            return null;
+        }
+        VerificationToken vtoken = userService.getVerificationToken(user, false);
+        if (vtoken != null) {
+            token = vtoken.getToken();
+        }
+        return token;
     }
 
     @RequestMapping(value="/login/logout", method = RequestMethod.GET)

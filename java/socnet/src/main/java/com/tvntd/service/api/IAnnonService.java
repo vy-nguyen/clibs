@@ -90,6 +90,14 @@ public interface IAnnonService
             return user.getAdUuid();
         }
 
+        public boolean okLoginEmail()
+        {
+            if (user != null && user.getVisitSessions() > 2) {
+                return true;
+            }
+            return false;
+        }
+
         public String getAdImgOid0()
         {
             ObjStore objStore = ObjStore.getInstance();

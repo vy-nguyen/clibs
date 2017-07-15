@@ -173,8 +173,14 @@ public class Profile
         prof.userImgUrl = null;
 
         try {
-            prof.firstName = user.getFirstName().getBytes("UTF-8");
-            prof.lastName = user.getLastName().getBytes("UTF-8");
+            String name = user.getFirstName();
+            if (name != null) {
+                prof.firstName = name.getBytes("UTF-8");
+            }
+            name = user.getLastName();
+            if (name != null) {
+                prof.lastName = name.getBytes("UTF-8");
+            }
         } catch(UnsupportedEncodingException e) {
         }
         return prof;

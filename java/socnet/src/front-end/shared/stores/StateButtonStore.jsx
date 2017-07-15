@@ -49,6 +49,18 @@ class ButtonState {
         return state.text;
     }
 
+    changeStateInfo(text, disabled) {
+        let state;
+
+        if (text != null) {
+            state = this.getState();
+            state.text = text;
+            state.disabled = disabled === true ? true : false;
+            console.log("Change state to " + text);
+            console.log(state);
+        }
+    }
+
     getStateValue(key) {
         let state = this.getState();
         return state[key];

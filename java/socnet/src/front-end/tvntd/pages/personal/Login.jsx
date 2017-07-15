@@ -240,7 +240,7 @@ class LoginLayout extends FormData
             ErrorStore.triggerError(id, data.authError);
             return -1;
         }
-        if (data.authCode === "reg-email-send") {
+        if (data.authCode === "reg-email-sent") {
             if (retry < 8) {
                 hdr   = "Notification";
                 style = "alert alert-success";
@@ -259,6 +259,11 @@ class LoginLayout extends FormData
             }
             ErrorStore.reportMesg(id, hdr, style, text);
             retry = retry + 1;
+        }
+        if (data.authCode === "reg-no-user") {
+            ErrorStore.reportMesg(id, "Error", "alert alert-warning",
+                "You need to open an account with us first");
+            return -1;
         }
         return retry;
     }
@@ -312,11 +317,17 @@ class EmailLayout extends FormData
     }
 
     submitNotif(store, result, status) {
-        console.log("Submit email result ");
-        console.log(result);
         this.emailSent =
             LoginLayout.authResult(this.getFormId(), this.emailSent, result, status);
-        console.log("Email sent " + this.emailSent);
+
+        if (0 < this.emailSent && this.emailSent < 9) {
+            this.changeSubmitState("saved", false, "Sent Email " + this.emailSent, false);
+        } else {
+            if (this.emailSent < 0) {
+                this.emailSent = 0;
+            }
+            this.changeSubmitState("failure", false);
+        }
     }
 
     render(onBlur, onSubmit) {
