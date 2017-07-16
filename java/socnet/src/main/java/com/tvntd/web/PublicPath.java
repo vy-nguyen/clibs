@@ -123,11 +123,13 @@ public class PublicPath
     /**
      * Handle public pages.
      */
-    @RequestMapping(value = "/public/letamanh", method = RequestMethod.GET)
-    public String letamanh(Map<String, Object> model, HttpSession session)
+    @RequestMapping(value = "/domain/{name}", method = RequestMethod.GET)
+    public String letamanh(Map<String, Object> model,
+            @PathVariable(value = "name") String name, HttpSession session)
     {
-        s_log.info("Hit letamanh page");
-        model.put("domain", "letamanh");
+        System.out.println("Hit domain page " + name);
+        session.setAttribute("domain", name);
+        model.put("domain", name);
         return "tvntd";
     }
 
@@ -153,6 +155,11 @@ public class PublicPath
         StartupResponse result = new StartupResponse(s_publicDto, reqt, session, true);
         fillStartupPublicResponse(result, s_publicDto);
         session.removeAttribute("startPage");
+
+        String domain = (String) session.getAttribute("domain");
+        if (domain != null) {
+            fillStartupDomainResponse(result, domain, s_publicDto);
+        }
         return result;
     }
 
@@ -214,6 +221,15 @@ public class PublicPath
         }
         resp.setLinkedUsers(userList);
         ApiPath.fillAuthorTags(resp, profile, uuids, authorSvc);
+    }
+
+    /**
+     * Fill response data when getting through a domain path.
+     */
+    protected void fillStartupDomainResponse(StartupResponse resp,
+            String domain, ProfileDTO profile)
+    {
+        System.out.println("Fill in data in " + domain);
     }
 
     /**

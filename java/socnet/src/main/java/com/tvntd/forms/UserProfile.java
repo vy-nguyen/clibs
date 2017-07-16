@@ -56,6 +56,12 @@ public class UserProfile
     protected String country;
 
     @Size(max = 128)
+    protected String domain;
+
+    @Size(max = 128)
+    protected String birthYear;
+
+    @Size(max = 128)
     protected String curPasswd;
 
     @Size(max = 128)
@@ -95,6 +101,12 @@ public class UserProfile
         }
         if (password1 != null) {
             password1 = Jsoup.clean(password1, wlist);
+        }
+        if (domain != null) {
+            domain = Jsoup.clean(domain, wlist);
+        }
+        if (birthYear != null) {
+            birthYear = Jsoup.clean(birthYear, wlist);
         }
         return true;
     }
@@ -181,6 +193,34 @@ public class UserProfile
      */
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    /**
+     * @return the domain
+     */
+    public String getDomain() {
+        return domain;
+    }
+
+    /**
+     * @param domain the domain to set
+     */
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
+
+    /**
+     * @return the birthYear
+     */
+    public String getBirthYear() {
+        return birthYear;
+    }
+
+    /**
+     * @param birthYear the birthYear to set
+     */
+    public void setBirthYear(String birthYear) {
+        this.birthYear = birthYear;
     }
 
     /**

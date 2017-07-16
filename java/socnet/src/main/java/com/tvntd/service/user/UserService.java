@@ -216,31 +216,30 @@ public class UserService implements IUserService
     {
         System.out.println("Change passwd " + userId + ", old " + oldPass +
                 " new " + newPass);
-        String encrypt;
         User user = repository.findById(userId);
 
         if (user == null) {
             return "User not found";
         }
         if (oldPass != null) {
-            encrypt = passwordEncoder.encode(oldPass);
-            // if (!encrypt.equals(user.getPassword())) {
-                System.out.println("Missmatch " + encrypt + " on file " +
+            if (!passwordEncoder.matches(oldPass, user.getPassword())) {
+                System.out.println("Missmatch " + oldPass + " on file " +
                         user.getPassword());
-                // return "Old password doesn't match";
-            // }
+                return "Old password doesn't match";
+            }
+        } else {
+            VerificationToken vtoken = getVerificationToken(user, false);
+            if (vtoken == null) {
+                return "Could not find the authentication token";
+            }
+            vtoken.setToken(UUID.randomUUID().toString());
+            tokenRepository.save(vtoken);
+            return "Changed password";
         }
-        VerificationToken vtoken = getVerificationToken(user, false);
-        if (vtoken == null) {
-            return "Could not find the authentication token";
-        }
-        encrypt = passwordEncoder.encode(newPass);
+        String encrypt = passwordEncoder.encode(newPass);
         System.out.println("New pass encrypt " + encrypt);
-        vtoken.setToken(encrypt);
         user.setPassword(encrypt);
-
         repository.save(user);
-        tokenRepository.save(vtoken);
         return "Changed password";
     }
 

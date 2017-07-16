@@ -11,13 +11,7 @@ import History            from 'vntd-shared/utils/History.jsx';
 import StateButton        from 'vntd-shared/utils/StateButton.jsx';
 import TabPanel           from 'vntd-shared/layout/TabPanel.jsx';
 import UserStore          from 'vntd-shared/stores/UserStore.jsx';
-import ErrorStore         from 'vntd-shared/stores/ErrorStore.jsx';
-import InputStore         from 'vntd-shared/stores/NestableStore.jsx';
-import StateButtonStore   from 'vntd-shared/stores/StateButtonStore.jsx';
 import Panel              from 'vntd-shared/widgets/Panel.jsx';
-import GenericForm        from 'vntd-shared/forms/commons/GenericForm.jsx';
-import Lang               from 'vntd-root/stores/LanguageStore.jsx';
-import Mesg               from 'vntd-root/components/Mesg.jsx';
 import Actions            from 'vntd-root/actions/Actions.jsx';
 import Friends            from './Friends.jsx';
 import Messages           from './Messages.jsx';
@@ -26,21 +20,183 @@ import ProfileCover       from './ProfileCover.jsx';
 import UserAvatar         from './UserAvatar.jsx';
 import UserTags           from './UserTags.jsx';
 
-import {noOpRetNull}      from 'vntd-shared/utils/Enum.jsx';
+import { FormData, ProcessForm } from 'vntd-shared/forms/commons/ProcessForm.jsx';
+
+class ProfileForm extends FormData
+{
+    constructor(props, suffix) {
+        super(props, suffix);
+        this.initData();
+        return this;
+    }
+
+    initData() {
+        let self = UserStore.getSelf(), first, last,
+        profileInfo = [ {
+            labelTxt : 'First Name',
+            inpHolder: 'Your first name',
+            inpName  : 'prof-first',
+            field    : 'firstName'
+        }, {
+            labelTxt : 'Last Name',
+            inpHolder: 'Your last name',
+            inpName  : 'prof-last',
+            field    : 'lastName'
+        }, {
+            emptyOk  : true,
+            labelTxt : 'Your Domain',
+            inpHolder: 'Domain for your own page',
+            inpName  : 'prof-domain',
+            field    : 'domain'
+        }, {
+            emptyOk  : true,
+            labelTxt : 'Birth Year',
+            inpHolder: 'Your year of birth',
+            inpName  : 'prof-year',
+            field    : 'birthYear',
+        }, {
+            labelTxt : 'Home Town',
+            inpHolder: 'Your home town',
+            inpName  : 'prof-city',
+            field    : 'homeTown'
+        }, {
+            labelTxt : 'State',
+            inpHolder: 'Your state',
+            inpName  : 'prof-state',
+            field    : 'state'
+        }, {
+            labelTxt : 'Country',
+            inpHolder: 'Country',
+            inpName  : 'prof-country',
+            field    : 'country'
+        } ],
+        securityInfo = [ {
+            emptyOk  : true,
+            labelTxt : 'New Password',
+            inpHolder: 'Change your password',
+            inpType  : 'password',
+            inpName  : 'prof-passw0',
+            field    : 'password0'
+        }, {
+            emptyOk  : true,
+            labelTxt : 'Verify Password',
+            inpHolder: 'Verify password changes',
+            inpType  : 'password',
+            inpName  : 'prof-passw1',
+            field    : 'password1'
+        } ];
+
+        if (self.secureAcct === true) {
+            securityInfo.push({
+                emptyOk  : true,
+                labelTxt : 'Current Password',
+                inpHolder: 'Enter your current password',
+                inpType  : 'password',
+                inpName  : 'prof-password',
+                field    : 'password'
+            });
+        }
+        this.forms = {
+            formId     : 'prof-form',
+            formFmt    : "client-form",
+            submitFn   : Actions.updateProfile,
+            formEntries: [ {
+                legend : "About Me",
+                twoCols: true,
+                entries: profileInfo
+            }, {
+                legend : "Security Preferences",
+                entries: securityInfo
+            } ],
+            buttons: [ {
+                btnName  : 'prof-cancel',
+                btnFmt   : 'btn btn-lg btn-info',
+                btnCreate: function() {
+                    return StateButton.basicButton("Cancel");
+                }
+            }, {
+                btnName  : 'prof-submit',
+                btnFmt   : 'btn btn-lg btn-primary',
+                btnSubmit: true,
+                btnCreate: function() {
+                    return StateButton.saveButtonFsm("Change", "Submit", "Ok");
+                }
+            } ]
+        };
+        last  = self.lastName;
+        first = last != null ? self.firstName : null;
+
+        this.self = self;
+        this.defValue = {
+            lastName : last,
+            firstName: first,
+            homeTown : self.homeTown,
+            state    : self.state,
+            country  : self.country,
+            birthYear: self.birthYear,
+            domain   : self.domain
+        };
+    }
+
+    submitNotif(store, result, status, resp) {
+        console.log("Submit notif");
+        console.log(result);
+        console.log(status);
+        console.log(resp);
+        super.submitNotif(store, result, status);
+    }
+
+    validateInput(data, errFlags) {
+        if (data.password != null && data.password != "") {
+            if (_.isEmpty(data.password0) || data.password0 !== data.password1) {
+                errFlags.password0 = true;
+                errFlags.password1 = true;
+                errFlags.errText   = "Password doesn't match";
+                errFlags.helpText  = "You need to enter matching passwords";
+                return null;
+            }
+        } else {
+            if (data.password0 != "" || data.password1 != "") {
+                errFlags.password  = true;
+                errFlags.password0 = true;
+                errFlags.password1 = true;
+                errFlags.errText   = "Missing current password";
+                errFlags.helpText  = "Enter your current password to change";
+                return null;
+            }
+        }
+        return {
+            userUuid : this.self.userUuid,
+            firstName: data.firstName,
+            lastName : data.lastName,
+            homeTown : data.homeTown,
+            state    : data.state,
+            country  : data.country,
+            birthYear: data.birthYear,
+            domain   : data.domain,
+            curPasswd: data.password,
+            password0: data.password0,
+            password1: data.password1
+        };
+    }
+
+    onClick(btn, btnState) {
+        console.log("on click button");
+        console.log(btn);
+        console.log(btnState);
+        super.submitNotif(null, null, null);
+        History.pushState(null, "/");
+    }
+}
 
 class UserInfo extends React.Component
 {
     constructor(props) {
-        let self = UserStore.getSelf();
-
         super(props);
-        this._assignState   = this._assignState.bind(this);
-        this._updateState   = this._updateState.bind(this);
         this._onLineStatus  = this._onLineStatus.bind(this);
         this._offLineStatus = this._offLineStatus.bind(this);
         this._saveProfile   = this._saveProfile.bind(this);
         this._cancelSave    = this._cancelSave.bind(this);
-        this._focusInput    = this._focusInput.bind(this);
 
         this._profileMenu = {
             iconFmt  : 'btn-xs btn-success',
@@ -61,68 +217,7 @@ class UserInfo extends React.Component
             header     : 'My Basic Information',
             headerMenus: [this._profileMenu]
         };
-
-        this.state      = this._assignState(self);
-        this._submitId  = "prof-submit-id";
-        this._submitBtn = StateButtonStore.createButton(this._submitId, function() {
-            return StateButton.saveButtonFsmFull(
-                { text: "Ok",              format: "btn btn-lg btn-primary" },
-                { text: "Submit Change",   format: "btn btn-lg btn-danger"  },
-                { text: "Changed Profile", format: "btn btn-lg btn-success" },
-                { text: "Update Failed",   format: "btn btn-lg btn-danger"  },
-                { text: "Submitting...",   format: "btn btn-lg btn-info" }
-            );
-        });
-        this._lastNameId   = "prof-lastName";
-        this._firstNameId  = "prof-firstName";
-        this._hometownId   = "prof-hometown";
-        this._stateId      = "prof-state";
-        this._countryId    = "prof-country";
-        this._currPasswdId = "prof-curr-passwd";
-        this._passwordId0  = "prof-password0";
-        this._passwordId1  = "prof-password1";
-    }
-
-    componentDidMount() {
-        this.unsub = UserStore.listen(this._updateState);
-    }
-
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsub = null;
-        }
-    }
-
-    _focusInput(entry) {
-        StateButtonStore.setButtonStateObj(this._submitBtn, "needSave");
-    }
-
-    _assignState(self) {
-        let firstName, lastName  = self.lastName;
-
-        firstName = lastName != null ? self.firstName : null;
-        return {
-            self     : self,
-            lastName : lastName,
-            firstName: firstName,
-            homeTown : self.homeTown,
-            state    : self.state,
-            country  : self.country
-        };
-    }
-
-    _updateState(data, status) {
-        if (status !== "update-profile") {
-            return;
-        }
-        console.log(data);
-
-        this.setState(this._assignState(this.state.self));
-        InputStore.clearItemIndex(this._currPasswdId);
-        InputStore.clearItemIndex(this._passwordId0);
-        InputStore.clearItemIndex(this._passwordId1);
-        StateButtonStore.setButtonStateObj(this._submitBtn, "saved");
+        this.profileForm = new ProfileForm(props);
     }
 
     _onLineStatus() {
@@ -137,18 +232,6 @@ class UserInfo extends React.Component
         if (hasError === true) {
             return;
         }
-        Actions.updateProfile({
-            userUuid : this.state.self.userUuid,
-            firstName: data[this._firstNameId],
-            lastName : data[this._lastNameId],
-            homeTown : data[this._hometownId],
-            state    : data[this._stateId],
-            country  : data[this._countryId],
-            curPasswd: data[this._currPasswdId],
-            password0: data[this._passwordId0],
-            password1: data[this._passwordId1]
-        });
-        StateButtonStore.setButtonStateObj(this._submitBtn, "saving");
     }
 
     _cancelSave(data, btn) {
@@ -156,108 +239,9 @@ class UserInfo extends React.Component
     }
 
     render() {
-        let self = this.state.self;
-        if (self == null) {
-            return null;
-        }
-        let defFirst = Lang.translate("Your first name"),
-            defLast  = Lang.translate("Your last name"),
-        profileInp = [ {
-            onFocus  : this._focusInput,
-            labelTxt : "First Name",
-            inpHolder: defFirst,
-            inpDefVal: this.state.firstName,
-            inpName  : this._firstNameId,
-            errorId  : this._firstNameId,
-            errorFlag: false
-        }, {
-            onFocus  : this._focusInput,
-            labelTxt : "Last Name",
-            inpHolder: defLast,
-            inpDefVal: this.state.lastName,
-            inpName  : this._lastNameId,
-            errorId  : this._lastNameId,
-            errorFlag: false
-        }, {
-            onFocus  : this._focusInput,
-            labelTxt : "Home Town",
-            inpName  : this._hometownId,
-            inpDefVal: this.state.self.homeTown,
-            inpHolder: Lang.translate("Home Town")
-        }, {
-            onFocus  : this._focusInput,
-            labelTxt : "State",
-            inpName  : this._stateId,
-            inpDefVal: this.state.self.state,
-            inpHolder: Lang.translate("Home Town")
-        }, {
-            onFocus  : this._focusInput,
-            labelTxt : "Country",
-            inpName  : this._countryId,
-            inpDefVal: this.state.self.country,
-            inpHolder: Lang.translate("Country")
-        } ],
-        securityInp = [ {
-            onFocus  : this._focusInput,
-            labelTxt : "New Password",
-            inpHolder: Lang.translate("Change your password"),
-            inpType  : "password",
-            inpName  : this._passwordId0,
-            errorId  : this._passwordId0,
-            errorFlag: false,
-            inpValidate: noOpRetNull
-        }, {
-            onFocus  : this._focusInput,
-            labelTxt : "Verify Password",
-            inpHolder: Lang.translate("Verify password changes"),
-            inpType  : "password",
-            inpName  : this._passwordId1,
-            errorId  : this._passwordId1,
-            errorFlag: false,
-            inpValidate: function(data, entry) {
-                if (data[this._passwordId0] !== data[this._passwordId1]) {
-                    return "Miss match passwords";
-                }
-                return null;
-            }.bind(this)
-        } ];
-        if (self.secureAcct === true) {
-            securityInp.push({
-                onFocus  : this._focusInput,
-                labelTxt : "Current Password",
-                inpHolder: Lang.translate("Enter your current password"),
-                inpType  : "password",
-                inpName  : this._currPasswdId,
-                errorId  : this._currPasswdId,
-                errorFlag: false,
-                inpValidate: noOpRetNull
-            });
-        }
-        let profileForm = {
-            formFmt    : "client-form",
-            hiddenHead : null,
-            hiddenTail : null,
-            formEntries: [ {
-                legend : "About Me",
-                entries: profileInp
-            }, {
-                legend : "Security Preferences",
-                entries: securityInp
-            } ],
-            buttons: [ {
-                btnFmt  : "btn btn-lg btn-info",
-                btnText : "Cancel",
-                callOnly: true,
-                onClick :  this._cancelSave
-            }, {
-                btnFmt : "btn btn-lg btn-primary",
-                stateId: this._submitId,
-                onClick: this._saveProfile
-            } ]
-        };
         return (
             <Panel context={this._panelData} className="well no-padding">
-                <GenericForm form={profileForm}/>
+                <ProcessForm form={this.profileForm} store={UserStore}/>
             </Panel>
         );
     }

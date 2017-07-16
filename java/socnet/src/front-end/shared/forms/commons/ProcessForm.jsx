@@ -86,7 +86,8 @@ class FormData
             info = {
                 section: section,
                 field  : entry.field,
-                entryId: entry.inpName
+                entryId: entry.inpName,
+                emptyOk: entry.emptyOk
             };
             if (entry.dropzone === true) {
                 info.emptyOk = true;
@@ -321,13 +322,15 @@ class FormData
     }
 
     onClick(btn, btnState) {
+        console.log("Base onclick");
+        console.log(btn);
     }
 
     validateInput(data, errFlags) {
         return data;
     }
 
-    submitNotif(store, result, status) {
+    submitNotif(store, result, status, resp) {
         this.clearData();
         this.changeSubmitState("saved", false);
     }
@@ -340,9 +343,11 @@ class FormData
     submitAct(data) {
         let submitFn = this.forms.submitFn;
 
-        this.changeSubmitState("saving", true);
+        this.changeSubmitState("saving", false);
         if (submitFn != null) {
             submitFn(data);
+            console.log("Call submit with data");
+            console.log(data);
         }
     }
 
@@ -389,7 +394,7 @@ class ProcessForm extends React.Component
         let value = this.props.value, context = this.props.form;
 
         if (value == null) {
-            value = this.props.defValue;
+            value = this.props.defValue || context.defValue;
         }
         context.setData(value, {
             sending: this._dzSend,
@@ -441,11 +446,11 @@ class ProcessForm extends React.Component
         this.props.form.uploadImageOk(result);
     }
 
-    _updateState(data, status) {
+    _updateState(data, status, resp) {
         let context = this.props.form;
 
         if (context.isSubmitting() === true) {
-            context.submitNotif(this.props.store, data, status);
+            context.submitNotif(this.props.store, data, status, resp);
 
             if (this._imgDz != null) {
                 this._imgDz.removeAllFiles();

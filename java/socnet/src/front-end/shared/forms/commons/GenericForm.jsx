@@ -454,98 +454,10 @@ class InputEntry
 }
 
 /*
- * Form format:
- * formEntry {
- *     legend: "",
- *     entries: [
- *         labelFmt: "",
- *         labelTxt: "",
- *         inputFmt: "",
- *         inpName : "",
- *         inpHolder: ""
- *     ]
- * }
- * Form {
- *     formFmt: "",
- *     hiddenHead: "",
- *     hiddenTail: "",
- *     formEntries: []
- *     buttons: [ {
- *         btnFmt: "",
- *         btnText" "",
- *         onClick: function...
- *     } ]
- * }
+ * TODO: move stand alone functions to be static in here.
  */
-class GenericForm extends React.Component
+class GenericForm
 {
-    constructor(props) {
-        super(props);
-        this.state = {
-            hasError: false
-        };
-    }
-
-    componentWillUnmount() {
-    }
-
-    _btnClick(button) {
-        let hasError = false, dataRefs = {},
-            entries = this.props.form.formEntries;
-
-        if (button.callOnly === true) {
-            hasError = button.onClick(dataRefs, button, hasError);
-        } else {
-            _.forEach(entries, function(section) {
-                hasError = GenericForm.readContent(section.entries, dataRefs);
-            });
-        }
-        hasError = button.onClick(dataRefs, button, hasError);
-        this.setState({
-            hasError: hasError || false
-        });
-    }
-
-    static validateInput(dataRefs, entry) {
-        let out = null;
-
-        if (entry.errorId == null || entry.errorFlag == null) {
-            return false;
-        }
-        if (entry.inpValidate != null) {
-            out = entry.inpValidate(dataRefs, entry);
-
-        } else if (_.isEmpty(dataRefs[entry.inpName])) {
-            out = "This field is required";
-        }
-        if (out != null) {
-            entry.errorFlag = true;
-            ErrorStore.reportErrMesg(entry.errorId, out, null);
-            return true;
-        } else {
-            entry.errorFlag = false;
-        }
-        return false;
-    }
-
-    static readContent(entries, dataRefs) {
-        let hasError = false;
-
-        _.forEach(entries, function(item) {
-            if (InputStore.getItemIndex(item.inpName) == null) {
-                InputStore.storeItemIndex(item.inpName, item.inpDefVal);
-            }
-            dataRefs[item.inpName] = InputStore.getItemIndex(item.inpName);
-            item.inpDefVal = dataRefs[item.inpName];
-        });
-        _.forEach(entries, function(item) {
-            if (GenericForm.validateInput(dataRefs, item) === true) {
-                hasError = true;
-            }
-        });
-        return hasError;
-    }
-
     static getDjsConfig() {
         const token  = $("meta[name='_csrf']").attr("content"),
             header = $("meta[name='_csrf_header']").attr("content");
@@ -558,63 +470,6 @@ class GenericForm extends React.Component
                 [header]: token
             }
         };
-    }
-
-    render() {
-        let form = this.props.form;
-        let formButtons = null;
-
-        if (form.buttons != null) {
-            let buttons = form.buttons.map(function(item, idx) {
-                if (item.stateId != null) {
-                    return (
-                        <StateButton btnId={item.stateId} className={item.btnFmt}
-                            onClick={this._btnClick.bind(this, item)}/>
-                    );
-                }
-                return (
-                    <button key={_.uniqueId('form-btn-')} type="button"
-                        className={item.btnFmt} onClick={this._btnClick.bind(this, item)}>
-                        <Mesg text={item.btnText}/>
-                    </button>
-                );
-            }.bind(this));
-
-            formButtons = (
-                <div className="row">
-                    <div className="col-sm-offset-2 col-sm-10">
-                        <div className="btn-group pull-right" role="group">
-                            {buttons}
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-        let formEntries = form.formEntries.map(function(item) {
-            let entries = item.entries.map(function(entry) {
-                return InputEntry.render(entry);
-            }),
-            legend = item.legend != null ?
-                <legend><Mesg text={item.legend}/></legend> : null;
-
-            return (
-                <div key={_.uniqueId('form-fields')}>
-                    {legend}
-                    <fieldset>
-                        {entries}
-                    </fieldset>
-                </div>
-            );
-        }.bind(this));
-
-        return (
-            <form className={form.formFmt}
-                encType="multipart/form-data" acceptCharset="utf-8">
-                {form.hiddenHead}
-                {formEntries}
-                {formButtons}
-            </form>
-        );
     }
 }
 

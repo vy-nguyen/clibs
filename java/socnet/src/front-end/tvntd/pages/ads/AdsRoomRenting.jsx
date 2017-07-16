@@ -67,18 +67,7 @@ class RoomRenting extends FormData
             buttons: [ {
                 btnName  : 'room-ads-cancel',
                 btnCreate: function() {
-                    return {
-                        success: {
-                            text     : 'Cancel',
-                            nextState: 'success',
-                            className: 'btn btn-info'
-                        },
-                        failure: {
-                            text     : 'Cancel Failed',
-                            nextState: 'success',
-                            className: 'btn btn-danger'
-                        }
-                    };
+                    return StateButton.basicButton("Cancel");
                 }
             }, {
                 btnName  : 'room-ads-submit',

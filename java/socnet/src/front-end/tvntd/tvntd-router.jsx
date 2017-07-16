@@ -9,7 +9,6 @@ import {Route, Redirect, IndexRoute, DefaultRoute} from 'react-router';
 
 import Layout        from './pages/layout/Layout.jsx';
 import {Login}       from './pages/login/Login.jsx';
-import CustLogin     from './pages/personal/Login.jsx';
 import Logout        from './pages/login/Logout.jsx';
 import Register      from './pages/login/Register.jsx';
 import RecoverAcct   from './pages/login/Forgot.jsx';
@@ -27,6 +26,8 @@ import MainAds       from './pages/ads/MainAds.jsx';
 import PublicUrlArt  from './pages/public/PublicUrlArt.jsx';
 import LoginRequired from 'vntd-shared/utils/LoginRequired.jsx';
 
+import CustLogin     from './pages/personal/Login.jsx';
+import CustMain      from './pages/personal/MainPage.jsx';
 import {MainPage, AboutUs}  from './pages/public/MainPage.jsx';
 
 const _publicRoutes = (
@@ -123,7 +124,7 @@ _custLoginRoutes = (
 PersonalRoutes = (
     <Route>
         <Route path="/" component={Layout} url={"/public/start"}>
-            <IndexRoute component={MainBlog} subheader={true}/>
+            <IndexRoute component={CustMain} subheader={true}/>
             <Redirect from="/" to ="public"/>
             {_publicRoutes}
 

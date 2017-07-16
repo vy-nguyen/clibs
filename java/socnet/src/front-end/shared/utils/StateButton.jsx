@@ -103,6 +103,29 @@ class StateButton extends React.Component
             }
         };
     }
+
+    static basicButton(success, failure) {
+        return StateButton.basicButtonFsmFull(
+            { text: success }, { text: failure }
+        );
+    }
+
+    static basicButtonFsmFull(success, failure) {
+        return {
+            success: {
+                text     : success.text || 'Success',
+                disabled : false,
+                nextState: 'success',
+                className: success.format || 'btn btn-success'
+            },
+            failure: {
+                text     : failure.text || 'Failure',
+                disabled : false,
+                nextState: 'failure',
+                className: failure.format || 'btn btn-danger'
+            }
+        };
+    }
 }
 
 export default StateButton;

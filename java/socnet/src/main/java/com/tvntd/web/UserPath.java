@@ -879,6 +879,7 @@ public class UserPath
         } else {
             res.setMessage("ok");
         }
+        System.out.println("Got domain request " + form.getDomain());
         return res;
     }
 }

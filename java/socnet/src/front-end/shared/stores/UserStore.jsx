@@ -233,8 +233,8 @@ let UserStore = Reflux.createStore({
         }
     },
 
-    onRefreshNotifyCompleted: function(json) {
-        this.trigger(this.data);
+    onRefreshNotifyCompleted: function(resp) {
+        this.trigger(this.data, "refresh", resp);
     },
 
     /* Login actions. */
@@ -279,7 +279,7 @@ let UserStore = Reflux.createStore({
         if (self.userUuid === response.userSelf.userUuid) {
             self.updateProfile(response.userSelf);
         }
-        this.trigger(this.data, "update-profile");
+        this.trigger(this.data, "update-profile", response);
     },
 
     /* Logout actions. */
@@ -290,12 +290,12 @@ let UserStore = Reflux.createStore({
     },
 
     /* Password reset actions. */
-    onResetPasswordCompleted: function() {
-        this.trigger(this.data);
+    onResetPasswordCompleted: function(response) {
+        this.trigger(this.data, "reset-password", response);
     },
 
-    onResetPasswordFailed: function() {
-        this.trigger(this.data);
+    onResetPasswordFailed: function(error) {
+        this.trigger(this.data, "reset-password-failed", error);
     },
 
     /* Init. action. */
@@ -314,7 +314,7 @@ let UserStore = Reflux.createStore({
         this._setFriendStatus(raw.result.follow, "followed");
         this._setFriendStatus(raw.result.connect, "connected");
         this._setFriendStatus(raw.result.connecting, "connecting");
-        this.trigger(this.data);
+        this.trigger(this.data, "change-users", raw);
     },
 
     onUploadAvataDoneCompleted: function(data) {
@@ -366,7 +366,7 @@ let UserStore = Reflux.createStore({
                 this.data.authMesg = resp.error;
             }
         }
-        this.trigger(this.data, startPage);
+        this.trigger(this.data, startPage, resp);
     },
 
     _addFromJson: function(items) {

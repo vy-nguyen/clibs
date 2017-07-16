@@ -99,6 +99,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                     "/login/**",
                     "/register/**",
                     "/public/**",
+                    "/domain/**",
                     "/api/**",
                     "/help/**").permitAll()
             .antMatchers("/user/**").hasRole(Role.User)
@@ -110,8 +111,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
             .and()
                 .formLogin()
                     .loginPage("/login")
-                    //.defaultSuccessUrl("/home")
-                    //.failureUrl("/login.do?error=true")
                     .successHandler(urlAuthenticationSuccessHandler)
                     .failureHandler(authenticationFailureHandler)
                     .usernameParameter("email").passwordParameter("password")
