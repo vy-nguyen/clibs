@@ -45,6 +45,7 @@ public class Domain
     @Column(length = 64)
     String authorUuid;
 
+    public Domain() {}
     public Domain(String name, String authorUuid)
     {
         this.domain = name;
