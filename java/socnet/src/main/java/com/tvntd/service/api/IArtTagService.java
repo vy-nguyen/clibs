@@ -77,6 +77,16 @@ public interface IArtTagService
             publicTags.add(update);
         }
 
+        public void updateTagList(ArtTagList tags)
+        {
+            if (tags.publicTags != null) {
+                publicTags.addAll(tags.publicTags);
+            }
+            if (tags.deletedTags != null) {
+                publicTags.addAll(tags.deletedTags);
+            }
+        }
+
         /**
          * @return the publicTags
          */

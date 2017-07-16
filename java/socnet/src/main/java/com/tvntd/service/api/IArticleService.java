@@ -274,7 +274,7 @@ public interface IArticleService
          * @return the rank
          */
         public ArticleRankDTO getRank() {
-            return new ArticleRankDTO(rank);
+            return rank != null ? new ArticleRankDTO(rank) : null;
         }
 
         /**

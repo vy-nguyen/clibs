@@ -26,6 +26,11 @@
  */
 package com.tvntd.service.user;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -35,8 +40,20 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 
 import com.tvntd.dao.DomainRepo;
+import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Domain;
+import com.tvntd.service.api.IArtTagService;
+import com.tvntd.service.api.IArtTagService.ArtTagDTO;
+import com.tvntd.service.api.IArtTagService.ArtTagList;
+import com.tvntd.service.api.IArticleService;
+import com.tvntd.service.api.IArticleService.ArticleDTO;
+import com.tvntd.service.api.IArticleService.ArticleRankDTO;
+import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IDomainService;
+import com.tvntd.service.api.IProfileService;
+import com.tvntd.service.api.IProfileService.ProfileDTO;
+import com.tvntd.service.api.StartupResponse;
+import com.tvntd.web.ApiPath;
 
 @Service
 @Transactional
@@ -47,6 +64,18 @@ public class DomainService implements IDomainService
 
     @Autowired
     protected DomainRepo domainRepo;
+
+    @Autowired
+    protected IArtTagService artTagSvc;
+
+    @Autowired
+    protected IAuthorService authorSvc;
+
+    @Autowired
+    protected IArticleService articleSvc;
+
+    @Autowired
+    protected IProfileService profileSvc;
 
     public Domain getDomain(String domain)
     {
@@ -64,5 +93,81 @@ public class DomainService implements IDomainService
     public void deleteDomain(Domain domain)
     {
         domainRepo.delete(domain);
+    }
+
+    public void fillStartupDomain(StartupResponse resp, String name, ProfileDTO prof)
+    {
+        Domain domain = domainRepo.findByDomain(name);
+        Map<String, String> artUuids = new HashMap<>();
+
+        if (domain != null) {
+            String authorUuid = domain.getAuthorUuid();
+            ArtTagList tags = artTagSvc.getUserTagsDTO(authorUuid);
+            resp.setPublicTags(tags);
+
+            List<ArticleDTO> articles = articleSvc.getArticlesByUser(authorUuid);
+            resp.setArticles(articles);
+        }
+        fillStartupResponse(resp, prof, artUuids);
+    }
+
+    private void fillStartupResponse(StartupResponse resp,
+            ProfileDTO profile, Map<String, String> artUuids)
+    {
+        String publicUuid = com.tvntd.util.Constants.PublicUuid;
+        ArtTagList tags = artTagSvc.getUserTagsDTO(publicUuid);
+        resp.setPublicTags(tags);
+
+        Map<String, String> authorUuids = new HashMap<>();
+        List<ArtTagDTO> tagList = tags.getPublicTags();
+
+        // Get all authors and articles from public tags.
+        //
+        for (ArtTagDTO t : tagList) {
+            String u = t.getUserUuid();
+            if (!u.equals(publicUuid) && (authorUuids.get(u) == null)) {
+                authorUuids.put(u, u);
+            }
+            List<String> ranks = t.getArticleRank();
+            for (String r : ranks) {
+                if (artUuids.get(r) == null) {
+                    artUuids.put(r, r);
+                }
+            }
+        }
+        // Get all articles.
+        //
+        List<ArticleDTO> artList = new LinkedList<>();
+        List<ArticleRankDTO> rankList = new LinkedList<>();
+        for (Map.Entry<String, String> entry : artUuids.entrySet()) {
+            ArticleDTO art = articleSvc.getArticleDTO(entry.getKey());
+            if (art != null) {
+                artList.add(art);
+                String author = art.getAuthorUuid();
+
+                if (authorUuids.get(author) == null) {
+                    authorUuids.put(author, author);
+                }
+                ArticleRankDTO rank = art.getRank();
+                if (rank == null) {
+                }
+            }
+        }
+        resp.setArtRanks(rankList);
+        resp.setArticles(artList);
+
+        // Get all authors.
+        //
+        List<String> uuids = new LinkedList<>();
+        List<ProfileDTO> userList = new LinkedList<>();
+        for (Map.Entry<String, String> entry : authorUuids.entrySet()) {
+            ProfileDTO user = profileSvc.getProfile(entry.getKey());
+            if (user != null) {
+                userList.add(user);
+                uuids.add(entry.getKey());
+            }
+        }
+        resp.setLinkedUsers(userList);
+        ApiPath.fillAuthorTags(resp, profile, uuids, authorSvc);
     }
 }

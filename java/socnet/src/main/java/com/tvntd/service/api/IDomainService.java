@@ -27,10 +27,12 @@
 package com.tvntd.service.api;
 
 import com.tvntd.models.Domain;
+import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 public interface IDomainService
 {
     Domain getDomain(String domain);
+    void fillStartupDomain(StartupResponse resp, String domain, ProfileDTO prof);
     void saveDomain(String name, String authorUuid);
     void deleteDomain(Domain domain);
 }

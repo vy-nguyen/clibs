@@ -46,11 +46,15 @@ public class StartupResponse
     private LoginResponse          userDTO;
     private List<ProfileDTO>       linkedUsers;
     private List<ArticleDTO>       articles;
-    private List<ArticleRankDTO>   artRanks;
     private List<AuthorDTO>        authors;
 
     private List<Language>         languages;
     private ArtTagList             publicTags;
+
+    // Only use this list to reduce the amount of full articles fetched back from
+    // one shot.
+    //
+    private List<ArticleRankDTO>   artRanks;
 
     public StartupResponse(ProfileDTO profile,
             HttpServletRequest reqt, HttpSession session, boolean annon)
@@ -96,6 +100,15 @@ public class StartupResponse
         return result;
     }
 
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("# articles ").append(articles.size())
+            .append(", #ranks ").append(artRanks.size())
+            .append(", #authors ").append(authors.size());
+        return sb.toString();
+    }
+
     /**
      * @return the userDTO
      */
@@ -134,8 +147,13 @@ public class StartupResponse
     /**
      * @param articles the articles to set
      */
-    public void setArticles(List<ArticleDTO> articles) {
-        this.articles = articles;
+    public void setArticles(List<ArticleDTO> list)
+    {
+        if (articles == null) {
+            articles = list;
+        } else {
+            articles.addAll(list);
+        }
     }
 
     /**
@@ -148,8 +166,13 @@ public class StartupResponse
     /**
      * @param artRanks the artRanks to set
      */
-    public void setArtRanks(List<ArticleRankDTO> artRanks) {
-        this.artRanks = artRanks;
+    public void setArtRanks(List<ArticleRankDTO> rankList)
+    {
+        if (artRanks == null) {
+            artRanks = rankList;
+        } else {
+            artRanks.addAll(rankList);
+        }
     }
 
     /**
@@ -183,8 +206,13 @@ public class StartupResponse
     /**
      * @param publicTags the publicTags to set
      */
-    public void setPublicTags(ArtTagList publicTags) {
-        this.publicTags = publicTags;
+    public void setPublicTags(ArtTagList publicTags)
+    {
+        if (this.publicTags == null) {
+            this.publicTags = publicTags;
+        } else {
+            this.publicTags.updateTagList(publicTags);
+        }
     }
 
     public static class Language

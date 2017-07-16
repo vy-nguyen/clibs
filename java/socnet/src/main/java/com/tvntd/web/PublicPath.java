@@ -33,8 +33,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -75,11 +73,11 @@ import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArtTagService.ArtTagDTO;
 import com.tvntd.service.api.IArtTagService.ArtTagList;
 import com.tvntd.service.api.IArticleService;
-import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.ICommentService;
 import com.tvntd.service.api.ICommentService.CommentDTOResponse;
+import com.tvntd.service.api.IDomainService;
 import com.tvntd.service.api.IProductService;
 import com.tvntd.service.api.IProductService.ProductDTO;
 import com.tvntd.service.api.IProductService.ProductDTOResponse;
@@ -120,6 +118,9 @@ public class PublicPath
     @Autowired
     private IAdsPostService adsSvc;
 
+    @Autowired
+    private IDomainService domainSvc;
+
     /**
      * Handle public pages.
      */
@@ -152,84 +153,11 @@ public class PublicPath
             s_publicDto = new ProfileDTO(s_public);
         }
         annonSvc.getAnnonUser(reqt, resp, session);
-        StartupResponse result = new StartupResponse(s_publicDto, reqt, session, true);
-        fillStartupPublicResponse(result, s_publicDto);
-        session.removeAttribute("startPage");
-
         String domain = (String) session.getAttribute("domain");
-        if (domain != null) {
-            fillStartupDomainResponse(result, domain, s_publicDto);
-        }
+        StartupResponse result = new StartupResponse(s_publicDto, reqt, session, true);
+        domainSvc.fillStartupDomain(result, domain, s_publicDto);
+        session.removeAttribute("startPage");
         return result;
-    }
-
-    protected void fillStartupPublicResponse(StartupResponse resp, ProfileDTO profile)
-    {
-        String publicUuid = com.tvntd.util.Constants.PublicUuid;
-        ArtTagList tags = artTagSvc.getUserTagsDTO(publicUuid);
-        resp.setPublicTags(tags);
-
-        Map<String, String> artUuids = new HashMap<>();
-        Map<String, String> authorUuids = new HashMap<>();
-        List<ArtTagDTO> tagList = tags.getPublicTags();
-
-        // Get all authors and articles from public tags.
-        //
-        for (ArtTagDTO t : tagList) {
-            String u = t.getUserUuid();
-            if (!u.equals(publicUuid) && (authorUuids.get(u) == null)) {
-                authorUuids.put(u, u);
-            }
-            List<String> ranks = t.getArticleRank();
-            for (String r : ranks) {
-                if (artUuids.get(r) == null) {
-                    artUuids.put(r, r);
-                }
-            }
-        }
-        // Get all articles.
-        //
-        List<ArticleDTO> artList = new LinkedList<>();
-        List<ArticleRankDTO> rankList = new LinkedList<>();
-        for (Map.Entry<String, String> entry : artUuids.entrySet()) {
-            ArticleRank rank = articleSvc.getRank(entry.getKey());
-            if (rank != null) {
-                rankList.add(new ArticleRankDTO(rank));
-            }
-            ArticleDTO art = articleSvc.getArticleDTO(entry.getKey());
-            if (art != null) {
-                artList.add(art);
-                String author = art.getAuthorUuid();
-                if (authorUuids.get(author) == null) {
-                    authorUuids.put(author, author);
-                }
-            }
-        }
-        resp.setArtRanks(rankList);
-        resp.setArticles(artList);
-
-        // Get all authors.
-        //
-        List<String> uuids = new LinkedList<>();
-        List<ProfileDTO> userList = new LinkedList<>();
-        for (Map.Entry<String, String> entry : authorUuids.entrySet()) {
-            ProfileDTO user = profileSvc.getProfile(entry.getKey());
-            if (user != null) {
-                userList.add(user);
-                uuids.add(entry.getKey());
-            }
-        }
-        resp.setLinkedUsers(userList);
-        ApiPath.fillAuthorTags(resp, profile, uuids, authorSvc);
-    }
-
-    /**
-     * Fill response data when getting through a domain path.
-     */
-    protected void fillStartupDomainResponse(StartupResponse resp,
-            String domain, ProfileDTO profile)
-    {
-        System.out.println("Fill in data in " + domain);
     }
 
     /**
