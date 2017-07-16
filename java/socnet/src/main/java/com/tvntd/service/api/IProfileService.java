@@ -26,7 +26,6 @@
  */
 package com.tvntd.service.api;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -139,29 +138,11 @@ public interface IProfileService
 
         protected void convertUTF()
         {
-            try {
-                byte[] str = profile.getFirstName();
-                if (str != null) {
-                    firstName = new String(str, "UTF-8");
-                }
-                str = profile.getLastName();
-                if (str != null) {
-                    lastName = new String(str, "UTF-8");
-                }
-                str = profile.getHomeTown();
-                if (str != null) {
-                    homeTown = new String(str, "UTF-8");
-                }
-                str = profile.getState();
-                if (str != null) {
-                    state = new String(str, "UTF-8");
-                }
-                str = profile.getCountry();
-                if (str != null) {
-                    country = new String(str, "UTF-8");
-                }
-            } catch(UnsupportedEncodingException e) {
-            }
+            firstName = Util.fromRawByte(profile.getFirstName());
+            lastName  = Util.fromRawByte(profile.getLastName());
+            homeTown  = Util.fromRawByte(profile.getHomeTown());
+            state     = Util.fromRawByte(profile.getState());
+            country   = Util.fromRawByte(profile.getCountry());
         }
 
         public boolean isAdmin() {
@@ -482,11 +463,10 @@ public interface IProfileService
         /**
          * @param firstName the firstName to set
          */
-        public void setFirstName(String firstName) {
-            try {
-                this.firstName = firstName;
-                profile.setFirstName(firstName.getBytes("UTF-8"));
-            } catch(UnsupportedEncodingException e) {}
+        public void setFirstName(String firstName)
+        {
+            this.firstName = firstName;
+            profile.setFirstName(Util.toRawByte(firstName, 64));
         }
 
         /**
@@ -499,22 +479,20 @@ public interface IProfileService
         /**
          * @param lastName the lastName to set
          */
-        public void setLastName(String lastName) {
-            try {
-                this.lastName = lastName;
-                profile.setLastName(lastName.getBytes("UTF-8"));
-            } catch(UnsupportedEncodingException e) {}
+        public void setLastName(String lastName)
+        {
+            this.lastName = lastName;
+            profile.setLastName(Util.toRawByte(lastName, 64));
         }
 
         public String getHomeTown() {
             return homeTown;
         }
 
-        public void setHomeTown(String homeTown) {
-            try {
-                this.homeTown = homeTown;
-                profile.setHomeTown(homeTown.getBytes("UTF-8"));
-            } catch(UnsupportedEncodingException e) {}
+        public void setHomeTown(String homeTown)
+        {
+            this.homeTown = homeTown;
+            profile.setHomeTown(Util.toRawByte(homeTown, 64));
         }
 
         /**
@@ -527,11 +505,10 @@ public interface IProfileService
         /**
          * @param state the state to set
          */
-        public void setState(String state) {
-            try {
-                this.state = state;
-                profile.setState(state.getBytes("UTF-8"));
-            } catch(UnsupportedEncodingException e) {}
+        public void setState(String state)
+        {
+            this.state = state;
+            profile.setState(Util.toRawByte(state, 64));
         }
 
         /**
@@ -544,11 +521,10 @@ public interface IProfileService
         /**
          * @param country the country to set
          */
-        public void setCountry(String country) {
-            try {
-                this.country = country;
-                profile.setCountry(country.getBytes("UTF-8"));
-            } catch(UnsupportedEncodingException e) {}
+        public void setCountry(String country)
+        {
+            this.country = country;
+            profile.setCountry(Util.toRawByte(country, 64));
         }
  
         /**
@@ -563,6 +539,28 @@ public interface IProfileService
          */
         public String getUserUrl() {
             return "/usr/id/" + profile.getUserUuid();
+        }
+
+        /**
+         * Get/set brithYear
+         */
+        public String getBirthYear() {
+            return profile.getBirthYear();
+        }
+
+        public void setBirthYear(String year) {
+            profile.setBirthYear(Util.toMaxString(year, 64));
+        }
+
+        /**
+         * Get/set domain
+         */
+        public String getDomain() {
+            return profile.getDomain();
+        }
+
+        public void setDomain(String domain) {
+            profile.setDomain(Util.toMaxString(domain, 64));
         }
 
         /**

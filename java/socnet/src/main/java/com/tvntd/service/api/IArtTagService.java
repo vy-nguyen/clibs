@@ -198,7 +198,7 @@ public interface IArtTagService
         }
 
         public void setTagName(String tagName) {
-            artTag.setTagName(Util.toRawByte(tagName));
+            artTag.setTagName(Util.toRawByte(tagName, 128));
         }
 
         /**
@@ -209,7 +209,7 @@ public interface IArtTagService
         }
 
         public void setParentTag(String parent) {
-            artTag.setParentTag(Util.toRawByte(parent));
+            artTag.setParentTag(Util.toRawByte(parent, 128));
         }
 
         /**

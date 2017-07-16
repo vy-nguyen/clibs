@@ -109,7 +109,8 @@ public class GenericResponse
         return error;
     }
 
-    public void setError(final String error) {
-        this.error = error;
+    public void setError(final String error, String mesg) {
+        this.error   = error;
+        this.message = mesg;
     }
 }

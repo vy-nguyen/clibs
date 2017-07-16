@@ -139,11 +139,14 @@ class ProfileForm extends FormData
     }
 
     submitNotif(store, result, status, resp) {
-        console.log("Submit notif");
-        console.log(result);
-        console.log(status);
-        console.log(resp);
-        super.submitNotif(store, result, status);
+        if (resp.error == null) {
+            super.submitNotif(store, result, status);
+            History.goBack();
+            return;
+        }
+        if (resp.error === "reg-failure") {
+            console.log(resp);
+        }
     }
 
     validateInput(data, errFlags) {
@@ -181,11 +184,8 @@ class ProfileForm extends FormData
     }
 
     onClick(btn, btnState) {
-        console.log("on click button");
-        console.log(btn);
-        console.log(btnState);
         super.submitNotif(null, null, null);
-        History.pushState(null, "/");
+        History.goBack();
     }
 }
 

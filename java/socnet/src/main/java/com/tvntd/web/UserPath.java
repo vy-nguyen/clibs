@@ -83,6 +83,7 @@ import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.ICommentService;
 import com.tvntd.service.api.ICommentService.CommentDTOResponse;
 import com.tvntd.service.api.ICommentService.CommentRespDTO;
+import com.tvntd.service.api.IDomainService;
 import com.tvntd.service.api.IProductService;
 import com.tvntd.service.api.IProductService.ProductDTO;
 import com.tvntd.service.api.IProfileService;
@@ -95,6 +96,7 @@ import com.tvntd.service.api.UuidResponse;
 import com.tvntd.service.user.ArtTagService;
 import com.tvntd.service.user.ArticleService;
 import com.tvntd.service.user.ProductService;
+import com.tvntd.util.Util;
 
 @Controller
 public class UserPath
@@ -136,6 +138,10 @@ public class UserPath
 
     @Autowired
     protected IProductService productSvc;
+
+    @Autowired
+    protected IDomainService domainSvc;
+
 
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     @ResponseBody
@@ -835,51 +841,31 @@ public class UserPath
             s_log.info("Not author " + profile.getUserUuid() + " request " + uuid);
             return s_noProfile;
         }
-        boolean save = false;
-        String name = form.getFirstName();
-
-        if (name != null) {
-            save = true;
-            profile.setFirstName(name);
-        }
-        name = form.getLastName();
-        if (name != null) {
-            save = true;
-            profile.setLastName(name);
-        }
-        name = form.getHomeTown();
-        if (name != null) {
-            save = true;
-            profile.setHomeTown(name);
-        }
-        name = form.getState();
-        if (name != null) {
-            save = true;
-            profile.setState(name);
-        }
-        name = form.getCountry();
-        if (name != null) {
-            save = true;
-            profile.setCountry(name);
-        }
+        boolean save = form.updateProfile(profile);
         if (save == true) {
             profileSvc.saveProfile(profile);
         }
         LoginResponse res = new LoginResponse(profile, request, session, false);
-        name = form.getPassword0();
-        if (name != null) {
+
+        String name = form.getPassword0();
+        if (name != null && !name.isEmpty()) {
             String verf = form.getPassword1();
             if (verf == null || !verf.equals(name)) {
-                res.setMessage("Password verification failed");
+                res.setError(GenericResponse.REG_FAILED, "Passwords don't match");
             } else {
                 String mesg = userService.changePassword(
                         profile.fetchUserId(), form.getCurPasswd(), name);
-                res.setMessage(mesg);
+                if (mesg != null) {
+                    res.setError(GenericResponse.REG_FAILED, mesg);
+                }
             }
-        } else {
-            res.setMessage("ok");
         }
-        System.out.println("Got domain request " + form.getDomain());
+        name = Util.toMaxString(form.getDomain(), 64);
+        if (name != null) {
+            System.out.println("Save domain " + form.getDomain() + ", uuid " +
+                    profile.getUserUuid());
+            domainSvc.saveDomain(name, profile.getUserUuid());
+        }
         return res;
     }
 }

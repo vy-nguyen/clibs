@@ -74,15 +74,26 @@ public final class Util
         return "";
     }
 
-    static public byte[] toRawByte(String str)
+    static public byte[] toRawByte(String str, int limit)
     {
         if (str != null) {
             try {
+                if (str.length() > limit) {
+                    return str.substring(0, limit).getBytes("UTF-8");
+                }
                 return str.getBytes("UTF-8");
             } catch(UnsupportedEncodingException e) {
             }
         }
         return null;
+    }
+
+    static public String toMaxString(String str, int limit)
+    {
+        if (str != null && str.length() > limit) {
+            return str.substring(0, limit);
+        }
+        return str;
     }
 
     static public <T> T isInList(List<T> list, T item)

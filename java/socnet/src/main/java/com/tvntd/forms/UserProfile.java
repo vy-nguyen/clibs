@@ -32,6 +32,7 @@ import javax.validation.constraints.Size;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
+import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.util.Util;
 
 public class UserProfile
@@ -109,6 +110,48 @@ public class UserProfile
             birthYear = Jsoup.clean(birthYear, wlist);
         }
         return true;
+    }
+
+    public boolean updateProfile(ProfileDTO profile)
+    {
+        boolean save = false;
+        String name = firstName;
+
+        if (name != null && !name.isEmpty() && !name.equals(profile.getFirstName())) {
+            save = true;
+            profile.setFirstName(name);
+        }
+        name = lastName;
+        if (name != null && !name.isEmpty() && !name.equals(profile.getLastName())) {
+            save = true;
+            profile.setLastName(name);
+        }
+        name = homeTown;
+        if (name != null && !name.isEmpty() && !name.equals(profile.getHomeTown())) {
+            save = true;
+            profile.setHomeTown(name);
+        }
+        name = state;
+        if (name != null && !name.isEmpty() && !name.equals(profile.getState())) {
+            save = true;
+            profile.setState(name);
+        }
+        name = country;
+        if (name != null && !name.isEmpty() && !name.equals(profile.getCountry())) {
+            save = true;
+            profile.setCountry(name);
+        }
+        name = birthYear;
+        if (name != null && !name.isEmpty() && !name.equals(profile.getBirthYear())) {
+            save = true;
+            profile.setBirthYear(name);
+        }
+        name = domain;
+        if (name != null && !name.isEmpty() && !name.equals(profile.getDomain())) {
+            save = true;
+            profile.setDomain(name);
+        }
+        return save;
     }
 
     /**

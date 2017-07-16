@@ -97,6 +97,12 @@ public class Profile
     private String userUuid;
 
     @Column(length = 64)
+    private String birthYear;
+
+    @Column(length = 64)
+    private String domain;
+
+    @Column(length = 64)
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "ConnectList",
             uniqueConstraints = @UniqueConstraint(columnNames = {
@@ -431,6 +437,34 @@ public class Profile
      */
     public String getUserUuid() {
         return userUuid;
+    }
+
+    /**
+     * @return the birthYear
+     */
+    public String getBirthYear() {
+        return birthYear;
+    }
+
+    /**
+     * @param birthYear the birthYear to set
+     */
+    public void setBirthYear(String birthYear) {
+        this.birthYear = birthYear;
+    }
+
+    /**
+     * @return the domain
+     */
+    public String getDomain() {
+        return domain;
+    }
+
+    /**
+     * @param domain the domain to set
+     */
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 
     /**

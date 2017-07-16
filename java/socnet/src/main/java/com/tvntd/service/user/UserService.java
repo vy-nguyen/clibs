@@ -234,13 +234,13 @@ public class UserService implements IUserService
             }
             vtoken.setToken(UUID.randomUUID().toString());
             tokenRepository.save(vtoken);
-            return "Changed password";
+            return null;
         }
         String encrypt = passwordEncoder.encode(newPass);
         System.out.println("New pass encrypt " + encrypt);
         user.setPassword(encrypt);
         repository.save(user);
-        return "Changed password";
+        return null;
     }
 
     @Override
