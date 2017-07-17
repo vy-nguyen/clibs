@@ -19,6 +19,10 @@ class ArticleBrief extends ArticleTagBrief
         return this._renderArtBriefUuid(art.articleUuid);
     }
 
+    _renderArtFull(art) {
+        return this._renderArtFullUuid(art, art.articleUuid);
+    }
+
     render() {
         let art, tag = this.props.tag, ranks = tag.sortedArts, articles = [];
 

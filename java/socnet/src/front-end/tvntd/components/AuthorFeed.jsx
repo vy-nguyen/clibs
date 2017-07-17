@@ -139,24 +139,24 @@ class AuthorFeed extends React.Component
         }
         return (
             <div className="row">
-                    <div className="well well-light well-sm">
-                        <div className="row">
-                            <div className="col-sm-3 col-md-3 col-lg-3">
-                                <Author user={author}/>
-                                {plugin.render.bind(this, plugin)(author.coverImg)}
-                            </div>
-                            <div className="col-sm-9 col-md-9 col-lg-9">
-                                <TabPanel className="padding-top-10"
-                                    context={this._getAuthorTab(author.userUuid)}>
-                                    <PostArticles data={articles} user={user}/>
-                                    <Blog authorUuid={userUuid} user={user}/>
-                                    <UserPostView userUuid={author.userUuid}/>
-                                    <Timeline/>
-                                    <EStore userUuid={author.userUuid}/>
-                                </TabPanel>
-                            </div>
+                <div className="well well-light well-sm">
+                    <div className="row">
+                        <div className="col-sm-3 col-md-3 col-lg-3">
+                            <Author user={author}/>
+                            {plugin.render.bind(this, plugin)(author.coverImg)}
+                        </div>
+                        <div className="col-sm-9 col-md-9 col-lg-9">
+                            <TabPanel className="padding-top-10"
+                                context={this._getAuthorTab(author.userUuid)}>
+                                <PostArticles data={articles} user={user}/>
+                                <Blog authorUuid={userUuid} user={user}/>
+                                <UserPostView userUuid={author.userUuid}/>
+                                <Timeline/>
+                                <EStore userUuid={author.userUuid}/>
+                            </TabPanel>
                         </div>
                     </div>
+                </div>
             </div>
         )
     }

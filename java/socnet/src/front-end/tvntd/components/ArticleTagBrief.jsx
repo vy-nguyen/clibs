@@ -26,21 +26,18 @@ class ArticleTagBrief extends React.Component
         this._renderArtBriefUuid = this._renderArtBriefUuid.bind(this);
 
         this.state = {
-            articleUuid: null,
-            articleRank: null 
+            articleUuid: null
         };
     }
 
     _readArticle(uuid, artRank) {
         if (uuid === this.state.articleUuid) {
             this.setState({
-                articleUuid: null,
-                articleRank: null 
+                articleUuid: null
             });
         } else {
             this.setState({
-                articleUuid: uuid,
-                articleRank: artRank
+                articleUuid: uuid
             });
         }
     }
@@ -71,20 +68,23 @@ class ArticleTagBrief extends React.Component
         return this._renderArtBriefUuid(art.artUuid);
     }
 
-    _renderArtFull(art) {
-        if (this.state.articleUuid == null ||
-            this.state.articleUuid !== art.artUuid) {
+    _renderArtFullUuid(article, artUuid) {
+        if (this.state.articleUuid == null || this.state.articleUuid !== artUuid) {
             return null;
         }
-        let artUuid = art.artUuid, artTag = art.artTag,
+        if (article == null) {
             article = ArticleStore.getArticleByUuid(artUuid);
-
+        }
         return (
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 {AuthorFeed.renderToggleView(article.authorUuid,
-                    article, this._readArticle, artTag)}
+                    article, this._readArticle, null)}
             </div>
         )
+    }
+
+    _renderArtFull(art) {
+        return this._renderArtFullUuid(null, art.artUuid);
     }
 
     render() {
