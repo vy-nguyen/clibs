@@ -44,6 +44,7 @@ import com.tvntd.service.api.IProfileService.ProfileDTO;
 public class StartupResponse
 {
     private LoginResponse          userDTO;
+    private String                 domainUuid;
     private List<ProfileDTO>       linkedUsers;
     private List<ArticleDTO>       articles;
     private List<AuthorDTO>        authors;
@@ -121,6 +122,20 @@ public class StartupResponse
      */
     public void setUserDTO(LoginResponse userDTO) {
         this.userDTO = userDTO;
+    }
+
+    /**
+     * @return the domainUuid
+     */
+    public String getDomainUuid() {
+        return domainUuid;
+    }
+
+    /**
+     * @param domainUuid the domainUuid to set
+     */
+    public void setDomainUuid(String domainUuid) {
+        this.domainUuid = domainUuid;
     }
 
     /**

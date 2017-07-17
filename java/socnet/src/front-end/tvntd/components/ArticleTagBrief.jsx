@@ -23,6 +23,8 @@ class ArticleTagBrief extends React.Component
         this._renderArtBrief = this._renderArtBrief.bind(this);
         this._renderArtFull  = this._renderArtFull.bind(this);
 
+        this._renderArtBriefUuid = this._renderArtBriefUuid.bind(this);
+
         this.state = {
             articleUuid: null,
             articleRank: null 
@@ -43,9 +45,8 @@ class ArticleTagBrief extends React.Component
         }
     }
 
-    _renderArtBrief(art) {
-        let artUuid = art.artUuid, artTag = art.artTag,
-        clickCb = {
+    _renderArtBriefUuid(artUuid) {
+        let clickCb = {
             getBtnFormat: function() {
                 if (this.state.articleUuid == null ||
                     this.state.articleUuid !== artUuid) {
@@ -66,6 +67,10 @@ class ArticleTagBrief extends React.Component
         return ArticleBox.article(artUuid, clickCb);
     }
 
+    _renderArtBrief(art) {
+        return this._renderArtBriefUuid(art.artUuid);
+    }
+
     _renderArtFull(art) {
         if (this.state.articleUuid == null ||
             this.state.articleUuid !== art.artUuid) {
@@ -83,7 +88,7 @@ class ArticleTagBrief extends React.Component
     }
 
     render() {
-        let tag = this.props.tag;
+        let tag = this.props.tag, articles = [], unique = {};
 
         if (tag.tagKind === "estore") {
             let products = [];
@@ -95,8 +100,7 @@ class ArticleTagBrief extends React.Component
             });
             return EStore.renderProducts(products, null);
         }
-        let articles = [], unique = {};
-        ArticleTagStore.getPublishedArticles(this.props.tag.tagName, articles, unique);
+        ArticleTagStore.getPublishedArticles(tag.tagName, articles, unique);
 
         return (
             <section id='widget-grid'>

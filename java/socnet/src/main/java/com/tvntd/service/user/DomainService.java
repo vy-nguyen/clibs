@@ -40,7 +40,6 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 
 import com.tvntd.dao.DomainRepo;
-import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Domain;
 import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArtTagService.ArtTagDTO;
@@ -102,8 +101,9 @@ public class DomainService implements IDomainService
 
         if (domain != null) {
             String authorUuid = domain.getAuthorUuid();
-            ArtTagList tags = artTagSvc.getUserTagsDTO(authorUuid);
-            resp.setPublicTags(tags);
+            resp.setDomainUuid(authorUuid);
+            // ArtTagList tags = artTagSvc.getUserTagsDTO(authorUuid);
+            // resp.setPublicTags(tags);
 
             List<ArticleDTO> articles = articleSvc.getArticlesByUser(authorUuid);
             resp.setArticles(articles);

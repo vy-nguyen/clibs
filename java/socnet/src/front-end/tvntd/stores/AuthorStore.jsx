@@ -211,6 +211,10 @@ class AuthorTagMgr {
         return this.authorTags;
     }
 
+    getSortedTagList() {
+        return this.sortedTags;
+    }
+
     addAuthorTag(tag) {
         let authorTag = this.authorTags[tag.tagName];
         if (authorTag != null) {
@@ -667,15 +671,12 @@ let AuthorStore = Reflux.createStore({
         let authors = data.authors;
         if (authors != null) {
             this._addAuthorList(authors);
-            //Actions.getArticleRank({
-            //    authorUuid: 0,
-            //    uuids: this.getAuthorUuidList()
-            //});
         }
         if (data.articles != null) {
             this._updateArtRankFromArticles(data.articles);
         }
         Startup.mainStartup();
+        this.trigger(this.data, data, "startup");
     },
 
     statics: {

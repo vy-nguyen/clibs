@@ -10,6 +10,7 @@ import Reflux   from 'reflux';
 
 import ErrorStore   from 'vntd-shared/stores/ErrorStore.jsx';
 import Actions      from 'vntd-root/actions/Actions.jsx';
+import {VntdGlob}   from 'vntd-root/config/constants.js';
 
 /*
  * Explicit define known fields in User object.
@@ -158,7 +159,13 @@ let UserStore = Reflux.createStore({
     },
 
     getSelfUuid: function() {
-        return this.data.userSelf.userUuid;
+        if (this.data.domainUuid != null) {
+            return this.data.domainUuid;
+        }
+        if (this.data.userSelf != null) {
+            return this.data.userSelf.userUuid;
+        }
+        return VntdGlob.publicUuid;
     },
 
     getActiveUser: function() {
@@ -223,6 +230,7 @@ let UserStore = Reflux.createStore({
 
     /* Startup actions. */
     onStartupCompleted: function(json) {
+        this.data.domainUuid = json.domainUuid;
         this._addFromJson(json.linkedUsers);
         if (json.userDTO != null) {
             this._changedData(json.userDTO);

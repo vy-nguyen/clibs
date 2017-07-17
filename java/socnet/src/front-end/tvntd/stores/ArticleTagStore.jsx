@@ -8,8 +8,9 @@ import _         from 'lodash';
 import Reflux    from 'reflux';
 import Actions   from 'vntd-root/actions/Actions.jsx';
 
-import {tagKinds}                  from 'vntd-root/components/TagInfo.jsx';
-import {cloneInputEntry}           from 'vntd-shared/forms/commons/GenericForm.jsx';
+import {VntdGlob}            from 'vntd-root/config/constants.js';
+import {tagKinds}            from 'vntd-root/components/TagInfo.jsx';
+import {cloneInputEntry}     from 'vntd-shared/forms/commons/GenericForm.jsx';
 
 import {
     GetStoreKind, LookupArticle
@@ -144,7 +145,6 @@ class ArtTag {
  */
 let ArticleTagStore = Reflux.createStore({
     data: null,
-    publicUuid : "00000000-ffff-0000-ffff-00ff00ff00ff",
     listenables: [Actions],
 
     init: function() {
@@ -162,6 +162,8 @@ let ArticleTagStore = Reflux.createStore({
     /* Admin actions to list users. */
     onStartupCompleted: function(data) {
         let tagData = data.publicTags; 
+
+        this.data.domainUuid = data.domainUuid;
         if (tagData != null) {
             _.forEach(tagData.publicTags, function(tag) {
                 this._addTag(new ArtTag(tag));
@@ -442,7 +444,7 @@ let ArticleTagStore = Reflux.createStore({
             if (t != null) {
                 t.addSubTag(tagObj);
             }
-        } else if (ownerUuid === this.publicUuid) {
+        } else if (ownerUuid === VntdGlob.publicUuid) {
             this.data.publicTags[tagObj.tagName] = tagObj;
             insertSorted(tagObj, this.data.sortedPubTags, this._compareTags);
         } else {
