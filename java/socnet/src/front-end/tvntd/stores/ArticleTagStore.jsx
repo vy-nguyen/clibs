@@ -138,8 +138,13 @@ class ArtTag {
     }
 }
 
+/*
+ * This store manages tags having published articles.  Tags keeping track of all
+ * articles are managed by AuthorStore.
+ */
 let ArticleTagStore = Reflux.createStore({
-    data: {},
+    data: null,
+    publicUuid : "00000000-ffff-0000-ffff-00ff00ff00ff",
     listenables: [Actions],
 
     init: function() {
@@ -149,6 +154,7 @@ let ArticleTagStore = Reflux.createStore({
             sortedPubTags: [],
             sortedIdxTags: [],
             sortedTagKind: {},
+            sortedByOwner: {},
             unResolved   : {}
         };
     },
@@ -424,8 +430,9 @@ let ArticleTagStore = Reflux.createStore({
     * Main method to add tag to this store.
     */
     _addTag: function(tagObj) {
-        let tagIndex = this.data.pubTagIndex;
+        let tagList, ownerUuid, tagIndex = this.data.pubTagIndex;
 
+        ownerUuid = tagObj.userUuid;
         if (tagIndex[tagObj.tagName] == null) {
             tagIndex[tagObj.tagName] = tagObj;
             insertSorted(tagObj, this.data.sortedIdxTags, this._compareTags);
@@ -435,12 +442,21 @@ let ArticleTagStore = Reflux.createStore({
             if (t != null) {
                 t.addSubTag(tagObj);
             }
-        } else if (this.data.publicTags[tagObj.tagName] == null) {
-            // No parent tag is public tag.
+        } else if (ownerUuid === this.publicUuid) {
             this.data.publicTags[tagObj.tagName] = tagObj;
             insertSorted(tagObj, this.data.sortedPubTags, this._compareTags);
+        } else {
+            tagList = this.data.sortedByOwner[ownerUuid];
+            if (tagList == null) {
+                tagList = [];
+                this.data.sortedByOwner[ownerUuid] = tagList;
+            }
+            insertSorted(tagObj, tagList, this._compareTags);
         }
         this._addSortedTagKind(tagObj);
+
+        // Sorted articles published in the tag, saved unresolved to fetch later.
+        //
         tagObj.sortArticles(this.data.unResolved);
     },
 
