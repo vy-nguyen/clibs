@@ -9,6 +9,7 @@ import React             from 'react-mod';
 import UserStore         from 'vntd-shared/stores/UserStore.jsx';
 import SubHeader         from 'vntd-root/pages/layout/SubHeader.jsx';
 import Mesg              from 'vntd-root/components/Mesg.jsx';
+import UserIcon          from 'vntd-root/components/UserIcon.jsx';
 
 class UserAvatar extends React.Component
 {
@@ -39,31 +40,26 @@ class UserAvatar extends React.Component
     }
 
     render() {
-        let self = UserStore.getUserByUuid(this.props.userUuid)
-        if (self === null) {
+        let icon, userUuid = this.props.userUuid,
+            self = UserStore.getUserByUuid(userUuid),
+            imgUrl = self != null ? self.userImgUrl : "";
+
+        if (self == null) {
             return null;
         }
-        let fileImg = (
-            <div className="col-sm-3 col-md-3 col-lg-2 profile-pic">
-                <img src={self.userImgUrl}/>
+        icon = (
+            <div className="col-xs-3 col-sm-3 col-md-2 col-lg-2">
+                <UserIcon width="80" height="80"
+                    className="profile-pic" userUuid={userUuid}/>
             </div>
         );
         return (
             <div className="row">
-                {fileImg}
-                <div className="col-sm-2 col-md-2 col-lg-2">
+                {icon}
+                <div className="col-xs-3 col-sm-3 col-md-3 col-lg-3">
                     <h1 className="profile-username">
-                        {self.lastName} <span className="semi-bold">{self.firstName}</span>
+                        {self.lastName} <span className="bold">{self.firstName}</span>
                     </h1>
-                    <div className="padding-10">
-                        <h4 className="font-md"><strong>{self.connections}</strong>
-                            <br/><small><Mesg text="Connections"/></small>
-                        </h4>
-                        <br/>
-                        <h4 className="font-md"><strong>{self.followers}</strong>
-                            <br/><small><Mesg text="Followers"/></small>
-                        </h4>
-                    </div>
                 </div>
             </div>
         );

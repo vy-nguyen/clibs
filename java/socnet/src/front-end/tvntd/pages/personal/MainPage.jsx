@@ -86,7 +86,8 @@ class CustMain extends React.Component
         return (
             <div id="content">
                 <ProfileCover userUuid={userUuid}/>
-                <ProfileAvatar/>
+                <ProfileAvatar userUuid={userUuid}/>
+                <br/>
                 <div className="row">
                     <div className="col-sm-12 col-md-12 col-lg-12">
                         <TabPanel className="padding-top-10" context={tabData}>

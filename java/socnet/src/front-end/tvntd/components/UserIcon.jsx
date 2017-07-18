@@ -12,13 +12,13 @@ class UserIcon extends React.Component
 {
     render() {
         let user   = UserStore.getUserByUuid(this.props.userUuid),
-            width  = this.props.width == null ? "40" : this.props.width,
-            height = this.props.height == null ? "40" : this.props.height;
+            width  = this.props.width || "40",
+            height = this.props.height || "40", url;
 
-        if (user === null) {
+        if (user == null) {
             return null;
         }
-        let url = (user === UserStore.getSelf()) ? "/#/user" : "/#/user/" + user.userUuid;
+        url = (user == UserStore.getSelf()) ? "/#/user" : "/#/user/" + user.userUuid;
         return (
             <a href={url} className={this.props.className}>
                 <img width={width} height={height} src={user.userImgUrl}/>

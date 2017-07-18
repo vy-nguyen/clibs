@@ -23,7 +23,6 @@ class BaseStore
         _.forEach(tagList, (tag) => {
             insertSorted(tag, out, BaseStore.compareByArt);
         });
-        console.log(out);
         return out;
     }
 }

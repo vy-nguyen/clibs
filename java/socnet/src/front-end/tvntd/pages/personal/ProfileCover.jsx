@@ -7,6 +7,8 @@
 import _                 from 'lodash';
 import React             from 'react-mod';
 
+import UserStore         from 'vntd-shared/stores/UserStore.jsx';
+
 class ProfileCover extends React.Component
 {
     constructor(props) {
@@ -21,12 +23,12 @@ class ProfileCover extends React.Component
 
     render() {
         let imageId = this._getId(), cssImageId = '#' + imageId,
-            imgList = [
-                "/rs/img/bg/letamanh.jpg",
-                "/rs/img/demo/s1.jpg",
-                "/rs/img/demo/s2.jpg",
-                "/rs/img/demo/s3.jpg"
-            ],
+        imgList = [
+            "/rs/img/bg/letamanh.jpg",
+            "/rs/img/demo/s1.jpg",
+            "/rs/img/demo/s2.jpg",
+            "/rs/img/demo/s3.jpg"
+        ],
         coverHdr = imgList.map(function(item, index) {
             if (index == 0) {
                 return <li key={_.uniqueId('prof-')} data-target={cssImageId}
@@ -44,12 +46,11 @@ class ProfileCover extends React.Component
                 </div>
             );
         });
-
         return (
             <div className="row">
                 <div className="col-sm-12 col-md-12 col-lg-12">
                     <div id={imageId} className="carousel fade profile-carousel">
-                        <div className="air air-top-right padding-10">
+                        <div className="air air-bottom-right padding-10">
                         </div>
                         <ol className="carousel-indicators">
                             {coverHdr}

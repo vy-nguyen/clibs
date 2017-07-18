@@ -397,8 +397,6 @@ Actions.setTags.listen(function(data) {
 });
 
 Actions.changeTagArt.listen(function(data) {
-    console.log("publish tag");
-    console.log(data);
     postRestCall(data, "/admin/change-art-tag", true, this, true, "changeTagArt");
 });
 

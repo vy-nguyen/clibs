@@ -56,8 +56,6 @@ class ButtonState {
             state = this.getState();
             state.text = text;
             state.disabled = disabled === true ? true : false;
-            console.log("Change state to " + text);
-            console.log(state);
         }
     }
 
@@ -83,12 +81,11 @@ class ButtonState {
     }
 
     getClassFmt() {
-        let state = this.getState();
+        let className, state = this.getState();
         if (state == null) {
-            console.log(this);
-            console.log(this.currState);
+            return "btn btn-default";
         }
-        let className = state.className != null ? state.className : "btn btn-default";
+        className = state.className != null ? state.className : "btn btn-default";
 
         if (state.disabled != null && state.disabled == true) {
             return className + " disabled";
