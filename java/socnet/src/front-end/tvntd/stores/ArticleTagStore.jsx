@@ -27,7 +27,11 @@ function sortArticle(pivot, article) {
 
 class ArtTag {
     constructor(data) {
-        this._id  = _.uniqueId('id-art-tag-');
+        let artUuids;
+
+        this._id        = _.uniqueId('id-art-tag-');
+        this.sortedArts = null;
+
         _.forEach(data, function(v, k) {
             this[k] = v;
         }.bind(this));
@@ -35,10 +39,26 @@ class ArtTag {
         if (_.isEmpty(this.parentTag)) {
             this.parentTag = null;
         }
-        if (this.articleRank == null) {
-            this.articleRank = [];
+        if (this.articleRank != null) {
+            artUuids = {};
+            _.forEach(this.articleRank, function(artUuid) {
+                artUuids[artUuid] = artUuid;
+            });
+            this.articleRank = artUuids;
+        } else {
+            this.articleRank = {};
         }
         return this;
+    }
+
+    updateTag(raw, unResolved) {
+        let article;
+
+        _.forEach(raw.articleRank, function(artUuid) {
+            if (this.articleRank[artUuid] == null) {
+                this.addArticle(unResolved, artUuid);
+            }
+        }.bind(this));
     }
 
     sortArticles(unResolved) {
@@ -48,21 +68,19 @@ class ArtTag {
             return;
         }
         sortedArts = [];
-        _.forEach(this.articleRank, function(artUuid) {
+        _.forOwn(this.articleRank, function(artUuid) {
             let article = store.getItemByUuid(artUuid);
 
             if (article == null) {
                 unResolved[artUuid] = this;
             } else {
+                this.articleRank[article.articleUuid] = article;
                 insertSorted(article, sortedArts, sortArticle);
             }
         }.bind(this));
 
         if (!_.isEmpty(sortedArts)) {
-            this.sortedArts  = sortedArts;
-            this.articleRank = sortedArts.map(function(art) {
-                return art.articleUuid;
-            });
+            this.sortedArts = sortedArts;
         }
     }
 
@@ -72,23 +90,27 @@ class ArtTag {
         }
         if (this.sortedArts == null) {
             this.sortedArts = [article];
-            return;
+        } else {
+            this.articleRank[article.articleUuid] = article;
+            insertSorted(article, this.sortedArts, sortArticle);
         }
-        insertSorted(article, this.sortedArts, sortArticle);
     }
 
     addArticle(unResolved, artUuid) {
+        let article;
+
         if (artUuid == null) {
             return;
         }
-        let article = LookupArticle(artUuid);
+        article = LookupArticle(artUuid);
         if (article == null) {
             unResolved[artUuid] = this;
         }
-        if (this.articleRank.indexOf(artUuid) < 0) {
-            this.articleRank.push(artUuid);
+        if (this.articleRank[artUuid] == null) {
             if (article != null) {
                 this.resolveArticle(null, article);
+            } else {
+                this.articleRank[artUuid] = artUuid;
             }
         }
     }
@@ -161,12 +183,18 @@ let ArticleTagStore = Reflux.createStore({
 
     /* Admin actions to list users. */
     onStartupCompleted: function(data) {
-        let tagData = data.publicTags; 
+        let curr, allTags, tagData = data.publicTags; 
 
         this.data.domainUuid = data.domainUuid;
         if (tagData != null) {
+            allTags = this.data.pubTagIndex;
             _.forEach(tagData.publicTags, function(tag) {
-                this._addTag(new ArtTag(tag));
+                curr = allTags[tag.tagName];
+                if (curr != null) {
+                    curr.updateTag(tag, this.data.unResolved);
+                } else {
+                    this._addTag(new ArtTag(tag));
+                }
             }.bind(this));
             this._updateParents();
             this.trigger(this.data, tagData);

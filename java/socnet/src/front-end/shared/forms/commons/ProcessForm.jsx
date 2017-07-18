@@ -346,8 +346,6 @@ class FormData
         this.changeSubmitState("saving", false);
         if (submitFn != null) {
             submitFn(data);
-            console.log("Call submit with data");
-            console.log(data);
         }
     }
 
