@@ -29,7 +29,6 @@ package com.tvntd.web;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -64,16 +63,14 @@ import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleService.ArticleDTOResponse;
 import com.tvntd.service.api.IAuthorService;
-import com.tvntd.service.api.IAuthorService.AuthorDTO;
+import com.tvntd.service.api.IDomainService;
 import com.tvntd.service.api.IMenuItemService;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.IUserNotifService;
-import com.tvntd.service.api.LoginResponse;
 import com.tvntd.service.api.StartupResponse;
 import com.tvntd.service.api.UserConnectionChange;
 import com.tvntd.service.api.UserNotifResponse;
-import com.tvntd.util.Constants;
 
 @Controller
 public class ApiPath
@@ -95,6 +92,9 @@ public class ApiPath
 
     @Autowired
     protected IArtTagService artTagSvc;
+
+    @Autowired
+    protected IDomainService domainSvc;
 
     @Autowired
     protected Mongo mongo;
@@ -150,69 +150,15 @@ public class ApiPath
     getStartupMenu(Locale locale, HttpSession session,
             HttpServletRequest reqt, HttpServletResponse resp)
     {
-        User user = (User) session.getAttribute("user");
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
-        if (user == null || profile == null) {
+
+        if (session.getAttribute("user") == null || profile == null) {
             return null;
         }
+        String domain = (String) session.getAttribute("domain");
         StartupResponse result = new StartupResponse(profile, reqt, session, false);
-        fillStartupResponse(result, profile,
-                profileSvc, authorSvc, articleSvc, artTagSvc);
+        domainSvc.fillStartupAccount(result, domain, profile);
         return result;
-    }
-
-    /**
-     * Common methods shared by admin and regular user startup response.
-     */
-    public static void
-    fillStartupResponse(StartupResponse resp, ProfileDTO profile,
-            IProfileService profileSvc, IAuthorService authorSvc,
-            IArticleService articleSvc, IArtTagService artTagSvc)
-    {
-        if (profileSvc != null) {
-            resp.setLinkedUsers(profileSvc.getProfileFromRaw(null));
-        }
-        if (authorSvc != null) {
-            fillLoginResponse(resp.getUserDTO(), profile);
-            fillAuthorTags(resp, profile, null, authorSvc);
-        }
-        if (articleSvc != null) {
-            List<String> uuids = resp.getAllUserUuids();
-            resp.setArticles(articleSvc.getArticlesByUser(uuids));
-        }
-        resp.setPublicTags(artTagSvc.getUserTagsDTO(Constants.PublicUuid));
-    }
-
-    public static void
-    fillAuthorTags(StartupResponse resp, ProfileDTO profile,
-            List<String> userUuids, IAuthorService authorSvc)
-    {
-        String myUuid = profile.getUserUuid();
-        List<AuthorDTO> authorList = new LinkedList<>();
-
-        AuthorDTO author = authorSvc.getAuthorDTO(myUuid);
-        if (author != null) {
-            authorList.add(author);
-        }
-        if (userUuids == null) {
-            userUuids = resp.getAllUserUuids();
-        }
-        if (userUuids != null) {
-            for (String uuid : userUuids) {
-                if (!myUuid.equals(uuid)) {
-                    author = authorSvc.getAuthorDTO(uuid);
-                    if (author != null) {
-                        authorList.add(author);
-                    }
-                }
-            }
-        }
-        resp.setAuthors(authorList);
-    }
-
-    public static void
-    fillLoginResponse(LoginResponse resp, ProfileDTO profile)
-    {
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})

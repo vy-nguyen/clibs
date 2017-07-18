@@ -24,6 +24,7 @@ import SetTags       from './pages/admin/SetTags.jsx';
 import MainBlog      from './pages/blog/MainBlog.jsx';
 import MainAds       from './pages/ads/MainAds.jsx';
 import PublicUrlArt  from './pages/public/PublicUrlArt.jsx';
+import NewsFeed      from './pages/news-feed/NewsFeed.jsx';
 import LoginRequired from 'vntd-shared/utils/LoginRequired.jsx';
 
 import CustLogin     from './pages/personal/Login.jsx';
@@ -83,12 +84,18 @@ _loginRequired = (
 
         <Redirect from="/" to="user"/>
         <Route path="user">
-            <IndexRoute  component={UserHome}/>
+            <IndexRoute component={UserHome}/>
             <Route path="profile" component={UserProfile}/>
+            <Route path="domain" component={CustMain} subheader={true}/>
             <Route path="account" component={UserAccount}/>
             <Route path="transaction" component={UserTrans}/>
             <Route path="all" component={UserConnect} userList={null}/>
             <Route path=":userUuid" component={UserHome}/>
+        </Route>
+
+        <Redirect from="/" to="newsfeed"/>
+        <Route path="newsfeed">
+            <IndexRoute component={NewsFeed}/>
         </Route>
     </Route>
 ),
@@ -125,7 +132,7 @@ PersonalRoutes = (
     <Route>
         <Route path="/" component={Layout} url={"/public/start"}>
             <IndexRoute component={CustMain} subheader={true}/>
-            <Redirect from="/" to ="public"/>
+            <Redirect from="/" to="public"/>
             {_publicRoutes}
 
             <Redirect from="/" to="login"/>

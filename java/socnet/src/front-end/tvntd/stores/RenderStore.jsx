@@ -18,6 +18,22 @@ const _menuHome = {
     title: 'Home'
 };
 
+const _menuDomainHome = {
+    badge: null,
+    icon : 'fa fa-lg fa-fw fa-user-plus',
+    items: null,
+    route: '/newsfeed',
+    title: 'News Feed'
+};
+
+const _myDomainHome = {
+    badge: null,
+    icon : 'fa fa-lg fa-fw fa-user-plus',
+    items: null,
+    route: '/user/domain',
+    title: 'My Domain Page',
+};
+
 const _menuProfile = {
     badge: null,
     icon : 'fa fa-lg fa-fw fa-user',
@@ -174,8 +190,8 @@ let RenderStore = Reflux.createStore({
 
     init: function() {
         this.data = {
-            menuItems: [],
-            notifyItems: [],
+            menuItems   : [],
+            notifyItems : [],
             activeNotify: {
                 items: []
             },
@@ -207,6 +223,13 @@ let RenderStore = Reflux.createStore({
         let menuItems = [_menuHome];
 
         if (UserStore.isLogin() == true) {
+            if (UserStore.getDomainUuid() != null) {
+                if (window.VNDomain === "tudoviet") {
+                    menuItems.push(_myDomainHome);
+                } else {
+                    menuItems.push(_menuDomainHome);
+                }
+            }
             menuItems.push(_menuProfile);
             menuItems.push(_menuProjects);
             Array.prototype.push.apply(menuItems, _menuBlogs);

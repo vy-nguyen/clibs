@@ -140,22 +140,21 @@ public class PublicPath
     getStartupMenu(Locale locale, HttpSession session,
             HttpServletRequest reqt, HttpServletResponse resp)
     {
-        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
-        if (profile != null) {
-            StartupResponse result = new StartupResponse(profile, reqt, session, false);
-            ApiPath.fillStartupResponse(result, profile,
-                    profileSvc, authorSvc, articleSvc, artTagSvc);
-
-            session.removeAttribute("startPage");
-            return result;
-        }
-        if (s_publicDto == null) {
-            s_publicDto = new ProfileDTO(s_public);
-        }
-        annonSvc.getAnnonUser(reqt, resp, session);
+        StartupResponse result;
         String domain = (String) session.getAttribute("domain");
-        StartupResponse result = new StartupResponse(s_publicDto, reqt, session, true);
-        domainSvc.fillStartupDomain(result, domain, s_publicDto);
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+
+        if (profile != null) {
+            result = new StartupResponse(profile, reqt, session, false);
+            domainSvc.fillStartupAccount(result, domain, profile);
+        } else {
+            if (s_publicDto == null) {
+                s_publicDto = new ProfileDTO(s_public);
+            }
+            annonSvc.getAnnonUser(reqt, resp, session);
+            result = new StartupResponse(s_publicDto, reqt, session, true);
+            domainSvc.fillStartupDomain(result, domain, s_publicDto);
+        }
         session.removeAttribute("startPage");
         return result;
     }

@@ -53,6 +53,7 @@ import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.IAuthorService;
+import com.tvntd.service.api.IDomainService;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.IPublicUrlService;
@@ -80,6 +81,9 @@ public class AdminPath
     @Autowired
     protected IPublicUrlService urlSvc;
 
+    @Autowired
+    protected IDomainService domainSvc;
+
     @Secured({"ROLE_Admin"})
     @RequestMapping(value = "/admin", params = {"user"}, method = RequestMethod.GET)
     @ResponseBody
@@ -93,7 +97,7 @@ public class AdminPath
             return null;
         }
         LoginResponse resp = new LoginResponse(profile, reqt, session, false);
-        ApiPath.fillLoginResponse(resp, profile);
+        domainSvc.fillLoginResponse(resp, profile);
         return resp;
     }
 

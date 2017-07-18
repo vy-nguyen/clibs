@@ -48,11 +48,12 @@ import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.IAuthorService;
+import com.tvntd.service.api.IAuthorService.AuthorDTO;
 import com.tvntd.service.api.IDomainService;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
+import com.tvntd.service.api.LoginResponse;
 import com.tvntd.service.api.StartupResponse;
-import com.tvntd.web.ApiPath;
 
 @Service
 @Transactional
@@ -94,20 +95,42 @@ public class DomainService implements IDomainService
         domainRepo.delete(domain);
     }
 
+    /**
+     * Shared code for public/user/admin startup.
+     */
+    public void fillDomainInfo(StartupResponse resp, String name, ProfileDTO prof,
+            Map<String, String> artUuids, Map<String, String> authorUuids)
+    {
+        if (name == null) {
+            name = prof.getDomain();
+        }
+        Domain domain = domainRepo.findByDomain(name);
+        if (domain == null) {
+            return;
+        }
+        String authorUuid = domain.getAuthorUuid();
+        resp.setDomainUuid(authorUuid);
+
+        List<ArticleDTO> articles = articleSvc.getArticlesByUser(authorUuid);
+        resp.setArticles(articles);
+        authorUuids.put(authorUuid, authorUuid);
+    }
+
+    @Override
+    public void
+    fillLoginResponse(LoginResponse resp, ProfileDTO profile)
+    {
+    }
+
+    /**
+     * Startup response when access through public url without account.
+     */
     public void fillStartupDomain(StartupResponse resp, String name, ProfileDTO prof)
     {
-        Domain domain = domainRepo.findByDomain(name);
         Map<String, String> artUuids = new HashMap<>();
         Map<String, String> authorUuids = new HashMap<>();
 
-        if (domain != null) {
-            String authorUuid = domain.getAuthorUuid();
-            resp.setDomainUuid(authorUuid);
-
-            List<ArticleDTO> articles = articleSvc.getArticlesByUser(authorUuid);
-            resp.setArticles(articles);
-            authorUuids.put(authorUuid, authorUuid);
-        }
+        fillDomainInfo(resp, name, prof, artUuids, authorUuids);
         fillStartupResponse(resp, prof, artUuids, authorUuids);
     }
 
@@ -167,6 +190,58 @@ public class DomainService implements IDomainService
             }
         }
         resp.setLinkedUsers(userList);
-        ApiPath.fillAuthorTags(resp, profile, uuids, authorSvc);
+        fillAuthorTags(resp, profile, uuids);
+    }
+
+    /**
+     * Startup response when login with a valid user account.
+     */
+    @Override
+    public void fillStartupAccount(StartupResponse resp, String name, ProfileDTO prof)
+    {
+        Map<String, String> artUuids = new HashMap<>();
+        Map<String, String> authorUuids = new HashMap<>();
+
+        fillDomainInfo(resp, name, prof, artUuids, authorUuids);
+
+        // For now, get all profiles from the database.
+        //
+        resp.setLinkedUsers(profileSvc.getProfileFromRaw(null));
+        fillLoginResponse(resp.getUserDTO(), prof);
+
+        List<String> uuids = resp.getAllUserUuids();
+        fillAuthorTags(resp, prof, uuids);
+
+        String publicUuid = com.tvntd.util.Constants.PublicUuid;
+        resp.setPublicTags(artTagSvc.getUserTagsDTO(publicUuid));
+        resp.setArticles(articleSvc.getArticlesByUser(uuids));
+    }
+
+    private void
+    fillAuthorTags(StartupResponse resp, ProfileDTO profile, List<String> userUuids)
+    {
+        String myUuid = profile.getUserUuid();
+        List<AuthorDTO> authorList = new LinkedList<>();
+        AuthorDTO author = authorSvc.getAuthorDTO(myUuid);
+
+        if (author != null) {
+            authorList.add(author);
+        }
+        if (userUuids == null) {
+            userUuids = resp.getAllUserUuids();
+            if (userUuids == null) {
+                resp.setAuthors(authorList);
+                return;
+            }
+        }
+        for (String uuid : userUuids) {
+            if (!myUuid.equals(uuid)) {
+                author = authorSvc.getAuthorDTO(uuid);
+                if (author != null) {
+                    authorList.add(author);
+                }
+            }
+        }
+        resp.setAuthors(authorList);
     }
 }

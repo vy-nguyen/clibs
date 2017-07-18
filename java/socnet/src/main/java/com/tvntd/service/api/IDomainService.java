@@ -32,7 +32,10 @@ import com.tvntd.service.api.IProfileService.ProfileDTO;
 public interface IDomainService
 {
     Domain getDomain(String domain);
-    void fillStartupDomain(StartupResponse resp, String domain, ProfileDTO prof);
     void saveDomain(String name, String authorUuid);
     void deleteDomain(Domain domain);
+
+    void fillLoginResponse(LoginResponse resp, ProfileDTO profile);
+    void fillStartupDomain(StartupResponse resp, String domain, ProfileDTO prof);
+    void fillStartupAccount(StartupResponse resp, String domain, ProfileDTO prof);
 }

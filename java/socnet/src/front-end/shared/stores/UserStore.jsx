@@ -95,12 +95,14 @@ let UserStore = Reflux.createStore({
     },
 
     getFetchedUuidList: function(req) {
+        let result, updated, userMap;
+
         if (this.data.loginReady === false) {
             return null;
         }
-        let result = [];
-        let updated = null;
-        let userMap = this.data.userMap;
+        result = [];
+        updated = null;
+        userMap = this.data.userMap;
 
         if (req === 'estore') {
             updated = this.data.estoreUuids;
@@ -166,6 +168,10 @@ let UserStore = Reflux.createStore({
             return this.data.userSelf.userUuid;
         }
         return VntdGlob.publicUuid;
+    },
+
+    getDomainUuid: function() {
+        return this.data.domainUuid;
     },
 
     getActiveUser: function() {

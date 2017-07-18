@@ -48,7 +48,6 @@ class Startup
             History.pushState(null, "/");
             return;
         }
-        console.log(">>> do start page " + self.startPage);
         start = Startup.parseStartup(self.startPage);
         switch (start.startLink) {
             case "profile":

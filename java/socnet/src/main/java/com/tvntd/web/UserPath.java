@@ -149,7 +149,8 @@ public class UserPath
     {
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
         LoginResponse resp = new LoginResponse(profile, reqt, session, false);
-        ApiPath.fillLoginResponse(resp, profile);
+
+        domainSvc.fillLoginResponse(resp, profile);
         return resp;
     }
 
