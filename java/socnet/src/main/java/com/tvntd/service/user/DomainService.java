@@ -98,27 +98,26 @@ public class DomainService implements IDomainService
     {
         Domain domain = domainRepo.findByDomain(name);
         Map<String, String> artUuids = new HashMap<>();
+        Map<String, String> authorUuids = new HashMap<>();
 
         if (domain != null) {
             String authorUuid = domain.getAuthorUuid();
             resp.setDomainUuid(authorUuid);
-            // ArtTagList tags = artTagSvc.getUserTagsDTO(authorUuid);
-            // resp.setPublicTags(tags);
 
             List<ArticleDTO> articles = articleSvc.getArticlesByUser(authorUuid);
             resp.setArticles(articles);
+            authorUuids.put(authorUuid, authorUuid);
         }
-        fillStartupResponse(resp, prof, artUuids);
+        fillStartupResponse(resp, prof, artUuids, authorUuids);
     }
 
-    private void fillStartupResponse(StartupResponse resp,
-            ProfileDTO profile, Map<String, String> artUuids)
+    private void fillStartupResponse(StartupResponse resp, ProfileDTO profile,
+            Map<String, String> artUuids, Map<String, String> authorUuids)
     {
         String publicUuid = com.tvntd.util.Constants.PublicUuid;
         ArtTagList tags = artTagSvc.getUserTagsDTO(publicUuid);
         resp.setPublicTags(tags);
 
-        Map<String, String> authorUuids = new HashMap<>();
         List<ArtTagDTO> tagList = tags.getPublicTags();
 
         // Get all authors and articles from public tags.
