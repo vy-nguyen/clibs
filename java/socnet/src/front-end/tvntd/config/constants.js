@@ -19,5 +19,9 @@ export const errMesg = {
 };
 
 export const VntdGlob = {
-    publicUuid: "00000000-ffff-0000-ffff-00ff00ff00ff"
+    publicUuid: "00000000-ffff-0000-ffff-00ff00ff00ff",
+    styleFit: {
+        width : "100%",
+        height: "auto"
+    }
 };

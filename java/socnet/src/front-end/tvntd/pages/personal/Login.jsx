@@ -6,6 +6,7 @@
 
 import React         from 'react-mod';
 import { Link }      from 'react-router';
+import { VntdGlob }  from 'vntd-root/config/constants.js';
 import AboutUsStore  from 'vntd-root/stores/AboutUsStore.jsx';
 import ImageCarousel from 'vntd-shared/layout/ImageCarousel.jsx';
 import { LoginHeader, LoginForm }   from 'vntd-root/pages/login/Login.jsx';
@@ -15,7 +16,7 @@ class LoginAbout extends React.Component
     constructor(props) {
         super(props);
         this.state = {
-            login: AboutUsStore.getData().login
+            login: AboutUsStore.getCustData().login
         }
         this._updateState = this._updateState.bind(this);
     }
@@ -33,30 +34,24 @@ class LoginAbout extends React.Component
 
     _updateState(data) {
         this.setState({
-            login: AboutUsStore.getData().login
+            login: AboutUsStore.getCustData().login
         });
     }
 
     render() {
-        let login = this.state.login, loginBox, imgUrl, footUrl, imgList, style;
+        let login = this.state.login, loginBox, imgUrl, footUrl, imgList;
 
         if (login == null) {
             return null;
         }
         loginBox = login || { header: "Viet Nam Tu Do" };
-        imgUrl   = this.props.logoImg || "/rs/img/logo/flag.png";
-        footUrl  = this.props.footImg || "/rs/img/bg/letamanh.jpg";
+        imgUrl   = loginBox.logoImg || "/rs/img/logo/flag.png";
+        footUrl  = loginBox.footImg || "/rs/img/bg/letamanh.jpg";
 
-        style = {
-            width : "100%",
-            height: "auto"
-        };
         return (
             <div className="well">
-                <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                    <div className="profile-carousel">
-                        <img src={imgUrl} className="pull-right display-image"/>
-                    </div>
+                <div className="row">
+                    <img src={imgUrl} style={VntdGlob.styleFit}/>
                     <div className="air air-top-left padding-10">
                         <h1 className="txt-color-red login-header-big">
                             {loginBox.headerBar}
@@ -67,7 +62,7 @@ class LoginAbout extends React.Component
                     </div>
                 </div>
                 <div className="row">
-                    <img style={style} src={footUrl}/>
+                    <img style={VntdGlob.styleFit} src={footUrl}/>
                 </div>
                 <div className="row">
                     <h5 className="about-heading">{loginBox.aboutBrief}</h5>

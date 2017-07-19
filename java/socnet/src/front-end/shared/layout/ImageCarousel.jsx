@@ -60,8 +60,6 @@ class ImageCarousel extends React.Component
                 </div>
             )
         });
-        console.log(imgHdr);
-        console.log(imgList);
         return (
             <div className="container">
                 <div className="row">

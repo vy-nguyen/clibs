@@ -189,6 +189,91 @@ class ProfileForm extends FormData
     }
 }
 
+class DomainForm extends FormData
+{
+    constructor(props, suffix) {
+        super(props, suffix);
+        this.initData();
+        return this;
+    }
+
+    initData() {
+        let imgs = [ {
+            url     : '/user/upload-img',
+            field   : 'loginImg',
+            inpName : 'domain-logo',
+            dropzone: true,
+            labelTxt: 'Login Image'
+        }, {
+            url     : '/user/upload-img',
+            field   : 'cover',
+            inpName : 'domain-cover',
+            dropzone: true,
+            labelTxt: 'Cover Images'
+        } ],
+        entries = [ {
+            field    : 'loginHdr',
+            inline   : true,
+            inpName  : 'domain-login-hdr',
+            inpHolder: 'Your Login Header',
+            labelTxt : 'Login Header'
+        }, {
+            field    : 'loginHdrTxt',
+            inline   : true,
+            inpName  : 'domain-login-txt',
+            inpHolder: 'Login header text',
+            labelTxt : 'Login Header Content',
+        }, {
+            field    :'loginFootHdr',
+            inline   : true,
+            ingName  : 'domain-login-foot',
+            inpHolder: 'Login Footer',
+            labelTxt : 'Login Footer Title',
+        }, {
+            field    : 'loginFootTxt',
+            inline   : true,
+            inpName  : 'domain-login-foot-txt',
+            inpHolder: 'Login Footer Text',
+            labelTxt : 'Login Footer Content'
+        } ];
+        this.forms = {
+            formId   : 'domain-cust',
+            formFmt  : 'client-form',
+            submitFn : this.submit,
+            formEntries: [ {
+                legend : 'Upload Images',
+                entries: imgs
+            }, {
+                legend : 'Login Screen',
+                entries: entries,
+                twoCols: true
+            } ],
+            buttons: [ {
+                btnName  : 'domain-info',
+                btnSubmit: true,
+                btnCreate: function() {
+                    return StateButton.saveButtonFsm("Edit", "Submit", "Done");
+                }
+            } ]
+        };
+    }
+
+    validateInput(data, errFlags) {
+        console.log(data);
+        return data;
+    }
+
+    submit(data) {
+        console.log("Submit data");
+        console.log(data);
+    }
+
+    submitNotif(store, result, status) {
+        console.log(result);
+        super.submitNotif(store, result, status);
+    }
+}
+
 class UserInfo extends React.Component
 {
     constructor(props) {
@@ -239,9 +324,24 @@ class UserInfo extends React.Component
     }
 
     render() {
+        let form, domainForm = null, domainUuid = UserStore.getDomainUuid();
+
+        if (domainUuid != null) {
+            form = new DomainForm(this.props);
+            domainForm = (
+                <div>
+                    <br/>
+                    <h1>Domain Info</h1>
+                    <ProcessForm form={form} store={UserStore}/>
+                </div>
+            );
+        }
         return (
-            <Panel context={this._panelData} className="well no-padding">
-                <ProcessForm form={this.profileForm} store={UserStore}/>
+            <Panel context={this._panelData} className="well">
+                <div className="widget-body padding-10">
+                    <ProcessForm form={this.profileForm} store={UserStore}/>
+                    {domainForm}
+                </div>
             </Panel>
         );
     }
