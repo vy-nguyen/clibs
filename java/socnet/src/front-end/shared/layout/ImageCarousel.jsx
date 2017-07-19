@@ -7,8 +7,36 @@ import React from 'react';
 
 class ImageCarousel extends React.Component
 {
+    constructor(props) {
+        super(props);
+        this.redStyle = { color: 'red' };
+        this.yelStyle = { color: 'yellow' };
+    }
+
+    _renderLeftArrow(cTag) {
+        let left = "glyphicon glyphicon-chevron-left";
+        return (
+            <a className="left carousel-control"
+                href={cTag} role="button" data-slide="prev">
+                <i className={left} style={this.yelStyle}/>
+                <span className="sr-only">Previous</span>
+            </a>
+        );
+    }
+
+    _renderRightArrow(cTag) {
+        let right = "glyphicon glyphicon-chevron-right";
+        return (
+            <a className="right carousel-control"
+                href={cTag} role="button" data-slide="next">
+                <i className={right} style={this.yelStyle}/>
+                <span className="sr-only">Next</span>
+            </a>
+        );
+    }
+
     render() {
-        let imgHdr, imgList, fontStyle = { color: 'yellow' },
+        let imgHdr, imgList,
             carouselId = _.uniqueId('img-list-'), cTag = '#' + carouselId;
 
         imgHdr = this.props.imageList.map(function(item, idx) {
@@ -41,18 +69,8 @@ class ImageCarousel extends React.Component
                         <div className="carousel-inner">
                             {imgList}
                         </div>
-                        <a className="left carousel-control"
-                            href={cTag} role="button" data-slide="prev">
-                            <span className="glyphicon glyphicon-chevron-left"
-                                aria-hidden="true" style={fontStyle}></span>
-                            <span className="sr-only">Previous</span>
-                        </a>
-                        <a className="right carousel-control"
-                            href={cTag} role="button" data-slide="next">
-                            <span className="glyphicon glyphicon-chevron-right"
-                                aria-hidden="true" style={fontStyle}></span>
-                            <span className="sr-only">Next</span>
-                        </a>
+                        {this._renderLeftArrow(cTag)}
+                        {this._renderRightArrow(cTag)}
                     </div>
                 </div>
             </div>

@@ -56,7 +56,7 @@ class ProfileCover extends React.Component
         return (
             <div className="row">
                 <div className="col-sm-12 col-md-12 col-lg-12">
-                    <div id={imageId} className="carousel fade profile-carousel">
+                    <div id={imageId} className="carousel slide profile-carousel">
                         <div className="air air-top-right padding-10">
                             <DropzoneComponent
                                 config={componentConfig}

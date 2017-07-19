@@ -8,6 +8,7 @@ import _                 from 'lodash';
 import React             from 'react-mod';
 
 import UserStore         from 'vntd-shared/stores/UserStore.jsx';
+import ImageCarousel     from 'vntd-shared/layout/ImageCarousel.jsx';
 
 class ProfileCover extends React.Component
 {
@@ -30,13 +31,11 @@ class ProfileCover extends React.Component
             "/rs/img/demo/s3.jpg"
         ],
         coverHdr = imgList.map(function(item, index) {
-            if (index == 0) {
-                return <li key={_.uniqueId('prof-')} data-target={cssImageId}
-                    data-slide-to={index.toString()} className='active'></li>;
-            } else {
-                return <li key={_.uniqueId('prof-')} data-target={cssImageId}
-                    data-slide-to={index.toString()} class></li>;
-            }
+            let classn = index === 0 ? "active" : "";
+            return (
+                <li key={_.uniqueId('prof-')} data-target={cssImageId}
+                    data-slide-to={index.toString()} className={classn}/>
+            );
         }),
         coverImg = imgList.map(function(item, index) {
             return (
@@ -49,7 +48,8 @@ class ProfileCover extends React.Component
         return (
             <div className="row">
                 <div className="col-sm-12 col-md-12 col-lg-12">
-                    <div id={imageId} className="carousel fade profile-carousel">
+                    <div id={imageId} className="carousel slide"
+                        data-ride="carousel" data-interval="3000">
                         <div className="air air-bottom-right padding-10">
                         </div>
                         <ol className="carousel-indicators">
