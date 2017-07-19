@@ -39,7 +39,7 @@ class PostItem extends React.Component
     _openModal(idx, e) {
         e.preventDefault();
         this.setState({
-            imageSelected: idx ? idx : "0",
+            imageSelected: idx || "0",
             modalIsOpen  : true
         });
     }

@@ -9,7 +9,6 @@ import TabPanel       from 'vntd-shared/layout/TabPanel.jsx';
 import UserStore      from 'vntd-shared/stores/UserStore.jsx';
 import Blog           from 'vntd-root/components/Blog.jsx';
 import Author         from 'vntd-root/components/Author.jsx';
-import ProfileCover   from 'vntd-root/components/ProfileCover.jsx';
 import AuthorStore    from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleStore   from 'vntd-root/stores/ArticleStore.jsx';
 import UserPostView   from 'vntd-root/pages/user/UserPostView.jsx';

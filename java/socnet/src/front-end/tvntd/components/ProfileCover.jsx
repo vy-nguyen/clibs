@@ -9,44 +9,17 @@ import React          from 'react-mod';
 import { htmlCodes }  from 'vntd-root/config/constants';
 import Mesg           from 'vntd-root/components/Mesg.jsx'
 import UserStore      from 'vntd-shared/stores/UserStore.jsx';
-
+import ImageCarousel  from 'vntd-shared/layout/ImageCarousel.jsx';
 import { choose, getRandomInt } from 'vntd-shared/utils/Enum.jsx';
 
-class ProfileCover extends React.Component
+class UserProfile extends ImageCarousel
 {
-    render() {
-        let self = UserStore.getUserByUuid(this.props.userUuid), imageId, imgList,
-            active, cover_hdr, cover_img, connectFmt, followFmt;
+    constructor(props) {
+        super(props);
+    }
 
-        if (self === null) {
-            return <h1><Mesg text="Invalid user id"/></h1>
-        }
-        imageId = 'prof-' + self.userUuid;
-        imgList = [
-            choose(self.coverImg0, '/rs/img/demo/s1.jpg'),
-            choose(self.coverImg1, '/rs/img/demo/s2.jpg'),
-            choose(self.coverImg2, '/rs/img/demo/s3.jpg')
-        ];
-        active = getRandomInt(0, imgList.length);
-        cover_hdr = imgList.map(function(item, index) {
-            let id = _.uniqueId('prof-cover-img-');
-            if (index == active) {
-                return <li key={id} data-target={'#' + imageId}
-                            data-slide-to={index.toString()} className='active'></li>;
-            }
-            return <li key={id} data-target={'#' + imageId}
-                        data-slide-to={index.toString()} className=''></li>;
-        });
-        cover_img = imgList.map(function(item, index) {
-            return (
-                <div key={_.uniqueId('prof-cover-img-')}
-                    className={index == active ? "item active" : "item"}>
-                    <img src={item} alt="Cover Image"/>
-                </div>
-            );
-        });
-        connectFmt = "";
-        followFmt = "";
+    _renderEmbeded() {
+        let self = this.props.self, connectFmt = "", followFmt = "";
 
         if (UserStore.getSelf() != self) {
             if (self.isInConnection()) {
@@ -82,24 +55,37 @@ class ProfileCover extends React.Component
             }
         }
         return (
-            <div className="row">            
-                <div className="col-sm-12">
-                    <div id={imageId} className="carousel fade profile-carousel">
-                        <div className="air air-top-right padding-10">
-                            {connectFmt}
-                            {htmlCodes.spaceNoBreak}
-                            {followFmt}
-                        </div>
-                        <ol className="carousel-indicators">
-                            {cover_hdr}
-                        </ol>
-                        <div className="carousel-inner">
-                            {cover_img}
-                        </div>
-                    </div>
-                </div>
+            <div className="air air-top-right padding-10">
+                {connectFmt}
+                {htmlCodes.spaceNoBreak}
+                {followFmt}
             </div>
-        )
+        );
+    }
+}
+
+class ProfileCover extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        let self = UserStore.getUserByUuid(this.props.userUuid), imgList, start;
+
+        if (self === null) {
+            return <h1><Mesg text="Invalid user id"/></h1>
+        }
+        imgList = [
+            "/rs/img/demo/s1.jpg",
+            "/rs/img/demo/s2.jpg",
+            "/rs/img/demo/s3.jpg"
+        ];
+        start = getRandomInt(0, imgList.length).toString();
+        return (
+            <UserProfile self={self} select={start}
+                imageList={imgList} className="profile-carousel"/>
+        );
     }
 }
 

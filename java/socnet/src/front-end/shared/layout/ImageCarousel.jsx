@@ -35,34 +35,40 @@ class ImageCarousel extends React.Component
         );
     }
 
+    _renderEmbeded() {
+        return null;
+    }
+
     render() {
         let imgHdr, imgList,
+            imageList = this.props.imageList,
+            select = this.props.select || "0",
             carouselId = _.uniqueId('img-list-'), cTag = '#' + carouselId;
 
-        imgHdr = this.props.imageList.map(function(item, idx) {
-            let index = idx.toString(),
-                classn = index === this.props.select ? 'active' : '';
-
+        imgHdr = imageList.map(function(item, idx) {
+            let index = idx.toString(), classn = index === select ? 'active' : '';
             return (
                 <li key={_.uniqueId('img-')} data-target={cTag}
                     data-slide-to={index} className={classn}></li>
             );
-        }.bind(this));
-
-        imgList = this.props.imageList.map(function(item, idx) {
-            let classn = idx.toString() === this.props.select ? 'item active' : 'item';
+        });
+        imgList = imageList.map(function(item, idx) {
+            let classn = idx.toString() === select ? 'item active' : 'item';
             return (
                 <div key={_.uniqueId('img-')} className={classn}>
                     <img src={item}/>
                 </div>
             )
-        }.bind(this));
-
+        });
+        console.log(imgHdr);
+        console.log(imgList);
         return (
             <div className="container">
                 <div className="row">
-                    <div id={carouselId} className="carousel slde"
-                        data-ride="carousel" data-interval="1000">
+                    <div id={carouselId} data-ride="carousel"
+                        data-interval={this.props.delay || 2000}
+                        className={"carousel slde " + this.props.className}>
+                        {this._renderEmbeded()}
                         <ol className="carousel-indicators">
                             {imgHdr}
                         </ol>

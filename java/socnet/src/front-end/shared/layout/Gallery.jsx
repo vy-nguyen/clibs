@@ -33,20 +33,15 @@ class Gallery extends React.Component
             imageSelected: "0",
             modalIsOpen  : false
         };
-        this._openModal = this._openModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
-        this._afterOpenModal = this._afterOpenModal.bind(this);
     }
 
     _openModal(idx, e) {
         e.preventDefault();
         this.setState({
-            imageSelected: idx ? idx : "0",
+            imageSelected: idx || "0",
             modalIsOpen  : true
         });
-    }
-
-    _afterOpenModal() {
     }
 
     _closeModal() {
@@ -61,19 +56,20 @@ class Gallery extends React.Component
                 isLoading
             }
         } = this;
-        let modal = 
+        let modal = (
             <Modal style={modalStyle}
                 isOpen={this.state.modalIsOpen}
-                onAfterOpen={this._afterOpenModal}
                 onRequestClose={this._closeModal}>
 
                 <div className="form-group alert ">
-                    <a className="close" aria-label="close" onClick={this._closeModal}>x</a>
+                    <a className="close"
+                        aria-label="close" onClick={this._closeModal}>x</a>
                 </div>
-                <ImageCarousel imageList={this.props.imageList} select={this.state.imageSelected}/>
-            </Modal>;
-
-        let images = [];
+                <ImageCarousel imageList={this.props.imageList}
+                    select={this.state.imageSelected}/>
+            </Modal>
+        ),
+        images = [];
         _.forEach(this.props.imageList, function(it, idx) {
             images.push(
                 <div className="col-md-3" key={_.uniqueId("img-box-")}>

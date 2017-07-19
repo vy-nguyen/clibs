@@ -11,9 +11,9 @@ import TabPanel           from 'vntd-shared/layout/TabPanel.jsx';
 import UserStore          from 'vntd-shared/stores/UserStore.jsx';
 import BaseStore          from 'vntd-root/stores/BaseStore.jsx';
 import AuthorStore        from 'vntd-root/stores/AuthorStore.jsx';
-import ProfileCover       from './ProfileCover.jsx';
 import ProfileAvatar      from './ProfileAvatar.jsx';
 import ArticleBrief       from './ArticleBrief.jsx';
+import ProfileCover       from './ProfileCover.jsx';
 
 class CustMain extends React.Component
 {

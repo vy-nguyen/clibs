@@ -6,7 +6,6 @@
 
 import _                from 'lodash';
 import React            from 'react-mod';
-import ProfileCover     from './ProfileCover.jsx';
 import Mesg             from 'vntd-root/components/Mesg.jsx'
 import UserIcon         from 'vntd-root/components/UserIcon.jsx';
 import AuthorLinks      from 'vntd-root/components/AuthorLinks.jsx';
