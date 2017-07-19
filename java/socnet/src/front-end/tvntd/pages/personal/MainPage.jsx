@@ -22,7 +22,7 @@ class CustMain extends React.Component
         this._updateState = this._updateState.bind(this);
         this._getBlogTab  = this._getBlogTab.bind(this);
         this.state = {
-            tagList: []
+            tagList: this._updateTags()
         }
     }
 

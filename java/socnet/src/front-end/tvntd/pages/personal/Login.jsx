@@ -7,6 +7,7 @@
 import React         from 'react-mod';
 import { Link }      from 'react-router';
 import AboutUsStore  from 'vntd-root/stores/AboutUsStore.jsx';
+import ImageCarousel from 'vntd-shared/layout/ImageCarousel.jsx';
 import { LoginHeader, LoginForm }   from 'vntd-root/pages/login/Login.jsx';
 
 class LoginAbout extends React.Component
@@ -37,46 +38,40 @@ class LoginAbout extends React.Component
     }
 
     render() {
-        let login = this.state.login,
-            loginBox = login || { header: "Viet Nam Tu Do" },
-            logoImg = this.props.logoImg == null ?
-                <img src="/rs/img/logo/flag.png" className="pull-right display-image"
-                    alt="" style={{width:'210px'}}/> : null;
+        let login = this.state.login, loginBox, imgUrl, footUrl, imgList, style;
 
         if (login == null) {
             return null;
         }
+        loginBox = login || { header: "Viet Nam Tu Do" };
+        imgUrl   = this.props.logoImg || "/rs/img/logo/flag.png";
+        footUrl  = this.props.footImg || "/rs/img/bg/letamanh.jpg";
+
+        style = {
+            width : "100%",
+            height: "auto"
+        };
         return (
-            <div>
-                <h1 className="txt-color-red login-header-big">
-                    {loginBox.headerBar}
-                    Le Tam Anh Login
-                </h1>
-                <div className="hero">
-                    <div className="pull-left login-desc-box-l">
-                        <h4 className="paragraph-header">{loginBox.headerText}</h4>
-                        <div className="login-app-icons">
-                            <button href="#" className="btn btn-danger btn-sm">
-                                {loginBox.tourButton}
-                            </button>
-                            <span> </span>
-                            <Link to="/public/aboutus"
-                                className="btn btn-danger btn-sm">
-                                {loginBox.aboutButton}
-                            </Link>
+            <div className="well">
+                <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <div className="profile-carousel">
+                        <img src={imgUrl} className="pull-right display-image"/>
+                    </div>
+                    <div className="air air-top-left padding-10">
+                        <h1 className="txt-color-red login-header-big">
+                            {loginBox.headerBar}
+                        </h1>
+                        <div className="pull-left login-desc-box-l">
+                            <h4 className="paragraph-header">{loginBox.headerText}</h4>
                         </div>
                     </div>
-                    {logoImg}
                 </div>
                 <div className="row">
-                    <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                        <h5 className="about-heading">{loginBox.aboutBrief}</h5>
-                        <p>{loginBox.aboutText}</p>
-                    </div>
-                    <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                        <h5 className="about-heading">{loginBox.siteBrief}</h5>
-                        <p>{loginBox.siteText}</p>
-                    </div>
+                    <img style={style} src={footUrl}/>
+                </div>
+                <div className="row">
+                    <h5 className="about-heading">{loginBox.aboutBrief}</h5>
+                    <p>{loginBox.aboutText}</p>
                 </div>
             </div>
         );

@@ -68,7 +68,7 @@ class ArticleTagBrief extends React.Component
         return this._renderArtBriefUuid(art.artUuid);
     }
 
-    _renderArtFullUuid(article, artUuid) {
+    _renderArtFullUuid(article, artUuid, wideFmt) {
         if (this.state.articleUuid == null || this.state.articleUuid !== artUuid) {
             return null;
         }
@@ -78,7 +78,7 @@ class ArticleTagBrief extends React.Component
         return (
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 {AuthorFeed.renderToggleView(article.authorUuid,
-                    article, this._readArticle, null)}
+                    article, this._readArticle, null, wideFmt)}
             </div>
         )
     }

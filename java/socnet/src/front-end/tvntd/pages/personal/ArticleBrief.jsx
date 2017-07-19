@@ -20,7 +20,7 @@ class ArticleBrief extends ArticleTagBrief
     }
 
     _renderArtFull(art) {
-        return this._renderArtFullUuid(art, art.articleUuid);
+        return this._renderArtFullUuid(art, art.articleUuid, true);
     }
 
     render() {

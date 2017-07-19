@@ -120,48 +120,59 @@ class AuthorFeed extends React.Component
         }
     }
 
+    _renderTabPanel(author, articles, user) {
+        return (
+            <TabPanel className="padding-top-10"
+                context={this._getAuthorTab(author.userUuid)}>
+                <PostArticles data={articles} user={user}/>
+                <Blog authorUuid={user.userUuid} user={user}/>
+                <UserPostView userUuid={author.userUuid}/>
+                <Timeline/>
+                <EStore userUuid={author.userUuid}/>
+            </TabPanel>
+        );
+    }
+
+    _renderSideAuthor(author, articles, user, plugin) {
+        return (
+            <div className="row">
+                <div className="col-sm-3 col-md-3 col-lg-3">
+                    <Author user={author}/>
+                    {plugin.render.bind(this, plugin)(author.coverImg)}
+                </div>
+                <div className="col-sm-9 col-md-9 col-lg-9">
+                    {this._renderTabPanel(author, articles, user)}
+                </div>
+            </div>
+        );
+    }
+
     render() {
-        let userUuid = this.props.authorUuid, user, articles, plugin,
+        let userUuid = this.props.authorUuid, user, articles, plugin, out,
             author = AuthorStore.getAuthorByUuid(userUuid);
 
         if (author == null) {
             return null;
         }
-        user = UserStore.getUserByUuid(userUuid);
-        articles = this.props.articles;
+        user     = UserStore.getUserByUuid(userUuid);
+        articles = this.props.articles || this.state.articles;
+        plugin   = this.props.plugin || DefaultPlugin;
 
-        if (articles == null) {
-            articles = this.state.articles;
-        }
-        plugin = this.props.plugin;
-        if (plugin == null) {
-            plugin = DefaultPlugin;
+        if (this.props.wideFmt != null) {
+            out = this._renderTabPanel(author, articles, user);
+        } else {
+            out = this._renderSideAuthor(author, articles, user, plugin);
         }
         return (
             <div className="row">
                 <div className="well well-light well-sm">
-                    <div className="row">
-                        <div className="col-sm-3 col-md-3 col-lg-3">
-                            <Author user={author}/>
-                            {plugin.render.bind(this, plugin)(author.coverImg)}
-                        </div>
-                        <div className="col-sm-9 col-md-9 col-lg-9">
-                            <TabPanel className="padding-top-10"
-                                context={this._getAuthorTab(author.userUuid)}>
-                                <PostArticles data={articles} user={user}/>
-                                <Blog authorUuid={userUuid} user={user}/>
-                                <UserPostView userUuid={author.userUuid}/>
-                                <Timeline/>
-                                <EStore userUuid={author.userUuid}/>
-                            </TabPanel>
-                        </div>
-                    </div>
+                    {out}
                 </div>
             </div>
         )
     }
 
-    static renderToggleView(authorUuid, article, toggleClick, cbArg) {
+    static renderToggleView(authorUuid, article, toggleClick, cbArg, wideFmt) {
         let togglePlugin = {
             txtStyle: {
                 textAlign: "center",
@@ -194,7 +205,7 @@ class AuthorFeed extends React.Component
         articles = [ article ];
         return (
             <AuthorFeed authorUuid={authorUuid}
-                articles={articles} plugin={togglePlugin}/>
+                articles={articles} plugin={togglePlugin} wideFmt={wideFmt}/>
         )
     }
 }
