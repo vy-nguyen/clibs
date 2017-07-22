@@ -26,8 +26,12 @@
  */
 package com.tvntd.service.api;
 
+import com.tvntd.lib.ObjectId;
 import com.tvntd.models.Domain;
+import com.tvntd.objstore.ObjStore;
+import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
+import com.tvntd.util.Util;
 
 public interface IDomainService
 {
@@ -38,4 +42,115 @@ public interface IDomainService
     void fillLoginResponse(LoginResponse resp, ProfileDTO profile);
     void fillStartupDomain(StartupResponse resp, String domain, ProfileDTO prof);
     void fillStartupAccount(StartupResponse resp, String domain, ProfileDTO prof);
+
+    public static class DomainDTO
+    {
+        private Domain domain;
+        private String loginHdr;
+        private String loginTxt;
+        private String footHdr;
+        private String footTxt;
+
+        public DomainDTO(Domain domain)
+        {
+            this.domain = domain;
+            convertUTF();
+        }
+
+        public void convertUTF()
+        {
+            loginHdr = Util.fromRawByte(domain.getLoginHdr());
+            loginTxt = Util.fromRawByte(domain.getLoginTxt());
+            footHdr  = Util.fromRawByte(domain.getFootHdr());
+            footTxt  = Util.fromRawByte(domain.getFootTxt());
+        }
+
+        public Domain fetchDomain() {
+            return domain;
+        }
+
+        public String getDomain() {
+            return domain.getDomain();
+        }
+
+        public String getLoginMainImg()
+        {
+            String path = ArticleDTO.s_baseUri + Long.toString(domain.getAuthorId());
+            ObjectId oid = ObjectId.fromString(domain.getLoginMainImg());
+            return ObjStore.getInstance().imgObjUri(oid, path);
+        }
+
+        public void setLoginMainImg(String oid) {
+            domain.setLoginMainImg(oid);
+        }
+
+        public String getLoginFootImg()
+        {
+            String path = ArticleDTO.s_baseUri + Long.toString(domain.getAuthorId());
+            ObjectId oid = ObjectId.fromString(domain.getLoginFootImg());
+            return ObjStore.getInstance().imgObjUri(oid, path);
+        }
+
+        public void setLoginFootImg(String oid) {
+            domain.setLoginFootImg(oid);
+        }
+
+        /**
+         * @return the loginHdr
+         */
+        public String getLoginHdr() {
+            return loginHdr;
+        }
+
+        /**
+         * @param loginHdr the loginHdr to set
+         */
+        public void setLoginHdr(String loginHdr)
+        {
+            this.loginHdr = loginHdr;
+            domain.setLoginHdr(Util.toRawByte(loginHdr, 128));
+        }
+
+        /**
+         * @return the loginTxt
+         */
+        public String getLoginTxt() {
+            return loginTxt;
+        }
+
+        /**
+         * @param loginTxt the loginTxt to set
+         */
+        public void setLoginTxt(String loginTxt) {
+            this.loginTxt = loginTxt;
+        }
+
+        /**
+         * @return the footHdr
+         */
+        public String getFootHdr() {
+            return footHdr;
+        }
+
+        /**
+         * @param footHdr the footHdr to set
+         */
+        public void setFootHdr(String footHdr) {
+            this.footHdr = footHdr;
+        }
+
+        /**
+         * @return the footTxt
+         */
+        public String getFootTxt() {
+            return footTxt;
+        }
+
+        /**
+         * @param footTxt the footTxt to set
+         */
+        public void setFootTxt(String footTxt) {
+            this.footTxt = footTxt;
+        }
+    }
 }

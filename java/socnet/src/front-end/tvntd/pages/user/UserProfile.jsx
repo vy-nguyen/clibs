@@ -200,13 +200,13 @@ class DomainForm extends FormData
     initData() {
         let imgs = [ {
             url     : '/user/upload-img',
-            field   : 'loginImg',
+            field   : 'mainImg',
             inpName : 'domain-logo',
             dropzone: true,
             labelTxt: 'Login Image'
         }, {
             url     : '/user/upload-img',
-            field   : 'cover',
+            field   : 'imageRec',
             inpName : 'domain-cover',
             dropzone: true,
             labelTxt: 'Cover Images'
@@ -216,30 +216,32 @@ class DomainForm extends FormData
             inline   : true,
             inpName  : 'domain-login-hdr',
             inpHolder: 'Your Login Header',
-            labelTxt : 'Login Header'
+            labelTxt : 'Header'
         }, {
-            field    : 'loginHdrTxt',
-            inline   : true,
-            inpName  : 'domain-login-txt',
-            inpHolder: 'Login header text',
-            labelTxt : 'Login Header Content',
-        }, {
-            field    :'loginFootHdr',
+            field    :'footHdr',
             inline   : true,
             ingName  : 'domain-login-foot',
             inpHolder: 'Login Footer',
-            labelTxt : 'Login Footer Title',
+            labelTxt : 'Footer',
         }, {
-            field    : 'loginFootTxt',
+            field    : 'loginTxt',
             inline   : true,
+            editor   : true,
+            inpName  : 'domain-login-txt',
+            inpHolder: 'Login header text',
+            labelTxt : 'Header Content',
+        }, {
+            field    : 'footTxt',
+            inline   : true,
+            editor   : true,
             inpName  : 'domain-login-foot-txt',
             inpHolder: 'Login Footer Text',
-            labelTxt : 'Login Footer Content'
+            labelTxt : 'Footer Content'
         } ];
         this.forms = {
             formId   : 'domain-cust',
             formFmt  : 'client-form',
-            submitFn : this.submit,
+            submitFn : Actions.updateDomain,
             formEntries: [ {
                 legend : 'Upload Images',
                 entries: imgs
@@ -259,13 +261,13 @@ class DomainForm extends FormData
     }
 
     validateInput(data, errFlags) {
-        console.log(data);
-        return data;
-    }
-
-    submit(data) {
-        console.log("Submit data");
-        console.log(data);
+        return {
+            articleUuid: data.articleUUid,
+            loginHdr   : data.loginHdr,
+            loginTxt   : data.loginTxt,
+            footHdr    : data.footHdr,
+            footTxt    : data.footTxt
+        };
     }
 
     submitNotif(store, result, status) {

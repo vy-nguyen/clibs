@@ -26,14 +26,11 @@
  */
 package com.tvntd.service.api;
 
-import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 
 import com.tvntd.forms.CommentChangeForm;
@@ -129,8 +126,7 @@ public interface IArticleService
      */
     public static class ArticleDTO extends GenericResponse
     {
-        private static Logger s_log = LoggerFactory.getLogger(ArticleDTO.class);
-        private static String s_baseUri = "/rs/user/";
+        public  static String s_baseUri = "/rs/user/";
 
         private Article article;
         private ArticleRank rank;
@@ -165,24 +161,14 @@ public interface IArticleService
 
         public void convertUTF()
         {
-            try {
-                byte[] str = article.getTopic();
-                if (str != null) {
-                    topic = new String(str, "UTF-8");
-                }
-                str = article.getContent();
-                if (str != null) {
-                    content = new String(str, "UTF-8");
-                }
+            topic   = Util.fromRawByte(article.getTopic());
+            content = Util.fromRawByte(article.getContent());
 
-            } catch(UnsupportedEncodingException e) {
-                s_log.error(e.toString());
-            }
             if (rank != null) {
                 String urlTag = rank.getUrlTag();
                 if (urlTag != null) {
                     StringBuilder sb = new StringBuilder();
-                    sb.append("https://www.tvntd.com/public/article/")
+                    sb.append("https://www.tudoviet.com/public/article/")
                         .append(Util.utf8ToUrlString(rank.getUrlTag()))
                         .append("/")
                         .append(Util.utf8ToUrlString(topic));

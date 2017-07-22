@@ -24,51 +24,52 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.models;
+package com.tvntd.forms;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.validation.constraints.Size;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-@Entity
-public class Domain
+public class DomainForm
 {
-    static private Logger s_log = LoggerFactory.getLogger(Domain.class);
+    @Size(max = 64)
+    private String authorUuid;;
 
-    @Id
-    @Column(length = 64)
-    String domain;
+    @Size(max = 64)
+    private String domain;
 
-    Long authorId;
+    @Size(max = 64)
+    private String loginMainImg;
 
-    @Column(length = 64)
-    String authorUuid;
+    @Size(max = 64)
+    private String loginFootImg;
 
-    @Column(length = 64)
-    String loginMainImg;
+    @Size(max = 128)
+    private String loginHdr;
 
-    @Column(length = 64)
-    String loginFootImg;
+    @Size(max = 512)
+    private String loginTxt;
 
-    @Column(length = 128)
-    byte[] loginHdr;
+    @Size(max = 128)
+    private String footHdr;
 
-    @Column(length = 512)
-    byte[] loginTxt;
+    @Size(max = 512)
+    private String footTxt;
 
-    @Column(length = 64)
-    byte[] footHdr;
+    /**
+     * @return the authorUuid
+     */
+    public String getAuthorUuid() {
+        return authorUuid;
+    }
 
-    @Column(length = 512)
-    byte[] footTxt;
-
-    public Domain() {}
-    public Domain(String name, String authorUuid)
+    public boolean cleanInput()
     {
-        this.domain = name;
+        return true;
+    }
+
+    /**
+     * @param authorUuid the authorUuid to set
+     */
+    public void setAuthorUuid(String authorUuid) {
         this.authorUuid = authorUuid;
     }
 
@@ -84,34 +85,6 @@ public class Domain
      */
     public void setDomain(String domain) {
         this.domain = domain;
-    }
-
-    /**
-     * @return the authorId
-     */
-    public Long getAuthorId() {
-        return authorId;
-    }
-
-    /**
-     * @param authorId the authorId to set
-     */
-    public void setAuthorId(Long authorId) {
-        this.authorId = authorId;
-    }
-
-    /**
-     * @return the authorUuid
-     */
-    public String getAuthorUuid() {
-        return authorUuid;
-    }
-
-    /**
-     * @param authorUuid the authorUuid to set
-     */
-    public void setAuthorUuid(String authorUuid) {
-        this.authorUuid = authorUuid;
     }
 
     /**
@@ -145,56 +118,56 @@ public class Domain
     /**
      * @return the loginHdr
      */
-    public byte[] getLoginHdr() {
+    public String getLoginHdr() {
         return loginHdr;
     }
 
     /**
      * @param loginHdr the loginHdr to set
      */
-    public void setLoginHdr(byte[] loginHdr) {
+    public void setLoginHdr(String loginHdr) {
         this.loginHdr = loginHdr;
     }
 
     /**
      * @return the loginTxt
      */
-    public byte[] getLoginTxt() {
+    public String getLoginTxt() {
         return loginTxt;
     }
 
     /**
      * @param loginTxt the loginTxt to set
      */
-    public void setLoginTxt(byte[] loginTxt) {
+    public void setLoginTxt(String loginTxt) {
         this.loginTxt = loginTxt;
     }
 
     /**
      * @return the footHdr
      */
-    public byte[] getFootHdr() {
+    public String getFootHdr() {
         return footHdr;
     }
 
     /**
      * @param footHdr the footHdr to set
      */
-    public void setFootHdr(byte[] footHdr) {
+    public void setFootHdr(String footHdr) {
         this.footHdr = footHdr;
     }
 
     /**
      * @return the footTxt
      */
-    public byte[] getFootTxt() {
+    public String getFootTxt() {
         return footTxt;
     }
 
     /**
      * @param footTxt the footTxt to set
      */
-    public void setFootTxt(byte[] footTxt) {
+    public void setFootTxt(String footTxt) {
         this.footTxt = footTxt;
     }
 }

@@ -21,6 +21,7 @@ class FormData
     constructor(props, suffix) {
         this.props       = props;
         this.suffix      = suffix || "";
+        this.dzImage     = null;
         this.imageId     = null;
         this.buttons     = null;
         this.submitBtn   = null;
@@ -29,6 +30,9 @@ class FormData
         this.onFocus = this.onFocus.bind(this);
         this.onBlur  = this.onBlur.bind(this);
         this.onClick = this.onClick.bind(this);
+
+        this._dzError   = this._dzError.bind(this);
+        this._dzSuccess = this._dzSuccess.bind(this);
         return this;
     }
 
@@ -50,6 +54,9 @@ class FormData
         this.iterFormFields(null, null, function(arg, entry) {
             InputStore.freeItemIndex(entry.inpName);
         });
+        if (this.dzImage != null) {
+            this.dzImage.removeAllFiles();
+        }
     }
 
     setImageId(imgId) {
@@ -98,7 +105,24 @@ class FormData
         return retVal;
     }
 
-    setData(value, dzHandler) {
+    _dzSend(entry, files, xhr, form) {
+        form.append('name', files.name);
+        form.append('formId', this.getFormId());
+        form.append('imageId', entry.field);
+        form.append('authorUuid', '');
+        form.append('articleUuid', '');
+    }
+
+    _dzSuccess(dz, hdr, progress) {
+        this.uploadImageOk(hdr);
+    }
+
+    _dzError(a) {
+        console.log("dzError...");
+        console.log(a);
+    }
+
+    setData(value) {
         if (this.initialized === true) {
             return;
         }
@@ -109,7 +133,14 @@ class FormData
             entry.inpName = this._getId(entry.inpName);
             if (entry.dropzone === true) {
                 this.setImageId(entry.inpName);
-                entry.handlers = dzHandler;
+                entry.handlers = {
+                    sending: this._dzSend.bind(this, entry),
+                    success: this._dzSuccess,
+                    error  : this._dzError,
+                    init   : function(dz) {
+                        this.dzImage = dz;
+                    }.bind(this)
+                }
             }
             if (entry.onFocus == null) {
                 entry.onFocus = this.onFocus;
@@ -296,7 +327,9 @@ class FormData
     changeSubmitState(state, click, text, disable) {
         let btn = this.submitBtn, btnObj;
         if (btn != null) {
-            btnObj = StateButtonStore.setButtonStateObj(this.buttons[btn.btnName], state);
+            btnObj = StateButtonStore
+                .setButtonStateObj(this.buttons[btn.btnName], state);
+
             if (btnObj != null && text != null) {
                 btnObj.changeStateInfo(text, disable);
             }
@@ -365,17 +398,11 @@ class FormData
 class ProcessForm extends React.Component
 {
     constructor(props) {
-        let form;
         super(props);
 
-        this._imgDz        = null;
-        this._dzSend       = this._dzSend.bind(this);
-        this._dzSuccess    = this._dzSuccess.bind(this);
-        this._dzError      = this._dzError.bind(this);
         this._onBlurInput  = this._onBlurInput.bind(this);
         this._submitClick  = this._submitClick.bind(this);
         this._updateState  = this._updateState.bind(this);
-        this._imgUploadOk  = this._imgUploadOk.bind(this);
         this._getInitState = this._getInitState.bind(this);
 
         props.form.createButtons();
@@ -394,14 +421,7 @@ class ProcessForm extends React.Component
         if (value == null) {
             value = this.props.defValue || context.defValue;
         }
-        context.setData(value, {
-            sending: this._dzSend,
-            success: this._dzSuccess,
-            error  : this._dzError,
-            init   : function(dz) {
-                this._imgDz = dz;
-            }
-        });
+        context.setData(value);
     }
 
     componentDidMount() {
@@ -415,19 +435,6 @@ class ProcessForm extends React.Component
         }
     }
 
-    _dzSend(files, xhr, form) {
-        form.append('name', files.name);
-        form.append('authorUuid', '');
-        form.append('articleUuid', '');
-    }
-
-    _dzSuccess(dz, hdr, progress) {
-        this._imgUploadOk(null, hdr);
-    }
-
-    _dzError() {
-    }
-
     _onBlurInput(entry) {
         let context = this.props.form;
 
@@ -438,10 +445,6 @@ class ProcessForm extends React.Component
                 errFlags: {}
             });
         }
-    }
-
-    _imgUploadOk(entry, result) {
-        this.props.form.uploadImageOk(result);
     }
 
     _updateState(data, status, resp) {

@@ -38,6 +38,7 @@ const Actions = Reflux.createActions({
     verifyAccount:   completedFailedFn,
     resetPassword:   completedFailedAlwaysFn,
     updateProfile:   completedFailedFn,
+    updateDomain:    completedFailedFn,
 
     changeUsers:     completedFailedFn,
     saveUserPost:    completedFailedFn,
@@ -250,6 +251,10 @@ Actions.resetPassword.listen(function(resetData) {
 
 Actions.updateProfile.listen(function(data) {
     postRestCall(data, "/user/update-profile", true, this);
+});
+
+Actions.updateDomain.listen(function(data) {
+    postRestCall(data, "/user/update-domain", true, this);
 });
 
 Actions.preload.listen(function() {

@@ -58,6 +58,7 @@ import com.tvntd.dao.AuthorTagRepo.AuthorTagRespDTO;
 import com.tvntd.forms.ArticleForm;
 import com.tvntd.forms.CommentChangeForm;
 import com.tvntd.forms.CommentForm;
+import com.tvntd.forms.DomainForm;
 import com.tvntd.forms.PostForm;
 import com.tvntd.forms.ProductForm;
 import com.tvntd.forms.TagForm;
@@ -433,6 +434,7 @@ public class UserPath
     @ResponseBody
     public GenericResponse
     uploadImage(@RequestParam("name") String name,
+            @RequestParam("formId") String formId,
             @RequestParam("authorUuid") String authorUuid,
             @RequestParam("articleUuid") String artUuid,
             @RequestParam("file") MultipartFile file,
@@ -442,6 +444,7 @@ public class UserPath
         if (profile == null) {
             return s_noProfile;
         }
+        System.out.println("Upload form id " + formId);
         ArticleDTO art = genPendPost(profile, true, artUuid);
         try {
             String uid = profile.fetchUserId().toString();
@@ -869,4 +872,38 @@ public class UserPath
         }
         return res;
     }
+
+    /**
+     * Change domain info.
+     */
+    @RequestMapping(value = "/user/update-domain",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    updateDomain(@RequestBody DomainForm form,
+            HttpServletRequest request, HttpSession session)
+    {
+        if (form.cleanInput() == false) {
+            return s_badInput;
+        }
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
+        ArticleDTO pend = profile.fetchPendPost();
+        if (pend != null) {
+            Article art = pend.fetchArticle();
+            List<String> pics = art.getPictures();
+            System.out.println(pics);
+            try {
+                form.setLoginMainImg(pics.get(0));
+                form.setLoginFootImg(pics.get(1));
+            } catch(Exception e) {}
+        }
+        form.setAuthorUuid(profile.getUserUuid());
+        LoginResponse res = new LoginResponse(profile, request, session, false);
+        return res;
+    }
+ 
 }
