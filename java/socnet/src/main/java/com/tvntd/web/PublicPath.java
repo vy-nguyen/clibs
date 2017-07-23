@@ -230,6 +230,7 @@ public class PublicPath
         }
         List<ArticleRankDTO> ranks = articleSvc.getArticleRank(uuids);
         ArrayList<String> artUuids = new ArrayList<>(list.size());
+
         for (ProductDTO prod : list) {
             artUuids.add(prod.getArticleUuid());
         }

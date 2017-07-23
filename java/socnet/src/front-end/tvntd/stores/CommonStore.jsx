@@ -179,18 +179,20 @@ class CommonStore {
     }
 
     getItemsByAuthor(uuid, fetch) {
-        let items = [],
-            uuids = UserStore.getFetchedUuidList(this.storeKind);
+        let anchor, items = [], owners;
 
-        if (fetch === true && !_.isEmpty(uuids)) {
-            Actions.getPublishProds({
-                authorUuid: UserStore.getSelfUuid(),
-                uuidType  : "user",
-                reqKind   : this.storeKind,
-                uuids     : uuids
-            });
+        if (fetch === true) {
+            owners = UserStore.getFetchedUuidList(this.storeKind);
+            if (owners != null && !_.isEmpty(owners)) {
+                Actions.getPublishProds({
+                    authorUuid: UserStore.getSelfUuid(),
+                    uuidType  : "user",
+                    reqKind   : this.storeKind,
+                    uuids     : owners
+                });
+            }
         }
-        let anchor = this.getItemOwner(uuid);
+        anchor = this.getItemOwner(uuid);
         if (anchor.hasData() === true) {
             anchor.iterArticles(function(it) {
                 items.push(it);
@@ -296,20 +298,22 @@ class CommonStore {
         let store = this.data.itemsByUuid,
             missing = this.data.missingUuids;
 
-        _.forEach(uuids, function(uid) {
-            if (store[uid] == null) {
+        _.forEach(uuids, function(uid, key) {
+            if (store[key] == null) {
                 if (this.data.missingUuids == null) {
                     this.data.missingUuids = [];
                     missing = this.data.missingUuids;
                 }
-                missing.push(uid);
+                missing.push(key);
             }
         }.bind(this));
     }
 
     updatePublicTags(tags, actionFn) {
         _.forEach(tags, function(t) {
-            this.updateMissingUuid(t.articleRank);
+            if (t.articleRank != null) {
+                this.updateMissingUuid(t.articleRank);
+            }
         }.bind(this));
         this.requestItems(actionFn);
     }

@@ -245,9 +245,13 @@ class FormData
         if (form.buttons == null) {
             return null;
         }
+        if (this.buttons == null) {
+            this.createButtons();
+        }
         buttons = form.buttons.map(function(btn) {
             name = btn.btnName;
             if (btn.btnSubmit !== true) {
+                console.log(this);
                 return (
                     <StateButton btnId={name} className={btn.btnFmt}
                         onClick={this.onClick.bind(this, btn, this.buttons[name])}/>
@@ -340,6 +344,9 @@ class FormData
     }
 
     isSubmitting() {
+        if (this.submitBtn == null) {
+            return false;
+        }
         return StateButtonStore.isButtonInState(this.submitBtn.btnName, "saving");
     }
 
@@ -349,8 +356,10 @@ class FormData
 
     onFocus(entry) {
         ErrorStore.clearError(this.getFormId());
-        if (StateButtonStore.isButtonInState(this.submitBtn.btnName, "failure")) {
-            this.changeSubmitState("needSave", false);
+        if (this.submitBtn != null) {
+            if (StateButtonStore.isButtonInState(this.submitBtn.btnName, "failure")) {
+                this.changeSubmitState("needSave", false);
+            }
         }
     }
 
@@ -405,7 +414,6 @@ class ProcessForm extends React.Component
         this._updateState  = this._updateState.bind(this);
         this._getInitState = this._getInitState.bind(this);
 
-        props.form.createButtons();
         this.state = this._getInitState();
     }
 

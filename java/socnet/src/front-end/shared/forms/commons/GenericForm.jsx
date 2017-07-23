@@ -446,6 +446,13 @@ class InputEntry
         if (entry.checkedBox != null) {
             return <InputWrap entry={entry}/>;
         }
+        if (entry.editor === true && entry.labelTxt == null) {
+            return (
+                <div className={entry.inputFmt}>
+                    <EditorEntry entry={entry} onChange={onBlur}/>
+                </div>
+            );
+        }
         return (
             <InputBox entry={entry} onBlur={onBlur}
                 onFocus={entry.onFocus} onSelected={entry.onSelect}/>

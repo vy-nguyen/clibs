@@ -8,19 +8,152 @@ import _      from 'lodash';
 import React  from 'react-mod';
 
 import ArticleStore     from 'vntd-root/stores/ArticleStore.jsx';
+import Mesg             from 'vntd-root/components/Mesg.jsx';
 import Actions          from 'vntd-root/actions/Actions.jsx';
-import Lang             from 'vntd-root/stores/LanguageStore.jsx';
 import AuthorStore      from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleTagStore  from 'vntd-root/stores/ArticleTagStore.jsx';
-import Mesg             from 'vntd-root/components/Mesg.jsx';
-import UserStore        from 'vntd-shared/stores/UserStore.jsx';
-import DataStore        from 'vntd-shared/stores/NestableStore.jsx';
 import ErrorStore       from 'vntd-shared/stores/ErrorStore.jsx';
-import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
-import {EditorEntry}    from 'vntd-shared/forms/editors/Editor.jsx';
 import JarvisWidget     from 'vntd-shared/widgets/JarvisWidget.jsx';
 import StateButton      from 'vntd-shared/utils/StateButton.jsx';
-import ErrorView        from 'vntd-shared/layout/ErrorView.jsx';
+import { FormData, ProcessForm } from 'vntd-shared/forms/commons/ProcessForm.jsx';
+
+class PostForm extends FormData
+{
+    constructor(props, suffix) {
+        super(props, suffix);
+        this.initData();
+        return this;
+    }
+
+    initData() {
+        let inputFmt = 'control-label col-xs-11 col-sm-11 col-md-11 col-lg-11',
+            labelFmt = 'control-label col-xs-1 col-sm-1 col-md-1 col-lg-1',
+        entries = [ {
+            dropzone : true,
+            url      : '/user/upload-img',
+            field    : 'image',
+            inpName  : 'art-img-',
+            inputFmt : inputFmt,
+            labelFmt : labelFmt,
+            labelTxt : 'Drop Images'
+        }, {
+            field    : 'tags',
+            inpName  : 'art-tag-',
+            inpHolder: 'My Post',
+            taOptions: this._getAutoTags(),
+            typeAhead: true,
+            inputFmt : inputFmt,
+            labelFmt : labelFmt,
+            labelTxt : 'Category'
+        }, {
+            field    : 'topic',
+            inpName  : 'art-topic-',
+            inpHolder: 'Article Title',
+            inputFmt : inputFmt,
+            labelFmt : labelFmt,
+            labelTxt : 'Title'
+        }, {
+            field    : 'content',
+            inpName  : 'art-content-',
+            editor   : true,
+            menu     : 'full',
+            uploadUrl: '/user/upload-img',
+            inputFmt : 'inbox-message no-padding'
+        } ];
+        this.forms = {
+            formId   : 'post-article',
+            formFmt  : 'product-content product-wrap clearfix',
+            submitFn : this._submitPost,
+            formEntries: [ {
+                entries: entries
+            } ],
+            buttons: [ {
+                btnName  : 'post-save',
+                btnFmt   : 'btn btn-primary',
+                btnCreate: function() {
+                    return StateButton.saveButtonFsm("Saved", "Save Post",
+                        "Saved", "Save Failed", "Saving...");
+                }
+            }, {
+                btnName  : 'post-publish',
+                btnFmt   : 'btn btn-primary',
+                btnSubmit: true,
+                btnCreate: function() {
+                    return StateButton.saveButtonFsm("Publish", "Publish Post",
+                        "Published", "Publish Failed", "Publishing...");
+                }
+            } ]
+        };
+    }
+
+    _getAutoTags() {
+        return _.merge([],
+            AuthorStore.getTagsByAuthorUuid(null),
+            ArticleTagStore.getAllPublicTags(false));
+    }
+
+    _submitPost(data) {
+        console.log("Submit post");
+        console.log(data);
+    }
+
+    validateInput(data, errFlags) {
+        return data;
+    }
+
+    submitNotif(store, result, status, resp) {
+        let formId = this.getFormId();
+
+        if (status === "publish-failed") {
+            ErrorStore.reportErrMesg(formId, result.error, result.message);
+            this.submitFailure(result, status);
+            return;
+
+        }
+        /* eslint-disable */
+        if (tinymce != null) {
+            tinymce.EditorManager.get(formId).setContent('');
+        }
+        /* eslint-enable */
+        super.submitNotif(store, result, status, resp);
+    }
+
+    onClick(btn, btnState) {
+    }
+}
+
+class EditorPost extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        let data, art = this.props.article,
+            suffix = art != null ? art.articleUuid : 'post';
+
+        data = new PostForm(this.props, suffix);
+        return (
+            <div className="row">
+                <article className="col-sm-12 col-md-12 col-lg-12">
+                    <JarvisWidget id="my-post" color="purple">
+                        <header>
+                            <span className="widget-icon"> <i className="fa fa-pencil"/>
+                            </span>
+                            <h2><Mesg text='Publish Post'/></h2>
+                        </header>
+                        <div className="widget-body">
+                            <ProcessForm form={data} store={ArticleStore} value={art}/>
+                        </div>
+                    </JarvisWidget>
+                </article>
+            </div>
+        );
+    }
+}
+
+
+/*
 import {
     DropZoneWrap, InputBox
 } from 'vntd-shared/forms/commons/GenericForm.jsx';
@@ -136,6 +269,7 @@ class EditorPost extends React.Component
 
     _onSend(files, xhr, form) {
         form.append('name', files.name);
+        form.append('formId', 'abc');
         form.append('authorUuid', UserStore.getSelf().userUuid);
         form.append('articleUuid', this.state.articleUuid);
     }
@@ -245,11 +379,9 @@ class EditorPost extends React.Component
             this._clearData();
             this.setState(this._getInitState());
 
-            /* eslint-disable */
             if (tinymce != null) {
                 tinymce.EditorManager.get(this._getId('main-content')).setContent('');
             }
-            /* eslint-enable */
         }
     }
 
@@ -350,4 +482,5 @@ class EditorPost extends React.Component
     }
 }
 
+    */
 export default EditorPost;
