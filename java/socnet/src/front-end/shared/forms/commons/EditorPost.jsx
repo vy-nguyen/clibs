@@ -105,8 +105,7 @@ class PostForm extends FormData
         if (this.props.article == null) {
             Actions.publishUserPost(data);
         } else {
-            console.log("Update user post");
-            console.log(data);
+            data.articleUuid = this.props.article.articleUuid;
             Actions.updateUserPost(data);
         }
     }
@@ -136,7 +135,7 @@ class PostForm extends FormData
         };
     }
 
-    submitNotif(store, result, status, resp) {
+    submitNotif(store, data, result, status, resp) {
         let formId = this.getFormId();
 
         if (status === "publish-failed") {
@@ -156,7 +155,7 @@ class PostForm extends FormData
             }
         }
         /* eslint-enable */
-        super.submitNotif(store, result, status, resp);
+        super.submitNotif(store, data, result, status, resp);
     }
 
     onBlur(entry) {
@@ -189,9 +188,19 @@ class EditorPost extends React.Component
     }
 
     render() {
-        let data, art = this.props.article,
-            suffix = art != null ? art.articleUuid : 'post';
-
+        let data, suffix, val, art = this.props.article;
+        
+        if (art != null) {
+            suffix = art.articleUuid;
+            val    = {
+                tags   : art.rank != null ? art.rank.tagName : null,
+                topic  : art.topic,
+                content: art.content
+            };
+        } else {
+            val    = null;
+            suffix = 'post';
+        }
         data = new PostForm(this.props, suffix);
         return (
             <div className="row">
@@ -203,7 +212,7 @@ class EditorPost extends React.Component
                             <h2><Mesg text='Publish Post'/></h2>
                         </header>
                         <div className="widget-body">
-                            <ProcessForm form={data} store={ArticleStore} value={art}/>
+                            <ProcessForm form={data} store={ArticleStore} value={val}/>
                         </div>
                     </JarvisWidget>
                 </article>

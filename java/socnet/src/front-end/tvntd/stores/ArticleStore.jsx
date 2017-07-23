@@ -248,7 +248,7 @@ let ArticleStore = Reflux.createStore({
         } else {
             status = "pubish-failed";
         }
-        this.trigger(this.store, post, status);
+        this.store._triggerStore(this, post, status);
     },
 
     onDeleteUserPostCompleted: function(data) {

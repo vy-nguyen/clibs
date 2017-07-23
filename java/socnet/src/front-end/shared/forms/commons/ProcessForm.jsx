@@ -481,16 +481,11 @@ class ProcessForm extends React.Component
         }
     }
 
-    _updateState(data, status, resp) {
+    _updateState(data, result, status, resp) {
         let context = this.props.form;
 
-        console.log("update state " + status + " isSubmitting " + context.isSubmitting());
-        console.log(context);
-        console.log(resp);
-        console.log(data);
-
         if (context.isSubmitting() === true) {
-            context.submitNotif(this.props.store, data, status, resp);
+            context.submitNotif(this.props.store, data, result, status);
 
             if (this._imgDz != null) {
                 this._imgDz.removeAllFiles();

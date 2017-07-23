@@ -308,7 +308,7 @@ public class UserPath
         }
         ArticleDTO art = articleSvc.getArticleDTO(form.getArticleUuid());
         if (art == null) {
-            return s_noProfile;
+            return s_invalidArticle;
         }
         Article article = art.fetchArticle();
         ArticleService.applyPostForm(form, article, publish);
