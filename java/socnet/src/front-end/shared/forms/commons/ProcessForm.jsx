@@ -105,6 +105,28 @@ class FormData
         return retVal;
     }
 
+    getAndValidateForm(errFlags) {
+        let field, value, data, entryInfo = [];
+
+        data = this.getData(entryInfo);
+        _.forEach(entryInfo, function(info) {
+            field = info.field;
+            value = data[field];
+            if (info.emptyOk == null && ((value == null) ||
+                (typeof value === 'string' && value === ''))) {
+                errFlags[field]   = true;
+                errFlags.helpText = Lang.translate("Enter values in highlighted fields");
+                errFlags.errText  = Lang.translate("Please correct highlighted values");
+            }
+        });
+        data = this.validateInput(data, errFlags);
+        if (errFlags.errText == null) {
+            return data;
+        }
+        ErrorStore.reportErrMesg(this.getFormId(), errFlags.errText, errFlags.helpText);
+        return null;
+    }
+
     _dzSend(entry, files, xhr, form) {
         form.append('name', files.name);
         form.append('formId', this.getFormId());
@@ -230,6 +252,9 @@ class FormData
         this.buttons = {};
         if (buttons != null) {
             _.forEach(buttons, function(btn) {
+                if (!_.isEmpty(this.suffix)) {
+                    btn.btnName = btn.btnName + this.suffix;
+                }
                 obj = StateButtonStore.createButton(btn.btnName, btn.btnCreate);
                 this.buttons[btn.btnName] = obj;
                 if (btn.btnSubmit === true) {
@@ -251,7 +276,6 @@ class FormData
         buttons = form.buttons.map(function(btn) {
             name = btn.btnName;
             if (btn.btnSubmit !== true) {
-                console.log(this);
                 return (
                     <StateButton btnId={name} className={btn.btnFmt}
                         onClick={this.onClick.bind(this, btn, this.buttons[name])}/>
@@ -343,7 +367,10 @@ class FormData
         }
     }
 
-    isSubmitting() {
+    isSubmitting(btnName) {
+        if (btnName != null) {
+            return StateButtonStore.isButtonInState(btnName, "saving");
+        }
         if (this.submitBtn == null) {
             return false;
         }
@@ -364,8 +391,7 @@ class FormData
     }
 
     onClick(btn, btnState) {
-        console.log("Base onclick");
-        console.log(btn);
+        StateButtonStore.setButtonStateObj(this.buttons[btn.btnName], "saving");
     }
 
     validateInput(data, errFlags) {
@@ -458,6 +484,11 @@ class ProcessForm extends React.Component
     _updateState(data, status, resp) {
         let context = this.props.form;
 
+        console.log("update state " + status + " isSubmitting " + context.isSubmitting());
+        console.log(context);
+        console.log(resp);
+        console.log(data);
+
         if (context.isSubmitting() === true) {
             context.submitNotif(this.props.store, data, status, resp);
 
@@ -469,21 +500,9 @@ class ProcessForm extends React.Component
     }
 
     _submitClick() {
-        let field, value, data,
-            context = this.props.form, errFlags = {}, entryInfo = [];
+        let data, context = this.props.form, errFlags = {};
 
-        data = context.getData(entryInfo);
-        _.forEach(entryInfo, function(info) {
-            field = info.field;
-            value = data[field];
-            if (info.emptyOk == null && ((value == null) ||
-                (typeof value === 'string' && value === ''))) {
-                errFlags[field] = true;
-                errFlags.helpText = Lang.translate("Enter values in highlighted fields");
-                errFlags.errText  = Lang.translate("Please correct highlighted values");
-            }
-        });
-        data = context.validateInput(data, errFlags);
+        data = context.getAndValidateForm(errFlags);
         if (errFlags.errText == null) {
             context.submitAct(data);
             return;
@@ -491,8 +510,6 @@ class ProcessForm extends React.Component
         this.setState({
             errFlags: errFlags
         });
-        ErrorStore.reportErrMesg(context.getFormId(),
-            errFlags.errText, errFlags.helpText);
     }
 
     render() {
