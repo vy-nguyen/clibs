@@ -374,7 +374,10 @@ class FormData
         if (this.submitBtn == null) {
             return false;
         }
-        return StateButtonStore.isButtonInState(this.submitBtn.btnName, "saving");
+        if (this._onClickBtn == null) {
+            return StateButtonStore.isButtonInState(this.submitBtn.btnName, "saving");
+        }
+        return true;
     }
 
     onBlur(entry) {
@@ -391,7 +394,8 @@ class FormData
     }
 
     onClick(btn, btnState) {
-        StateButtonStore.setButtonStateObj(this.buttons[btn.btnName], "saving");
+        this._onClickBtn = this.buttons[btn.btnName];
+        StateButtonStore.setButtonStateObj(this._onClickBtn, "saving");
     }
 
     validateInput(data, errFlags) {
@@ -401,6 +405,11 @@ class FormData
     submitNotif(store, result, status, resp) {
         this.clearData();
         this.changeSubmitState("saved", false);
+
+        if (this._onClickBtn != null) {
+            StateButtonStore.setButtonStateObj(this._onClickBtn, "success");
+        }
+        this._onClickBtn = null;
     }
 
     submitFailure(result, status) {
@@ -491,6 +500,7 @@ class ProcessForm extends React.Component
                 this._imgDz.removeAllFiles();
             }
             this.setState(this._getInitState());
+            return;
         }
     }
 

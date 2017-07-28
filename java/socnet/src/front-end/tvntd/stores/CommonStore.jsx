@@ -352,16 +352,19 @@ class CommonStore {
     }
 
     _addItemStore(item, saved) {
-        let anchor, authorTagMgr, it = Article.newInstance(this.data.storeKind, item);
+        let anchor, authorTagMgr, it;
 
         if (saved === true) {
-            this.data.mySavedItems = preend(it, this.data.mySavedItems);
-            return it;
-        }
-        anchor = this.getItemOwner(it.authorUuid);
-        if (this.data.itemsByUuid[it.articleUuid] == null) {
-            this.data.itemsByUuid[it.articleUuid] = it;
-            anchor.addArticle(it);
+            this.addFromJson([item], 'mySavedItems');
+            it = this.data.mySavedItems[item.articleUuid];
+        } else {
+            it = Article.newInstance(this.data.storeKind, item);
+            anchor = this.getItemOwner(it.authorUuid);
+
+            if (this.data.itemsByUuid[it.articleUuid] == null) {
+                this.data.itemsByUuid[it.articleUuid] = it;
+                anchor.addArticle(it);
+            }
         }
         if (it.rank != null) {
             authorTagMgr = AuthorStore.getAuthorTagMgr(it.authorUuid);
@@ -390,11 +393,19 @@ class CommonStore {
     }
 
     addFromJson(items, key, index) {
-        let itemsByKey = this.data[key], kind = this.data.storeKind;
+        let art, kind = this.data.storeKind,
+            itemsByKey = this.data[key],
+            savedItems = this.data.mySavedItems;
 
         _.forOwn(items, function(it, k) {
-            if (itemsByKey[it.articleUuid] == null) {
-                itemsByKey[it.articleUuid] = Article.newInstance(kind, it);
+            if (it.published === false) {
+                if (savedItems[it.articleUuid] == null) {
+                    savedItems[it.articleUuid] = Article.newInstance(kind, it);
+                }
+            } else {
+                if (itemsByKey[it.articleUuid] == null) {
+                    itemsByKey[it.articleUuid] = Article.newInstance(kind, it);
+                }
             }
         }.bind(this));
 

@@ -4,6 +4,7 @@
  */
 'use strict';
 
+import _              from 'lodash';
 import Reflux         from 'reflux';
 import Actions        from 'vntd-root/actions/Actions.jsx';
 import CommonStore    from 'vntd-root/stores/CommonStore.jsx';
@@ -198,15 +199,20 @@ let ArticleStore = Reflux.createStore({
 
     onRefreshArticlesCompleted: function(data) {
         let out = this.store.addFromJson(data.articles, 'itemsByUuid', true);
-        this.store.addFromJson(data.pendPosts, 'mySavedItems');
+
+        if (data.pendPosts) {
+            this.store.addFromJson(data.pendPosts, 'mySavedItems');
+        }
         this.trigger(out, data.articles, "refresh", true, null);
     },
 
     onStartupCompleted: function(data) {
-        if (data.articles) {
-            let out = this.store.addFromJson(data.articles, 'itemsByUuid', true);
-            this.trigger(out, null, "startup", true, null);
+        let out = this.store.addFromJson(data.articles, 'itemsByUuid', true);
+
+        if (data.pendPosts) {
+            this.store.addFromJson(data.pendPosts, "mySavedItems", false);
         }
+        this.trigger(out, null, "startup", true, null);
         Startup.mainStartup();
     },
 
@@ -223,6 +229,7 @@ let ArticleStore = Reflux.createStore({
 
     onSaveUserPostCompleted: function(post) {
         this.store._addItemStore(post, true, this, "save"); 
+        this.store._triggerStore(this, post, status);
     },
 
     onPublishUserPostFailed: function(err) {

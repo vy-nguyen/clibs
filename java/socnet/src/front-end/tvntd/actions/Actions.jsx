@@ -310,8 +310,6 @@ Actions.pendingProduct.listen(function(data) {
 });
 
 Actions.getPublishProds.listen(function(data) {
-    console.log("get estore");
-    console.log(data);
     postRestCall(data, "/public/get-estores", true, this, false, "getPublishProds");
 });
 

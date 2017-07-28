@@ -581,7 +581,10 @@ let ArticleTagStore = Reflux.createStore({
      */
     hasPublishedArticle: function(artUuid) {
         let article = LookupArticle(artUuid);
-        return article.publishTag != null;
+        if (article != null) {
+            return article.publishTag != null;
+        }
+        return false;
     },
 
     getTagTableData: function(edit, kind, ownerUuid) {

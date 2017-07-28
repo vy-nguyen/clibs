@@ -44,6 +44,7 @@ class PostForm extends FormData
             url      : '/user/upload-img',
             field    : 'image',
             inpName  : 'art-img-',
+            emptyOk  : true,
             inputFmt : inputFmt,
             labelFmt : labelFmt,
             labelTxt : 'Drop Images'
@@ -144,9 +145,6 @@ class PostForm extends FormData
             return;
 
         }
-        console.log("Submit notif " + status);
-        console.log(this);
-
         /* eslint-disable */
         if (tinymce != null) {
             let mce = tinymce.EditorManager.get(this.editorEntry.inpName);
@@ -172,9 +170,6 @@ class PostForm extends FormData
         if (this.isSubmitting(btn.btnName) === true) {
             data = this.getAndValidateForm(errFlags);
             if (data != null) {
-                console.log("In submitting state");
-                console.log(data);
-                console.log(errFlags);
                 Actions.saveUserPost(data);
             }
         }
