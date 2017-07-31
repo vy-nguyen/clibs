@@ -201,7 +201,7 @@ let ArticleStore = Reflux.createStore({
         let out = this.store.addFromJson(data.articles, 'itemsByUuid', true);
 
         if (data.pendPosts) {
-            this.store.addFromJson(data.pendPosts, 'mySavedItems');
+            this.store.addFromJson(data.pendPosts, 'itemsByUuid', true);
         }
         this.trigger(out, data.articles, "refresh", true, null);
     },
@@ -210,7 +210,7 @@ let ArticleStore = Reflux.createStore({
         let out = this.store.addFromJson(data.articles, 'itemsByUuid', true);
 
         if (data.pendPosts) {
-            this.store.addFromJson(data.pendPosts, "mySavedItems", false);
+            this.store.addFromJson(data.pendPosts, "itemsByUuid", true);
         }
         this.trigger(out, null, "startup", true, null);
         Startup.mainStartup();
@@ -219,17 +219,13 @@ let ArticleStore = Reflux.createStore({
     /**
      * Save/publish user post.
      */
-    onPendingPostCompleted: function(post) {
-        this.store.onPendingPostCompleted(post);
-    },
-
     onSaveUserPostFailed: function(err) {
         this.store.errorHandler(err);
     },
 
     onSaveUserPostCompleted: function(post) {
-        this.store._addItemStore(post, true, this, "save"); 
-        this.store._triggerStore(this, post, status);
+        this.store._addItemStore(post);
+        this.store._triggerStore(this, post, "publish", true, post.authorUuid);
     },
 
     onPublishUserPostFailed: function(err) {
@@ -239,28 +235,27 @@ let ArticleStore = Reflux.createStore({
     onPublishUserPostCompleted: function(post) {
         let status = "publish";
         if (post.error == null) {
-            this.store.onPendingPostCompleted(post);
-            this.store._addItemStore(post, false);
+            this.store._addItemStore(post);
         } else {
             status = "publish-failed";
         }
-        this.store._triggerStore(this, post, status);
+        this.store._triggerStore(this, post, status, true, post.authorUuid);
     },
 
     onUpdateUserPostCompleted: function(post) {
         let status = "publish";
         if (post.error == null) {
             this.store._removeItemStore([post.articleUuid], post.authorUuid, true);
-            this.store._addItemStore(post, false);
+            this.store._addItemStore(post);
         } else {
             status = "pubish-failed";
         }
-        this.store._triggerStore(this, post, status);
+        this.store._triggerStore(this, post, status, true, post.authorUuid);
     },
 
     onDeleteUserPostCompleted: function(data) {
         this.store._removeItemStore(data.uuids, data.authorUuid, true);
-        this.trigger(this.store, data, "delOk");
+        this.trigger(this.store, data, "delOk", true, data.authorUuid);
     },
 
     onDeleteUserPostFailed: function(data) {

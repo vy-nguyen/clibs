@@ -24,6 +24,7 @@ import Friends             from './Friends.jsx';
 class UserHome extends React.Component
 {
     constructor(props) {
+        let all;
         super(props);
         this.getUserTab     = this.getUserTab.bind(this);
         this.getMyUserTab   = this.getMyUserTab.bind(this);
@@ -37,10 +38,11 @@ class UserHome extends React.Component
         this._getActPaneCommon = this._getActPaneCommon.bind(this);
         this._setActPaneCommon = this._setActPaneCommon.bind(this);
 
-        let { userUuid } = props.params;
+        all = this._getArticles(props.params.userUuid);
         this.state = {
-            tabIndex: 0,
-            articles: this._getArticles(userUuid)
+            tabIndex : 0,
+            articles : all.articles,
+            savedArts: all.savedArts
         };
     }
 
@@ -56,19 +58,30 @@ class UserHome extends React.Component
     }
 
     _updateStore(store, data, status, update, authorUuid) {
-        let { userUuid } = this.props.params;
+        let all;
+
+        console.log("User home update " + update);
         if (update === true) {
+            all = this._getArticles(this.props.params.userUuid);
+            console.log(all);
             this.setState({
-                articles: this._getArticles(userUuid)
+                articles : all.articles,
+                savedArts: all.savedArts
             });
         }
     }
 
     _getArticles(userUuid) {
-        if (userUuid != null) {
-            return ArticleStore.getSortedArticlesByAuthor(userUuid);
+        if (userUuid != null && !UserStore.isUserMe(userUuid)) {
+            return {
+                articles : ArticleStore.getSortedArticlesByAuthor(userUuid),
+                savedArts: null
+            };
         }
-        return ArticleStore.getMyArticles();
+        return {
+            articles : ArticleStore.getMyArticles(),
+            savedArts: ArticleStore.getMySavedArticles()
+        };
     }
 
     getUserTab() {
@@ -147,8 +160,7 @@ class UserHome extends React.Component
     }
 
     _getOwner() {
-        let { userUuid } = this.props.params;
-        return UserStore.getUserByUuid(userUuid);
+        return UserStore.getUserByUuid(this.props.params.userUuid);
     }
 
     _getActivePane() {
@@ -190,7 +202,8 @@ class UserHome extends React.Component
     }
 
     render() {
-        let me = true, postView, saveArticles, tabCtx, articles, editTab,
+        let me = true, postView, saveArticles, tabCtx, articles, editTab, all,
+            userUuid = this.props.params.userUuid,
             self = this._getOwner();
 
         if (self == null) {
@@ -198,20 +211,18 @@ class UserHome extends React.Component
             return null;
         }
         postView = null;
-        saveArticles = null;
         tabCtx = this.getUserTab();
         articles = this.state.articles;
-        let { userUuid } = this.props.params;
 
         if (userUuid != null) {
             me = false;
-            articles = this._getArticles(userUuid);
+            saveArticles = null;
         } else {
             tabCtx = this.getMyUserTab();
             postView = <UserPostView userUuid={self.userUuid}/>;
             saveArticles =
                 <PostArticles userUuid={self.userUuid}
-                    data={ArticleStore.getMySavedArticles()} edit={true}/>
+                    data={this.state.savedArts} edit={true}/>;
         }
         if (articles == null) {
             articles = {};
@@ -225,7 +236,6 @@ class UserHome extends React.Component
                 </TabPanel>
             );
         }
-        /*<Link to={{ pathname: "/user/" + "123450", query: { editor: false } }}>User profile</Link>*/
         return (
             <div id="user-home">
                 <ProfileCover userUuid={self.userUuid}/>
@@ -247,5 +257,11 @@ class UserHome extends React.Component
         )
     }
 }
+
+/*
+    <Link to={{ pathname: "/user/" + "123450", query: { editor: false } }}>
+        User profile
+    </Link>
+*/
 
 export default UserHome;

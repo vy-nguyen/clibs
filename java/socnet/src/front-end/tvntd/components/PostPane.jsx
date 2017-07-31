@@ -313,7 +313,9 @@ class PostPane extends React.Component
         this._postPaneId = "post-pane-" + article.articleUuid;
         active = InputStore.getItemIndex(this._postPaneId);
         if (active == null) {
-            artRank = AuthorStore.getArticleRank(article.authorUuid, article.articleUuid);
+            artRank = AuthorStore
+                .getArticleRank(article.authorUuid, article.articleUuid);
+
             if (artRank != null) {
                 if (artRank.publishPost == null) {
                     artRank.publishPost = false;

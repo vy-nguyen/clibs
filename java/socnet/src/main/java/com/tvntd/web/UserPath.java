@@ -259,15 +259,13 @@ public class UserPath
         Article article = art.fetchArticle();
         ArticleService.applyPostForm(form, article, publish);
 
+        System.out.println("Beg save art uuid " + art.getArticleUuid());
+        art.convertUTF();
         if (publish == true) {
             article.markActive();
-            art.convertUTF();
             articleSvc.saveArticle(art);
 
-            // We're done with the current post.
-            profile.assignPendPost(null);
             profile.pushPublishArticle(art);
-
             timeLineSvc.saveTimeLine(profile.getUserUuid(),
                     art.getArticleUuid(), null, article.getContentBrief());
         } else {
@@ -276,6 +274,9 @@ public class UserPath
         }
         ArticleRank artRank = authorSvc.createArticleRank(article, form.getTags());
         art.setRank(artRank);
+
+        // We're done with the current post.
+        profile.assignPendPost(null);
         return art;
     }
 

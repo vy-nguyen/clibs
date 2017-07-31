@@ -79,9 +79,11 @@ class AdsItem extends Article {
 
 class AuthorShelf {
     constructor(article, authorUuid) {
-        this.getData = 0;
-        this.articles = {};
-        this.sortedArticles = [];
+        this.getData   = 0;
+        this.articles  = {};
+        this.savedArts = {};
+        this.sortedArticles  = [];
+        this.sortedSavedArts = [];
 
         this.addSortedArticle = this.addSortedArticle.bind(this);
         if (article != null) {
@@ -93,14 +95,25 @@ class AuthorShelf {
     }
 
     addArticle(article) {
-        if (article != null && this.articles[article.articleUuid] == null) {
-            this.articles[article.articleUuid] = article;
-            this.sortedArticles = preend(article, this.sortedArticles);
+        if (article == null) {
+            return;
+        }
+        if (article.published === true) {
+            if (this.articles[article.articleUuid] == null) {
+                this.removeArticle(article.articleUuid);
+                this.articles[article.articleUuid] = article;
+                this.sortedArticles = preend(article, this.sortedArticles);
+            }
+        } else {
+            if (this.articles[article.articleUuid] != null) {
+                this.removeArticle(article.articleUuid);
+            }
+            this.addSortedSavedArts(article);
         }
     }
 
     _cmpArticle(anchor, elm) {
-        if (anchor.createdDate == elm.createdDate) {
+        if (anchor.createdDate === elm.createdDate) {
             return 0;
         }
         if (anchor.createdDate > elm.createdDate) {
@@ -115,14 +128,29 @@ class AuthorShelf {
             removeArray(this.sortedArticles, article, 0, this._cmpArticle);
             delete this.articles[articleUuid];
         }
+        article = this.savedArts[articleUuid];
+        if (article != null) {
+            removeArray(this.sortedSavedArts, article, 0, this._cmpArticle);
+            delete this.savedArts[articleUuid];
+        }
     }
 
     addSortedArticle(article) {
-        if (this.articles[article.articleUuid] === article) {
+        if (article.published === true) {
+            if (this.articles[article.articleUuid] !== article) {
+                this.articles[article.articleUuid] = article;
+                insertSorted(article, this.sortedArticles, this._cmpArticle);
+            }
             return;
         }
-        this.articles[article.articleUuid] = article;
-        insertSorted(article, this.sortedArticles, this._cmpArticle);
+        this.addSortedSavedArts(article);
+    }
+
+    addSortedSavedArts(article) {
+        if (this.savedArts[article.articleUuid] !== article) {
+            this.savedArts[article.articleUuid] = article;
+            insertSorted(article, this.sortedSavedArts, this._cmpArticle);
+        }
     }
 
     hasData() {
@@ -131,6 +159,17 @@ class AuthorShelf {
 
     getSortedArticles() {
         return this.sortedArticles;
+    }
+
+    getSortedSavedArts() {
+        return this.sortedSavedArts;
+    }
+
+    getArticle(artUuid) {
+        if (this.articles[artUuid] != null) {
+            return this.articles[artUuid];
+        }
+        return this.savedArts[artUuid];
     }
 
     iterArticles(func, arg) {
@@ -150,13 +189,10 @@ class CommonStore {
             getItemCount : 0,
             itemsByAuthor: {},
             itemsByUuid  : {},
-            mySavedItems : {},
 
             requestUuids : null,
             missingUuids : null,
             myItems      : null,
-            myItemPost   : null,
-            myPostResult : null,
             errorText    : "",
             errorResp    : null,
             itemKinds    : {},
@@ -234,7 +270,8 @@ class CommonStore {
     }
 
     getMySavedItems() {
-        return this.data.mySavedItems;
+        let myShelf = this.data.myItems;
+        return (myShelf != null) ? myShelf.getSortedSavedArts() : null;
     }
 
     getItemByUuid(uuid) {
@@ -250,15 +287,10 @@ class CommonStore {
         return null;
     }
 
-    onPendingPostCompleted(item) {
-        this.data.myPostResult = item;
-    }
-
     onPublishItemCompleted(item, store) {
-        let it = this._addItemStore(item, false),
+        let it = this._addItemStore(item),
             pubTag = it.publicTag;
 
-        this.data.myItemPost = it;
         this._notifyListeners("add", [it]);
         store.trigger(this.data, [it], "postOk", true, it.authorUuid);
     }
@@ -272,7 +304,7 @@ class CommonStore {
 
         CommentStore.onGetCommentsCompleted(data);
         _.forEach(data[key], function(item) {
-            items.push(this._addItemStore(item, false));
+            items.push(this._addItemStore(item));
         }.bind(this));
 
         this.data.requestUuids = null;
@@ -351,20 +383,15 @@ class CommonStore {
         return anchor;
     }
 
-    _addItemStore(item, saved) {
+    _addItemStore(item) {
         let anchor, authorTagMgr, it;
 
-        if (saved === true) {
-            this.addFromJson([item], 'mySavedItems');
-            it = this.data.mySavedItems[item.articleUuid];
-        } else {
-            it = Article.newInstance(this.data.storeKind, item);
-            anchor = this.getItemOwner(it.authorUuid);
+        it = Article.newInstance(this.data.storeKind, item);
+        anchor = this.getItemOwner(it.authorUuid);
 
-            if (this.data.itemsByUuid[it.articleUuid] == null) {
-                this.data.itemsByUuid[it.articleUuid] = it;
-                anchor.addArticle(it);
-            }
+        if (this.data.itemsByUuid[it.articleUuid] == null) {
+            this.data.itemsByUuid[it.articleUuid] = it;
+            anchor.addArticle(it);
         }
         if (it.rank != null) {
             authorTagMgr = AuthorStore.getAuthorTagMgr(it.authorUuid);
@@ -393,19 +420,11 @@ class CommonStore {
     }
 
     addFromJson(items, key, index) {
-        let art, kind = this.data.storeKind,
-            itemsByKey = this.data[key],
-            savedItems = this.data.mySavedItems;
+        let art, kind = this.data.storeKind, itemsByKey = this.data[key];
 
         _.forOwn(items, function(it, k) {
-            if (it.published === false) {
-                if (savedItems[it.articleUuid] == null) {
-                    savedItems[it.articleUuid] = Article.newInstance(kind, it);
-                }
-            } else {
-                if (itemsByKey[it.articleUuid] == null) {
-                    itemsByKey[it.articleUuid] = Article.newInstance(kind, it);
-                }
+            if (itemsByKey[it.articleUuid] == null) {
+                itemsByKey[it.articleUuid] = Article.newInstance(kind, it);
             }
         }.bind(this));
 
