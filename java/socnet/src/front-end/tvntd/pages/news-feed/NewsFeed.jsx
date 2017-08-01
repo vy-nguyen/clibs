@@ -53,7 +53,9 @@ class NewsFeed extends React.Component
         let output = [], authorList = this.state.authorList;
 
         _.forEach(authorList, function(uuid) {
-            output.push(<AuthorFeed key={_.uniqueId("author-feed-")} authorUuid={uuid}/>);
+            output.push(
+                <AuthorFeed key={_.uniqueId("author-feed-")} authorUuid={uuid}/>
+            );
         });
         return output;
     }

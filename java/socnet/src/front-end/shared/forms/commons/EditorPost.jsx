@@ -207,7 +207,8 @@ class EditorPost extends React.Component
                             <h2><Mesg text='Publish Post'/></h2>
                         </header>
                         <div className="widget-body">
-                            <ProcessForm form={data} store={ArticleStore} value={val}/>
+                            <ProcessForm form={data} store={ArticleStore}
+                                brief={true} value={val}/>
                         </div>
                     </JarvisWidget>
                 </article>

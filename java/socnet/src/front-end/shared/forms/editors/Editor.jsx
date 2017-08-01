@@ -42,8 +42,9 @@ class EditorEntry extends React.Component
 {
     constructor(props) {
         let entry = props.entry;
+
         super(props);
-        this._onChange = this._onChange.bind(this);
+        this._onChange   = this._onChange.bind(this);
         this._uploadCall = this._uploadCall.bind(this);
         this._filePicker = this._filePicker.bind(this);
         NestableStore.allocIndexString(entry.inpName, entry.inpHolder)
@@ -58,8 +59,12 @@ class EditorEntry extends React.Component
     }
 
     _onChange(e) {
-        let content = NestableStore
-            .storeItemIndex(this.props.entry.inpName, e.target.getContent(), true);
+        let content = e.target.getContent();
+
+        if (content == null) {
+            return;
+        }
+        NestableStore.storeItemIndex(this.props.entry.inpName, content, true);
         if (this.props.onChange != null) {
             this.props.onChange(content);
         }

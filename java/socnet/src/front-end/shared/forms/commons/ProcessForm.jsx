@@ -211,7 +211,7 @@ class FormData
     }
 
     setValues(errFlags) {
-        let val;
+        let val, hasValue = false;
 
         this.iterFormFields(errFlags, null, function(flags, entry, section) {
             if (flags[entry.field] != null) {
@@ -222,10 +222,12 @@ class FormData
             entry.errorId = entry.inpName;
             val = InputStore.getItemIndex(entry.inpName);
             if (val != null) {
+                hasValue = true;
                 entry.inpDefVal = val;
             }
             return flags;
         });
+        return hasValue;
     }
 
     iterFormFields(cbObj, iterSection, iterField) {
@@ -344,6 +346,13 @@ class FormData
         }.bind(this));
     }
 
+    /**
+     * Get brief message to shortern the form.
+     */
+    getBriefMesg() {
+        return "Write something...";
+    }
+
     renderHeader() {
         return null;
     }
@@ -444,17 +453,19 @@ class ProcessForm extends React.Component
     constructor(props) {
         super(props);
 
+        this._onFocusBrief = this._onFocusBrief.bind(this);
         this._onBlurInput  = this._onBlurInput.bind(this);
         this._submitClick  = this._submitClick.bind(this);
         this._updateState  = this._updateState.bind(this);
         this._getInitState = this._getInitState.bind(this);
 
-        this.state = this._getInitState();
+        this.state = this._getInitState(props ? props.brief : false);
     }
 
-    _getInitState() {
+    _getInitState(brief) {
         return {
-            errFlags: {}
+            errFlags: {},
+            inpBrief: brief
         };
     }
 
@@ -490,6 +501,12 @@ class ProcessForm extends React.Component
         }
     }
 
+    _onFocusBrief(key) {
+        this.setState({
+            inpBrief: false
+        });
+    }
+
     _updateState(data, result, status, resp) {
         let context = this.props.form;
 
@@ -518,9 +535,15 @@ class ProcessForm extends React.Component
     }
 
     render() {
-        let context = this.props.form;
+        let hasVal, context = this.props.form, inpHolder = context.getBriefMesg();
 
-        context.setValues(this.state.errFlags);
+        hasVal = context.setValues(this.state.errFlags);
+        if (this.state.inpBrief === true && hasVal === false) {
+            return (
+                <input ref="briefBox" className="form-control"
+                    placeholder={inpHolder} onFocus={this._onFocusBrief}/>
+            );
+        }
         return context.render(this._onBlurInput, this._submitClick);
     }
 }
@@ -528,6 +551,7 @@ class ProcessForm extends React.Component
 ProcessForm.propTypes = {
     form    : PropTypes.object.isRequired,
     store   : PropTypes.object.isRequired,
+    brief   : PropTypes.boolean,
     value   : PropTypes.object,
     defValue: PropTypes.object
 };
