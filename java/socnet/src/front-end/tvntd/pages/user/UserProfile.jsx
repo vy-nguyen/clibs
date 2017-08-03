@@ -227,6 +227,7 @@ class DomainForm extends FormData
             field    : 'loginTxt',
             inline   : true,
             editor   : true,
+            menu     : 'short',
             inpName  : 'domain-login-txt',
             inpHolder: 'Login header text',
             labelTxt : 'Header Content',
@@ -234,6 +235,7 @@ class DomainForm extends FormData
             field    : 'footTxt',
             inline   : true,
             editor   : true,
+            menu     : 'short',
             inpName  : 'domain-login-foot-txt',
             inpHolder: 'Login Footer Text',
             labelTxt : 'Footer Content'

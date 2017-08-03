@@ -3,6 +3,7 @@
  */
 'use strict';
 
+import _               from 'lodash';
 import React           from 'react-mod';
 import NavigationStore from 'vntd-shared/stores/NavigationStore.jsx';
 
@@ -62,20 +63,19 @@ class BigBreadcrumbs extends React.Component
     }
 
     render() {
-        let first = _.head(this.state.items);
-        let child = _.tail(this.state.items).map(function(item) {
-            return
+        let first = _.head(this.state.items),
+        child = _.tail(this.state.items).map(function(item) {
+            return (
                 <span key={_.uniqueId('big-breadcrumb-')}>
                     <span className="page-title-separator">&gt;</span>
                     {item}
                 </span>
-            });
-
+            );
+        });
         return (
             <div className={this.props.className + ' big-breadcrumbs'}>
                 <h2 className="page-title txt-color-blueDark">
-                    <i className={this.state.icon}/>{' ' + first}
-                    {child}
+                    <i className={this.state.icon}/>{' ' + first}{child}
                 </h2>
             </div>
         )

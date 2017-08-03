@@ -37,7 +37,8 @@ var scripts = {
             "react-bootstrap",
             "react-router",
             "jquery",
-            "moment"
+            "moment",
+            "he"
         ],
         "vendor.ui": [
             "clockpicker",

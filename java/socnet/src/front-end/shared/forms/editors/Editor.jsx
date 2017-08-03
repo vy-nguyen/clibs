@@ -49,9 +49,8 @@ class EditorEntry extends React.Component
         this._filePicker = this._filePicker.bind(this);
         NestableStore.allocIndexString(entry.inpName, entry.inpHolder)
 
-        this.tshrt = 'undo|bold italic|styleselect|alignleft aligncenter alignright';
-        this.tfull =
-            'undo|bold italic|styleselect|image|alignleft aligncenter alignright';
+        this.tshrt = 'undo | bold italic | styleselect';
+        this.tfull = this.tshrt + ' | image | alignleft aligncenter alignright';
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -129,11 +128,6 @@ class EditorEntry extends React.Component
         const entry = this.props.entry;
         let onBlur, toolbar, config, menubar = '';
 
-        if (entry.menu === "short") {
-            menubar = "file edit insert format";
-        } else if (entry.menu == "full") {
-            menubar = "file edit insert view format table tools";
-        }
         if (entry.uploadUrl != null) {
             config = {
                 automatic_uploads    : true,
@@ -141,9 +135,14 @@ class EditorEntry extends React.Component
                 file_picker_callback : this._filePicker,
             };
         } else {
-            config = {
-                // toolbar: tshrt
-            };
+            config = {};
+        }
+        if (entry.menu === "short") {
+            menubar = "file edit insert format";
+            config.toolbar = this.tshrt;
+
+        } else if (entry.menu == "full") {
+            menubar = "file edit insert view format table tools";
         }
         onBlur = this.props.onBlur;
         config.plugins = 'autoresize autolink link image lists print preview';

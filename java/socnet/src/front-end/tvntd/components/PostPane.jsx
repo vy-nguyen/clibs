@@ -29,6 +29,7 @@ import StateButton      from 'vntd-shared/utils/StateButton.jsx';
 
 import Panel            from 'vntd-shared/widgets/Panel.jsx'; 
 import { toDateString } from 'vntd-shared/utils/Enum.jsx';
+import { VntdGlob }     from 'vntd-root/config/constants.js';
 import {
     InputInline, TAWrap, InputWrap
 }  from 'vntd-shared/forms/commons/GenericForm.jsx';
@@ -537,24 +538,15 @@ class PostPane extends React.Component
             header : toDateString(article.createdDate),
             headerMenus: [ownerPostMenu],
             panelLabel : panelLabel
-        },
-        divStyle = {
-            margin: "10px 10px 10px 10px",
-            fontSize: "130%"
         };
         content = (
-            <div style={divStyle} dangerouslySetInnerHTML={this._rawMarkup(article)}/>
+            <div style={VntdGlob.styleContent}
+                dangerouslySetInnerHTML={this._rawMarkup(article)}/>
         );
         imgs = article.pictureUrl;
         if (imgs != null) {
             if (imgs.length == 1) {
-                const imgStyle = {
-                    float  : "left",
-                    width  : "50%",
-                    height : "50%",
-                    padding: "5px"
-                };
-                pictures = <PostItem style={imgStyle} data={imgs}/>
+                pictures = <PostItem style={VntdGlob.styleImg} data={imgs}/>
             } else {
                 pictures = <PostItem data={imgs}/>
             }

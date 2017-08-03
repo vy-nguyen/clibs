@@ -23,5 +23,15 @@ export const VntdGlob = {
     styleFit: {
         width : "100%",
         height: "auto"
+    },
+    styleContent: {
+        margin: "10px 10px 10px 10px",
+        fontSize: "130%"
+    },
+    styleImg: {
+        float  : "left",
+        width  : "50%",
+        height : "50%",
+        padding: "5px"
     }
 };

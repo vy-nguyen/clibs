@@ -31,14 +31,14 @@ class Layout extends React.Component
                 <Header/>
                 <Navigation/>
                 <ErrorNotify errorId="main-error"/>
-                {/*<Shortcut/>*/}
+                <Shortcut/>
                 <div className="container" id="main" role="main">
                     {this.props.children}
                 </div>
                 <Footer/>
             </div>
-        )
+        );
     }
-};
+}
 
 export default Layout;
