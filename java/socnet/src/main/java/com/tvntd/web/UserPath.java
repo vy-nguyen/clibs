@@ -436,6 +436,7 @@ public class UserPath
     public GenericResponse
     uploadImage(@RequestParam("name") String name,
             @RequestParam("formId") String formId,
+            @RequestParam("imageId") String imgId,
             @RequestParam("authorUuid") String authorUuid,
             @RequestParam("articleUuid") String artUuid,
             @RequestParam("file") MultipartFile file,
@@ -446,6 +447,7 @@ public class UserPath
             return s_noProfile;
         }
         System.out.println("Upload form id " + formId);
+        System.out.println("Img field id " + imgId);
         ArticleDTO art = genPendPost(profile, true, artUuid);
         try {
             String uid = profile.fetchUserId().toString();
@@ -455,6 +457,10 @@ public class UserPath
 
             if (oid != null) {
                 art.addPicture(oid);
+                art.assignUploadImg(imgId, oid);
+            }
+            if (formId != null) {
+                art.assignUploadFormId(formId);
             }
             ImageUploadResp resp =
                 new ImageUploadResp(art.getArticleUuid(), art.getAuthorUuid(), oid);
@@ -867,9 +873,9 @@ public class UserPath
         }
         name = Util.toMaxString(form.getDomain(), 64);
         if (name != null) {
-            System.out.println("Save domain " + form.getDomain() + ", uuid " +
-                    profile.getUserUuid());
-            domainSvc.saveDomain(name, profile.getUserUuid());
+            if (domainSvc.saveDomain(name, profile) == false) {
+                res.setError(GenericResponse.USER_ERROR, "Domain was taken");
+            }
         }
         return res;
     }
@@ -888,21 +894,17 @@ public class UserPath
         if (form.cleanInput() == false) {
             return s_badInput;
         }
+        System.out.println("Domain author " + form.getAuthorUuid());
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
         if (profile == null) {
             return s_noProfile;
         }
         ArticleDTO pend = profile.fetchPendPost();
-        if (pend != null) {
-            Article art = pend.fetchArticle();
-            List<String> pics = art.getPictures();
-            System.out.println(pics);
-            try {
-                form.setLoginMainImg(pics.get(0));
-                form.setLoginFootImg(pics.get(1));
-            } catch(Exception e) {}
+        if (pend == null) {
+            pend = new ArticleDTO(profile.getUserUuid(), profile.fetchUserId());
         }
-        form.setAuthorUuid(profile.getUserUuid());
+        domainSvc.updateDomain(profile.getDomain(), form, pend, profile);
+        profile.assignPendPost(null);
         LoginResponse res = new LoginResponse(profile, request, session, false);
         return res;
     }

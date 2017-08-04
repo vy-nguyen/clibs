@@ -52,6 +52,7 @@ public class GenericResponse
     public static final String REG_USER_EXISTS = "reg-user-exists";
     public static final String REG_NO_USER     = "reg-no-user";
     public static final String USER_HOME       = "user";
+    public static final String USER_ERROR      = "user-error";
 
     private String type;
     private String message;

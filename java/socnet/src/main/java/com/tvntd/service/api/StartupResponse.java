@@ -39,12 +39,14 @@ import com.tvntd.service.api.IArtTagService.ArtTagList;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.IAuthorService.AuthorDTO;
+import com.tvntd.service.api.IDomainService.DomainDTO;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 public class StartupResponse
 {
     private LoginResponse          userDTO;
     private String                 domainUuid;
+    private DomainDTO              domain;
     private List<ProfileDTO>       linkedUsers;
     private List<ArticleDTO>       articles;
     private List<AuthorDTO>        authors;
@@ -136,6 +138,20 @@ public class StartupResponse
      */
     public void setDomainUuid(String domainUuid) {
         this.domainUuid = domainUuid;
+    }
+
+    /**
+     * @return the domain
+     */
+    public DomainDTO getDomain() {
+        return domain;
+    }
+
+    /**
+     * @param domain the domain to set
+     */
+    public void setDomain(DomainDTO domain) {
+        this.domain = domain;
     }
 
     /**

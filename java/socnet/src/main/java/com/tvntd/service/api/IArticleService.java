@@ -28,8 +28,10 @@ package com.tvntd.service.api;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 
@@ -134,6 +136,8 @@ public interface IArticleService
         private String  topic;
         private String  content;
         private String  articleUrl;
+        private String  uploadFormId;
+        private Map<String, ObjectId> uploadImgMap;
 
         public ArticleDTO(Article art, ArticleRank rank)
         {
@@ -206,6 +210,48 @@ public interface IArticleService
 
         public void removePicture(ObjectId img) {
             article.removePicture(img);
+        }
+
+        /**
+         * Get/set upload image identified by field id.
+         */
+        public ObjectId fetchUploadImg(String name)
+        {
+            if (uploadImgMap != null) {
+                return uploadImgMap.get(name);
+            }
+            return null;
+        }
+
+        public void assignUploadImg(String name, ObjectId oid)
+        {
+            if (uploadImgMap == null) {
+                uploadImgMap = new HashMap<>();
+            }
+            if (name != null && oid != null) {
+                uploadImgMap.put(name, oid);
+            }
+        }
+
+        /**
+         * @return the uploadFormId
+         */
+        public String fetchUploadFormId() {
+            return uploadFormId;
+        }
+
+        /**
+         * @param uploadFormId the uploadFormId to set
+         */
+        public void assignUploadFormId(String uploadFormId) {
+            this.uploadFormId = uploadFormId;
+        }
+
+        /**
+         * @return the uploadImgMap
+         */
+        public Map<String, ObjectId> fetchUploadImgMap() {
+            return uploadImgMap;
         }
 
         /**

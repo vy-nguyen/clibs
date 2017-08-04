@@ -33,6 +33,7 @@ import com.tvntd.models.Domain;
 public interface DomainRepo extends JpaRepository<Domain, String>
 {
     Domain findByDomain(String domain);
+    void deleteByAuthorUuid(String authorUuid);
 
     @Override
     void delete(String domain);

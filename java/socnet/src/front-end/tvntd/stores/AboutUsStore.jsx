@@ -26,14 +26,26 @@ let AboutUsStore = Reflux.createStore({
     },
 
     getCustData: function() {
+        let domain = UserStore.getDomain();
+
+        if (domain == null) {
+            domain = {
+                footHdr     : "Login footer title",
+                footTxt     : "Login footer text",
+                loginHdr    : "Login header title",
+                loginTxt    : "Login header text",
+                loginFootImg: "/rs/img/demo/s3.jpg",
+                loginMainImg: "/rs/img/demo/s2.jpg"
+            };
+        }
         return {
             login: {
-                headerBar : "Welcome to Le Tam Anh",
-                headerText: "Something about this web",
-                aboutBrief: "Login footer here...",
-                aboutText : "Someting about login footer here..",
-                logoImg   : "/rs/img/demo/s2.jpg",
-                footImg   : "/rs/img/bg/letamanh.jpg"
+                headerBar : domain.loginHdr,
+                headerText: domain.loginTxt,
+                aboutBrief: domain.footHdr,
+                aboutText : domain.footTxt,
+                logoImg   : domain.loginMainImg || "/rs/img/demo/s2.jpg",
+                footImg   : domain.loginFootImg
             }
         };
     },

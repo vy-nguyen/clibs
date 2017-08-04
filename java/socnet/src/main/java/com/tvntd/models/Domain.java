@@ -30,14 +30,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @Entity
 public class Domain
 {
-    static private Logger s_log = LoggerFactory.getLogger(Domain.class);
-
     @Id
     @Column(length = 64)
     String domain;
@@ -66,9 +61,10 @@ public class Domain
     byte[] footTxt;
 
     public Domain() {}
-    public Domain(String name, String authorUuid)
+    public Domain(String name, String authorUuid, Long authorId)
     {
-        this.domain = name;
+        this.domain     = name;
+        this.authorId   = authorId;
         this.authorUuid = authorUuid;
     }
 

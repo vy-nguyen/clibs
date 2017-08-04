@@ -174,6 +174,10 @@ let UserStore = Reflux.createStore({
         return this.data.domainUuid;
     },
 
+    getDomain: function() {
+        return this.data.domain;
+    },
+
     getActiveUser: function() {
         return this.data.userActive;
     },
@@ -236,6 +240,7 @@ let UserStore = Reflux.createStore({
 
     /* Startup actions. */
     onStartupCompleted: function(json) {
+        this.data.domain     = json.domain;
         this.data.domainUuid = json.domainUuid;
         this._addFromJson(json.linkedUsers);
         if (json.userDTO != null) {
@@ -294,6 +299,10 @@ let UserStore = Reflux.createStore({
             self.updateProfile(response.userSelf);
         }
         this.trigger(this.data, "update-profile", response);
+    },
+
+    onUpdateDomainCompleted: function(resp) {
+        this.trigger(this.data, "update-domain", resp);
     },
 
     /* Logout actions. */

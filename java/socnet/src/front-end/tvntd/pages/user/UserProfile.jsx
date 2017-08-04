@@ -273,8 +273,8 @@ class DomainForm extends FormData
     }
 
     submitNotif(store, result, status) {
-        console.log(result);
         super.submitNotif(store, result, status);
+        History.goBack();
     }
 }
 
@@ -328,7 +328,8 @@ class UserInfo extends React.Component
     }
 
     render() {
-        let form, domainForm = null, domainUuid = UserStore.getDomainUuid();
+        let form, domainForm = null, domainUuid = UserStore.getDomainUuid(),
+            domain = UserStore.getDomain();
 
         if (domainUuid != null) {
             form = new DomainForm(this.props);
@@ -336,7 +337,7 @@ class UserInfo extends React.Component
                 <div>
                     <br/>
                     <h1>Domain Info</h1>
-                    <ProcessForm form={form} store={UserStore}/>
+                    <ProcessForm form={form} store={UserStore} value={domain}/>
                 </div>
             );
         }

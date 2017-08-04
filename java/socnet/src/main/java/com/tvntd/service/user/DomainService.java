@@ -40,6 +40,8 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 
 import com.tvntd.dao.DomainRepo;
+import com.tvntd.forms.DomainForm;
+import com.tvntd.lib.ObjectId;
 import com.tvntd.models.Domain;
 import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArtTagService.ArtTagDTO;
@@ -54,6 +56,7 @@ import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.LoginResponse;
 import com.tvntd.service.api.StartupResponse;
+import com.tvntd.util.Util;
 
 @Service
 @Transactional
@@ -83,16 +86,77 @@ public class DomainService implements IDomainService
         return domainRepo.findByDomain(domain);
     }
 
-    public void saveDomain(String name, String authorUuid)
+    @Override
+    public boolean saveDomain(String name, ProfileDTO profile)
     {
+        String authorUuid = profile.getUserUuid();
         s_log.info("Save domain " + name + ", user " + authorUuid);
-        Domain domain = new Domain(name, authorUuid);
-        domainRepo.save(domain);
+        try {
+            domainRepo.deleteByAuthorUuid(authorUuid);
+        } catch(Exception e) {
+            System.out.println("Delete domain " + e.getMessage());
+        }
+        Domain domain = getDomain(name);
+        if (domain != null) {
+            return false;
+        }
+        try {
+            domain = new Domain(name, authorUuid, profile.fetchUserId());
+            domainRepo.save(domain);
+
+        } catch(Exception e) {
+            return false;
+        }
+        return true;
     }
 
+    @Override
     public void deleteDomain(Domain domain)
     {
         domainRepo.delete(domain);
+    }
+
+    @Override
+    public boolean
+    updateDomain(String name, DomainForm form, ArticleDTO pend, ProfileDTO profile)
+    {
+        Domain domain = getDomain(name);
+        if (domain == null) {
+            s_log.info("Can't find domain name " + name);
+            return false;
+        }
+        domain.setAuthorId(profile.fetchUserId());
+        ObjectId oid = pend.fetchUploadImg("mainImg");
+        if (oid != null) {
+            domain.setLoginMainImg(oid.name());
+        }
+        oid = pend.fetchUploadImg("imageRec");
+        if (oid != null) {
+            domain.setLoginFootImg(oid.name());
+        }
+        String field = form.getLoginHdr();
+        if (field != null) {
+            domain.setLoginHdr(Util.toRawByte(field, 128));
+        }
+        field = form.getLoginTxt();
+        if (field != null) {
+            domain.setLoginTxt(Util.toRawByte(field, 512));
+        }
+        field = form.getFootHdr();
+        if (field != null) {
+            domain.setFootHdr(Util.toRawByte(field, 64));
+        }
+        field = form.getFootTxt();
+        if (field != null) {
+            domain.setFootTxt(Util.toRawByte(field, 512));
+        }
+        try {
+            domainRepo.save(domain);
+
+        } catch(Exception e) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -110,6 +174,7 @@ public class DomainService implements IDomainService
         }
         String authorUuid = domain.getAuthorUuid();
         resp.setDomainUuid(authorUuid);
+        resp.setDomain(new DomainDTO(domain));
 
         List<ArticleDTO> articles = articleSvc.getArticlesByUser(authorUuid);
         resp.setArticles(articles);
@@ -125,6 +190,7 @@ public class DomainService implements IDomainService
     /**
      * Startup response when access through public url without account.
      */
+    @Override
     public void fillStartupDomain(StartupResponse resp, String name, ProfileDTO prof)
     {
         Map<String, String> artUuids = new HashMap<>();

@@ -28,6 +28,9 @@ package com.tvntd.forms;
 
 import javax.validation.constraints.Size;
 
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
+
 public class DomainForm
 {
     @Size(max = 64)
@@ -63,6 +66,22 @@ public class DomainForm
 
     public boolean cleanInput()
     {
+        Whitelist wlist = Whitelist.none();
+        if (domain != null) {
+            domain = Jsoup.clean(domain, wlist);
+        }
+        if (loginHdr != null) {
+            loginHdr = Jsoup.clean(loginHdr, wlist);
+        }
+        if (loginTxt != null) {
+            loginTxt = Jsoup.clean(loginTxt, wlist);
+        }
+        if (footHdr != null) {
+            footHdr = Jsoup.clean(footHdr, wlist);
+        }
+        if (footTxt != null) {
+            footTxt = Jsoup.clean(footTxt, wlist);
+        }
         return true;
     }
 
