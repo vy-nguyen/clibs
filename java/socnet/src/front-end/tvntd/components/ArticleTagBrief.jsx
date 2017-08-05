@@ -19,7 +19,6 @@ class ArticleTagBrief extends React.Component
 {
     constructor(props) {
         super(props);
-        this._readArticle    = this._readArticle.bind(this);
         this._renderArtBrief = this._renderArtBrief.bind(this);
         this._renderArtFull  = this._renderArtFull.bind(this);
 
@@ -42,8 +41,8 @@ class ArticleTagBrief extends React.Component
         }
     }
 
-    _renderArtBriefUuid(artUuid) {
-        let clickCb = {
+    _getClickCtx(artUuid) {
+        return {
             getBtnFormat: function() {
                 if (this.state.articleUuid == null ||
                     this.state.articleUuid !== artUuid) {
@@ -61,7 +60,10 @@ class ArticleTagBrief extends React.Component
             callbackArg : this,
             clickHandler: this._readArticle
         };
-        return ArticleBox.article(artUuid, clickCb);
+    }
+
+    _renderArtBriefUuid(artUuid) {
+        return ArticleBox.artBlog(artUuid, this._getClickCtx(artUuid));
     }
 
     _renderArtBrief(art) {

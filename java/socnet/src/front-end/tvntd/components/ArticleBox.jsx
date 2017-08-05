@@ -12,6 +12,7 @@ import ArticleStore    from 'vntd-root/stores/ArticleStore.jsx';
 import AuthorStore     from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 import LikeStat        from 'vntd-root/components/LikeStat.jsx';
+import {getRandomInt}  from 'vntd-shared/utils/Enum.jsx';
 
 const _artDefStyle  = { maxHeight: "auto", minHeight: "100%" },
     _artBoxStyle    = { border: "1px", marginBottom: "10px", background: "#fff" },
@@ -95,13 +96,14 @@ class ArticleBox extends React.Component
         )
     }
 
-    static article(articleUuid, clickCb) {
-        let article = ArticleStore.getArticleByUuid(articleUuid);
+    static getArtCtx(articleUuid, clickCb) {
+        let img, author, artRank, article = ArticleStore.getArticleByUuid(articleUuid);
+
         if (article == null) {
             return null;
         }
-        let author = UserStore.getUserByUuid(article.authorUuid);
-        let artRank = AuthorStore.getArticleRank(article.authorUuid, articleUuid);
+        author = UserStore.getUserByUuid(article.authorUuid);
+        artRank = AuthorStore.getArticleRank(article.authorUuid, articleUuid);
 
         if (artRank == null) {
             return null;
@@ -109,9 +111,15 @@ class ArticleBox extends React.Component
         if (artRank.contentBrief == null) {
             artRank.contentBrief = article.content.substring(0, 100);
         }
-        let arg = {
+        img = article.pictureUrl;
+        if (img != null && !_.isEmpty(img)) {
+            img = img[getRandomInt(0, img.length - 1)];
+        } else {
+            img = author.userImgUrl;
+        }
+        return {
             logo       : author.userImgUrl,
-            image      : article.pictureUrl[0],
+            image      : img,
             image1     : article.pictureUrl[1],
             dateInfo   : article.dateString,
             artTitle   : article.topic,
@@ -128,7 +136,88 @@ class ArticleBox extends React.Component
                 sharesCount : artRank.shares 
             }
         };
-        return (<ArticleBox data={arg}/>);
+    }
+
+    static article(articleUuid, clickCb) {
+        return (<ArticleBox data={ArticleBox.getArtCtx(articleUuid, clickCb)}/>);
+    }
+
+    static artBlog(articleUuid, clickCb) {
+        return (<ArtBlogStyle data={ArticleBox.getArtCtx(articleUuid, clickCb)}/>);
+    }
+
+    static artBlogWide(articleUuid, clickCb) {
+        return (<ArtBlogWide data={ArticleBox.getArtCtx(articleUuid, clickCb)}/>);
+    }
+}
+
+class ArtBlogStyle extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        let arg = this.props.data, clickBtn = arg.clickBtn;
+
+        if (arg == null) {
+            return null;
+        }
+        return (
+            <div className="content padding-10">
+                <div className="row">
+                    <a onClick={arg.clickCbFn}>
+                        <img src={arg.image} className="img-responsive"/>
+                    </a>
+                    <LikeStat data={arg.likeStat} className="padding-10"/>
+                </div>
+                <div className="row">
+                    <h3 className="margin-top-0"> 
+                        <a onClick={arg.clickCbFn}>{arg.artTitle}</a>
+                    </h3>
+                    <p className="padding-10">{arg.artBrief}</p>
+                    <a className={clickBtn.btnClass} onClick={arg.clickCbFn}>
+                        {clickBtn.btnText}
+                    </a>
+                </div>
+            </div>
+        );
+    }
+}
+
+class ArtBlogWide extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        let arg = this.props.data, clickBtn = arg.clickBtn;
+
+        if (arg == null) {
+            return null;
+        }
+        return (
+            <div className="content padding-10">
+                <div className="row">
+                    <div className="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                        <a onClick={arg.clickCbFn}>
+                            <img src={arg.image} className="img-responsive"/>
+                        </a>
+                        <LikeStat data={arg.likeStat} className="padding-10"/>
+                    </div>
+                    <div className="col-xs-8 col-sm-8 col-md-8 col-lg-8 padding-left-0">
+                        <h3 className="margin-top-10">
+                            <a onClick={arg.clickCbFn}>{arg.artTitle}</a>
+                        </h3>
+                        <p>{arg.artBrief}</p>
+                        <a className={clickBtn.btnClass} onClick={arg.clickCbFn}>
+                            {clickBtn.btnText}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        );
     }
 }
 
