@@ -13,9 +13,9 @@ import NavActions       from 'vntd-shared/actions/NavigationActions.jsx';
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import ArticleTagStore  from 'vntd-root/stores/ArticleTagStore.jsx';
 import Startup          from 'vntd-root/pages/login/Startup.jsx';
+import {Util}           from 'vntd-shared/utils/Enum.jsx';
 
 import {ArticleStore, EProductStore} from 'vntd-root/stores/ArticleStore.jsx';
-import {insertSorted, insertUnique, compareUuid} from 'vntd-shared/utils/Enum.jsx';
 
 class Author {
     constructor(data) {
@@ -151,7 +151,7 @@ class AuthorTag {
         if (artRank == null) {
             artRank = rank;
             this.articles[rank.articleUuid] = rank;
-            insertSorted(rank, this.sortedArts, this.compareRank);
+            Util.insertSorted(rank, this.sortedArts, this.compareRank);
         }
         return artRank;
     }
@@ -223,7 +223,7 @@ class AuthorTagMgr {
         authorTag = new AuthorTag(tag);
         this.authorTags[tag.tagName] = authorTag;
 
-        insertSorted(authorTag, this.sortedTags, AuthorTag.compareRank);
+        Util.insertSorted(authorTag, this.sortedTags, AuthorTag.compareRank);
         this.stringTags = _.map(this.sortedTags, function(it) {
             return it.tagName;
         });
@@ -584,7 +584,7 @@ let AuthorStore = Reflux.createStore({
             let uuid = author.authorUuid;
             if (authorMap[uuid] == null) {
                 authorMap[uuid] = new Author(author);
-                insertUnique(uuid, authorUuids, compareUuid);
+                Util.insertUnique(uuid, authorUuids, Util.compareUuid);
             }
             this.getAuthorTagMgr(uuid).addAuthorTagList(author.authorTags);
         }.bind(this));

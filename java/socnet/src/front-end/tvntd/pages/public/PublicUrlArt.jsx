@@ -7,7 +7,7 @@ import _                  from 'lodash';
 import React, {PropTypes} from 'react-mod';
 
 import AuthorFeed         from 'vntd-root/components/AuthorFeed.jsx';
-import {LookupArticle}    from 'vntd-root/stores/ArticleStore.jsx';
+import {GlobStore}        from 'vntd-root/stores/ArticleStore.jsx';
 
 class PublicUrlArt extends React.Component
 {
@@ -24,7 +24,7 @@ class PublicUrlArt extends React.Component
     render() {
         let article, {author, articleUuid} = this.props.params;
 
-        article = LookupArticle(articleUuid);
+        article = GlobStore.lookupArticle(articleUuid);
         if (article == null) {
             return <h1>Not found</h1>;
         }

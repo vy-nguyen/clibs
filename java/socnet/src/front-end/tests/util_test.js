@@ -7,7 +7,7 @@ import { expect, assert } from 'chai';
 import setup              from './setup.js';
 
 import Startup            from 'vntd-root/pages/login/Startup.jsx';
-import { insertSorted, getRandomInt, findSorted } from 'vntd-shared/utils/Enum.jsx';
+import { Util } from 'vntd-shared/utils/Enum.jsx';
 
 const testParams = {
     insertSorted: [ 100, 1000, 10000, 10000 ]
@@ -25,7 +25,7 @@ function verifySorted(array, cmpFn) {
         });
     }
     for (let i = 0; i < length; i++) {
-        let idx = findSorted(verify[i].value, array, cmpFn);
+        let idx = Util.findSorted(verify[i].value, array, cmpFn);
         assert(idx !== -1, "Failed to locate back the element");
         assert(idx === verify[i].index || array[idx] == verify[i].value,
                "Wrong lookup recheck at " + idx);
@@ -41,8 +41,8 @@ describe('Test Insert Sort Functions', function() {
         let sortTest = function(loop) {
             let array = [];
             for (let i = 0; i < loop; i++) {
-                let num = getRandomInt(0, 100000);
-                insertSorted(num, array, sortCompare);
+                let num = Util.getRandomInt(0, 100000);
+                Util.insertSorted(num, array, sortCompare);
             }
             verifySorted(array, sortCompare);
         }
@@ -62,7 +62,7 @@ describe('Test Sort Funciton', function() {
         ];
         let sort = [];
         _.forEach(data, function(item) {
-            insertSorted(item, sort, sortCompare);
+            Util.insertSorted(item, sort, sortCompare);
         });
         verifySorted(sort, sortCompare);
     });

@@ -262,29 +262,32 @@ let ArticleStore = Reflux.createStore({
         console.log("Failed to delete user post");
     }
 });
+    
+class GlobStore
+{
+    static getStoreKind(kind, spec) {
+        let out = ArticleStore;
 
-function GetStoreKind(kind, spec) {
-    let out = ArticleStore;
-
-    if (kind === "ads") {
-        out = AdsStore;
-    } else if (kind === "estore") {
-        out = EProductStore;
-    }
-    return spec == null ? out.store : out;
-}
-
-function LookupArticle(artUuid) {
-    const stores = [ ArticleStore.store, EProductStore.store, AdsStore.store ];
-
-    for (let i = 0; i < stores.length; i++) {
-        let article = stores[i].getItemByUuid(artUuid);
-        if (article != null) {
-            return article;
+        if (kind === "ads") {
+            out = AdsStore;
+        } else if (kind === "estore") {
+            out = EProductStore;
         }
+        return spec == null ? out.store : out;
     }
-    return null;
+
+    static lookupArticle(artUuid) {
+        const stores = [ ArticleStore.store, EProductStore.store, AdsStore.store ];
+
+        for (let i = 0; i < stores.length; i++) {
+            let article = stores[i].getItemByUuid(artUuid);
+            if (article != null) {
+                return article;
+            }
+        }
+        return null;
+    }
 }
 
-export { EProductStore, ArticleStore, AdsStore, GetStoreKind, LookupArticle }
+export { EProductStore, ArticleStore, AdsStore, GlobStore }
 export default ArticleStore;

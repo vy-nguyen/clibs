@@ -34,6 +34,7 @@ import java.util.UUID;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -52,6 +53,7 @@ import com.tvntd.lib.ObjectId;
 @Entity
 @Inheritance
 @DiscriminatorColumn(name = "ArtType")
+@DiscriminatorValue(value = "Article")
 @Table(indexes = {
     @Index(columnList = "authorUuid", name = "authorUuid", unique = false)
 })

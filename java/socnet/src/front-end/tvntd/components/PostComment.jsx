@@ -17,7 +17,7 @@ import UserIcon         from 'vntd-root/components/UserIcon.jsx';
 import LanguageStore    from 'vntd-root/stores/LanguageStore.jsx';
 import CommentStore     from 'vntd-root/stores/CommentStore.jsx';
 import StateButton      from 'vntd-shared/utils/StateButton.jsx';
-import {safeStringify, findUuid}  from 'vntd-shared/utils/Enum.jsx';
+import {Util}           from 'vntd-shared/utils/Enum.jsx';
 
 class CommentBox extends React.Component
 {
@@ -90,7 +90,7 @@ class CommentBox extends React.Component
     _submitComment(e) {
         e.preventDefault();
         Actions.postComment({
-            comment    : safeStringify(this.refs.comment.value),
+            comment    : this.refs.comment.value,
             articleUuid: this.props.articleUuid,
         });
         this.setState({
@@ -333,7 +333,9 @@ class CommentItem extends React.Component {
 
     componentWillMount() {
         let likeBtnId = this._getLikeBtnId();
-        if (findUuid(this.props.data.getUserLiked(), null, UserStore.getSelfUuid()) != -1) {
+
+        if (Util.findUuid(this.props.data.getUserLiked(),
+                          null, UserStore.getSelfUuid()) != -1) {
             StateButtonStore.setButtonState(likeBtnId, "liked");
         }
     }

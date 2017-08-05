@@ -16,50 +16,6 @@ function Enum() {
     return kv;
 }
 
-// A utility function to safely escape JSON for embedding in a <script> tag
-function safeStringify(str) {
-    let returnText = "" + str;
-
-    //-- remove BR tags and replace them with line break
-    //returnText = returnText.replace(/<br>/gi, "\n");
-    //returnText = returnText.replace(/<br\s\/>/gi, "\n");
-    //returnText = returnText.replace(/<br\/>/gi, "\n");
-
-    //-- remove P and A tags but preserve what's inside of them
-    //returnText = returnText.replace(/<p.*?>/gi, "\n");
-    //returnText = returnText.replace(/<a.*href="(.*?)".*>(.*?)<\/a>/gi, " $2 ($1)");
-
-    //-- remove all inside SCRIPT and STYLE tags
-    returnText = returnText.replace(/<script.*>[\w\W]{1,}(.*?)[\w\W]{1,}<\/script>/gi, "");
-    returnText = returnText.replace(/<style.*>[\w\W]{1,}(.*?)[\w\W]{1,}<\/style>/gi, "");
-
-    //-- remove all else
-    //returnText = returnText.replace(/<(?:.|\s)*?>/g, "");
-
-    //-- get rid of more than 2 multiple line breaks:
-    //returnText = returnText.replace(/(?:(?:\r\n|\r|\n)\s*){2,}/gim, "\n\n");
-
-    //-- get rid of html-encoded characters:
-    //returnText = returnText.replace(/&nbsp;/gi," ");
-    //returnText = returnText.replace(/&amp;/gi,"&");
-    //returnText = returnText.replace(/&quot;/gi,'"');
-    //returnText = returnText.replace(/&lt;/gi,'<');
-    //returnText = returnText.replace(/&gt;/gi,'>');
-
-    return returnText;
-}
-
-/**
- * Get a random integer between `min` and `max`.
- * 
- * @param {number} min - min number
- * @param {number} max - max number
- * @return {int} a random integer
- */
-function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-}
-
 /*
  * return the index to insert into the sorted array.
  */
@@ -104,151 +60,200 @@ function _locationOf(elm, array, compareFn) {
     return curIdx + 1;
 }
 
-function insertUnique(elm, array, compareFn) {
-    let length = array.length;
-    for (let i = 0; i < length; i++) {
-        if (compareFn(array[i], elm) === true) {
-            return -1;
+class Util
+{
+    // A utility function to safely escape JSON for embedding in a <script> tag
+    static safeStringify(str) {
+        let returnText = "" + str;
+
+        /*
+        //-- remove BR tags and replace them with line break
+        returnText = returnText.replace(/<br>/gi, "\n");
+        returnText = returnText.replace(/<br\s\/>/gi, "\n");
+        returnText = returnText.replace(/<br\/>/gi, "\n");
+
+        //-- remove P and A tags but preserve what's inside of them
+        returnText = returnText.replace(/<p.*?>/gi, "\n");
+        returnText = returnText.replace(/<a.*href="(.*?)".*>(.*?)<\/a>/gi, " $2 ($1)");
+         */
+
+        //-- remove all inside SCRIPT and STYLE tags
+        returnText =
+            returnText.replace(/<script.*>[\w\W]{1,}(.*?)[\w\W]{1,}<\/script>/gi, "");
+
+        returnText =
+            returnText.replace(/<style.*>[\w\W]{1,}(.*?)[\w\W]{1,}<\/style>/gi, "");
+
+        /*
+        //-- remove all else
+        returnText = returnText.replace(/<(?:.|\s)*?>/g, "");
+
+        //-- get rid of more than 2 multiple line breaks:
+        returnText = returnText.replace(/(?:(?:\r\n|\r|\n)\s*){2,}/gim, "\n\n");
+
+        //-- get rid of html-encoded characters:
+        returnText = returnText.replace(/&nbsp;/gi," ");
+        returnText = returnText.replace(/&amp;/gi,"&");
+        returnText = returnText.replace(/&quot;/gi,'"');
+        returnText = returnText.replace(/&lt;/gi,'<');
+        returnText = returnText.replace(/&gt;/gi,'>');
+         */
+        return returnText;
+    }
+
+    /**
+     * Get a random integer between `min` and `max`.
+     * 
+     * @param {number} min - min number
+     * @param {number} max - max number
+     * @return {int} a random integer
+     */
+    static getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
+    static insertUnique(elm, array, compareFn) {
+        let length = array.length;
+        for (let i = 0; i < length; i++) {
+            if (compareFn(array[i], elm) === true) {
+                return -1;
+            }
         }
+        array.push(elm);
+        return array.length;
     }
-    array.push(elm);
-    return array.length;
-}
 
-function stringCmp(s1, s2) {
-    return s1.attr.localeCompare(s2.attr);
-}
-
-function insertSorted(elm, array, compareFn) {
-    if (array.length === 0) {
-        return array.splice(0, 0, elm);
+    static stringCmp(s1, s2) {
+        return s1.attr.localeCompare(s2.attr);
     }
-    return array.splice(_locationOf(elm, array, compareFn), 0, elm);
-}
 
-function insertSortedUnique(elm, array, compareFn) {
-    let index = findSorted(elm, array, compareFn);
-    if (index == -1) {
-        return insertSorted(elm, array, compareFn);
+    static insertSorted(elm, array, compareFn) {
+        if (array.length === 0) {
+            return array.splice(0, 0, elm);
+        }
+        return array.splice(_locationOf(elm, array, compareFn), 0, elm);
     }
-    return index;
-}
 
-function findSorted(elm, array, compareFn) {
-    if (array.length === 0) {
-        return -1;
-    }
-    let index = _locationOf(elm, array, compareFn);
-    if (compareFn(array[index], elm) === 0) {
+    static insertSortedUnique(elm, array, compareFn) {
+        let index = Util.findSorted(elm, array, compareFn);
+        if (index == -1) {
+            return Util.insertSorted(elm, array, compareFn);
+        }
         return index;
     }
-    return -1;
-}
 
-function toDateString(milli) {
-    if (milli) {
-        let d = new Date(milli);
-        return d.toString();
-    }
-    return 'No date';
-}
-
-function preend(elm, array) {
-    let newArr = array.slice(0);
-    newArr.unshift(elm);
-    return newArr;
-}
-
-function removeArray(array, elm, fromIdx, cmp) {
-    if (array == null) {
-        return -1;
-    }
-    let o = Object(array);
-    let len = o.length >>> 0;
-    if (len === 0) {
-        return -1;
-    }
-    let n = +fromIdx || 0;
-    if (Math.abs(n) === Infinity) {
-        n = 0;
-    }
-    if (n >= len) {
-        return -1;
-    }
-    let k = Math.max(n >= 0 ? n : len - Math.abs(n), 0);
-    while (k < len) {
-        if (k in o && cmp(o[k], elm) === 0) {
-            array.splice(k, 1);
-            return k;
+    static findSorted(elm, array, compareFn) {
+        if (array.length === 0) {
+            return -1;
         }
-        k++;
+        let index = _locationOf(elm, array, compareFn);
+        if (compareFn(array[index], elm) === 0) {
+            return index;
+        }
+        return -1;
     }
-    return -1;
-}
 
-function compareUuid(uuid, elm, field) {
-    if (field != null) {
-        return elm[field] === uuid ? true : false;
+    static toDateString(milli) {
+        if (milli) {
+            let d = new Date(milli);
+            return d.toString();
+        }
+        return 'No date';
     }
-    return elm === uuid ? true : false;
-}
 
-function findUuid(array, field, uuid) {
-    if (array != null) {
-        return _.findIndex(array, function(elm) {
-            if (field != null) {
-                return elm[field] === uuid;
+    static preend(elm, array) {
+        let newArr = array.slice(0);
+        newArr.unshift(elm);
+        return newArr;
+    }
+
+    static removeArray(array, elm, fromIdx, cmp) {
+        if (array == null) {
+            return -1;
+        }
+        let o = Object(array);
+        let len = o.length >>> 0;
+        if (len === 0) {
+            return -1;
+        }
+        let n = +fromIdx || 0;
+        if (Math.abs(n) === Infinity) {
+            n = 0;
+        }
+        if (n >= len) {
+            return -1;
+        }
+        let k = Math.max(n >= 0 ? n : len - Math.abs(n), 0);
+        while (k < len) {
+            if (k in o && cmp(o[k], elm) === 0) {
+                array.splice(k, 1);
+                return k;
             }
-            return elm === uuid;
-        });
-    }
-    return -1;
-}
-
-function choose(value, key, defVal) {
-    if (!_.isEmpty(key) && !_.isEmpty(defVal)) {
-        if (!_.isEmpty(value)) {
-            return !_.isEmpty(value[key]) ? value[key] : defVal;
+            k++;
         }
-        return defVal;
+        return -1;
     }
-    return !_.isEmpty(value) ? value : defVal;
-}
 
-function setCookie(cname, cvalue, exdays) {
-    let expires, d = new Date();
-
-    if (exdays == null) {
-        exdays = 10000;
-    }
-    d.setTime(d.getTime() + (exdays*24*60*60*1000));
-    expires = "expires="+ d.toUTCString();
-    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-}
-
-function getCookie(cname) {
-    let decodedCookie, ca, name = cname + "=";
-    decodedCookie = decodeURIComponent(document.cookie);
-    ca = decodedCookie.split(';');
-
-    for(let i = 0; i < ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) == ' ') {
-            c = c.substring(1);
+    static compareUuid(uuid, elm, field) {
+        if (field != null) {
+            return elm[field] === uuid ? true : false;
         }
-        if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
-        }
+        return elm === uuid ? true : false;
     }
-    return "";
+
+    static findUuid(array, field, uuid) {
+        if (array != null) {
+            return _.findIndex(array, function(elm) {
+                if (field != null) {
+                    return elm[field] === uuid;
+                }
+                return elm === uuid;
+            });
+        }
+        return -1;
+    }
+
+    static choose(value, key, defVal) {
+        if (!_.isEmpty(key) && !_.isEmpty(defVal)) {
+            if (!_.isEmpty(value)) {
+                return !_.isEmpty(value[key]) ? value[key] : defVal;
+            }
+            return defVal;
+        }
+        return !_.isEmpty(value) ? value : defVal;
+    }
+
+    static setCookie(cname, cvalue, exdays) {
+        let expires, d = new Date();
+
+        if (exdays == null) {
+            exdays = 10000;
+        }
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        expires = "expires="+ d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
+    static getCookie(cname) {
+        let decodedCookie, ca, name = cname + "=";
+        decodedCookie = decodeURIComponent(document.cookie);
+        ca = decodedCookie.split(';');
+
+        for(let i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+
+    static noOpRetNull() {
+        return null;
+    }
 }
 
-function noOpRetNull() {
-    return null;
-}
-
-export {
-    Enum, safeStringify, insertUnique, insertSorted, insertSortedUnique, toDateString,
-    preend, getRandomInt, removeArray, findSorted, findUuid, compareUuid, choose,
-    setCookie, getCookie, noOpRetNull, stringCmp
-}
+export { Enum, Util }

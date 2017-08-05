@@ -148,7 +148,7 @@ function getJSON(url, cbObj, authReq, id, context, syncServer) {
         }
 
     }).fail(function(resp, text, error) {
-        console.log("Get JSON failed");
+        console.log("Get JSON failed " + url);
         console.log(resp);
         resp.cbContext = context;
         cbObj.failed(ErrorStore.reportFailure(id, resp, text, error));

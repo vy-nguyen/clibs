@@ -70,7 +70,7 @@
     "mocha-loader": "1.1.1",
     "karma": "1.7.0",
 
-    "jsdom": ">=4.0.2",
+    "jsdom": "9.9.0",
     "style-loader": "0.18.2",
     "css-loader": "0.28.0",
     "json-loader": "^0.5.4",

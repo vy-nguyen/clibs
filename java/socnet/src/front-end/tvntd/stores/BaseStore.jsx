@@ -5,7 +5,7 @@
 'use strict';
 
 import _              from 'lodash';
-import {insertSorted} from 'vntd-shared/utils/Enum.jsx';
+import {Util}         from 'vntd-shared/utils/Enum.jsx';
 
 class BaseStore
 {
@@ -21,7 +21,7 @@ class BaseStore
     static sortTagByArticles(tagList) {
         let out = [];
         _.forEach(tagList, (tag) => {
-            insertSorted(tag, out, BaseStore.compareByArt);
+            Util.insertSorted(tag, out, BaseStore.compareByArt);
         });
         return out;
     }

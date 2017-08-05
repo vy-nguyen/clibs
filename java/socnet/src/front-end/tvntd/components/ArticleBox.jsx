@@ -13,7 +13,7 @@ import AuthorStore     from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 import LikeStat        from 'vntd-root/components/LikeStat.jsx';
 import {VntdGlob}      from 'vntd-root/config/constants.js';
-import {getRandomInt}  from 'vntd-shared/utils/Enum.jsx';
+import {Util}          from 'vntd-shared/utils/Enum.jsx';
 
 const _artDefStyle  = { maxHeight: "auto", minHeight: "100%" },
     _artBoxStyle    = { border: "1px", marginBottom: "10px", background: "#fff" },
@@ -114,7 +114,7 @@ class ArticleBox extends React.Component
         }
         img = article.pictureUrl;
         if (img != null && !_.isEmpty(img)) {
-            img = img[getRandomInt(0, img.length - 1)];
+            img = img[Util.getRandomInt(0, img.length - 1)];
         } else {
             img = author.userImgUrl;
         }

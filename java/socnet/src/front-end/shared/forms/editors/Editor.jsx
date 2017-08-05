@@ -8,7 +8,7 @@ import $              from 'jquery';
 import TinyMCE        from 'react-tinymce';
 import NestableStore  from 'vntd-shared/stores/NestableStore.jsx';
 import ErrorView      from 'vntd-shared/layout/ErrorView.jsx';
-import {choose}       from 'vntd-shared/utils/Enum.jsx';
+import {Util}         from 'vntd-shared/utils/Enum.jsx';
 
 class Editor extends React.Component
 {
@@ -77,7 +77,7 @@ class EditorEntry extends React.Component
         form.append('articleUuid', 0);
 
         xhr = new XMLHttpRequest();
-        url = choose(this.props.entry.uploadUrl, '/user/upload-img');
+        url = Util.choose(this.props.entry.uploadUrl, '/user/upload-img');
         xhr.withCredentials = false;
         xhr.open('POST', url, true);
 

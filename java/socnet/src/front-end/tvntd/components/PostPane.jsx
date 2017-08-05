@@ -28,7 +28,7 @@ import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
 import StateButton      from 'vntd-shared/utils/StateButton.jsx';
 
 import Panel            from 'vntd-shared/widgets/Panel.jsx'; 
-import { toDateString } from 'vntd-shared/utils/Enum.jsx';
+import { Util }         from 'vntd-shared/utils/Enum.jsx';
 import { VntdGlob }     from 'vntd-root/config/constants.js';
 import {
     InputInline, TAWrap, InputWrap
@@ -535,7 +535,7 @@ class PostPane extends React.Component
         }
         const panelData = {
             icon   : 'fa fa-book',
-            header : toDateString(article.createdDate),
+            header : Util.toDateString(article.createdDate),
             headerMenus: [ownerPostMenu],
             panelLabel : panelLabel
         };

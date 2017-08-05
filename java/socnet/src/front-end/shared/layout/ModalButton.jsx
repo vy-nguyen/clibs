@@ -3,12 +3,13 @@
  */
 'use strict';
 
+import $          from 'jquery';
 import React      from 'react-mod';
 import Modal      from 'react-modal';
 import Mesg       from 'vntd-root/components/Mesg.jsx';
 import InputStore from 'vntd-shared/stores/NestableStore.jsx';
 import { ModalChoice } from 'vntd-shared/forms/commons/ModalConfirm.jsx';
-import { noOpRetNull } from 'vntd-shared/utils/Enum.jsx';
+import { Util }        from 'vntd-shared/utils/Enum.jsx';
 
 const modalStyle = {
     content: {
@@ -118,7 +119,7 @@ class ModalButton extends React.Component
         if (this.props.closeWarning != null) {
             choice = (
                 <ModalChoice ref="choice" okFn={this._okModalClose}
-                    cancelFn={noOpRetNull} closeWarning={this.props.closeWarning}/>
+                    cancelFn={Util.noOpRetNull} closeWarning={this.props.closeWarning}/>
             );
         }
         return (

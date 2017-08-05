@@ -48,6 +48,7 @@ public class PostForm
     private String authorUuid;
     private String articleUuid;
     private String contentBrief;
+    private String videoUrl;
 
     public boolean cleanInput()
     {
@@ -67,6 +68,7 @@ public class PostForm
         authorUuid = Jsoup.clean(authorUuid, wlist);
         articleUuid = Jsoup.clean(articleUuid, wlist);
 
+        System.out.println("Video url " + videoUrl);
         int len = content.length();
         if (len > 200) {
             len = 200;
@@ -144,5 +146,19 @@ public class PostForm
      */
     public String getContentBrief() {
         return contentBrief;
+    }
+
+    /**
+     * @return the videoUrl
+     */
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
+    /**
+     * @param videoUrl the videoUrl to set
+     */
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
     }
 }

@@ -61,39 +61,6 @@ class SelectWrap extends React.Component
     }
 }
 
-function htmlCheckBox(entry) {
-    let opt = [
-        '<input type="checkbox" value="' + entry.inpHolder +
-        '" id="' + entry.inpName + '"' +
-        (entry.checked === true ? ' checked="checked">' : '>')
-    ];
-    if (entry.labelText != null) {
-        opt.push('<label for="' + entry.inpName + '">' + entry.labelText + '</label>');
-    }
-    return opt.join('\n');
-}
-
-function htmlSelect(entry) {
-    let opt = [
-        '<select id="' + entry.inpName + '">'
-    ];
-
-    if (entry.selectOpt != null) {
-        if (_.isEmpty(entry.inpDefVal)) {
-            opt.push('<option value="">-none-');
-        }
-        _.forEach(entry.selectOpt, function(elm) {
-            if (elm.value === entry.inpDefVal) {
-                opt.push('<option selected value="' + elm.value + '">' + elm.label);
-            } else {
-                opt.push('<option value="' + elm.value + '">' + elm.label);
-            }
-        });
-    }
-    opt.push('</select>');
-    return opt.join('\n');
-}
-
 class TAWrap extends React.Component
 {
     constructor(props) {
@@ -136,35 +103,6 @@ class TAWrap extends React.Component
                 onBlur={this._defOnBlur} onOptionSelected={this._defOnSelect}/>
         );
     }
-}
-
-function htmlInput(entry) {
-    return '<input id="' + entry.inpName +
-        '" type="text" class="form-control" value="' + entry.inpDefVal +
-        '" placeholder="' + entry.inpHolder + '">';
-}
-
-function renderHtmlInput(entry) {
-    if (entry.typeAhead === true) {
-        return "";
-    }
-    if (entry.select === true) {
-        return htmlSelect(entry);
-    }
-    if (entry.checked != null) {
-        return htmlCheckBox(entry);
-    }
-    return htmlInput(entry);
-}
-
-function cloneInputEntry(entry, base) {
-    return {
-        inpHolder: entry.inpHolder,
-        inpDefVal: entry.inpDefVal,
-        inpName  : _.uniqueId(base),
-        select   : entry.select,
-        selectOpt: entry.selectOpt
-    };
 }
 
 class InputWrap extends React.Component
@@ -461,7 +399,6 @@ class InputEntry
 }
 
 /*
- * TODO: move stand alone functions to be static in here.
  */
 class GenericForm
 {
@@ -478,10 +415,73 @@ class GenericForm
             }
         };
     }
+
+    static htmlCheckBox(entry) {
+        let opt = [
+            '<input type="checkbox" value="' + entry.inpHolder +
+            '" id="' + entry.inpName + '"' +
+            (entry.checked === true ? ' checked="checked">' : '>')
+        ];
+        if (entry.labelText != null) {
+            opt.push('<label for="' + entry.inpName + '">' +
+                entry.labelText + '</label>');
+        }
+        return opt.join('\n');
+    }
+
+    static htmlSelect(entry) {
+        let opt = [
+            '<select id="' + entry.inpName + '">'
+        ];
+
+        if (entry.selectOpt != null) {
+            if (_.isEmpty(entry.inpDefVal)) {
+                opt.push('<option value="">-none-');
+            }
+            _.forEach(entry.selectOpt, function(elm) {
+                if (elm.value === entry.inpDefVal) {
+                    opt.push('<option selected value="' + elm.value + '">' + elm.label);
+                } else {
+                    opt.push('<option value="' + elm.value + '">' + elm.label);
+                }
+            });
+        }
+        opt.push('</select>');
+        return opt.join('\n');
+    }
+
+    static htmlInput(entry) {
+        return '<input id="' + entry.inpName +
+            '" type="text" class="form-control" value="' + entry.inpDefVal +
+            '" placeholder="' + entry.inpHolder + '">';
+    }
+
+    static renderHtmlInput(entry) {
+        if (entry.typeAhead === true) {
+            return "";
+        }
+        if (entry.select === true) {
+            return GenericForm.htmlSelect(entry);
+        }
+        if (entry.checked != null) {
+            return GenericForm.htmlCheckBox(entry);
+        }
+        return GenericForm.htmlInput(entry);
+    }
+
+    static cloneInputEntry(entry, base) {
+        return {
+            inpHolder: entry.inpHolder,
+            inpDefVal: entry.inpDefVal,
+            inpName  : _.uniqueId(base),
+            select   : entry.select,
+            selectOpt: entry.selectOpt
+        };
+    }
 }
 
 export {
     SelectWrap, TAWrap, InputWrap, DropZoneWrap, InputBox, InputInline, GenericForm,
-    InputToolTip, InputEntry, renderHtmlInput, cloneInputEntry
+    InputToolTip, InputEntry
 };
 export default GenericForm;
