@@ -12,6 +12,7 @@ import ArticleStore    from 'vntd-root/stores/ArticleStore.jsx';
 import AuthorStore     from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 import LikeStat        from 'vntd-root/components/LikeStat.jsx';
+import {VntdGlob}      from 'vntd-root/config/constants.js';
 import {getRandomInt}  from 'vntd-shared/utils/Enum.jsx';
 
 const _artDefStyle  = { maxHeight: "auto", minHeight: "100%" },
@@ -164,10 +165,11 @@ class ArtBlogStyle extends React.Component
             return null;
         }
         return (
-            <div className="content padding-10">
+            <div className="well">
                 <div className="row">
                     <a onClick={arg.clickCbFn}>
-                        <img src={arg.image} className="img-responsive"/>
+                        <img src={arg.image}
+                            style={VntdGlob.styleFit} className="img-responsive"/>
                     </a>
                     <LikeStat data={arg.likeStat} className="padding-10"/>
                 </div>
@@ -198,11 +200,12 @@ class ArtBlogWide extends React.Component
             return null;
         }
         return (
-            <div className="content padding-10">
+            <div className="well">
                 <div className="row">
                     <div className="col-xs-4 col-sm-4 col-md-4 col-lg-4">
                         <a onClick={arg.clickCbFn}>
-                            <img src={arg.image} className="img-responsive"/>
+                            <img src={arg.image}
+                                style={VntdGlob.styleFit} className="img-responsive"/>
                         </a>
                         <LikeStat data={arg.likeStat} className="padding-10"/>
                     </div>
