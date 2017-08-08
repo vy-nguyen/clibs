@@ -69,11 +69,11 @@ class PostForm extends FormData
         }, {
             field    : 'video',
             inpName  : 'art-video-',
-            inpHolder: 'www.youtube.com/...',
+            inpHolder: 'www.youtube.com/embeded/xyz... or just xyz...',
             emptyOk  : true,
             inputFmt : inputFmt,
             labelFmt : labelFmt,
-            labelTxt : 'Video Link'
+            labelTxt : 'Youtube Link'
         } ];
         entries.push(this.editorEntry);
 

@@ -64,36 +64,36 @@ public class Article
 
     @Id
     @Column(length = 64)
-    private String   articleUuid;
+    protected String   articleUuid;
 
     @Column(length = 64)
-    private String   authorUuid;
+    protected String   authorUuid;
 
-    private Long     authorId;
-    private boolean  pending;
+    protected Long     authorId;
+    protected boolean  pending;
 
     @Column(length = 64)
-    private String contentOId;
+    protected String contentOId;
 
     @Column
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdDate;
+    protected Date createdDate;
 
     @Column(length = 128)
-    private byte[] topic;
+    protected byte[] topic;
 
     @Column(length = 128)
-    private byte[] publicTag;
+    protected byte[] publicTag;
 
     @Lob
     @Column(length = 1 << 16)
-    private byte[] content;
+    protected byte[] content;
 
     @Column(length = 64)
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "ArtPics",
             joinColumns = @JoinColumn(name = "articleId"))
-    private List<String> pictures;
+    protected List<String> pictures;
 
     @Transient
     private byte[] contentBrief;

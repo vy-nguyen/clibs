@@ -11,6 +11,7 @@ import TA           from 'react-typeahead';
 import Actions      from 'vntd-root/actions/Actions.jsx';
 import Lang         from 'vntd-root/stores/LanguageStore.jsx';
 import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
+import ArticleBox   from 'vntd-root/components/ArticleBox.jsx';
 import Mesg         from 'vntd-root/components/Mesg.jsx'
 import PostItem     from 'vntd-root/components/PostItem.jsx';
 import RefLinks     from 'vntd-root/components/RefLinks.jsx';
@@ -420,7 +421,7 @@ class PostPane extends React.Component
     render() {
         const fmt = "btn btn-primary pull-right";
         let content, imgs, adminItem = null, ownerItem = null, panelLabel = null,
-            pictures, refLink = null, article = this.state.article,
+            video, pictures, refLink = null, article = this.state.article,
         modal = (
             <ModalConfirm ref="modal" height="auto"
                 modalTitle="Delete this article post?">
@@ -543,6 +544,9 @@ class PostPane extends React.Component
             <div style={VntdGlob.styleContent}
                 dangerouslySetInnerHTML={this._rawMarkup(article)}/>
         );
+        if (article.youtube != null) {
+            video = ArticleBox.youtubeLink(article);
+        }
         imgs = article.pictureUrl;
         if (imgs != null) {
             if (imgs.length == 1) {
@@ -552,6 +556,7 @@ class PostPane extends React.Component
             }
             content = (
                 <div>
+                    {video}
                     {pictures}
                     {content}
                 </div>

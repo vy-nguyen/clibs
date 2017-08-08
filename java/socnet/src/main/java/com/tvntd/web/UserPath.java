@@ -256,10 +256,10 @@ public class UserPath
             return s_badInput;
         }
         ArticleDTO art = genPendPost(profile, true, form.getArticleUuid());
-        Article article = art.fetchArticle();
-        ArticleService.applyPostForm(form, article, publish);
+        String v = form.getVideoUrl();
+        Article article = v == null ? art.fetchArticle() : art.assignVideo(v);
 
-        System.out.println("Beg save art uuid " + art.getArticleUuid());
+        ArticleService.applyPostForm(form, article, publish);
         art.convertUTF();
         if (publish == true) {
             article.markActive();

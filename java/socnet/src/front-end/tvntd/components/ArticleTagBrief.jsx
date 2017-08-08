@@ -41,29 +41,9 @@ class ArticleTagBrief extends React.Component
         }
     }
 
-    _getClickCtx(artUuid) {
-        return {
-            getBtnFormat: function() {
-                if (this.state.articleUuid == null ||
-                    this.state.articleUuid !== artUuid) {
-                    return {
-                        btnClass: "btn btn-success",
-                        btnText : Lang.translate("Read more...")
-                    }
-                }
-                return {
-                    btnClass: "btn btn-success",
-                    btnText : Lang.translate("Hide Post")
-                }
-            }.bind(this),
-
-            callbackArg : this,
-            clickHandler: this._readArticle
-        };
-    }
-
     _renderArtBriefUuid(artUuid) {
-        return ArticleBox.artBlog(artUuid, this._getClickCtx(artUuid));
+        return ArticleBox.artBlog(artUuid,
+            ArticleBox.getClickCb(this.state, artUuid, this._readArticle, this));
     }
 
     _renderArtBrief(art) {

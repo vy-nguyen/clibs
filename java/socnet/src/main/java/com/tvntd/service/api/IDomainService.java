@@ -75,8 +75,7 @@ public interface IDomainService
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.append(getLoginMainImg()).append("\n")
-                .append(getLoginFootImg()).append("\n");
+            sb.append(domain).append("\n");
             return sb.toString();
         }
 
@@ -86,11 +85,14 @@ public interface IDomainService
 
         public String getLoginMainImg()
         {
-            if (domain.getAuthorId() == null) {
+            Long authorId = domain.getAuthorId();
+            String imgOid = domain.getLoginMainImg();
+
+            if (authorId == null || imgOid == null) {
                 return null;
             }
-            String path = ArticleDTO.s_baseUri + Long.toString(domain.getAuthorId());
-            ObjectId oid = ObjectId.fromString(domain.getLoginMainImg());
+            String path = ArticleDTO.s_baseUri + Long.toString(authorId);
+            ObjectId oid = ObjectId.fromString(imgOid);
             return ObjStore.getInstance().imgObjUri(oid, path);
         }
 
@@ -100,11 +102,14 @@ public interface IDomainService
 
         public String getLoginFootImg()
         {
-            if (domain.getAuthorId() == null) {
+            Long authorId = domain.getAuthorId();
+            String imgOid = domain.getLoginFootImg();
+
+            if (authorId == null || imgOid == null) {
                 return null;
             }
-            String path = ArticleDTO.s_baseUri + Long.toString(domain.getAuthorId());
-            ObjectId oid = ObjectId.fromString(domain.getLoginFootImg());
+            String path = ArticleDTO.s_baseUri + Long.toString(authorId);
+            ObjectId oid = ObjectId.fromString(imgOid);
             return ObjStore.getInstance().imgObjUri(oid, path);
         }
 

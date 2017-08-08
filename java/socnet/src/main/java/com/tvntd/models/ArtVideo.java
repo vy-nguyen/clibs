@@ -33,7 +33,23 @@ import javax.persistence.Entity;
 @DiscriminatorValue(value = "video")
 public class ArtVideo extends Article
 {
-    private String videoUrl;
+    protected String videoUrl;
+
+    public ArtVideo() {
+        super();
+    }
+
+    public ArtVideo(Article org, String video)
+    {
+        this.articleUuid = org.articleUuid;
+        this.authorUuid  = org.authorUuid;
+        this.authorId    = org.authorId;
+        this.pending     = org.pending;
+        this.contentOId  = org.contentOId;
+        this.createdDate = org.createdDate;
+        this.pictures    = org.pictures;
+        this.videoUrl    = video;
+    }
 
     /**
      * @return the videoUrl

@@ -39,6 +39,7 @@ import com.tvntd.forms.CommentChangeForm;
 import com.tvntd.forms.PostForm;
 import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.ObjectId;
+import com.tvntd.models.ArtVideo;
 import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.models.AuthorTag;
@@ -153,7 +154,6 @@ public interface IArticleService
             article = new Article();
             article.setAuthorId(id);
             article.setAuthorUuid(author);
-            convertUTF();
         }
 
         public ArticleDTO(PostForm form, ProfileDTO profile)
@@ -261,6 +261,12 @@ public interface IArticleService
             return article;
         }
 
+        public Article assignVideo(String link)
+        {
+            article = new ArtVideo(article, link);
+            return article;
+        }
+
         /**
          * @return the authorUuid
          */
@@ -322,6 +328,14 @@ public interface IArticleService
 
         public String getContent() {
             return this.content;
+        }
+
+        public String getYoutube()
+        {
+            if (article instanceof ArtVideo) {
+                return ((ArtVideo)article).getVideoUrl();
+            }
+            return null;
         }
 
         public List<String> getCommentList() {
