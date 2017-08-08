@@ -106,9 +106,15 @@ public class StartupResponse
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        sb.append("# articles ").append(articles.size())
-            .append(", #ranks ").append(artRanks.size())
-            .append(", #authors ").append(authors.size());
+        if (articles != null) {
+            sb.append("# articles ").append(articles.size());
+        }
+        if (artRanks != null) {
+            sb.append(", #ranks ").append(artRanks.size());
+        }
+        if (authors != null) {
+            sb.append(", #authors ").append(authors.size());
+        }
         return sb.toString();
     }
 

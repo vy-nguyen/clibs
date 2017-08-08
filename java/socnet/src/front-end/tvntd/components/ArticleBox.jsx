@@ -11,9 +11,10 @@ import UserStore       from 'vntd-shared/stores/UserStore.jsx';
 import ArticleStore    from 'vntd-root/stores/ArticleStore.jsx';
 import AuthorStore     from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
+import Lang            from 'vntd-root/stores/LanguageStore.jsx';
 import LikeStat        from 'vntd-root/components/LikeStat.jsx';
 import {VntdGlob}      from 'vntd-root/config/constants.js';
-import {getRandomInt}  from 'vntd-shared/utils/Enum.jsx';
+import {Util}          from 'vntd-shared/utils/Enum.jsx';
 
 const _artDefStyle  = { maxHeight: "auto", minHeight: "100%" },
     _artBoxStyle    = { border: "1px", marginBottom: "10px", background: "#fff" },
@@ -114,11 +115,12 @@ class ArticleBox extends React.Component
         }
         img = article.pictureUrl;
         if (img != null && !_.isEmpty(img)) {
-            img = img[getRandomInt(0, img.length - 1)];
+            img = img[Util.getRandomInt(0, img.length - 1)];
         } else {
             img = author.userImgUrl;
         }
         return {
+            article    : article,
             logo       : author.userImgUrl,
             image      : img,
             image1     : article.pictureUrl[1],
@@ -139,6 +141,25 @@ class ArticleBox extends React.Component
         };
     }
 
+    static getClickCb(state, artUuid, clickFn, cbarg) {
+        return {
+            getBtnFormat: function() {
+                if (state.articleUuid == null || state.articleUuid !== artUuid) {
+                    return {
+                        btnClass: "btn btn-success",
+                        btnText : Lang.translate("Read more...")
+                    }
+                }
+                return {
+                    btnClass: "btn btn-success",
+                    btnText : Lang.translate("Hide post")
+                }
+            },
+            callbackArg : cbarg,
+            clickHandler: clickFn != null ? clickFn : function() {}
+        };
+    }
+
     static article(articleUuid, clickCb) {
         return (<ArticleBox data={ArticleBox.getArtCtx(articleUuid, clickCb)}/>);
     }
@@ -150,6 +171,33 @@ class ArticleBox extends React.Component
     static artBlogWide(articleUuid, clickCb) {
         return (<ArtBlogWide data={ArticleBox.getArtCtx(articleUuid, clickCb)}/>);
     }
+
+    static artVideo(articleUuid, clickCb) {
+        return (<ArtVideo data={ArticleBox.getArtCtx(articleUuid, clickCb)}/>);
+    }
+
+    static youtubeLink(article) {
+        let url = "https://www.youtube.com/embed/" + article.youtube;
+        const style = {
+            position: "relative",
+            width   : "100%",
+            height  : 0,
+            paddingBottom: "56.25%"
+        },
+        video = {
+            position: "absolute",
+            top     : 0,
+            left    : 0,
+            width   : "100%",
+            height  : "100%"
+        };
+        return (
+            <div style={style}>
+                <iframe style={video} src={url}
+                    frameborder="0" allowfullscreen className="video"/>
+            </div>
+        );
+    }
 }
 
 class ArtBlogStyle extends React.Component
@@ -159,18 +207,25 @@ class ArtBlogStyle extends React.Component
     }
 
     render() {
-        let arg = this.props.data, clickBtn = arg.clickBtn;
+        let img, arg = this.props.data, clickBtn = arg.clickBtn, article = arg.article;
 
         if (arg == null) {
             return null;
         }
+        if (article.youtube != null) {
+            img = ArticleBox.youtubeLink(article);
+        } else {
+            img = (
+                <a onClick={arg.clickCbFn}>
+                    <img src={arg.image}
+                            style={VntdGlob.styleFit} className="img-responsive"/>
+                </a>
+            );
+        }
         return (
             <div className="well">
                 <div className="row">
-                    <a onClick={arg.clickCbFn}>
-                        <img src={arg.image}
-                            style={VntdGlob.styleFit} className="img-responsive"/>
-                    </a>
+                    {img}
                     <LikeStat data={arg.likeStat} className="padding-10"/>
                 </div>
                 <div className="row">
@@ -218,6 +273,53 @@ class ArtBlogWide extends React.Component
                             {clickBtn.btnText}
                         </a>
                     </div>
+                </div>
+            </div>
+        );
+    }
+}
+
+class ArtVideo extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this._onLoad  = this._onLoad.bind(this);
+        this._onClick = this._onClick.bind(this);
+    }
+
+    _onClick(evt) {
+        evt.stopPropagation();
+        console.log("Click event intercept...");
+    }
+
+    _onLoad() {
+        let frame = this.refs.frame;
+        frame.on("click", function(evt) {
+            console.log("Click event iframe intercept...");
+        });
+    }
+
+    render() {
+        let arg = this.props.data, clickBtn = arg.clickBtn,
+            url = "https://www.youtube.com/embed/" + arg.article.youTube;
+
+        if (arg == null) {
+            return null;
+        }
+        return (
+            <div className="well">
+                <div className="row">
+                    <h3 className="margin-top-0"> 
+                        <a onClick={arg.clickCbFn}>{arg.artTitle}</a>
+                    </h3>
+                    <p className="padding-10">{arg.artBrief}</p>
+                </div>
+                <div className="row">
+                    <iframe ref="frame"
+                        width="100%" height="100%" src={url} frameborder="0"/>
+                    <a className={clickBtn.btnClass} onClick={arg.clickCbFn}>
+                        {clickBtn.btnText}
+                    </a>
                 </div>
             </div>
         );

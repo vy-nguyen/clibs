@@ -10,7 +10,7 @@ import { htmlCodes }  from 'vntd-root/config/constants';
 import Mesg           from 'vntd-root/components/Mesg.jsx'
 import UserStore      from 'vntd-shared/stores/UserStore.jsx';
 import ImageCarousel  from 'vntd-shared/layout/ImageCarousel.jsx';
-import { choose, getRandomInt } from 'vntd-shared/utils/Enum.jsx';
+import {Util}         from 'vntd-shared/utils/Enum.jsx';
 
 class UserProfile extends ImageCarousel
 {
@@ -81,7 +81,7 @@ class ProfileCover extends React.Component
             "/rs/img/demo/s2.jpg",
             "/rs/img/demo/s3.jpg"
         ];
-        start = getRandomInt(0, imgList.length).toString();
+        start = Util.getRandomInt(0, imgList.length).toString();
         return (
             <UserProfile self={self} select={start}
                 imageList={imgList} className="profile-carousel"/>

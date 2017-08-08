@@ -16,7 +16,7 @@ import Lang              from 'vntd-root/stores/LanguageStore.jsx';
 import Mesg              from 'vntd-root/components/Mesg.jsx';
 
 import {
-    InputWrap, renderHtmlInput
+    InputWrap, GenericForm 
 } from 'vntd-shared/forms/commons/GenericForm.jsx';
 
 class RenderRow extends React.Component
@@ -168,7 +168,7 @@ class RenderRow extends React.Component
             row = {};
             _.forOwn(inpRow, function(cell, key) {
                 if (typeof cell === 'object') {
-                    row[key] = renderHtmlInput(cell);
+                    row[key] = GenericForm.renderHtmlInput(cell);
                 } else {
                     row[key] = cell;
                 }
@@ -193,7 +193,7 @@ class RenderRow extends React.Component
                         entry.inpHolder = val;
                         entry.inpDefVal = val;
                     }
-                    row[key] = renderHtmlInput(entry);
+                    row[key] = GenericForm.renderHtmlInput(entry);
                 } else {
                     row[key] = cell;
                 }

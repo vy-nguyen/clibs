@@ -44,10 +44,19 @@ public class PostForm
     @Size(max = 1 << 16)
     private String content;
 
+    @Size(max = 128)
     private String tags;
+
+    @Size(max = 64)
     private String authorUuid;
+
+    @Size(max = 64)
     private String articleUuid;
+
     private String contentBrief;
+
+    @Size(max = 80)
+    private String videoUrl;
 
     public boolean cleanInput()
     {
@@ -67,6 +76,12 @@ public class PostForm
         authorUuid = Jsoup.clean(authorUuid, wlist);
         articleUuid = Jsoup.clean(articleUuid, wlist);
 
+        if (videoUrl != null && !videoUrl.isEmpty()) {
+            videoUrl = Jsoup.clean(videoUrl, wlist);
+            int idx  = videoUrl.lastIndexOf('/');
+            videoUrl = videoUrl.substring(idx + 1);
+        }
+        System.out.println("Video url " + videoUrl);
         int len = content.length();
         if (len > 200) {
             len = 200;
@@ -144,5 +159,19 @@ public class PostForm
      */
     public String getContentBrief() {
         return contentBrief;
+    }
+
+    /**
+     * @return the videoUrl
+     */
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
+    /**
+     * @param videoUrl the videoUrl to set
+     */
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
     }
 }

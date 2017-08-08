@@ -10,8 +10,7 @@ import Actions      from 'vntd-root/actions/Actions.jsx';
 import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
 import CommentStore from 'vntd-root/stores/CommentStore.jsx';
 import UserStore    from 'vntd-shared/stores/UserStore.jsx';
-
-import {insertSorted, preend, removeArray} from 'vntd-shared/utils/Enum.jsx';
+import {Util}       from 'vntd-shared/utils/Enum.jsx';
 
 class Article {
     constructor(data) {
@@ -102,7 +101,7 @@ class AuthorShelf {
             if (this.articles[article.articleUuid] == null) {
                 this.removeArticle(article.articleUuid);
                 this.articles[article.articleUuid] = article;
-                this.sortedArticles = preend(article, this.sortedArticles);
+                this.sortedArticles = Util.preend(article, this.sortedArticles);
             }
         } else {
             if (this.articles[article.articleUuid] != null) {
@@ -125,12 +124,12 @@ class AuthorShelf {
     removeArticle(articleUuid) {
         let article = this.articles[articleUuid];
         if (article != null) {
-            removeArray(this.sortedArticles, article, 0, this._cmpArticle);
+            Util.removeArray(this.sortedArticles, article, 0, this._cmpArticle);
             delete this.articles[articleUuid];
         }
         article = this.savedArts[articleUuid];
         if (article != null) {
-            removeArray(this.sortedSavedArts, article, 0, this._cmpArticle);
+            Util.removeArray(this.sortedSavedArts, article, 0, this._cmpArticle);
             delete this.savedArts[articleUuid];
         }
     }
@@ -139,7 +138,7 @@ class AuthorShelf {
         if (article.published === true) {
             if (this.articles[article.articleUuid] !== article) {
                 this.articles[article.articleUuid] = article;
-                insertSorted(article, this.sortedArticles, this._cmpArticle);
+                Util.insertSorted(article, this.sortedArticles, this._cmpArticle);
             }
             return;
         }
@@ -149,7 +148,7 @@ class AuthorShelf {
     addSortedSavedArts(article) {
         if (this.savedArts[article.articleUuid] !== article) {
             this.savedArts[article.articleUuid] = article;
-            insertSorted(article, this.sortedSavedArts, this._cmpArticle);
+            Util.insertSorted(article, this.sortedSavedArts, this._cmpArticle);
         }
     }
 

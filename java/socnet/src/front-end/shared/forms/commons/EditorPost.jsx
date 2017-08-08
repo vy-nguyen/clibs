@@ -66,6 +66,14 @@ class PostForm extends FormData
             inputFmt : inputFmt,
             labelFmt : labelFmt,
             labelTxt : 'Title'
+        }, {
+            field    : 'video',
+            inpName  : 'art-video-',
+            inpHolder: 'www.youtube.com/embeded/xyz... or just xyz...',
+            emptyOk  : true,
+            inputFmt : inputFmt,
+            labelFmt : labelFmt,
+            labelTxt : 'Youtube Link'
         } ];
         entries.push(this.editorEntry);
 
@@ -130,6 +138,7 @@ class PostForm extends FormData
         return {
             authorUuid : data.authorUuid,
             articleUuid: data.articleUuid,
+            videoUrl   : data.video,
             tags       : data.tags,
             topic      : data.topic,
             content    : data.content

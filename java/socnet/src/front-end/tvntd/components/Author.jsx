@@ -10,7 +10,7 @@ import Mesg             from 'vntd-root/components/Mesg.jsx'
 import UserIcon         from 'vntd-root/components/UserIcon.jsx';
 import AuthorLinks      from 'vntd-root/components/AuthorLinks.jsx';
 import KeyValueTable    from 'vntd-shared/layout/KeyValueTable.jsx';
-import {getRandomInt}   from 'vntd-shared/utils/Enum.jsx';
+import {Util}           from 'vntd-shared/utils/Enum.jsx';
 
 class Author extends React.Component
 {
@@ -48,7 +48,7 @@ class Author extends React.Component
         }
         let user = this.props.user,
             self = user.getUser(),
-            coverIdx = getRandomInt(0, user.imgList.length - 1),
+            coverIdx = Util.getRandomInt(0, user.imgList.length - 1),
             infoStyle = {
                 backgroundImage: 'url(' + user.imgList[coverIdx] + ')'
             },

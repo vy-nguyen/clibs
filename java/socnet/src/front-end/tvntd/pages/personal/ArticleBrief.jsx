@@ -8,6 +8,7 @@ import React           from 'react-mod';
 
 import {ArticleStore}  from 'vntd-root/stores/ArticleStore.jsx';
 import ArticleTagBrief from 'vntd-root/components/ArticleTagBrief.jsx';
+import ArticleBox      from 'vntd-root/components/ArticleBox.jsx';
 
 class ArticleBrief extends ArticleTagBrief
 {
@@ -37,6 +38,10 @@ class ArticleBrief extends ArticleTagBrief
         });
         if (_.isEmpty(articles)) {
             return null;
+        }
+        if (!_.isEmpty(articles)) {
+            let video = articles[0];
+            video.youtube = "FaomPmTIKuw";
         }
         return (
             <section id='widget-grid'>
