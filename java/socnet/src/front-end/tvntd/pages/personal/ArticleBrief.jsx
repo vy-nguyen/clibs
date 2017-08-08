@@ -39,10 +39,6 @@ class ArticleBrief extends ArticleTagBrief
         if (_.isEmpty(articles)) {
             return null;
         }
-        if (!_.isEmpty(articles)) {
-            let video = articles[0];
-            video.youtube = "FaomPmTIKuw";
-        }
         return (
             <section id='widget-grid'>
                 {ArticleTagBrief.renderArtBox(articles,
