@@ -18,11 +18,16 @@ import ProfileCover       from './ProfileCover.jsx';
 class CustMain extends React.Component
 {
     constructor(props) {
+        let userUuid;
+
         super(props);
         this._updateState = this._updateState.bind(this);
         this._getBlogTab  = this._getBlogTab.bind(this);
+
+        userUuid = UserStore.getSelfUuid();
         this.state = {
-            tagList: this._updateTags()
+            userUuid: userUuid,
+            tagList : this._updateTags(userUuid)
         }
     }
 
@@ -37,17 +42,38 @@ class CustMain extends React.Component
         }
     }
 
+    componentWillReceiveProps(nextProps) {
+        let uuid = this._getUserUuid(nextProps);
+
+        if (uuid !== this.state.userUuid) {
+            console.log("change uuid " + uuid);
+            this.setState({
+                userUuid: uuid,
+                tagList : this._updateTags(uuid)
+            })
+        }
+    }
+
+    _getUserUuid(props) {
+        if (props.userUuid != null) {
+            return props.userUuid;
+        }
+        if (props.params != null && props.params.userUuid != null) {
+            return props.params.userUuid;
+        }
+        return UserStore.getSelfUuid();
+    }
+
     _updateState(data, recv, status) {
         if (status === "startup") {
             this.setState({
-                tagList: this._updateTags()
+                tagList: this._updateTags(this.state.userUuid)
             });
         }
     }
 
-    _updateTags() {
-        let allTags, userUuid = UserStore.getSelfUuid(),
-            tagMgr = AuthorStore.getAuthorTagMgr(userUuid);
+    _updateTags(userUuid) {
+        let allTags, tagMgr = AuthorStore.getAuthorTagMgr(userUuid);
 
         if (tagMgr != null) {
             allTags = tagMgr.getSortedTagList();
@@ -80,8 +106,7 @@ class CustMain extends React.Component
     }
 
     render() {
-        let userUuid = UserStore.getSelfUuid(),
-            tabData = this._getBlogTab();
+        let userUuid = this.state.userUuid, tabData = this._getBlogTab();
 
         return (
             <div id="content">

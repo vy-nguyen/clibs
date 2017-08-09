@@ -256,8 +256,7 @@ public class UserPath
             return s_badInput;
         }
         ArticleDTO art = genPendPost(profile, true, form.getArticleUuid());
-        String v = form.getVideoUrl();
-        Article article = v == null ? art.fetchArticle() : art.assignVideo(v);
+        Article article = art.assignVideo(form.getVideoUrl());
 
         ArticleService.applyPostForm(form, article, publish);
         art.convertUTF();
