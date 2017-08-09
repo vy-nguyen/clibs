@@ -79,7 +79,13 @@ public class PostForm
         if (videoUrl != null && !videoUrl.isEmpty()) {
             videoUrl = Jsoup.clean(videoUrl, wlist);
             int idx  = videoUrl.lastIndexOf('/');
-            videoUrl = videoUrl.substring(idx + 1);
+            if (idx > 0) {
+                videoUrl = videoUrl.substring(idx + 1);
+                idx = videoUrl.lastIndexOf("?v=");
+                if (idx > 0) {
+                    videoUrl = videoUrl.substring(idx + 3);
+                }
+            }
         }
         System.out.println("Video url " + videoUrl);
         int len = content.length();

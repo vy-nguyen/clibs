@@ -1,13 +1,18 @@
 /**
  * Modified by Vy Nguyen (2016)
  */
-import React  from 'react-mod'
-import {Link} from 'react-router'
-import Mesg   from 'vntd-root/components/Mesg.jsx';
+import React      from 'react-mod'
+import {Link}     from 'react-router'
+import Mesg       from 'vntd-root/components/Mesg.jsx';
+import UserStore  from 'vntd-shared/stores/UserStore.jsx';
 
 class Shortcut extends React.Component
 {
-	render() {
+    constructor(props) {
+        super(props);
+    }
+
+	_renderLogin() {
 		return (
             <div id="shortcut">
                 <ul>
@@ -50,7 +55,32 @@ class Shortcut extends React.Component
                 </ul>
             </div>
         )
-	}
+    }
+
+    _renderPublic() {
+        return (
+            <div id="shortcut">
+                <ul>
+                    <li>
+                        <Link to="/app" title="Main App"
+                            className="jarvismetro-tile bg-color-blue">
+                            <span className="iconbox">
+                                <i className="fa fa-home fa=2x"/>
+                                <span><Mesg text="Main App"/></span>
+                            </span>
+                        </Link>
+                    </li>
+                </ul>
+            </div>
+        );
+    }
+
+    render() {
+        if (UserStore.isLogin()) {
+            return this._renderLogin();
+        }
+        return this._renderPublic();
+    }
 }
 
 // className="jarvismetro-tile selected bg-color-pinkDark">

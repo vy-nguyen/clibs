@@ -263,7 +263,9 @@ public interface IArticleService
 
         public Article assignVideo(String link)
         {
-            article = new ArtVideo(article, link);
+            if (link != null && !link.isEmpty()) {
+                article = new ArtVideo(article, link);
+            }
             return article;
         }
 

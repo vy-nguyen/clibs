@@ -138,7 +138,7 @@ class PostForm extends FormData
         return {
             authorUuid : data.authorUuid,
             articleUuid: data.articleUuid,
-            videoUrl   : data.video,
+            videoUrl   : _.isEmpty(data.video) ? null : data.video,
             tags       : data.tags,
             topic      : data.topic,
             content    : data.content
