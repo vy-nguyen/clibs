@@ -6,17 +6,15 @@
 import _                  from 'lodash';
 import React, {PropTypes} from 'react-mod';
 
+import { SectionWall }    from 'vntd-shared/layout/UserBase.jsx';
 import UserStore          from 'vntd-shared/stores/UserStore.jsx';
+import DomainWall         from 'vntd-root/pages/personal/Domain.jsx';
 
-class SectionWall extends React.Component
+/*
+class AdsWall extends AdsBase
 {
-    constructor(props) {
-        super(props);
-    }
-
-    render() {
-    }
 }
+ */
 
 class MainWall extends React.Component
 {
@@ -42,7 +40,7 @@ class MainWall extends React.Component
 
     render() {
         return (
-            <h1>App Wall</h1>
+            <DomainWall/>
         );
     }
 }

@@ -8,7 +8,7 @@ import _            from 'lodash';
 import React        from 'react-mod';
 import Reflux       from 'reflux';
 import UserStore    from 'vntd-shared/stores/UserStore.jsx';
-import ArticleStore from 'vntd-root/stores/ArticleStore.jsx';
+import ArticleBase  from 'vntd-shared/layout/ArticleBase.jsx';
 import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
 import Lang         from 'vntd-root/stores/LanguageStore.jsx';
 import Mesg         from 'vntd-root/components/Mesg.jsx'
@@ -16,37 +16,10 @@ import PostPane     from 'vntd-root/components/PostPane.jsx';
 import LikeStat     from 'vntd-root/components/LikeStat.jsx';
 import ArticleBox   from 'vntd-root/components/ArticleBox.jsx';
 
-class Blog extends React.Component
+class Blog extends ArticleBase
 {
     constructor(props) {
         super(props);
-        this._updateState = this._updateState.bind(this);
-
-        this.state = {
-            articleUuid: null,
-            articles   : ArticleStore.getSortedArticlesByAuthor(props.authorUuid)
-        };
-    }
-
-    componentDidMount() {
-        this.unsub = ArticleStore.listen(this._updateState);
-    }
-
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsub = null;
-        }
-    }
-
-    _updateState(store, data, status) {
-        let articles = ArticleStore.getSortedArticlesByAuthor(this.props.authorUuid);
-        if ((this.state.articles == null) ||
-            (articles != null && this.state.articles.length !== articles.length)) {
-            this.setState({
-                articles: ArticleStore.getSortedArticlesByAuthor(this.props.authorUuid)
-            });
-        }
     }
 
     _readArticle(articleUuid) {
@@ -62,7 +35,8 @@ class Blog extends React.Component
     }
 
     _getBtnFormat(articleUuid) {
-        if ((this.state.articleUuid == null) || (this.state.articleUuid !== articleUuid)) {
+        if ((this.state.articleUuid == null) ||
+            (this.state.articleUuid !== articleUuid)) {
             return {
                 btnClass: "btn btn-primary",
                 btnText : Lang.translate("Read more...")

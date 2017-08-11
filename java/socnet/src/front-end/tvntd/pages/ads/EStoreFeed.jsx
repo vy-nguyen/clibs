@@ -14,8 +14,8 @@ import AdsReview      from './AdsReview.jsx';
 import BusinessMap    from './BusinessMap.jsx';
 import BusinessMedia  from './BusinessMedia.jsx';
 
-import { AdsBox, BusinessInfo }    from './AdsBox.jsx';
-import { AdsStore, EProductStore } from 'vntd-root/stores/ArticleStore.jsx';
+import { AdsStore }              from 'vntd-root/stores/ArticleStore.jsx';
+import { AdsBox, BusinessInfo }  from './AdsBox.jsx';
 
 class StoreFeed extends React.Component
 {

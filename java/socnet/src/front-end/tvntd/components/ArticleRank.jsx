@@ -9,6 +9,7 @@ import React  from 'react-mod';
 import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
 import InputStore       from 'vntd-shared/stores/NestableStore.jsx';
 import StateButton      from 'vntd-shared/utils/StateButton.jsx';
+import ArticleBase      from 'vntd-shared/layout/ArticleBase.jsx';
 
 import Actions      from 'vntd-root/actions/Actions.jsx';
 import PostPane     from 'vntd-root/components/PostPane.jsx';
@@ -16,42 +17,40 @@ import LikeStat     from 'vntd-root/components/LikeStat.jsx';
 import ArticleStore from 'vntd-root/stores/ArticleStore.jsx';
 import Lang         from 'vntd-root/stores/LanguageStore.jsx';
 
-class ArticleRank extends React.Component
+class ArticleRank extends ArticleBase
 {
     constructor(props) {
+        let artBtn;
+
         super(props);
         this.artBtnId = "art-rank-btn-" + props.articleUuid;
-        this._getArticleResult  = this._getArticleResult.bind(this);
         this._toggleFullArticle = this._toggleFullArticle.bind(this);
         this._createReadButton  = this._createReadButton.bind(this);
 
-        let artBtn = StateButtonStore.createButton(this.artBtnId, this._createReadButton);
+        artBtn = StateButtonStore.createButton(this.artBtnId, this._createReadButton);
         this.state = {
             fullArt : artBtn.getStateCode(),
             article : ArticleStore.getArticleByUuid(props.articleUuid)
         };
     }
 
-    componentDidMount() {
-        this.unsub = ArticleStore.listen(this._getArticleResult);
-    }
-
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsub = null;
-        }
-    }
-
     componentWillMount() {
         let active = this.props.active;
+
         if (active != null && InputStore.getItemIndex(active) != null) {
             this._toggleFullArticle();
             InputStore.freeItemIndex(active);
         }
     }
 
-    _getArticleResult() {
+    _updateArts(store, data, status, update, authorUuid) {
+        let article = ArticleStore.getArticleByUuid(this.props.articleUuid);
+
+        if (article != this.state.article) {
+            this.setState({
+                article: article
+            });
+        }
     }
 
     _createReadButton() {

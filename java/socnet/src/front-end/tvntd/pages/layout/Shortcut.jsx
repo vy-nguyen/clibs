@@ -26,11 +26,11 @@ class Shortcut extends React.Component
                         </Link>
                     </li>
                     <li>
-                        <Link to="/user/domain"
+                        <Link to="/app"
                             className="jarvismetro-tile bg-color-orangeDark">
                             <span className="iconbox">
-                                <i className="fa fa-money fa-2x" />
-                                <span><Mesg text='Transactions'/> </span>
+                                <i className="fa fa-home fa-2x" />
+                                <span><Mesg text='Front Page'/> </span>
                             </span>
                         </Link>
                     </li>
@@ -65,7 +65,7 @@ class Shortcut extends React.Component
                         <Link to="/app" title="Main App"
                             className="jarvismetro-tile bg-color-blue">
                             <span className="iconbox">
-                                <i className="fa fa-home fa=2x"/>
+                                <i className="fa fa-home fa-2x"/>
                                 <span><Mesg text="Main App"/></span>
                             </span>
                         </Link>

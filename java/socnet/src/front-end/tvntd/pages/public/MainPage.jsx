@@ -15,7 +15,8 @@ import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import AboutUsStore     from 'vntd-root/stores/AboutUsStore.jsx';
 import Lang             from 'vntd-root/stores/LanguageStore.jsx';
 import NewsFeed         from '../news-feed/NewsFeed.jsx';
-import MainAds          from '../ads/MainAds.jsx';
+import MainWall         from '../wall/Main.jsx';
+// import MainAds          from '../ads/MainAds.jsx';
 
 class PriceBox extends React.Component
 {
@@ -332,7 +333,8 @@ class MainPage extends React.Component
         if (UserStore.isLogin()) {
             return <NewsFeed/>;
         }
-        return <MainAds params={{blog: "ads"}}/>
+        return <MainWall/>;
+        // return <MainAds params={{blog: "ads"}}/>
     }
 }
 

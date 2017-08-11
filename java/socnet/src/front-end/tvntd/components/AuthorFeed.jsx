@@ -6,6 +6,7 @@
 
 import React          from 'react-mod';
 import TabPanel       from 'vntd-shared/layout/TabPanel.jsx';
+import ArticleBase    from 'vntd-shared/layout/ArticleBase.jsx';
 import UserStore      from 'vntd-shared/stores/UserStore.jsx';
 import Blog           from 'vntd-root/components/Blog.jsx';
 import Author         from 'vntd-root/components/Author.jsx';
@@ -27,18 +28,17 @@ const DefaultPlugin = {
     }
 };
 
-class AuthorFeed extends React.Component
+class AuthorFeed extends ArticleBase
 {
     constructor(props) {
+        let tabIdx = 0, author;
+
         super(props);
-        this._updateState   = this._updateState.bind(this);
         this._getAuthorTab  = this._getAuthorTab.bind(this);
         this._getActivePane = this._getActivePane.bind(this);
         this._setActivePane = this._setActivePane.bind(this);
 
-        let tabIdx = 0;
-        let author = AuthorStore.getAuthorByUuid(props.authorUuid);
-
+        author = AuthorStore.getAuthorByUuid(props.authorUuid);
         if (author != null) {
             if (author.tabPanelIdx == null) {
                 author.tabPanelIdx = 0;
@@ -54,18 +54,7 @@ class AuthorFeed extends React.Component
         }
     }
 
-    componentDidMount() {
-        this.unsub = ArticleStore.listen(this._updateState);
-    }
-
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsub = null;
-        }
-    }
-
-    _updateState(data, item, status) {
+    _updateArts(data, item, status, update, authorUuid) {
         if ((status === "refresh") ||
             (status === "delOk" && this.props.authorUuid !== item.authorUuid)) {
             return;
