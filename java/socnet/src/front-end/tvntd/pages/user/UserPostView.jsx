@@ -133,16 +133,12 @@ class UserPostView extends React.Component
 
     _saveUpdate(btnState) {
         if (btnState === this.saveBtn) {
-            btnState.callTrigger(this);
+            StateButtonStore.setButtonStateObj(this.arrangeBtn, "success");
+            this.setState({
+                status: "save ok",
+                tagMgr: AuthorStore.getAuthorTagMgr(this.props.userUuid)
+            });
         }
-    }
-
-    static _saveStateSuccess(me, btnId, prev, curr) {
-        StateButtonStore.setButtonStateObj(me.arrangeBtn, "success");
-        me.setState({
-            status: "save ok",
-            tagMgr: AuthorStore.getAuthorTagMgr(me.props.userUuid)
-        });
     }
 
     _arrangeMode(btnId) {
@@ -235,8 +231,7 @@ class UserPostView extends React.Component
                 text: Lang.translate("Order Saved"),
                 disabled : true,
                 nextState: "needSave",
-                className: "btn btn-default",
-                triggerFn: UserPostView._saveStateSuccess
+                className: "btn btn-default"
             },
             failure: {
                 text: Lang.translate("Save order failed"),

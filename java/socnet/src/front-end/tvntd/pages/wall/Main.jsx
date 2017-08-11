@@ -10,6 +10,11 @@ import { SectionWall }    from 'vntd-shared/layout/UserBase.jsx';
 import UserStore          from 'vntd-shared/stores/UserStore.jsx';
 import DomainWall         from 'vntd-root/pages/personal/Domain.jsx';
 
+/*
+class AdsWall extends AdsBase
+{
+}
+ */
 
 class MainWall extends React.Component
 {

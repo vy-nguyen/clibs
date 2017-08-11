@@ -10,6 +10,7 @@ import {Link}              from 'react-router';
 import History             from 'vntd-shared/utils/History.jsx';
 import UserStore           from 'vntd-shared/stores/UserStore.jsx';
 import TabPanel            from 'vntd-shared/layout/TabPanel.jsx';
+import ArticleBase         from 'vntd-shared/layout/ArticleBase.jsx';
 import EditorPost          from 'vntd-shared/forms/commons/EditorPost.jsx';
 import UserPostView        from 'vntd-root/pages/user/UserPostView.jsx';
 import EStorePost          from 'vntd-root/pages/e-store/EStorePost.jsx';
@@ -21,17 +22,17 @@ import Actions             from 'vntd-root/actions/Actions.jsx';
 import UserAvatar          from './UserAvatar.jsx';
 import Friends             from './Friends.jsx';
 
-class UserHome extends React.Component
+class UserHome extends ArticleBase
 {
     constructor(props) {
         let all;
         super(props);
+
         this.getUserTab     = this.getUserTab.bind(this);
         this.getMyUserTab   = this.getMyUserTab.bind(this);
         this._getEditTab    = this._getEditTab.bind(this);
         this._getActivePane = this._getActivePane.bind(this);
         this._setActivePane = this._setActivePane.bind(this);
-        this._updateStore   = this._updateStore.bind(this);
 
         this._getActEditPane   = this._getActEditPane.bind(this);
         this._setActEditPane   = this._setActEditPane.bind(this);
@@ -46,18 +47,7 @@ class UserHome extends React.Component
         };
     }
 
-    componentDidMount() {
-        this.unsub = ArticleStore.listen(this._updateStore);
-    }
-
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsub = null;
-        }
-    }
-
-    _updateStore(store, data, status, update, authorUuid) {
+    _updateArts(store, data, status, update, authorUuid) {
         let all;
 
         console.log("User home update " + update);

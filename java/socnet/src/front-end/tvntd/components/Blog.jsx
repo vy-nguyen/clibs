@@ -16,7 +16,7 @@ import PostPane     from 'vntd-root/components/PostPane.jsx';
 import LikeStat     from 'vntd-root/components/LikeStat.jsx';
 import ArticleBox   from 'vntd-root/components/ArticleBox.jsx';
 
-class Blog extends ArticleBase // React.Component
+class Blog extends ArticleBase
 {
     constructor(props) {
         super(props);
