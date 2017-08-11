@@ -36,12 +36,12 @@ const _publicRoutes = (
     <Route path="/public">
         <Route path="aboutus" component={AboutUs}/>
         <Route path="article/:author/:articleUuid" component={PublicUrlArt}/>
-        <Route path="ads" component={MainAds} subHeader={false}/>
-        <Route path=":blog" component={MainBlog} subHeader={true}/>
+        <Route path="ads"     component={MainAds}  subHeader={false}/>
+        <Route path=":blog"   component={MainBlog} subHeader={true}/>
         <Route path=":estore" component={MainBlog} subHeader={true}/>
-        <Route path=":edu" component={MainBlog} subHeader={true}/>
-        <Route path=":news" component={MainBlog} subHeader={true}/>
-        <Route path=":tech" component={MainBlog} subHeader={true}/>
+        <Route path=":edu"    component={MainBlog} subHeader={true}/>
+        <Route path=":news"   component={MainBlog} subHeader={true}/>
+        <Route path=":tech"   component={MainBlog} subHeader={true}/>
     </Route>
 ),
 

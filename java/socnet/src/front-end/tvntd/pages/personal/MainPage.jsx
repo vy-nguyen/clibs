@@ -46,7 +46,6 @@ class CustMain extends React.Component
         let uuid = this._getUserUuid(nextProps);
 
         if (uuid !== this.state.userUuid) {
-            console.log("change uuid " + uuid);
             this.setState({
                 userUuid: uuid,
                 tagList : this._updateTags(uuid)
@@ -55,6 +54,9 @@ class CustMain extends React.Component
     }
 
     _getUserUuid(props) {
+        console.log("----");
+        console.log(props);
+
         if (props.userUuid != null) {
             return props.userUuid;
         }
@@ -84,12 +86,15 @@ class CustMain extends React.Component
         return [];
     }
 
-    _getBlogTab() {
+    _getBlogTab(uuid) {
         let idx = 0, tagList = this.state.tagList,
         out = {
             tabItems: [],
             tabContents: []
         };
+        if (uuid != null) {
+            tagList = this._updateTags(uuid);
+        }
         _.forOwn(tagList, function(tag) {
             out.tabItems.push({
                 domId  : _.uniqueId('tag-'),
@@ -106,8 +111,15 @@ class CustMain extends React.Component
     }
 
     render() {
-        let userUuid = this.state.userUuid, tabData = this._getBlogTab();
+        let tabData, userUuid = this.state.userUuid, params = this.props.params;
 
+        if (params != null && params.userUuid != null && params.userUuid != userUuid) {
+            userUuid = params.userUuid;
+            tabData  = this._getBlogTab(userUuid);
+        } else {
+            tabData  = this._getBlogTab(null);
+        }
+        console.log("Render domain " + userUuid);
         return (
             <div id="content">
                 <ProfileCover userUuid={userUuid}/>

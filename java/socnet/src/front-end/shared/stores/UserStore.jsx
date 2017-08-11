@@ -160,7 +160,10 @@ let UserStore = Reflux.createStore({
         return this.data.userSelf;
     },
 
-    getSelfUuid: function() {
+    getSelfUuid: function(uuid) {
+        if (uuid != null) {
+            return uuid;
+        }
         if (this.data.domainUuid != null) {
             return this.data.domainUuid;
         }
@@ -180,6 +183,19 @@ let UserStore = Reflux.createStore({
 
     getActiveUser: function() {
         return this.data.userActive;
+    },
+
+    getAllUserDomains: function() {
+        let out = [];
+        _.forOwn(this.data.userMap, function(user) {
+            if (user.domain != null) {
+                out.push({
+                    domain  : user.domain,
+                    userUuid: user.userUuid
+                });
+            }
+        });
+        return out;
     },
 
     setActiveUser: function(user) {

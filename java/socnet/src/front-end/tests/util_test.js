@@ -7,7 +7,7 @@ import { expect, assert } from 'chai';
 import setup              from './setup.js';
 
 import Startup            from 'vntd-root/pages/login/Startup.jsx';
-import { Util } from 'vntd-shared/utils/Enum.jsx';
+import { Util }           from 'vntd-shared/utils/Enum.jsx';
 
 const testParams = {
     insertSorted: [ 100, 1000, 10000, 10000 ]
@@ -51,7 +51,7 @@ describe('Test Insert Sort Functions', function() {
             console.log("Tested insertSorted with " + it + " elements");
         });
     });
-});
+})
 
 describe('Test Sort Funciton', function() {
     it('Sort Array', function() {
@@ -84,7 +84,7 @@ function cmpObjs(o1, o2){
         }
     }
     return true;
-};
+}
 
 describe('Test Parse Startup String', function() {
     const testParseStartup = [ {
@@ -123,4 +123,4 @@ describe('Test Parse Startup String', function() {
                    "Unexpected result " + result);
         });
     });
-});
+})
