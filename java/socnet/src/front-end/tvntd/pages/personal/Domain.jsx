@@ -22,24 +22,16 @@ class Domain extends UserBase
     }
 
     render() {
-        let idx, link, cover, self = this.state.self;
+        let idx, self = this.state.self;
 
         if (self == null) {
             return null;
         }
         idx = Util.getRandomInt(0, 2);
-        if (idx === 0) {
-            cover = self.coverImg0;
-        } else if (idx === 1) {
-            cover = self.coverImg1;
-        } else {
-            cover = self.coverImg2;
-        }
-        link = "/domain/" + self.userUuid;
         return (
             <div className="well no-padding">
-                <Link to={link}>
-                    <img src={cover} style={VntdGlob.styleFit}/>
+                <Link to={self.getDomainLink()}>
+                    <img src={self.getCoverImg(idx)} style={VntdGlob.styleFit}/>
                 </Link>
                 <div className="air air-top-left padding-10">
                     {this._renderAvatar()}

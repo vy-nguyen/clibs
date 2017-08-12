@@ -24,7 +24,7 @@
 
     <link rel="shortcut icon" href="/rs/img/favicon.ico" type="image/x-icon">
 
-    <!-- iOS web-app metas : hides Safari UI Components and Changes Status Bar Appearance -->
+    <!-- iOS web-app metas : -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
 </head>
@@ -37,6 +37,9 @@
   </span>
   <div id="tvntd-root"></div>
   <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+  <%--
+  <script src="/rs/js/tinymce/tinymce.min.js"></script>
+  --%>
   <script src="/rs/client/tvntd-vendor-bundle.js"></script>
   <script src="/rs/client/tvntd-bundle.js"></script>
 </body>

@@ -5,8 +5,11 @@
 'use strict';
 
 import React           from 'react-mod';
+import { Link }        from 'react-router';
+
 import UserStore       from 'vntd-shared/stores/UserStore.jsx';
 import Mesg            from 'vntd-root/components/Mesg.jsx';
+import { VntdGlob }    from 'vntd-root/config/constants.js';
 
 class UserBase extends React.Component
 {
@@ -36,25 +39,23 @@ class UserBase extends React.Component
     }
 
     _renderKV(key, value, small) {
-        let val = <Mesg text={value}/>;
-
-        if (small === true) {
-            val = <small>{val}</small>;
-        }
-        return (
-            <h4 className="font-md">
-                <strong>{key}</strong> {val}
-            </h4>
-        );
+        SectionWall.renderKV(key, value, small);
     }
 
     _renderAvatar() {
-        let self = this.state.self;
-        const style = {
-            background: "#ffffff",
-            opacity   : "0.5"
+        let self = this.state.self,
+        header = {
+            title    : self.firstName + " " + self.lastName,
+            keyValues: [ {
+                key  : self.connections,
+                value: "Connections",
+                small: true
+            }, {
+                key  : self.followers,
+                value: "Followers",
+                small: true
+            } ]
         };
-
         return (
             <div className="padding-10">
                 <div className="row">
@@ -62,15 +63,7 @@ class UserBase extends React.Component
                         <img src={self.userImgUrl}/>
                     </div>
                 </div>
-                <div style={style} className="row">
-                    <h1 className="login-header-big">
-                        {self.firstName} {self.lastName}
-                    </h1>
-                    <div className="padding-10">
-                        {this._renderKV(self.connections, "Connections", true)}
-                        {this._renderKV(self.followers, "Followers", true)}
-                    </div>
-                </div>
+                {SectionWall.renderText(header)}
             </div>
         );
     }
@@ -97,6 +90,50 @@ class SectionWall extends React.Component
                     <section id="widget-grid">
                         {this._renderSection()}
                     </section>
+                </div>
+            </div>
+        );
+    }
+
+    static renderKV(key, value, small) {
+        let val = <Mesg text={value}/>;
+
+        if (small === true) {
+            val = <small>{val}</small>;
+        }
+        return (
+            <h4 className="font-md">
+                <strong>{key}</strong> {val}
+            </h4>
+        );
+    }
+
+    static renderText(sect) {
+        let keyValues = sect.keyValues.map(function(kv) {
+            return SectionWall.renderKV(kv.key, kv.value, kv.small);
+        });
+        return (
+            <div className="padding-10">
+            <div style={VntdGlob.styleWhiteOpaque} className="row">
+                <h1 className="login-header-big">
+                    {sect.title}
+                </h1>
+                <div className="padding-10">
+                    {keyValues}
+                </div>
+            </div>
+            </div>
+        );
+    }
+
+    static renderSection(sect) {
+        return (
+            <div className="well no-padding">
+                <Link to={sect.link}>
+                    <img src={sect.imgUrl} style={VntdGlob.styleFit}/>
+                </Link>
+                <div className="air air-top-left padding-10">
+                    {SectionWall.renderText(sect)}
                 </div>
             </div>
         );

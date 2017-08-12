@@ -43,6 +43,20 @@ class User {
         return this.connectState === "follower";
     }
 
+    getCoverImg(index) {
+        if (index === 0) {
+            return this.coverImg0;
+        }
+        if (index === 1) {
+            return this.coverImg1;
+        }
+        return this.coverImg2;
+    }
+
+    getDomainLink() {
+        return ("/domain/" + this.userUuid);
+    }
+
     updateProfile(self) {
         this.firstName = self.firstName;
         this.lastName  = self.lastName;
