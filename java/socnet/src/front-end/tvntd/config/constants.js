@@ -21,11 +21,12 @@ export const errMesg = {
 export const VntdGlob = {
     publicUuid: "00000000-ffff-0000-ffff-00ff00ff00ff",
     styleFit: {
-        width : "100%",
-        height: "auto"
+        width    : "100%",
+        height   : "auto",
+        maxHeight: "200px"
     },
     styleContent: {
-        margin: "10px 10px 10px 10px",
+        margin  : "10px 10px 10px 10px",
         fontSize: "130%"
     },
     styleImg: {
@@ -33,5 +34,9 @@ export const VntdGlob = {
         width  : "50%",
         height : "50%",
         padding: "5px"
+    },
+    styleWhiteOpaque: {
+        background: "#ffffff",
+        opacity   : "0.7"
     }
 };
