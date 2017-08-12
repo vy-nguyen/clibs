@@ -8,29 +8,19 @@ import React          from 'react-mod';
 import {Link}         from 'react-router';
 import Mesg           from 'vntd-root/components/Mesg.jsx';
 import UserStore      from 'vntd-shared/stores/UserStore.jsx';
+import UserBase       from 'vntd-shared/layout/UserBase.jsx';
 import LanguageStore  from 'vntd-root/stores/LanguageStore.jsx';
 import ToggleShortcut from './ToggleShortcut.jsx';
 
-class LoginInfo extends React.Component
+class LoginInfo extends UserBase
 {
     constructor(props) {
         super(props);
-        this.state = {};
-        this._changeState = this._changeState.bind(this);
     }
 
-    componentDidMount() {
-        this.unsub = UserStore.listen(this._changeState);
-    }
-
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsub = null;
-        }
-    }
-
-    _changeState(data) {
+    // @Override
+    //
+    _updateUser(data) {
         if (data.authError == null && data.userSelf) {
             this.setState(data.userSelf);
         }

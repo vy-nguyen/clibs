@@ -6,12 +6,12 @@ import _ from 'lodash';
 import React, { PropTypes } from 'react-mod'
 
 import StarRating        from 'vntd-shared/layout/StarRating.jsx';
+import ProductBase       from 'vntd-shared/layout/ProductBase.jsx';
 import NavigationStore   from 'vntd-shared/stores/NavigationStore.jsx';
 import UserStore         from 'vntd-shared/stores/UserStore.jsx';
 import LikeStat          from 'vntd-root/components/LikeStat.jsx';
 import ArticleTagBrief   from 'vntd-root/components/ArticleTagBrief.jsx';
 import Mesg              from 'vntd-root/components/Mesg.jsx';
-import { EProductStore } from 'vntd-root/stores/ArticleStore.jsx';
 import { ProductInfo, ProductBrief } from './ProductInfo.jsx';
 
 import ErrorView from 'vntd-shared/layout/ErrorView.jsx';
@@ -20,38 +20,6 @@ class EStore extends React.Component
 {
     constructor(props) {
         super(props);
-        this._updateState = this._updateState.bind(this);
-
-        this.state = {
-            products: EProductStore.getProductsByAuthor(props.userUuid)
-        }
-    }
-
-    componentDidMount() {
-        this.unsub = EProductStore.listen(this._updateState);
-    }
-
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsub = null;
-        }
-    }
-
-    _updateState(store, data, status, update) {
-        let userUuid = this.props.userUuid;
-        if (data == null || _.isEmpty(data) || !Array.isArray(data)) {
-            return;
-        }
-        _.forEach(data, function(prod) {
-            if (prod.authorUuid !== userUuid) {
-                return;
-            }
-            this.setState({
-                products: EProductStore.getProductsByAuthor(userUuid)
-            });
-            return false;
-        }.bind(this));
     }
 
     static _renderProdBrief(userUuid, product) {

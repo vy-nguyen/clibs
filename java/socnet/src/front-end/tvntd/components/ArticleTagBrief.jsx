@@ -73,14 +73,10 @@ class ArticleTagBrief extends React.Component
         let tag = this.props.tag, articles = [], unique = {};
 
         if (tag.tagKind === "estore") {
-            let products = [];
-            _.forEach(tag.articleRank, function(uuid) {
-                let prod = EProductStore.getProductByUuid(uuid);
-                if (prod != null) {
-                    products.push(prod);
-                }
-            });
-            return EStore.renderProducts(products, null);
+            if (tag.sortedArts == null) {
+                return null;
+            }
+            return EStore.renderProducts(tag.sortedArts, null);
         }
         ArticleTagStore.getPublishedArticles(tag.tagName, articles, unique);
 

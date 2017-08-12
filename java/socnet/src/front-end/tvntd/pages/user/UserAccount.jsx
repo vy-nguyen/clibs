@@ -4,37 +4,20 @@
  */
 'use strict';
 
+import _                  from 'lodash';
 import React              from 'react-mod';
+import UserBase           from 'vntd-shared/layout/UserBase.jsx';
 import UserStore          from 'vntd-shared/stores/UserStore.jsx';
 import ProfileCover       from 'vntd-root/components/ProfileCover.jsx';
 
-class UserAccount extends React.Component
+class UserAccount extends UserBase
 {
     constructor(props) {
         super(props);
         this._updateState = this._updateState.bind(this);
 
-        let { userUuid } = this.props.params;
-        this.state = {
-            myUuid: userUuid,
-            self  : UserStore.getUserByUuid(userUuid)
-        };
-    }
-
-    componentDidMount() {
-        this.unsub = UserStore.listen(this._updateState);
-    }
-
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsub = null;
-        }
-    }
-
-    _updateState() {
-        this.setState({
-            self: UserStore.getUserByUuid(this.state.myUuid)
+        this.state = _.merge({
+            myUuid: props.params.userUuid
         });
     }
 

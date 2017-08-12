@@ -18,7 +18,7 @@ class Article {
             this[k] = v;
         }.bind(this));
 
-        this._id          = _.uniqueId('id-article-');
+        // this._id          = _.uniqueId('id-article-');
         this.author       = UserStore.getUserByUuid(data.authorUuid);
         this.createdDate  = Date.parse(data.createdDate);
         this.dateString   = moment(this.createdDate).format("DD/MM/YYYY - HH:mm");
@@ -35,6 +35,10 @@ class Article {
 
     getTitle() {
         return this.topic;        
+    }
+
+    isPublished() {
+        return this.published;
     }
 
     static newInstance(kind, data) {
@@ -60,6 +64,10 @@ class Product extends Article {
     getTitle() {
         return this.prodTitle;
     }
+
+    isPublished() {
+        return true;
+    }
 }
 
 class AdsItem extends Article {
@@ -73,6 +81,10 @@ class AdsItem extends Article {
 
     getTitle() {
         return this.busName;
+    }
+
+    isPublished() {
+        return true;
     }
 }
 
@@ -97,7 +109,7 @@ class AuthorShelf {
         if (article == null) {
             return;
         }
-        if (article.published === true) {
+        if (article.isPublished()) {
             if (this.articles[article.articleUuid] == null) {
                 this.removeArticle(article.articleUuid);
                 this.articles[article.articleUuid] = article;
@@ -135,7 +147,7 @@ class AuthorShelf {
     }
 
     addSortedArticle(article) {
-        if (article.published === true) {
+        if (article.isPublished()) {
             if (this.articles[article.articleUuid] !== article) {
                 this.articles[article.articleUuid] = article;
                 Util.insertSorted(article, this.sortedArticles, this._cmpArticle);

@@ -4,43 +4,35 @@
  */
 'use strict';
 
+import _          from 'lodash';
 import React      from 'react';
 import Actions    from 'vntd-root/actions/Actions.jsx';
 import Mesg       from 'vntd-root/components/Mesg.jsx';
 import Lang       from 'vntd-root/stores/LanguageStore.jsx';
 import History    from 'vntd-shared/utils/History.jsx';
 import UserStore  from 'vntd-shared/stores/UserStore.jsx';
+import UserBase   from 'vntd-shared/layout/UserBase.jsx';
 import { LoginAbout, LoginHeader, LoginSocial } from './Login.jsx';
 
 class Forgot extends React.Component
 {
     constructor(props) {
         super(props);
-        this._submitResult = this._submitResult.bind(this);
         this._submitForm = this._submitForm.bind(this);
-        this.state = {
+        this.state = _.merge(this.state, {
             display: 'none'
-        };
+        });
     }
 
     componentWillMount() {
         if (UserStore.isLogin()) {
-            History.pushState(null, "public/vietnam");
+            History.pushState(null, "/public");
         }
     }
 
-    componentDidMount() {
-        this.unsub = UserStore.listen(this._submitResult);
-    }
-
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsub = null;
-        }
-    }
-
-    _submitResult(data) {
+    // @Override
+    //
+    _updateUser(data) {
         this.setState({
             display: 'none'
         });

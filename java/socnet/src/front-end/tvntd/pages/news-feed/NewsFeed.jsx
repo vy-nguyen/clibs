@@ -10,43 +10,14 @@ import AuthorFeed         from 'vntd-root/components/AuthorFeed.jsx';
 
 import SubHeader          from '../layout/SubHeader.jsx';
 import EditorPost         from 'vntd-shared/forms/commons/EditorPost.jsx';
+import AuthorBase         from 'vntd-shared/layout/AuthorBase.jsx';
 import BigBreadcrumbs     from 'vntd-shared/layout/BigBreadcrumbs.jsx';
-import AuthorStore        from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleStore       from 'vntd-root/stores/ArticleStore.jsx';
 
-class NewsFeed extends React.Component
+class NewsFeed extends AuthorBase
 {
     constructor(props) {
         super(props);
-        this._updateState   = this._updateState.bind(this);
-        this._updateAuthors = this._updateAuthors.bind(this);
-
-        this.state = this._updateAuthors();
-    }
-
-    componentDidMount() {
-        this.unsub = AuthorStore.listen(this._updateState);
-    }
-
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsub = null;
-        }
-    }
-
-    _updateAuthors() {
-        let authors = AuthorStore.getAuthorUuidList();
-        return {
-            authorCnt : authors.length,
-            authorList: authors
-        }
-    }
-
-    _updateState(data, elm, what) {
-        if (AuthorStore.hasDiffAuthor(this.state.authorCnt)) {
-            this.setState(this._updateAuthors());
-        }
     }
 
     renderAuthors() {
