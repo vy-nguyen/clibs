@@ -16,7 +16,7 @@ import { ProductInfo, ProductBrief } from './ProductInfo.jsx';
 
 import ErrorView from 'vntd-shared/layout/ErrorView.jsx';
 
-class EStore extends React.Component
+class EStore extends ProductBase
 {
     constructor(props) {
         super(props);
