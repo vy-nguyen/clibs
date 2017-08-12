@@ -6,42 +6,20 @@
 
 import React             from 'react-mod';
 
+import UserBase          from 'vntd-shared/layout/UserBase.jsx';
 import UserStore         from 'vntd-shared/stores/UserStore.jsx';
 import SubHeader         from 'vntd-root/pages/layout/SubHeader.jsx';
 import Mesg              from 'vntd-root/components/Mesg.jsx';
 import UserIcon          from 'vntd-root/components/UserIcon.jsx';
 
-class UserAvatar extends React.Component
+class UserAvatar extends UserBase
 {
     constructor(props) {
         super(props);
-
-        this._updateUser = this._updateUser.bind(this);
-        this.state = {
-            self: UserStore.getUserByUuid(props.userUuid)
-        };
-    }
-
-    componentDidMount() {
-        this.unsub = UserStore.listen(this._updateUser);
-    }
-
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsub = null;
-        }
-    }
-
-    _updateUser(data) {
-        this.setState({
-            self: UserStore.getUserByUuid(this.props.userUuid)
-        });
     }
 
     render() {
-        let icon, userUuid = this.props.userUuid,
-            self = UserStore.getUserByUuid(userUuid),
+        let icon, userUuid = this.props.userUuid, self = this.state.self,
             imgUrl = self != null ? self.userImgUrl : "";
 
         if (self == null) {

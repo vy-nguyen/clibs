@@ -9,17 +9,17 @@ import $         from 'jquery';
 import React     from 'react-mod';
 
 import TreeView      from 'vntd-shared/layout/TreeView.jsx';
+import AuthorBase    from 'vntd-shared/layout/AuthorBase.jsx';
 import AccordionView from 'vntd-shared/layout/AccordionView.jsx';
 import InputStore    from 'vntd-shared/stores/NestableStore.jsx';
 import AuthorStore   from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleStore  from 'vntd-root/stores/ArticleStore.jsx';
 
-class AuthorLinks extends React.Component
+class AuthorLinks extends AuthorBase
 {
     constructor(props) {
         super(props);
         this.evenRow        = true;
-        this._updateState   = this._updateState.bind(this);
         this._renderTag     = this._renderTag.bind(this);
         this._renderLink    = this._renderLink.bind(this);
         this._renderElement = this._renderElement.bind(this);
@@ -31,20 +31,9 @@ class AuthorLinks extends React.Component
         };
     }
 
-    componentDidMount() {
-        this.unsub = AuthorStore.listen(this._updateState);
-    }
-
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsub = null;
-        }
-    }
-
-    _updateState(data, mgr) {
-        let tagItems = 0;
-        let tagMgr   = this.state.tagMgr;
+    _updateAuthor(data, mgr) {
+        let tagItems = 0,
+            tagMgr   = this.state.tagMgr;
 
         if (tagMgr == null) {
             tagMgr   = AuthorStore.getAuthorTagMgr(this.props.authorUuid);

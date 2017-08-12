@@ -7,13 +7,14 @@ import _              from 'lodash';
 import React          from 'react-mod';
 
 import UserStore      from 'vntd-shared/stores/UserStore.jsx';
+import UserBase       from 'vntd-shared/layout/UserBase.jsx';
 import Actions        from 'vntd-root/actions/Actions.jsx';
 import UserTable      from 'vntd-root/components/UserTable.jsx';
 import UserSelect     from 'vntd-root/components/UserSelect.jsx';
 import Mesg           from 'vntd-root/components/Mesg.jsx';
 import Lang           from 'vntd-root/stores/LanguageStore.jsx';
 
-class UserFriends extends React.Component
+class UserFriends extends UserBase
 {
     constructor(props) {
         super(props);
@@ -21,27 +22,6 @@ class UserFriends extends React.Component
         this._submitChanges = this._submitChanges.bind(this);
         this._getUserTable  = this._getUserTable.bind(this);
         this._getTabHeader  = this._getTabHeader.bind(this);
-        this._updateState   = this._updateState.bind(this);
-        this.state = {
-            self: UserStore.getSelf()
-        };
-    }
-
-    componentDidMount() {
-        this.unsub = UserStore.listen(this._updateState);
-    }
-
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unusb = null;
-        }
-    }
-
-    _updateState() {
-        this.setState({
-            self: UserStore.getSelf()
-        });
     }
 
     _submitChanges(event) {
@@ -175,14 +155,15 @@ class UserFriends extends React.Component
                 return followTab;
             case 'follower':
                 return followerTab;
+            default:
+                break;
             }
         }
         return fullTab;
     }
 
     render() {
-        let footer = null;
-        let data = this._getUserTable();
+        let footer = null, data = this._getUserTable();
 
         if (data.hasInput === true) {
             footer = (

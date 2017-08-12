@@ -8,6 +8,7 @@ import _                  from 'lodash';
 import React              from 'react-mod'
 
 import TabPanel           from 'vntd-shared/layout/TabPanel.jsx';
+import AuthorBase         from 'vntd-shared/layout/AuthorBase.jsx';
 import UserStore          from 'vntd-shared/stores/UserStore.jsx';
 import BaseStore          from 'vntd-root/stores/BaseStore.jsx';
 import AuthorStore        from 'vntd-root/stores/AuthorStore.jsx';
@@ -15,31 +16,19 @@ import ProfileAvatar      from './ProfileAvatar.jsx';
 import ArticleBrief       from './ArticleBrief.jsx';
 import ProfileCover       from './ProfileCover.jsx';
 
-class CustMain extends React.Component
+class CustMain extends AuthorBase
 {
     constructor(props) {
         let userUuid;
 
         super(props);
-        this._updateState = this._updateState.bind(this);
-        this._getBlogTab  = this._getBlogTab.bind(this);
+        this._getBlogTab = this._getBlogTab.bind(this);
 
         userUuid = UserStore.getSelfUuid();
-        this.state = {
+        this.state = _.merge(this.state, {
             userUuid: userUuid,
             tagList : this._updateTags(userUuid)
-        }
-    }
-
-    componentDidMount() {
-        this.unsub = AuthorStore.listen(this._updateState);
-    }
-
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsub = null;
-        }
+        });
     }
 
     componentWillReceiveProps(nextProps) {
@@ -54,9 +43,6 @@ class CustMain extends React.Component
     }
 
     _getUserUuid(props) {
-        console.log("----");
-        console.log(props);
-
         if (props.userUuid != null) {
             return props.userUuid;
         }
@@ -66,7 +52,8 @@ class CustMain extends React.Component
         return UserStore.getSelfUuid();
     }
 
-    _updateState(data, recv, status) {
+    // @Override
+    _updateAuthor(data, recv, status) {
         if (status === "startup") {
             this.setState({
                 tagList: this._updateTags(this.state.userUuid)
@@ -119,7 +106,6 @@ class CustMain extends React.Component
         } else {
             tabData  = this._getBlogTab(null);
         }
-        console.log("Render domain " + userUuid);
         return (
             <div id="content">
                 <ProfileCover userUuid={userUuid}/>

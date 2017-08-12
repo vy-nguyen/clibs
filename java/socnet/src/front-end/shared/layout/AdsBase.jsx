@@ -12,7 +12,7 @@ class AdsBase extends React.Component
 {
     constructor(props) {
         super(props);
-        this._updateAds = this._updateAdsr.bind(this);
+        this._updateAds = this._updateAds.bind(this);
     }
 
     componentDidMount() {

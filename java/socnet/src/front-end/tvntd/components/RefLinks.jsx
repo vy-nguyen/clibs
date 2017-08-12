@@ -7,6 +7,7 @@
 import _     from 'lodash';
 import React from 'react-mod';
 
+import AuthorBase   from 'vntd-shared/layout/AuthorBase.jsx';
 import ErrorView    from 'vntd-shared/layout/ErrorView.jsx';
 import UserStore    from 'vntd-shared/stores/UserStore.jsx';
 import InputStore   from 'vntd-shared/stores/NestableStore.jsx';
@@ -15,30 +16,18 @@ import Mesg         from 'vntd-root/components/Mesg.jsx'
 
 import { SelectWrap, InputInline } from 'vntd-shared/forms/commons/GenericForm.jsx';
 
-class RefLinks extends React.Component
+class RefLinks extends AuthorBase
 {
     constructor(props) {
         super(props);
 
-        this._updateState  = this._updateState.bind(this);
         this._renderArtRef = this._renderArtRef.bind(this);
-        this.state = {
+        this.state = _.merge(this.state, {
             rankUpdate: 0
-        };
+        });
     }
 
-    componentDidMount() {
-        this.unsub = AuthorStore.listen(this._updateState);
-    }
-
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsub = null;
-        }
-    }
-
-    _updateState(data, artRank, what) {
+    _updateAuthor(data, artRank, what) {
         if (artRank == null || what !== "update") {
             return;
         }

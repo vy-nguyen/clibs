@@ -106,7 +106,7 @@ class MainAds extends React.Component
         return (
             <div id="content">
                 <div className="row">
-                    <div className="col-sm-12 col-md-12 col-lg-12">
+                    <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                         <TabPanel className="padding-top-10" context={tabData}>
                             {this._renderYellowPage()}
                             {this._renderFeatureAds()}

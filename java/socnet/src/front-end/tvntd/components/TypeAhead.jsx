@@ -4,38 +4,43 @@
  */
 'use strict';
 
+import _             from 'lodash';
 import React         from 'react-mod';
 import TA            from 'react-typeahead';
 
 import AuthorStore   from 'vntd-root/stores/AuthorStore.jsx';
 import UserStore     from 'vntd-shared/stores/UserStore.jsx';
+import AuthorBase    from 'vntd-shared/layout/AuthorBase.jsx';
 
-class TypeAhead extends React.Component
+class TypeAhead extends AuthorBase
 {
     constructor(props) {
+        let myUuid, artRank;
+
         super(props);
         this._onBlur = this._onBlur.bind(this);
-        this._updateState = this._updateState.bind(this);
         this._onOptionSelected = this._onOptionSelected.bind(this);
 
-        let myUuid  = UserStore.getSelf().userUuid;
-        let artRank = AuthorStore.getArticleRank(myUuid, props.articleUuid);
-        this.state = {
+        myUuid  = UserStore.getSelf().userUuid;
+        artRank = AuthorStore.getArticleRank(myUuid, props.articleUuid);
+
+        this.state = _.merge(this.state, {
             myUuid   : myUuid,
             artRank  : artRank,
             allTags  : AuthorStore.getTagsByAuthorUuid(myUuid),
             authorTag: AuthorStore.getAuthorTag(myUuid, artRank.tagName)
-        };
+        });
     }
 
     componentWillMount() {
-        let myUuid = this.state.myUuid;
+        let artRank, authorTag, myUuid = this.state.myUuid;
+
         if (this.props.articleUuid != null) {
-            let artRank = this.state.artRank;
+            artRank = this.state.artRank;
             if (artRank == null) {
                 return;
             }
-            let authorTag = this.state.authorTag;
+            authorTag = this.state.authorTag;
             this.setState({
                 myUuid : myUuid,
                 artRank: artRank,
@@ -49,18 +54,7 @@ class TypeAhead extends React.Component
         }
     }
 
-    componentDidMount() {
-        this.unsub = AuthorStore.listen(this._updateState);
-    }
-
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsub = null;
-        }
-    }
-
-    _updateState(data) {
+    _updateAuthor(data) {
         let myUuid = this.state.myUuid,
             artRank = AuthorStore.getArticleRank(myUuid, this.props.articleUuid);
 
