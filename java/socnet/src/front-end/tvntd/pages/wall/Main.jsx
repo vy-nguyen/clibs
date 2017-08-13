@@ -24,6 +24,10 @@ class ServiceWall extends ArtTagBase
         this._renderAllSections = this._renderAllSections.bind(this);
     }
 
+    _cmpTags(pivot, tag) {
+        return tag.order - pivot.order;
+    }
+
     _getSerevices(out) {
         let i, len, tag;
 
@@ -37,19 +41,22 @@ class ServiceWall extends ArtTagBase
         if (tag != null) {
             len = tag.length > 8 ? 8 : tag.length;
             for (i = 0; i < len; i++) {
-                out.push(this._convertTag(tag[i]));
+                Util.insertSorted(this._convertTag(tag[i]), out, this._cmpTags);
             }
         }
         return out;
     }
 
     _convertTag(tag) {
+        let key = tag.sortedArts != null ? tag.sortedArts.length : 0;
+
         return {
             link  : "",
-            imgUrl: this._getImgUrl(),
+            order : key,
             title : tag.tagName,
+            imgUrl: this._getImgUrl(),
             keyValues: [ {
-                key  : tag.sortedArts != null ? tag.sortedArts.length : 0,
+                key  : key,
                 value: "Posts",
                 small: true
             } ]
@@ -71,16 +78,21 @@ class ServiceWall extends ArtTagBase
 
     _getImgUrl() {
         const imgs = [
-            "/rs/img/superbox/superbox-full-10.jpg",
-            "/rs/img/superbox/superbox-full-11.jpg",
-            "/rs/img/superbox/superbox-full-12.jpg",
-            "/rs/img/superbox/superbox-full-13.jpg",
-            "/rs/img/superbox/superbox-full-14.jpg",
-            "/rs/img/superbox/superbox-full-15.jpg",
-            "/rs/img/superbox/superbox-full-16.jpg",
-            "/rs/img/superbox/superbox-full-17.jpg",
-            "/rs/img/superbox/superbox-full-18.jpg",
-            "/rs/img/superbox/superbox-full-19.jpg"
+            "/rs/img/bg/cover.png",
+            "/rs/img/bg/violate.jpg",
+            "/rs/img/bg/english.jpg",
+            "/rs/img/bg/entertainment.jpg",
+            "/rs/img/bg/finance.jpg",
+            "/rs/img/bg/it.jpg",
+            "/rs/img/bg/literature.jpg",
+            "/rs/img/bg/math.jpg",
+            "/rs/img/bg/music.jpg",
+            "/rs/img/bg/opinion.jpg",
+            "/rs/img/bg/picture.jpg",
+            "/rs/img/bg/politics.jpg",
+            "/rs/img/bg/renting.jpg",
+            "/rs/img/bg/technology.png",
+            "/rs/img/bg/vanhoc.jpg"
         ];
         return imgs[Util.getRandomInt(0, imgs.length - 1)];
     }
@@ -109,6 +121,7 @@ class SpecialSvc extends ServiceWall
         out = [ {
             link  : "",
             imgUrl: this._getImgUrl(),
+            order : 10000,
             title : "Abc",
             keyValues: [ {
                 key  : "1",

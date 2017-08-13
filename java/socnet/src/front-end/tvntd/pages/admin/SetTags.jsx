@@ -26,7 +26,10 @@ class SetTags extends React.Component
             <div id="content">
                 <section id="widget-grid" className="">
                 </section>
-                <ListTags tagKind={null}/>
+                <ListTags tagKind="blog"/>
+                <ListTags tagKind="edu"/>
+                <ListTags tagKind="ads"/>
+                <ListTags tagKind="estore"/>
             </div>
         );
     }

@@ -93,6 +93,12 @@ public class ArtTag
     @Column(length = 16)
     private String tagKind;
 
+    @Column(length = 64)
+    private String imgOid;
+
+    @Column(length = 128)
+    private String routeLink;
+
     public ArtTag()
     {
         this.lastUpdate = new Date();
@@ -250,5 +256,33 @@ public class ArtTag
      */
     public void setTagKind(String tagKind) {
         this.tagKind = tagKind;
+    }
+
+    /**
+     * @return the imgOid
+     */
+    public String getImgOid() {
+        return imgOid;
+    }
+
+    /**
+     * @param imgOid the imgOid to set
+     */
+    public void setImgOid(String imgOid) {
+        this.imgOid = imgOid;
+    }
+
+    /**
+     * @return the routeLink
+     */
+    public String getRouteLink() {
+        return routeLink;
+    }
+
+    /**
+     * @param routeLink the routeLink to set
+     */
+    public void setRouteLink(String routeLink) {
+        this.routeLink = routeLink;
     }
 }
