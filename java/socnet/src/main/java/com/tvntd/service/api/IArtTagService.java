@@ -315,5 +315,24 @@ public interface IArtTagService
                 artTag.setTagKind(ArtTag.BLOG);
             }
         }
+
+        /**
+         * Get/set img/routes
+         */
+        public String getImgOid() {
+            return artTag.getImgOid();
+        }
+
+        public void setImgObjId(String oid) {
+            artTag.setImgOid(oid);
+        }
+
+        public String getRouteLink() {
+            return artTag.getRouteLink();
+        }
+
+        public void setRouteLink(String route) {
+            artTag.setRouteLink(route);
+        }
     }
 }

@@ -152,6 +152,14 @@ class ArtTag {
             this.parentTag = null;
         }
     }
+
+    getImgUrl() {
+        return "/rs/img/bg/" + this.imgObjId;
+    }
+
+    getRouteLink() {
+        return this.routeLink;
+    }
 }
 
 /*
