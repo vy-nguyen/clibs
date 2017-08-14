@@ -174,7 +174,7 @@ class ArtTag {
     }
 
     getRouteLink() {
-        let base = "/public/" + this.tagKind + "/";
+        let base = "/app/" + this.tagKind + "/";
         if (this.routeLink == null) {
             return base;
         }

@@ -61,4 +61,17 @@ class MainBlog extends ArtTagBase
     }
 }
 
+class TagBlog extends MainBlog
+{
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        console.log(this.props);
+        return <h1>Render sub blog</h1>;
+    }
+}
+
 export default MainBlog;
+export { MainBlog, TagBlog }
