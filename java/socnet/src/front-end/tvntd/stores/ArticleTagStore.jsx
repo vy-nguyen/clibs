@@ -41,7 +41,20 @@ class ArtTag {
         } else {
             this.articleRank = {};
         }
+        this.update = this.update.bind(this);
         return this;
+    }
+
+    getId(prefix) {
+        return prefix + this._id;
+    }
+
+    update(artRank) {
+        _.forOwn(artRank, function(value, key) {
+            if (value != null && this[key] !== value) {
+                this[key] = value;
+            }
+        }.bind(this));
     }
 
     updateTag(raw, unResolved) {
@@ -355,7 +368,9 @@ let ArticleTagStore = Reflux.createStore({
     },
 
     addPubListTags: function(tags) {
+        console.log(">>> add pubListTags");
         _.forEach(tags, function(tag) {
+            console.log(tag);
             this._addNewPublicTag(tag, tag.parentTag, null);
         }.bind(this));
         this.trigger(this.data);
@@ -421,6 +436,9 @@ let ArticleTagStore = Reflux.createStore({
     _addNewPublicTag: function(artRank, parentTag, articleUuid) {
         let tag = this.data.pubTagIndex[artRank.tagName];
         if (tag != null) {
+            tag.update(artRank);
+            console.log("add new public tag");
+            console.log(tag);
             return tag;
         }
         tag = new ArtTag({
@@ -429,6 +447,8 @@ let ArticleTagStore = Reflux.createStore({
             rankScore: artRank.rank || artRank.rankScore,
             parentTag: parentTag,
             tagKind  : artRank.tagKind,
+            routeLink: artRank.routeLink,
+            imgOid   : artRank.imgOid,
             subTags  : [],
             articleRank: []
         });
@@ -609,13 +629,13 @@ let ArticleTagStore = Reflux.createStore({
                         inpHolder: parentTag,
                         inpDefVal: parentTag,
                         selectOpt: parents,
-                        inpName  : _.uniqueId('parent-')
+                        inpName  : tag.getId('parent-')
                     },
                     rankScore: {
                         inpValue : tag.rankScore,
                         inpDefVal: tag.rankScore,
                         inpHolder: 100,
-                        inpName  : _.uniqueId('rank-')
+                        inpName  : tag.getId('rank-')
                     },
                     tagKind: {
                         select   : true,
@@ -623,6 +643,18 @@ let ArticleTagStore = Reflux.createStore({
                         inpDefVal: tag.tagKind,
                         selectOpt: tagKinds,
                         inpName  : tag.tagName + "-" + tag.tagKind
+                    },
+                    routeLink: {
+                        inpValue : tag.routeLink,
+                        inpDefVal: tag.routeLink || "",
+                        inpHolder: "routing link",
+                        inpName  : tag.getId('route-')
+                    },
+                    imgOid: {
+                        inpValue : tag.imgOid,
+                        inpDefVal: tag.imgOid || "",
+                        inpHolder: "background img",
+                        inpName  : tag.getId('bg-')
                     }
                 });
             } else {

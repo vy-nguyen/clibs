@@ -136,6 +136,7 @@ public class AdminPath
                 ArtTagService.makeSubTags(tags, Constants.PublicUuid);
 
             for (ArtTagDTO tag : fixup) {
+                System.out.println("Save tag " + tag.toString());
                 artTagSvc.saveTag(tag);       
             }
         }

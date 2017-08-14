@@ -151,8 +151,9 @@ public interface IArtTagService
         public String toString()
         {
             StringBuilder sb = new StringBuilder();
-
-            toString(sb, 0);
+            sb.append("User uuid: ").append(artTag.getUserUuid()).append("\n")
+                .append("ImgOid : ").append(artTag.getImgOid()).append("\n")
+                .append("Link route ").append(artTag.getRouteLink()).append("\n");
             return sb.toString();
         }
 
@@ -323,7 +324,7 @@ public interface IArtTagService
             return artTag.getImgOid();
         }
 
-        public void setImgObjId(String oid) {
+        public void setImgOid(String oid) {
             artTag.setImgOid(oid);
         }
 

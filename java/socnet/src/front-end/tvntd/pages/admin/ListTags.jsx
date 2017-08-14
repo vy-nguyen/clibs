@@ -57,6 +57,8 @@ class ListTags extends React.Component
                 rankScore  : entry.rankScore,
                 tagKind    : entry.tagKind,
                 tagName    : entry.tagName,
+                routeLink  : entry.routeLink,
+                imgOid     : entry.imgOid,
                 articleRank: entry.articleRank
             });
         });
@@ -68,6 +70,8 @@ class ListTags extends React.Component
 
         reqt = this._convertToReqt(changes);
         ArticleTagStore.addPubListTags(reqt);
+        console.log("submit tag changes");
+        console.log(reqt);
         Actions.setTags({
             publicTags : reqt,
             deletedTags: []
@@ -102,9 +106,13 @@ class ListTags extends React.Component
             format: "fa fa-tags",
             header: Lang.translate("Tag Rank")
         }, {
-            key   : "ownerUuid",
+            key   : "routeLink",
+            format: "fa fa-tags",
+            header: Lang.translate("Route Link")
+        }, {
+            key   : "imgOid",
             format: "fa fa-user",
-            header: Lang.translate("Owner")
+            header: Lang.translate("Image")
         } ];
         return tagTab;
     }
