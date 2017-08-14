@@ -167,11 +167,18 @@ class ArtTag {
     }
 
     getImgUrl() {
-        return "/rs/img/bg/" + this.imgObjId;
+        if (this.imgOid == null) {
+            return "/rs/img/bg/cover.png";
+        }
+        return "/rs/img/bg/" + this.imgOid;
     }
 
     getRouteLink() {
-        return this.routeLink;
+        let base = "/public/" + this.tagKind + "/";
+        if (this.routeLink == null) {
+            return base;
+        }
+        return base + this.routeLink;
     }
 }
 
@@ -368,9 +375,7 @@ let ArticleTagStore = Reflux.createStore({
     },
 
     addPubListTags: function(tags) {
-        console.log(">>> add pubListTags");
         _.forEach(tags, function(tag) {
-            console.log(tag);
             this._addNewPublicTag(tag, tag.parentTag, null);
         }.bind(this));
         this.trigger(this.data);
@@ -437,8 +442,6 @@ let ArticleTagStore = Reflux.createStore({
         let tag = this.data.pubTagIndex[artRank.tagName];
         if (tag != null) {
             tag.update(artRank);
-            console.log("add new public tag");
-            console.log(tag);
             return tag;
         }
         tag = new ArtTag({
@@ -693,7 +696,9 @@ let ArticleTagStore = Reflux.createStore({
                 ownerUuid: row.ownerUuid,
                 parentTag: GenericForm.cloneInputEntry(parentTag, 'new-tag-'),
                 rankScore: GenericForm.cloneInputEntry(row.rankScore, 'new-tag-'),
-                tagKind  : GenericForm.cloneInputEntry(row.tagKind, 'new-tag-')
+                tagKind  : GenericForm.cloneInputEntry(row.tagKind, 'new-tag-'),
+                routeLink: GenericForm.cloneInputEntry(row.routeLink, 'new-tag-'),
+                imgOid   : GenericForm.cloneInputEntry(row.imgOid, 'new-tag-')
             });
         }
         return out;

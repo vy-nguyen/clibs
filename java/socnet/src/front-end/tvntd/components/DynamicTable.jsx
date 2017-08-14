@@ -234,7 +234,7 @@ class RenderRow extends React.Component
             columns.push({data: value.key});
             tableFmt.push(
                 <th key={_.uniqueId("dym-table-")}>
-                    <i className={value.format}/>{value.header}
+                    <i className={value.format}/> {value.header}
                 </th>
             );
         });
@@ -328,9 +328,6 @@ class DynamicTable extends React.Component
         let change, elm = event.target,
             val = entry.checked == null ? elm.value : $(elm).is(':checked');
 
-        console.log("select change " + entry.inpName);
-        console.log(val);
-
         InputStore.storeItemIndex(entry.inpName, val, true);
         entry.inpDefVal = val;
 
@@ -382,9 +379,6 @@ class DynamicTable extends React.Component
         let changedRows, changes = [];
 
         changedRows = InputStore.getItemIndex(this.props.tableId);
-
-        console.log("Submit table " + this.props.tableId);
-        console.log(changedRows);
 
         if (changedRows != null) {
             RenderRow.fetchTableData(changedRows, changes, null);

@@ -70,8 +70,6 @@ class ListTags extends React.Component
 
         reqt = this._convertToReqt(changes);
         ArticleTagStore.addPubListTags(reqt);
-        console.log("submit tag changes");
-        console.log(reqt);
         Actions.setTags({
             publicTags : reqt,
             deletedTags: []

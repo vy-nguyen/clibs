@@ -51,13 +51,13 @@ class ServiceWall extends ArtTagBase
         let key = tag.sortedArts != null ? tag.sortedArts.length : 0;
 
         return {
-            link  : "",
+            link  : tag.getRouteLink(),
             order : key,
             title : tag.tagName,
-            imgUrl: this._getImgUrl(),
+            imgUrl: tag.getImgUrl(),
             keyValues: [ {
                 key  : key,
-                value: "Posts",
+                value: "Article Posts",
                 small: true
             } ]
         }
