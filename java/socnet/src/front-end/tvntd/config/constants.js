@@ -37,6 +37,6 @@ export const VntdGlob = {
     },
     styleWhiteOpaque: {
         background: "#ffffff",
-        opacity   : "0.7"
+        opacity   : "0.9"
     }
 };
