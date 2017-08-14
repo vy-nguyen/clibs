@@ -445,8 +445,6 @@ public class UserPath
         if (profile == null) {
             return s_noProfile;
         }
-        System.out.println("Upload form id " + formId);
-        System.out.println("Img field id " + imgId);
         ArticleDTO art = genPendPost(profile, true, artUuid);
         try {
             String uid = profile.fetchUserId().toString();
@@ -785,7 +783,6 @@ public class UserPath
         if (profile == null) {
             return s_noProfile;
         }
-
         String uuid = form.getUserUuid();
         if (!profile.getUserUuid().equals(uuid)) {
             s_log.info("Not author " + profile.getUserUuid() + " request " + uuid);
@@ -893,7 +890,6 @@ public class UserPath
         if (form.cleanInput() == false) {
             return s_badInput;
         }
-        System.out.println("Domain author " + form.getAuthorUuid());
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
         if (profile == null) {
             return s_noProfile;

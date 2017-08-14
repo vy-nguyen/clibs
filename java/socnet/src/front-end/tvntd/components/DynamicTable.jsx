@@ -76,10 +76,10 @@ class RenderRow extends React.Component
         return newRows;
     }
 
-    _inputChange(entry, row, elm) {
+    _inputChange(entry, row, event) {
         let cellVal, rowVal = InputStore.getItemIndex(row.rowId);
 
-        cellVal = InputStore.storeItemIndex(entry.inpName, elm.val(), true);
+        cellVal = InputStore.storeItemIndex(entry.inpName, event.target.value, true);
         entry.inpHolder = cellVal;
         entry.inpDefVal = cellVal;
 
@@ -149,14 +149,12 @@ class RenderRow extends React.Component
         let elm, cbFn;
 
         if (typeof cell === 'object') {
-            elm = $('#' + cell.inpName);
-            if (elm != null) {
-                cbFn = callbackFn.bind(bind, cell, row, elm);
-                if (cell.select === true || cell.checked != null) {
-                    elm.on('change', cbFn);
-                } else {
-                    elm.on('blur', cbFn);
-                }
+            elm  = '#' + cell.inpName;
+            cbFn = callbackFn.bind(bind, cell, row);
+            if (cell.select === true || cell.checked != null) {
+                $(document).on('change', elm, cbFn);
+            } else {
+                $(document).on('blur', elm, cbFn);
             }
         }
     }
@@ -326,8 +324,12 @@ class DynamicTable extends React.Component
         }.bind(this));
     }
 
-    _selectChange(entry, row, elm) {
-        let change, val = entry.checked == null ? elm.val() : elm.is(':checked');
+    _selectChange(entry, row, event) {
+        let change, elm = event.target,
+            val = entry.checked == null ? elm.value : $(elm).is(':checked');
+
+        console.log("select change " + entry.inpName);
+        console.log(val);
 
         InputStore.storeItemIndex(entry.inpName, val, true);
         entry.inpDefVal = val;
@@ -380,6 +382,9 @@ class DynamicTable extends React.Component
         let changedRows, changes = [];
 
         changedRows = InputStore.getItemIndex(this.props.tableId);
+
+        console.log("Submit table " + this.props.tableId);
+        console.log(changedRows);
 
         if (changedRows != null) {
             RenderRow.fetchTableData(changedRows, changes, null);

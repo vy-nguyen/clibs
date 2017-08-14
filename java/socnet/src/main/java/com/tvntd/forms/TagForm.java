@@ -122,6 +122,8 @@ public class TagForm
         private boolean pubTag;
         private boolean favorite;
         private boolean article;
+        private String  imgOid;
+        private String  routeLink;
 
         @Override
         public int compareTo(TagRank t2) {
@@ -182,6 +184,34 @@ public class TagForm
          */
         public boolean isArticle() {
             return article;
+        }
+
+        /**
+         * @return the imgObjId
+         */
+        public String getImgOid() {
+            return imgOid;
+        }
+
+        /**
+         * @param imgObjId the imgObjId to set
+         */
+        public void setImgOid(String imgOid) {
+            this.imgOid = imgOid;
+        }
+
+        /**
+         * @return the routeLink
+         */
+        public String getRouteLink() {
+            return routeLink;
+        }
+
+        /**
+         * @param routeLink the routeLink to set
+         */
+        public void setRouteLink(String routeLink) {
+            this.routeLink = routeLink;
         }
     }
 
