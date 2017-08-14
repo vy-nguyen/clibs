@@ -75,27 +75,6 @@ class ServiceWall extends ArtTagBase
                 render={this._renderAllSections}/>
         );
     }
-
-    _getImgUrl() {
-        const imgs = [
-            "/rs/img/bg/cover.png",
-            "/rs/img/bg/violate.jpg",
-            "/rs/img/bg/english.jpg",
-            "/rs/img/bg/entertainment.jpg",
-            "/rs/img/bg/finance.jpg",
-            "/rs/img/bg/it.jpg",
-            "/rs/img/bg/literature.jpg",
-            "/rs/img/bg/math.jpg",
-            "/rs/img/bg/music.jpg",
-            "/rs/img/bg/opinion.jpg",
-            "/rs/img/bg/picture.jpg",
-            "/rs/img/bg/politics.jpg",
-            "/rs/img/bg/renting.jpg",
-            "/rs/img/bg/technology.png",
-            "/rs/img/bg/vanhoc.jpg"
-        ];
-        return imgs[Util.getRandomInt(0, imgs.length - 1)];
-    }
 }
 
 class BlogWall extends ServiceWall
@@ -119,17 +98,31 @@ class SpecialSvc extends ServiceWall
     //
     _getSerevices(out) {
         out = [ {
-            link  : "",
-            imgUrl: this._getImgUrl(),
+            link  : "/app/rent",
+            imgUrl: "/rs/img/bg/renting.jpg",
             order : 10000,
-            title : "Abc",
+            title : "Renting",
             keyValues: [ {
                 key  : "1",
-                value: "Key 1",
+                value: "New Listings",
                 small: true
             }, {
-                key  : "2",
-                value: "Key 2",
+                key  : "10",
+                value: "Active Listings",
+                small: true
+            } ]
+        }, {
+            link  : "/app/yp",
+            imgUrl: "/rs/img/bg/yp.jpg",
+            order : 999,
+            title : "Yellow Page",
+            keyValues: [ {
+                key  : "1",
+                value: "City",
+                small: true
+            }, {
+                key  : "100",
+                value: "Business Listings",
                 small: true
             } ]
         } ];

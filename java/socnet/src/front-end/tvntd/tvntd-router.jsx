@@ -21,7 +21,6 @@ import UserProfile   from './pages/user/UserProfile.jsx';
 import UserConnect   from './pages/user/UserConnect.jsx';
 import ListUsers     from './pages/admin/ListUsers.jsx';
 import SetTags       from './pages/admin/SetTags.jsx';
-import MainBlog      from './pages/blog/MainBlog.jsx';
 import MainAds       from './pages/ads/MainAds.jsx';
 import PublicUrlArt  from './pages/public/PublicUrlArt.jsx';
 import NewsFeed      from './pages/news-feed/NewsFeed.jsx';
@@ -31,6 +30,7 @@ import MainWall      from './pages/wall/Main.jsx';
 import CustLogin     from './pages/personal/Login.jsx';
 import CustMain      from './pages/personal/MainPage.jsx';
 import {MainPage, AboutUs}  from './pages/public/MainPage.jsx';
+import {MainBlog, TagBlog}  from './pages/blog/MainBlog.jsx';
 
 const _publicRoutes = (
     <Route path="/public">
@@ -48,7 +48,14 @@ const _publicRoutes = (
 _publicApps = (
     <Route path="/app">
         <IndexRoute component={MainWall}/>
-        <Route path="main" component={MainWall}/>
+        <Route path="main"        component={MainWall}/>
+        <Route path="blog/:tag"   component={TagBlog}/>
+        <Route path="tech/:tag"   component={TagBlog}/>
+        <Route path="estore/:tag" component={TagBlog}/>
+        <Route path="edu/:tag"    component={TagBlog}/>
+        <Route path="ads/:tag"    component={TagBlog}/>
+        <Route path="yp"          component={MainAds} params="ads"/>
+        <Route path="rent"        component={MainAds} params="rent"/>
     </Route>
 ),
 
@@ -150,6 +157,9 @@ PersonalRoutes = (
             <IndexRoute component={CustMain} subheader={true}/>
             <Redirect from="/" to="/public"/>
             {_publicRoutes}
+
+            <Redirect from="/" to="app"/>
+            {_publicApps}
 
             <Redirect from="/" to="/login"/>
             {_custLoginRoutes}
