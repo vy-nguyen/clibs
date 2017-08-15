@@ -174,7 +174,7 @@ class ArtTag {
     }
 
     getRouteLink() {
-        let base = "/app/" + this.tagKind + "/";
+        let base = "/app/public/";
         if (this.routeLink == null) {
             return base;
         }
@@ -192,6 +192,7 @@ let ArticleTagStore = Reflux.createStore({
 
     init: function() {
         this.data = {
+            routeMap     : {},
             publicTags   : {},  // only public tags
             pubTagIndex  : {},  // all tags
             sortedPubTags: [],
@@ -509,6 +510,23 @@ let ArticleTagStore = Reflux.createStore({
         }
         this._addSortedTagKind(tagObj);
 
+        if (tagObj.routeLink != null) {
+            let parent, parentTag = tagObj.parentTag;
+
+            console.log("parent tag " + parentTag);
+            while (parentTag != null && tagObj != null) {
+                parent = tagIndex[parentTag];
+                console.log("parent tag " + parentTag);
+                console.log(parent);
+                if (parent == null) {
+                    break;
+                }
+                tagObj    = parent;
+                console.log(tagObj);
+                parentTag = tagObj.parentTag;
+            }
+            this.data.routeMap[tagObj.routeLink] = tagObj;
+        }
         // Sorted articles published in the tag, saved unresolved to fetch later.
         //
         tagObj.sortArticles(this.data.unResolved);
@@ -611,6 +629,16 @@ let ArticleTagStore = Reflux.createStore({
         return false;
     },
 
+    /*
+     * @return tag associated with the link routing.
+     */
+    getTagFromRoute(route) {
+        return this.data.routeMap[route];
+    },
+
+    /*
+     * @return tag data to display in a table.
+     */
     getTagTableData: function(edit, kind, ownerUuid) {
         let parentTag, userUuid, parents, data = [];
 

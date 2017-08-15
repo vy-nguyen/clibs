@@ -49,11 +49,7 @@ _publicApps = (
     <Route path="/app">
         <IndexRoute component={MainWall}/>
         <Route path="main"        component={MainWall}/>
-        <Route path="blog/:tag"   component={TagBlog}/>
-        <Route path="tech/:tag"   component={TagBlog}/>
-        <Route path="estore/:tag" component={TagBlog}/>
-        <Route path="edu/:tag"    component={TagBlog}/>
-        <Route path="ads/:tag"    component={TagBlog}/>
+        <Route path="public/:tag" component={TagBlog}/>
         <Route path="yp"          component={MainAds} params="ads"/>
         <Route path="rent"        component={MainAds} params="rent"/>
     </Route>

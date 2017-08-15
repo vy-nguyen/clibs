@@ -11,6 +11,28 @@ import ArtTagBase      from 'vntd-shared/layout/ArtTagBase.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 import ArticleTagBrief from 'vntd-root/components/ArticleTagBrief.jsx';
 
+class TagBlog extends ArtTagBase
+{
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        let pubTags = this.state.pubTags, param = this.props.params,
+            tag = ArticleTagStore.getTagFromRoute(param.tag);
+
+        if (tag != null) {
+            return (
+                <div id="content">
+                    <ArticleTagBrief tag={tag}/>
+                </div>
+            );
+        }
+        return null;
+    }
+}
+
+
 class MainBlog extends ArtTagBase
 {
     constructor(props) {
@@ -59,18 +81,7 @@ class MainBlog extends ArtTagBase
             </div>
         )
     }
-}
 
-class TagBlog extends MainBlog
-{
-    constructor(props) {
-        super(props);
-    }
-
-    render() {
-        console.log(this.props);
-        return <h1>Render sub blog</h1>;
-    }
 }
 
 export default MainBlog;

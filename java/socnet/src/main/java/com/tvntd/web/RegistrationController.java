@@ -36,7 +36,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -77,9 +76,6 @@ public class RegistrationController
 
     @Autowired
     private UserDetailsService userDetailsService;
-
-    @Autowired
-    private Environment env;
 
     public RegistrationController() {
         super();
@@ -241,7 +237,6 @@ public class RegistrationController
         email.setSubject("Resend Registration Token");
         email.setText(message + " \r\n" + confirmationUrl);
         email.setTo(user.getEmail());
-        email.setFrom(env.getProperty("support.email"));
         return email;
     }
 
@@ -256,10 +251,6 @@ public class RegistrationController
         email.setTo(user.getEmail());
         email.setSubject("Reset Password");
         email.setText(message + " \r\n" + url);
-        email.setFrom(env.getProperty("support.email"));
-
-        System.out.println("Send email to " + user.getEmail());
-        System.out.println(email.toString());
         return email;
     }
 

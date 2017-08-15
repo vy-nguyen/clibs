@@ -117,7 +117,6 @@ public class UserService implements IUserService
         mesg.setTo(email);
         mesg.setSubject(s_loginMail);
         mesg.setText(s_loginLink + "\n" + link);
-        mesg.setFrom(env.getProperty("support.email"));
 
         ExecutorService exec = LibModule.getExecutorService();
         exec.submit(new SendEmailTask(mesg));
