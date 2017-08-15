@@ -28,7 +28,6 @@ package com.tvntd.events;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
-import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
@@ -36,6 +35,7 @@ import org.springframework.stereotype.Component;
 import com.tvntd.models.User;
 import com.tvntd.models.VerificationToken;
 import com.tvntd.service.api.IUserService;
+import com.tvntd.service.user.UserService;
 
 @Component
 public class RegistrationListener implements ApplicationListener<RegistrationEvent>
@@ -49,9 +49,6 @@ public class RegistrationListener implements ApplicationListener<RegistrationEve
 
     @Autowired
     private JavaMailSender mailSender;
-
-    @Autowired
-    private Environment env;
 
     // API
 
@@ -80,6 +77,7 @@ public class RegistrationListener implements ApplicationListener<RegistrationEve
         String recipientAddress = user.getEmail();
         SimpleMailMessage email = new SimpleMailMessage();
 
+        UserService.setEmailCommon(email);
         email.setTo(recipientAddress);
         email.setSubject(s_mailSubject);
         email.setText(s_mailMessage + " \r\n" + event.getCallbackUrl());

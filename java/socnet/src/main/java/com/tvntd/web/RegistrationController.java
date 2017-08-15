@@ -58,6 +58,7 @@ import com.tvntd.models.User;
 import com.tvntd.models.VerificationToken;
 import com.tvntd.service.api.GenericResponse;
 import com.tvntd.service.api.IUserService;
+import com.tvntd.service.user.UserService;
 
 @Controller
 public class RegistrationController
@@ -234,6 +235,7 @@ public class RegistrationController
         String message = messages.getMessage("message.resendToken", null, locale);
         SimpleMailMessage email = new SimpleMailMessage();
 
+        UserService.setEmailCommon(email);
         email.setSubject("Resend Registration Token");
         email.setText(message + " \r\n" + confirmationUrl);
         email.setTo(user.getEmail());
@@ -248,6 +250,7 @@ public class RegistrationController
         String message = messages.getMessage("message.resetPassword", null, locale);
         SimpleMailMessage email = new SimpleMailMessage();
 
+        UserService.setEmailCommon(email);
         email.setTo(user.getEmail());
         email.setSubject("Reset Password");
         email.setText(message + " \r\n" + url);

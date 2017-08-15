@@ -114,6 +114,7 @@ public class UserService implements IUserService
     {
         SimpleMailMessage mesg = new SimpleMailMessage();
 
+        setEmailCommon(mesg);
         mesg.setTo(email);
         mesg.setSubject(s_loginMail);
         mesg.setText(s_loginLink + "\n" + link);
@@ -121,6 +122,12 @@ public class UserService implements IUserService
         ExecutorService exec = LibModule.getExecutorService();
         exec.submit(new SendEmailTask(mesg));
         // mailSender.send(mesg);
+    }
+
+    public static void setEmailCommon(SimpleMailMessage mesg)
+    {
+        mesg.setFrom("webmaster@tudoviet.com");
+        mesg.setReplyTo("webmaster@tudoviet.com");
     }
 
     @Override
