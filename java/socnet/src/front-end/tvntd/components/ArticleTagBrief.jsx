@@ -80,6 +80,8 @@ class ArticleTagBrief extends React.Component
         }
         ArticleTagStore.getPublishedArticles(tag.tagName, articles, unique);
 
+        console.log(tag);
+        console.log(articles);
         return (
             <section id='widget-grid'>
                 {ArticleTagBrief.renderArtBox(articles,
