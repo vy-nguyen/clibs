@@ -4,12 +4,13 @@
  */
 'use strict';
 
-import _               from 'lodash';
-import React           from 'react-mod'
-import TabPanel        from 'vntd-shared/layout/TabPanel.jsx';
-import ArtTagBase      from 'vntd-shared/layout/ArtTagBase.jsx';
-import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
-import ArticleTagBrief from 'vntd-root/components/ArticleTagBrief.jsx';
+import _                 from 'lodash';
+import React             from 'react-mod'
+import SmallBreadcrumbs  from 'vntd-shared/layout/SmallBreadcrumbs.jsx';
+import TabPanel          from 'vntd-shared/layout/TabPanel.jsx';
+import ArtTagBase        from 'vntd-shared/layout/ArtTagBase.jsx';
+import ArticleTagStore   from 'vntd-root/stores/ArticleTagStore.jsx';
+import ArticleTagBrief   from 'vntd-root/components/ArticleTagBrief.jsx';
 
 class TagBlog extends ArtTagBase
 {
@@ -24,6 +25,8 @@ class TagBlog extends ArtTagBase
         if (tag != null) {
             return (
                 <div id="content">
+                    <SmallBreadcrumbs id="route-map"
+                        crumb={tag.tagName} route={tag.getRouteLink()}/>
                     <ArticleTagBrief tag={tag}/>
                 </div>
             );
@@ -31,7 +34,6 @@ class TagBlog extends ArtTagBase
         return null;
     }
 }
-
 
 class MainBlog extends ArtTagBase
 {
@@ -71,6 +73,7 @@ class MainBlog extends ArtTagBase
         let tabData = this._getBlogTab();
         return (
             <div id="content">
+                <SmallBreadcrumbs id="route-map" crumb="Blogs" route="/public/blog"/>
                 <div className="row">
                     <div className="col-sm-12 col-md-12 col-lg-12">
                         <TabPanel className="padding-top-10" context={tabData}>
