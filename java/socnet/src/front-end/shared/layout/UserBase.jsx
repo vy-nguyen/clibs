@@ -45,7 +45,7 @@ class UserBase extends React.Component
     _renderAvatar() {
         let self = this.state.self,
         header = {
-            title    : self.firstName + " " + self.lastName,
+            title    : self.lastName + " " + self.firstName,
             keyValues: [ {
                 key  : self.connections,
                 value: "Connections",

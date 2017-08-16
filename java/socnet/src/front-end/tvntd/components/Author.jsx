@@ -81,7 +81,7 @@ class Author extends React.Component
                         style={{background: "rgba(255,255,255,0.8)"}}>
                         <div className="box-header">
                             <h1 className="profile-username text-center">
-                                {self.firstName} <span className="semi-bold">{self.lastName}</span>
+                                {self.lastName} <span className="semi-bold">{self.firstName}</span>
                                 <br/>
                                 <small>{self.userStatus}</small>
                             </h1>

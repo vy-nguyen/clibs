@@ -8,7 +8,6 @@ import React             from 'react-mod';
 
 import UserBase          from 'vntd-shared/layout/UserBase.jsx';
 import UserStore         from 'vntd-shared/stores/UserStore.jsx';
-import SubHeader         from 'vntd-root/pages/layout/SubHeader.jsx';
 import Mesg              from 'vntd-root/components/Mesg.jsx';
 import UserIcon          from 'vntd-root/components/UserIcon.jsx';
 

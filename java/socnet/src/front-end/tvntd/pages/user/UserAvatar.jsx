@@ -76,7 +76,7 @@ class UserAvatar extends UserBase
                 {file_drop}
                 <div className="col-xs-9 col-sm-9 col-md-3 col-lg-3">
                     <h1 className="profile-username">
-                        {self.firstName} {self.lastName}
+                        {self.lastName} {self.firstName}
                     </h1>
                     <div className="padding-10">
                         {this._renderKV(self.connections, "Connections", true)}

@@ -60,6 +60,63 @@ function _locationOf(elm, array, compareFn) {
     return curIdx + 1;
 }
 
+class BoundArray
+{
+    constructor(max) {
+        this.data   = [];
+        this.maxLen = max;
+    }
+
+    push(key, elm) {
+        let i, len = this.data.length;
+
+        if (len === this.maxLen) {
+            len--;
+            this.data.shift();
+        }
+        for (i = 0; i < len; i++) {
+            if (this.data[i].key === key) {
+                if ((i + 1) === len) {
+                    return;
+                }
+                len--;
+                for (; i < len; i++) {
+                    this.data[i] = this.data[i + 1];
+                }
+                this.data.pop();
+            }
+        }
+        this.data.push({
+            key: key,
+            elm: elm
+        });
+    }
+
+    pop() {
+        return this.data.pop();
+    }
+
+    popElm(key) {
+        let i, len, ret = null;
+
+        len = this.data.length;
+        for (i = 0; i < len; i++) {
+            if (this.data[i].key === key) {
+                ret = this.data[i];
+                for (; i < len; i++) {
+                    this.data.pop();
+                }
+                break;
+            }
+        }
+        return ret;
+    }
+
+    getData() {
+        return this.data;
+    }
+}
+
 class Util
 {
     // A utility function to safely escape JSON for embedding in a <script> tag
@@ -256,4 +313,4 @@ class Util
     }
 }
 
-export { Enum, Util }
+export { BoundArray, Enum, Util }

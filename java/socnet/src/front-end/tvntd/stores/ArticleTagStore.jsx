@@ -513,16 +513,12 @@ let ArticleTagStore = Reflux.createStore({
         if (tagObj.routeLink != null) {
             let parent, parentTag = tagObj.parentTag;
 
-            console.log("parent tag " + parentTag);
             while (parentTag != null && tagObj != null) {
                 parent = tagIndex[parentTag];
-                console.log("parent tag " + parentTag);
-                console.log(parent);
                 if (parent == null) {
                     break;
                 }
                 tagObj    = parent;
-                console.log(tagObj);
                 parentTag = tagObj.parentTag;
             }
             this.data.routeMap[tagObj.routeLink] = tagObj;

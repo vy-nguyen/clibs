@@ -8,10 +8,9 @@ import _                  from 'lodash';
 import React              from 'react-mod';
 import AuthorFeed         from 'vntd-root/components/AuthorFeed.jsx';
 
-import SubHeader          from '../layout/SubHeader.jsx';
 import EditorPost         from 'vntd-shared/forms/commons/EditorPost.jsx';
 import AuthorBase         from 'vntd-shared/layout/AuthorBase.jsx';
-import BigBreadcrumbs     from 'vntd-shared/layout/BigBreadcrumbs.jsx';
+import SmallBreadcrumbs   from 'vntd-shared/layout/SmallBreadcrumbs.jsx';
 import ArticleStore       from 'vntd-root/stores/ArticleStore.jsx';
 
 class NewsFeed extends AuthorBase
@@ -35,8 +34,7 @@ class NewsFeed extends AuthorBase
         return (
             <div id="author-content">
                 <div className="row">
-                    <BigBreadcrumbs className="col-xs-12 col-sm-7 col-md-7 col-lg-4"/>
-                    <SubHeader/>
+                    <SmallBreadcrumbs id="route-map" crumb="NewsFeed" route="/newsfeed"/>
                 </div>
                 <EditorPost id="feed-"/>
                 {this.renderAuthors()}

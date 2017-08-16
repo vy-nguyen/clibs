@@ -6,9 +6,11 @@
 
 import _               from 'lodash';
 import React           from 'react-mod'
-import Actions         from 'vntd-root/actions/Actions.jsx';
-import TabPanel        from 'vntd-shared/layout/TabPanel.jsx';
-import DynamicTable    from 'vntd-root/components/DynamicTable.jsx';
+
+import Actions          from 'vntd-root/actions/Actions.jsx';
+import TabPanel         from 'vntd-shared/layout/TabPanel.jsx';
+import SmallBreadcrumbs from 'vntd-shared/layout/SmallBreadcrumbs.jsx';
+
 import Mesg            from 'vntd-root/components/Mesg.jsx';
 import YellowPage      from './YellowPage.jsx';
 import PostAds         from './PostAds.jsx';
@@ -105,6 +107,7 @@ class MainAds extends React.Component
         let tabData = this._getAdsTab(this.props.mode);
         return (
             <div id="content">
+                <SmallBreadcrumbs id="route-map" crumb="Ads" route="/public/ads"/>
                 <div className="row">
                     <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                         <TabPanel className="padding-top-10" context={tabData}>

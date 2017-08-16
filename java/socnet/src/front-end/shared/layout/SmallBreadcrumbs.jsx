@@ -5,65 +5,61 @@
 
 import _               from 'lodash';
 import React           from 'react-mod';
-import NavigationStore from 'vntd-shared/stores/NavigationStore';
+import { Link }        from 'react-router';
+import { BoundArray }  from 'vntd-shared/utils/Enum.jsx';
+import InputStore      from 'vntd-shared/stores/NestableStore.jsx';
 
 class SmallBreadcrumbs extends React.Component
 {
     constructor(props) {
+        let crumbs;
+
         super(props);
-        this.state = {
-            items: this.props.items || []
-        };
         this._addCrumb = this._addCrumb.bind(this);
-        this._onNavigationChange = this._onNavigationChange.bind(this);
+
+        this.state = {
+            crumbs: this._createStore(props)
+        };
     }
 
-    componentWillMount() {
-        let item = NavigationStore.getData().item;
-        if (!this.props.items && item) {
-            this._onNavigationChange({
-                item: item
-            })
+    componentWillReceiveProps(nextProps) {
+        this._addCrumb(nextProps);
+    }
+
+    _createStore(props) {
+        let crumbs = InputStore.getItemIndex(props.id);
+
+        if (crumbs == null) {
+            crumbs = new BoundArray(5);
+            InputStore.storeItemIndex(props.id, crumbs);
         }
+        crumbs.push(props.crumb, props.route);
+        return crumbs;
     }
 
-    componentDidMount() {
-        this.unsub = NavigationStore.listen(this._onNavigationChange);
-    }
-
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsub = null;
-        }
-    }
-
-    _onNavigationChange(data) {
-        let item = data.item;
-        let result = [];
-
-        if (item.route) {
-            this._addCrumb(item, result);
-            this.setState({
-                items: result
-            });
-        }
-    }
-
-    _addCrumb(item, result) {
-        result.unshift(item.title)
-        if (item.parent) {
-            this._addCrumb(item.parent, result)
-        }
+    _addCrumb(props) {
+        this.setState({
+            crumbs: this._createStore(props)
+        });
     }
 
     render() {
+        let out = null, data = this.state.crumbs.getData();
+
+        out = data.map(function(elm) {
+            return (
+                <li key={_.uniqueId('bc-')}>
+                    <Link to={elm.elm}>
+                        {elm.key}
+                    </Link>
+                </li>
+            );
+        }.bind(this));
+
         return (
             <ol className="breadcrumb">
-                <li>Home</li>
-                {this.state.items.map(function(item, idx) {
-                    return <li key={idx}>{item}</li>
-                })}
+                <li><Link to="/app"><i className="fa fa-home fa-2x"/></Link></li>
+                {out}
             </ol>
         )
     }

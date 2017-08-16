@@ -11,6 +11,7 @@ import History             from 'vntd-shared/utils/History.jsx';
 import UserStore           from 'vntd-shared/stores/UserStore.jsx';
 import TabPanel            from 'vntd-shared/layout/TabPanel.jsx';
 import ArticleBase         from 'vntd-shared/layout/ArticleBase.jsx';
+import SmallBreadcrumbs    from 'vntd-shared/layout/SmallBreadcrumbs.jsx';
 import EditorPost          from 'vntd-shared/forms/commons/EditorPost.jsx';
 import UserPostView        from 'vntd-root/pages/user/UserPostView.jsx';
 import EStorePost          from 'vntd-root/pages/e-store/EStorePost.jsx';
@@ -50,10 +51,8 @@ class UserHome extends ArticleBase
     _updateArts(store, data, status, update, authorUuid) {
         let all;
 
-        console.log("User home update " + update);
         if (update === true) {
             all = this._getArticles(this.props.params.userUuid);
-            console.log(all);
             this.setState({
                 articles : all.articles,
                 savedArts: all.savedArts
@@ -192,7 +191,7 @@ class UserHome extends ArticleBase
     }
 
     render() {
-        let me = true, postView, saveArticles, tabCtx, articles, editTab, all,
+        let me = true, route, postView, saveArticles, tabCtx, articles, editTab, all,
             userUuid = this.props.params.userUuid,
             self = this._getOwner();
 
@@ -206,8 +205,10 @@ class UserHome extends ArticleBase
 
         if (userUuid != null) {
             me = false;
+            route = "/user/" + userUuid;
             saveArticles = null;
         } else {
+            route = "/user";
             tabCtx = this.getMyUserTab();
             postView = <UserPostView userUuid={self.userUuid}/>;
             saveArticles =
@@ -228,6 +229,7 @@ class UserHome extends ArticleBase
         }
         return (
             <div id="user-home">
+                <SmallBreadcrumbs id="route-map" crumb="User" route={route}/>
                 <ProfileCover userUuid={self.userUuid}/>
                 <UserAvatar data={{doFileDrop: false}} userUuid={self.userUuid}/>
                 {editTab}
