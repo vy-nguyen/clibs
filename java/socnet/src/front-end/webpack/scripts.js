@@ -10,7 +10,7 @@ var scripts = {
         "react-dom-server": "/node_modules/react-dom/server.js",
         "react-bootstrap" : "/node_modules/react-bootstrap/dist/react-bootstrap.min.js",
         "react-router"    : "/node_modules/react-router/umd/ReactRouter.min.js",
-        "react-dropzone-component": "/node_modules/react-dropzone-component/lib/react-dropzone.js",
+        "react-dropzone-component": "/node_modules/react-dropzone-component/dist/react-dropzone.js",
 
         "history/lib": "/node_modules/history/umd/History.min.js",
         "jquery": "/node_modules/jquery/dist/jquery.min.js",
