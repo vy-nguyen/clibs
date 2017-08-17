@@ -460,6 +460,7 @@ class ProcessForm extends React.Component
         this._getInitState = this._getInitState.bind(this);
 
         this.state = this._getInitState(props ? props.brief : false);
+        this._setContext(props);
     }
 
     _getInitState(brief) {
@@ -469,13 +470,17 @@ class ProcessForm extends React.Component
         };
     }
 
-    componentWillMount() {
-        let value = this.props.value, context = this.props.form;
+    _setContext(props) {
+        let value = props.value, context = props.form;
 
         if (value == null) {
-            value = this.props.defValue || context.defValue;
+            value = props.defValue || context.defValue;
         }
         context.setData(value);
+    }
+
+    componentWillMount() {
+        this._setContext(this.props);
     }
 
     componentDidMount() {

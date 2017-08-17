@@ -99,7 +99,8 @@ class TAWrap extends React.Component
         return (
             <TA.Typeahead options={entry.taOptions}
                 maxVisible={entry.maxVisible ? entry.maxVisible : 6}
-                placeholder={entry.inpHolder} value={this.state.value} customClasses={fmt}
+                placeholder={entry.inpHolder} value={this.state.value}
+                customClasses={fmt}
                 onBlur={this._defOnBlur} onOptionSelected={this._defOnSelect}/>
         );
     }
@@ -258,7 +259,6 @@ class DropZoneWrap extends React.Component
             postUrl         : entry.url != null ? entry.url : '/user/upload-img'
         },
         id = entry.djsId != null ? entry.djsId : _.uniqueId('dropzone-');
-
         return (
             <DropzoneComponent className="col-xs-12 col-sm-12 col-md-12 col-lg-12"
                 id={id} dictDefaultMessage={entry.defaultMesg}
