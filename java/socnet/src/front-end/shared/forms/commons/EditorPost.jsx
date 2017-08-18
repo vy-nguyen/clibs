@@ -189,23 +189,28 @@ class EditorPost extends React.Component
 {
     constructor(props) {
         super(props);
+
+        let suffix = props.article != null ? props.article.articleUuid : "post";
+        this.data = new PostForm(props, suffix);
+        console.log("constructor " + suffix);
+    }
+
+    _getDefValue(props) {
+        let art = props.article;
+
+        if (art == null) {
+            return null;
+        }
+        return {
+            tags   : art.rank != null ? art.rank.tagName : null,
+            topic  : art.topic,
+            content: art.content
+        };
     }
 
     render() {
-        let data, suffix, val, art = this.props.article;
-        
-        if (art != null) {
-            suffix = art.articleUuid;
-            val    = {
-                tags   : art.rank != null ? art.rank.tagName : null,
-                topic  : art.topic,
-                content: art.content
-            };
-        } else {
-            val    = null;
-            suffix = 'post';
-        }
-        data = new PostForm(this.props, suffix);
+        let val = this._getDefValue(this.props);
+
         return (
             <div className="row">
                 <article className="col-sm-12 col-md-12 col-lg-12">
@@ -216,7 +221,7 @@ class EditorPost extends React.Component
                             <h2><Mesg text='Publish Post'/></h2>
                         </header>
                         <div className="widget-body">
-                            <ProcessForm form={data} store={ArticleStore}
+                            <ProcessForm form={this.data} store={ArticleStore}
                                 brief={true} value={val}/>
                         </div>
                     </JarvisWidget>

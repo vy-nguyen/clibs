@@ -151,13 +151,13 @@ class EStorePost extends React.Component
 {
     constructor(props) {
         super(props);
+        let uuid = props.product != null ? props.product.articleUuid : "-store";
+        this.data = new StorePost(props, uuid);
     }
 
     render() {
-        let data, props = this.props, product = props.product,
-            uuid = product != null ? product.articleUuid : "-store";
+        let product = this.props.product;
 
-        data = new StorePost(props, uuid);
         return (
             <JarvisWidget id="ads-post" color="purple">
                 <header>
@@ -165,7 +165,7 @@ class EStorePost extends React.Component
                     <h2><Mesg text="Post Your Product"/></h2>
                 </header>
                 <div className="widget-body">
-                    <ProcessForm form={data} store={EProductStore} value={product}/>
+                    <ProcessForm form={this.data} store={EProductStore} value={product}/>
                 </div>
             </JarvisWidget>
         );

@@ -58,12 +58,14 @@ class UserBase extends React.Component
         };
         return (
             <div className="padding-10">
-                <div className="row">
+                <div className="air air-top padding-10">
                     <div className="profile-pic">
                         <img src={self.userImgUrl}/>
                     </div>
                 </div>
-                {SectionWall.renderText(header)}
+                <div className="air air-top-right padding-10">
+                    {SectionWall.renderText(header)}
+                </div>
             </div>
         );
     }
@@ -114,14 +116,14 @@ class SectionWall extends React.Component
         });
         return (
             <div className="padding-10">
-            <div style={VntdGlob.styleWhiteOpaque} className="row">
-                <h1 className="login-header-big">
-                    {sect.title}
-                </h1>
-                <div className="padding-10">
-                    {keyValues}
+                <div style={VntdGlob.styleWhiteOpaque} className="row">
+                    <h1 className="login-header-big">
+                        {sect.title}
+                    </h1>
+                    <div className="padding-10">
+                        {keyValues}
+                    </div>
                 </div>
-            </div>
             </div>
         );
     }
@@ -131,10 +133,10 @@ class SectionWall extends React.Component
             <div className="well no-padding">
                 <Link to={sect.link}>
                     <img src={sect.imgUrl} style={VntdGlob.styleFit}/>
+                    <div className="air air-top-left padding-10">
+                        {SectionWall.renderText(sect)}
+                    </div>
                 </Link>
-                <div className="air air-top-left padding-10">
-                    {SectionWall.renderText(sect)}
-                </div>
             </div>
         );
     }
