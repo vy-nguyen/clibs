@@ -32,10 +32,8 @@ class Domain extends UserBase
             <div className="well no-padding">
                 <Link to={self.getDomainLink()}>
                     <img src={self.getCoverImg(idx)} style={VntdGlob.styleFit}/>
-                </Link>
-                <div className="air air-top-left padding-10">
                     {this._renderAvatar()}
-                </div>
+                </Link>
             </div>
         );
     }
