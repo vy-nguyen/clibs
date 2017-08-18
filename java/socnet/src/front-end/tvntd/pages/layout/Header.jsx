@@ -13,38 +13,19 @@ import UserStore          from 'vntd-shared/stores/UserStore.jsx';
 import NavigationStore    from 'vntd-shared/stores/NavigationStore.jsx';
 import ToggleMenu         from 'vntd-shared/layout/ToggleMenu.jsx';
 import SearchMobile       from 'vntd-shared/layout/SearchMobile.jsx';
+import LoginInfo          from 'vntd-shared/layout/LoginInfo.jsx';
 import ActivitiesDropdown from 'vntd-shared/activities/ActivitiesDropdown.jsx';
 import AboutUsStore       from 'vntd-root/stores/AboutUsStore.jsx';
 import LanguageStore      from 'vntd-root/stores/LanguageStore.jsx';
 import LangMenu           from 'vntd-root/components/LangMenu.jsx';
 import Mesg               from 'vntd-root/components/Mesg.jsx';
+import {VntdGlob}         from 'vntd-root/config/constants.js';
 import LoginRegDropDown   from './LoginRegDropDown.jsx';
 
 class HeaderBtn extends React.Component
 {
     constructor(props) {
         super(props);
-        this.state = {
-            text: LanguageStore.translate(this.props.text)
-        }
-        this._updateLang = this._updateLang.bind(this);
-    }
-
-    componentDidMount() {
-        this.unsub = LanguageStore.listen(this._updateLang);
-    }
-
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsub = null;
-        }
-    }
-
-    _updateLang() {
-        this.setState({
-            text: LanguageStore.translate(this.props.text)
-        });
     }
 
     render() {
@@ -60,7 +41,7 @@ class HeaderBtn extends React.Component
             </div>
         )
     }
-};
+}
 
 class HeaderBtnRow extends React.Component
 {
@@ -157,6 +138,37 @@ class HeaderBtnRow extends React.Component
     }
 }
 
+class LogoMenu extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        let login, logoText = AboutUsStore.getData().login,
+            titleText = logoText ? logoText.headerBar : "TDVN";
+
+        if (UserStore.isLogin()) {
+            login  = <ActivitiesDropdown url={'api/user-notification'}/>;
+        } else {
+            login = (
+                <span id="activity" className="activity-dropdown">
+                    <Link to="/login">
+                        <i className="fa fa-user"/>
+                        <b className="badge"><Mesg text="Login"/></b>
+                    </Link>
+                </span>
+            );
+        }
+        return (
+            <div id="logo-group" style={{width: "80px"}}>
+                <LoginInfo/>
+                {login}
+            </div>
+        );
+    }
+}
+
 class Header extends React.Component
 {
     constructor(props) {
@@ -199,10 +211,7 @@ class Header extends React.Component
     }
 
     render() {
-        let loginMenu, logoBlock, search, btnRow, logoutMenu = null,
-            mode = NavigationStore.getViewMode(),
-            logoText = AboutUsStore.getData().login,
-            titleText = logoText ? logoText.headerBar : "Vietnam Tu Do",
+        let search, btnRow, logout = null, mode = NavigationStore.getViewMode(),
                 /*
             btnHeader = [ {
                 linkTo  : "/",
@@ -217,58 +226,37 @@ class Header extends React.Component
                 dropMenu: null
             }, {
                  */
-            btnHeader = [ {
-                linkTo  : "/public/blog",
-                icon    : "fa fa-users",
-                tooltip : "Read Blogs"
-            }, {
-                linkTo  : "/public/edu",
-                icon    : "fa fa-book",
-                tooltip : "Education"
-            }, {
-                linkTo  : "/public/ads",
-                icon    : "fa fa-money",
-                tooltip : "View Ads"
-            }, {
-                linkTo  : "/public/estore",
-                icon    : "fa fa-shopping-cart",
-                tooltip : "Shop E-Store"
-            } ];
+        btnHeader = [ {
+            linkTo  : "/public/blog",
+            icon    : "fa fa-users",
+            tooltip : "Read Blogs"
+        }, {
+            linkTo  : "/public/edu",
+            icon    : "fa fa-book",
+            tooltip : "Education"
+        }, {
+            linkTo  : "/public/ads",
+            icon    : "fa fa-money",
+            tooltip : "View Ads"
+        }, {
+            linkTo  : "/public/estore",
+            icon    : "fa fa-shopping-cart",
+            tooltip : "Shop E-Store"
+        } ];
 
-        if (this.state.login === true) {
-            loginMenu = <ActivitiesDropdown url={'api/user-notification'}/>;
-            logoutMenu = (
+        if (UserStore.isLogin()) { 
+            logout = (
                 <div id="logout" className="btn-header transparent pull-right">
                     <span>
                         <a href="/login/logout" title="Sign Out"
                             data-logout-msg="Close this browser window">
                             <i className="fa fa-sign-out"/>
                         </a>
-                    </span>
+                    </span> 
                 </div>
             );
-        } else {
-            loginMenu = (
-                <span id="activity" className="activity-dropdown">
-                    <Link to="/login">
-                        <i className="fa fa-user"/>
-                        <b className="badge"><Mesg text="Login"/></b>
-                    </Link>
-                </span>
-            );
         }
-        logoBlock = (
-            <div id="logo-group">
-                <span id="logo" className="pull-left">
-                    <Link to="/public/aboutus" title={titleText}>
-                        <span><b>{titleText}</b></span>
-                    </Link>
-                </span>
-                {loginMenu}
-            </div>
-        );
         if (mode == 'xs' || mode == 'sm') {
-            btnRow = null;
             search = <SearchMobile className="btn-header transparent pull-right"/>
         } else {
             search = (
@@ -281,16 +269,16 @@ class Header extends React.Component
                     </a>
                 </form>
             );
-            btnRow = <HeaderBtnRow buttons={btnHeader}/>
         }
+        btnRow = <HeaderBtnRow buttons={btnHeader}/>
         return (
             <header id="header">
-                {logoBlock}
+                <LogoMenu/>
                 {btnRow}
                 <div className="pull-right">
                     <ToggleMenu className="btn-header pull-right"/>
                     <LangMenu/>
-                    {logoutMenu}
+                    {logout}
                     {search}
                 </div>
             </header>

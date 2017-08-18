@@ -41,7 +41,9 @@ class ToggleShortcut extends React.Component
     _toggleShortcut(e) {
         e.preventDefault();
         this._shortcut = $('#shortcut');
+        this._sideMenu = $('#left-panel');
 
+        this._sideMenu.hide();
         if (this._shortcut.is(":visible")) {
             this._hideShortcut();
         } else {
