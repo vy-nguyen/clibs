@@ -177,7 +177,7 @@ class AuthorFeed extends ArticleBase
                     backgroundImage: "url(" + img + ")"
                 }
                 return (
-                    <div className="row" style={divStyle}
+                    <div className="row hidden-xs hidden-sm" style={divStyle}
                         onClick={plugin.clickHandler.bind(this, plugin)}>
                         <br/>
                         <h3 style={plugin.txtStyle}>{plugin.content}</h3>
