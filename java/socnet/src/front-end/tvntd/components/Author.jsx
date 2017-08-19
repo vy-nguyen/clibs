@@ -93,7 +93,7 @@ class Author extends React.Component
                                 <strong>{self.connections}</strong>
                                 <small><Mesg text=" Connections"/></small></h4>
                         </div>
-                        <div className="box-body">
+                        <div className="box-body hidden-xs hidden-sm">
                             <strong>
                                 <i className='fa fa-book margin-r-5'></i>
                                 <Mesg text="Public Transactions"/>

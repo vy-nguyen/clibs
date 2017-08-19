@@ -565,9 +565,10 @@ class PostPane extends React.Component
         return (
             <Panel className="well no-padding" context={panelData}>
                 <TagPost article={article} notifyId={this._postPaneId}/>
-                <p style={{fontSize: "140%"}}>
+                <p className="hidden-xs hidden-sm" style={{fontSize: "140%"}}>
                     {article.articleUrl}
                 </p>
+                {refLink}
                 {modal}
                 {publishModal}
                 {content}

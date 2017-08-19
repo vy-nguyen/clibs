@@ -20,39 +20,101 @@ import LanguageStore      from 'vntd-root/stores/LanguageStore.jsx';
 import LangMenu           from 'vntd-root/components/LangMenu.jsx';
 import Mesg               from 'vntd-root/components/Mesg.jsx';
 import {VntdGlob}         from 'vntd-root/config/constants.js';
-import LoginRegDropDown   from './LoginRegDropDown.jsx';
 
-class HeaderBtn extends React.Component
+class LogoMenu extends React.Component
 {
     constructor(props) {
         super(props);
     }
 
+    _renderBtnRow(btnRow) {
+        let elm, key, rows = [];
+
+        _.forEach(btnRow, function(btn) {
+            key = _.uniqueId('hr-');
+            if (btn.dropMenu != null) {
+                elm = btn.dropMenu;
+            } else if (btn.tooltip != null) {
+                elm = (
+                    <span key={key} id="activity" title={btn.tooltip}
+                        className="activity-dropdown"
+                        data-original-title={btn.tooltip}
+                        data-toggle="tooltip" data-placement="right">
+                        <Link to={btn.linkTo}><i className={btn.icon}/></Link>
+                    </span>
+                );
+            } else if (btn.badge != null) {
+                elm = (
+                    <span key={key} id="activity" className="activity-dropdown">
+                        <Link to={btn.linkTo}>
+                            <i className={btn.icon}/>
+                            <b className="badge"><Mesg text={btn.badge}/></b>
+                        </Link>
+                    </span>
+                );
+            } else if (btn.spanId != null) {
+                elm = (
+                    //<span id={btn.spanId} className={btn.className}>
+                    <span key={key} id={btn.spanId} className="activity-dropdown">
+                        <Link to={btn.linkTo}>
+                            <span><b><Mesg text={btn.title}/></b></span>
+                        </Link>
+                    </span>
+                );
+            } else {
+                elm = (
+                    <span key={key} id="activity" className="activity-dropdown">
+                        <Link to={btn.linkTo}>
+                            <span><b><Mesg text={btn.title}/></b></span>
+                        </Link>
+                    </span>
+                );
+            }
+            rows.push(elm);
+        });
+        return rows;
+    }
+
     render() {
-        return (
-            <div id="logo-group">
-                <span id="activity" className="activity-dropdown"
-                    data-original-title={this.state.text}
-                    data-toggle="tooltip" data-placement="right" title={this.state.text}>
-                    <Link to={this.props.linkTo}>
-                        <i className={this.props.icon}/>
+        let login, btnRow, logoText = AboutUsStore.getData().login,
+            titleText = logoText ? logoText.headerBar : "TDVN";
+
+        if (UserStore.isLogin()) {
+            login  = (
+                <span>
+                    <ActivitiesDropdown url={'api/user-notification'}/>
+                </span>
+            );
+        } else {
+            login = (
+                <span id="activity" className="activity-dropdown">
+                    <Link to="/login">
+                        <i className="fa fa-user"/>
+                        <b className="badge"><Mesg text="Login"/></b>
                     </Link>
                 </span>
+            );
+        }
+        btnRow = this._renderBtnRow(this.props.btnRow);
+        return (
+            <div id="logo-group">
+                <LoginInfo/>
+                {login}
+                {btnRow}
             </div>
-        )
+        );
     }
 }
 
-class HeaderBtnRow extends React.Component
+class HeaderSearch extends React.Component
 {
     constructor(props) {
         super(props);
         this._updateLang = this._updateLang.bind(this);
-        this._transText  = this._transText.bind(this);
 
         this.state = {
-            buttons: this._transText(props)
-        }
+            searchText: "Search"
+        };
     }
 
     componentDidMount() {
@@ -66,105 +128,27 @@ class HeaderBtnRow extends React.Component
         }
     }
 
-    _updateLang() {
+    _updateLang(data) {
         this.setState({
-            buttons: this._transText(this.props)
+            searchText: LanguageStore.translate("Search")
         });
-    }
-
-    _transText(props) {
-        _.forEach(props.buttons, function(btn) {
-            if (btn.tooltip != null) {
-                btn.tooltip = LanguageStore.translate(btn.tooltip);
-            }
-            if (btn.title != null) {
-                btn.title = LanguageStore.translate(btn.title);
-            }
-            if (btn.badge != null) {
-                btn.badge = LanguageStore.translate(btn.badge);
-            }
-        });
-        return props.buttons;
     }
 
     render() {
-        let elm, rows = [];
+        let mode = NavigationStore.getViewMode();
 
-        _.forEach(this.state.buttons, function(btn) {
-            if (btn.dropMenu != null) {
-                elm = btn.dropMenu;
-            } else if (btn.tooltip != null) {
-                elm = (
-                    <span id="activity" className="activity-dropdown"
-                        data-original-title={btn.tooltip}
-                        data-toggle="tooltip" data-placement="right" title={btn.tooltip}>
-                        <Link to={btn.linkTo}><i className={btn.icon}/></Link>
-                    </span>
-                );
-            } else if (btn.badge != null) {
-                elm = (
-                    <span id="activity" className="activity-dropdown">
-                        <Link to={btn.linkTo}>
-                            <i className={btn.icon}/>
-                            <b className="badge"><Mesg text={btn.badge}/></b>
-                        </Link>
-                    </span>
-                );
-            } else if (btn.spanId != null) {
-                elm = (
-                    //<span id={btn.spanId} className={btn.className}>
-                    <span id={btn.spanId} className="activity-dropdown">
-                        <Link to={btn.linkTo}>
-                            <span><b><Mesg text={btn.title}/></b></span>
-                        </Link>
-                    </span>
-                );
-            } else {
-                elm = (
-                    <span id="activity" className="activity-dropdown">
-                        <Link to={btn.linkTo}>
-                            <span><b><Mesg text={btn.title}/></b></span>
-                        </Link>
-                    </span>
-                );
-            }
-            rows.push(elm);
-        });
-        return (
-            <div id="logo-group">
-                {rows}
-            </div>
-        );
-    }
-}
-
-class LogoMenu extends React.Component
-{
-    constructor(props) {
-        super(props);
-    }
-
-    render() {
-        let login, logoText = AboutUsStore.getData().login,
-            titleText = logoText ? logoText.headerBar : "TDVN";
-
-        if (UserStore.isLogin()) {
-            login  = <ActivitiesDropdown url={'api/user-notification'}/>;
-        } else {
-            login = (
-                <span id="activity" className="activity-dropdown">
-                    <Link to="/login">
-                        <i className="fa fa-user"/>
-                        <b className="badge"><Mesg text="Login"/></b>
-                    </Link>
-                </span>
-            );
+        if (mode == 'xs' || mode == 'sm') {
+            return <SearchMobile className="btn-header transparent pull-right"/>;
         }
         return (
-            <div id="logo-group" style={{width: "80px"}}>
-                <LoginInfo/>
-                {login}
-            </div>
+            <form className="header-search pull-right">
+                <input id="search-fld" type="text" name="param"
+                    placeholder={this.state.searchText} data-autocomplete='[]' />
+                <button type="submit"><i className="fa fa-search"/></button>
+                <a href="$" id="cancel-search-js" title="Cancel Search">
+                    <i className="fa fa-times"/>
+                </a>
+            </form>
         );
     }
 }
@@ -173,60 +157,7 @@ class Header extends React.Component
 {
     constructor(props) {
         super(props);
-        this.state = {
-            login: false,
-            searchText: "Search"
-        };
-        this._updateLang = this._updateLang.bind(this);
-        this._updateState = this._updateState.bind(this);
-    }
-
-    componentDidMount() {
-        this.unsub = UserStore.listen(this._updateState);
-        this.unsubLang = LanguageStore.listen(this._updateLang);
-    }
-
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsubLang();
-            this.unsub = null;
-            this.unsubLang = null;
-        }
-    }
-
-    _updateState(data, startPage) {
-        if (this.state.login === false && UserStore.isLogin()) {
-            this.setState({
-                login     : true,
-                searchText: LanguageStore.translate("Search")
-            });
-        }
-    }
-
-    _updateLang(data) {
-        this.setState({
-            searchText: LanguageStore.translate("Search")
-        });
-    }
-
-    render() {
-        let search, btnRow, logout = null, mode = NavigationStore.getViewMode(),
-                /*
-            btnHeader = [ {
-                linkTo  : "/",
-                icon    : null,
-                spanId  : "logo",
-                title   : logoText ? logoText.headerBar : "Vietnam Tu Do",
-                className: "pull-left"
-            }, {
-                linkTo  : "/login",
-                icon    : "fa fa-user",
-                badge   : "Login",
-                dropMenu: null
-            }, {
-                 */
-        btnHeader = [ {
+        this.btnHeader =  [ {
             linkTo  : "/public/blog",
             icon    : "fa fa-users",
             tooltip : "Read Blogs"
@@ -243,6 +174,36 @@ class Header extends React.Component
             icon    : "fa fa-shopping-cart",
             tooltip : "Shop E-Store"
         } ];
+        this._updateLang = this._updateLang.bind(this);
+    }
+
+    componentDidMount() {
+        this.unsub = LanguageStore.listen(this._updateLang);
+    }
+
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    _updateLang(data) {
+        _.forEach(this.btnHeader, function(btn) {
+            if (btn.tooltip != null) {
+                btn.tooltip = LanguageStore.translate(btn.tooltip);
+            }
+            if (btn.title != null) {
+                btn.title = LanguageStore.translate(btn.title);
+            }
+            if (btn.badge != null) {
+                btn.badge = LanguageStore.translate(btn.badge);
+            }
+        });
+    }
+
+    render() {
+        let logout = null
 
         if (UserStore.isLogin()) { 
             logout = (
@@ -256,30 +217,13 @@ class Header extends React.Component
                 </div>
             );
         }
-        if (mode == 'xs' || mode == 'sm') {
-            search = <SearchMobile className="btn-header transparent pull-right"/>
-        } else {
-            search = (
-                <form action="#/misc/search.html" className="header-search pull-right">
-                    <input id="search-fld" type="text" name="param"
-                        placeholder={this.state.searchText} data-autocomplete='[]' />
-                    <button type="submit"><i className="fa fa-search"/></button>
-                    <a href="$" id="cancel-search-js" title="Cancel Search">
-                        <i className="fa fa-times"/>
-                    </a>
-                </form>
-            );
-        }
-        btnRow = <HeaderBtnRow buttons={btnHeader}/>
         return (
             <header id="header">
-                <LogoMenu/>
-                {btnRow}
+                <LogoMenu btnRow={this.btnHeader}/>
                 <div className="pull-right">
-                    <ToggleMenu className="btn-header pull-right"/>
                     <LangMenu/>
                     {logout}
-                    {search}
+                    <HeaderSearch/>
                 </div>
             </header>
         );
@@ -287,3 +231,5 @@ class Header extends React.Component
 }
 
 export default Header;
+
+
