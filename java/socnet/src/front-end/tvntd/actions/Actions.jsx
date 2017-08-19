@@ -24,6 +24,9 @@ const Actions = Reflux.createActions({
     clickMenuItem:   completedFn,
     authRequired:    completedFn,
 
+    // Navigation actions
+    toggleSideBar:   completedFn,
+
     // User actions
     logout:          completedFailedFn,
     initialData:     completedFailedFn,
@@ -170,6 +173,10 @@ Actions.clickMenuItem.listen(function(item) {
 
 Actions.authRequired.listen(function(id, context) {
     this.completed(id, context);
+});
+
+Actions.toggleSideBar.listen(function(data) {
+    this.completed(data);
 });
 
 /**

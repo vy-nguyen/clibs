@@ -25,6 +25,15 @@ export const VntdGlob = {
         height   : "auto",
         maxHeight: "200px"
     },
+    styleLogo: {
+        width : "30px",
+        height: "30px"
+    },
+    logoSpan: {
+        width     : "40px",
+        marginTop : "9px",
+        marginLeft: "9px"
+    },
     styleContent: {
         margin  : "10px 10px 10px 10px",
         fontSize: "130%"
@@ -38,5 +47,9 @@ export const VntdGlob = {
     styleWhiteOpaque: {
         background: "#ffffff",
         opacity   : "0.9"
+    },
+    smallBox: {
+        width : "60px",
+        height: "60px"
     }
 };

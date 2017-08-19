@@ -4,7 +4,6 @@
 'use strict';
 
 import React           from 'react-mod';
-import LoginInfo       from 'vntd-shared/layout/LoginInfo.jsx';
 import SmartMenuList   from 'vntd-shared/layout/SmartMenuList.jsx';
 import MinifyMenu      from 'vntd-shared/layout/MinifyMenu.jsx';
 import NavigationStore from 'vntd-shared/stores/NavigationStore.jsx';
@@ -14,7 +13,7 @@ class Navigation extends React.Component
     constructor(props) {
         super(props);
         this.state = {
-            items: []
+            items: NavigationStore.getSideBarItems()
         };
         this._updateMenu = this._updateMenu.bind(this);
     }
@@ -30,16 +29,17 @@ class Navigation extends React.Component
         }
     }
 
-    _updateMenu(data) {
-        this.setState({
-            items: data.items
-        });
+    _updateMenu(data, status) {
+        if (status === 'update') {
+            this.setState({
+                items: NavigationStore.getSideBarItems()
+            });
+        }
     }
 
     render() {
         return (
             <aside id="left-panel">
-                <LoginInfo />
                 <nav>
                     <SmartMenuList items={this.state.items} />
                 </nav>

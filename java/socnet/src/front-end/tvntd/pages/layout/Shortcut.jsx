@@ -1,8 +1,11 @@
 /**
  * Modified by Vy Nguyen (2016)
  */
+import _          from 'lodash';
 import React      from 'react-mod'
 import {Link}     from 'react-router'
+import {VntdGlob} from 'vntd-root/config/constants.js';
+import Actions    from 'vntd-root/actions/Actions.jsx';
 import Mesg       from 'vntd-root/components/Mesg.jsx';
 import UserStore  from 'vntd-shared/stores/UserStore.jsx';
 
@@ -10,76 +13,93 @@ class Shortcut extends React.Component
 {
     constructor(props) {
         super(props);
+        this._toggleSideBar = this._toggleSideBar.bind(this);
+        this.common = [ {
+            routeTo: "/app",
+            btnFmt : "btn-primary",
+            icon   : "fa-home",
+            text   : "Home"
+        }, {
+            onClick: this._toggleSideBar,
+            btnFmt : "btn-success",
+            icon   : "fa-window-restore",
+            text   : "Side Menu"
+        } ];
+        this.login = [ {
+            routeTo: "/user/profile",
+            btnFmt : "btn-info",
+            icon   : "fa-user",
+            text   : "Profile"
+        } ];
+        this.public = [ {
+            routeTo: "/public/ads",
+            btnFmt : "btn-info",
+            icon   : "fa-shopping-cart",
+            text   : "Ads"
+        } ];
     }
 
-	_renderLogin() {
-		return (
-            <div id="shortcut">
-                <ul>
-                    <li>
-                        <Link to="/user/profile" title="My Profile"
-                            className="jarvismetro-tile bg-color-blue">
-                            <span className="iconbox">
-                                <i className="fa fa-user-circle fa-2x" />
-                                <span><Mesg text='My Profile'/></span>
-                            </span>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link to="/app"
-                            className="jarvismetro-tile bg-color-orangeDark">
-                            <span className="iconbox">
-                                <i className="fa fa-home fa-2x" />
-                                <span><Mesg text='Front Page'/> </span>
-                            </span>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link to="/user/account"
-                            className="jarvismetro-tile bg-color-purple">
-                            <span className="iconbox">
-                                <i className="fa fa-suitcase fa-2x" />
-                                <span><Mesg text='Maps'/> </span>
-                            </span>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link to="/public"
-                            className="jarvismetro-tile bg-color-pinkDark">
-                            <span className="iconbox">
-                                <i className="fa fa-user fa-2x" />
-                                <span><Mesg text='NewsFeed'/> </span>
-                            </span>
-                        </Link>
-                    </li>
-                </ul>
-            </div>
-        )
+    _toggleSideBar() {
+        Actions.toggleSideBar();
+        console.log("toggle sidebar");
     }
 
-    _renderPublic() {
+    _renderEntry(entry) {
+        let fmt = "btn " + entry.btnFmt;
+
+        if (entry.onClick != null) {
+            return (
+                <li key={_.uniqueId('sc-')}>
+                    <button className={fmt} onClick={entry.onClick}>
+                        <i className={"fa fa-lg " + entry.icon}/>
+                        <span> <Mesg text={entry.text}/></span>
+                    </button>
+                </li>
+            );
+        }
         return (
-            <div id="shortcut">
-                <ul>
-                    <li>
-                        <Link to="/app" title="Main App"
-                            className="jarvismetro-tile bg-color-blue">
-                            <span className="iconbox">
-                                <i className="fa fa-home fa-2x"/>
-                                <span><Mesg text="Main App"/></span>
-                            </span>
-                        </Link>
-                    </li>
-                </ul>
-            </div>
+            <li key={_.uniqueId('sc-')}>
+                <Link to={entry.routeTo}>
+                    <button className={fmt}>
+                        <i className={"fa fa-lg " + entry.icon}/>
+                        <span> <Mesg text={entry.text}/></span>
+                    </button>
+                </Link>
+            </li>
         );
     }
 
+    _renderEntries(entries, out) {
+        _.forEach(entries, function(entry) {
+            out.push(this._renderEntry(entry));
+        }.bind(this));
+    }
+
+    _renderLogin(out) {
+        this._renderEntries(this.common, out);
+        this._renderEntries(this.login, out);
+    }
+
+    _renderPublic(out) {
+        this._renderEntries(this.common, out);
+        this._renderEntries(this.public, out);
+    }
+
     render() {
+        let out = [];
+
         if (UserStore.isLogin()) {
-            return this._renderLogin();
+            this._renderLogin(out);
+        } else {
+            this._renderPublic(out);
         }
-        return this._renderPublic();
+        return (
+            <div id="shortcut">
+                <ul>
+                    {out}
+                </ul>
+            </div>
+        );
     }
 }
 

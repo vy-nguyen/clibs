@@ -20,6 +20,7 @@ let NavigationStore = Reflux.createStore({
 
     init: function() {
         this.data = {
+            sideBar   : true,
             item      : null,
             items     : [],
             currMqIdx : null,
@@ -35,17 +36,21 @@ let NavigationStore = Reflux.createStore({
         data.currMqIdx = $('#mq-detector span').index($('#mq-detector span:visible'));
         switch(data.currMqIdx) {
             case 0:
+                data.sideBar    = false;
                 data.currMqMode = 'xs';
                 break;
             case 1:
+                data.sideBar    = false;
                 data.currMqMode = 'sm';
                 data.maxHeight = '750px';
                 break;
             case 2:
+                data.sideBar    = true;
                 data.currMqMode = 'md';
                 data.maxHeight = '1000px';
                 break;
             case 3:
+                data.sideBar    = true;
                 data.currMqMode = 'lg';
                 data.maxHeight = '1000px';
                 break;
@@ -62,20 +67,33 @@ let NavigationStore = Reflux.createStore({
         return this.data.maxHeight;
     },
 
+    isSideBarOn: function() {
+        return this.data.sideBar;
+    },
+
+    getSideBarItems: function() {
+        return this.data.items;
+    },
+
     replaceMenuItems: function(json) {
         this.data.items = null;
         this.data.item  = null;
         this.addRawItems(json);
-        this.trigger(this.data);
+        this.trigger(this.data, 'update');
     },
 
     onGetItemsCompleted: function(rawItems) {
         this.addRawItems(rawItems.items);
-        this.trigger(this.data)
+        this.trigger(this.data, 'update')
     },
 
     onTranslateCompleted: function() {
         this._translate(this.data.items);
+    },
+
+    onToggleSideBarCompleted: function() {
+        this.data.sideBar = !this.data.sideBar;
+        this.trigger(this.data, 'sidebar');
     },
 
     onActivate: function(item) {
@@ -83,7 +101,7 @@ let NavigationStore = Reflux.createStore({
         if (item.route) {
             History.pushState(null, item.route)
         }
-        this.trigger(this.data);
+        this.trigger(this.data, 'active');
     },
 
     addRawItems: function(rawItems) {
