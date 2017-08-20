@@ -1,0 +1,35 @@
+web_topdir   := $(topdir)/java/socnet
+web_jsdir    := $(web_topdir)/src/front-end
+webapp_dir   := $(web_topdir)/src/main/webapp
+
+npm_modules  := $(web_topdir)/node_modules
+npm_bin      := $(npm_modules)/.bin
+
+mocha        := $(npm_bin)/mocha
+lessc        := $(npm_bin)/lessc
+
+mocha_args   := --compilers js:babel-core/register
+lessc_args   := --clean-css="--s1 --advanced --compatibility=ie8"
+
+css_destdir  := $(webapp_dir)/css
+
+include $(topdir)/Makefile.incl
+
+define scpt_mk_css
+proj_css: $(css_destdir)/$(1).css
+
+$(css_destdir)/$(1).css: $(1).less
+	$(lessc) $(lessc_args) $$< > $$@
+endef
+
+define scpt_mk_css_dep
+depend: $(1).dep
+
+$(1).dep: $(1).less
+	$(lessc) -M $$< $(css_destdir)/$(1).css > $(1).dep
+endef
+
+$(foreach less,$(proj_less),$(eval $(call scpt_mk_css,$(basename $(less)))))
+$(foreach less,$(proj_less),$(eval $(call scpt_mk_css_dep,$(basename $(less)))))
+
+include $(wildcard *.dep)
