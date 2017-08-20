@@ -15,13 +15,12 @@
     <%--
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/site.css">
       --%>
 
-    <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/smartadmin-production-plugins.css">
-    <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/smartadmin-production.css">
-    <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/site.css">
-
-    <link rel="shortcut icon" href="/rs/img/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/tvntd-plugins.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/tvntd.css">
+    <link rel="shortcut icon" href="/rs/img/logo/flag.jpg" type="image/x-icon">
 
     <!-- iOS web-app metas : -->
     <meta name="apple-mobile-web-app-capable" content="yes">
