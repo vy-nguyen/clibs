@@ -17,9 +17,8 @@
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/font-awesome.min.css">
       --%>
 
-    <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/Admin/smartadmin-production-plugins.min.css">
-    <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/Admin/smartadmin-production.min.css">
-    <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/Admin/smartadmin-skins.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/smartadmin-production-plugins.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/smartadmin-production.css">
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/site.css">
 
     <link rel="shortcut icon" href="/rs/img/favicon.ico" type="image/x-icon">

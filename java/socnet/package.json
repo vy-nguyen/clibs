@@ -25,7 +25,9 @@
     "webpack-dev-server": "^2.5.0",
     "clean-webpack-plugin": "^0.1.16",
     "yargs": "^3.31.0",
-    "rewire-webpack": "^1.0.1"
+    "rewire-webpack": "^1.0.1",
+    "less": "2.7.2",
+    "less-plugin-clean-css": "1.5.1"
   },
   "dependencies": {
     "react": "0.14.8",
