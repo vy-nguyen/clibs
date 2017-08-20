@@ -319,7 +319,6 @@ class CommonStore {
         }.bind(this));
 
         this.data.requestUuids = null;
-        this.requestItems();
         if (!_.isEmpty(items)) {
             this._notifyListeners("add", items);
         }
