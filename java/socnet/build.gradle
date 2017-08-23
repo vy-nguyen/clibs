@@ -53,6 +53,14 @@ sourceSets {
     }
 }
 
+ext {
+    if (project.hasProperty("mainClass")) {
+        mainManifest = manifest {
+            attributes 'Main-Class': mainClass
+        }
+    }
+}
+
 dependencies {
     compile "com.google.code.gson:gson:2.4"
     compile "com.google.guava:guava:${guava_version}"

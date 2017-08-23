@@ -177,23 +177,38 @@ class ArticleBox extends React.Component
     }
 
     static youtubeLink(article) {
-        let url = "https://www.youtube.com/embed/" + article.youtube;
+        let oid = article.contentOid, code, url;
+
+        if (oid != null) {
+            code = oid.substring(0, 3);
+            if (code === "DOC") {
+                url = "https://docs.google.com/" + article.youtube;
+            } else if (code === "VID") {
+                url = "https://www.youtube.com/embed/" + article.youtube;
+            } else {
+                url = null;
+            }
+        } else {
+            url = "https://www.youtube.com/embed/" + article.youtube;
+        }
+
         const style = {
-            position: "relative",
-            width   : "100%",
-            height  : 0,
-            paddingBottom: "56.25%"
+            position : "relative",
+            width    : "100%",
+            paddingBottom: "95%"
         },
-        video = {
+        frame = {
             position: "absolute",
             top     : 0,
             left    : 0,
+            border  : "none",
             width   : "100%",
-            height  : "100%"
+            height  : "100%",
+            maxHeight: "800px"
         };
         return (
             <div style={style}>
-                <iframe style={video} src={url}
+                <iframe style={frame} src={url}
                     frameborder="0" allowfullscreen className="video"/>
             </div>
         );

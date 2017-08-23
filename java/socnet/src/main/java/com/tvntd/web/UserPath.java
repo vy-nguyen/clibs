@@ -256,10 +256,10 @@ public class UserPath
             return s_badInput;
         }
         ArticleDTO art = genPendPost(profile, true, form.getArticleUuid());
-        Article article = art.assignVideo(form.getVideoUrl());
-
-        ArticleService.applyPostForm(form, article, publish);
+        ArticleService.applyPostForm(form, art, publish);
+        Article article = art.fetchArticle();
         art.convertUTF();
+
         if (publish == true) {
             article.markActive();
             articleSvc.saveArticle(art);
@@ -310,8 +310,8 @@ public class UserPath
         if (art == null) {
             return s_invalidArticle;
         }
-        Article article = art.fetchArticle();
-        ArticleService.applyPostForm(form, article, publish);
+        // Article article = art.fetchArticle();
+        ArticleService.applyPostForm(form, art, publish);
         articleSvc.saveArticle(art);
 
         ArticleRank artRank = articleSvc.getRank(form.getArticleUuid());
