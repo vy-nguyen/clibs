@@ -13,6 +13,7 @@ import UserStore          from 'vntd-shared/stores/UserStore.jsx';
 import NavigationStore    from 'vntd-shared/stores/NavigationStore.jsx';
 import ToggleMenu         from 'vntd-shared/layout/ToggleMenu.jsx';
 import SearchMobile       from 'vntd-shared/layout/SearchMobile.jsx';
+import SmallBreadcrumbs   from 'vntd-shared/layout/SmallBreadcrumbs.jsx';
 import LoginInfo          from 'vntd-shared/layout/LoginInfo.jsx';
 import ActivitiesDropdown from 'vntd-shared/activities/ActivitiesDropdown.jsx';
 import AboutUsStore       from 'vntd-root/stores/AboutUsStore.jsx';

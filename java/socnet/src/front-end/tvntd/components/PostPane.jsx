@@ -562,6 +562,13 @@ class PostPane extends React.Component
                 </div>
             );
         }
+        const doc = {
+            position: "absolute",
+            top     : 0,
+            left    : 0,
+            width   : "100%",
+            height  : "100%"
+        };
         return (
             <Panel className="well no-padding" context={panelData}>
                 <TagPost article={article} notifyId={this._postPaneId}/>

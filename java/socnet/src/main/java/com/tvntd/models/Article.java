@@ -59,6 +59,12 @@ import com.tvntd.lib.ObjectId;
 })
 public class Article
 {
+    /*
+     * contentOId format:
+     * HEX:abcdef123... for OID
+     * DOC:docs.google.com for doc link.
+     * VID:youtube.com for video link.
+     */
     public static int MaxTitleLength = 128;
     public static int MaxContentLength = 1 << 16;
 
@@ -111,6 +117,10 @@ public class Article
 
     public void markActive() {
         pending = false;
+    }
+
+    public void makeUrlLink(String host, boolean video) {
+        contentOId = video == false ? "DOC:" + host: "VID:" + host;
     }
 
     /**

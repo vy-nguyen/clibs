@@ -26,17 +26,25 @@
  */
 package com.tvntd.forms;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.safety.Whitelist;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.tvntd.util.Constants;
 import com.tvntd.util.Util;
 
 public class PostForm
 {
+    private static Logger s_log = LoggerFactory.getLogger(PostForm.class);
     @Size(max = 140)
     private String topic;
 
@@ -55,12 +63,17 @@ public class PostForm
 
     private String contentBrief;
 
-    @Size(max = 80)
+    @Size(max = 160)
     private String videoUrl;
+
+    private String contentUrlFile;
+    private String contentUrlHost;
+    private boolean videoLink;
 
     public boolean cleanInput()
     {
-        if (content == null || authorUuid == null || articleUuid == null) {
+        if ((content == null && videoUrl == null) ||
+            authorUuid == null || articleUuid == null) {
             return false;
         }
         if (topic == null) {
@@ -71,28 +84,21 @@ public class PostForm
         }
         Whitelist wlist = Util.allowedTags;
         topic = Jsoup.clean(topic, wlist);
-        content = Jsoup.clean(content, wlist);
         tags = Jsoup.clean(tags, wlist);
         authorUuid = Jsoup.clean(authorUuid, wlist);
         articleUuid = Jsoup.clean(articleUuid, wlist);
 
-        if (videoUrl != null && !videoUrl.isEmpty()) {
-            videoUrl = Jsoup.clean(videoUrl, wlist);
-            int idx  = videoUrl.lastIndexOf('/');
-            if (idx > 0) {
-                videoUrl = videoUrl.substring(idx + 1);
-                idx = videoUrl.lastIndexOf("?v=");
-                if (idx > 0) {
-                    videoUrl = videoUrl.substring(idx + 3);
-                }
+        if (content != null) {
+            content = Jsoup.clean(content, wlist);
+            int len = content.length();
+            if (len > 200) {
+                len = 200;
             }
+            contentBrief = Jsoup.parse(content.substring(0, len)).text();
         }
-        System.out.println("Video url " + videoUrl);
-        int len = content.length();
-        if (len > 200) {
-            len = 200;
+        if (videoUrl != null) {
+            parseIframe(videoUrl);
         }
-        contentBrief = Jsoup.parse(content.substring(0, len)).text();
         return true;
     }
 
@@ -102,6 +108,74 @@ public class PostForm
         sb.append("Topic ").append(topic).append("\n")
             .append("Tags ").append(tags).append("\n");
         return sb.toString();
+    }
+
+    public boolean parseIframe(String input)
+    {
+        int idx;
+        URL url = null;
+        String host = null;
+        Document doc = Jsoup.parse(input);
+        Element iframe = doc.select("iframe").first();
+
+        try {
+            if (iframe == null) {
+                url = new URL(input);
+            } else {
+                String src = iframe.attr("src");
+                if (src != null && !src.isEmpty()) {
+                    url = new URL(src);
+                }
+            }
+        } catch(MalformedURLException e) {
+        }
+        if (url != null) {
+            host = url.getHost();
+            contentUrlFile = url.getFile();
+        } else {
+            idx = input.indexOf('/');
+            if (idx > 0) {
+                host = input.substring(0, idx);
+                contentUrlFile = input.substring(idx + 1);
+            } else {
+                s_log.info("Not url " + input);
+                return false;
+            }
+        }
+        if (host.contains("google.com")) {
+            videoLink = false;
+            contentUrlHost = host;
+
+        } else if (host.contains("youtube.com") || host.contains("youtu.be")) {
+            videoLink = true;
+            contentUrlHost = host;
+
+            idx = contentUrlFile.lastIndexOf("/");
+            if (idx >= 0) {
+                contentUrlFile = contentUrlFile.substring(idx + 1);
+            }
+            idx = contentUrlFile.lastIndexOf("?v=");
+            if (idx > 0) {
+                contentUrlFile = contentUrlFile.substring(idx + 3);
+            }
+        } else {
+            s_log.info(">>> Not supported host url " + input + " <<<< " + host);
+            return false;
+        }
+        s_log.info(input + ": host " + contentUrlHost + " url  " + contentUrlFile);
+        return true;
+    }
+
+    public String fetchContentUrlFile() {
+        return contentUrlFile;
+    }
+
+    public String fetchContentUrlHost() {
+        return contentUrlHost;
+    }
+
+    public boolean fetchVideoLink() {
+        return videoLink;
     }
 
     /**

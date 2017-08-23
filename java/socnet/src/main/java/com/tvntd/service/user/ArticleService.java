@@ -84,8 +84,9 @@ public class ArticleService implements IArticleService
     /**
      * Common static methods.
      */
-    public static void applyPostForm(PostForm form, Article art, boolean publish)
+    public static void applyPostForm(PostForm form, ArticleDTO artDTO, boolean publish)
     {
+        Article art = artDTO.fetchArticle();
         if (publish == true) {
             art.markActive();
         } else {
@@ -95,12 +96,18 @@ public class ArticleService implements IArticleService
             String str = Util.truncate(form.getTopic(), Article.MaxTitleLength);
             art.setTopic(str.getBytes("UTF-8"));
 
-            str = Util.truncate(form.getContent(), Article.MaxContentLength);
-            art.setContent(str.getBytes("UTF-8"));
-            if (form.getContentBrief() != null) {
-                str = Util.truncate(form.getContentBrief(),
-                        ArticleRank.MaxContentLength);
-                art.setContentBrief(str.getBytes("UTF-8"));
+            if (form.fetchContentUrlHost() != null) {
+                art = artDTO.assignVideo(form.fetchContentUrlFile());
+                art.makeUrlLink(form.fetchContentUrlHost(), form.fetchVideoLink());
+            }
+            if (form.getContent() != null) {
+                str = Util.truncate(form.getContent(), Article.MaxContentLength);
+                art.setContent(str.getBytes("UTF-8"));
+                if (form.getContentBrief() != null) {
+                    str = Util.truncate(form.getContentBrief(),
+                            ArticleRank.MaxContentLength);
+                    art.setContentBrief(str.getBytes("UTF-8"));
+                }
             }
         } catch(UnsupportedEncodingException e) {
             s_log.info(e.getMessage());
@@ -112,7 +119,7 @@ public class ArticleService implements IArticleService
         Article art = new Article();
         art.setAuthorId(profile.fetchUserId());
         art.setAuthorUuid(profile.getUserUuid());
-        ArticleService.applyPostForm(form, art, false);
+        ArticleService.applyPostForm(form, new ArticleDTO(art, null), false);
         return art;
     }
 
