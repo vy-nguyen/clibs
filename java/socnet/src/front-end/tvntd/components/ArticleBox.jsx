@@ -7,6 +7,7 @@ import _               from 'lodash';
 import React           from 'react-mod';
 import StarRating      from 'react-star-rating';
 
+import NavStore        from 'vntd-shared/stores/NavigationStore.jsx';
 import UserStore       from 'vntd-shared/stores/UserStore.jsx';
 import ArticleStore    from 'vntd-root/stores/ArticleStore.jsx';
 import AuthorStore     from 'vntd-root/stores/AuthorStore.jsx';
@@ -182,11 +183,23 @@ class ArticleBox extends React.Component
         if (oid != null) {
             code = oid.substring(0, 3);
             if (code === "DOC") {
-                url = "https://docs.google.com/" + article.youtube;
+                url = "https://docs.google.com/" + article.youtube +
+                    "/pub?embedded=true";
+
             } else if (code === "VID") {
                 url = "https://www.youtube.com/embed/" + article.youtube;
+
+            } else if (code === "DRV") {
+                let linkId = article.youtube, idx = linkId.lastIndexOf('/');
+
+                if (idx > 0) {
+                    linkId = linkId.substring(idx);
+                    console.log(linkId);
+                }
+                url = "https://docs.google.com/viewer?srcid=" + linkId +
+                    "&pid=explorer&efh=false&a=v&chrome=false&embedded=true";
             } else {
-                url = null;
+                return null;
             }
         } else {
             url = "https://www.youtube.com/embed/" + article.youtube;
@@ -195,25 +208,19 @@ class ArticleBox extends React.Component
         const style = {
             position : "relative",
             width    : "100%",
+            height   : NavStore.getMaxHeight(),
             paddingBottom: "95%"
-        },
-        frame = {
-            position: "absolute",
-            top     : 0,
-            left    : 0,
-            border  : "none",
-            width   : "100%",
-            height  : "100%",
-            maxHeight: "800px"
         };
+        console.log(style);
         return (
             <div style={style}>
-                <iframe style={frame} src={url}
+                <iframe style={VntdGlob.styleFrame} src={url}
                     frameborder="0" allowfullscreen className="video"/>
             </div>
         );
     }
 }
+// <iframe style={frame} src="https://docs.google.com/viewer?srcid=0B-PLkJ2jO9eYRHJzempNRG1PajA&pid=explorer&efh=false&a=v&chrome=false&embedded=true" frameborder="0"/>
 
 class ArtBlogStyle extends React.Component
 {

@@ -39,6 +39,7 @@ import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.tvntd.models.Article;
 import com.tvntd.util.Constants;
 import com.tvntd.util.Util;
 
@@ -68,7 +69,7 @@ public class PostForm
 
     private String contentUrlFile;
     private String contentUrlHost;
-    private boolean videoLink;
+    private int docType;
 
     public boolean cleanInput()
     {
@@ -131,7 +132,7 @@ public class PostForm
         }
         if (url != null) {
             host = url.getHost();
-            contentUrlFile = url.getFile();
+            contentUrlFile = url.getPath();
         } else {
             idx = input.indexOf('/');
             if (idx > 0) {
@@ -142,28 +143,55 @@ public class PostForm
                 return false;
             }
         }
-        if (host.contains("google.com")) {
-            videoLink = false;
+        if (host.contains("docs.google.com")) {
+            docType = Article.DOC_TYPE;
             contentUrlHost = host;
+            contentUrlFile = parseFileId(contentUrlFile);
 
         } else if (host.contains("youtube.com") || host.contains("youtu.be")) {
-            videoLink = true;
+            docType = Article.VID_TYPE;
             contentUrlHost = host;
+            contentUrlFile = parseFileId(contentUrlFile);
 
-            idx = contentUrlFile.lastIndexOf("/");
-            if (idx >= 0) {
-                contentUrlFile = contentUrlFile.substring(idx + 1);
-            }
-            idx = contentUrlFile.lastIndexOf("?v=");
-            if (idx > 0) {
-                contentUrlFile = contentUrlFile.substring(idx + 3);
-            }
+        } else if (host.contains("drive.google.com")) {
+            docType = Article.DRV_TYPE;
+            contentUrlHost = host;
+            contentUrlFile = parseFileId(contentUrlFile);
+
         } else {
             s_log.info(">>> Not supported host url " + input + " <<<< " + host);
+            contentUrlHost = host;
+            contentUrlFile = parseFileId(contentUrlFile);
             return false;
         }
         s_log.info(input + ": host " + contentUrlHost + " url  " + contentUrlFile);
         return true;
+    }
+
+    protected String parseFileId(String path)
+    {
+        String result = path;
+
+        int idx = path.lastIndexOf("/view");
+        if (idx >= 0) {
+            return result.substring(0, idx);
+        }
+        idx = result.lastIndexOf("/pub");
+        if (idx >= 0) {
+            return result.substring(0, idx);
+        }
+        if (result.length() > 5 && result.substring(0, 5).equals("embed")) {
+            result = result.substring(5);
+        }
+        idx = result.lastIndexOf("/embed");
+        if (idx >= 0 && result.length() > (idx + 6)) {
+            result = result.substring(idx + 6);
+        }
+        idx = result.lastIndexOf("?v=");
+        if (idx >= 0 && result.length() > (idx + 3)) {
+            result = result.substring(idx + 3);
+        }
+        return result;
     }
 
     public String fetchContentUrlFile() {
@@ -174,8 +202,8 @@ public class PostForm
         return contentUrlHost;
     }
 
-    public boolean fetchVideoLink() {
-        return videoLink;
+    public int fetchDocType() {
+        return docType;
     }
 
     /**

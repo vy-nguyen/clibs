@@ -67,6 +67,9 @@ public class Article
      */
     public static int MaxTitleLength = 128;
     public static int MaxContentLength = 1 << 16;
+    public static int DOC_TYPE = 100;
+    public static int VID_TYPE = 200;
+    public static int DRV_TYPE = 300;
 
     @Id
     @Column(length = 64)
@@ -119,8 +122,17 @@ public class Article
         pending = false;
     }
 
-    public void makeUrlLink(String host, boolean video) {
-        contentOId = video == false ? "DOC:" + host: "VID:" + host;
+    public void makeUrlLink(String host, int mode)
+    {
+        if (mode == DOC_TYPE) {
+            contentOId = "DOC:" + host;
+        } else if (mode == VID_TYPE) {
+            contentOId = "VID:" + host;
+        } else if (mode == DRV_TYPE) {
+            contentOId = "DRV:" + host;
+        } else {
+            contentOId = "HEX:" + host;
+        }
     }
 
     /**
