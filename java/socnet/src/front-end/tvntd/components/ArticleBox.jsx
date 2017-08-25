@@ -194,7 +194,6 @@ class ArticleBox extends React.Component
 
                 if (idx > 0) {
                     linkId = linkId.substring(idx);
-                    console.log(linkId);
                 }
                 url = "https://docs.google.com/viewer?srcid=" + linkId +
                     "&pid=explorer&efh=false&a=v&chrome=false&embedded=true";

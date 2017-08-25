@@ -69,7 +69,7 @@ class PostForm extends FormData
         }, {
             field    : 'video',
             inpName  : 'art-video-',
-            inpHolder: 'www.youtube.com/embeded/xyz... or just xyz...',
+            inpHolder: 'Copy published Google link',
             emptyOk  : true,
             inputFmt : inputFmt,
             labelFmt : labelFmt,
