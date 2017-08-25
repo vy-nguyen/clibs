@@ -545,7 +545,7 @@ class PostPane extends React.Component
                 dangerouslySetInnerHTML={this._rawMarkup(article)}/>
         );
         if (article.youtube != null) {
-            video = ArticleBox.youtubeLink(article);
+            video = ArticleBox.youtubeLink(article, false);
         }
         imgs = article.pictureUrl;
         if (imgs != null) {
