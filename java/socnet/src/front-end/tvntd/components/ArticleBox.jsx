@@ -177,7 +177,7 @@ class ArticleBox extends React.Component
         return (<ArtVideo data={ArticleBox.getArtCtx(articleUuid, clickCb)}/>);
     }
 
-    static youtubeLink(article) {
+    static youtubeLink(article, brief) {
         let oid = article.contentOid, code, url;
 
         if (oid != null) {
@@ -208,10 +208,9 @@ class ArticleBox extends React.Component
         const style = {
             position : "relative",
             width    : "100%",
-            height   : NavStore.getMaxHeight(),
+            height   : brief === true ? "200px" : NavStore.getMaxHeight(),
             paddingBottom: "95%"
         };
-        console.log(style);
         return (
             <div style={style}>
                 <iframe style={VntdGlob.styleFrame} src={url}
@@ -235,7 +234,7 @@ class ArtBlogStyle extends React.Component
             return null;
         }
         if (article.youtube != null) {
-            img = ArticleBox.youtubeLink(article);
+            img = ArticleBox.youtubeLink(article, true);
         } else {
             img = (
                 <a onClick={arg.clickCbFn}>
