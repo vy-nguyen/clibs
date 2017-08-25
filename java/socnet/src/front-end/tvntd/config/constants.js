@@ -48,6 +48,14 @@ export const VntdGlob = {
         background: "#ffffff",
         opacity   : "0.9"
     },
+    styleFrame: {
+        position: "absolute",
+        top     : 0,
+        left    : 0,
+        border  : "none",
+        width   : "100%",
+        height  : "100%"
+    },
     smallBox: {
         width : "60px",
         height: "60px"

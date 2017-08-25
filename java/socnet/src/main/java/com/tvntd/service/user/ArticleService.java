@@ -98,7 +98,7 @@ public class ArticleService implements IArticleService
 
             if (form.fetchContentUrlHost() != null) {
                 art = artDTO.assignVideo(form.fetchContentUrlFile());
-                art.makeUrlLink(form.fetchContentUrlHost(), form.fetchVideoLink());
+                art.makeUrlLink(form.fetchContentUrlHost(), form.fetchDocType());
             }
             if (form.getContent() != null) {
                 str = Util.truncate(form.getContent(), Article.MaxContentLength);
