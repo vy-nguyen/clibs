@@ -180,6 +180,10 @@ let ArticleStore = Reflux.createStore({
         // this.store.updatePublicTags(tags, Actions.getPublishAds);
     },
 
+    updateMissingUuid: function(uuids) {
+        this.store.updateMissingUuid(uuids);
+    },
+
     dumpData: function(header) {
         this.store.dumpData(header);
     },

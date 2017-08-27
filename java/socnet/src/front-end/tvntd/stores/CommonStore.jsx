@@ -29,6 +29,14 @@ class Article {
         return this;
     }
 
+    getArticleUuid() {
+        return this.articleUuid;
+    }
+
+    getAuthorUuid() {
+        return this.authorUuid;
+    }
+
     getTagName() {
         return this.rank.tagName;
     }

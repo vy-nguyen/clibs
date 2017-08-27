@@ -5,13 +5,15 @@
 'use strict';
 
 import _                  from 'lodash';
-import React              from 'react-mod'
+import React              from 'react-mod';
+import Spinner            from 'react-spinjs';
 
 import TabPanel           from 'vntd-shared/layout/TabPanel.jsx';
 import AuthorBase         from 'vntd-shared/layout/AuthorBase.jsx';
 import UserStore          from 'vntd-shared/stores/UserStore.jsx';
 import BaseStore          from 'vntd-root/stores/BaseStore.jsx';
 import AuthorStore        from 'vntd-root/stores/AuthorStore.jsx';
+import {VntdGlob}         from 'vntd-root/config/constants.js';
 import ProfileAvatar      from './ProfileAvatar.jsx';
 import ArticleBrief       from './ArticleBrief.jsx';
 import ProfileCover       from './ProfileCover.jsx';
@@ -54,7 +56,7 @@ class CustMain extends AuthorBase
 
     // @Override
     _updateAuthor(data, recv, status) {
-        if (status === "startup") {
+        if (status === "startup" || status === "domain") {
             this.setState({
                 tagList: this._updateTags(this.state.userUuid)
             });
@@ -67,7 +69,7 @@ class CustMain extends AuthorBase
         if (tagMgr != null) {
             allTags = tagMgr.getSortedTagList();
             if (allTags != null) {
-                return BaseStore.sortTagByArticles(allTags).slice(0, 5);
+                return BaseStore.sortTagByArticles(allTags).slice(0, 10);
             }
         }
         return [];
@@ -98,7 +100,8 @@ class CustMain extends AuthorBase
     }
 
     render() {
-        let tabData, userUuid = this.state.userUuid, params = this.props.params;
+        let self, tabData, spinner,
+            userUuid = this.state.userUuid, params = this.props.params;
 
         if (params != null && params.userUuid != null && params.userUuid != userUuid) {
             userUuid = params.userUuid;
@@ -106,8 +109,16 @@ class CustMain extends AuthorBase
         } else {
             tabData  = this._getBlogTab(null);
         }
+        self = UserStore.getUserByUuid(userUuid);
+        if (self == null) {
+            return null;
+        }
+        spinner = (self.getPublicData() === true) ?
+            <Spinner config={VntdGlob.spinner}/> : null;
+
         return (
             <div id="content">
+                {spinner}
                 <ProfileCover userUuid={userUuid}/>
                 <ProfileAvatar userUuid={userUuid}/>
                 <br/>

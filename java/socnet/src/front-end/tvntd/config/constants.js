@@ -59,5 +59,12 @@ export const VntdGlob = {
     smallBox: {
         width : "60px",
         height: "60px"
+    },
+    spinner: {
+        top   : "10%",
+        width : 5,
+        radius: 30,
+        length: 20,
+        color : "black"
     }
 };

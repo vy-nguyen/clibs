@@ -5,6 +5,7 @@
 
 import _        from 'lodash';
 import React    from 'react-mod';
+import Spinner  from 'react-spinjs';
 
 import NavigationStore from 'vntd-shared/stores/NavigationStore.jsx';
 import ArticleBox      from 'vntd-root/components/ArticleBox.jsx';
@@ -13,6 +14,7 @@ import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 import Lang            from 'vntd-root/stores/LanguageStore.jsx';
 import EStore          from 'vntd-root/pages/e-store/EStore.jsx';
 
+import {VntdGlob}      from 'vntd-root/config/constants.js';
 import {ArticleStore, EProductStore}  from 'vntd-root/stores/ArticleStore.jsx';
 
 class ArticleTagBrief extends React.Component
@@ -41,32 +43,39 @@ class ArticleTagBrief extends React.Component
         }
     }
 
-    _renderArtBriefUuid(artUuid) {
-        return ArticleBox.artBlog(artUuid,
+    _renderArtBriefUuid(artUuid, authorUuid) {
+        return ArticleBox.artBlog(artUuid, authorUuid,
             ArticleBox.getClickCb(this.state, artUuid, this._readArticle, this));
     }
 
     _renderArtBrief(art) {
-        return this._renderArtBriefUuid(art.artUuid);
+        return this._renderArtBriefUuid(art.getArticleUuid(), art.getAuthorUuid());
     }
 
     _renderArtFullUuid(article, artUuid, wideFmt) {
+        let out;
+
         if (this.state.articleUuid == null || this.state.articleUuid !== artUuid) {
             return null;
         }
         if (article == null) {
             article = ArticleStore.getArticleByUuid(artUuid);
         }
+        if (article == null) {
+            out = <Spinner config={VntdGlob.spinner}/>;
+        } else {
+            out = AuthorFeed.renderToggleView(article.authorUuid,
+                article, this._readArticle, null, wideFmt);
+        }
         return (
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                {AuthorFeed.renderToggleView(article.authorUuid,
-                    article, this._readArticle, null, wideFmt)}
+                {out}
             </div>
-        )
+        );
     }
 
     _renderArtFull(art) {
-        return this._renderArtFullUuid(null, art.artUuid);
+        return this._renderArtFullUuid(null, art.getArticleUuid());
     }
 
     render() {

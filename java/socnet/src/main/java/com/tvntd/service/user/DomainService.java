@@ -41,6 +41,7 @@ import org.springframework.stereotype.Service;
 
 import com.tvntd.dao.DomainRepo;
 import com.tvntd.forms.DomainForm;
+import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.ObjectId;
 import com.tvntd.models.Domain;
 import com.tvntd.service.api.IArtTagService;
@@ -223,7 +224,7 @@ public class DomainService implements IDomainService
                 }
             }
         }
-        // Get all articles.
+        // Get all public articles.
         //
         List<ArticleDTO> artList = new LinkedList<>();
         List<ArticleRankDTO> rankList = new LinkedList<>();
@@ -257,6 +258,22 @@ public class DomainService implements IDomainService
         }
         resp.setLinkedUsers(userList);
         fillAuthorTags(resp, profile, uuids);
+    }
+
+    /**
+     * Get domain data for a domain through public URL.
+     */
+    @Override
+    public void fillDomainData(StartupResponse resp, UuidForm uuids)
+    {
+        String[] author = { resp.getDomainUuid() };
+        uuids.setUuids(author);
+
+        List<ArticleRankDTO> artRanks = articleSvc.getArticleRank(uuids);
+        List<ArticleDTO> articles = new LinkedList<>();
+
+        resp.setArticles(articles);
+        resp.setArtRanks(artRanks);
     }
 
     /**

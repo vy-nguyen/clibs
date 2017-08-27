@@ -26,6 +26,11 @@ class User {
         this.followers    = this.followerList.length;
         this.follows      = this.followList.length;
         this.connections  = this.connectList.length;
+
+        this.hasData      = 0;
+        this.PublicData   = 1;
+        this.GroupData    = 2;
+        this.PrivateData  = 4;
         return this;
     }
 
@@ -63,6 +68,42 @@ class User {
         this.homeTown  = self.homeTown;
         this.state     = self.state;
         this.country   = self.country;
+    }
+
+    _reqDomainData() {
+        return {
+            authorUuid: this.userUuid,
+            uuidType  : "domain",
+            reqKind   : this.domain
+        };
+    }
+
+    _reqDataResult(result, context) {
+        this.hasData = this.hasData | context.mask;
+    }
+
+    getPublicData() {
+        if ((this.hasData & this.PublicData) == 0) {
+            let context = {
+                user: this,
+                mask: this.PublicData
+            };
+            Actions.getDomainData(this._reqDomainData(), context);
+            return true;
+        }
+        return false;
+    }
+
+    getGroupData() {
+        if ((this.hasData & this.GroupData) == 0) {
+            console.log("Request to get Group data");
+        }
+    }
+
+    getPrivateData() {
+        if ((this.hasData & this.PrivateData) == 0) {
+            console.log("Request to get Private data");
+        }
     }
 }
 
@@ -333,6 +374,11 @@ let UserStore = Reflux.createStore({
 
     onUpdateDomainCompleted: function(resp) {
         this.trigger(this.data, "update-domain", resp);
+    },
+
+    onGetDomainDataCompleted: function(resp, context) {
+        context.user._reqDataResult(resp, context);
+        this.trigger(this.data, "get-domain", resp);
     },
 
     /* Logout actions. */

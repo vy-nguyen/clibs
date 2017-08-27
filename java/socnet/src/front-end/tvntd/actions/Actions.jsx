@@ -60,6 +60,8 @@ const Actions = Reflux.createActions({
     getPublishProds: completedFailedFn,
     deleteProduct:   completedFailedFn,
 
+    getDomainData:   completedFailedFn,
+
     // Comment actions
     updateComment:   completedFn,
     postComment:     completedFailedFn,
@@ -96,11 +98,11 @@ const Actions = Reflux.createActions({
     setTags:         completedFailedFn
 });
 
-function postRestCall(formData, url, json, cbObj, authReq, id, context) {
+function postRestCall(formData, url, json, cbObj, authReq, context) {
     let type, content, data = formData;
 
     if ((authReq === true) && !UserStore.isLogin()) {
-        Actions.authRequired(id, context);
+        Actions.authRequired(url, context);
         return;
     }
     if (json === true) {
@@ -128,7 +130,7 @@ function postRestCall(formData, url, json, cbObj, authReq, id, context) {
         console.log(resp);
 
         resp.cbContext = context;
-        cbObj.failed(ErrorStore.reportFailure(id, resp, text, error));
+        cbObj.failed(ErrorStore.reportFailure(url, resp, text, error));
 
     }).always(function(resp, text, error) {
         resp.cbContext = context;
@@ -140,7 +142,7 @@ function postRestCall(formData, url, json, cbObj, authReq, id, context) {
 
 function getJSON(url, cbObj, authReq, id, context, syncServer) {
     if ((authReq === true) && !UserStore.isLogin()) {
-        Actions.authRequired(id, context);
+        Actions.authRequired(url, context);
         return;
     }
     $.getJSON(url).done(function(data, status, resp) {
@@ -154,7 +156,7 @@ function getJSON(url, cbObj, authReq, id, context, syncServer) {
         console.log("Get JSON failed " + url);
         console.log(resp);
         resp.cbContext = context;
-        cbObj.failed(ErrorStore.reportFailure(id, resp, text, error));
+        cbObj.failed(ErrorStore.reportFailure(url, resp, text, error));
 
     }).always(function(resp, text, error) {
         resp.cbContext = context;
@@ -279,28 +281,28 @@ Actions.preload.listen(function() {
  * User activities.
  */
 Actions.changeUsers.listen(function(data) {
-    postRestCall(data, "/api/user-connections", true, this, true, "changeUsers");
+    postRestCall(data, "/api/user-connections", true, this, true);
 });
 
 Actions.saveUserPost.listen(function(data) {
-    postRestCall(data, "/user/save-post", true, this, true, "saveUserPost");
+    postRestCall(data, "/user/save-post", true, this, true);
 });
 
 Actions.deleteUserPost.listen(function(data) {
-    postRestCall(data, "/user/delete-post", true, this, true, "deleteUserPost");
+    postRestCall(data, "/user/delete-post", true, this, true);
 });
 
 Actions.publishUserPost.listen(function(data) {
-    postRestCall(data, "/user/publish-post", true, this, true, "publishUserPost");
+    postRestCall(data, "/user/publish-post", true, this, true);
 });
 
 Actions.updateUserPost.listen(function(data, save) {
     let url = save === true ? "/user/update-post/save" : "/user/update-post/publish";
-    postRestCall(data, url, true, this, true, "updateUserPost");
+    postRestCall(data, url, true, this, true);
 });
 
 Actions.publishProduct.listen(function(data) {
-    postRestCall(data, "/user/publish-product", true, this, true, "pubishProduct");
+    postRestCall(data, "/user/publish-product", true, this, true);
     Actions.pendingProduct(data);
 });
 
@@ -309,54 +311,56 @@ Actions.pendingProduct.listen(function(data) {
 });
 
 Actions.getPublishProds.listen(function(data) {
-    postRestCall(data, "/public/get-estores", true, this, false, "getPublishProds");
+    postRestCall(data, "/public/get-estores", true, this, false);
 });
 
 Actions.deleteProduct.listen(function(data) {
-    postRestCall(data, "/user/delete-product", true, this, true, "deleteProduct");
+    postRestCall(data, "/user/delete-product", true, this, true);
 });
 
 /**
  * Public ads posting.
  */
 Actions.publicPostAds.listen(function(data) {
-    postRestCall(data, "/public/publish-ads", true, this, false, "publicPostAds");
+    postRestCall(data, "/public/publish-ads", true, this, false);
 });
 
 Actions.getPublishAds.listen(function(data) {
-    postRestCall(data, "/public/get-ads", true, this, false, "getPublishAds");
+    postRestCall(data, "/public/get-ads", true, this, false);
 });
 
 /**
  * Comment actions.
  */
 Actions.updateComment.listen(function(data, callback) {
-    postRestCall(data, "/user/change-comment",
-                 true, this, true, "updateComment", callback);
+    postRestCall(data, "/user/change-comment", true, this, true, callback);
 });
 
 Actions.postComment.listen(function(data) {
-    postRestCall(data, "/user/publish-comment", true, this, true, "postComment");
+    postRestCall(data, "/user/publish-comment", true, this, true);
 });
 
 Actions.postCmtSelect.listen(function(data) {
-    postRestCall(data, "/user/change-comment", true, this, true, "postCmtSelect");
+    postRestCall(data, "/user/change-comment", true, this, true);
 });
 
 /**
  * Rank article actions.
  */
 Actions.updateArtRank.listen(function(data, callback) {
-    postRestCall(data, "/user/update-art-rank",
-                 true, this, true, "updateArtRank", callback);
+    postRestCall(data, "/user/update-art-rank", true, this, true, callback);
 });
 
 Actions.postArtSelect.listen(function(data) {
-    postRestCall(data, "/user/update-art-rank", true, this, true, "postArtSelect");
+    postRestCall(data, "/user/update-art-rank", true, this, true);
 });
 
 Actions.getArticleRank.listen(function(data) {
-    postRestCall(data, "/user/get-art-rank", true, this, "getArticleRank");
+    postRestCall(data, "/user/get-art-rank", true, this, true);
+});
+
+Actions.getDomainData.listen(function(data, context) {
+    postRestCall(data, "/public/get-domain", true, this, false, context);
 });
 
 /*
@@ -375,7 +379,8 @@ Actions.getArticleRank.listen(function(data) {
  * }
  */
 Actions.commitTagRanks.listen(function(tagMgr, userTags) {
-    postRestCall(userTags, "/user/update-tag-rank", true, this, true, tagMgr.btnId, tagMgr);
+    // postRestCall(userTags, "/user/update-tag-rank", true, this, true, tagMgr.btnId, tagMgr);
+    postRestCall(userTags, "/user/update-tag-rank", true, this, true, tagMgr);
 });
 
 Actions.reRankTag.listen(function(tagMgr) {
@@ -397,18 +402,18 @@ Actions.listUsers.listen(function() {
 });
 
 Actions.setTags.listen(function(data) {
-    postRestCall(data, "/admin/set-tags", true, this, true, "setTags");
+    postRestCall(data, "/admin/set-tags", true, this, true);
 });
 
 Actions.changeTagArt.listen(function(data) {
-    postRestCall(data, "/admin/change-art-tag", true, this, true, "changeTagArt");
+    postRestCall(data, "/admin/change-art-tag", true, this, true);
 });
 
 /**
  * Language choices.
  */
 Actions.getLangJson.listen(function(lang) {
-    getJSON('/public/get-json/langs/' + lang, this, false, "getLang", lang);
+    getJSON('/public/get-json/langs/' + lang, this, false, lang);
 });
 
 Actions.translate.listen(function() {

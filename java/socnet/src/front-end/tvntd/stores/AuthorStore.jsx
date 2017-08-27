@@ -109,6 +109,14 @@ class ArticleRank {
             this.nextArticle = tagInfo.nextArticle;
         }
     }
+
+    getArticleUuid() {
+        return this.articleUuid;
+    }
+
+    getAuthorUuid() {
+        return this.authorUuid;
+    }
 }
 
 class AuthorTag {
@@ -677,6 +685,12 @@ let AuthorStore = Reflux.createStore({
         }
         Startup.mainStartup();
         this.trigger(this.data, data, "startup");
+    },
+
+    onGetDomainDataCompleted: function(data, context) {
+        data.articleRank = data.artRanks;
+        this._updateArticleRank(data);
+        this.trigger(this.data, data, "domain");
     },
 
     statics: {

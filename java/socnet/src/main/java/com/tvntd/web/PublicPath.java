@@ -405,6 +405,23 @@ public class PublicPath
         return new AdsPostDTOResponse(ads, co.getComments());
     }
 
+    @RequestMapping(value = "/public/get-domain",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public StartupResponse
+    getDomainData(@RequestBody UuidForm uuids, HttpSession session)
+    {
+        if (uuids == null) {
+            return new StartupResponse(null);
+        }
+        System.out.println("Request domain " + uuids.getAuthorUuid() +
+                ", type " + uuids.getUuidType());
+        StartupResponse resp = new StartupResponse(uuids.getAuthorUuid());
+        domainSvc.fillDomainData(resp, uuids);
+        return resp;
+    }
+
     /**
      * Get a public URL article.
      */

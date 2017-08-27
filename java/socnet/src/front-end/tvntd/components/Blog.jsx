@@ -54,7 +54,7 @@ class Blog extends ArticleBase
             getBtnFormat: this._getBtnFormat.bind(this, articleUuid),
             clickHandler: this._readArticle.bind(this, articleUuid)
         };
-        return ArticleBox.artBlogWide(articleUuid, clickCb);
+        return ArticleBox.artBlogWide(articleUuid, authorUuid, clickCb);
     }
 
     _renderFull(articleUuid, article, artRank) {
