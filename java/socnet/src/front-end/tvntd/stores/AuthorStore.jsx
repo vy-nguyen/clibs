@@ -328,8 +328,8 @@ class AuthorTagMgr {
         return null;
     }
 
-    getArticleRankByUuid(articleUuid) {
-        return AuthorStore.getArticleRankByUuid(articleUuid);
+    getArticleRankByUuid(articleUuid, authorUuid) {
+        return AuthorStore.getArticleRankByUuid(articleUuid, authorUuid);
     }
 
     getStringTags() {
@@ -461,6 +461,9 @@ let AuthorStore = Reflux.createStore({
             return rank;
         }
         article = ArticleStore.getArticleByUuid(uuid, authorUuid);
+        if (article == null) {
+            return null;
+        }
         return article.rank;
     },
 

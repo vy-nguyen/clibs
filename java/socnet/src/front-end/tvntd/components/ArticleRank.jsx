@@ -95,7 +95,10 @@ class ArticleRank extends ArticleBase
     }
 
     render() {
-        let likeStat, artPane = null, readBtn = null, rank = this.props.rank;
+        let likeStat, artPane = null, readBtn = null, rank = this.props.rank,
+            html = {
+                __html: rank.contentBrief
+            };
 
         if (this.props.noBtn == null) {
             readBtn = (
@@ -126,7 +129,7 @@ class ArticleRank extends ArticleBase
                             <LikeStat data={likeStat}/>
                         </div>
                         <div className="col-xs-7 col-sm-7 col-md-7">
-                            <p>{rank.contentBrief}</p>
+                            <p dangerouslySetInnerHTML={html}/>
                             {readBtn}
                         </div>
                     </div>

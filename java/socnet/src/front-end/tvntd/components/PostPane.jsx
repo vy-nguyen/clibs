@@ -70,7 +70,7 @@ class TagPost extends React.Component
         this._setupIds(artUuid);
         tagInfo = {
             tagName    : this._getTagValue(artRank),
-            userUuid   : article.authorUuid,
+            userUuid   : article.getAuthorUuid(),
             title      : this._getTitleValue(artRank),
             rank       : this._getRankValue(artRank),
             likeInc    : 0,
@@ -81,7 +81,7 @@ class TagPost extends React.Component
             nextArticle: InputStore.getItemIndex(RefLinks.getNextRefArtId(artUuid))
         };
         state = StateButtonStore.getButtonState(btnId).setNextState();
-        artRank = AuthorStore.getArticleRankByUuid(article.articleUuid);
+        artRank = AuthorStore.getArticleRankByUuid(artUuid, article.getAuthorUuid());
         AuthorStore.updateAuthorTag(tagInfo, artRank);
         this._updateSuccess(state, this._buttonId, null);
     }
@@ -314,24 +314,29 @@ class PublishArticle extends React.Component {
 class PostPane extends React.Component
 {
     constructor(props) {
-        let article = props.data, active, artRank;
+        let article = props.data, active, artRank,
+            articleUuid = article.getArticleUuid();
 
         super(props);
-        this._postPaneId = "post-pane-" + article.articleUuid;
+        this._postPaneId = "post-pane-" + articleUuid;
         active = InputStore.getItemIndex(this._postPaneId);
         if (active == null) {
-            artRank = AuthorStore.getArticleRankByUuid(article.articleUuid);
-
+            artRank = article.rank;
             if (artRank != null) {
                 if (artRank.publishPost == null) {
                     artRank.publishPost = false;
                 }
             } else {
-                artRank = {
-                    editMode   : false,
-                    favorite   : false,
-                    publishPost: false
-                };
+                artRank = AuthorStore
+                    .getArticleRankByUuid(articleUuid, article.getAuthorUuid());
+
+                if (artRank == null) {
+                    artRank = {
+                        editMode   : false,
+                        favorite   : false,
+                        publishPost: false
+                    };
+                }
             }
         } else {
             artRank = active.artRank;
@@ -344,7 +349,7 @@ class PostPane extends React.Component
             publish : artRank.publishPost,
             editMode: artRank.editMode
         };
-        if (ArticleTagStore.hasPublishedArticle(article.articleUuid)) {
+        if (ArticleTagStore.hasPublishedArticle(articleUuid)) {
             this.state.publish = true;
         }
         this._cancelDel      = this._cancelDel.bind(this);

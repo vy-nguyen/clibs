@@ -46,7 +46,7 @@ class ArticleBox extends React.Component
         if (data.artBrief != null) {
             data.description = (
                 <div className="description">
-                    <p>{data.artBrief}</p>
+                    <div dangerouslySetInnerHTML={{__html: data.artBrief}}/>
                 </div>
             );
         }
@@ -104,7 +104,7 @@ class ArticleBox extends React.Component
             article = ArticleStore.getArticleByUuid(articleUuid, authorUuid);
 
         author = UserStore.getUserByUuid(authorUuid);
-        artRank = AuthorStore.getArticleRankByUuid(articleUuid);
+        artRank = AuthorStore.getArticleRankByUuid(articleUuid, authorUuid);
 
         if (artRank == null) {
             return null;
@@ -235,11 +235,15 @@ class ArtBlogStyle extends React.Component
     }
 
     render() {
-        let img, arg = this.props.data, clickBtn = arg.clickBtn, article = arg.article;
+        let html, img, arg = this.props.data, clickBtn = arg.clickBtn,
+            article = arg.article;
 
         if (arg == null) {
             return null;
         }
+        html = {
+            __html: arg.artBrief
+        };
         if (article.youtube != null) {
             img = ArticleBox.youtubeLink(article, true);
         } else {
@@ -260,7 +264,7 @@ class ArtBlogStyle extends React.Component
                     <h3 className="margin-top-0"> 
                         <a onClick={arg.clickCbFn}>{arg.artTitle}</a>
                     </h3>
-                    <p className="padding-10">{arg.artBrief}</p>
+                    <p className="padding-10" dangerouslySetInnerHTML={html}/>
                     <a className={clickBtn.btnClass} onClick={arg.clickCbFn}>
                         {clickBtn.btnText}
                     </a>
@@ -277,11 +281,14 @@ class ArtBlogWide extends React.Component
     }
 
     render() {
-        let arg = this.props.data, clickBtn = arg.clickBtn;
+        let html, arg = this.props.data, clickBtn = arg.clickBtn;
 
         if (arg == null) {
             return null;
         }
+        html = {
+            __html: arg.artBrief
+        };
         return (
             <div className="well">
                 <div className="row">
@@ -296,7 +303,7 @@ class ArtBlogWide extends React.Component
                         <h3 className="margin-top-10">
                             <a onClick={arg.clickCbFn}>{arg.artTitle}</a>
                         </h3>
-                        <p>{arg.artBrief}</p>
+                        <p dangerouslySetInnerHTML={html}/>
                         <a className={clickBtn.btnClass} onClick={arg.clickCbFn}>
                             {clickBtn.btnText}
                         </a>

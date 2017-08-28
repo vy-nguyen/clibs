@@ -22,7 +22,7 @@ class TypeAhead extends AuthorBase
         this._onOptionSelected = this._onOptionSelected.bind(this);
 
         myUuid  = UserStore.getSelf().userUuid;
-        artRank = AuthorStore.getArticleRankByUuid(props.articleUuid);
+        artRank = AuthorStore.getArticleRankByUuid(props.articleUuid, myUuid);
 
         this.state = _.merge(this.state, {
             myUuid   : myUuid,
@@ -56,7 +56,7 @@ class TypeAhead extends AuthorBase
 
     _updateAuthor(data) {
         let myUuid = this.state.myUuid,
-            artRank = AuthorStore.getArticleRankByUuid(this.props.articleUuid);
+            artRank = AuthorStore.getArticleRankByUuid(this.props.articleUuid, myUuid);
 
         this.setState({
             artRank  : artRank,

@@ -37,7 +37,7 @@ class ArticleBrief extends ArticleTagBrief
             art = ArticleStore
                 .getArticleByUuid(artRank.getArticleUuid(), artRank.getAuthorUuid());
 
-            if (art.noData === true) {
+            if (art == null || art.noData === true) {
                 if (missingArts == null) {
                     missingArts = [];
                 }

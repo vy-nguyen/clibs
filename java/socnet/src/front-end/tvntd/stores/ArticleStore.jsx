@@ -169,7 +169,7 @@ let ArticleStore = Reflux.createStore({
     getArticleByUuid: function(artUuid, authorUuid) {
         let article = this.store.getItemByUuid(artUuid, authorUuid);
 
-        if (article.noData === true) {
+        if (article != null && article.noData === true) {
             article.topic = "Getting data...";
         }
         return article;
