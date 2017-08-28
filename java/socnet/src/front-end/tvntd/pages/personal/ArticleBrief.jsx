@@ -21,7 +21,8 @@ class ArticleBrief extends ArticleTagBrief
     }
 
     _renderArtFull(art) {
-        return this._renderArtFullUuid(null, art.getArticleUuid(), true);
+        return this._renderArtFullUuid(null,
+            art.getArticleUuid(), art.getAuthorUuid(), true);
     }
 
     render() {
@@ -33,8 +34,10 @@ class ArticleBrief extends ArticleTagBrief
         }
         _.forEach(ranks, function(artRank) {
             articles.push(artRank);
-            art = ArticleStore.getArticleByUuid(artRank.articleUuid);
-            if (art == null) {
+            art = ArticleStore
+                .getArticleByUuid(artRank.getArticleUuid(), artRank.getAuthorUuid());
+
+            if (art.noData === true) {
                 if (missingArts == null) {
                     missingArts = [];
                 }

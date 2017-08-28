@@ -5,8 +5,8 @@
 
 import _        from 'lodash';
 import React    from 'react-mod';
-import Spinner  from 'react-spinjs';
 
+import WebUtils        from 'vntd-shared/utils/WebUtils.jsx';
 import NavigationStore from 'vntd-shared/stores/NavigationStore.jsx';
 import ArticleBox      from 'vntd-root/components/ArticleBox.jsx';
 import AuthorFeed      from 'vntd-root/components/AuthorFeed.jsx';
@@ -14,7 +14,6 @@ import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 import Lang            from 'vntd-root/stores/LanguageStore.jsx';
 import EStore          from 'vntd-root/pages/e-store/EStore.jsx';
 
-import {VntdGlob}      from 'vntd-root/config/constants.js';
 import {ArticleStore, EProductStore}  from 'vntd-root/stores/ArticleStore.jsx';
 
 class ArticleTagBrief extends React.Component
@@ -23,7 +22,6 @@ class ArticleTagBrief extends React.Component
         super(props);
         this._renderArtBrief = this._renderArtBrief.bind(this);
         this._renderArtFull  = this._renderArtFull.bind(this);
-
         this._renderArtBriefUuid = this._renderArtBriefUuid.bind(this);
 
         this.state = {
@@ -52,21 +50,18 @@ class ArticleTagBrief extends React.Component
         return this._renderArtBriefUuid(art.getArticleUuid(), art.getAuthorUuid());
     }
 
-    _renderArtFullUuid(article, artUuid, wideFmt) {
+    _renderArtFullUuid(article, artUuid, authorUuid, wideFmt) {
         let out;
 
         if (this.state.articleUuid == null || this.state.articleUuid !== artUuid) {
             return null;
         }
         if (article == null) {
-            article = ArticleStore.getArticleByUuid(artUuid);
+            article = ArticleStore.getArticleByUuid(artUuid, authorUuid);
         }
-        if (article == null) {
-            out = <Spinner config={VntdGlob.spinner}/>;
-        } else {
-            out = AuthorFeed.renderToggleView(article.authorUuid,
+        out = AuthorFeed.renderToggleView(authorUuid,
                 article, this._readArticle, null, wideFmt);
-        }
+
         return (
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 {out}
@@ -75,7 +70,7 @@ class ArticleTagBrief extends React.Component
     }
 
     _renderArtFull(art) {
-        return this._renderArtFullUuid(null, art.getArticleUuid());
+        return this._renderArtFullUuid(null, art.getArticleUuid(), art.getAuthorUuid());
     }
 
     render() {

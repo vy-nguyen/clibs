@@ -20,7 +20,8 @@ import WidgetGrid   from 'vntd-shared/widgets/WidgetGrid.jsx';
 import JarvisWidget from 'vntd-shared/widgets/JarvisWidget.jsx';
 import ModalConfirm from 'vntd-shared/forms/commons/ModalConfirm.jsx';
 import EditorPost   from 'vntd-shared/forms/commons/EditorPost.jsx';
-import InputStore   from 'vntd-shared/stores/NestableStore.jsx'; 
+import InputStore   from 'vntd-shared/stores/NestableStore.jsx';
+import WebUtils     from 'vntd-shared/utils/WebUtils.jsx';
 
 import ArticleStore     from 'vntd-root/stores/ArticleStore.jsx';
 import ArticleTagStore  from 'vntd-root/stores/ArticleTagStore.jsx';
@@ -171,6 +172,10 @@ class TagPost extends React.Component
         let article = this.props.article, artRank = article.rank, refLink = null,
             value, tagEntry, titleEntry, rankEntry;
 
+        if (article.noData === true) {
+            console.log("wait for data...");
+            return WebUtils.spinner();
+        }
         value = this._getTitleValue(artRank);
         if (!UserStore.isUserMe(article.authorUuid)) {
             return this._renderTitle(value, artRank);
@@ -315,8 +320,7 @@ class PostPane extends React.Component
         this._postPaneId = "post-pane-" + article.articleUuid;
         active = InputStore.getItemIndex(this._postPaneId);
         if (active == null) {
-            artRank = AuthorStore
-                .getArticleRank(article.authorUuid, article.articleUuid);
+            artRank = AuthorStore.getArticleRankByUuid(article.articleUuid);
 
             if (artRank != null) {
                 if (artRank.publishPost == null) {

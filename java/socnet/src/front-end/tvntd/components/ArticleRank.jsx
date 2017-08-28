@@ -24,13 +24,14 @@ class ArticleRank extends ArticleBase
 
         super(props);
         this.artBtnId = "art-rank-btn-" + props.articleUuid;
+        this._getArticle        = this._getArticle.bind(this);
         this._toggleFullArticle = this._toggleFullArticle.bind(this);
         this._createReadButton  = this._createReadButton.bind(this);
 
         artBtn = StateButtonStore.createButton(this.artBtnId, this._createReadButton);
         this.state = {
             fullArt : artBtn.getStateCode(),
-            article : ArticleStore.getArticleByUuid(props.articleUuid)
+            article : this._getArticle(props)
         };
     }
 
@@ -43,8 +44,13 @@ class ArticleRank extends ArticleBase
         }
     }
 
+    _getArticle(props) {
+        return ArticleStore
+            .getArticleByUuid(props.articleUuid, props.rank.getAuthorUuid());
+    }
+
     _updateArts(store, data, status, update, authorUuid) {
-        let article = ArticleStore.getArticleByUuid(this.props.articleUuid);
+        let article = this._getArticle(this.props);
 
         if (article != this.state.article) {
             this.setState({
@@ -83,7 +89,7 @@ class ArticleRank extends ArticleBase
         if (newState !== this.state.fullArt) {
             this.setState({
                 fullArt: newState,
-                article: ArticleStore.getArticleByUuid(this.props.articleUuid)
+                article: this._getArticle(this.props)
             });
         }
     }

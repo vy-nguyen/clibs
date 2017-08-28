@@ -293,9 +293,20 @@ class CommonStore {
         return (myShelf != null) ? myShelf.getSortedSavedArts() : null;
     }
 
-    getItemByUuid(uuid) {
-        let uuids = this.data.itemsByUuid[uuid];
-        return uuids;
+    getItemByUuid(uuid, authorUuid) {
+        let item = this.data.itemsByUuid[uuid];
+
+        if (item == null) {
+            if (authorUuid == null) {
+                return null;
+            }
+            item = Article.newInstance(this.data.storeKind, {
+                authorUuid : authorUuid,
+                articleUuid: uuid,
+                noData     : true
+            });
+        }
+        return item;
     }
 
     getAuthorUuid(articleUuid) {

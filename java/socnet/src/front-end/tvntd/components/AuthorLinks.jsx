@@ -60,7 +60,7 @@ class AuthorLinks extends AuthorBase
 
     _renderLink(item) {
         let text, parent = item.parent,
-            article = ArticleStore.getArticleByUuid(item.articleUuid);
+            article = ArticleStore.getArticleByUuid(item.articleUuid, item.authorUuid);
 
         if (article == null) {
             return null;

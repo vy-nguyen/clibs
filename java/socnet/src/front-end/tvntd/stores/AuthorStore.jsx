@@ -80,11 +80,9 @@ class ArticleRank {
 
         this._id = _.uniqueId('id-art-rank-');
         if (article == null) {
-            article = ArticleStore.getArticleByUuid(this.articleUuid);
+            article = ArticleStore.getArticleByUuid(this.articleUuid, this.authorUuid);
         }
-        if (article != null) {
-            article.rank = this;
-        }
+        article.rank = this;
         return this;
     }
 
@@ -331,11 +329,7 @@ class AuthorTagMgr {
     }
 
     getArticleRankByUuid(articleUuid) {
-        let article = ArticleStore.getArticleByUuid(articleUuid);
-        if (article != null) {
-            return article.rank;
-        }
-        return null;
+        return AuthorStore.getArticleRankByUuid(articleUuid);
     }
 
     getStringTags() {
@@ -461,8 +455,13 @@ let AuthorStore = Reflux.createStore({
         return this.data.authorMap[uuid];
     },
 
-    getArticleRankByUuid: function(uuid) {
-        return this.data.allArticleRanks[uuid];
+    getArticleRankByUuid: function(uuid, authorUuid) {
+        let article, rank = this.data.allArticleRanks[uuid];
+        if (rank != null) {
+            return rank;
+        }
+        article = ArticleStore.getArticleByUuid(uuid, authorUuid);
+        return article.rank;
     },
 
     _setArticleRankObj: function(rankObj) {
@@ -511,24 +510,14 @@ let AuthorStore = Reflux.createStore({
         return tagMgr.getAuthorTag(tagName, 50, false);
     },
 
-    /**
-     * @return artRank matching with author uuid and article uuid.
-     */
-    getArticleRank: function(authorUuid, articleUuid) {
-        let tagMgr = this.getAuthorTagMgr(authorUuid);
-        return tagMgr.getArticleRankByUuid(articleUuid);
-    },
-
     updateAuthorTag: function(tagInfo, artRank) {
         let authorTagMgr = this.getAuthorTagMgr(tagInfo.userUuid);
         let authorTag = authorTagMgr.getAuthorTag(tagInfo.tagName,
                             tagInfo.tagRank, tagInfo.favorite);
 
         if (artRank == null) {
-            let article = ArticleStore.getArticleByUuid(tagInfo.articleUuid);
-            if (article == null) {
-                return;
-            }
+            let article = ArticleStore
+                .getArticleByUuid(tagInfo.articleUuid, tagInfo.userUuid);
             artRank = new ArticleRank(null, authorTag, article);
         } else {
             artRank.detachTag();
@@ -694,13 +683,6 @@ let AuthorStore = Reflux.createStore({
     },
 
     statics: {
-        createDefArtRank: function(articleUuid) {
-            let article = ArticleStore.getArticleByUuid(articleUuid);
-            if (article != null) {
-                return new ArticleRank(null, null, article);
-            }
-            return null;
-        }
     }
 });
 

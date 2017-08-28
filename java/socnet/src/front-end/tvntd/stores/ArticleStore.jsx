@@ -166,8 +166,13 @@ let ArticleStore = Reflux.createStore({
         return this.store.getMySavedItems();
     },
 
-    getArticleByUuid: function(artUuid) {
-        return this.store.getItemByUuid(artUuid);
+    getArticleByUuid: function(artUuid, authorUuid) {
+        let article = this.store.getItemByUuid(artUuid, authorUuid);
+
+        if (article.noData === true) {
+            article.topic = "Getting data...";
+        }
+        return article;
     },
 
     sortArticlesByDate: function(articles) {

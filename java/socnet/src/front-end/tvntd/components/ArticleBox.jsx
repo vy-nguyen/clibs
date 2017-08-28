@@ -100,22 +100,13 @@ class ArticleBox extends React.Component
     }
 
     static getArtCtx(articleUuid, authorUuid, clickCb) {
-        let img, author, artRank, article = ArticleStore.getArticleByUuid(articleUuid);
+        let img, img1, author, artRank,
+            article = ArticleStore.getArticleByUuid(articleUuid, authorUuid);
 
-        if (article == null) {
-            article = {
-                topic      : "Getting data...",
-                content    : null,
-                pictureUrl : null,
-                dateString : null,
-                createdDate: null
-            };
-        }
         author = UserStore.getUserByUuid(authorUuid);
         artRank = AuthorStore.getArticleRankByUuid(articleUuid);
 
         if (artRank == null) {
-            console.log("No rank >>> get ctx " + articleUuid + " author " + authorUuid);
             return null;
         }
         if (artRank.contentBrief == null) {
@@ -127,15 +118,17 @@ class ArticleBox extends React.Component
         }
         img = article.pictureUrl;
         if (img != null && !_.isEmpty(img)) {
-            img = img[Util.getRandomInt(0, img.length - 1)];
+            img  = img[Util.getRandomInt(0, img.length - 1)];
+            img1 = article.pictureUrl[1];
         } else {
-            img = author.userImgUrl;
+            img  = UserStore.getSelf().userImgUrl
+            img1 = null;
         }
         return {
             article    : article,
             logo       : author.userImgUrl,
             image      : img,
-            image1     : article.pictureUrl != null ? article.pictureUrl[1] : null,
+            image1     : img1,
             dateInfo   : article.dateString,
             artTitle   : article.topic,
             artCategory: artRank.tagName,
