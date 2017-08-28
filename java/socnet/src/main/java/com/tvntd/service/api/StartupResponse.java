@@ -59,6 +59,10 @@ public class StartupResponse
     //
     private List<ArticleRankDTO>   artRanks;
 
+    public StartupResponse(String uuid) {
+        domainUuid = uuid;
+    }
+
     public StartupResponse(ProfileDTO profile,
             HttpServletRequest reqt, HttpSession session, boolean annon)
     {

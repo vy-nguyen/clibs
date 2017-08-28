@@ -99,20 +99,31 @@ class ArticleBox extends React.Component
         )
     }
 
-    static getArtCtx(articleUuid, clickCb) {
+    static getArtCtx(articleUuid, authorUuid, clickCb) {
         let img, author, artRank, article = ArticleStore.getArticleByUuid(articleUuid);
 
         if (article == null) {
-            return null;
+            article = {
+                topic      : "Getting data...",
+                content    : null,
+                pictureUrl : null,
+                dateString : null,
+                createdDate: null
+            };
         }
-        author = UserStore.getUserByUuid(article.authorUuid);
-        artRank = AuthorStore.getArticleRank(article.authorUuid, articleUuid);
+        author = UserStore.getUserByUuid(authorUuid);
+        artRank = AuthorStore.getArticleRankByUuid(articleUuid);
 
         if (artRank == null) {
+            console.log("No rank >>> get ctx " + articleUuid + " author " + authorUuid);
             return null;
         }
         if (artRank.contentBrief == null) {
-            artRank.contentBrief = article.content.substring(0, 100);
+            if (article.content != null && article.content.length > 100) {
+                artRank.contentBrief = article.content.substring(0, 100);
+            } else {
+                artRank.contentBrief = "";
+            }
         }
         img = article.pictureUrl;
         if (img != null && !_.isEmpty(img)) {
@@ -124,7 +135,7 @@ class ArticleBox extends React.Component
             article    : article,
             logo       : author.userImgUrl,
             image      : img,
-            image1     : article.pictureUrl[1],
+            image1     : article.pictureUrl != null ? article.pictureUrl[1] : null,
             dateInfo   : article.dateString,
             artTitle   : article.topic,
             artCategory: artRank.tagName,
@@ -161,20 +172,24 @@ class ArticleBox extends React.Component
         };
     }
 
-    static article(articleUuid, clickCb) {
-        return (<ArticleBox data={ArticleBox.getArtCtx(articleUuid, clickCb)}/>);
+    static article(articleUuid, authorUuid, clickCb) {
+        let data = ArticleBox.getArtCtx(articleUuid, authorUuid, clickCb);
+        return (data != null ? <ArticleBox data={data}/> : null);
     }
 
-    static artBlog(articleUuid, clickCb) {
-        return (<ArtBlogStyle data={ArticleBox.getArtCtx(articleUuid, clickCb)}/>);
+    static artBlog(articleUuid, authorUuid, clickCb) {
+        let data = ArticleBox.getArtCtx(articleUuid, authorUuid, clickCb);
+        return (data != null ? <ArtBlogStyle data={data}/> : null);
     }
 
-    static artBlogWide(articleUuid, clickCb) {
-        return (<ArtBlogWide data={ArticleBox.getArtCtx(articleUuid, clickCb)}/>);
+    static artBlogWide(articleUuid, authorUuid, clickCb) {
+        let data = ArticleBox.getArtCtx(articleUuid, authorUuid, clickCb);
+        return (data != null ? <ArtBlogWide data={data}/> : null);
     }
 
-    static artVideo(articleUuid, clickCb) {
-        return (<ArtVideo data={ArticleBox.getArtCtx(articleUuid, clickCb)}/>);
+    static artVideo(articleUuid, authorUuid, clickCb) {
+        let data = ArticleBox.getArtCtx(articleUuid, authorUuid, clickCb);
+        return (data != null ? <ArtVideo data={data}/> : null);
     }
 
     static youtubeLink(article, brief) {
@@ -194,7 +209,6 @@ class ArticleBox extends React.Component
 
                 if (idx > 0) {
                     linkId = linkId.substring(idx);
-                    console.log(linkId);
                 }
                 url = "https://docs.google.com/viewer?srcid=" + linkId +
                     "&pid=explorer&efh=false&a=v&chrome=false&embedded=true";

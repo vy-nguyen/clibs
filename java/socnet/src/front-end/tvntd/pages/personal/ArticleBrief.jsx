@@ -17,27 +17,37 @@ class ArticleBrief extends ArticleTagBrief
     }
 
     _renderArtBrief(art) {
-        return this._renderArtBriefUuid(art.articleUuid);
+        return this._renderArtBriefUuid(art.getArticleUuid(), art.getAuthorUuid());
     }
 
     _renderArtFull(art) {
-        return this._renderArtFullUuid(art, art.articleUuid, true);
+        return this._renderArtFullUuid(null, art.getArticleUuid(), true);
     }
 
     render() {
-        let art, tag = this.props.tag, ranks = tag.sortedArts, articles = [];
+        let art, tag = this.props.tag, ranks = tag.sortedArts,
+            articles = [], missingArts = null;
 
         if (ranks == null) {
             return null;
         }
         _.forEach(ranks, function(artRank) {
+            articles.push(artRank);
             art = ArticleStore.getArticleByUuid(artRank.articleUuid);
-            if (art != null) {
-                articles.push(art);
+            if (art == null) {
+                if (missingArts == null) {
+                    missingArts = [];
+                }
+                missingArts.push(artRank.articleUuid);
             }
         });
         if (_.isEmpty(articles)) {
             return null;
+        }
+        if (missingArts != null) {
+            console.log("Tag " + tag.tagName);
+            console.log(missingArts);
+            ArticleStore.updateMissingUuid(missingArts);
         }
         return (
             <section id='widget-grid'>

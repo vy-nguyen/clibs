@@ -27,6 +27,7 @@
 package com.tvntd.service.api;
 
 import com.tvntd.forms.DomainForm;
+import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.ObjectId;
 import com.tvntd.models.Domain;
 import com.tvntd.objstore.ObjStore;
@@ -44,6 +45,7 @@ public interface IDomainService
     void fillLoginResponse(LoginResponse resp, ProfileDTO profile);
     void fillStartupDomain(StartupResponse resp, String domain, ProfileDTO prof);
     void fillStartupAccount(StartupResponse resp, String domain, ProfileDTO prof);
+    void fillDomainData(StartupResponse resp, UuidForm form);
 
     public static class DomainDTO
     {

@@ -18,6 +18,22 @@ function sortArticle(pivot, article) {
     return article.createdDate - pivot.createdDate;
 }
 
+class PublishArtTag {
+    constructor(artObj, artTag, uuid) {
+        this.artObj = artObj;
+        this.artTag = artTag;
+        this.articleUuid = uuid;
+    }
+
+    getArticleUuid() {
+        return this.articleUuid;
+    }
+
+    getAuthorUuid() {
+        return this.artObj.authorUuid;
+    }
+}
+
 class ArtTag {
     constructor(data) {
         let artUuids;
@@ -129,7 +145,6 @@ class ArtTag {
 
     debugPrint() {
         if (!_.isEmpty(this.sortedArts)) {
-            console.log("Tag " + this.tagName);
             _.forEach(this.sortedArts, function(article) {
                 console.log("[" + article.createdDate + "] " + article.getTitle());
             });
@@ -598,11 +613,7 @@ let ArticleTagStore = Reflux.createStore({
 
                 if (uuidDict[uuid] == null) {
                     uuidDict[uuid] = uuid;
-                    artUuids.push({
-                        artUuid: uuid,
-                        artTag : tag,
-                        artObj : artObj
-                    });
+                    artUuids.push(new PublishArtTag(artObj, tag, uuid));
                 }
             });
             if (tag.subTags != null) {

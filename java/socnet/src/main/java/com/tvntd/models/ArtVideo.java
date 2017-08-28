@@ -47,6 +47,9 @@ public class ArtVideo extends Article
         this.pending     = org.pending;
         this.contentOId  = org.contentOId;
         this.createdDate = org.createdDate;
+        this.topic       = org.topic;
+        this.publicTag   = org.publicTag;
+        this.content     = org.content;
         this.pictures    = org.pictures;
         this.videoUrl    = video;
     }

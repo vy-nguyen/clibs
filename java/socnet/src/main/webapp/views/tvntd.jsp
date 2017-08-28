@@ -15,7 +15,6 @@
     <%--
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/site.css">
       --%>
 
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/tvntd-plugins.css">
