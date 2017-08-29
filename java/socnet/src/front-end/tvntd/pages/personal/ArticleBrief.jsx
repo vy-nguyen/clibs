@@ -36,21 +36,9 @@ class ArticleBrief extends ArticleTagBrief
             articles.push(artRank);
             art = ArticleStore
                 .getArticleByUuid(artRank.getArticleUuid(), artRank.getAuthorUuid());
-
-            if (art == null || art.noData === true) {
-                if (missingArts == null) {
-                    missingArts = [];
-                }
-                missingArts.push(artRank.articleUuid);
-            }
         });
         if (_.isEmpty(articles)) {
             return null;
-        }
-        if (missingArts != null) {
-            console.log("Tag " + tag.tagName);
-            console.log(missingArts);
-            ArticleStore.updateMissingUuid(missingArts);
         }
         return (
             <section id='widget-grid'>

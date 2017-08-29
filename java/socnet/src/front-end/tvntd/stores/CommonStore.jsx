@@ -18,13 +18,13 @@ class Article {
             this[k] = v;
         }.bind(this));
 
-        // this._id          = _.uniqueId('id-article-');
         this.author       = UserStore.getUserByUuid(data.authorUuid);
         this.createdDate  = Date.parse(data.createdDate);
         this.dateString   = moment(this.createdDate).format("DD/MM/YYYY - HH:mm");
 
         if (data.rank != null) {
             CommentStore.addArtAttr(data.rank);
+            AuthorStore.addArticleRankFromJson(data.rank);
         }
         return this;
     }
@@ -297,6 +297,7 @@ class CommonStore {
         let item = this.data.itemsByUuid[uuid];
 
         if (item == null) {
+            this._recordMissingUuid(uuid);
             if (authorUuid == null) {
                 return null;
             }
@@ -353,6 +354,17 @@ class CommonStore {
 
         this._notifyListeners("remove", out);
         store.trigger(this.data, [data], "delOk", true, data.authorUuid);
+    }
+
+    _recordMissingUuid(uuid) {
+        let missing = this.data.missingUuids;
+
+        if (missing == null) {
+            this.data.missingUuids = [];
+            missing = this.data.missingUuids;
+        }
+        missing.push(uuid);
+        return missing;
     }
 
     updateMissingUuid(uuids) {

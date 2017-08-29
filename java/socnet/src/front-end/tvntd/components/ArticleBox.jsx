@@ -130,7 +130,7 @@ class ArticleBox extends React.Component
             image      : img,
             image1     : img1,
             dateInfo   : article.dateString,
-            artTitle   : article.topic,
+            artTitle   : artRank.getArtTitle(),
             artCategory: artRank.tagName,
             artBrief   : artRank.contentBrief,
             artPrice   : author.getUserName(),
