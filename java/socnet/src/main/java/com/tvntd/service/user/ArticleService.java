@@ -57,12 +57,10 @@ import com.tvntd.models.ArtTag;
 import com.tvntd.models.ArtVideo;
 import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
-import com.tvntd.service.api.IAdsPostService;
 import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.ICommentService;
-import com.tvntd.service.api.IProductService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.util.Util;
 
@@ -145,9 +143,39 @@ public class ArticleService implements IArticleService
     @Override
     public List<ArticleDTO> convert(List<Article> arts)
     {
+        List<String> uuids = new LinkedList<>();
+        for (Article a : arts) {
+            uuids.add(a.getArticleUuid());
+        }
+        List<ArticleRank> ranks = artRankRepo.findByArticleUuidIn(uuids);
+        return makeArticleDTOList(arts, ranks);
+    }
+
+    protected ArticleDTO makeArticleDTO(ArticleRank rank, Article art)
+    {
+        if (rank != null && rank.getArtTag() == null) {
+            rank.setHasArticle(true);
+            rank.setArtTag(ArtTag.BLOG);
+            rank.setContentOid(art.getContentOId());
+            if (art instanceof ArtVideo) {
+                rank.setContentLinkUrl(((ArtVideo)art).getVideoUrl());
+            }
+            artRankRepo.save(rank);
+        }
+        return new ArticleDTO(art, rank);
+    }
+
+    protected List<ArticleDTO>
+    makeArticleDTOList(List<Article> articles, List<ArticleRank> ranks)
+    {
         List<ArticleDTO> result = new LinkedList<>();
-        for (Article at : arts) {
-            result.add(new ArticleDTO(at, getRank(at.getArticleUuid())));
+        Map<String, ArticleRank> map = new HashMap<>();
+
+        for (ArticleRank r : ranks) {
+            map.put(r.getArticleUuid(), r);
+        }
+        for (Article a : articles) {
+            result.add(makeArticleDTO(map.get(a.getArticleUuid()), a));
         }
         return result;
     }
@@ -189,15 +217,11 @@ public class ArticleService implements IArticleService
     @Override
     public List<ArticleRank> getArtRank(String[] artUuids)
     {
-        List<ArticleRank> result = new LinkedList<>();
-
-        for (String uuid : artUuids) {
-            ArticleRank rank = artRankRepo.findByArticleUuid(uuid);
-            if (rank != null) {
-                result.add(rank);
-            }
+        List<String> uuids = new LinkedList<>();
+        for (String u : artUuids) {
+            uuids.add(u);
         }
-        return result;
+        return artRankRepo.findByArticleUuidIn(uuids);
     }
 
     @Override
@@ -267,29 +291,26 @@ public class ArticleService implements IArticleService
         return rank;
     }
 
-    public List<ArticleRankDTO> getArticleRank(UuidForm uuids)
+    public List<ArticleRankDTO> getArticleRank(UuidForm form)
     {
-        List<ArticleRankDTO> ranks = new LinkedList<>();
-        String type = uuids.getUuidType();
-
+        List<String> uuids = new LinkedList<>();
+        for (String uid : form.getUuids()) {
+            uuids.add(uid);
+        }
+        String type = form.getUuidType();
         boolean author = true;
+
         if (type != null && type.equals("product")) {
             author = false;
         }
-        for (String uuid : uuids.getUuids()) {
-            if (author == true) {
-                List<ArticleRank> r = artRankRepo.findByAuthorUuid(uuid);
-                if (r != null && !r.isEmpty()) {
-                    ranks.addAll(convertRank(r));
-                }
-            } else {
-                ArticleRank r = artRankRepo.findByArticleUuid(uuid);
-                if (r != null) {
-                    ranks.add(new ArticleRankDTO(r));
-                }
-            }
+        List<ArticleRank> ranks;
+
+        if (author == true) {
+            ranks = artRankRepo.findByAuthorUuidIn(uuids);
+        } else {
+            ranks = artRankRepo.findByArticleUuidIn(uuids);
         }
-        return ranks;
+        return convertRank(ranks);
     }
 
     /**
@@ -298,21 +319,10 @@ public class ArticleService implements IArticleService
     @Override
     public ArticleDTO getArticleDTO(String artUuid)
     {
-        String uuid = artUuid.toString();
-        Article art = articleRepo.findByArticleUuid(uuid);
+        Article art = articleRepo.findByArticleUuid(artUuid);
 
         if (art != null) {
-            ArticleRank rank = getRank(uuid);
-            if (rank != null && rank.getArtTag() == null) {
-                rank.setHasArticle(true);
-                rank.setArtTag(ArtTag.BLOG);
-                rank.setContentOid(art.getContentOId());
-                if (art instanceof ArtVideo) {
-                    rank.setContentLinkUrl(((ArtVideo)art).getVideoUrl());
-                }
-                artRankRepo.save(rank);
-            }
-            return new ArticleDTO(art, rank);
+            return makeArticleDTO(getRank(artUuid), art);
         }
         return null;
     }
@@ -327,7 +337,7 @@ public class ArticleService implements IArticleService
     {
         Map<String, String> valid = null;
         List<Article> arts = articleRepo.findByArticleUuidIn(uuids);
-        List<ArticleDTO> result = new ArrayList<>(arts.size());
+        List<ArticleDTO> result = new LinkedList<>();
 
         if (arts.size() < uuids.size()) {
             valid = new HashMap<>();
@@ -369,14 +379,16 @@ public class ArticleService implements IArticleService
 
     protected Map<String, ArticleRank> getRanks(List<Article> articles)
     {
+        List<String> uuids = new LinkedList<>();
+
+        for (Article a : articles) {
+            uuids.add(a.getArticleUuid());
+        }
         Map<String, ArticleRank> ranks = new HashMap<>();
-        for (Article art : articles) {
-            String uuid = art.getArticleUuid();
-            ArticleRank rank = artRankRepo.findByArticleUuid(uuid);
-            if (rank == null) {
-                continue;
-            }
-            ranks.put(uuid, rank);
+        List<ArticleRank> result = artRankRepo.findByArticleUuidIn(uuids);
+
+        for (ArticleRank r : result) {
+            ranks.put(r.getArticleUuid(), r);
         }
         return ranks;
     }
@@ -400,15 +412,7 @@ public class ArticleService implements IArticleService
     @Override
     public List<ArticleDTO> getArticlesByUser(List<String> uuidList)
     {
-        List<ArticleDTO> result = new LinkedList<>();
-
-        for (String userUuid : uuidList) {
-            List<ArticleDTO> arts = getArticlesByUser(userUuid);
-            if (arts != null && !arts.isEmpty()) {
-                result.addAll(arts);
-            }
-        }
-        return result;
+        return convert(articleRepo.findByArticleUuidIn(uuidList));
     }
 
     @Override

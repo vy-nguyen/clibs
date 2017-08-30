@@ -37,7 +37,9 @@ public interface AdsPostRepo extends JpaRepository<AdsPost, String>
     AdsPost findByArticleUuid(String uuid);
     AdsPost findByAuthorUuid(String uuid);
 
+    List<AdsPost> findByArticleUuidIn(List<String> uuids);
     List<AdsPost> findAllByAuthorUuid(String uuid);
+    List<AdsPost> findByAuthorUuidIn(List<String> authorUuids);
     List<AdsPost> findAllByAuthorUuidOrderByCreatedDateAsc(String uuid);
 
     @Override

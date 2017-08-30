@@ -186,19 +186,23 @@ class ArticleBox extends React.Component
     }
 
     static youtubeLink(article, brief) {
-        let oid = article.contentOid, code, url;
+        let rank = article.getArticleRank(), oid, code, url;
 
+        if (rank == null) {
+            return null;
+        }
+        oid = rank.contentOid;
         if (oid != null) {
             code = oid.substring(0, 3);
             if (code === "DOC") {
-                url = "https://docs.google.com/" + article.youtube +
+                url = "https://docs.google.com/" + rank.contentLinkUrl +
                     "/pub?embedded=true";
 
             } else if (code === "VID") {
-                url = "https://www.youtube.com/embed/" + article.youtube;
+                url = "https://www.youtube.com/embed/" + rank.contentLinkUrl;
 
             } else if (code === "DRV") {
-                let linkId = article.youtube, idx = linkId.lastIndexOf('/');
+                let linkId = rank.contentLinkUrl, idx = linkId.lastIndexOf('/');
 
                 if (idx > 0) {
                     linkId = linkId.substring(idx);
@@ -209,7 +213,7 @@ class ArticleBox extends React.Component
                 return null;
             }
         } else {
-            url = "https://www.youtube.com/embed/" + article.youtube;
+            url = "https://www.youtube.com/embed/" + rank.contentLinkUrl;
         }
 
         const style = {

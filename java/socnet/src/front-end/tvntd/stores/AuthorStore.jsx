@@ -19,7 +19,6 @@ import {ArticleStore, EProductStore} from 'vntd-root/stores/ArticleStore.jsx';
 
 class Author {
     constructor(data) {
-        // this._id       = _.uniqueId('id-author-');
         this.profile    = null;
         this.userUuid   = data.authorUuid;
         this.aboutList  = data.aboutList;
@@ -465,8 +464,13 @@ let AuthorStore = Reflux.createStore({
         return this.data.authorMap[uuid];
     },
 
+    lookupArticleRankByUuid: function(uuid) {
+        return this.data.allArticleRanks[uuid];
+    },
+
     getArticleRankByUuid: function(uuid, authorUuid) {
-        let article, rank = this.data.allArticleRanks[uuid];
+        let article, rank = this.lookupArticleRankByUuid(uuid);
+
         if (rank != null) {
             return rank;
         }

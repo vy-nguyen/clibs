@@ -311,7 +311,7 @@ class PublishArticle extends React.Component {
 class PostPane extends React.Component
 {
     constructor(props) {
-        let article = props.data, active, artRank,
+        let article = props.data, active, artRank, authorUuid,
             articleUuid = article.getArticleUuid();
 
         super(props);
@@ -324,8 +324,8 @@ class PostPane extends React.Component
                     artRank.publishPost = false;
                 }
             } else {
-                artRank = AuthorStore
-                    .getArticleRankByUuid(articleUuid, article.getAuthorUuid());
+                authorUuid = article.getAuthorUuid();
+                artRank = AuthorStore.getArticleRankByUuid(articleUuid, authorUuid);
 
                 if (artRank == null) {
                     artRank = {

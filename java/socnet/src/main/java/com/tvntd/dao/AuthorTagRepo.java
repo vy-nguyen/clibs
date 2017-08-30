@@ -35,7 +35,10 @@ import com.tvntd.models.AuthorTag;
 public interface AuthorTagRepo extends JpaRepository<AuthorTag, String>
 {
     AuthorTag findByTagOid(String tagOid);
+    List<AuthorTag> findByTagOid(List<String> tagOids);
+
     List<AuthorTag> findByAuthorUuid(String authorUuid);
+    List<AuthorTag> findByAuthorUuidIn(List<String> authorUuid);
     
     @Override
     void delete(String tagOid);

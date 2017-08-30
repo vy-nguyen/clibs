@@ -267,8 +267,6 @@ let ArticleStore = Reflux.createStore({
     },
 
     onGetArticlesCompleted: function(data) {
-        console.log("Get articles completed");
-        console.log(data);
         this.store.onGetPublishItemCompleted(data, 'articles', this);
     }
 });

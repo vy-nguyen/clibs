@@ -36,6 +36,7 @@ public interface TimeLineRepo extends JpaRepository<TimeLine, String>
 {
     TimeLine findByUserUuidAndArticleUuid(String user, String article);
     List<TimeLine> findByUserUuid(String userUuid);
+    List<TimeLine> findByUserUuidIn(List<String> uuids);
 
     @Override
     void delete(TimeLine rec);

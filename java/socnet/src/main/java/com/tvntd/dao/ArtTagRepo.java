@@ -36,7 +36,9 @@ public interface ArtTagRepo extends JpaRepository<ArtTag, String>
 {
     ArtTag findByTagOid(String tagKey);
     ArtTag findByTagName(String tag);
+
     List<ArtTag> findAllByUserUuid(String uuid);
+    List<ArtTag> findByUserUuidIn(List<String> userUuids);
 
     @Override
     void delete(ArtTag tag);

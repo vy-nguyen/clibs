@@ -39,6 +39,8 @@ public interface ArticleRankRepo extends JpaRepository<ArticleRank, Long>
     ArticleRank findByPublicUrlOid(String urlOid);
 
     List<ArticleRank> findByAuthorUuid(String uuid);
+    List<ArticleRank> findByArticleUuidIn(List<String> uuids);
+    List<ArticleRank> findByAuthorUuidIn(List<String> authorUuids);
 
     @Override
     void delete(ArticleRank rank);

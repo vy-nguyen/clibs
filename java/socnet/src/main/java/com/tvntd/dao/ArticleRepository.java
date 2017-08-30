@@ -40,13 +40,11 @@ public interface ArticleRepository extends JpaRepository<Article, String>
     List<Article> findByArticleUuidIn(List<String> uuids);
 
     Article findByAuthorUuid(String uuid);
+    List<Article> findByAuthorUuidIn(List<String> authorUUids);
 
     List<Article> findAllByAuthorId(Long authorId);
-
     List<Article> findAllByAuthorUuid(String authorUuidid);
-
     List<Article> findAllByAuthorIdOrderByCreatedDateDesc(Long authorId);
-
     List<Article> findAllByAuthorUuidOrderByCreatedDateAsc(String uuid);
 
     Page<Article>

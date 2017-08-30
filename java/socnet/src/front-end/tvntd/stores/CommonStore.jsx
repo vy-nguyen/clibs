@@ -52,12 +52,21 @@ class Article {
 
     requestData() {
         if (this.noData === true && this.ownerStore != null) {
-            console.log("Request data... " + this.articleUuid);
             this.ownerStore.requestItems(Actions.getArticles);
         } else {
             console.log("skip Request data...");
         }
         return WebUtils.spinner();
+    }
+
+    getArticleRank() {
+        if (this.rank != null) {
+            return this.rank;
+        }
+        if (this.noData === true) {
+            return AuthorStore.lookupArticleRankByUuid(this.articleUui);
+        }
+        return null;
     }
 
     static newInstance(kind, data) {
@@ -455,9 +464,7 @@ class CommonStore {
             authorTagMgr = AuthorStore.getAuthorTagMgr(authorUuid);
             authorTagMgr.addArticleRank(it.rank);
         } else {
-            // Pass null so that if can't find the rank, we get back null.
-            //
-            it.rank = AuthorStore.getArticleRankByUuid(articleUuid, null);
+            it.rank = AuthorStore.lookupArticleRankByUuid(articleUuid);
         }
         return it;
     }
