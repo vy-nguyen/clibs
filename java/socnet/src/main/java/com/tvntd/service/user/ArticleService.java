@@ -194,6 +194,12 @@ public class ArticleService implements IArticleService
      * Article ranking.
      */
     @Override
+    public List<ArticleRankDTO> getArtRankByAuthor(String authorUuid)
+    {
+        return convertRank(artRankRepo.findByAuthorUuid(authorUuid));
+    }
+
+    @Override
     public ArticleRank getRank(String artUuid) {
         return artRankRepo.findByArticleUuid(artUuid);
     }
@@ -335,44 +341,11 @@ public class ArticleService implements IArticleService
     @Override
     public List<ArticleDTO> getArticles(List<String> uuids)
     {
-        Map<String, String> valid = null;
         List<Article> arts = articleRepo.findByArticleUuidIn(uuids);
         List<ArticleDTO> result = new LinkedList<>();
 
-        if (arts.size() < uuids.size()) {
-            valid = new HashMap<>();
-        }
         for (Article a : arts) {
             result.add(new ArticleDTO(a, null));
-            if (valid != null) {
-                String artUuid = a.getArticleUuid();
-                valid.put(artUuid, artUuid);
-            }
-        }
-        if (valid != null) {
-            // Cleanup stale art rank entries.
-            //
-            for (String artUuid : uuids) {
-                if (valid.get(artUuid) != null) {
-                    continue;
-                }
-                ArticleRank rank = artRankRepo.findByArticleUuid(artUuid);
-                if (rank == null) {
-                    continue;
-                }
-                if (prodRepo.findByArticleUuid(artUuid) != null) {
-                    rank.setArtTag(ArtTag.ESTORE);
-                    artRankRepo.save(rank);
-                    continue;
-                }
-                if (adsRepo.findByArticleUuid(artUuid) != null) {
-                    rank.setArtTag(ArtTag.ADS);
-                    artRankRepo.save(rank);
-                    continue;
-                }
-                artRankRepo.delete(rank);
-                System.out.println("Delete stale art " + rank.getArtTitle());
-            }
         }
         return result;
     }

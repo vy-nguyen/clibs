@@ -57,10 +57,12 @@ public interface IArticleService
     ArticleRank getRank(String artUuid);
     ArticleRank getRank(String tagName, String title);
     List<ArticleRank> getArtRank(String[] artUuids);
+
     void saveRank(ArticleRank rank);
 
     ArticleRank updateRank(CommentChangeForm form, ProfileDTO user);
     List<ArticleRankDTO> getArticleRank(UuidForm uuids);
+    List<ArticleRankDTO> getArtRankByAuthor(String authorUuid);
     List<ArticleRankDTO> convertRank(List<ArticleRank> ranks);
 
     List<ArticleDTO> convert(List<Article> arts);
