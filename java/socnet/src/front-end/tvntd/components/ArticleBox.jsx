@@ -268,7 +268,7 @@ class ArtBlogStyle extends React.Component
                     <h3 className="margin-top-0"> 
                         <a onClick={arg.clickCbFn}>{arg.artTitle}</a>
                     </h3>
-                    <p className="padding-10" dangerouslySetInnerHTML={html}/>
+                    <div className="padding-10" dangerouslySetInnerHTML={html}/>
                     <a className={clickBtn.btnClass} onClick={arg.clickCbFn}>
                         {clickBtn.btnText}
                     </a>
@@ -307,7 +307,7 @@ class ArtBlogWide extends React.Component
                         <h3 className="margin-top-10">
                             <a onClick={arg.clickCbFn}>{arg.artTitle}</a>
                         </h3>
-                        <p dangerouslySetInnerHTML={html}/>
+                        <div dangerouslySetInnerHTML={html}/>
                         <a className={clickBtn.btnClass} onClick={arg.clickCbFn}>
                             {clickBtn.btnText}
                         </a>
