@@ -174,15 +174,15 @@ public class DomainService implements IDomainService
             return;
         }
         String authorUuid = domain.getAuthorUuid();
-        List<ArticleRankDTO> artRanks = articleSvc.getArtRankByAuthor(authorUuid);
+        // List<ArticleRankDTO> artRanks = articleSvc.getArtRankByAuthor(authorUuid);
 
         resp.setDomainUuid(authorUuid);
         resp.setDomain(new DomainDTO(domain));
-        resp.setArtRanks(artRanks);
+        // resp.setArtRanks(artRanks);
         authorUuids.put(authorUuid, authorUuid);
 
-        //List<ArticleDTO> articles = articleSvc.getArticlesByUser(authorUuid);
-        //resp.setArticles(articles);
+        List<ArticleDTO> articles = articleSvc.getArticlesByUser(authorUuid);
+        resp.setArticles(articles);
     }
 
     @Override
