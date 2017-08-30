@@ -21,7 +21,6 @@ import JarvisWidget from 'vntd-shared/widgets/JarvisWidget.jsx';
 import ModalConfirm from 'vntd-shared/forms/commons/ModalConfirm.jsx';
 import EditorPost   from 'vntd-shared/forms/commons/EditorPost.jsx';
 import InputStore   from 'vntd-shared/stores/NestableStore.jsx';
-import WebUtils     from 'vntd-shared/utils/WebUtils.jsx';
 
 import ArticleStore     from 'vntd-root/stores/ArticleStore.jsx';
 import ArticleTagStore  from 'vntd-root/stores/ArticleTagStore.jsx';
@@ -169,14 +168,12 @@ class TagPost extends React.Component
     }
 
     render() {
-        let article = this.props.article, artRank = article.rank, refLink = null,
-            value, tagEntry, titleEntry, rankEntry;
+        let article = this.props.article, refLink = null,
+            artRank, value, tagEntry, titleEntry, rankEntry;
 
-        if (article.noData === true) {
-            console.log("wait for data...");
-            return WebUtils.spinner();
-        }
+        artRank = article.rank;
         value = this._getTitleValue(artRank);
+
         if (!UserStore.isUserMe(article.authorUuid)) {
             return this._renderTitle(value, artRank);
         }
@@ -357,6 +354,8 @@ class PostPane extends React.Component
         this._toggleFavorite = this._toggleFavorite.bind(this);
         this._donePublish    = this._donePublish.bind(this);
         this._updateState    = this._updateState.bind(this);
+        this._getOwnerMenu   = this._getOwnerMenu.bind(this);
+        this._getAdminMenu   = this._getAdminMenu.bind(this);
     }
 
     componentDidMount() {
@@ -427,10 +426,83 @@ class PostPane extends React.Component
         });
     }
 
+    _getOwnerMenu(article) {
+        if (article.noData === true) {
+            return null;
+        }
+        return [ {
+            itemFmt : 'fa fa-thumbs-up txt-color-green',
+            itemText: this.state.favorite ?
+            Lang.translate("Not Favorite") :
+            Lang.translate("Mark Favorite"),
+            itemHandler: function() {
+                this._toggleFavorite();
+            }.bind(this)
+        }, {
+            itemFmt : 'fa fa-circle txt-color-red',
+            itemText: 'Delete Post',
+            itemHandler: function(e, pane) {
+                e.stopPropagation();
+                this.refs.modal.openModal();
+            }.bind(this)
+        }, {
+            itemFmt : 'fa fa-pencil-square-o txt-color-green',
+            itemText: 'Edit Post',
+            itemHandler: function() {
+                this._editArticle();
+            }.bind(this)
+        } ];
+    }
+
+    _getAdminMenu(article) {
+        let adminItem = null;
+
+        if (article.noData === true) {
+            return null;
+        }
+        if (this.state.publish === true) {
+            adminItem = [ {
+                itemFmt : 'fa fa-check txt-color-green',
+                itemText: 'Withdraw Publishing Post',
+                itemHandler: function(e, pane) {
+                    this.setState({
+                        publish: false
+                    });
+                }.bind(this)
+            } ];
+        } else {
+            adminItem = [ {
+                itemFmt : 'fa fa-circle txt-color-blue',
+                itemText: 'Publish Post',
+                itemHandler: function(e, pane) {
+                    e.preventDefault();
+                    this.setState({
+                        publish: true
+                    });
+                    this.refs.publish.openModal();
+                }.bind(this)
+            } ];
+        }  
+        return adminItem;
+    }
+
     render() {
         const fmt = "btn btn-primary pull-right";
         let content, imgs, adminItem = null, ownerItem = null, panelLabel = null,
             video, pictures, refLink = null, article = this.state.article,
+            modal, publishModal, ownerPostMenu, tagPost = null;
+
+        if (article.noData === true) {
+            content  = ArticleStore.getArticleByUuid(article.articleUuid, null);
+            if (content == null || content.noData === true) {
+                tagPost = article.requestData();
+            } else {
+                article = content;
+            }
+        }
+        if (tagPost == null) {
+            tagPost = <TagPost article={article} notifyId={this._postPaneId}/>;
+        }
         modal = (
             <ModalConfirm ref="modal" height="auto"
                 modalTitle="Delete this article post?">
@@ -444,12 +516,12 @@ class PostPane extends React.Component
                     </button>
                 </div>
             </ModalConfirm>
-        ),
+        );
         publishModal = (
             <ModalConfirm ref="publish" height="auto" modalTitle="Publish Article">
                 <PublishArticle article={article} doneFn={this._donePublish}/>
             </ModalConfirm>
-        ),
+        );
         ownerPostMenu = {
             iconFmt  : 'btn-xs btn-success',
             titleText: Lang.translate('Options'),
@@ -466,53 +538,10 @@ class PostPane extends React.Component
             return <EditorPost article={article}/>
         }
         if (UserStore.amIAdmin() == true) {
-            if (this.state.publish === true) {
-                adminItem = [ {
-                    itemFmt : 'fa fa-check txt-color-green',
-                    itemText: 'Withdraw Publishing Post',
-                    itemHandler: function(e, pane) {
-                        this.setState({
-                            publish: false
-                        });
-                    }.bind(this)
-                } ];
-            } else {
-                adminItem = [ {
-                    itemFmt : 'fa fa-circle txt-color-blue',
-                    itemText: 'Publish Post',
-                    itemHandler: function(e, pane) {
-                        e.preventDefault();
-                        this.setState({
-                            publish: true
-                        });
-                        this.refs.publish.openModal();
-                    }.bind(this)
-                } ];
-            }  
+            adminItem = this._getAdminMenu(article);
         }
         if (UserStore.isUserMe(article.authorUuid)) {
-            ownerItem = [ {
-                itemFmt : 'fa fa-thumbs-up txt-color-green',
-                itemText: this.state.favorite ?
-                    Lang.translate("Not Favorite") :
-                    Lang.translate("Mark Favorite"),
-                itemHandler: function() {
-                    this._toggleFavorite();
-                }.bind(this)
-            }, {
-                itemFmt : 'fa fa-circle txt-color-red',
-                itemText: 'Delete Post',
-                itemHandler: function(e, pane) {
-                    e.stopPropagation();
-                    this.refs.modal.openModal();
-                }.bind(this)
-            }, {
-                itemFmt : 'fa fa-pencil-square-o txt-color-green',
-                itemText: 'Edit Post',
-                itemHandler: function() {
-                    this._editArticle();
-                }.bind(this)
-            } ];
+            ownerItem = this._getOwnerMenu(article);
         } else {
             refLink = (
                 <RefLinks article={article} edit={false} notifyId={this._postPaneId}/>
@@ -571,16 +600,9 @@ class PostPane extends React.Component
                 </div>
             );
         }
-        const doc = {
-            position: "absolute",
-            top     : 0,
-            left    : 0,
-            width   : "100%",
-            height  : "100%"
-        };
         return (
             <Panel className="well no-padding" context={panelData}>
-                <TagPost article={article} notifyId={this._postPaneId}/>
+                {tagPost}
                 <p className="hidden-xs hidden-sm" style={{fontSize: "140%"}}>
                     {article.articleUrl}
                 </p>

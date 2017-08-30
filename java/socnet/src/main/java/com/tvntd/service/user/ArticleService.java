@@ -45,18 +45,24 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.tvntd.dao.AdsPostRepo;
 import com.tvntd.dao.ArticleRankRepo;
 import com.tvntd.dao.ArticleRepository;
+import com.tvntd.dao.ProductRepository;
 import com.tvntd.forms.CommentChangeForm;
 import com.tvntd.forms.PostForm;
 import com.tvntd.forms.UuidForm;
 import com.tvntd.key.HashKey;
+import com.tvntd.models.ArtTag;
+import com.tvntd.models.ArtVideo;
 import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
+import com.tvntd.service.api.IAdsPostService;
 import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.ICommentService;
+import com.tvntd.service.api.IProductService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.util.Util;
 
@@ -81,6 +87,12 @@ public class ArticleService implements IArticleService
     @Autowired
     protected IArtTagService artTagSvc;
 
+    @Autowired
+    protected ProductRepository prodRepo;
+
+    @Autowired
+    protected AdsPostRepo adsRepo;
+
     /**
      * Common static methods.
      */
@@ -98,7 +110,7 @@ public class ArticleService implements IArticleService
 
             if (form.fetchContentUrlHost() != null) {
                 art = artDTO.assignVideo(form.fetchContentUrlFile());
-                art.makeUrlLink(form.fetchContentUrlHost(), form.fetchDocType());
+                Article.makeUrlLink(art, form.fetchContentUrlHost(), form.fetchDocType());
             }
             if (form.getContent() != null) {
                 str = Util.truncate(form.getContent(), Article.MaxContentLength);
@@ -288,8 +300,19 @@ public class ArticleService implements IArticleService
     {
         String uuid = artUuid.toString();
         Article art = articleRepo.findByArticleUuid(uuid);
+
         if (art != null) {
-            return new ArticleDTO(art, getRank(uuid));
+            ArticleRank rank = getRank(uuid);
+            if (rank != null && rank.getArtTag() == null) {
+                rank.setHasArticle(true);
+                rank.setArtTag(ArtTag.BLOG);
+                rank.setContentOid(art.getContentOId());
+                if (art instanceof ArtVideo) {
+                    rank.setContentLinkUrl(((ArtVideo)art).getVideoUrl());
+                }
+                artRankRepo.save(rank);
+            }
+            return new ArticleDTO(art, rank);
         }
         return null;
     }
@@ -302,15 +325,46 @@ public class ArticleService implements IArticleService
     @Override
     public List<ArticleDTO> getArticles(List<String> uuids)
     {
-        List<ArticleDTO> ret = new LinkedList<>();
+        Map<String, String> valid = null;
+        List<Article> arts = articleRepo.findByArticleUuidIn(uuids);
+        List<ArticleDTO> result = new ArrayList<>(arts.size());
 
-        for (String uuid : uuids) {
-            ArticleDTO dto = getArticleDTO(uuid);
-            if (dto != null) {
-                ret.add(dto);
+        if (arts.size() < uuids.size()) {
+            valid = new HashMap<>();
+        }
+        for (Article a : arts) {
+            result.add(new ArticleDTO(a, null));
+            if (valid != null) {
+                String artUuid = a.getArticleUuid();
+                valid.put(artUuid, artUuid);
             }
         }
-        return ret;
+        if (valid != null) {
+            // Cleanup stale art rank entries.
+            //
+            for (String artUuid : uuids) {
+                if (valid.get(artUuid) != null) {
+                    continue;
+                }
+                ArticleRank rank = artRankRepo.findByArticleUuid(artUuid);
+                if (rank == null) {
+                    continue;
+                }
+                if (prodRepo.findByArticleUuid(artUuid) != null) {
+                    rank.setArtTag(ArtTag.ESTORE);
+                    artRankRepo.save(rank);
+                    continue;
+                }
+                if (adsRepo.findByArticleUuid(artUuid) != null) {
+                    rank.setArtTag(ArtTag.ADS);
+                    artRankRepo.save(rank);
+                    continue;
+                }
+                artRankRepo.delete(rank);
+                System.out.println("Delete stale art " + rank.getArtTitle());
+            }
+        }
+        return result;
     }
 
     protected Map<String, ArticleRank> getRanks(List<Article> articles)

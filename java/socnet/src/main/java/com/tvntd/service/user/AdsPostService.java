@@ -39,13 +39,19 @@ import org.springframework.stereotype.Service;
 
 import com.tvntd.dao.AdsPostRepo;
 import com.tvntd.dao.ArticleRankRepo;
+import com.tvntd.dao.AuthorRepo;
+import com.tvntd.dao.AuthorTagRepo;
 import com.tvntd.forms.AdsForm;
 import com.tvntd.models.AdsPost;
+import com.tvntd.models.ArtTag;
 import com.tvntd.models.ArticleRank;
+import com.tvntd.models.Author;
+import com.tvntd.models.AuthorTag;
 import com.tvntd.service.api.IAdsPostService;
 import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.ICommentService;
+import com.tvntd.util.Util;
 
 @Service
 @Transactional
@@ -64,6 +70,12 @@ public class AdsPostService implements IAdsPostService
 
     @Autowired
     private IArtTagService artTagSvc;
+
+    @Autowired
+    private AuthorRepo authorRepo;
+
+    @Autowired
+    private AuthorTagRepo authorTagRepo;
 
     /**
      * Common static methods.
@@ -131,6 +143,11 @@ public class AdsPostService implements IAdsPostService
         AdsPost ads = adsRepo.findByArticleUuid(uuid);
         if (ads != null) {
             ArticleRank rank = artRankRepo.findByArticleUuid(uuid);
+            if (rank != null && rank.getArtTag() == null) {
+                rank.setHasArticle(true);
+                rank.setArtTag(ArtTag.ADS);
+                artRankRepo.save(rank);
+            }
             AdsPostDTO result = new AdsPostDTO(ads, new ArticleRankDTO(rank));
 
             result.convertUTF();
@@ -179,5 +196,33 @@ public class AdsPostService implements IAdsPostService
             artRankRepo.delete(rank);
         }
         return ads;
+    }
+
+    @Override
+    public void auditAdsTable()
+    {
+        List<AdsPost> ads = adsRepo.findAll();
+
+        for (AdsPost ad : ads) {
+            String authorUuid = ad.getAuthorUuid();
+            String articleUuid = ad.getArticleUuid();
+            ArticleRank rank = artRankRepo.findByArticleUuid(articleUuid);
+
+            if (rank != null) {
+                continue;
+            }
+            Author author = authorRepo.findByAuthorUuid(authorUuid);
+            if (author == null) {
+                author = new Author(authorUuid, ad.getArticleUuid());
+            }
+            String busCat = Util.fromRawByte(ad.getBusCat());
+            AuthorTag tag = author.addTag(busCat, 0L, false);
+
+            rank = new ArticleRank(tag, ad);
+            artRankRepo.save(rank);
+            if (tag.isNeedSave() == true) {
+                authorTagRepo.save(tag);
+            }
+        }
     }
 }

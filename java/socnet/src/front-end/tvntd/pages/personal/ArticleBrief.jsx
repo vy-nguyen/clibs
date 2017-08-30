@@ -6,9 +6,11 @@
 import _               from 'lodash';
 import React           from 'react-mod';
 
-import {ArticleStore}  from 'vntd-root/stores/ArticleStore.jsx';
 import ArticleTagBrief from 'vntd-root/components/ArticleTagBrief.jsx';
 import ArticleBox      from 'vntd-root/components/ArticleBox.jsx';
+import {
+    ArticleStore, EProductStore, AdsStore
+} from 'vntd-root/stores/ArticleStore.jsx';
 
 class ArticleBrief extends ArticleTagBrief
 {
@@ -26,16 +28,26 @@ class ArticleBrief extends ArticleTagBrief
     }
 
     render() {
-        let art, tag = this.props.tag, ranks = tag.sortedArts,
+        let tag = this.props.tag, ranks = tag.sortedArts,
             articles = [], missingArts = null;
 
         if (ranks == null) {
             return null;
         }
         _.forEach(ranks, function(artRank) {
+            let articleUuid = artRank.getArticleUuid(),
+                authorUuid = artRank.getAuthorUuid();
+
+            if (artRank.artTag === "estore") {
+                EProductStore.getProductByUuid(articleUuid, authorUuid);
+                return;
+            }
+            if (artRank.artTag === "ads") {
+                AdsStore.getAdsByUuid(articleUuid, authorUuid);
+                return;
+            }
             articles.push(artRank);
-            art = ArticleStore
-                .getArticleByUuid(artRank.getArticleUuid(), artRank.getAuthorUuid());
+            ArticleStore.getArticleByUuid(articleUuid, authorUuid);
         });
         if (_.isEmpty(articles)) {
             return null;

@@ -83,7 +83,9 @@ class ArticleRank {
         if (article == null) {
             article = ArticleStore.getArticleByUuid(this.articleUuid, this.authorUuid);
         }
-        article.rank = this;
+        if (article != null) {
+            article.rank = this;
+        }
         return this;
     }
 
@@ -367,8 +369,7 @@ class AuthorTagMgr {
     }
 
     commitTagRanks(btnId, articleOrder) {
-        let tagRanks = [];
-        let len = this.sortedTags.length;
+        let tagRanks = [], len = this.sortedTags.length;
 
         this.btnId = btnId;
         for (let i = 0; i < len; i++) {
@@ -507,6 +508,7 @@ let AuthorStore = Reflux.createStore({
 
     getAuthorEStoreMgr: function(uuid) {
         let estoreMgr = this.data.authorEStoreMgr[uuid];
+
         if (estoreMgr == null) {
             this.data.authorEStoreMgr[uuid] = new AuthorTagMgr(uuid);
             return this.data.authorEStoreMgr[uuid];
@@ -523,13 +525,13 @@ let AuthorStore = Reflux.createStore({
     },
 
     updateAuthorTag: function(tagInfo, artRank) {
-        let authorTagMgr = this.getAuthorTagMgr(tagInfo.userUuid);
-        let authorTag = authorTagMgr.getAuthorTag(tagInfo.tagName,
+        let article, userUuid = tagInfo.userUuid,
+            authorTagMgr = this.getAuthorTagMgr(userUuid),
+            authorTag = authorTagMgr.getAuthorTag(tagInfo.tagName,
                             tagInfo.tagRank, tagInfo.favorite);
 
         if (artRank == null) {
-            let article = ArticleStore
-                .getArticleByUuid(tagInfo.articleUuid, tagInfo.userUuid);
+            article = ArticleStore.getArticleByUuid(tagInfo.articleUuid, userUuid);
             artRank = new ArticleRank(null, authorTag, article);
         } else {
             artRank.detachTag();
@@ -542,12 +544,13 @@ let AuthorStore = Reflux.createStore({
     },
 
     updateAuthorEStoreTag: function(tagInfo, artRank) {
-        let estoreMgr = this.getAuthorEStoreMgr(tagInfo.userUuid);
-        let estoreTag = estoreMgr.getAuthorTag(tagInfo.tagName,
+        let userUuid = tagInfo.userUuid,
+            estoreMgr = this.getAuthorEStoreMgr(userUuid),
+            estoreTag = estoreMgr.getAuthorTag(tagInfo.tagName,
                             tagInfo.tagRank, tagInfo.favorite);
 
         if (artRank == null) {
-            let prod = EProductStore.getProductByUuid(tagInfo.articleUuid);
+            let prod = EProductStore.getProductByUuid(tagInfo.articleUuid, userUuid);
             if (prod == null) {
                 return;
             }

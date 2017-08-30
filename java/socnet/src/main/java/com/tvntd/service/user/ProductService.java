@@ -41,6 +41,8 @@ import org.springframework.stereotype.Service;
 import com.tvntd.dao.ArticleRankRepo;
 import com.tvntd.dao.ProductRepository;
 import com.tvntd.forms.ProductForm;
+import com.tvntd.models.ArtTag;
+import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Product;
 import com.tvntd.service.api.IArtTagService;
@@ -111,7 +113,14 @@ public class ProductService implements IProductService
     {
         Product prod = getProduct(uuid);
         if (prod != null) {
-            return new ProductDTO(prod, artRankRepo.findByArticleUuid(uuid));
+            ArticleRank rank = artRankRepo.findByArticleUuid(uuid);
+            if (rank != null && rank.getArtTag() == null) {
+                System.out.println("Set art " + rank.getArticleUuid() + " to product");
+                rank.setHasArticle(true);
+                rank.setArtTag(ArtTag.ESTORE);
+                artRankRepo.save(rank);
+            }
+            return new ProductDTO(prod, rank);
         }
         return null;
     }

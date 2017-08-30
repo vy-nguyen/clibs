@@ -37,6 +37,7 @@ import com.tvntd.models.Article;
 public interface ArticleRepository extends JpaRepository<Article, String>
 {
     Article findByArticleUuid(String uuid);
+    List<Article> findByArticleUuidIn(List<String> uuids);
 
     Article findByAuthorUuid(String uuid);
 

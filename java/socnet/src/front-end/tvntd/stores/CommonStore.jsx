@@ -10,6 +10,7 @@ import Actions      from 'vntd-root/actions/Actions.jsx';
 import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
 import CommentStore from 'vntd-root/stores/CommentStore.jsx';
 import UserStore    from 'vntd-shared/stores/UserStore.jsx';
+import WebUtils     from 'vntd-shared/utils/WebUtils.jsx';
 import {Util}       from 'vntd-shared/utils/Enum.jsx';
 
 class Article {
@@ -47,6 +48,16 @@ class Article {
 
     isPublished() {
         return this.published;
+    }
+
+    requestData() {
+        if (this.noData === true && this.ownerStore != null) {
+            console.log("Request data... " + this.articleUuid);
+            this.ownerStore.requestItems(Actions.getArticles);
+        } else {
+            console.log("skip Request data...");
+        }
+        return WebUtils.spinner();
     }
 
     static newInstance(kind, data) {
@@ -304,6 +315,7 @@ class CommonStore {
             item = Article.newInstance(this.data.storeKind, {
                 authorUuid : authorUuid,
                 articleUuid: uuid,
+                ownerStore : this,
                 noData     : true
             });
         }
@@ -349,6 +361,22 @@ class CommonStore {
         store.trigger(this.data, null, "failure", false, null);
     }
 
+    requestItems(actionFn) {
+        if (this.data.requestUuids != null ||
+            this.data.missingUuids == null || _.isEmpty(this.data.missingUuids)) {
+            return;
+        }
+        this.data.requestUuids = this.data.missingUuids;
+        this.data.missingUuids = null;
+
+        actionFn({
+            authorUuid: null,
+            uuidType  : this.data.storeKind,
+            reqKind   : this.data.storeKind,
+            uuids     : this.data.requestUuids
+        });
+    }
+
     onDeleteItemCompleted(data, store) {
         let out = this._removeItemStore(data.uuids, data.authorUuid);
 
@@ -391,20 +419,6 @@ class CommonStore {
         this.requestItems(actionFn);
     }
 
-    requestItems(actionFn) {
-        if (this.data.requestdUuids != null || this.data.missingUuids == null) {
-            return;
-        }
-        this.data.requestUuids = this.data.missingUuids;
-        this.data.missingUuids = null;
-
-        actionFn({
-            authorUuid: null,
-            uuidType  : this.data.storeKind,
-            uuids     : this.data.requestUuids
-        });
-    }
-
     /**
      * Internal methods, used by derrived stores.
      */
@@ -425,18 +439,25 @@ class CommonStore {
     }
 
     _addItemStore(item) {
-        let anchor, authorTagMgr, it;
+        let articleUuid, authorUuid, anchor, authorTagMgr, it, oldArt;
 
         it = Article.newInstance(this.data.storeKind, item);
-        anchor = this.getItemOwner(it.authorUuid);
+        articleUuid = it.getArticleUuid();
+        authorUuid  = it.getAuthorUuid();
 
-        if (this.data.itemsByUuid[it.articleUuid] == null) {
-            this.data.itemsByUuid[it.articleUuid] = it;
+        anchor = this.getItemOwner(authorUuid);
+        oldArt = this.data.itemsByUuid[articleUuid];
+        if (oldArt == null || oldArt.noData === true) {
+            this.data.itemsByUuid[articleUuid] = it;
             anchor.addArticle(it);
         }
         if (it.rank != null) {
-            authorTagMgr = AuthorStore.getAuthorTagMgr(it.authorUuid);
+            authorTagMgr = AuthorStore.getAuthorTagMgr(authorUuid);
             authorTagMgr.addArticleRank(it.rank);
+        } else {
+            // Pass null so that if can't find the rank, we get back null.
+            //
+            it.rank = AuthorStore.getArticleRankByUuid(articleUuid, null);
         }
         return it;
     }

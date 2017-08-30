@@ -503,6 +503,26 @@ public interface IArticleService
             return artRank.isFavorite();
         }
 
+        public boolean isHasArticle() {
+            return artRank.isHasArticle();
+        }
+
+        public String getArtTag() {
+            return artRank.getArtTag();
+        }
+
+        public String getContentOid() {
+            return artRank.getContentOid();
+        }
+
+        public String getContentLinkUrl() {
+            return artRank.getContentLinkUrl();
+        }
+
+        public String getTransRoot() {
+            return artRank.getTransRoot();
+        }
+
         /**
          * @return the userLiked
          */

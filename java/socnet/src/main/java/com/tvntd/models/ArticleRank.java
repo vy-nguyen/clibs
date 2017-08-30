@@ -105,6 +105,18 @@ public class ArticleRank
     private Long score;
     private Long permMask;
     private boolean favorite;
+    private boolean hasArticle;
+
+    /**
+     * Contains value from ArtTag to specify article type.
+     */
+    private String artTag;
+    private String contentOid;
+    private String contentLinkUrl;
+
+    /*
+     * Reserve to record head of a transaction block chain.
+     */
     private String transRoot;
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -132,16 +144,23 @@ public class ArticleRank
         this.tag = Util.DefaultTag;
     }
 
+    public ArticleRank(String artUuid)
+    {
+        this();
+        this.articleUuid = artUuid;
+    }
+
     public ArticleRank(AuthorTag tag, Article article)
     {
         this();
-        this.articleUuid = article.getArticleUuid();
-        this.authorUuid = article.getAuthorUuid();
-        this.favorite = tag.isFavorite();
-        this.rank = tag.getRank();
-        this.artTitle = article.getTopic();
-        this.tag = tag.fetchTag();
-        this.tagHash = HashKey.toSha1Key(this.tag, authorUuid);
+        this.artTag       = ArtTag.BLOG;
+        this.articleUuid  = article.getArticleUuid();
+        this.authorUuid   = article.getAuthorUuid();
+        this.favorite     = tag.isFavorite();
+        this.rank         = tag.getRank();
+        this.artTitle     = article.getTopic();
+        this.tag          = tag.fetchTag();
+        this.tagHash      = HashKey.toSha1Key(this.tag, authorUuid);
         this.contentBrief = article.getContentBrief();
     }
 
@@ -151,16 +170,17 @@ public class ArticleRank
     public ArticleRank(AuthorTag tag, Product product)
     {
         this();
+        this.artTag      = ArtTag.ESTORE;
         this.articleUuid = product.getArticleUuid();
-        this.authorUuid = product.getAuthorUuid();
-        this.favorite = tag.isFavorite();
-        this.rank = tag.getRank();
-        this.tagHash = HashKey.toSha1Key(this.tag, authorUuid);
+        this.authorUuid  = product.getAuthorUuid();
+        this.favorite    = tag.isFavorite();
+        this.rank        = tag.getRank();
+        this.artTitle    = product.getProdName();
+        this.tag         = product.getProdCat();
+        this.tagHash     = HashKey.toSha1Key(this.tag, authorUuid);
 
         this.contentBrief =
             Arrays.copyOfRange(product.getProdDesc(), 0, MaxContentLength);
-        this.artTitle = product.getProdName();
-        this.tag = product.getProdCat();
     }
 
     /**
@@ -169,23 +189,24 @@ public class ArticleRank
     public ArticleRank(AuthorTag tag, AdsPost ads)
     {
         this();
-        this.articleUuid = ads.getArticleUuid();
-        this.authorUuid = ads.getAuthorUuid();
-        this.favorite = tag.isFavorite();
-        this.rank = tag.getRank();
-        this.tagHash = HashKey.toSha1Key(this.tag, authorUuid);
-
+        this.artTag       = ArtTag.ADS;
+        this.articleUuid  = ads.getArticleUuid();
+        this.authorUuid   = ads.getAuthorUuid();
+        this.favorite     = tag.isFavorite();
+        this.rank         = tag.getRank();
         this.contentBrief = Arrays.copyOfRange(ads.getBusDesc(), 0, MaxContentLength);
-        this.artTitle = ads.getBusName();
-        this.tag = ads.getBusCat();
+        this.artTitle     = ads.getBusName();
+        this.tag          = ads.getBusCat();
+        this.tagHash      = HashKey.toSha1Key(this.tag, authorUuid);
     }
 
     public ArticleRank(CommentChangeForm form, String authorUuid)
     {
         this();
-        this.articleUuid = form.getArticleUuid();
-        this.authorUuid = authorUuid;
-        this.favorite = form.isFavorite();
+        this.artTag       = form.getKind();
+        this.articleUuid  = form.getArticleUuid();
+        this.authorUuid   = authorUuid;
+        this.favorite     = form.isFavorite();
         this.creditEarned = form.getCommentId();
     }
 
@@ -539,6 +560,62 @@ public class ArticleRank
      */
     public void setUserShared(List<String> userShared) {
         this.userShared = userShared;
+    }
+
+    /**
+     * @return the hasArticle
+     */
+    public boolean isHasArticle() {
+        return hasArticle;
+    }
+
+    /**
+     * @param hasArticle the hasArticle to set
+     */
+    public void setHasArticle(boolean hasArticle) {
+        this.hasArticle = hasArticle;
+    }
+
+    /**
+     * @return the artTag
+     */
+    public String getArtTag() {
+        return artTag;
+    }
+
+    /**
+     * @param artTag the artTag to set
+     */
+    public void setArtTag(String artTag) {
+        this.artTag = artTag;
+    }
+
+    /**
+     * @return the contentOid
+     */
+    public String getContentOid() {
+        return contentOid;
+    }
+
+    /**
+     * @param contentOid the contentOid to set
+     */
+    public void setContentOid(String contentOid) {
+        this.contentOid = contentOid;
+    }
+
+    /**
+     * @return the contentLinkUrl
+     */
+    public String getContentLinkUrl() {
+        return contentLinkUrl;
+    }
+
+    /**
+     * @param contentLinkUrl the contentLinkUrl to set
+     */
+    public void setContentLinkUrl(String contentLinkUrl) {
+        this.contentLinkUrl = contentLinkUrl;
     }
 
     /**
