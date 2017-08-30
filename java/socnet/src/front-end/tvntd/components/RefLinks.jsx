@@ -51,7 +51,7 @@ class RefLinks extends AuthorBase
         let title, artRank = null, out = null, edit = this.props.edit;
 
         if (refUuid != null) {
-            artRank = AuthorStore.getArticleRankByUuid(refUuid);
+            artRank = AuthorStore.lookupArticleRankByUuid(refUuid);
         }
         if (artRank != null) {
             title = artRank.artTitle;

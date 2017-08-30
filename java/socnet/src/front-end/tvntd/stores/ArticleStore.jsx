@@ -34,8 +34,8 @@ let EProductStore = Reflux.createStore({
         return this.store.getSortedItemsByAuthor(uuid);
     },
 
-    getProductByUuid: function(uuid) {
-        return this.store.getItemByUuid(uuid);
+    getProductByUuid: function(uuid, authorUuid) {
+        return this.store.getItemByUuid(uuid, authorUuid);
     },
 
     onPublishProductCompleted: function(product) {
@@ -83,8 +83,8 @@ let AdsStore = Reflux.createStore({
         this.store = new CommonStore('ads');
     },
 
-    getAdsByUuid: function(uuid) {
-        return this.store.getItemByUuid(uuid);
+    getAdsByUuid: function(uuid, authorUuid) {
+        return this.store.getItemByUuid(uuid, authorUuid);
     },
 
     onPublicPostAdsCompleted: function(res) {
@@ -166,8 +166,8 @@ let ArticleStore = Reflux.createStore({
         return this.store.getMySavedItems();
     },
 
-    getArticleByUuid: function(artUuid) {
-        return this.store.getItemByUuid(artUuid);
+    getArticleByUuid: function(artUuid, authorUuid) {
+        return this.store.getItemByUuid(artUuid, authorUuid);
     },
 
     sortArticlesByDate: function(articles) {
@@ -264,6 +264,10 @@ let ArticleStore = Reflux.createStore({
 
     onDeleteUserPostFailed: function(data) {
         console.log("Failed to delete user post");
+    },
+
+    onGetArticlesCompleted: function(data) {
+        this.store.onGetPublishItemCompleted(data, 'articles', this);
     }
 });
     

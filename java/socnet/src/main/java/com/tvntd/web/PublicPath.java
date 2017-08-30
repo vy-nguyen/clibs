@@ -73,6 +73,8 @@ import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArtTagService.ArtTagDTO;
 import com.tvntd.service.api.IArtTagService.ArtTagList;
 import com.tvntd.service.api.IArticleService;
+import com.tvntd.service.api.IArticleService.ArticleDTO;
+import com.tvntd.service.api.IArticleService.ArticleDTOResponse;
 import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.ICommentService;
@@ -251,7 +253,13 @@ public class PublicPath
         if (uuids == null) {
             return UserPath.s_genOkResp;
         }
-        return null;
+        List<String> input = new ArrayList<>();
+        for (String u : uuids.getUuids()) {
+            input.add(u);
+        }
+        List<ArticleDTO> arts = articleSvc.getArticles(input);
+        System.out.println("Result art lengh " + arts.size());
+        return new ArticleDTOResponse(arts, null);
     }
 
     /**
@@ -454,6 +462,7 @@ public class PublicPath
     {
         String buf = "hello world x = " + x + ", y = " + y;
         System.out.println("Input x = " + x + ", y = " + y);
+
         resp.setContentType("text/html;charset=UTF-8");
         resp.setCharacterEncoding("utf-8");
         try {

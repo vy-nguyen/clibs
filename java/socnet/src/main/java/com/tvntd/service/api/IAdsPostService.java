@@ -52,6 +52,8 @@ public interface IAdsPostService
     void deleteAds(AdsPost ads);
     AdsPost deleteAds(String uuid);
 
+    void auditAdsTable();
+
     /**
      * @return list of ads.
      */

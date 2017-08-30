@@ -6,9 +6,11 @@
 import _               from 'lodash';
 import React           from 'react-mod';
 
-import {ArticleStore}  from 'vntd-root/stores/ArticleStore.jsx';
 import ArticleTagBrief from 'vntd-root/components/ArticleTagBrief.jsx';
 import ArticleBox      from 'vntd-root/components/ArticleBox.jsx';
+import {
+    ArticleStore, EProductStore, AdsStore
+} from 'vntd-root/stores/ArticleStore.jsx';
 
 class ArticleBrief extends ArticleTagBrief
 {
@@ -21,33 +23,34 @@ class ArticleBrief extends ArticleTagBrief
     }
 
     _renderArtFull(art) {
-        return this._renderArtFullUuid(null, art.getArticleUuid(), true);
+        return this._renderArtFullUuid(null,
+            art.getArticleUuid(), art.getAuthorUuid(), true);
     }
 
     render() {
-        let art, tag = this.props.tag, ranks = tag.sortedArts,
+        let tag = this.props.tag, ranks = tag.sortedArts,
             articles = [], missingArts = null;
 
         if (ranks == null) {
             return null;
         }
         _.forEach(ranks, function(artRank) {
-            articles.push(artRank);
-            art = ArticleStore.getArticleByUuid(artRank.articleUuid);
-            if (art == null) {
-                if (missingArts == null) {
-                    missingArts = [];
-                }
-                missingArts.push(artRank.articleUuid);
+            let articleUuid = artRank.getArticleUuid(),
+                authorUuid = artRank.getAuthorUuid();
+
+            if (artRank.artTag === "estore") {
+                EProductStore.getProductByUuid(articleUuid, authorUuid);
+                return;
             }
+            if (artRank.artTag === "ads") {
+                AdsStore.getAdsByUuid(articleUuid, authorUuid);
+                return;
+            }
+            articles.push(artRank);
+            ArticleStore.getArticleByUuid(articleUuid, authorUuid);
         });
         if (_.isEmpty(articles)) {
             return null;
-        }
-        if (missingArts != null) {
-            console.log("Tag " + tag.tagName);
-            console.log(missingArts);
-            ArticleStore.updateMissingUuid(missingArts);
         }
         return (
             <section id='widget-grid'>

@@ -122,17 +122,23 @@ public class Article
         pending = false;
     }
 
-    public void makeUrlLink(String host, int mode)
+    static public String makeUrlLink(Article self, String host, int mode)
     {
+        String oid;
+
         if (mode == DOC_TYPE) {
-            contentOId = "DOC:" + host;
+            oid = "DOC:" + host;
         } else if (mode == VID_TYPE) {
-            contentOId = "VID:" + host;
+            oid = "VID:" + host;
         } else if (mode == DRV_TYPE) {
-            contentOId = "DRV:" + host;
+            oid = "DRV:" + host;
         } else {
-            contentOId = "HEX:" + host;
+            oid = "HEX:" + host;
         }
+        if (self != null) {
+            self.contentOId = oid;
+        }
+        return oid;
     }
 
     /**

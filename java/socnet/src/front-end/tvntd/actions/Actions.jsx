@@ -213,7 +213,7 @@ Actions.getOneArticle.listen(function(artUuid) {
 });
 
 Actions.getArticles.listen(function(artUuids) {
-    postRestCall(artUuids, "/user/get-articles", true, this);
+    postRestCall(artUuids, "/public/get-articles", true, this);
 });
 
 Actions.getComments.listen(function(artUuids) {

@@ -26,6 +26,8 @@
  */
 package com.tvntd.account.dao;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tvntd.account.models.Account;
@@ -34,7 +36,10 @@ public interface AccountRepo extends JpaRepository<Account, String>
 {
     Account findByOwnerUuid(String ownerUuid);
     Account findByAccountUuid(String accountUuid);
-    
+
+    List<Account> findByOwnerUuidIn(List<String> ownerUuids);
+    List<Account> findByAccountUuidIn(List<String> acctUuids);
+
     @Override
     void delete(Account account);
 

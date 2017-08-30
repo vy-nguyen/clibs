@@ -19,11 +19,11 @@ import {ArticleStore, EProductStore} from 'vntd-root/stores/ArticleStore.jsx';
 
 class Author {
     constructor(data) {
-        this._id       = _.uniqueId('id-author-');
-        this.profile   = null;
-        this.userUuid  = data.authorUuid;
-        this.aboutList = data.aboutList;
+        this.profile    = null;
+        this.userUuid   = data.authorUuid;
+        this.aboutList  = data.aboutList;
         this.authorTags = data.authorTags;
+
         if (this.profile != null) {
             this.coverImg = this.profile.coverImg0;
             this.imgList  = [];
@@ -80,7 +80,7 @@ class ArticleRank {
 
         this._id = _.uniqueId('id-art-rank-');
         if (article == null) {
-            article = ArticleStore.getArticleByUuid(this.articleUuid);
+            article = ArticleStore.getArticleByUuid(this.articleUuid, this.authorUuid);
         }
         if (article != null) {
             article.rank = this;
@@ -110,6 +110,12 @@ class ArticleRank {
         }
     }
 
+    updateFromJson(json) {
+        _.forEach(json, function(v, k) {
+            this[k] = v;
+        }.bind(this));
+    }
+
     getArticleUuid() {
         return this.articleUuid;
     }
@@ -117,19 +123,20 @@ class ArticleRank {
     getAuthorUuid() {
         return this.authorUuid;
     }
+
+    getArtTitle() {
+        return this.artTitle;
+    }
 }
 
 class AuthorTag {
     constructor(tag) {
-        this._id        = _.uniqueId('id-author-tag-');
         this.articles   = {};
         this.sortedArts = [];
-        this.tagName    = tag.tagName;
-        this.headNotif  = tag.headNotif;
-        this.isFavorite = tag.isFavorite;
-        this.rank       = tag.rank;
-        this.notifCount = tag.notifCount;
-        this.headChain  = tag.headChain;
+
+        _.forEach(tag, function(v, k) {
+            this[k] = v;
+        }.bind(this));
         return this;
     }
 
@@ -137,6 +144,7 @@ class AuthorTag {
         let rank = this.articles[json.articleUuid];
 
         if (rank != null) {
+            rank.updateFromJson(json);
             return rank;
         }
         return this.addArticleRankObj(new ArticleRank(json, this, null));
@@ -330,12 +338,8 @@ class AuthorTagMgr {
         return null;
     }
 
-    getArticleRankByUuid(articleUuid) {
-        let article = ArticleStore.getArticleByUuid(articleUuid);
-        if (article != null) {
-            return article.rank;
-        }
-        return null;
+    getArticleRankByUuid(articleUuid, authorUuid) {
+        return AuthorStore.getArticleRankByUuid(articleUuid, authorUuid);
     }
 
     getStringTags() {
@@ -364,8 +368,7 @@ class AuthorTagMgr {
     }
 
     commitTagRanks(btnId, articleOrder) {
-        let tagRanks = [];
-        let len = this.sortedTags.length;
+        let tagRanks = [], len = this.sortedTags.length;
 
         this.btnId = btnId;
         for (let i = 0; i < len; i++) {
@@ -461,8 +464,21 @@ let AuthorStore = Reflux.createStore({
         return this.data.authorMap[uuid];
     },
 
-    getArticleRankByUuid: function(uuid) {
+    lookupArticleRankByUuid: function(uuid) {
         return this.data.allArticleRanks[uuid];
+    },
+
+    getArticleRankByUuid: function(uuid, authorUuid) {
+        let article, rank = this.lookupArticleRankByUuid(uuid);
+
+        if (rank != null) {
+            return rank;
+        }
+        article = ArticleStore.getArticleByUuid(uuid, authorUuid);
+        if (article == null) {
+            return null;
+        }
+        return article.rank;
     },
 
     _setArticleRankObj: function(rankObj) {
@@ -496,6 +512,7 @@ let AuthorStore = Reflux.createStore({
 
     getAuthorEStoreMgr: function(uuid) {
         let estoreMgr = this.data.authorEStoreMgr[uuid];
+
         if (estoreMgr == null) {
             this.data.authorEStoreMgr[uuid] = new AuthorTagMgr(uuid);
             return this.data.authorEStoreMgr[uuid];
@@ -511,24 +528,14 @@ let AuthorStore = Reflux.createStore({
         return tagMgr.getAuthorTag(tagName, 50, false);
     },
 
-    /**
-     * @return artRank matching with author uuid and article uuid.
-     */
-    getArticleRank: function(authorUuid, articleUuid) {
-        let tagMgr = this.getAuthorTagMgr(authorUuid);
-        return tagMgr.getArticleRankByUuid(articleUuid);
-    },
-
     updateAuthorTag: function(tagInfo, artRank) {
-        let authorTagMgr = this.getAuthorTagMgr(tagInfo.userUuid);
-        let authorTag = authorTagMgr.getAuthorTag(tagInfo.tagName,
+        let article, userUuid = tagInfo.userUuid,
+            authorTagMgr = this.getAuthorTagMgr(userUuid),
+            authorTag = authorTagMgr.getAuthorTag(tagInfo.tagName,
                             tagInfo.tagRank, tagInfo.favorite);
 
         if (artRank == null) {
-            let article = ArticleStore.getArticleByUuid(tagInfo.articleUuid);
-            if (article == null) {
-                return;
-            }
+            article = ArticleStore.getArticleByUuid(tagInfo.articleUuid, userUuid);
             artRank = new ArticleRank(null, authorTag, article);
         } else {
             artRank.detachTag();
@@ -541,12 +548,13 @@ let AuthorStore = Reflux.createStore({
     },
 
     updateAuthorEStoreTag: function(tagInfo, artRank) {
-        let estoreMgr = this.getAuthorEStoreMgr(tagInfo.userUuid);
-        let estoreTag = estoreMgr.getAuthorTag(tagInfo.tagName,
+        let userUuid = tagInfo.userUuid,
+            estoreMgr = this.getAuthorEStoreMgr(userUuid),
+            estoreTag = estoreMgr.getAuthorTag(tagInfo.tagName,
                             tagInfo.tagRank, tagInfo.favorite);
 
         if (artRank == null) {
-            let prod = EProductStore.getProductByUuid(tagInfo.articleUuid);
+            let prod = EProductStore.getProductByUuid(tagInfo.articleUuid, userUuid);
             if (prod == null) {
                 return;
             }
@@ -604,11 +612,15 @@ let AuthorStore = Reflux.createStore({
      */
     _updateArticleRank: function(data) {
         _.forOwn(data.articleRank, function(rank) {
-            let obj = this.getAuthorTagMgr(rank.authorUuid).addArticleRank(rank);
-            this._setArticleRankObj(obj);
+            this.addArticleRankFromJson(rank);
         }.bind(this));
 
         this.trigger(this.data, null, "update");
+    },
+
+    addArticleRankFromJson(rank) {
+        let obj = this.getAuthorTagMgr(rank.authorUuid).addArticleRank(rank);
+        this._setArticleRankObj(obj);
     },
 
     /*
@@ -616,10 +628,11 @@ let AuthorStore = Reflux.createStore({
      */
     _updateArtRankFromArticles: function(articles) {
         _.forOwn(articles, function(art) {
-            let rank = art.rank;
-            if (rank != null) {
-                let obj = this.getAuthorTagMgr(rank.authorUuid).addArticleRank(rank);
-                this._setArticleRankObj(obj);
+            if (art.rank instanceof ArticleRank) {
+                console.log("skip art rank " + art.getArticleUuid());
+            }
+            if (art.rank != null && !(art.rank instanceof ArticleRank)) {
+                this.addArticleRankFromJson(art.rank);
             }
         }.bind(this));
     },
@@ -694,13 +707,6 @@ let AuthorStore = Reflux.createStore({
     },
 
     statics: {
-        createDefArtRank: function(articleUuid) {
-            let article = ArticleStore.getArticleByUuid(articleUuid);
-            if (article != null) {
-                return new ArticleRank(null, null, article);
-            }
-            return null;
-        }
     }
 });
 

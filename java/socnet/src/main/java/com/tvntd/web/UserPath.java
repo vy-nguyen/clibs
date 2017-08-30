@@ -212,11 +212,18 @@ public class UserPath
     public GenericResponse
     getArticleList(@RequestBody UuidForm uuids, HttpSession session)
     {
-        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
-        if (profile == null) {
+        /*
+        if (uuids.cleanInput() == false) {
             return s_noProfile;
         }
-        return null;
+        */
+        List<String> input = new ArrayList<>();
+        for (String u : uuids.getUuids()) {
+            input.add(u);
+        }
+        List<ArticleDTO> arts = articleSvc.getArticles(input);
+        System.out.println("Result art lengh " + arts.size());
+        return new ArticleDTOResponse(arts, null);
     }
 
     /**
