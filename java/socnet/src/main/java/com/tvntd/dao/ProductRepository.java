@@ -41,6 +41,8 @@ public interface ProductRepository extends JpaRepository<Product, String>
 
     List<Product> findAllByAuthorId(Long authorId);
     List<Product> findAllByAuthorUuid(String authorUuid);
+    List<Product> findByArticleUuidIn(List<String> articleUuids);
+    List<Product> findByAuthorUuidIn(List<String> authorUuids);
 
     List<Product> findAllByAuthorIdOrderByCreatedDateDesc(Long authorId);
     List<Product> findAllByAuthorUuidOrderByCreatedDateAsc(String uuid);

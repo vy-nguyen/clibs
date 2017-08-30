@@ -26,6 +26,8 @@
  */
 package com.tvntd.dao;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tvntd.models.CommentRank;
@@ -33,6 +35,7 @@ import com.tvntd.models.CommentRank;
 public interface CommentRankRepo extends JpaRepository<CommentRank, Long>
 {
     CommentRank findByCommentId(Long id);
+    List<CommentRank> findByCommentIdIn(List<Long> ids);
     
     @Override
     void delete(CommentRank rank);

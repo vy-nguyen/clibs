@@ -26,6 +26,8 @@
  */
 package com.tvntd.dao;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tvntd.models.Domain;
@@ -33,6 +35,8 @@ import com.tvntd.models.Domain;
 public interface DomainRepo extends JpaRepository<Domain, String>
 {
     Domain findByDomain(String domain);
+    List<Domain> findByDomainIn(List<String> domain);
+
     void deleteByAuthorUuid(String authorUuid);
 
     @Override

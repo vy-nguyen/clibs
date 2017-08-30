@@ -27,8 +27,10 @@
 package com.tvntd.service.user;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
@@ -41,6 +43,8 @@ import org.springframework.stereotype.Service;
 import com.tvntd.dao.ArticleRankRepo;
 import com.tvntd.dao.ProductRepository;
 import com.tvntd.forms.ProductForm;
+import com.tvntd.models.ArtTag;
+import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Product;
 import com.tvntd.service.api.IArtTagService;
@@ -106,12 +110,23 @@ public class ProductService implements IProductService
         }
     }
 
+    protected ProductDTO makeProduct(ArticleRank rank, Product prod)
+    {
+        if (rank != null && rank.getArtTag() == null) {
+            System.out.println("Set art " + rank.getArticleUuid() + " to product");
+            rank.setHasArticle(true);
+            rank.setArtTag(ArtTag.ESTORE);
+            artRankRepo.save(rank);
+        }
+        return new ProductDTO(prod, rank);
+    }
+
     @Override
     public ProductDTO getProductDTO(String uuid)
     {
         Product prod = getProduct(uuid);
         if (prod != null) {
-            return new ProductDTO(prod, artRankRepo.findByArticleUuid(uuid));
+            return makeProduct(artRankRepo.findByArticleUuid(uuid), prod);
         }
         return null;
     }
@@ -122,25 +137,40 @@ public class ProductService implements IProductService
         return productRepo.findByArticleUuid(uuid);
     }
 
-    @Override
-    public List<ProductDTO> convert(List<Product> products)
+    protected List<ProductDTO>
+    makeProductDTO(List<Product> products, List<ArticleRank> ranks)
     {
         List<ProductDTO> result = new LinkedList<>();
+        Map<String, ArticleRank> map = new HashMap<>();
+
+        for (ArticleRank r : ranks) {
+            map.put(r.getArticleUuid(), r);
+        }
         for (Product p : products) {
-            ArticleRank r = artRankRepo.findByArticleUuid(p.getArticleUuid());
-            result.add(new ProductDTO(p, r));
+            result.add(makeProduct(map.get(p.getArticleUuid()), p));
         }
         return result;
     }
 
     @Override
+    public List<ProductDTO> convert(List<Product> products)
+    {
+        List<String> uuids = new LinkedList<>();
+
+        for (Product p : products) {
+            uuids.add(p.getArticleUuid());
+        }
+        List<ArticleRank> ranks = artRankRepo.findByArticleUuidIn(uuids);
+        return makeProductDTO(products, ranks);
+    }
+
+    @Override
     public List<ProductDTO> getProducts(List<String> uuids)
     {
-        List<ProductDTO> result = new LinkedList<>();
-        for (String u : uuids) {
-            result.add(getProductDTO(u));
-        }
-        return result;
+        List<Product> raw = productRepo.findByArticleUuidIn(uuids);
+        List<ArticleRank> ranks = artRankRepo.findByArticleUuidIn(uuids);
+
+        return makeProductDTO(raw, ranks);
     }
 
     @Override
@@ -166,44 +196,27 @@ public class ProductService implements IProductService
     @Override
     public List<ProductDTO> getProductsByUser(List<String> userUuids)
     {
-        List<ProductDTO> result = new LinkedList<>();
-        for (String u : userUuids) {
-            List<ProductDTO> prods = getProductsByUser(u);
-            if (prods != null) {
-                result.addAll(prods);
-            }
-        }
-        return result;
+        return convert(productRepo.findByAuthorUuidIn(userUuids));
     }
 
     @Override
     public List<ProductDTO> getProductsByUser(String[] userUuids)
     {
-        List<ProductDTO> result = new LinkedList<>();
-        if (userUuids != null) {
-            for (String u : userUuids) {
-                List<ProductDTO> prods = getProductsByUser(u);
-                if (prods != null) {
-                    result.addAll(prods);
-                }
-            }
+        List<String> uuids = new LinkedList<>();
+        for (String u : userUuids) {
+            uuids.add(u);
         }
-        return result;
+        return getProductsByUser(uuids);
     }
 
     @Override
     public List<ProductDTO> getProductsByUuids(String[] prodUuids)
     {
-        List<ProductDTO> result = new LinkedList<>();
-        if (prodUuids != null) {
-            for (String u : prodUuids) {
-                ProductDTO prod = getProductDTO(u);
-                if (prod != null) {
-                    result.add(prod);
-                }
-            }
+        List<String> uuids = new LinkedList<>();
+        for (String u : prodUuids) {
+            uuids.add(u);
         }
-        return result;
+        return getProducts(uuids);
     }
 
     @Override

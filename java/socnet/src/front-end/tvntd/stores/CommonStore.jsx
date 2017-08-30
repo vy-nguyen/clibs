@@ -10,6 +10,7 @@ import Actions      from 'vntd-root/actions/Actions.jsx';
 import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
 import CommentStore from 'vntd-root/stores/CommentStore.jsx';
 import UserStore    from 'vntd-shared/stores/UserStore.jsx';
+import WebUtils     from 'vntd-shared/utils/WebUtils.jsx';
 import {Util}       from 'vntd-shared/utils/Enum.jsx';
 
 class Article {
@@ -18,13 +19,13 @@ class Article {
             this[k] = v;
         }.bind(this));
 
-        // this._id          = _.uniqueId('id-article-');
         this.author       = UserStore.getUserByUuid(data.authorUuid);
         this.createdDate  = Date.parse(data.createdDate);
         this.dateString   = moment(this.createdDate).format("DD/MM/YYYY - HH:mm");
 
         if (data.rank != null) {
             CommentStore.addArtAttr(data.rank);
+            AuthorStore.addArticleRankFromJson(data.rank);
         }
         return this;
     }
@@ -47,6 +48,25 @@ class Article {
 
     isPublished() {
         return this.published;
+    }
+
+    requestData() {
+        if (this.noData === true && this.ownerStore != null) {
+            this.ownerStore.requestItems(Actions.getArticles);
+        } else {
+            console.log("skip Request data...");
+        }
+        return WebUtils.spinner();
+    }
+
+    getArticleRank() {
+        if (this.rank != null) {
+            return this.rank;
+        }
+        if (this.noData === true) {
+            return AuthorStore.lookupArticleRankByUuid(this.articleUui);
+        }
+        return null;
     }
 
     static newInstance(kind, data) {
@@ -293,9 +313,22 @@ class CommonStore {
         return (myShelf != null) ? myShelf.getSortedSavedArts() : null;
     }
 
-    getItemByUuid(uuid) {
-        let uuids = this.data.itemsByUuid[uuid];
-        return uuids;
+    getItemByUuid(uuid, authorUuid) {
+        let item = this.data.itemsByUuid[uuid];
+
+        if (item == null) {
+            this._recordMissingUuid(uuid);
+            if (authorUuid == null) {
+                return null;
+            }
+            item = Article.newInstance(this.data.storeKind, {
+                authorUuid : authorUuid,
+                articleUuid: uuid,
+                ownerStore : this,
+                noData     : true
+            });
+        }
+        return item;
     }
 
     getAuthorUuid(articleUuid) {
@@ -337,11 +370,38 @@ class CommonStore {
         store.trigger(this.data, null, "failure", false, null);
     }
 
+    requestItems(actionFn) {
+        if (this.data.requestUuids != null ||
+            this.data.missingUuids == null || _.isEmpty(this.data.missingUuids)) {
+            return;
+        }
+        this.data.requestUuids = this.data.missingUuids;
+        this.data.missingUuids = null;
+
+        actionFn({
+            authorUuid: null,
+            uuidType  : this.data.storeKind,
+            reqKind   : this.data.storeKind,
+            uuids     : this.data.requestUuids
+        });
+    }
+
     onDeleteItemCompleted(data, store) {
         let out = this._removeItemStore(data.uuids, data.authorUuid);
 
         this._notifyListeners("remove", out);
         store.trigger(this.data, [data], "delOk", true, data.authorUuid);
+    }
+
+    _recordMissingUuid(uuid) {
+        let missing = this.data.missingUuids;
+
+        if (missing == null) {
+            this.data.missingUuids = [];
+            missing = this.data.missingUuids;
+        }
+        missing.push(uuid);
+        return missing;
     }
 
     updateMissingUuid(uuids) {
@@ -368,20 +428,6 @@ class CommonStore {
         this.requestItems(actionFn);
     }
 
-    requestItems(actionFn) {
-        if (this.data.requestdUuids != null || this.data.missingUuids == null) {
-            return;
-        }
-        this.data.requestUuids = this.data.missingUuids;
-        this.data.missingUuids = null;
-
-        actionFn({
-            authorUuid: null,
-            uuidType  : this.data.storeKind,
-            uuids     : this.data.requestUuids
-        });
-    }
-
     /**
      * Internal methods, used by derrived stores.
      */
@@ -402,18 +448,23 @@ class CommonStore {
     }
 
     _addItemStore(item) {
-        let anchor, authorTagMgr, it;
+        let articleUuid, authorUuid, anchor, authorTagMgr, it, oldArt;
 
         it = Article.newInstance(this.data.storeKind, item);
-        anchor = this.getItemOwner(it.authorUuid);
+        articleUuid = it.getArticleUuid();
+        authorUuid  = it.getAuthorUuid();
 
-        if (this.data.itemsByUuid[it.articleUuid] == null) {
-            this.data.itemsByUuid[it.articleUuid] = it;
+        anchor = this.getItemOwner(authorUuid);
+        oldArt = this.data.itemsByUuid[articleUuid];
+        if (oldArt == null || oldArt.noData === true) {
+            this.data.itemsByUuid[articleUuid] = it;
             anchor.addArticle(it);
         }
         if (it.rank != null) {
-            authorTagMgr = AuthorStore.getAuthorTagMgr(it.authorUuid);
+            authorTagMgr = AuthorStore.getAuthorTagMgr(authorUuid);
             authorTagMgr.addArticleRank(it.rank);
+        } else {
+            it.rank = AuthorStore.lookupArticleRankByUuid(articleUuid);
         }
         return it;
     }

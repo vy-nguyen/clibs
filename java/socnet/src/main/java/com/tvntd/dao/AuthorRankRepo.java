@@ -26,6 +26,8 @@
  */
 package com.tvntd.dao;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tvntd.models.AuthorRank;
@@ -33,6 +35,7 @@ import com.tvntd.models.AuthorRank;
 public interface AuthorRankRepo extends JpaRepository<AuthorRank, String>
 {
     AuthorRank findByAuthorUuid(String id);
+    List<AuthorRank> findByAuthorUuidIn(List<String> authorUuids);
     
     @Override
     void delete(AuthorRank rank);

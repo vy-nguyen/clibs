@@ -46,7 +46,7 @@ class ArticleBox extends React.Component
         if (data.artBrief != null) {
             data.description = (
                 <div className="description">
-                    <p>{data.artBrief}</p>
+                    <div dangerouslySetInnerHTML={{__html: data.artBrief}}/>
                 </div>
             );
         }
@@ -100,22 +100,13 @@ class ArticleBox extends React.Component
     }
 
     static getArtCtx(articleUuid, authorUuid, clickCb) {
-        let img, author, artRank, article = ArticleStore.getArticleByUuid(articleUuid);
+        let img, img1, author, artRank,
+            article = ArticleStore.getArticleByUuid(articleUuid, authorUuid);
 
-        if (article == null) {
-            article = {
-                topic      : "Getting data...",
-                content    : null,
-                pictureUrl : null,
-                dateString : null,
-                createdDate: null
-            };
-        }
         author = UserStore.getUserByUuid(authorUuid);
-        artRank = AuthorStore.getArticleRankByUuid(articleUuid);
+        artRank = AuthorStore.getArticleRankByUuid(articleUuid, authorUuid);
 
         if (artRank == null) {
-            console.log("No rank >>> get ctx " + articleUuid + " author " + authorUuid);
             return null;
         }
         if (artRank.contentBrief == null) {
@@ -127,17 +118,19 @@ class ArticleBox extends React.Component
         }
         img = article.pictureUrl;
         if (img != null && !_.isEmpty(img)) {
-            img = img[Util.getRandomInt(0, img.length - 1)];
+            img  = img[Util.getRandomInt(0, img.length - 1)];
+            img1 = article.pictureUrl[1];
         } else {
-            img = author.userImgUrl;
+            img  = UserStore.getSelf().userImgUrl
+            img1 = null;
         }
         return {
             article    : article,
             logo       : author.userImgUrl,
             image      : img,
-            image1     : article.pictureUrl != null ? article.pictureUrl[1] : null,
+            image1     : img1,
             dateInfo   : article.dateString,
-            artTitle   : article.topic,
+            artTitle   : artRank.getArtTitle(),
             artCategory: artRank.tagName,
             artBrief   : artRank.contentBrief,
             artPrice   : author.getUserName(),
@@ -193,19 +186,23 @@ class ArticleBox extends React.Component
     }
 
     static youtubeLink(article, brief) {
-        let oid = article.contentOid, code, url;
+        let rank = article.getArticleRank(), oid, code, url;
 
+        if (rank == null) {
+            return null;
+        }
+        oid = rank.contentOid;
         if (oid != null) {
             code = oid.substring(0, 3);
             if (code === "DOC") {
-                url = "https://docs.google.com/" + article.youtube +
+                url = "https://docs.google.com/" + rank.contentLinkUrl +
                     "/pub?embedded=true";
 
             } else if (code === "VID") {
-                url = "https://www.youtube.com/embed/" + article.youtube;
+                url = "https://www.youtube.com/embed/" + rank.contentLinkUrl;
 
             } else if (code === "DRV") {
-                let linkId = article.youtube, idx = linkId.lastIndexOf('/');
+                let linkId = rank.contentLinkUrl, idx = linkId.lastIndexOf('/');
 
                 if (idx > 0) {
                     linkId = linkId.substring(idx);
@@ -216,7 +213,7 @@ class ArticleBox extends React.Component
                 return null;
             }
         } else {
-            url = "https://www.youtube.com/embed/" + article.youtube;
+            url = "https://www.youtube.com/embed/" + rank.contentLinkUrl;
         }
 
         const style = {
@@ -242,11 +239,15 @@ class ArtBlogStyle extends React.Component
     }
 
     render() {
-        let img, arg = this.props.data, clickBtn = arg.clickBtn, article = arg.article;
+        let html, img, arg = this.props.data, clickBtn = arg.clickBtn,
+            article = arg.article;
 
         if (arg == null) {
             return null;
         }
+        html = {
+            __html: arg.artBrief
+        };
         if (article.youtube != null) {
             img = ArticleBox.youtubeLink(article, true);
         } else {
@@ -267,7 +268,7 @@ class ArtBlogStyle extends React.Component
                     <h3 className="margin-top-0"> 
                         <a onClick={arg.clickCbFn}>{arg.artTitle}</a>
                     </h3>
-                    <p className="padding-10">{arg.artBrief}</p>
+                    <p className="padding-10" dangerouslySetInnerHTML={html}/>
                     <a className={clickBtn.btnClass} onClick={arg.clickCbFn}>
                         {clickBtn.btnText}
                     </a>
@@ -284,11 +285,14 @@ class ArtBlogWide extends React.Component
     }
 
     render() {
-        let arg = this.props.data, clickBtn = arg.clickBtn;
+        let html, arg = this.props.data, clickBtn = arg.clickBtn;
 
         if (arg == null) {
             return null;
         }
+        html = {
+            __html: arg.artBrief
+        };
         return (
             <div className="well">
                 <div className="row">
@@ -303,7 +307,7 @@ class ArtBlogWide extends React.Component
                         <h3 className="margin-top-10">
                             <a onClick={arg.clickCbFn}>{arg.artTitle}</a>
                         </h3>
-                        <p>{arg.artBrief}</p>
+                        <p dangerouslySetInnerHTML={html}/>
                         <a className={clickBtn.btnClass} onClick={arg.clickCbFn}>
                             {clickBtn.btnText}
                         </a>

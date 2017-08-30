@@ -213,7 +213,7 @@ class Util
     static toDateString(milli) {
         if (milli) {
             let d = new Date(milli);
-            return d.toString();
+            return d.toDateString();
         }
         return 'No date';
     }

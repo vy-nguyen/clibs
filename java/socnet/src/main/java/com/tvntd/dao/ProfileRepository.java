@@ -26,6 +26,8 @@
  */
 package com.tvntd.dao;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -37,6 +39,7 @@ public interface ProfileRepository extends JpaRepository<Profile, Long>
     Profile findByUserId(Long id);
 
     Profile findByUserUuid(String uuid);
+    List<Profile> findByUserUuid(List<String> uuids);
 
     Page<Profile> findAll(Pageable pageble);
 

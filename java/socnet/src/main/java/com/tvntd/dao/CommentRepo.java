@@ -37,6 +37,7 @@ import com.tvntd.models.Comment;
 public interface CommentRepo extends JpaRepository<Comment, Long>
 {
     Comment findById(Long id);
+    List<Comment> findByIdIn(List<Long> ids);
     List<Comment> findAllByArticleUuid(String uuid);
     Page<Comment> findAllByArticleUuid(Pageable page, String uuid);
 
