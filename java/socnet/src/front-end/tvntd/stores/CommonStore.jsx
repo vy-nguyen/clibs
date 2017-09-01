@@ -78,6 +78,15 @@ class Article {
         }
         return new AdsItem(data);
     }
+
+    static newDefInstance(kind, store, articleUuid, authorUuid) {
+        return Article.newInstance(kind, {
+            authorUuid : authorUuid,
+            articleUuid: articleUuid,
+            ownerStore : store,
+            noData     : true
+        });
+    }
 }
 
 class Product extends Article {
@@ -124,11 +133,9 @@ class AuthorShelf {
         this.sortedArticles  = [];
         this.sortedSavedArts = [];
 
-        this.addSortedArticle = this.addSortedArticle.bind(this);
+        // this.addSortedArticle = this.addSortedArticle.bind(this);
         if (article != null) {
             this.addSortedArticle(article);
-        } else {
-            Actions.refreshArticles(authorUuid);
         }
         return this;
     }
@@ -137,18 +144,10 @@ class AuthorShelf {
         if (article == null) {
             return;
         }
-        if (article.isPublished()) {
-            if (this.articles[article.articleUuid] == null) {
-                this.removeArticle(article.articleUuid);
-                this.articles[article.articleUuid] = article;
-                this.sortedArticles = Util.preend(article, this.sortedArticles);
-            }
-        } else {
-            if (this.articles[article.articleUuid] != null) {
-                this.removeArticle(article.articleUuid);
-            }
-            this.addSortedSavedArts(article);
+        if (this.articles[article.articleUuid] != null) {
+            this.removeArticle(article.articleUuid);
         }
+        this.addSortedArticle(article, true);
     }
 
     _cmpArticle(anchor, elm) {
@@ -174,11 +173,15 @@ class AuthorShelf {
         }
     }
 
-    addSortedArticle(article) {
+    addSortedArticle(article, pre) {
         if (article.isPublished()) {
             if (this.articles[article.articleUuid] !== article) {
                 this.articles[article.articleUuid] = article;
-                Util.insertSorted(article, this.sortedArticles, this._cmpArticle);
+                if (pre === true) {
+                    this.sortedArticles = Util.preend(article, this.sortedArticles);
+                } else {
+                    Util.insertSorted(article, this.sortedArticles, this._cmpArticle);
+                }
             }
             return;
         }
@@ -321,12 +324,8 @@ class CommonStore {
             if (authorUuid == null) {
                 return null;
             }
-            item = Article.newInstance(this.data.storeKind, {
-                authorUuid : authorUuid,
-                articleUuid: uuid,
-                ownerStore : this,
-                noData     : true
-            });
+            item = Article.newDefInstance(this.data.storeKind, this, uuid, authorUuid);
+            this._addItemObjStore(item);
         }
         return item;
     }
@@ -448,9 +447,12 @@ class CommonStore {
     }
 
     _addItemStore(item) {
-        let articleUuid, authorUuid, anchor, authorTagMgr, it, oldArt;
+        return this._addItemObjStore(Article.newInstance(this.data.storeKind, item));
+    }
 
-        it = Article.newInstance(this.data.storeKind, item);
+    _addItemObjStore(it) {
+        let articleUuid, authorUuid, anchor, authorTagMgr, oldArt;
+
         articleUuid = it.getArticleUuid();
         authorUuid  = it.getAuthorUuid();
 

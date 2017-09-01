@@ -15,7 +15,9 @@ import ArticleTagStore  from 'vntd-root/stores/ArticleTagStore.jsx';
 import Startup          from 'vntd-root/pages/login/Startup.jsx';
 import {Util}           from 'vntd-shared/utils/Enum.jsx';
 
-import {ArticleStore, EProductStore} from 'vntd-root/stores/ArticleStore.jsx';
+import {
+    ArticleStore, EProductStore, GlobalStore
+} from 'vntd-root/stores/ArticleStore.jsx';
 
 class Author {
     constructor(data) {
@@ -78,7 +80,6 @@ class ArticleRank {
             this[k] = v;
         }.bind(this));
 
-        this._id = _.uniqueId('id-art-rank-');
         if (article == null) {
             article = ArticleStore.getArticleByUuid(this.articleUuid, this.authorUuid);
         }
@@ -116,6 +117,10 @@ class ArticleRank {
         }.bind(this));
     }
 
+    getArticle() {
+        return GlobalStore.getArticle(this.artTag, this.articleUuid, this.authorUuid);
+    }
+
     getArticleUuid() {
         return this.articleUuid;
     }
@@ -144,7 +149,9 @@ class AuthorTag {
         let rank = this.articles[json.articleUuid];
 
         if (rank != null) {
-            rank.updateFromJson(json);
+            if (json !== rank && !(json instanceof ArticleRank)) {
+                rank.updateFromJson(json);
+            }
             return rank;
         }
         return this.addArticleRankObj(new ArticleRank(json, this, null));
@@ -481,10 +488,6 @@ let AuthorStore = Reflux.createStore({
         return article.rank;
     },
 
-    _setArticleRankObj: function(rankObj) {
-        this.data.allArticleRanks[rankObj.articleUuid] = rankObj;
-    },
-
     /**
      * @return string tags used for autocomplete.
      */
@@ -610,17 +613,19 @@ let AuthorStore = Reflux.createStore({
     /*
      * Update article ranks with data returned from the server.
      */
-    _updateArticleRank: function(data) {
-        _.forOwn(data.articleRank, function(rank) {
+    _updateArticleRank: function(articleRank, trigger) {
+        _.forOwn(articleRank, function(rank) {
             this.addArticleRankFromJson(rank);
         }.bind(this));
 
-        this.trigger(this.data, null, "update");
+        if (trigger != null) {
+            this.trigger(this.data, null, trigger);
+        }
     },
 
     addArticleRankFromJson(rank) {
         let obj = this.getAuthorTagMgr(rank.authorUuid).addArticleRank(rank);
-        this._setArticleRankObj(obj);
+        this.data.allArticleRanks[obj.articleUuid] = obj;
     },
 
     /*
@@ -628,9 +633,6 @@ let AuthorStore = Reflux.createStore({
      */
     _updateArtRankFromArticles: function(articles) {
         _.forOwn(articles, function(art) {
-            if (art.rank instanceof ArticleRank) {
-                console.log("skip art rank " + art.getArticleUuid());
-            }
             if (art.rank != null && !(art.rank instanceof ArticleRank)) {
                 this.addArticleRankFromJson(art.rank);
             }
@@ -647,7 +649,7 @@ let AuthorStore = Reflux.createStore({
     },
 
     onPostArticleSelectCompleted: function(data) {
-        this._updateArticleRank(data);
+        this._updateArticleRank(data.articleRank, "update");
     },
 
     onInitCompleted: function(json) {
@@ -662,7 +664,7 @@ let AuthorStore = Reflux.createStore({
     },
 
     onGetArticleRankCompleted: function(data) {
-        this._updateArticleRank(data);
+        this._updateArticleRank(data.articleRank, "update");
     },
 
     onReRankTagCompleted: function(tagMgr) {
@@ -685,7 +687,7 @@ let AuthorStore = Reflux.createStore({
     onUpdateArtRankCompleted: function(data) {
         let btnId = data.cbContext;
         NavActions.buttonChange(btnId);
-        this._updateArticleRank(data);
+        this._updateArticleRank(data.articleRank, "update");
     },
 
     onStartupCompleted: function(data) {
@@ -693,17 +695,18 @@ let AuthorStore = Reflux.createStore({
         if (authors != null) {
             this._addAuthorList(authors);
         }
-        if (data.articles != null) {
-            this._updateArtRankFromArticles(data.articles);
-        }
+        console.log("==== startup=== ");
+        console.log(data);
+
+        this._updateArticleRank(data.artRanks, null);
+        ArticleStore.mainStartup(data);
         Startup.mainStartup();
+
         this.trigger(this.data, data, "startup");
     },
 
     onGetDomainDataCompleted: function(data, context) {
-        data.articleRank = data.artRanks;
-        this._updateArticleRank(data);
-        this.trigger(this.data, data, "domain");
+        this._updateArticleRank(data.artRanks, "domain");
     },
 
     statics: {

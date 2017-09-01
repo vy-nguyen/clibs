@@ -63,6 +63,7 @@ public interface IArticleService
             boolean publish, boolean update);
 
     ArticleRank updateRank(CommentChangeForm form, ProfileDTO user);
+    List<ArticleRankDTO> getArticleRank(List<String> articleUuids);
     List<ArticleRankDTO> getArticleRank(UuidForm uuids);
     List<ArticleRankDTO> getArtRankByAuthor(String authorUuid);
     List<ArticleRankDTO> convertRank(List<ArticleRank> ranks);

@@ -229,6 +229,20 @@ public class DomainService implements IDomainService
         }
         // Get all public articles.
         //
+        List<String> articleUuids = new LinkedList<>();
+        for (Map.Entry<String, String> entry : artUuids.entrySet()) {
+            articleUuids.add(entry.getKey());
+        }
+        List<ArticleRankDTO> rankList = articleSvc.getArticleRank(articleUuids);
+        resp.setArtRanks(rankList);
+        for (ArticleRankDTO rank : rankList) {
+            String authorUuid = rank.getAuthorUuid();
+            if (authorUuids.get(authorUuid) == null) {
+                authorUuids.put(authorUuid, authorUuid);
+            }
+        }
+
+        /*
         List<ArticleDTO> artList = new LinkedList<>();
         List<ArticleRankDTO> rankList = new LinkedList<>();
         for (Map.Entry<String, String> entry : artUuids.entrySet()) {
@@ -247,6 +261,7 @@ public class DomainService implements IDomainService
         }
         resp.setArtRanks(rankList);
         resp.setArticles(artList);
+        */
 
         // Get all authors.
         //

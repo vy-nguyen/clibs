@@ -212,9 +212,15 @@ public class ArticleService implements IArticleService
      * Article ranking.
      */
     @Override
-    public List<ArticleRankDTO> getArtRankByAuthor(String authorUuid)
-    {
+    public List<ArticleRankDTO> getArtRankByAuthor(String authorUuid) {
         return convertRank(artRankRepo.findByAuthorUuid(authorUuid));
+    }
+
+    @Override
+    public List<ArticleRankDTO> getArticleRank(List<String> articleUuids)
+    {
+        List<ArticleRank> ranks = artRankRepo.findByArticleUuidIn(articleUuids);
+        return convertRank(ranks);
     }
 
     @Override

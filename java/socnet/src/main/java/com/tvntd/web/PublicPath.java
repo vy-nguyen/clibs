@@ -463,8 +463,6 @@ public class PublicPath
         String buf = "hello world x = " + x + ", y = " + y;
         System.out.println("Input x = " + x + ", y = " + y);
 
-        articleSvc.auditArticleTable();
-
         resp.setContentType("text/html;charset=UTF-8");
         resp.setCharacterEncoding("utf-8");
         try {

@@ -210,14 +210,13 @@ let ArticleStore = Reflux.createStore({
         this.trigger(out, data.articles, "refresh", true, null);
     },
 
-    onStartupCompleted: function(data) {
+    mainStartup: function(data) {
         let out = this.store.addFromJson(data.articles, 'itemsByUuid', true);
 
         if (data.pendPosts) {
             this.store.addFromJson(data.pendPosts, "itemsByUuid", true);
         }
         this.trigger(out, null, "startup", true, null);
-        Startup.mainStartup();
     },
 
     /**
@@ -248,6 +247,7 @@ let ArticleStore = Reflux.createStore({
 
     onUpdateUserPostCompleted: function(post) {
         let status = "publish";
+
         if (post.error == null) {
             this.store._removeItemStore([post.articleUuid], post.authorUuid, true);
             this.store._addItemStore(post);
@@ -294,6 +294,11 @@ class GlobStore
             }
         }
         return null;
+    }
+
+    static getArticle(kind, artUuid, authorUuid) {
+        let store = GlobStore.getStoreKind(kind, null);
+        return store.getItemByUuid(artUuid, authorUuid);
     }
 }
 
