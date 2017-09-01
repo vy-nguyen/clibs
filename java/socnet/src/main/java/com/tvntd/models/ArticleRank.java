@@ -60,6 +60,8 @@ public class ArticleRank
 {
     public static int MaxTitleLength = 128;
     public static int MaxContentLength = 250;
+    public static Long PERM_PRIVATE = 0x80000000L;
+
     static private Logger s_log = LoggerFactory.getLogger(ArticleRank.class);
 
     @Id
@@ -80,6 +82,9 @@ public class ArticleRank
 
     @Column(length = 64)
     private String urlTag;
+
+    @Column(length = 64)
+    private String imageOid;
 
     @Column(length = 64)
     private String prevArticle;
@@ -104,6 +109,7 @@ public class ArticleRank
     private Long rank;
     private Long score;
     private Long permMask;
+    private Long authorId;
     private boolean favorite;
     private boolean hasArticle;
 
@@ -132,16 +138,16 @@ public class ArticleRank
     public ArticleRank()
     {
         this.creditEarned = 0L;
-        this.moneyEarned = 0L;
-        this.likes = 0L;
-        this.shared = 0L;
-        this.score = 0L;
-        this.rank = 0L;
-        this.favorite = false;
-        this.artTitle = Util.DefaultTopic;
+        this.moneyEarned  = 0L;
+        this.likes        = 0L;
+        this.shared       = 0L;
+        this.score        = 0L;
+        this.rank         = 0L;
+        this.favorite     = false;
+        this.artTitle     = Util.DefaultTopic;
         this.contentBrief = null;
-        this.timeStamp = new Date();
-        this.tag = Util.DefaultTag;
+        this.timeStamp    = new Date();
+        this.tag          = Util.DefaultTag;
     }
 
     public ArticleRank(String artUuid)
@@ -150,6 +156,9 @@ public class ArticleRank
         this.articleUuid = artUuid;
     }
 
+    /**
+     * Create article rank from article.
+     */
     public ArticleRank(AuthorTag tag, Article article)
     {
         this();
@@ -162,6 +171,35 @@ public class ArticleRank
         this.tag          = tag.fetchTag();
         this.tagHash      = HashKey.toSha1Key(this.tag, authorUuid);
         this.contentBrief = article.getContentBrief();
+    }
+
+    public ArticleRank(Article article, String host, String url, String tag, int mode)
+    {
+        this();
+        artTag      = ArtTag.BLOG;
+        articleUuid = article.getArticleUuid();
+        authorUuid  = article.getAuthorUuid();
+        artTitle    = article.getTopic();
+        this.tag    = Util.toRawByte(tag, 64);
+        tagHash     = HashKey.toSha1Key(this.tag, authorUuid);
+
+        List<String> imgs = article.getPictures();
+        if (imgs != null && !imgs.isEmpty()) {
+            imageOid = imgs.get(0);
+        }
+        if (host != null && url != null) {
+            hasArticle     = false;
+            contentLinkUrl = url;
+            contentOid     = Article.makeUrlLink(null, host, mode);
+        } else {
+            hasArticle = true;
+        }
+        byte[] content = article.getContent();
+        if (content.length > MaxContentLength) {
+            contentBrief = Arrays.copyOfRange(content, 0, MaxContentLength);
+        } else {
+            contentBrief = content;
+        }
     }
 
     /**
@@ -251,6 +289,16 @@ public class ArticleRank
         }
     }
 
+    static public String toUrlTag(String urlTag, String topic)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("https://tudoviet.com/public/article/")
+            .append(Util.utf8ToUrlString(urlTag))
+            .append("/")
+            .append(Util.utf8ToUrlString(topic));
+        return sb.toString();
+    }
+
     public boolean setPublicUrl(String publicTag)
     {
         if (artTitle == null) {
@@ -265,6 +313,14 @@ public class ArticleRank
         } catch(UnsupportedEncodingException e) {
         }
         return false;
+    }
+
+    public void markActive() {
+        this.permMask = 0L;
+    }
+
+    public void markPending() {
+        this.permMask = PERM_PRIVATE;
     }
 
     /**
@@ -343,6 +399,20 @@ public class ArticleRank
     }
 
     /**
+     * @return the imageOid
+     */
+    public String getImageOid() {
+        return imageOid;
+    }
+
+    /**
+     * @param imageOid the imageOid to set
+     */
+    public void setImageOid(String imageOid) {
+        this.imageOid = imageOid;
+    }
+
+    /**
      * @return the prevArticle
      */
     public String getPrevArticle() {
@@ -413,6 +483,10 @@ public class ArticleRank
             return new String(contentBrief, Charset.forName("UTF-8"));
         }
         return "...";
+    }
+
+    public byte[] fetchContentBrief() {
+        return contentBrief;
     }
 
     /**
@@ -518,6 +592,20 @@ public class ArticleRank
      */
     public Long getPermMask() {
         return permMask;
+    }
+
+    /**
+     * @return the authorId
+     */
+    public Long getAuthorId() {
+        return authorId;
+    }
+
+    /**
+     * @param authorId the authorId to set
+     */
+    public void setAuthorId(Long authorId) {
+        this.authorId = authorId;
     }
 
     /**

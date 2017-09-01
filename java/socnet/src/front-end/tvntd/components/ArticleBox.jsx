@@ -116,11 +116,19 @@ class ArticleBox extends React.Component
                 artRank.contentBrief = "";
             }
         }
-        img = article.pictureUrl;
-        if (img != null && !_.isEmpty(img)) {
-            img  = img[Util.getRandomInt(0, img.length - 1)];
-            img1 = article.pictureUrl[1];
+        if (article.noData === true) {
+            img  = artRank.imageUrl;
+            img1 = img;
         } else {
+            img = article.pictureUrl;
+            if (img != null && !_.isEmpty(img)) {
+                img  = img[Util.getRandomInt(0, img.length - 1)];
+                img1 = article.pictureUrl[1];
+            } else {
+                img  = null;
+            }
+        }
+        if (img == null) {
             img  = UserStore.getSelf().userImgUrl
             img1 = null;
         }

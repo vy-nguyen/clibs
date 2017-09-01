@@ -26,7 +26,6 @@
  */
 package com.tvntd.service.user;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -53,15 +52,18 @@ import com.tvntd.forms.CommentChangeForm;
 import com.tvntd.forms.PostForm;
 import com.tvntd.forms.UuidForm;
 import com.tvntd.key.HashKey;
+import com.tvntd.models.AdsPost;
 import com.tvntd.models.ArtTag;
 import com.tvntd.models.ArtVideo;
 import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
+import com.tvntd.models.Product;
 import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.ICommentService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
+import com.tvntd.service.api.ITimeLineService;
 import com.tvntd.util.Util;
 
 @Service
@@ -91,50 +93,66 @@ public class ArticleService implements IArticleService
     @Autowired
     protected AdsPostRepo adsRepo;
 
+    @Autowired
+    protected ITimeLineService timeLineSvc;
+
     /**
-     * Common static methods.
      */
-    public static void applyPostForm(PostForm form, ArticleDTO artDTO, boolean publish)
+    @Override
+    public Article toArticle(PostForm form, ProfileDTO profile, boolean pub)
+    {
+        ArticleDTO art = new ArticleDTO(profile.getUserUuid(), profile.fetchUserId());
+        savePost(form, art, profile, pub, false);
+        return art.fetchArticle();
+    }
+
+    @Override
+    public void
+    savePost(PostForm form, ArticleDTO artDTO, ProfileDTO profile,
+            boolean publish, boolean update)
     {
         Article art = artDTO.fetchArticle();
+        art.setTopic(Util.toRawByte(form.getTopic(), Article.MaxTitleLength));
+        art.setContent(Util.toRawByte(form.getContent(), Article.MaxContentLength));
+
+        ArticleRank rank = null;
+        if (update == true) {
+            rank = getRank(art.getArticleUuid());
+        }
+        String tag = form.getTags();
+        if (rank == null) {
+            profile.assignPendPost(null);
+            rank = new ArticleRank(art, form.fetchContentUrlHost(),
+                    form.fetchContentUrlFile(), tag, form.fetchDocType());
+        }
+        if (!tag.equals(rank.getTag())) {
+            rank.setTag(tag);
+        }
         if (publish == true) {
+            rank.markActive();
             art.markActive();
         } else {
+            rank.markPending();
             art.markPending();
         }
-        try {
-            String str = Util.truncate(form.getTopic(), Article.MaxTitleLength);
-            art.setTopic(str.getBytes("UTF-8"));
+        artRankRepo.save(rank);
 
-            if (form.fetchContentUrlHost() != null) {
-                art = artDTO.assignVideo(form.fetchContentUrlFile());
-                Article.makeUrlLink(art, form.fetchContentUrlHost(), form.fetchDocType());
-            }
-            if (form.getContent() != null) {
-                str = Util.truncate(form.getContent(), Article.MaxContentLength);
-                art.setContent(str.getBytes("UTF-8"));
-                if (form.getContentBrief() != null) {
-                    str = Util.truncate(form.getContentBrief(),
-                            ArticleRank.MaxContentLength);
-                    art.setContentBrief(str.getBytes("UTF-8"));
-                }
-            }
-        } catch(UnsupportedEncodingException e) {
-            s_log.info(e.getMessage());
+        if (rank.isHasArticle() == false) {
+            System.out.println("Skip saving art " + art.getTopic());
+            return;
         }
-    }
+        art.setContentBrief(rank.fetchContentBrief());
+        artDTO.setRank(rank);
+        artDTO.convertUTF();
 
-    public static Article toArticle(PostForm form, ProfileDTO profile, boolean pub)
-    {
-        Article art = new Article();
-        art.setAuthorId(profile.fetchUserId());
-        art.setAuthorUuid(profile.getUserUuid());
-        ArticleService.applyPostForm(form, new ArticleDTO(art, null), false);
-        return art;
-    }
-
-    public static void toArticleRank(ArticleDTO art, ProfileDTO author, String tag)
-    {
+        if (publish == true) {
+            profile.pushPublishArticle(artDTO);
+            timeLineSvc.saveTimeLine(profile.getUserUuid(),
+                    art.getArticleUuid(), null, art.getContentBrief());
+        } else {
+            profile.pushSavedArticle(artDTO);
+        }
+        articleRepo.save(art);
     }
 
     /**
@@ -487,5 +505,61 @@ public class ArticleService implements IArticleService
     public void saveArticles(String jsonFile, String rsDir)
     {
         s_log.info("Save articles");
+    }
+
+    @Override
+    public void auditArticleTable()
+    {
+        List<Article> articles = articleRepo.findAll();
+        List<ArticleRank> ranks = artRankRepo.findAll();
+        Map<String, ArticleRank> map = new HashMap<>();
+
+        for (ArticleRank r : ranks) {
+            map.put(r.getArticleUuid(), r);
+        }
+        for (Article a : articles) {
+            ArticleRank r = map.get(a.getArticleUuid());
+            if (r != null) {
+                List<String> imgs = a.getPictures();
+                if (imgs != null && r.getImageOid() == null && !imgs.isEmpty()) {
+                    r.setImageOid(imgs.get(0));
+                    artRankRepo.save(r);
+                }
+                if (r.getAuthorId() == null) {
+                    System.out.println("Update article " + r.getArticleUuid());
+                    r.setAuthorId(a.getAuthorId());
+                    artRankRepo.save(r);
+                }
+            }
+        }
+        List<Product> products = prodRepo.findAll();
+        for (Product p : products) {
+            ArticleRank r = map.get(p.getArticleUuid());
+            if (r != null) {
+                List<String> imgs = p.getImages();
+                if (imgs != null && r.getImageOid() == null && !imgs.isEmpty()) {
+                    r.setImageOid(imgs.get(0));
+                    artRankRepo.save(r);
+                }
+                if (r.getAuthorId() == null) {
+                    r.setAuthorId(p.getAuthorId());
+                }
+            }
+        }
+        List<AdsPost> ads = adsRepo.findAll();
+        for (AdsPost a : ads) {
+            ArticleRank r = map.get(a.getArticleUuid());
+            if (r != null) {
+                String img = a.getAdImgOId0();
+                if (img != null && r.getImageOid() == null) {
+                    r.setImageOid(img);
+                }
+                if (r.getAuthorId() == null) {
+                    r.setAuthorId(0L);
+                }
+                artRankRepo.save(r);
+            }
+        }
+        map.clear();
     }
 }
