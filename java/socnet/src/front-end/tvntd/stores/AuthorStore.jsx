@@ -16,7 +16,7 @@ import Startup          from 'vntd-root/pages/login/Startup.jsx';
 import {Util}           from 'vntd-shared/utils/Enum.jsx';
 
 import {
-    ArticleStore, EProductStore, GlobalStore
+    ArticleStore, EProductStore, GlobStore
 } from 'vntd-root/stores/ArticleStore.jsx';
 
 class Author {
@@ -118,7 +118,7 @@ class ArticleRank {
     }
 
     getArticle() {
-        return GlobalStore.getArticle(this.artTag, this.articleUuid, this.authorUuid);
+        return GlobStore.getArticle(this.artTag, this.articleUuid, this.authorUuid);
     }
 
     getArticleUuid() {
@@ -626,6 +626,7 @@ let AuthorStore = Reflux.createStore({
     addArticleRankFromJson(rank) {
         let obj = this.getAuthorTagMgr(rank.authorUuid).addArticleRank(rank);
         this.data.allArticleRanks[obj.articleUuid] = obj;
+        return obj;
     },
 
     /*
@@ -695,11 +696,9 @@ let AuthorStore = Reflux.createStore({
         if (authors != null) {
             this._addAuthorList(authors);
         }
-        console.log("==== startup=== ");
-        console.log(data);
-
         this._updateArticleRank(data.artRanks, null);
         ArticleStore.mainStartup(data);
+        ArticleTagStore.mainStartup(data);
         Startup.mainStartup();
 
         this.trigger(this.data, data, "startup");

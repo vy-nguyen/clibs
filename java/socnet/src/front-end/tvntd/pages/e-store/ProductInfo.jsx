@@ -2,7 +2,8 @@
  * Copyright by Vy Nguyen (2016)
  * BSD License
  */
-import React, { PropTypes } from 'react-mod'
+import _                    from 'lodash';
+import React, { PropTypes } from 'react-mod';
 import StarRating           from 'react-star-rating';
 
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
@@ -118,21 +119,22 @@ class ProductInfo extends React.Component
     }
 
     _renderProduct() {
-        const {
-            articleUuid, prodTitle, prodPrice, priceNotice, prodSub,
-            prodTags, prodDetail, prodSpec, pictureUrl
-        } = this.props.product;
+        let prodTab, prodRank = this.props.product,
+            prod = prodRank.getArticle(), productTags = [];
 
-        let productTags = [],
-            prodTab = this._productDetail(articleUuid,
-                                          prodTitle, prodDetail, prodSpec);
+        if (prod == null) {
+            console.log("not found product");
+            return null;
+        }
+        prodTab = this._productDetail(prodRank.getArticleUuid(),
+            prod.prodTitle, prod.prodDetail, prod.prodSpec);
 
-        if (prodTags != null) {
-            let tagLength = prodTags.length;
+        if (prod.prodTags != null) {
+            let tagLength = prod.prodTags.length;
             for (let i = 0; i < tagLength; i++) {
                 productTags.push(
                     <li key={_.uniqueId('prod-info-')}>
-                        <div dangerouslySetInnerHTML={{__html: prodTags[i]}}/>
+                        <div dangerouslySetInnerHTML={{__html: prod.prodTags[i]}}/>
                     </li>
                 );
             }
@@ -141,7 +143,7 @@ class ProductInfo extends React.Component
             <div className="product-content product-wrap clearfix product-deatil">
                 <div className="row">
                     <div className="col-md-12 col-lg-12 col-sm-12 col-xs-12">
-                        {this._productImages(articleUuid, pictureUrl)}
+                        {this._productImages(prod.articleUuid, prod.pictureUrl)}
                     </div>
                 </div>
                 <div className="row">
@@ -149,17 +151,17 @@ class ProductInfo extends React.Component
                         <div className="row">
                             <div className="col-xs-12 col-sm-12 col-md-8 col-lg-8">
                                 <h2 className="name">
-                                    {prodTitle}
+                                    {prod.prodTitle}
                                     <div dangerouslySetInnerHTML=
-                                        {{__html: prodSub}}/>
+                                        {{__html: prod.prodSub}}/>
                                 </h2>
                                 <StarRating size={15}
                                     totalStars={5} rating={4} disabled={true}/>
                             </div>
                             <div className="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                 <h3 className="price-container">
-                                    {prodPrice}
-                                    <small>{priceNotice}</small>
+                                    {prod.prodPrice}
+                                    <small>{prod.priceNotice}</small>
                                 </h3>
                             </div>
                         </div>
@@ -177,7 +179,7 @@ class ProductInfo extends React.Component
                 <div className="row">
                     <div className="col-sm-12 col-md-6 col-lg-6"> 
                         <button className="btn btn-success btn-lg">
-                            <Mesg text="Add to cart"/>  (${prodPrice})
+                            <Mesg text="Add to cart"/>  (${prod.prodPrice})
                         </button>
                     </div>
                     <div className="col-sm-12 col-md-6 col-lg-6">
@@ -308,11 +310,8 @@ class ProductBrief extends React.Component
     }
 
     render() {
-        let editBox, delBox, button, onClickCb = this.props.onClickCb;
-        const {
-            logoImg, logoWidth, logoHeight, logoTag, likeStat,
-            articleUuid, rating, prodName, prodCat, prodPrice, prodDesc
-        } = this.props.product;
+        let editBox, delBox, button, logoTag, onClickCb = this.props.onClickCb,
+            prodRank = this.props.product, prod = prodRank.getArticle();
 
         if (onClickCb == null) {
             onClickCb = this._clickSelect;
@@ -339,6 +338,11 @@ class ProductBrief extends React.Component
                 </button>
             );
         }
+        if (prod.logoTag != null) {
+            logoTag = <span className='tag2 hot'>{prod.logoTag}</span>;
+        } else {
+            logoTag = null;
+        }
         return (
             <div className="product-content product-wrap clearfix"
                 onClick={onClickCb}>
@@ -349,25 +353,27 @@ class ProductBrief extends React.Component
                         product={this.props.product}/>
                     <div className="col-md-5 col-sm-12 col-xs-12">
                         <div className="product-image" style={{minHeight: "150"}}>
-                            <img src={logoImg} className='img-responsive'/>
+                            <img src={prod.logoImg} className='img-responsive'/>
                         </div>
-                        {logoTag ? <span className='tag2 hot'>{logoTag}</span> : null}
-                        <LikeStat data={likeStat} split={true}/>
+                        {logoTag}
+                        <LikeStat data={prod.likeStat} split={true}/>
                         <StarRating size={15}
                             totalStars={5} rating={4} disabled={true}/>
                     </div>
                     <div className="col-md-7 col-sm-12 col-xs-12">
                         <div className="product-deatil">
                             <h5 className="name">
-                                <a href="#">{prodName}<span>{prodCat}</span></a>
+                                <a href="#">{prod.prodName}
+                                    <span>{prod.prodCat}</span>
+                                </a>
                             </h5>
                             <p className="price-container">
-                                <span>{prodPrice}</span>
+                                <span>{prod.prodPrice}</span>
                             </p>
                             <span className="tag1"></span>
                         </div>
                         <div className="description"
-                            dangerouslySetInnerHTML={{__html: prodDesc}}/>
+                            dangerouslySetInnerHTML={{__html: prod.prodDesc}}/>
                     </div>
                 </div>
                 <div className="row">

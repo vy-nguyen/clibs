@@ -217,6 +217,11 @@ public class ArticleService implements IArticleService
     }
 
     @Override
+    public List<ArticleRankDTO> getArtRankByAuthors(List<String> authors) {
+        return convertRank(artRankRepo.findByAuthorUuidIn(authors));
+    }
+
+    @Override
     public List<ArticleRankDTO> getArticleRank(List<String> articleUuids)
     {
         List<ArticleRank> ranks = artRankRepo.findByArticleUuidIn(articleUuids);

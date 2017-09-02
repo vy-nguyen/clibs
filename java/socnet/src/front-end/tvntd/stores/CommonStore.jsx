@@ -25,7 +25,7 @@ class Article {
 
         if (data.rank != null) {
             CommentStore.addArtAttr(data.rank);
-            AuthorStore.addArticleRankFromJson(data.rank);
+            this.rank = AuthorStore.addArticleRankFromJson(data.rank);
         }
         return this;
     }
@@ -67,6 +67,13 @@ class Article {
             return AuthorStore.lookupArticleRankByUuid(this.articleUui);
         }
         return null;
+    }
+
+    /*
+     * TODO: rework product and ads to do dynamic loading like article.
+     */
+    getArticle() {
+        return this;
     }
 
     static newInstance(kind, data) {
@@ -339,8 +346,7 @@ class CommonStore {
     }
 
     onPublishItemCompleted(item, store) {
-        let it = this._addItemStore(item),
-            pubTag = it.publicTag;
+        let it = this._addItemStore(item), pubTag = it.publicTag;
 
         this._notifyListeners("add", [it]);
         store.trigger(this.data, [it], "postOk", true, it.authorUuid);

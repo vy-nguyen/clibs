@@ -180,9 +180,6 @@ public class DomainService implements IDomainService
         resp.setDomain(new DomainDTO(domain));
         resp.setArtRanks(artRanks);
         authorUuids.put(authorUuid, authorUuid);
-
-        // List<ArticleDTO> articles = articleSvc.getArticlesByUser(authorUuid);
-        // resp.setArticles(articles);
     }
 
     @Override
@@ -242,27 +239,6 @@ public class DomainService implements IDomainService
             }
         }
 
-        /*
-        List<ArticleDTO> artList = new LinkedList<>();
-        List<ArticleRankDTO> rankList = new LinkedList<>();
-        for (Map.Entry<String, String> entry : artUuids.entrySet()) {
-            ArticleDTO art = articleSvc.getArticleDTO(entry.getKey());
-            if (art != null) {
-                artList.add(art);
-                String author = art.getAuthorUuid();
-
-                if (authorUuids.get(author) == null) {
-                    authorUuids.put(author, author);
-                }
-                ArticleRankDTO rank = art.getRank();
-                if (rank == null) {
-                }
-            }
-        }
-        resp.setArtRanks(rankList);
-        resp.setArticles(artList);
-        */
-
         // Get all authors.
         //
         List<String> uuids = new LinkedList<>();
@@ -315,7 +291,8 @@ public class DomainService implements IDomainService
 
         String publicUuid = com.tvntd.util.Constants.PublicUuid;
         resp.setPublicTags(artTagSvc.getUserTagsDTO(publicUuid));
-        resp.setArticles(articleSvc.getArticlesByUser(uuids));
+        resp.setArtRanks(articleSvc.getArtRankByAuthors(uuids));
+        // resp.setArticles(articleSvc.getArticlesByUser(uuids));
     }
 
     private void

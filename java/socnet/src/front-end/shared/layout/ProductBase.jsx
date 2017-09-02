@@ -40,7 +40,8 @@ class ProductBase extends React.Component
         if (products == null) {
             return;
         }
-        if (this.state.products == null || products.length != this.state.products.length) {
+        if (this.state.products == null ||
+            products.length != this.state.products.length) {
             this.setState({
                 products: products
             });

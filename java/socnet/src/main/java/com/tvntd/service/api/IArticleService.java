@@ -66,6 +66,7 @@ public interface IArticleService
     List<ArticleRankDTO> getArticleRank(List<String> articleUuids);
     List<ArticleRankDTO> getArticleRank(UuidForm uuids);
     List<ArticleRankDTO> getArtRankByAuthor(String authorUuid);
+    List<ArticleRankDTO> getArtRankByAuthors(List<String> authors);
     List<ArticleRankDTO> convertRank(List<ArticleRank> ranks);
 
     List<ArticleDTO> convert(List<Article> arts);

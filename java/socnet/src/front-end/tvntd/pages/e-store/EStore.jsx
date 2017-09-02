@@ -37,6 +37,7 @@ class EStore extends ProductBase
 
     static renderProducts(products, userUuid) {
         let renderBrief = EStore._renderProdBrief.bind(this, userUuid);
+
         return (
             <div id="content">
                 <section id="widget-grid" className="">
