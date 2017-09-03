@@ -53,7 +53,7 @@ class Article {
     }
 
     getArtTag() {
-        return "blog";
+        return VConst.blog;
     }
 
     getSortedAnchor() {
@@ -97,10 +97,10 @@ class Article {
     }
 
     static newInstance(kind, data) {
-        if (kind === "blog") {
+        if (kind === VConst.blog) {
             return new Article(data);
         }
-        if (kind === "estore") {
+        if (kind === VConst.estore) {
             return new Product(data);
         }
         return new AdsItem(data);
@@ -124,6 +124,7 @@ class Article {
         json.ownerStore = store;
 
         if (artRank != null) {
+            kind             = artRank.artTag;
             json.authorUuid  = artRank.authorUuid;
             json.articleUuid = artRank.articleUuid;
             json.createdDate = artRank.timeStamp;
@@ -154,7 +155,7 @@ class Product extends Article {
     }
 
     getArtTag() {
-        return "estore";
+        return VConst.estore;
     }
 
     getSortedAnchor() {
@@ -180,7 +181,7 @@ class AdsItem extends Article {
     }
 
     getArtTag() {
-        return "ads";
+        return VConst.ad;
     }
 
     getSortedAnchor() {
