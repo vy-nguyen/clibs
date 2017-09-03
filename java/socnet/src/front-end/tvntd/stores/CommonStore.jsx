@@ -11,7 +11,9 @@ import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
 import CommentStore from 'vntd-root/stores/CommentStore.jsx';
 import UserStore    from 'vntd-shared/stores/UserStore.jsx';
 import WebUtils     from 'vntd-shared/utils/WebUtils.jsx';
+
 import {Util}       from 'vntd-shared/utils/Enum.jsx';
+import {VConst}     from 'vntd-root/config/constants.js';
 
 class Article {
     constructor(data) {
@@ -52,6 +54,10 @@ class Article {
 
     getArtTag() {
         return "blog";
+    }
+
+    getSortedAnchor() {
+        return VConst.blogs;
     }
 
     requestData() {
@@ -150,6 +156,10 @@ class Product extends Article {
     getArtTag() {
         return "estore";
     }
+
+    getSortedAnchor() {
+        return VConst.prods;
+    }
 }
 
 class AdsItem extends Article {
@@ -172,6 +182,10 @@ class AdsItem extends Article {
     getArtTag() {
         return "ads";
     }
+
+    getSortedAnchor() {
+        return VConst.ads;
+    }
 }
 
 class AuthorShelf {
@@ -179,7 +193,10 @@ class AuthorShelf {
         this.getData   = 0;
         this.articles  = {};
         this.savedArts = {};
-        this.sortedArticles  = [];
+
+        this[VConst.ads]     = [];
+        this[VConst.blogs]   = [];
+        this[VConst.prods]   = [];
         this.sortedSavedArts = [];
 
         if (article != null) {
@@ -209,9 +226,11 @@ class AuthorShelf {
     }
 
     removeArticle(articleUuid) {
-        let article = this.articles[articleUuid];
+        let root, article = this.articles[articleUuid];
+
         if (article != null) {
-            Util.removeArray(this.sortedArticles, article, 0, this._cmpArticle);
+            root = article.getSortedAnchor();
+            Util.removeArray(this[root], article, 0, this._cmpArticle);
             delete this.articles[articleUuid];
         }
         article = this.savedArts[articleUuid];
@@ -222,13 +241,15 @@ class AuthorShelf {
     }
 
     addSortedArticle(article, pre) {
+        let root = article.getSortedAnchor();
+
         if (article.isPublished()) {
             if (this.articles[article.articleUuid] !== article) {
                 this.articles[article.articleUuid] = article;
                 if (pre === true) {
-                    this.sortedArticles = Util.preend(article, this.sortedArticles);
+                    this[root] = Util.preend(article, this[root]);
                 } else {
-                    Util.insertSorted(article, this.sortedArticles, this._cmpArticle);
+                    Util.insertSorted(article, this[root], this._cmpArticle);
                 }
             }
             return;
@@ -248,7 +269,7 @@ class AuthorShelf {
     }
 
     getSortedArticles() {
-        return this.sortedArticles;
+        return this[VConst.blogs];
     }
 
     getSortedSavedArts() {
@@ -263,7 +284,7 @@ class AuthorShelf {
     }
 
     iterArticles(func, arg) {
-        _.forOwn(this.sortedArticles, function(item, key) {
+        _.forOwn(this[VConst.blogs], function(item, key) {
             func(item, arg);
         });
     }
