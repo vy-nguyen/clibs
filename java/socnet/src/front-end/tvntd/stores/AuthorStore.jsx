@@ -62,7 +62,7 @@ class ArticleRank {
         }.bind(this));
 
         if (article == null) {
-            article = ArticleStore.getArticleByUuid(this.articleUuid, this.authorUuid);
+            article = ArticleStore.addDefaultFromRank(this);
         }
         if (article != null) {
             article.rank = this;
@@ -705,6 +705,9 @@ let AuthorStore = Reflux.createStore({
         this._updateArticleRank(data.articleRank, "update");
     },
 
+    /**
+     * Main entry at startup after getting data returned back from the server.
+     */
     onStartupCompleted: function(data) {
         let authors = data.authors;
         if (authors != null) {
@@ -720,9 +723,6 @@ let AuthorStore = Reflux.createStore({
 
     onGetDomainDataCompleted: function(data, context) {
         this._updateArticleRank(data.artRanks, "domain");
-    },
-
-    statics: {
     }
 });
 
