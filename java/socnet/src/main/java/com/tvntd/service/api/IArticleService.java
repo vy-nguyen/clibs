@@ -46,21 +46,27 @@ import com.tvntd.models.AuthorTag;
 import com.tvntd.models.Profile;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
-import com.tvntd.service.user.ArticleService;
 import com.tvntd.util.Util;
 
 public interface IArticleService
 {
     ArticleDTO getArticleDTO(String uuid);
     Article getArticle(String artUuid);
+    Article toArticle(PostForm form, ProfileDTO profile, boolean pub);
 
     ArticleRank getRank(String artUuid);
     ArticleRank getRank(String tagName, String title);
     List<ArticleRank> getArtRank(String[] artUuids);
+
     void saveRank(ArticleRank rank);
+    void savePost(PostForm form, ArticleDTO artDTO, ProfileDTO prof,
+            boolean publish, boolean update);
 
     ArticleRank updateRank(CommentChangeForm form, ProfileDTO user);
+    List<ArticleRankDTO> getArticleRank(List<String> articleUuids);
     List<ArticleRankDTO> getArticleRank(UuidForm uuids);
+    List<ArticleRankDTO> getArtRankByAuthor(String authorUuid);
+    List<ArticleRankDTO> getArtRankByAuthors(List<String> authors);
     List<ArticleRankDTO> convertRank(List<ArticleRank> ranks);
 
     List<ArticleDTO> convert(List<Article> arts);
@@ -79,6 +85,8 @@ public interface IArticleService
 
     Article deleteArticle(Article article, ProfileDTO owner);
     Article deleteArticle(String uuid, ProfileDTO owner);
+
+    void auditArticleTable();
 
     public static class ArticleDTOResponse extends GenericResponse
     {
@@ -156,11 +164,12 @@ public interface IArticleService
             article.setAuthorUuid(author);
         }
 
-        public ArticleDTO(PostForm form, ProfileDTO profile)
+        public ArticleDTO(String artUuid, String authorUuid, Long id)
         {
             super(GenericResponse.USER_HOME, null, null);
-            this.article = ArticleService.toArticle(form, profile, false);
-            convertUTF();
+            article = new Article(artUuid);
+            article.setAuthorUuid(authorUuid);
+            article.setAuthorId(id);
         }
 
         public void convertUTF()
@@ -169,15 +178,7 @@ public interface IArticleService
             content = Util.fromRawByte(article.getContent());
 
             if (rank != null) {
-                String urlTag = rank.getUrlTag();
-                if (urlTag != null) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("https://www.tudoviet.com/public/article/")
-                        .append(Util.utf8ToUrlString(rank.getUrlTag()))
-                        .append("/")
-                        .append(Util.utf8ToUrlString(topic));
-                    articleUrl = sb.toString();
-                }
+                articleUrl = ArticleRank.toUrlTag(rank.getUrlTag(), topic);
             }
         }
 
@@ -517,6 +518,17 @@ public interface IArticleService
 
         public String getContentLinkUrl() {
             return artRank.getContentLinkUrl();
+        }
+
+        public String getImageUrl()
+        {
+            String img = artRank.getImageOid();
+            if (img == null) {
+                return null;
+            }
+            ObjStore objStore = ObjStore.getInstance();
+            String store = ArticleDTO.s_baseUri + Long.toString(artRank.getAuthorId());
+            return objStore.imgObjUri(ObjectId.fromString(img), store);
         }
 
         public String getTransRoot() {

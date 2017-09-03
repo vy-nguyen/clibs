@@ -68,7 +68,6 @@ import com.tvntd.forms.TagForm.TagRank;
 import com.tvntd.forms.UserProfile;
 import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.ObjectId;
-import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Author;
 import com.tvntd.models.Comment;
@@ -89,13 +88,11 @@ import com.tvntd.service.api.IProductService;
 import com.tvntd.service.api.IProductService.ProductDTO;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
-import com.tvntd.service.api.ITimeLineService;
 import com.tvntd.service.api.IUserService;
 import com.tvntd.service.api.ImageUploadResp;
 import com.tvntd.service.api.LoginResponse;
 import com.tvntd.service.api.UuidResponse;
 import com.tvntd.service.user.ArtTagService;
-import com.tvntd.service.user.ArticleService;
 import com.tvntd.service.user.ProductService;
 import com.tvntd.util.Util;
 
@@ -127,9 +124,6 @@ public class UserPath
 
     @Autowired
     private IUserService userService;
-
-    @Autowired
-    private ITimeLineService timeLineSvc;
 
     @Autowired
     private ICommentService commentSvc;
@@ -263,26 +257,7 @@ public class UserPath
             return s_badInput;
         }
         ArticleDTO art = genPendPost(profile, true, form.getArticleUuid());
-        ArticleService.applyPostForm(form, art, publish);
-        Article article = art.fetchArticle();
-        art.convertUTF();
-
-        if (publish == true) {
-            article.markActive();
-            articleSvc.saveArticle(art);
-
-            profile.pushPublishArticle(art);
-            timeLineSvc.saveTimeLine(profile.getUserUuid(),
-                    art.getArticleUuid(), null, article.getContentBrief());
-        } else {
-            articleSvc.saveArticle(art);
-            profile.pushSavedArticle(art);
-        }
-        ArticleRank artRank = authorSvc.createArticleRank(article, form.getTags());
-        art.setRank(artRank);
-
-        // We're done with the current post.
-        profile.assignPendPost(null);
+        articleSvc.savePost(form, art, profile, publish, false);
         return art;
     }
 
@@ -313,23 +288,13 @@ public class UserPath
         if (form.cleanInput() == false) {
             return s_badInput;
         }
-        ArticleDTO art = articleSvc.getArticleDTO(form.getArticleUuid());
-        if (art == null) {
-            return s_invalidArticle;
-        }
-        // Article article = art.fetchArticle();
-        ArticleService.applyPostForm(form, art, publish);
-        articleSvc.saveArticle(art);
+        String artUuid = form.getArticleUuid();
+        ArticleDTO art = articleSvc.getArticleDTO(artUuid);
 
-        ArticleRank artRank = articleSvc.getRank(form.getArticleUuid());
-        if (artRank != null) {
-            String tag = form.getTags();
-            if (!tag.equals(artRank.getTag())) {
-                artRank.setTag(tag);
-                articleSvc.saveRank(artRank);
-            }
+        if (art == null) {
+            art = new ArticleDTO(artUuid, profile.getUserUuid(), profile.fetchUserId());
         }
-        art.convertUTF();
+        articleSvc.savePost(form, art, profile, publish, true);
         return art;
     }
 

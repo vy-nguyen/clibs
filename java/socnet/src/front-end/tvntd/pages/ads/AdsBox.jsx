@@ -70,12 +70,12 @@ class AdsBox extends React.Component
     }
 
     static getAdsInfo(adsRec, active) {
-        let ads = adsRec.artObj, rank = ads.adsRank;
+        let ads = adsRec.getArticle(), rank = adsRec.getArticleRank();
 
         return {
             ads    : ads,
             rank   : rank,
-            adsTag : adsRec.artTag,
+            adsTag : adsRec.getTagObj(),
             imgUrl : !_.isEmpty(ads.imageUrl) ?  ads.imageUrl[0] : null,
             active : active === true ? <span className="tag2 hot">Active</span> : null,
             likeStat: RatingInfo.getLikeStat(rank)

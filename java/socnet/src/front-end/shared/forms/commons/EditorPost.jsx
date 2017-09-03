@@ -192,7 +192,6 @@ class EditorPost extends React.Component
 
         let suffix = props.article != null ? props.article.articleUuid : "post";
         this.data = new PostForm(props, suffix);
-        console.log("constructor " + suffix);
     }
 
     _getDefValue(props) {
