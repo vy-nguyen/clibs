@@ -139,6 +139,9 @@ class ArticleRank {
     }
 }
 
+/*
+ * Maintains binding from articles to a name tag.
+ */
 class AuthorTag {
     constructor(tag) {
         this.articles   = {};

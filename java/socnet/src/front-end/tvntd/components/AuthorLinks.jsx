@@ -66,7 +66,7 @@ class AuthorLinks extends AuthorBase
             return null;
         }
         text = item.artTitle.substring(0, 40);
-        item.keyId   = parent._id;
+        item.keyId   = parent.getId();
         item.viewId  = item.authorUuid;
         this.evenRow = !this.evenRow;
         return (
