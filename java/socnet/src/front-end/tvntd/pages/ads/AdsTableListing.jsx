@@ -58,6 +58,7 @@ class AdsTableListing extends React.Component
      */
     _updateListing() {
         let adsList = this._getArtListing(this.props.tagList);
+
         if (adsList.length != this.state.adsList) {
             this.setState({
                 adsList: adsList
@@ -67,6 +68,7 @@ class AdsTableListing extends React.Component
 
     _getArtListing(tagList) {
         let adsList = [], unique = {};
+
         _.forOwn(tagList, function(tagName) {
             ArticleTagStore.getPublishedArticles(tagName, adsList, unique);
         });
@@ -86,9 +88,15 @@ class AdsTableListing extends React.Component
     }
 
     _isActive(ads) {
+        let curRank, adsRank;
+
         if (this.state.currAds != null && ads.artObj != null) {
-            let curAds = this.state.currAds.artObj, adsObj = ads.artObj;
-            return (curAds != null) && (curAds.articleUuid === adsObj.articleUuid);
+            curRank = this.state.currAds.getArticleRank();
+            adsRank = ads.getArticleRank();
+            return (
+                (curRank != null) &&
+                (curRank.getArticleUuid() === adsRank.getArticleUuid())
+            );
         }
         return false;
     }

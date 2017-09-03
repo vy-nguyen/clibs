@@ -13,7 +13,9 @@ import {tagKinds}            from 'vntd-root/components/TagInfo.jsx';
 import {GenericForm}         from 'vntd-shared/forms/commons/GenericForm.jsx';
 import {Util}                from 'vntd-shared/utils/Enum.jsx';
 import {GlobStore}           from 'vntd-root/stores/ArticleStore.jsx';
+import AuthorStore           from 'vntd-root/stores/AuthorStore.jsx';
 
+import ErrorView from 'vntd-shared/layout/ErrorView.jsx';
 function sortArticle(pivot, article) {
     return article.createdDate - pivot.createdDate;
 }
@@ -30,7 +32,19 @@ class PublishArtTag {
     }
 
     getAuthorUuid() {
-        return this.artObj.authorUuid;
+        return this.artObj.getAuthorUuid();
+    }
+
+    getArticleRank() {
+        return this.artObj;
+    }
+
+    getArticle() {
+        return this.artObj.getArticle();
+    }
+
+    getTagObj() {
+        return this.artTag;
     }
 }
 
@@ -38,9 +52,8 @@ class ArtTag {
     constructor(data) {
         let artUuids;
 
-        this._id        = _.uniqueId('id-art-tag-');
+        this._id = _.uniqueId('tag-');
         this.sortedArts = null;
-
         _.forEach(data, function(v, k) {
             this[k] = v;
         }.bind(this));
@@ -62,7 +75,7 @@ class ArtTag {
     }
 
     getId(prefix) {
-        return prefix + this._id;
+        return (prefix || '') + this._id;
     }
 
     update(artRank) {
@@ -78,26 +91,27 @@ class ArtTag {
 
         _.forEach(raw.articleRank, function(artUuid) {
             if (this.articleRank[artUuid] == null) {
-                this.addArticle(unResolved, artUuid);
+                this.addArticleRank(unResolved, artUuid);
             }
         }.bind(this));
     }
 
     sortArticles(unResolved) {
-        let sortedArts, store = GlobStore.getStoreKind(this.tagKind);
+        let rank, sortedArts, store = GlobStore.getStoreKind(this.tagKind);
 
         if (this.sortedArts != null) {
+            // We already has the sorted list.  Don't need to do anything here.
             return;
         }
         sortedArts = [];
         _.forOwn(this.articleRank, function(artUuid) {
-            let article = store.getItemByUuid(artUuid);
+            rank = AuthorStore.lookupArticleRankByUuid(artUuid);
 
-            if (article == null) {
+            if (rank == null) {
                 unResolved[artUuid] = this;
             } else {
-                this.articleRank[article.articleUuid] = article;
-                Util.insertSorted(article, sortedArts, sortArticle);
+                this.articleRank[rank.getArticleUuid()] = rank;
+                Util.insertSorted(rank, sortedArts, sortArticle);
             }
         }.bind(this));
 
@@ -106,31 +120,35 @@ class ArtTag {
         }
     }
 
-    resolveArticle(unResolved, article) {
+    resolveArticleRank(unResolved, artRank) {
         if (unResolved != null) {
-            delete unResolved[article.articleUuid];
+            delete unResolved[artRank.getArticleUuid()];
+        }
+        if (artRank.artTag == null) {
+            console.log("Wrong type");
+            console.log(artRank);
         }
         if (this.sortedArts == null) {
-            this.sortedArts = [article];
+            this.sortedArts = [artRank];
         } else {
-            this.articleRank[article.articleUuid] = article;
-            Util.insertSorted(article, this.sortedArts, sortArticle);
+            this.articleRank[artRank.getArticleUuid()] = artRank;
+            Util.insertSorted(artRank, this.sortedArts, sortArticle);
         }
     }
 
-    addArticle(unResolved, artUuid) {
-        let article;
+    addArticleRank(unResolved, artUuid) {
+        let artRank;
 
         if (artUuid == null) {
             return;
         }
-        article = GlobStore.lookupArticle(artUuid);
-        if (article == null) {
+        artRank = AuthorStore.lookupArticleRankByUuid(artUuid);
+        if (artRank == null) {
             unResolved[artUuid] = this;
         }
         if (this.articleRank[artUuid] == null) {
-            if (article != null) {
-                this.resolveArticle(null, article);
+            if (artRank != null) {
+                this.resolveArticleRank(null, artRank);
             } else {
                 this.articleRank[artUuid] = artUuid;
             }
@@ -139,7 +157,7 @@ class ArtTag {
 
     updateArticles(unResolved, articles) {
         _.forEach(articles, function(artUuid) {
-            this.addArticle(unResolved, artUuid);
+            this.addArticleRank(unResolved, artUuid);
         }.bind(this));
     }
 
@@ -219,7 +237,7 @@ let ArticleTagStore = Reflux.createStore({
     },
 
     /* Admin actions to list users. */
-    onStartupCompleted: function(data) {
+    mainStartup: function(data) {
         let curr, allTags, tagData = data.publicTags; 
 
         this.data.domainUuid = data.domainUuid;
@@ -253,19 +271,23 @@ let ArticleTagStore = Reflux.createStore({
     },
 
     onItemsChanged: function(storeKind, code, changeList) {
-        let data = this.data, unResolved = data.unResolved;
+        let tagName, tag, rank, artUuid, data = this.data, unResolved = data.unResolved;
 
         _.forEach(changeList, function(article) {
-            let tagName, tag = unResolved[article.articleUuid];
-
+            artUuid = article.getArticleUuid();
+            rank = AuthorStore.lookupArticleRankByUuid(artUuid);
+            if (rank == null) {
+                rank = AuthorStore.addArticleRankFromArticle(article);
+            }
+            tag = unResolved[artUuid];
             if (tag != null) {
-                tag.resolveArticle(unResolved, article);
+                tag.resolveArticleRank(unResolved, rank);
             } else {
                 tagName = article.getTagName();
                 if (tagName != null) {
                     tag = data.pubTagIndex[tagName];
                     if (tag != null && tag.tagKind === storeKind) {
-                        tag.resolveArticle(null, article);
+                        tag.resolveArticleRank(null, rank);
                     }
                 }
             }
@@ -300,7 +322,7 @@ let ArticleTagStore = Reflux.createStore({
             this._addNewPublicTag(artRank, parentTag, articleUuid);
             this.trigger(this.data);
         } else {
-            tag.addArticle(this.data.unResolved, articleUuid);
+            tag.addArticleRank(this.data.unResolved, articleUuid);
         }
     },
 
@@ -471,7 +493,7 @@ let ArticleTagStore = Reflux.createStore({
             subTags  : [],
             articleRank: []
         });
-        tag.addArticle(this.data.unResolved, articleUuid);
+        tag.addArticleRank(this.data.unResolved, articleUuid);
         this._addTag(tag);
         return tag;
     },
@@ -607,13 +629,13 @@ let ArticleTagStore = Reflux.createStore({
         let uuid, tag = this.data.pubTagIndex[tagName];
 
         if (tag != null) {
-            _.forOwn(tag.sortedArts, function(artObj) {
-                artObj.publishTag = tag;
-                uuid = artObj.articleUuid;
+            _.forOwn(tag.sortedArts, function(artRankObj) {
+                artRankObj.publishTag = tag;
+                uuid = artRankObj.getArticleUuid();
 
                 if (uuidDict[uuid] == null) {
                     uuidDict[uuid] = uuid;
-                    artUuids.push(new PublishArtTag(artObj, tag, uuid));
+                    artUuids.push(new PublishArtTag(artRankObj, tag, uuid));
                 }
             });
             if (tag.subTags != null) {
@@ -629,9 +651,9 @@ let ArticleTagStore = Reflux.createStore({
      * @return true if the given uuid is listed in this store.
      */
     hasPublishedArticle: function(artUuid) {
-        let article = GlobStore.lookupArticle(artUuid);
-        if (article != null) {
-            return article.publishTag != null;
+        let artTag = AuthorStore.lookupArticleRankByUuid(artUuid);
+        if (artTag != null) {
+            return artTag.publishTag != null;
         }
         return false;
     },

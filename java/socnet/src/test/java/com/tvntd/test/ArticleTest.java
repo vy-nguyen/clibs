@@ -215,7 +215,7 @@ public class ArticleTest
             post.setTopic(RandUtil.genRandString(topicLen, topicLen));
             post.setContent(RandUtil.genRandString(contentLen, contentLen));
 
-            result.add(ArticleService.toArticle(post, profile, true));
+            result.add(articleSvc.toArticle(post, profile, true));
         }
         return result;
     }

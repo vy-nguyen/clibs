@@ -15,7 +15,9 @@ import ArticleTagStore  from 'vntd-root/stores/ArticleTagStore.jsx';
 import Startup          from 'vntd-root/pages/login/Startup.jsx';
 import {Util}           from 'vntd-shared/utils/Enum.jsx';
 
-import {ArticleStore, EProductStore} from 'vntd-root/stores/ArticleStore.jsx';
+import {
+    ArticleStore, EProductStore, GlobStore
+} from 'vntd-root/stores/ArticleStore.jsx';
 
 class Author {
     constructor(data) {
@@ -52,33 +54,13 @@ class Author {
 class ArticleRank {
     constructor(data, authorTag, article) {
         if (data == null) {
-            data = {
-                artTitle    : article.topic,
-                articleUuid : article.articleUuid,
-                authorUuid  : article.authorUuid,
-                contentBrief: null,
-                creditEarned: 0,
-                favorite    : false,
-                likes       : 0,
-                moneyEarned : 0,
-                notifCount  : 0,
-                notifHead   : 0,
-                rank        : 0,
-                score       : 0,
-                shares      : 0,
-                tagName     : "My Post",
-                tagRank     : null,
-                userLiked   : [],
-                userShared  : [],
-                defaultRank : true
-            }
+            data = ArticleRank.genArticleRankJson(article);
         }
         this.authorTag = authorTag;
         _.forEach(data, function(v, k) {
             this[k] = v;
         }.bind(this));
 
-        this._id = _.uniqueId('id-art-rank-');
         if (article == null) {
             article = ArticleStore.getArticleByUuid(this.articleUuid, this.authorUuid);
         }
@@ -116,6 +98,10 @@ class ArticleRank {
         }.bind(this));
     }
 
+    getArticle() {
+        return GlobStore.getArticle(this.artTag, this.articleUuid, this.authorUuid);
+    }
+
     getArticleUuid() {
         return this.articleUuid;
     }
@@ -127,12 +113,37 @@ class ArticleRank {
     getArtTitle() {
         return this.artTitle;
     }
+
+    static genArticleRankJson(article) {
+        return {
+            artTag      : article.getArtTag(),
+            artTitle    : article.getTitle(),
+            articleUuid : article.getArticleUuid(),
+            authorUuid  : article.getAuthorUuid(),
+            contentBrief: null,
+            creditEarned: 0,
+            favorite    : false,
+            likes       : 0,
+            moneyEarned : 0,
+            notifCount  : 0,
+            notifHead   : 0,
+            rank        : 0,
+            score       : 0,
+            shares      : 0,
+            tagName     : "My Post",
+            tagRank     : null,
+            userLiked   : [],
+            userShared  : [],
+            defaultRank : true
+        };
+    }
 }
 
 class AuthorTag {
     constructor(tag) {
         this.articles   = {};
         this.sortedArts = [];
+        this._id = _.uniqueId('atag-');
 
         _.forEach(tag, function(v, k) {
             this[k] = v;
@@ -140,11 +151,17 @@ class AuthorTag {
         return this;
     }
 
+    getId(prefix) {
+        return (prefix || '') + this._id;
+    }
+
     addArticleRank(json) {
         let rank = this.articles[json.articleUuid];
 
         if (rank != null) {
-            rank.updateFromJson(json);
+            if (json !== rank && !(json instanceof ArticleRank)) {
+                rank.updateFromJson(json);
+            }
             return rank;
         }
         return this.addArticleRankObj(new ArticleRank(json, this, null));
@@ -481,10 +498,6 @@ let AuthorStore = Reflux.createStore({
         return article.rank;
     },
 
-    _setArticleRankObj: function(rankObj) {
-        this.data.allArticleRanks[rankObj.articleUuid] = rankObj;
-    },
-
     /**
      * @return string tags used for autocomplete.
      */
@@ -610,17 +623,24 @@ let AuthorStore = Reflux.createStore({
     /*
      * Update article ranks with data returned from the server.
      */
-    _updateArticleRank: function(data) {
-        _.forOwn(data.articleRank, function(rank) {
+    _updateArticleRank: function(articleRank, trigger) {
+        _.forOwn(articleRank, function(rank) {
             this.addArticleRankFromJson(rank);
         }.bind(this));
 
-        this.trigger(this.data, null, "update");
+        if (trigger != null) {
+            this.trigger(this.data, null, trigger);
+        }
+    },
+
+    addArticleRankFromArticle(article) {
+        return this.addArticleRankFromJson(ArticleRank.genArticleRankJson(article));
     },
 
     addArticleRankFromJson(rank) {
         let obj = this.getAuthorTagMgr(rank.authorUuid).addArticleRank(rank);
-        this._setArticleRankObj(obj);
+        this.data.allArticleRanks[obj.articleUuid] = obj;
+        return obj;
     },
 
     /*
@@ -628,9 +648,6 @@ let AuthorStore = Reflux.createStore({
      */
     _updateArtRankFromArticles: function(articles) {
         _.forOwn(articles, function(art) {
-            if (art.rank instanceof ArticleRank) {
-                console.log("skip art rank " + art.getArticleUuid());
-            }
             if (art.rank != null && !(art.rank instanceof ArticleRank)) {
                 this.addArticleRankFromJson(art.rank);
             }
@@ -647,7 +664,7 @@ let AuthorStore = Reflux.createStore({
     },
 
     onPostArticleSelectCompleted: function(data) {
-        this._updateArticleRank(data);
+        this._updateArticleRank(data.articleRank, "update");
     },
 
     onInitCompleted: function(json) {
@@ -662,7 +679,7 @@ let AuthorStore = Reflux.createStore({
     },
 
     onGetArticleRankCompleted: function(data) {
-        this._updateArticleRank(data);
+        this._updateArticleRank(data.articleRank, "update");
     },
 
     onReRankTagCompleted: function(tagMgr) {
@@ -685,7 +702,7 @@ let AuthorStore = Reflux.createStore({
     onUpdateArtRankCompleted: function(data) {
         let btnId = data.cbContext;
         NavActions.buttonChange(btnId);
-        this._updateArticleRank(data);
+        this._updateArticleRank(data.articleRank, "update");
     },
 
     onStartupCompleted: function(data) {
@@ -693,21 +710,21 @@ let AuthorStore = Reflux.createStore({
         if (authors != null) {
             this._addAuthorList(authors);
         }
-        if (data.articles != null) {
-            this._updateArtRankFromArticles(data.articles);
-        }
+        this._updateArticleRank(data.artRanks, null);
+        ArticleStore.mainStartup(data);
+        ArticleTagStore.mainStartup(data);
         Startup.mainStartup();
+
         this.trigger(this.data, data, "startup");
     },
 
     onGetDomainDataCompleted: function(data, context) {
-        data.articleRank = data.artRanks;
-        this._updateArticleRank(data);
-        this.trigger(this.data, data, "domain");
+        this._updateArticleRank(data.artRanks, "domain");
     },
 
     statics: {
     }
 });
 
+export { AuthorStore, ArticleRank };
 export default AuthorStore;

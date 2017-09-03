@@ -26,7 +26,6 @@
  */
 package com.tvntd.service.api;
 
-import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
@@ -37,6 +36,7 @@ import com.tvntd.models.ArticleRank;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.ICommentService.CommentDTO;
+import com.tvntd.util.Util;
 
 public interface IAdsPostService
 {
@@ -113,58 +113,18 @@ public interface IAdsPostService
 
         public void convertUTF()
         {
-            try {
-                byte[] str = adPost.getBusName();
-                if (str != null) {
-                    busName = new String(str, "UTF-8");
-                }
-                str = adPost.getBusInfo();
-                if (str != null) {
-                    busInfo = new String(str, "UTF-8");
-                }
-                str = adPost.getBusCat();
-                if (str != null) {
-                    busCat = new String(str, "UTF-8");
-                }
-                str = adPost.getBusWeb();
-                if (str != null) {
-                    busWeb = new String(str, "UTF-8");
-                }
-                str = adPost.getBusEmail();
-                if (str != null) {
-                    busEmail = new String(str, "UTF-8");
-                }
-                str = adPost.getBusPhone();
-                if (str != null) {
-                    busPhone = new String(str, "UTF-8");
-                }
-                str = adPost.getBusStreet();
-                if (str != null) {
-                    busStreet = new String(str, "UTF-8");
-                }
-                str = adPost.getBusCity();
-                if (str != null) {
-                    busCity = new String(str, "UTF-8");
-                }
-                str = adPost.getBusState();
-                if (str != null) {
-                    busState = new String(str, "UTF-8");
-                }
-                str = adPost.getBusZip();
-                if (str != null) {
-                    busZip = new String(str, "UTF-8");
-                }
-                str = adPost.getBusHour();
-                if (str != null) {
-                    busHour = new String(str, "UTF-8");
-                }
-                str = adPost.getBusDesc();
-                if (str != null) {
-                    busDesc = new String(str, "UTF-8");
-                }
-
-            } catch(UnsupportedEncodingException e) {
-            }
+            busName   = Util.fromRawByte(adPost.getBusName());
+            busInfo   = Util.fromRawByte(adPost.getBusInfo());
+            busCat    = Util.fromRawByte(adPost.getBusCat());
+            busWeb    = Util.fromRawByte(adPost.getBusWeb());
+            busEmail  = Util.fromRawByte(adPost.getBusEmail());
+            busPhone  = Util.fromRawByte(adPost.getBusPhone());
+            busStreet = Util.fromRawByte(adPost.getBusStreet());
+            busCity   = Util.fromRawByte(adPost.getBusCity());
+            busState  = Util.fromRawByte(adPost.getBusState());
+            busZip    = Util.fromRawByte(adPost.getBusZip());
+            busHour   = Util.fromRawByte(adPost.getBusHour());
+            busDesc   = Util.fromRawByte(adPost.getBusDesc());
         }
 
         /**

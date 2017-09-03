@@ -114,6 +114,13 @@ public class Article
         createdDate = new Date();
     }
 
+    public Article(String uuid)
+    {
+        super();
+        articleUuid = uuid;
+        createdDate = new Date();
+    }
+
     public void markPending() {
         pending = true;
     }

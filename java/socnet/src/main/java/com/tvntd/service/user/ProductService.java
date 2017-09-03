@@ -271,4 +271,8 @@ public class ProductService implements IProductService
     {
         return deleteProduct(productRepo.findByArticleUuid(uuid), owner);
     }
+
+    public void auditProductTable()
+    {
+    }
 }

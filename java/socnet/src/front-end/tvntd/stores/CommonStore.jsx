@@ -25,7 +25,7 @@ class Article {
 
         if (data.rank != null) {
             CommentStore.addArtAttr(data.rank);
-            AuthorStore.addArticleRankFromJson(data.rank);
+            this.rank = AuthorStore.addArticleRankFromJson(data.rank);
         }
         return this;
     }
@@ -50,6 +50,10 @@ class Article {
         return this.published;
     }
 
+    getArtTag() {
+        return "blog";
+    }
+
     requestData() {
         if (this.noData === true && this.ownerStore != null) {
             this.ownerStore.requestItems(Actions.getArticles);
@@ -69,6 +73,19 @@ class Article {
         return null;
     }
 
+    updateFromJson(jsonArt) {
+        _.forEach(jsonArt, function(v, k) {
+            this[k] = v;
+        }.bind(this));
+    }
+
+    /*
+     * TODO: rework product and ads to do dynamic loading like article.
+     */
+    getArticle() {
+        return this;
+    }
+
     static newInstance(kind, data) {
         if (kind === "blog") {
             return new Article(data);
@@ -77,6 +94,15 @@ class Article {
             return new Product(data);
         }
         return new AdsItem(data);
+    }
+
+    static newDefInstance(kind, store, articleUuid, authorUuid) {
+        return Article.newInstance(kind, {
+            authorUuid : authorUuid,
+            articleUuid: articleUuid,
+            ownerStore : store,
+            noData     : true
+        });
     }
 }
 
@@ -96,6 +122,10 @@ class Product extends Article {
     isPublished() {
         return true;
     }
+
+    getArtTag() {
+        return "estore";
+    }
 }
 
 class AdsItem extends Article {
@@ -114,6 +144,10 @@ class AdsItem extends Article {
     isPublished() {
         return true;
     }
+
+    getArtTag() {
+        return "ads";
+    }
 }
 
 class AuthorShelf {
@@ -124,11 +158,9 @@ class AuthorShelf {
         this.sortedArticles  = [];
         this.sortedSavedArts = [];
 
-        this.addSortedArticle = this.addSortedArticle.bind(this);
+        // this.addSortedArticle = this.addSortedArticle.bind(this);
         if (article != null) {
             this.addSortedArticle(article);
-        } else {
-            Actions.refreshArticles(authorUuid);
         }
         return this;
     }
@@ -137,18 +169,10 @@ class AuthorShelf {
         if (article == null) {
             return;
         }
-        if (article.isPublished()) {
-            if (this.articles[article.articleUuid] == null) {
-                this.removeArticle(article.articleUuid);
-                this.articles[article.articleUuid] = article;
-                this.sortedArticles = Util.preend(article, this.sortedArticles);
-            }
-        } else {
-            if (this.articles[article.articleUuid] != null) {
-                this.removeArticle(article.articleUuid);
-            }
-            this.addSortedSavedArts(article);
+        if (this.articles[article.articleUuid] != null) {
+            this.removeArticle(article.articleUuid);
         }
+        this.addSortedArticle(article, true);
     }
 
     _cmpArticle(anchor, elm) {
@@ -174,11 +198,15 @@ class AuthorShelf {
         }
     }
 
-    addSortedArticle(article) {
+    addSortedArticle(article, pre) {
         if (article.isPublished()) {
             if (this.articles[article.articleUuid] !== article) {
                 this.articles[article.articleUuid] = article;
-                Util.insertSorted(article, this.sortedArticles, this._cmpArticle);
+                if (pre === true) {
+                    this.sortedArticles = Util.preend(article, this.sortedArticles);
+                } else {
+                    Util.insertSorted(article, this.sortedArticles, this._cmpArticle);
+                }
             }
             return;
         }
@@ -321,12 +349,8 @@ class CommonStore {
             if (authorUuid == null) {
                 return null;
             }
-            item = Article.newInstance(this.data.storeKind, {
-                authorUuid : authorUuid,
-                articleUuid: uuid,
-                ownerStore : this,
-                noData     : true
-            });
+            item = Article.newDefInstance(this.data.storeKind, this, uuid, authorUuid);
+            this._addItemObjStore(item);
         }
         return item;
     }
@@ -340,8 +364,7 @@ class CommonStore {
     }
 
     onPublishItemCompleted(item, store) {
-        let it = this._addItemStore(item),
-            pubTag = it.publicTag;
+        let it = this._addItemStore(item), pubTag = it.publicTag;
 
         this._notifyListeners("add", [it]);
         store.trigger(this.data, [it], "postOk", true, it.authorUuid);
@@ -448,9 +471,12 @@ class CommonStore {
     }
 
     _addItemStore(item) {
-        let articleUuid, authorUuid, anchor, authorTagMgr, it, oldArt;
+        return this._addItemObjStore(Article.newInstance(this.data.storeKind, item));
+    }
 
-        it = Article.newInstance(this.data.storeKind, item);
+    _addItemObjStore(it) {
+        let articleUuid, authorUuid, anchor, authorTagMgr, oldArt;
+
         articleUuid = it.getArticleUuid();
         authorUuid  = it.getAuthorUuid();
 
@@ -489,11 +515,16 @@ class CommonStore {
     }
 
     addFromJson(items, key, index) {
-        let art, kind = this.data.storeKind, itemsByKey = this.data[key];
+        let oldArt, kind = this.data.storeKind, itemsByKey = this.data[key];
 
         _.forOwn(items, function(it, k) {
-            if (itemsByKey[it.articleUuid] == null) {
+            oldArt = itemsByKey[it.articleUuid];
+
+            if (oldArt == null) {
                 itemsByKey[it.articleUuid] = Article.newInstance(kind, it);
+
+            } else if (oldArt.noData == true) {
+                oldArt.updateFromJson(it);
             }
         }.bind(this));
 

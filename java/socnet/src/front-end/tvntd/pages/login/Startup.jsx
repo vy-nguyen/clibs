@@ -9,8 +9,6 @@ import History            from 'vntd-shared/utils/History.jsx';
 import UserStore          from 'vntd-shared/stores/UserStore.jsx';
 import ErrorStore         from 'vntd-shared/stores/ErrorStore.jsx';
 
-let _startupCount = 0;
-
 class Startup
 {
     constructor() {
@@ -35,10 +33,6 @@ class Startup
     static mainStartup() {
         let url, start, self = UserStore.getSelf();
 
-        _startupCount = _startupCount + 1;
-        if (_startupCount < 2) {
-            return;
-        }
         if (self.loadStart != null) {
             return;
         }
