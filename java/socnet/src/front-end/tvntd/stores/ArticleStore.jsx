@@ -184,6 +184,10 @@ let ArticleStore = Reflux.createStore({
         this.store.updateMissingUuid(uuids);
     },
 
+    addDefaultFromRank: function(artRank) {
+        this.store.addDefaultFromRank(artRank);
+    },
+
     dumpData: function(header) {
         this.store.dumpData(header);
     },

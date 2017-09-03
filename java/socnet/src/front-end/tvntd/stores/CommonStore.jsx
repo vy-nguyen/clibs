@@ -77,6 +77,10 @@ class Article {
         _.forEach(jsonArt, function(v, k) {
             this[k] = v;
         }.bind(this));
+
+        if (jsonArt.noData == null) {
+            delete this.noData;
+        }
     }
 
     /*
@@ -97,12 +101,32 @@ class Article {
     }
 
     static newDefInstance(kind, store, articleUuid, authorUuid) {
-        return Article.newInstance(kind, {
+        let json = {
             authorUuid : authorUuid,
             articleUuid: articleUuid,
-            ownerStore : store,
-            noData     : true
-        });
+        };
+        return Article.newDefInstanceFrmRank(
+            store, kind, AuthorStore.lookupArticleRankByUuid(articleUuid), json
+        );
+    }
+
+    static newDefInstanceFrmRank(store, kind, artRank, json) {
+        if (json == null) {
+            json = {};
+        }
+        json.noData     = true;
+        json.ownerStore = store;
+
+        if (artRank != null) {
+            json.authorUuid  = artRank.authorUuid;
+            json.articleUuid = artRank.articleUuid;
+            json.createdDate = artRank.timeStamp;
+            json.topic       = artRank.getArtTitle();
+            json.content     = artRank.contentBrief;
+            json.published   = true;
+        }
+        store.recordMissingUuid(json.articleUuid);
+        return Article.newInstance(kind, json);
     }
 }
 
@@ -158,7 +182,6 @@ class AuthorShelf {
         this.sortedArticles  = [];
         this.sortedSavedArts = [];
 
-        // this.addSortedArticle = this.addSortedArticle.bind(this);
         if (article != null) {
             this.addSortedArticle(article);
         }
@@ -345,12 +368,10 @@ class CommonStore {
         let item = this.data.itemsByUuid[uuid];
 
         if (item == null) {
-            this._recordMissingUuid(uuid);
             if (authorUuid == null) {
                 return null;
             }
-            item = Article.newDefInstance(this.data.storeKind, this, uuid, authorUuid);
-            this._addItemObjStore(item);
+            item = this._addDefaultItem(this.data.storeKind, this, uuid, authorUuid);
         }
         return item;
     }
@@ -394,18 +415,24 @@ class CommonStore {
     }
 
     requestItems(actionFn) {
+        let uuids;
+
         if (this.data.requestUuids != null ||
             this.data.missingUuids == null || _.isEmpty(this.data.missingUuids)) {
             return;
         }
+        uuids = [];
         this.data.requestUuids = this.data.missingUuids;
         this.data.missingUuids = null;
 
+        _.forOwn(this.data.requestUuids, function(v, k) {
+            uuids.push(k);
+        });
         actionFn({
             authorUuid: null,
             uuidType  : this.data.storeKind,
             reqKind   : this.data.storeKind,
-            uuids     : this.data.requestUuids
+            uuids     : uuids
         });
     }
 
@@ -416,14 +443,14 @@ class CommonStore {
         store.trigger(this.data, [data], "delOk", true, data.authorUuid);
     }
 
-    _recordMissingUuid(uuid) {
+    recordMissingUuid(uuid) {
         let missing = this.data.missingUuids;
 
         if (missing == null) {
-            this.data.missingUuids = [];
+            this.data.missingUuids = {};
             missing = this.data.missingUuids;
         }
-        missing.push(uuid);
+        missing[uuid] = true;
         return missing;
     }
 
@@ -434,10 +461,10 @@ class CommonStore {
         _.forEach(uuids, function(uid, key) {
             if (store[key] == null) {
                 if (this.data.missingUuids == null) {
-                    this.data.missingUuids = [];
+                    this.data.missingUuids = {};
                     missing = this.data.missingUuids;
                 }
-                missing.push(key);
+                missing[key] = true;
             }
         }.bind(this));
     }
@@ -470,29 +497,53 @@ class CommonStore {
         return anchor;
     }
 
-    _addItemStore(item) {
-        return this._addItemObjStore(Article.newInstance(this.data.storeKind, item));
+    /**
+     * Add default article when we only have article uuid and author uuid.
+     */
+    _addDefaultItem(kind, store, articleUuid, authorUuid) {
+        return this._addItemStore(
+            Article.newDefInstance(kind, store, articleUuid, authorUuid)
+        );
     }
 
-    _addItemObjStore(it) {
-        let articleUuid, authorUuid, anchor, authorTagMgr, oldArt;
+    /**
+     * Add default article generated from article rank.
+     */
+    addDefaultFromRank(artRank) {
+        return this._addItemStore(
+            Article.newDefInstanceFrmRank(this, this.data.storeKind, artRank, null)
+        );
+    }
 
-        articleUuid = it.getArticleUuid();
-        authorUuid  = it.getAuthorUuid();
+    /**
+     * Add article item to the store where item is in json format or Article type.
+     */
+    _addItemStore(item) {
+        let articleUuid, authorUuid, anchor, authorTagMgr, article;
 
-        anchor = this.getItemOwner(authorUuid);
-        oldArt = this.data.itemsByUuid[articleUuid];
-        if (oldArt == null || oldArt.noData === true) {
-            this.data.itemsByUuid[articleUuid] = it;
-            anchor.addArticle(it);
-        }
-        if (it.rank != null) {
-            authorTagMgr = AuthorStore.getAuthorTagMgr(authorUuid);
-            authorTagMgr.addArticleRank(it.rank);
+        articleUuid = item.articleUuid;
+        authorUuid  = item.authorUuid;
+        anchor      = this.getItemOwner(authorUuid);
+        article     = this.data.itemsByUuid[articleUuid];
+
+        if (article == null) {
+            if (item instanceof Article) {
+                article = item;
+            } else {
+                article = Article.newInstance(this.data.storeKind, item);
+            }
+            this.data.itemsByUuid[articleUuid] = article;
+            anchor.addArticle(article);
         } else {
-            it.rank = AuthorStore.lookupArticleRankByUuid(articleUuid);
+            article.updateFromJson(item);
         }
-        return it;
+        if (item.rank != null) {
+            authorTagMgr = AuthorStore.getAuthorTagMgr(authorUuid);
+            article.rank = authorTagMgr.addArticleRank(item.rank);
+        } else {
+            article.rank = AuthorStore.lookupArticleRankByUuid(articleUuid);
+        }
+        return article;
     }
 
     _removeItemStore(itemUuids, authorUuid, silent) {
@@ -502,6 +553,7 @@ class CommonStore {
             anchor.removeArticle(articleUuid);
             item = this.data.itemsByUuid[articleUuid];
             result.push(item);
+
             if (silent == true) {
                 AuthorStore.removeArticleRank(item, silent);
             }
