@@ -18,6 +18,14 @@ export const errMesg = {
     }
 };
 
+export const VConst = {
+    ads  : 'sortedAds',
+    blogs: 'sortedArticles',
+    prods: 'sortedProducts'
+};
+
+Object.freeze(VConst);
+
 export const VntdGlob = {
     publicUuid: "00000000-ffff-0000-ffff-00ff00ff00ff",
     styleFit: {
