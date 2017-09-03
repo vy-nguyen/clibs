@@ -50,6 +50,10 @@ class Article {
         return this.published;
     }
 
+    getArtTag() {
+        return "blog";
+    }
+
     requestData() {
         if (this.noData === true && this.ownerStore != null) {
             this.ownerStore.requestItems(Actions.getArticles);
@@ -67,6 +71,12 @@ class Article {
             return AuthorStore.lookupArticleRankByUuid(this.articleUui);
         }
         return null;
+    }
+
+    updateFromJson(jsonArt) {
+        _.forEach(jsonArt, function(v, k) {
+            this[k] = v;
+        }.bind(this));
     }
 
     /*
@@ -112,6 +122,10 @@ class Product extends Article {
     isPublished() {
         return true;
     }
+
+    getArtTag() {
+        return "estore";
+    }
 }
 
 class AdsItem extends Article {
@@ -129,6 +143,10 @@ class AdsItem extends Article {
 
     isPublished() {
         return true;
+    }
+
+    getArtTag() {
+        return "ads";
     }
 }
 
@@ -497,11 +515,16 @@ class CommonStore {
     }
 
     addFromJson(items, key, index) {
-        let art, kind = this.data.storeKind, itemsByKey = this.data[key];
+        let oldArt, kind = this.data.storeKind, itemsByKey = this.data[key];
 
         _.forOwn(items, function(it, k) {
-            if (itemsByKey[it.articleUuid] == null) {
+            oldArt = itemsByKey[it.articleUuid];
+
+            if (oldArt == null) {
                 itemsByKey[it.articleUuid] = Article.newInstance(kind, it);
+
+            } else if (oldArt.noData == true) {
+                oldArt.updateFromJson(it);
             }
         }.bind(this));
 

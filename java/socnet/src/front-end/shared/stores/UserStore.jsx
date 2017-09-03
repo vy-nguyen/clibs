@@ -21,7 +21,6 @@ class User {
             this[k] = v;
         }.bind(this));
 
-        this._id          = _.uniqueId('id-user-info-');
         this.connectState = "stranger";
         this.followers    = this.followerList.length;
         this.follows      = this.followList.length;

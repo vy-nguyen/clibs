@@ -52,6 +52,7 @@ class ArtTag {
     constructor(data) {
         let artUuids;
 
+        this._id = _.uniqueId('tag-');
         this.sortedArts = null;
         _.forEach(data, function(v, k) {
             this[k] = v;
@@ -74,7 +75,7 @@ class ArtTag {
     }
 
     getId(prefix) {
-        return prefix + this._id;
+        return (prefix || '') + this._id;
     }
 
     update(artRank) {
@@ -125,7 +126,7 @@ class ArtTag {
         }
         if (artRank.artTag == null) {
             console.log("Wrong type");
-            ErrorView.stackTrace();
+            console.log(artRank);
         }
         if (this.sortedArts == null) {
             this.sortedArts = [artRank];
@@ -274,9 +275,11 @@ let ArticleTagStore = Reflux.createStore({
 
         _.forEach(changeList, function(article) {
             artUuid = article.getArticleUuid();
-            rank    = AuthorStore.lookupArticleRankByUuid(artUuid);
-            tag     = unResolved[artUuid];
-
+            rank = AuthorStore.lookupArticleRankByUuid(artUuid);
+            if (rank == null) {
+                rank = AuthorStore.addArticleRankFromArticle(article);
+            }
+            tag = unResolved[artUuid];
             if (tag != null) {
                 tag.resolveArticleRank(unResolved, rank);
             } else {

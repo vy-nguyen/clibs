@@ -292,7 +292,7 @@ public class DomainService implements IDomainService
         String publicUuid = com.tvntd.util.Constants.PublicUuid;
         resp.setPublicTags(artTagSvc.getUserTagsDTO(publicUuid));
         resp.setArtRanks(articleSvc.getArtRankByAuthors(uuids));
-        // resp.setArticles(articleSvc.getArticlesByUser(uuids));
+        resp.setArticles(articleSvc.getArticlesByUser(uuids));
     }
 
     private void

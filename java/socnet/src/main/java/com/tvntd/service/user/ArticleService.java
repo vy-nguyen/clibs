@@ -414,7 +414,7 @@ public class ArticleService implements IArticleService
     @Override
     public List<ArticleDTO> getArticlesByUser(List<String> uuidList)
     {
-        return convert(articleRepo.findByArticleUuidIn(uuidList));
+        return convert(articleRepo.findByAuthorUuidIn(uuidList));
     }
 
     @Override

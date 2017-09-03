@@ -154,14 +154,15 @@ class UserPostView extends React.Component
     }
 
     renderElement(parent, children, output) {
-        let active, expand, reorder = false, sub = [], orderSub = null;
+        let active, expand, reorder = false, sub = [], orderSub = null,
+            pid = parent != null ? parent.getId() : null;
 
         if (UserStore.isUserMe(this.props.userUuid) === true) {
             reorder = this.arrangeBtn.isInState("arrange");
         }
         if (children == null) {
             output.push({
-                keyId    : parent._id,
+                keyId    : pid,
                 renderFn : this.renderTag,
                 renderArg: parent,
                 defLabel : true,
@@ -172,8 +173,11 @@ class UserPostView extends React.Component
             sub = []; 
             active = this.state.active;
             _.forOwn(children, function(rank) {
+                if (rank.artTag !== "blog") {
+                    return;
+                }
                 expand = null;
-                if (active != null && parent._id === active.keyId &&
+                if (active != null && pid === active.keyId &&
                     active.articleUuid === rank.articleUuid) {
                     expand = active.keyId;
                 }
@@ -200,7 +204,7 @@ class UserPostView extends React.Component
                     renderArg: null,
                     renderFn : function() {
                         return (
-                            <Nestable group={parent._id}
+                            <Nestable group={pid}
                                 onChange={this._onChangeArt.bind(this, parent, children)}>
                                 <div className="dd">
                                     <ol className="dd-list">
@@ -213,7 +217,7 @@ class UserPostView extends React.Component
                 } ];
             }
             output.push({
-                keyId    : parent._id,
+                keyId    : pid,
                 renderFn : this.renderTag,
                 renderArg: parent,
                 defLabel : true,

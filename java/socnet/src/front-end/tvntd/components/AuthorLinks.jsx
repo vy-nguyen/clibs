@@ -78,6 +78,9 @@ class AuthorLinks extends AuthorBase
         if ((children != null) && !_.isEmpty(children)) {
             let style, sub = [];
             _.forOwn(children, function(item) {
+                if (item.artTag !== "blog") {
+                    return;
+                }
                 item.parent = parent;
                 sub.push({
                     renderFn : this._renderLink,

@@ -54,26 +54,7 @@ class Author {
 class ArticleRank {
     constructor(data, authorTag, article) {
         if (data == null) {
-            data = {
-                artTitle    : article.topic,
-                articleUuid : article.articleUuid,
-                authorUuid  : article.authorUuid,
-                contentBrief: null,
-                creditEarned: 0,
-                favorite    : false,
-                likes       : 0,
-                moneyEarned : 0,
-                notifCount  : 0,
-                notifHead   : 0,
-                rank        : 0,
-                score       : 0,
-                shares      : 0,
-                tagName     : "My Post",
-                tagRank     : null,
-                userLiked   : [],
-                userShared  : [],
-                defaultRank : true
-            }
+            data = ArticleRank.genArticleRankJson(article);
         }
         this.authorTag = authorTag;
         _.forEach(data, function(v, k) {
@@ -132,17 +113,46 @@ class ArticleRank {
     getArtTitle() {
         return this.artTitle;
     }
+
+    static genArticleRankJson(article) {
+        return {
+            artTag      : article.getArtTag(),
+            artTitle    : article.getTitle(),
+            articleUuid : article.getArticleUuid(),
+            authorUuid  : article.getAuthorUuid(),
+            contentBrief: null,
+            creditEarned: 0,
+            favorite    : false,
+            likes       : 0,
+            moneyEarned : 0,
+            notifCount  : 0,
+            notifHead   : 0,
+            rank        : 0,
+            score       : 0,
+            shares      : 0,
+            tagName     : "My Post",
+            tagRank     : null,
+            userLiked   : [],
+            userShared  : [],
+            defaultRank : true
+        };
+    }
 }
 
 class AuthorTag {
     constructor(tag) {
         this.articles   = {};
         this.sortedArts = [];
+        this._id = _.uniqueId('atag-');
 
         _.forEach(tag, function(v, k) {
             this[k] = v;
         }.bind(this));
         return this;
+    }
+
+    getId(prefix) {
+        return (prefix || '') + this._id;
     }
 
     addArticleRank(json) {
@@ -623,6 +633,10 @@ let AuthorStore = Reflux.createStore({
         }
     },
 
+    addArticleRankFromArticle(article) {
+        return this.addArticleRankFromJson(ArticleRank.genArticleRankJson(article));
+    },
+
     addArticleRankFromJson(rank) {
         let obj = this.getAuthorTagMgr(rank.authorUuid).addArticleRank(rank);
         this.data.allArticleRanks[obj.articleUuid] = obj;
@@ -712,4 +726,5 @@ let AuthorStore = Reflux.createStore({
     }
 });
 
+export { AuthorStore, ArticleRank };
 export default AuthorStore;
