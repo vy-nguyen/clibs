@@ -15,15 +15,19 @@ import WebUtils     from 'vntd-shared/utils/WebUtils.jsx';
 import {Util}       from 'vntd-shared/utils/Enum.jsx';
 import {VConst}     from 'vntd-root/config/constants.js';
 
+let currentTime = (new Date).getTime();
+
 class Article {
     constructor(data) {
+        let date;
+
         _.forEach(data, function(v, k) {
             this[k] = v;
         }.bind(this));
 
-        this.author       = UserStore.getUserByUuid(data.authorUuid);
-        this.createdDate  = Date.parse(data.createdDate);
-        this.dateString   = moment(this.createdDate).format("DD/MM/YYYY - HH:mm");
+        date            = new Date(data.createdDate);
+        this.dateString = moment(date).format("DD/MM/YYYY - HH:mm");
+        this.author     = UserStore.getUserByUuid(data.authorUuid);
 
         if (data.rank != null) {
             CommentStore.addArtAttr(data.rank);
@@ -52,6 +56,9 @@ class Article {
         return this.published;
     }
 
+    getRankOrder() {
+    }
+
     getArtTag() {
         return VConst.blog;
     }
@@ -61,10 +68,11 @@ class Article {
     }
 
     requestData() {
+        if (this.rank != null && this.rank.hasArticle === false) {
+            return null;
+        }
         if (this.noData === true && this.ownerStore != null) {
             this.ownerStore.requestItems(Actions.getArticles);
-        } else {
-            console.log("skip Request data...");
         }
         return WebUtils.spinner();
     }
@@ -77,6 +85,14 @@ class Article {
             return AuthorStore.lookupArticleRankByUuid(this.articleUui);
         }
         return null;
+    }
+
+    getRank() {
+        let artRank = this.getArticleRank();
+        if (artRank != null) {
+            return artRank.getRank();
+        }
+        return 0;
     }
 
     updateFromJson(jsonArt) {
@@ -110,6 +126,7 @@ class Article {
         let json = {
             authorUuid : authorUuid,
             articleUuid: articleUuid,
+            createdDate: currentTime
         };
         return Article.newDefInstanceFrmRank(
             store, kind, AuthorStore.lookupArticleRankByUuid(articleUuid), json
@@ -130,6 +147,7 @@ class Article {
             json.createdDate = artRank.timeStamp;
             json.topic       = artRank.getArtTitle();
             json.content     = artRank.contentBrief;
+            json.createdDate = artRank.timeStamp;
             json.published   = true;
         }
         store.recordMissingUuid(json.articleUuid);
@@ -194,6 +212,7 @@ class AuthorShelf {
         this.getData   = 0;
         this.articles  = {};
         this.savedArts = {};
+        this.authorUuid = authorUuid;
 
         this[VConst.ads]     = [];
         this[VConst.blogs]   = [];
@@ -206,24 +225,18 @@ class AuthorShelf {
         return this;
     }
 
-    addArticle(article) {
+    addArticle(article, preend) {
         if (article == null) {
             return;
         }
         if (this.articles[article.articleUuid] != null) {
             this.removeArticle(article.articleUuid);
         }
-        this.addSortedArticle(article, true);
+        this.addSortedArticle(article, preend);
     }
 
     _cmpArticle(anchor, elm) {
-        if (anchor.createdDate === elm.createdDate) {
-            return 0;
-        }
-        if (anchor.createdDate > elm.createdDate) {
-            return -1;
-        }
-        return 1;
+        return elm.createdDate - anchor.createdDate;
     }
 
     removeArticle(articleUuid) {
@@ -407,7 +420,7 @@ class CommonStore {
     }
 
     onPublishItemCompleted(item, store) {
-        let it = this._addItemStore(item), pubTag = it.publicTag;
+        let it = this._addItemStore(item, true), pubTag = it.publicTag;
 
         this._notifyListeners("add", [it]);
         store.trigger(this.data, [it], "postOk", true, it.authorUuid);
@@ -422,7 +435,7 @@ class CommonStore {
 
         CommentStore.onGetCommentsCompleted(data);
         _.forEach(data[key], function(item) {
-            items.push(this._addItemStore(item));
+            items.push(this._addItemStore(item, false));
         }.bind(this));
 
         this.data.requestUuids = null;
@@ -524,7 +537,7 @@ class CommonStore {
      */
     _addDefaultItem(kind, store, articleUuid, authorUuid) {
         return this._addItemStore(
-            Article.newDefInstance(kind, store, articleUuid, authorUuid)
+            Article.newDefInstance(kind, store, articleUuid, authorUuid), false
         );
     }
 
@@ -533,14 +546,15 @@ class CommonStore {
      */
     addDefaultFromRank(artRank) {
         return this._addItemStore(
-            Article.newDefInstanceFrmRank(this, this.data.storeKind, artRank, null)
+            Article.newDefInstanceFrmRank(this, this.data.storeKind, artRank, null),
+            false
         );
     }
 
     /**
      * Add article item to the store where item is in json format or Article type.
      */
-    _addItemStore(item) {
+    _addItemStore(item, preend) {
         let articleUuid, authorUuid, anchor, authorTagMgr, article;
 
         articleUuid = item.articleUuid;
@@ -555,7 +569,7 @@ class CommonStore {
                 article = Article.newInstance(this.data.storeKind, item);
             }
             this.data.itemsByUuid[articleUuid] = article;
-            anchor.addArticle(article);
+            anchor.addArticle(article, preend);
         } else {
             article.updateFromJson(item);
         }

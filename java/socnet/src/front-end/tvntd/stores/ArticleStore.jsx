@@ -185,7 +185,7 @@ let ArticleStore = Reflux.createStore({
     },
 
     addDefaultFromRank: function(artRank) {
-        this.store.addDefaultFromRank(artRank);
+        return this.store.addDefaultFromRank(artRank);
     },
 
     dumpData: function(header) {
@@ -241,6 +241,7 @@ let ArticleStore = Reflux.createStore({
 
     onPublishUserPostCompleted: function(post) {
         let status = "publish";
+
         if (post.error == null) {
             this.store._addItemStore(post);
         } else {

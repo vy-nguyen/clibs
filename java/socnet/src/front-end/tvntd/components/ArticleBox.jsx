@@ -196,7 +196,7 @@ class ArticleBox extends React.Component
     static youtubeLink(article, brief) {
         let rank = article.getArticleRank(), oid, code, url;
 
-        if (rank == null) {
+        if (rank == null || rank.contentLinkUrl == null) {
             return null;
         }
         oid = rank.contentOid;
