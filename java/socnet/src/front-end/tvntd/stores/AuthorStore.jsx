@@ -194,6 +194,10 @@ class AuthorTag {
         return anchor.getRankOrder() - elm.getRankOrder();
     }
 
+    static compareArtByTitle(anchor, elm) {
+        return anchor.artTitle.localeCompare(elm.artTitle);
+    }
+
     addArticleRankObj(rank) {
         let artUuid = rank.articleUuid,
             artRank = this.articles[artUuid];
@@ -229,6 +233,10 @@ class AuthorTag {
 
     getSortedArticleRank() {
         return this.sortedArts;
+    }
+
+    resortArticleRank(opt) {
+        this.sortedArts.sort();
     }
 }
 
@@ -430,10 +438,15 @@ class AuthorTagMgr {
             };
             artList.push(tagRank);
             if (sortedArts != null) {
+                sortedArts.sort(AuthorTag.compareArtByTitle);
                 _.forEach(sortedArts, function(rank, idx) {
-                    rank.rank = 1000 + idx;
+                    rank.rank = 10 + idx;
+                    tagRank.artUuid.push(rank.getArticleUuid());
                 });
             }
+            console.log(sortedArts);
+            console.log(tagRank.artUuid);
+                /*
             _.forEach(category, function(it, idx) {
                 tagRank.artUuid.push(it.id);
                 artRank = authorTag.getArticleRank(it.id);
@@ -444,6 +457,7 @@ class AuthorTagMgr {
             if (sortedArts != null) {
                 sortedArts.sort(AuthorTag.compareRank);
             }
+                 */
         }.bind(this));
 
         Actions.commitTagRanks(this, {
