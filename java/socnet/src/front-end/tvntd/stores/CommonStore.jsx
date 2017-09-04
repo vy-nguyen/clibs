@@ -89,8 +89,9 @@ class Article {
 
     getRank() {
         let artRank = this.getArticleRank();
+
         if (artRank != null) {
-            return artRank.getRank();
+            return artRank.getRankOrder();
         }
         return 0;
     }
