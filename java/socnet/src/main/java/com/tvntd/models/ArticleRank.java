@@ -173,7 +173,8 @@ public class ArticleRank
         this.contentBrief = article.getContentBrief();
     }
 
-    public ArticleRank(Article article, String host, String url, String tag, int mode)
+    public ArticleRank(Article article, String content,
+            String host, String url, String tag, int mode)
     {
         this();
         artTag      = ArtTag.BLOG;
@@ -194,12 +195,7 @@ public class ArticleRank
         } else {
             hasArticle = true;
         }
-        byte[] content = article.getContent();
-        if (content.length > MaxContentLength) {
-            contentBrief = Arrays.copyOfRange(content, 0, MaxContentLength);
-        } else {
-            contentBrief = content;
-        }
+        contentBrief = Util.toRawByte(content, MaxContentLength);
     }
 
     /**

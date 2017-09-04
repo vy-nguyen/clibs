@@ -379,7 +379,6 @@ Actions.getDomainData.listen(function(data, context) {
  * }
  */
 Actions.commitTagRanks.listen(function(tagMgr, userTags) {
-    // postRestCall(userTags, "/user/update-tag-rank", true, this, true, tagMgr.btnId, tagMgr);
     postRestCall(userTags, "/user/update-tag-rank", true, this, true, tagMgr);
 });
 

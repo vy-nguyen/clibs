@@ -786,7 +786,7 @@ public class UserPath
 
         TagArtRank[] artList = form.getArtList();
         for (TagArtRank r : artList) {
-            Long order = 0L;
+            Long order = 10L;
             List<ArticleRank> artRank = articleSvc.getArtRank(r.getArtUuid());
 
             for (ArticleRank rank : artRank) {

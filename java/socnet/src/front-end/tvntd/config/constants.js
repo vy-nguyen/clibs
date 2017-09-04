@@ -21,7 +21,11 @@ export const errMesg = {
 export const VConst = {
     ads  : 'sortedAds',
     blogs: 'sortedArticles',
-    prods: 'sortedProducts'
+    prods: 'sortedProducts',
+
+    ad    : 'ads',
+    blog  : 'blog',
+    estore: 'estore',
 };
 
 Object.freeze(VConst);
