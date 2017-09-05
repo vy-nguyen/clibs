@@ -173,10 +173,11 @@ public class ArticleRank
         this.contentBrief = article.getContentBrief();
     }
 
-    public ArticleRank(Article article, String content,
+    public ArticleRank(Article article, Long userId, String content,
             String host, String url, String tag, int mode)
     {
         this();
+        authorId    = userId;
         artTag      = ArtTag.BLOG;
         articleUuid = article.getArticleUuid();
         authorUuid  = article.getAuthorUuid();
