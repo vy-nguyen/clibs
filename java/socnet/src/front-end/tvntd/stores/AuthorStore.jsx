@@ -444,8 +444,7 @@ class AuthorTagMgr {
                     tagRank.artUuid.push(rank.getArticleUuid());
                 });
             }
-            console.log(sortedArts);
-            console.log(tagRank.artUuid);
+            console.log(category);
                 /*
             _.forEach(category, function(it, idx) {
                 tagRank.artUuid.push(it.id);

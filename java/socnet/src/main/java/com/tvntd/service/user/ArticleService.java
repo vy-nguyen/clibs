@@ -122,8 +122,9 @@ public class ArticleService implements IArticleService
         String tag = form.getTags();
         if (rank == null) {
             profile.assignPendPost(null);
-            rank = new ArticleRank(art, form.getContent(), form.fetchContentUrlHost(),
-                    form.fetchContentUrlFile(), tag, form.fetchDocType());
+            rank = new ArticleRank(art, profile.fetchUserId(), form.getContent(),
+                    form.fetchContentUrlHost(), form.fetchContentUrlFile(),
+                    tag, form.fetchDocType());
         }
         if (!tag.equals(rank.getTag())) {
             rank.setTag(tag);
