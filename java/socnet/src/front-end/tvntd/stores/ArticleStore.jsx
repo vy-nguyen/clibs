@@ -293,7 +293,8 @@ class GlobStore
         const stores = [ ArticleStore.store, EProductStore.store, AdsStore.store ];
 
         for (let i = 0; i < stores.length; i++) {
-            let article = stores[i].getItemByUuid(artUuid);
+            let article = stores[i].getItemByUuid(artUuid, null);
+
             if (article != null) {
                 return article;
             }

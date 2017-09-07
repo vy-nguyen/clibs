@@ -245,7 +245,8 @@ class ArtBlogStyle extends React.Component
         let img, arg = this.props.data, clickBtn = arg.clickBtn,
             article = arg.article, artRank = article.getArticleRank();
 
-        if (article.youtube != null || artRank.contentLinkUrl != null) {
+        if (article.youtube != null ||
+            (artRank != null && artRank.contentLinkUrl != null)) {
             img = ArticleBox.youtubeLink(article, true);
         } else {
             img = (
