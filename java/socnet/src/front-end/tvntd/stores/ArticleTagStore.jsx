@@ -16,6 +16,7 @@ import {GlobStore}           from 'vntd-root/stores/ArticleStore.jsx';
 import AuthorStore           from 'vntd-root/stores/AuthorStore.jsx';
 
 import ErrorView from 'vntd-shared/layout/ErrorView.jsx';
+
 function sortArticle(pivot, article) {
     return article.createdDate - pivot.createdDate;
 }

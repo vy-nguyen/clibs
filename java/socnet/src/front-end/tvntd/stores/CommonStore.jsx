@@ -5,136 +5,51 @@
 'use strict';
 
 import _            from 'lodash';
-import moment       from 'moment';
 import Actions      from 'vntd-root/actions/Actions.jsx';
 import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
 import CommentStore from 'vntd-root/stores/CommentStore.jsx';
 import UserStore    from 'vntd-shared/stores/UserStore.jsx';
 import WebUtils     from 'vntd-shared/utils/WebUtils.jsx';
 
-import {Util}       from 'vntd-shared/utils/Enum.jsx';
 import {VConst}     from 'vntd-root/config/constants.js';
+import {
+    Article, Product, AdsItem, ArticleRank, AuthorShelf, AuthorTagMgr, Author
+} from 'vntd-root/stores/Article.jsx';
 
-let currentTime = (new Date).getTime();
-
-class Article {
-    constructor(data) {
-        let date;
-
-        _.forEach(data, function(v, k) {
-            this[k] = v;
-        }.bind(this));
-
-        date            = new Date(data.createdDate);
-        this.dateString = moment(date).format("DD/MM/YYYY - HH:mm");
-        this.author     = UserStore.getUserByUuid(data.authorUuid);
-
-        if (data.rank != null) {
-            CommentStore.addArtAttr(data.rank);
-            this.rank = AuthorStore.addArticleRankFromJson(data.rank);
-        }
-        return this;
-    }
-
-    getArticleUuid() {
-        return this.articleUuid;
-    }
-
-    getAuthorUuid() {
-        return this.authorUuid;
-    }
-
-    getTagName() {
-        return this.rank.tagName;
-    }
-
-    getTitle() {
-        return this.topic;        
-    }
-
-    isPublished() {
-        return this.published;
-    }
-
-    getRankOrder() {
-    }
-
-    getArtTag() {
-        return VConst.blog;
-    }
-
-    getSortedAnchor() {
-        return VConst.blogs;
-    }
-
-    requestData() {
-        if (this.rank != null && this.rank.hasArticle === false) {
-            return null;
-        }
-        if (this.noData === true && this.ownerStore != null) {
-            this.ownerStore.requestItems(Actions.getArticles);
-        }
-        return WebUtils.spinner();
-    }
-
-    getArticleRank() {
-        if (this.rank != null) {
-            return this.rank;
-        }
-        if (this.noData === true) {
-            return AuthorStore.lookupArticleRankByUuid(this.articleUui);
-        }
-        return null;
-    }
-
-    getRank() {
-        let artRank = this.getArticleRank();
-
-        if (artRank != null) {
-            return artRank.getRankOrder();
-        }
-        return 0;
-    }
-
-    updateFromJson(jsonArt) {
-        _.forEach(jsonArt, function(v, k) {
-            this[k] = v;
-        }.bind(this));
-
-        if (jsonArt.noData == null) {
-            delete this.noData;
-        }
-    }
-
-    /*
-     * TODO: rework product and ads to do dynamic loading like article.
-     */
-    getArticle() {
-        return this;
-    }
+export class ArticleFactory {
 
     static newInstance(kind, data) {
+        let article;
+
         if (kind === VConst.blog) {
-            return new Article(data);
+            article = new Article(data);
+        } else if (kind === VConst.estore) {
+            article = new Product(data);
+        } else {
+            article = new AdsItem(data);
         }
-        if (kind === VConst.estore) {
-            return new Product(data);
+        if (data.rank != null) {
+            CommentStore.addArtAttr(data.rank);
+            article.rank = AuthorStore.addArticleRankFromJson(data.rank);
         }
-        return new AdsItem(data);
+        if (article.rank == null) {
+            article.authorStore = AuthorStore;
+        }
+        return article;
     }
 
-    static newDefInstance(kind, store, articleUuid, authorUuid) {
+    static newDefInstance(store, articleUuid, authorUuid) {
         let json = {
             authorUuid : authorUuid,
             articleUuid: articleUuid,
-            createdDate: currentTime
+            createdDate: WebUtils.currentTime
         };
-        return Article.newDefInstanceFrmRank(
-            store, kind, AuthorStore.lookupArticleRankByUuid(articleUuid), json
+        return ArticleFactory.newDefInstanceFrmRank(
+            store, AuthorStore.lookupArticleRankByUuid(articleUuid), json
         );
     }
 
-    static newDefInstanceFrmRank(store, kind, artRank, json) {
+    static newDefInstanceFrmRank(store, artRank, json) {
         if (json == null) {
             json = {};
         }
@@ -142,7 +57,6 @@ class Article {
         json.ownerStore = store;
 
         if (artRank != null) {
-            kind             = artRank.artTag;
             json.authorUuid  = artRank.authorUuid;
             json.articleUuid = artRank.articleUuid;
             json.createdDate = artRank.timeStamp;
@@ -152,156 +66,31 @@ class Article {
             json.published   = true;
         }
         store.recordMissingUuid(json.articleUuid);
-        return Article.newInstance(kind, json);
-    }
-}
-
-class Product extends Article {
-    constructor(data) {
-        super(data);
+        return ArticleFactory.newInstance(store.data.storeKind, json);
     }
 
-    getTagName() {
-        return this.publicTag;
-    }
+    static newArticleRank(data, store, authorTag, article) {
+        let artRank = new ArticleRank(data, store, authorTag, article);
 
-    getTitle() {
-        return this.prodTitle;
-    }
-
-    isPublished() {
-        return true;
-    }
-
-    getArtTag() {
-        return VConst.estore;
-    }
-
-    getSortedAnchor() {
-        return VConst.prods;
-    }
-}
-
-class AdsItem extends Article {
-    constructor(data) {
-        super(data);
-    }
-
-    getTagName() {
-        return this.adsRank.tagName;
-    }
-
-    getTitle() {
-        return this.busName;
-    }
-
-    isPublished() {
-        return true;
-    }
-
-    getArtTag() {
-        return VConst.ad;
-    }
-
-    getSortedAnchor() {
-        return VConst.ads;
-    }
-}
-
-class AuthorShelf {
-    constructor(article, authorUuid) {
-        this.getData   = 0;
-        this.articles  = {};
-        this.savedArts = {};
-        this.authorUuid = authorUuid;
-
-        this[VConst.ads]     = [];
-        this[VConst.blogs]   = [];
-        this[VConst.prods]   = [];
-        this.sortedSavedArts = [];
-
-        if (article != null) {
-            this.addSortedArticle(article);
-        }
-        return this;
-    }
-
-    addArticle(article, preend) {
         if (article == null) {
-            return;
+            article = store.addDefaultFromRank(artRank);
         }
-        if (this.articles[article.articleUuid] != null) {
-            this.removeArticle(article.articleUuid);
-        }
-        this.addSortedArticle(article, preend);
-    }
-
-    _cmpArticle(anchor, elm) {
-        return elm.createdDate - anchor.createdDate;
-    }
-
-    removeArticle(articleUuid) {
-        let root, article = this.articles[articleUuid];
-
         if (article != null) {
-            root = article.getSortedAnchor();
-            Util.removeArray(this[root], article, 0, this._cmpArticle);
-            delete this.articles[articleUuid];
+            article.rank = artRank;
         }
-        article = this.savedArts[articleUuid];
-        if (article != null) {
-            Util.removeArray(this.sortedSavedArts, article, 0, this._cmpArticle);
-            delete this.savedArts[articleUuid];
-        }
+        return artRank;
     }
 
-    addSortedArticle(article, pre) {
-        let root = article.getSortedAnchor();
-
-        if (article.isPublished()) {
-            if (this.articles[article.articleUuid] !== article) {
-                this.articles[article.articleUuid] = article;
-                if (pre === true) {
-                    this[root] = Util.preend(article, this[root]);
-                } else {
-                    Util.insertSorted(article, this[root], this._cmpArticle);
-                }
-            }
-            return;
-        }
-        this.addSortedSavedArts(article);
+    static newAuthorShelf(articleUuid, authorUuid) {
+        return new AuthorShelf(articleUuid, authorUuid);
     }
 
-    addSortedSavedArts(article) {
-        if (this.savedArts[article.articleUuid] !== article) {
-            this.savedArts[article.articleUuid] = article;
-            Util.insertSorted(article, this.sortedSavedArts, this._cmpArticle);
-        }
+    static newAuthorTagMgr(uuid, authorStore) {
+        return new AuthorTagMgr(uuid, authorStore);
     }
 
-    hasData() {
-        return true;
-    }
-
-    getSortedArticles() {
-        return this[VConst.blogs];
-    }
-
-    getSortedSavedArts() {
-        return this.sortedSavedArts;
-    }
-
-    getArticle(artUuid) {
-        if (this.articles[artUuid] != null) {
-            return this.articles[artUuid];
-        }
-        return this.savedArts[artUuid];
-    }
-
-    iterArticles(func, arg) {
-        _.forOwn(this[VConst.blogs], function(item, key) {
-            func(item, arg);
-        });
+    static newAuthor(author) {
+        return new Author(author);
     }
 }
 
@@ -407,7 +196,7 @@ class CommonStore {
             if (authorUuid == null) {
                 return null;
             }
-            item = this._addDefaultItem(this.data.storeKind, this, uuid, authorUuid);
+            item = this._addDefaultItem(this, uuid, authorUuid);
         }
         return item;
     }
@@ -415,7 +204,7 @@ class CommonStore {
     getAuthorUuid(articleUuid) {
         let item = this.data.itemsByUuid[articleUuid];
         if (item != null) {
-            return item.authorUuid;
+            return item.getAuthorUuid();
         }
         return null;
     }
@@ -524,7 +313,7 @@ class CommonStore {
     }
 
     _createOwnerAnchor(authorUuid, article) {
-        let anchor = new AuthorShelf(article, authorUuid);
+        let anchor = ArticleFactory.newAuthorShelf(article, authorUuid);
 
         this.data.itemsByAuthor[authorUuid] = anchor;
         if (UserStore.isUserMe(authorUuid)) {
@@ -536,9 +325,9 @@ class CommonStore {
     /**
      * Add default article when we only have article uuid and author uuid.
      */
-    _addDefaultItem(kind, store, articleUuid, authorUuid) {
+    _addDefaultItem(store, articleUuid, authorUuid) {
         return this._addItemStore(
-            Article.newDefInstance(kind, store, articleUuid, authorUuid), false
+            ArticleFactory.newDefInstance(store, articleUuid, authorUuid), false
         );
     }
 
@@ -547,8 +336,7 @@ class CommonStore {
      */
     addDefaultFromRank(artRank) {
         return this._addItemStore(
-            Article.newDefInstanceFrmRank(this, this.data.storeKind, artRank, null),
-            false
+            ArticleFactory.newDefInstanceFrmRank(this, artRank, null), false
         );
     }
 
@@ -567,19 +355,18 @@ class CommonStore {
             if (item instanceof Article) {
                 article = item;
             } else {
-                article = Article.newInstance(this.data.storeKind, item);
+                article = ArticleFactory.newInstance(this.data.storeKind, item);
             }
             this.data.itemsByUuid[articleUuid] = article;
             anchor.addArticle(article, preend);
         } else {
             article.updateFromJson(item);
         }
-        if (item.rank != null) {
+        if (item.rank != null && !(item instanceof Article)) {
             authorTagMgr = AuthorStore.getAuthorTagMgr(authorUuid);
             article.rank = authorTagMgr.addArticleRank(item.rank);
-        } else {
-            article.rank = AuthorStore.lookupArticleRankByUuid(articleUuid);
         }
+        article.getArticleRank();
         return article;
     }
 
@@ -610,7 +397,7 @@ class CommonStore {
             oldArt = itemsByKey[it.articleUuid];
 
             if (oldArt == null) {
-                itemsByKey[it.articleUuid] = Article.newInstance(kind, it);
+                itemsByKey[it.articleUuid] = ArticleFactory.newInstance(kind, it);
 
             } else if (oldArt.noData == true) {
                 oldArt.updateFromJson(it);
@@ -650,5 +437,4 @@ class CommonStore {
     }
 }
 
-export {CommonStore, Article}
 export default CommonStore;
