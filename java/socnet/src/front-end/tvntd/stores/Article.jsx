@@ -12,6 +12,8 @@ import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import WebUtils         from 'vntd-shared/utils/WebUtils.jsx';
 import {Util}           from 'vntd-shared/utils/Enum.jsx';
 import {VConst}         from 'vntd-root/config/constants.js';
+import {ArticleFactory} from 'vntd-root/stores/CommonStore.jsx';
+import {GlobStore, ArticleStore} from 'vntd-root/stores/ArticleStore.jsx';
 
 export class Author {
     constructor(data) {
@@ -64,7 +66,7 @@ export class AuthorTag {
     }
 
     addArticleRank(json) {
-        let rank = this.articles[json.articleUuid];
+        let store, rank = this.articles[json.articleUuid];
 
         if (rank != null) {
             if (json !== rank && !(json instanceof ArticleRank)) {
@@ -72,7 +74,11 @@ export class AuthorTag {
             }
             return rank;
         }
-        return this.addArticleRankObj(new ArticleRank(json, this, null));
+        store = GlobStore.getStoreKind(json.artTag);
+        if (store == null) {
+            store = ArticleStore;
+        }
+        return ArticleFactory.newArticleRank(json, store, this, null);
     }
 
     static compareRank(r1, r2) {
@@ -589,8 +595,8 @@ export class Article extends ArticleBase {
 }
 
 export class Product extends Article {
-    constructor(data) {
-        super(data);
+    constructor(data, store) {
+        super(data, store);
     }
 
     // @Override
@@ -625,8 +631,8 @@ export class Product extends Article {
 }
 
 export class AdsItem extends Article {
-    constructor(data) {
-        super(data);
+    constructor(data, store) {
+        super(data, store);
     }
 
     // @Override

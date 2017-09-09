@@ -18,15 +18,15 @@ import {
 
 export class ArticleFactory {
 
-    static newInstance(kind, data) {
-        let article;
+    static newInstance(store, data) {
+        let article, kind = store.data.storeKind;
 
         if (kind === VConst.blog) {
-            article = new Article(data);
+            article = new Article(data, store);
         } else if (kind === VConst.estore) {
-            article = new Product(data);
+            article = new Product(data, store);
         } else {
-            article = new AdsItem(data);
+            article = new AdsItem(data, store);
         }
         if (data.rank != null) {
             CommentStore.addArtAttr(data.rank);
@@ -66,7 +66,7 @@ export class ArticleFactory {
             json.published   = true;
         }
         store.recordMissingUuid(json.articleUuid);
-        return ArticleFactory.newInstance(store.data.storeKind, json);
+        return ArticleFactory.newInstance(store, json);
     }
 
     static newArticleRank(data, store, authorTag, article) {
@@ -355,7 +355,7 @@ class CommonStore {
             if (item instanceof Article) {
                 article = item;
             } else {
-                article = ArticleFactory.newInstance(this.data.storeKind, item);
+                article = ArticleFactory.newInstance(this, item);
             }
             this.data.itemsByUuid[articleUuid] = article;
             anchor.addArticle(article, preend);
@@ -391,13 +391,13 @@ class CommonStore {
     }
 
     addFromJson(items, key, index) {
-        let oldArt, kind = this.data.storeKind, itemsByKey = this.data[key];
+        let oldArt, itemsByKey = this.data[key];
 
         _.forOwn(items, function(it, k) {
             oldArt = itemsByKey[it.articleUuid];
 
             if (oldArt == null) {
-                itemsByKey[it.articleUuid] = ArticleFactory.newInstance(kind, it);
+                itemsByKey[it.articleUuid] = ArticleFactory.newInstance(this, it);
 
             } else if (oldArt.noData == true) {
                 oldArt.updateFromJson(it);
