@@ -12,8 +12,6 @@ import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import WebUtils         from 'vntd-shared/utils/WebUtils.jsx';
 import {Util}           from 'vntd-shared/utils/Enum.jsx';
 import {VConst}         from 'vntd-root/config/constants.js';
-import {ArticleFactory} from 'vntd-root/stores/CommonStore.jsx';
-import {GlobStore, ArticleStore} from 'vntd-root/stores/ArticleStore.jsx';
 
 export class Author {
     constructor(data) {
@@ -50,7 +48,7 @@ export class Author {
  * Maintains binding from articles to a name tag.
  */
 export class AuthorTag {
-    constructor(tag) {
+    constructor(tag, authorStore) {
         this.articles   = {};
         this.sortedArts = [];
         this._id = _.uniqueId('atag-');
@@ -65,7 +63,7 @@ export class AuthorTag {
         return (prefix || '') + this._id;
     }
 
-    addArticleRank(json) {
+    addArticleRank(json, globStore) {
         let store, rank = this.articles[json.articleUuid];
 
         if (rank != null) {
@@ -74,11 +72,10 @@ export class AuthorTag {
             }
             return rank;
         }
-        store = GlobStore.getStoreKind(json.artTag);
-        if (store == null) {
-            store = ArticleStore;
-        }
-        return ArticleFactory.newArticleRank(json, store, this, null);
+        store = globStore.getStoreKind(json.artTag);
+        return this.addArticleRankObj(
+            ArticleRank.newArticleRank(json, store, this, null)
+        );
     }
 
     static compareRank(r1, r2) {
@@ -100,8 +97,7 @@ export class AuthorTag {
     }
 
     addArticleRankObj(rank) {
-        let artUuid = rank.articleUuid,
-            artRank = this.articles[artUuid];
+        let artUuid = rank.articleUuid, artRank = this.articles[artUuid];
 
         if (artRank == null) {
             artRank = rank;
@@ -180,7 +176,7 @@ export class AuthorTagMgr {
         if (authorTag != null) {
             return authorTag;
         }
-        authorTag = new AuthorTag(tag);
+        authorTag = new AuthorTag(tag, this.authorStore);
         this.authorTags[tag.tagName] = authorTag;
 
         Util.insertSorted(authorTag, this.sortedTags, AuthorTag.compareRank);
@@ -224,13 +220,13 @@ export class AuthorTagMgr {
         });
     }
 
-    addArticleRank(rank) {
+    addArticleRank(rank, globStore) {
         let authorTag = this.authorTags[rank.tagName];
         if (authorTag == null) {
             authorTag = this.createAuthorTag(rank);
             this.authorTags[rank.tagName] = authorTag;
         }
-        return authorTag.addArticleRank(rank);
+        return authorTag.addArticleRank(rank, globStore);
     }
 
     removeArticleRank(rank) {
@@ -390,6 +386,7 @@ export class AuthorTagMgr {
 
 class ArticleBase {
     constructor(store) {
+        this.isArticle  = true;
         this.ownerStore = store;
     }
 
@@ -488,6 +485,18 @@ export class ArticleRank extends ArticleBase {
             userShared  : [],
             defaultRank : true
         };
+    }
+
+    static newArticleRank(data, store, authorTag, article) {
+        let artRank = new ArticleRank(data, store, authorTag, article);
+
+        if (article == null) {
+            article = store.addDefaultFromRank(artRank);
+        }
+        if (article != null) {
+            article.rank = artRank;
+        }
+        return artRank;
     }
 }
 
@@ -760,5 +769,206 @@ export class AuthorShelf {
         _.forOwn(this[VConst.blogs], function(item, key) {
             func(item, arg);
         });
+    }
+}
+
+function sortArticle(pivot, article) {
+    return article.createdDate - pivot.createdDate;
+}
+
+export class PublishArtTag {
+    constructor(artObj, artTag, uuid) {
+        this.artObj = artObj;
+        this.artTag = artTag;
+        this.articleUuid = uuid;
+    }
+
+    getArticleUuid() {
+        return this.articleUuid;
+    }
+
+    getAuthorUuid() {
+        return this.artObj.getAuthorUuid();
+    }
+
+    getArticleRank() {
+        return this.artObj;
+    }
+
+    getArticle() {
+        return this.artObj.getArticle();
+    }
+
+    getTagObj() {
+        return this.artTag;
+    }
+}
+
+export class ArtTag {
+    constructor(data, authorStore) {
+        let artUuids;
+
+        this._id         = _.uniqueId('tag-');
+        this.sortedArts  = null;
+        this.authorStore = authorStore;
+
+        _.forEach(data, function(v, k) {
+            this[k] = v;
+        }.bind(this));
+
+        if (_.isEmpty(this.parentTag)) {
+            this.parentTag = null;
+        }
+        if (this.articleRank != null) {
+            artUuids = {};
+            _.forEach(this.articleRank, function(artUuid) {
+                artUuids[artUuid] = artUuid;
+            });
+            this.articleRank = artUuids;
+        } else {
+            this.articleRank = {};
+        }
+        this.update = this.update.bind(this);
+        return this;
+    }
+
+    getId(prefix) {
+        return (prefix || '') + this._id;
+    }
+
+    update(artRank) {
+        _.forOwn(artRank, function(value, key) {
+            if (value != null && this[key] !== value) {
+                this[key] = value;
+            }
+        }.bind(this));
+    }
+
+    updateTag(raw, unResolved) {
+        let article;
+
+        _.forEach(raw.articleRank, function(artUuid) {
+            if (this.articleRank[artUuid] == null) {
+                this.addArticleRank(unResolved, artUuid);
+            }
+        }.bind(this));
+    }
+
+    sortArticles(unResolved) {
+        let rank, sortedArts, authorStore = this.authorStore;
+
+        if (this.sortedArts != null) {
+            // We already has the sorted list.  Don't need to do anything here.
+            return;
+        }
+        sortedArts = [];
+        _.forOwn(this.articleRank, function(artUuid) {
+            rank = authorStore.lookupArticleRankByUuid(artUuid);
+
+            if (rank == null) {
+                unResolved[artUuid] = this;
+            } else {
+                this.articleRank[rank.getArticleUuid()] = rank;
+                Util.insertSorted(rank, sortedArts, sortArticle);
+            }
+        }.bind(this));
+
+        if (!_.isEmpty(sortedArts)) {
+            this.sortedArts = sortedArts;
+        }
+    }
+
+    resolveArticleRank(unResolved, artRank) {
+        if (unResolved != null) {
+            delete unResolved[artRank.getArticleUuid()];
+        }
+        if (artRank.artTag == null) {
+            console.log("Wrong type");
+            console.log(artRank);
+        }
+        if (this.sortedArts == null) {
+            this.sortedArts = [artRank];
+        } else {
+            this.articleRank[artRank.getArticleUuid()] = artRank;
+            Util.insertSorted(artRank, this.sortedArts, sortArticle);
+        }
+    }
+
+    addArticleRank(unResolved, artUuid) {
+        let artRank;
+
+        if (artUuid == null) {
+            return;
+        }
+        artRank = this.authorStore.lookupArticleRankByUuid(artUuid);
+        if (artRank == null) {
+            unResolved[artUuid] = this;
+        }
+        if (this.articleRank[artUuid] == null) {
+            if (artRank != null) {
+                this.resolveArticleRank(null, artRank);
+            } else {
+                this.articleRank[artUuid] = artUuid;
+            }
+        }
+    }
+
+    updateArticles(unResolved, articles) {
+        _.forEach(articles, function(artUuid) {
+            this.addArticleRank(unResolved, artUuid);
+        }.bind(this));
+    }
+
+    debugPrint() {
+        if (!_.isEmpty(this.sortedArts)) {
+            _.forEach(this.sortedArts, function(article) {
+                console.log("[" + article.createdDate + "] " + article.getTitle());
+            });
+        }
+    }
+
+    addSubTag(sub) {
+        if (this.subTags == null) {
+            this.subTags = [];
+        }
+        this.removeSubTag(sub);
+        this.subTags.push(sub);
+    }
+
+    removeSubTag(sub) {
+        if (this.subTags != null) {
+            Util.removeArray(this.subTags, sub, 0, function(a, b) {
+                return (a.tagName === b.tagName) ? 0 : 1;
+            });
+        }
+    }
+
+    attachParent(parentObj) {
+        if (parentObj != null) {
+            parentObj.addSubTag(this);
+            this.parentTag = parentObj.tagName;
+        }
+    }
+
+    detachParent(parentObj) {
+        if (parentObj != null) {
+            parentObj.removeSubTag(this);
+            this.parentTag = null;
+        }
+    }
+
+    getImgUrl() {
+        if (this.imgOid == null) {
+            return "/rs/img/bg/cover.png";
+        }
+        return "/rs/img/bg/" + this.imgOid;
+    }
+
+    getRouteLink() {
+        let base = "/app/public/";
+        if (this.routeLink == null) {
+            return base;
+        }
+        return base + this.routeLink;
     }
 }
