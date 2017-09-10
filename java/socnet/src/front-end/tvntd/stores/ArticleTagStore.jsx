@@ -10,211 +10,12 @@ import Actions   from 'vntd-root/actions/Actions.jsx';
 
 import {VntdGlob}            from 'vntd-root/config/constants.js';
 import {tagKinds}            from 'vntd-root/components/TagInfo.jsx';
-import {GenericForm}         from 'vntd-shared/forms/commons/GenericForm.jsx';
-import {Util}                from 'vntd-shared/utils/Enum.jsx';
+import ArticleFactory        from 'vntd-root/stores/ArticleFactory.jsx';
 import {GlobStore}           from 'vntd-root/stores/ArticleStore.jsx';
 import AuthorStore           from 'vntd-root/stores/AuthorStore.jsx';
-
-import ErrorView from 'vntd-shared/layout/ErrorView.jsx';
-
-function sortArticle(pivot, article) {
-    return article.createdDate - pivot.createdDate;
-}
-
-class PublishArtTag {
-    constructor(artObj, artTag, uuid) {
-        this.artObj = artObj;
-        this.artTag = artTag;
-        this.articleUuid = uuid;
-    }
-
-    getArticleUuid() {
-        return this.articleUuid;
-    }
-
-    getAuthorUuid() {
-        return this.artObj.getAuthorUuid();
-    }
-
-    getArticleRank() {
-        return this.artObj;
-    }
-
-    getArticle() {
-        return this.artObj.getArticle();
-    }
-
-    getTagObj() {
-        return this.artTag;
-    }
-}
-
-class ArtTag {
-    constructor(data) {
-        let artUuids;
-
-        this._id = _.uniqueId('tag-');
-        this.sortedArts = null;
-        _.forEach(data, function(v, k) {
-            this[k] = v;
-        }.bind(this));
-
-        if (_.isEmpty(this.parentTag)) {
-            this.parentTag = null;
-        }
-        if (this.articleRank != null) {
-            artUuids = {};
-            _.forEach(this.articleRank, function(artUuid) {
-                artUuids[artUuid] = artUuid;
-            });
-            this.articleRank = artUuids;
-        } else {
-            this.articleRank = {};
-        }
-        this.update = this.update.bind(this);
-        return this;
-    }
-
-    getId(prefix) {
-        return (prefix || '') + this._id;
-    }
-
-    update(artRank) {
-        _.forOwn(artRank, function(value, key) {
-            if (value != null && this[key] !== value) {
-                this[key] = value;
-            }
-        }.bind(this));
-    }
-
-    updateTag(raw, unResolved) {
-        let article;
-
-        _.forEach(raw.articleRank, function(artUuid) {
-            if (this.articleRank[artUuid] == null) {
-                this.addArticleRank(unResolved, artUuid);
-            }
-        }.bind(this));
-    }
-
-    sortArticles(unResolved) {
-        let rank, sortedArts, store = GlobStore.getStoreKind(this.tagKind);
-
-        if (this.sortedArts != null) {
-            // We already has the sorted list.  Don't need to do anything here.
-            return;
-        }
-        sortedArts = [];
-        _.forOwn(this.articleRank, function(artUuid) {
-            rank = AuthorStore.lookupArticleRankByUuid(artUuid);
-
-            if (rank == null) {
-                unResolved[artUuid] = this;
-            } else {
-                this.articleRank[rank.getArticleUuid()] = rank;
-                Util.insertSorted(rank, sortedArts, sortArticle);
-            }
-        }.bind(this));
-
-        if (!_.isEmpty(sortedArts)) {
-            this.sortedArts = sortedArts;
-        }
-    }
-
-    resolveArticleRank(unResolved, artRank) {
-        if (unResolved != null) {
-            delete unResolved[artRank.getArticleUuid()];
-        }
-        if (artRank.artTag == null) {
-            console.log("Wrong type");
-            console.log(artRank);
-        }
-        if (this.sortedArts == null) {
-            this.sortedArts = [artRank];
-        } else {
-            this.articleRank[artRank.getArticleUuid()] = artRank;
-            Util.insertSorted(artRank, this.sortedArts, sortArticle);
-        }
-    }
-
-    addArticleRank(unResolved, artUuid) {
-        let artRank;
-
-        if (artUuid == null) {
-            return;
-        }
-        artRank = AuthorStore.lookupArticleRankByUuid(artUuid);
-        if (artRank == null) {
-            unResolved[artUuid] = this;
-        }
-        if (this.articleRank[artUuid] == null) {
-            if (artRank != null) {
-                this.resolveArticleRank(null, artRank);
-            } else {
-                this.articleRank[artUuid] = artUuid;
-            }
-        }
-    }
-
-    updateArticles(unResolved, articles) {
-        _.forEach(articles, function(artUuid) {
-            this.addArticleRank(unResolved, artUuid);
-        }.bind(this));
-    }
-
-    debugPrint() {
-        if (!_.isEmpty(this.sortedArts)) {
-            _.forEach(this.sortedArts, function(article) {
-                console.log("[" + article.createdDate + "] " + article.getTitle());
-            });
-        }
-    }
-
-    addSubTag(sub) {
-        if (this.subTags == null) {
-            this.subTags = [];
-        }
-        this.removeSubTag(sub);
-        this.subTags.push(sub);
-    }
-
-    removeSubTag(sub) {
-        if (this.subTags != null) {
-            Util.removeArray(this.subTags, sub, 0, function(a, b) {
-                return (a.tagName === b.tagName) ? 0 : 1;
-            });
-        }
-    }
-
-    attachParent(parentObj) {
-        if (parentObj != null) {
-            parentObj.addSubTag(this);
-            this.parentTag = parentObj.tagName;
-        }
-    }
-
-    detachParent(parentObj) {
-        if (parentObj != null) {
-            parentObj.removeSubTag(this);
-            this.parentTag = null;
-        }
-    }
-
-    getImgUrl() {
-        if (this.imgOid == null) {
-            return "/rs/img/bg/cover.png";
-        }
-        return "/rs/img/bg/" + this.imgOid;
-    }
-
-    getRouteLink() {
-        let base = "/app/public/";
-        if (this.routeLink == null) {
-            return base;
-        }
-        return base + this.routeLink;
-    }
-}
+import {GenericForm}         from 'vntd-shared/forms/commons/GenericForm.jsx';
+import {Util}                from 'vntd-shared/utils/Enum.jsx';
+import ErrorView             from 'vntd-shared/layout/ErrorView.jsx';
 
 /*
  * This store manages tags having published articles.  Tags keeping track of all
@@ -249,7 +50,7 @@ let ArticleTagStore = Reflux.createStore({
                 if (curr != null) {
                     curr.updateTag(tag, this.data.unResolved);
                 } else {
-                    this._addTag(new ArtTag(tag));
+                    this._addTag(ArticleFactory.newArtTag(tag));
                 }
             }.bind(this));
             this._updateParents();
@@ -313,7 +114,7 @@ let ArticleTagStore = Reflux.createStore({
 
     /* Public methods. */
     addTagInput: function(tag) {
-        this._addTag(new ArtTag(tag));
+        this._addTag(ArticleFactory.newArtTag(tag));
         this.trigger(this.data);
     },
 
@@ -483,7 +284,7 @@ let ArticleTagStore = Reflux.createStore({
             tag.update(artRank);
             return tag;
         }
-        tag = new ArtTag({
+        tag = ArticleFactory.newArtTag({
             tagName  : artRank.tagName,
             userUuid : artRank.authorUuid,
             rankScore: artRank.rank || artRank.rankScore,
@@ -636,7 +437,9 @@ let ArticleTagStore = Reflux.createStore({
 
                 if (uuidDict[uuid] == null) {
                     uuidDict[uuid] = uuid;
-                    artUuids.push(new PublishArtTag(artRankObj, tag, uuid));
+                    artUuids.push(
+                        ArticleFactory.newPublishArtTag(artRankObj, tag, uuid)
+                    );
                 }
             });
             if (tag.subTags != null) {

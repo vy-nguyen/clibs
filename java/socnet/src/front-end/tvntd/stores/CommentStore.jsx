@@ -275,16 +275,30 @@ let CommentStore = Reflux.createStore({
         this.trigger(this.data);
     },
 
+    /*
+     * Main entry at startup after getting data returned back from the server.
+     */
     onStartupCompleted: function(data) {
-        if (data.articles) {
-            let articleList = [];
+        let uuidList = [], uuidDict = {};
+
+        if (data.articles != null) {
             _.forOwn(data.articles, function(it, key) {
-                articleList.push(it.articleUuid);
+                uuidDict[it.articleUuid] = it.articleUuid;
             });
+        }
+        if (data.artRanks != null) {
+            _.forOwn(data.artRanks, function(it, key) {
+                uuidDict[it.articleUuid] = it.articleUuid;
+            });
+        }
+        _.forOwn(uuidDict, function(it) {
+            uuidList.push(it);
+        });
+        if (!_.isEmpty(uuidList)) {
             Actions.getComments({
                 authorUuid: UserStore.getSelfUuid(),
                 uuidType  : "artCmt",
-                uuids     : articleList
+                uuids     : uuidList 
             });
         }
     },

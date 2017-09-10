@@ -7,8 +7,8 @@
 import _              from 'lodash';
 import Reflux         from 'reflux';
 import Actions        from 'vntd-root/actions/Actions.jsx';
-import CommonStore    from 'vntd-root/stores/CommonStore.jsx';
 import Startup        from 'vntd-root/pages/login/Startup.jsx';
+import CommonStore    from 'vntd-root/stores/CommonStore.jsx';
 
 let EProductStore = Reflux.createStore({
     store: {},

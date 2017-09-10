@@ -4,95 +4,13 @@
  */
 'use strict';
 
-import _            from 'lodash';
-import Actions      from 'vntd-root/actions/Actions.jsx';
-import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
-import CommentStore from 'vntd-root/stores/CommentStore.jsx';
-import UserStore    from 'vntd-shared/stores/UserStore.jsx';
-import WebUtils     from 'vntd-shared/utils/WebUtils.jsx';
-
-import {VConst}     from 'vntd-root/config/constants.js';
-import {
-    Article, Product, AdsItem, ArticleRank, AuthorShelf, AuthorTagMgr, Author
-} from 'vntd-root/stores/Article.jsx';
-
-export class ArticleFactory {
-
-    static newInstance(kind, data) {
-        let article;
-
-        if (kind === VConst.blog) {
-            article = new Article(data);
-        } else if (kind === VConst.estore) {
-            article = new Product(data);
-        } else {
-            article = new AdsItem(data);
-        }
-        if (data.rank != null) {
-            CommentStore.addArtAttr(data.rank);
-            article.rank = AuthorStore.addArticleRankFromJson(data.rank);
-        }
-        if (article.rank == null) {
-            article.authorStore = AuthorStore;
-        }
-        return article;
-    }
-
-    static newDefInstance(store, articleUuid, authorUuid) {
-        let json = {
-            authorUuid : authorUuid,
-            articleUuid: articleUuid,
-            createdDate: WebUtils.currentTime
-        };
-        return ArticleFactory.newDefInstanceFrmRank(
-            store, AuthorStore.lookupArticleRankByUuid(articleUuid), json
-        );
-    }
-
-    static newDefInstanceFrmRank(store, artRank, json) {
-        if (json == null) {
-            json = {};
-        }
-        json.noData     = true;
-        json.ownerStore = store;
-
-        if (artRank != null) {
-            json.authorUuid  = artRank.authorUuid;
-            json.articleUuid = artRank.articleUuid;
-            json.createdDate = artRank.timeStamp;
-            json.topic       = artRank.getArtTitle();
-            json.content     = artRank.contentBrief;
-            json.createdDate = artRank.timeStamp;
-            json.published   = true;
-        }
-        store.recordMissingUuid(json.articleUuid);
-        return ArticleFactory.newInstance(store.data.storeKind, json);
-    }
-
-    static newArticleRank(data, store, authorTag, article) {
-        let artRank = new ArticleRank(data, store, authorTag, article);
-
-        if (article == null) {
-            article = store.addDefaultFromRank(artRank);
-        }
-        if (article != null) {
-            article.rank = artRank;
-        }
-        return artRank;
-    }
-
-    static newAuthorShelf(articleUuid, authorUuid) {
-        return new AuthorShelf(articleUuid, authorUuid);
-    }
-
-    static newAuthorTagMgr(uuid, authorStore) {
-        return new AuthorTagMgr(uuid, authorStore);
-    }
-
-    static newAuthor(author) {
-        return new Author(author);
-    }
-}
+import _               from 'lodash';
+import UserStore       from 'vntd-shared/stores/UserStore.jsx';
+import Actions         from 'vntd-root/actions/Actions.jsx';
+import AuthorStore     from 'vntd-root/stores/AuthorStore.jsx';
+import CommentStore    from 'vntd-root/stores/CommentStore.jsx';
+import ArticleFactory  from 'vntd-root/stores/ArticleFactory.jsx';
+import {VConst}        from 'vntd-root/config/constants.js';
 
 class CommonStore {
     constructor(kind) {
@@ -127,6 +45,10 @@ class CommonStore {
         _.forOwn(this.data.listenChanges, function(callback, key) {
             callback[key](storeKind, code, changeList);
         });
+    }
+
+    getStoreKind(kind, spec) {
+        return this;
     }
 
     getItemsByAuthor(uuid, fetch) {
@@ -352,17 +274,17 @@ class CommonStore {
         article     = this.data.itemsByUuid[articleUuid];
 
         if (article == null) {
-            if (item instanceof Article) {
+            if (item.isArticle === true) {
                 article = item;
             } else {
-                article = ArticleFactory.newInstance(this.data.storeKind, item);
+                article = ArticleFactory.newInstance(this, item);
             }
             this.data.itemsByUuid[articleUuid] = article;
             anchor.addArticle(article, preend);
         } else {
             article.updateFromJson(item);
         }
-        if (item.rank != null && !(item instanceof Article)) {
+        if (item.rank != null && item.isArticle !== true) {
             authorTagMgr = AuthorStore.getAuthorTagMgr(authorUuid);
             article.rank = authorTagMgr.addArticleRank(item.rank);
         }
@@ -391,13 +313,13 @@ class CommonStore {
     }
 
     addFromJson(items, key, index) {
-        let oldArt, kind = this.data.storeKind, itemsByKey = this.data[key];
+        let oldArt, itemsByKey = this.data[key];
 
         _.forOwn(items, function(it, k) {
             oldArt = itemsByKey[it.articleUuid];
 
             if (oldArt == null) {
-                itemsByKey[it.articleUuid] = ArticleFactory.newInstance(kind, it);
+                itemsByKey[it.articleUuid] = ArticleFactory.newInstance(this, it);
 
             } else if (oldArt.noData == true) {
                 oldArt.updateFromJson(it);
@@ -437,4 +359,4 @@ class CommonStore {
     }
 }
 
-export default CommonStore;
+export default CommonStore
