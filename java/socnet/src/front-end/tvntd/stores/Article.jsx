@@ -13,6 +13,30 @@ import WebUtils         from 'vntd-shared/utils/WebUtils.jsx';
 import {Util}           from 'vntd-shared/utils/Enum.jsx';
 import {VConst}         from 'vntd-root/config/constants.js';
 
+class ArticleSort {
+    static compareRank(r1, r2) {
+        if (r1.rank == null) {
+            r1.rank = 0;
+        }
+        if (r2.rank == null) {
+            r2.rank = 0;
+        }
+        return r1.rank - r2.rank;
+    }
+
+    static compareArticle(anchor, elm) {
+        return anchor.getRankOrder() - elm.getRankOrder();
+    }
+
+    static compareArtByTitle(anchor, elm) {
+        return anchor.artTitle.localeCompare(elm.artTitle);
+    }
+
+    static compareByDate(anchor, elm) {
+        return elm.createdDate - anchor.createdDate;
+    }
+}
+
 export class Author {
     constructor(data) {
         _.forOwn(data, function(v, k) {
@@ -45,7 +69,7 @@ export class Author {
 }
 
 /*
- * Maintains binding from articles to a name tag.
+ * Maintains binding from articles to a name tag owned by a user.
  */
 export class AuthorTag {
     constructor(tag, authorStore) {
@@ -78,31 +102,13 @@ export class AuthorTag {
         );
     }
 
-    static compareRank(r1, r2) {
-        if (r1.rank == null) {
-            r1.rank = 0;
-        }
-        if (r2.rank == null) {
-            r2.rank = 0;
-        }
-        return r1.rank - r2.rank;
-    }
-
-    static compareArticle(anchor, elm) {
-        return anchor.getRankOrder() - elm.getRankOrder();
-    }
-
-    static compareArtByTitle(anchor, elm) {
-        return anchor.artTitle.localeCompare(elm.artTitle);
-    }
-
     addArticleRankObj(rank) {
         let artUuid = rank.articleUuid, artRank = this.articles[artUuid];
 
         if (artRank == null) {
             artRank = rank;
             this.articles[rank.articleUuid] = rank;
-            Util.insertSorted(rank, this.sortedArts, AuthorTag.compareArticle);
+            Util.insertSorted(rank, this.sortedArts, ArticleSort.compareArticle);
         }
         return artRank;
     }
@@ -121,7 +127,7 @@ export class AuthorTag {
     }
 
     resortArtRank() {
-        this.sortedArts.sort(AuthorTag.compareArticle);
+        this.sortedArts.sort(ArticleSort.compareArticle);
     }
 
     getArticleRank(artUuid) {
@@ -137,6 +143,9 @@ export class AuthorTag {
     }
 }
 
+/**
+ * Manager managed tags/articles owned by an author/user.
+ */
 export class AuthorTagMgr {
     constructor(uuid, authorStore) {
         this.authorUuid  = uuid;
@@ -179,7 +188,7 @@ export class AuthorTagMgr {
         authorTag = new AuthorTag(tag, this.authorStore);
         this.authorTags[tag.tagName] = authorTag;
 
-        Util.insertSorted(authorTag, this.sortedTags, AuthorTag.compareRank);
+        Util.insertSorted(authorTag, this.sortedTags, ArticleSort.compareRank);
         this.stringTags = _.map(this.sortedTags, function(it) {
             return it.tagName;
         });
@@ -336,7 +345,7 @@ export class AuthorTagMgr {
             };
             artList.push(tagRank);
             if (sortedArts != null) {
-                sortedArts.sort(AuthorTag.compareArtByTitle);
+                sortedArts.sort(ArticleSort.compareArtByTitle);
                 _.forEach(sortedArts, function(rank, idx) {
                     rank.rank = 10 + idx;
                     tagRank.artUuid.push(rank.getArticleUuid());
@@ -352,7 +361,7 @@ export class AuthorTagMgr {
                 }
             });
             if (sortedArts != null) {
-                sortedArts.sort(AuthorTag.compareRank);
+                sortedArts.sort(ArticleSort.compareRank);
             }
                  */
         }.bind(this));
@@ -703,21 +712,17 @@ export class AuthorShelf {
         this.addSortedArticle(article, preend);
     }
 
-    _cmpArticle(anchor, elm) {
-        return elm.createdDate - anchor.createdDate;
-    }
-
     removeArticle(articleUuid) {
         let root, article = this.articles[articleUuid];
 
         if (article != null) {
             root = article.getSortedAnchor();
-            Util.removeArray(this[root], article, 0, this._cmpArticle);
+            Util.removeArray(this[root], article, 0, ArticleSort.compareByDate);
             delete this.articles[articleUuid];
         }
         article = this.savedArts[articleUuid];
         if (article != null) {
-            Util.removeArray(this.sortedSavedArts, article, 0, this._cmpArticle);
+            Util.removeArray(this.sortedSavedArts, article, 0, ArticleSort.compareByDate);
             delete this.savedArts[articleUuid];
         }
     }
@@ -731,7 +736,7 @@ export class AuthorShelf {
                 if (pre === true) {
                     this[root] = Util.preend(article, this[root]);
                 } else {
-                    Util.insertSorted(article, this[root], this._cmpArticle);
+                    Util.insertSorted(article, this[root], ArticleSort.compareByDate);
                 }
             }
             return;
@@ -742,7 +747,7 @@ export class AuthorShelf {
     addSortedSavedArts(article) {
         if (this.savedArts[article.articleUuid] !== article) {
             this.savedArts[article.articleUuid] = article;
-            Util.insertSorted(article, this.sortedSavedArts, this._cmpArticle);
+            Util.insertSorted(article, this.sortedSavedArts, ArticleSort.compareByDate);
         }
     }
 
@@ -770,10 +775,6 @@ export class AuthorShelf {
             func(item, arg);
         });
     }
-}
-
-function sortArticle(pivot, article) {
-    return article.createdDate - pivot.createdDate;
 }
 
 export class PublishArtTag {
@@ -804,6 +805,10 @@ export class PublishArtTag {
     }
 }
 
+/**
+ * ArtTag stores the binding between articles belonging to a public tag (e.g. all
+ * articles published under 'politics' tag.
+ */
 export class ArtTag {
     constructor(data, authorStore) {
         let artUuids;
@@ -869,7 +874,7 @@ export class ArtTag {
                 unResolved[artUuid] = this;
             } else {
                 this.articleRank[rank.getArticleUuid()] = rank;
-                Util.insertSorted(rank, sortedArts, sortArticle);
+                Util.insertSorted(rank, sortedArts, ArticleSort.compareByDate);
             }
         }.bind(this));
 
@@ -890,7 +895,7 @@ export class ArtTag {
             this.sortedArts = [artRank];
         } else {
             this.articleRank[artRank.getArticleUuid()] = artRank;
-            Util.insertSorted(artRank, this.sortedArts, sortArticle);
+            Util.insertSorted(artRank, this.sortedArts, ArticleSort.compareByDate);
         }
     }
 

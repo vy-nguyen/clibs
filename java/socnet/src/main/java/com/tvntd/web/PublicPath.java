@@ -76,6 +76,7 @@ import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleService.ArticleDTOResponse;
 import com.tvntd.service.api.IArticleService.ArticleRankDTO;
+import com.tvntd.service.api.IArticleSvc;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.ICommentService;
 import com.tvntd.service.api.ICommentService.CommentDTOResponse;
@@ -122,6 +123,9 @@ public class PublicPath
 
     @Autowired
     private IDomainService domainSvc;
+
+    @Autowired
+    private IArticleSvc artSvc;
 
     /**
      * Handle public pages.
@@ -463,6 +467,7 @@ public class PublicPath
         String buf = "hello world x = " + x + ", y = " + y;
         System.out.println("Input x = " + x + ", y = " + y);
 
+        artSvc.auditArticleTable();
         resp.setContentType("text/html;charset=UTF-8");
         resp.setCharacterEncoding("utf-8");
         try {
