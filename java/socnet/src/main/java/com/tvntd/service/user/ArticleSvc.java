@@ -83,10 +83,8 @@ public class ArticleSvc implements IArticleSvc
         return new ArticlePostDTO(art);
     }
 
-    @Override
-    public List<ArticlePostDTO> getArticleDTO(List<String> artUuids)
+    protected List<ArticlePostDTO> convertArtPost(List<ArticlePost> arts)
     {
-        List<ArticlePost> arts = artPostRepo.findByArticleUuidIn(artUuids);
         List<ArticlePostDTO> result = new LinkedList<>();
 
         for (ArticlePost a : arts) {
@@ -96,15 +94,18 @@ public class ArticleSvc implements IArticleSvc
     }
 
     @Override
-    public List<ArticlePostDTO> getArticleDTOByAuthor(String authorUuid)
-    {
-        return null;
+    public List<ArticlePostDTO> getArticleDTO(List<String> artUuids) {
+        return convertArtPost(artPostRepo.findByArticleUuidIn(artUuids));
     }
 
     @Override
-    public List<ArticlePostDTO> getArticleDTOByAuthor(List<String> authorUuid)
-    {
-        return null;
+    public List<ArticlePostDTO> getArticleDTOByAuthor(String authorUuid) {
+        return convertArtPost(artPostRepo.findByAuthorUuid(authorUuid));
+    }
+
+    @Override
+    public List<ArticlePostDTO> getArticleDTOByAuthor(List<String> authorUuid) {
+        return convertArtPost(artPostRepo.findByAuthorUuidIn(authorUuid));
     }
 
     @Override
@@ -117,10 +118,8 @@ public class ArticleSvc implements IArticleSvc
         return new ArticleBriefDTO(art);
     }
 
-    @Override
-    public List<ArticleBriefDTO> getArticleBriefDTO(List<String> artUuids)
+    protected List<ArticleBriefDTO> convertArtBrief(List<ArticleBrief> raw)
     {
-        List<ArticleBrief> raw = artBriefRepo.findByArticleUuidIn(artUuids);
         List<ArticleBriefDTO> result = new LinkedList<>();
 
         if (raw != null) {
@@ -132,9 +131,19 @@ public class ArticleSvc implements IArticleSvc
     }
 
     @Override
-    public List<ArticleBriefDTO> getArticleBriefDTOByAuthor(List<String> authorUuids)
-    {
-        return null;
+    public List<ArticleBriefDTO> getArticleBriefDTOByAuthor(String authorUuid) {
+        return convertArtBrief(artBriefRepo.findByAuthorUuid(authorUuid));
+    }
+
+    @Override
+    public List<ArticleBriefDTO> getArticleBriefDTO(List<String> artUuids) {
+        return convertArtBrief(artBriefRepo.findByArticleUuidIn(artUuids));
+
+    }
+
+    @Override
+    public List<ArticleBriefDTO> getArticleBriefDTOByAuthor(List<String> authorUuids) {
+        return convertArtBrief(artBriefRepo.findByAuthorUuidIn(authorUuids));
     }
 
     // Save, update
@@ -239,7 +248,7 @@ public class ArticleSvc implements IArticleSvc
         }
         List<Article> arts = artRepo.findAll();
         for (Article a : arts) {
-            ArticlePost post = new ArticlePost(a.getArticleUuid());
+            ArticlePost post = new ArticlePost(a.getAuthorUuid(), a.getArticleUuid());
 
             post.setContent(a.getContent());
             post.setPending(false);

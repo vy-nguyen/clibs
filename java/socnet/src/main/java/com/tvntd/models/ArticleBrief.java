@@ -35,19 +35,27 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Table;
 
 import com.tvntd.key.HashKey;
 import com.tvntd.util.Util;
 
 @Entity
+@Table(indexes = {
+    @Index(columnList = "authorUuid", unique = false)
+})
 public class ArticleBrief
 {
     @Id
     @Column(length = 64)
     protected String articleUuid;
+
+    @Column(length = 64)
+    protected String authorUuid;
 
     @Column(length = 64)
     protected String tagHash;
@@ -96,21 +104,21 @@ public class ArticleBrief
     protected ArticleAttr artAttr;
 
     public ArticleBrief() {}
+
     public ArticleBrief(ArticleBase base)
     {
-        articleUuid = base.getArticleUuid();
         artBase     = base;
+        articleUuid = base.getArticleUuid();
         artAttr     = new ArticleAttr(articleUuid);
         favorite    = false;
         hasArticle  = false;
         transRoot   = null;
-        userLiked   = null;
-        userShared  = null;
     }
 
     public void fromArticleRank(ArticleRank rank)
     {
         tag          = Util.toRawByte(rank.getTag(), 64);
+        authorUuid   = rank.getAuthorUuid();
         prevArticle  = rank.getPrevArticle();
         nextArticle  = rank.getNextArticle();
         topArticle   = rank.getTopArticle();
@@ -121,7 +129,7 @@ public class ArticleBrief
         userShared   = rank.getUserShared();
        
         if (tag != null) {
-            tagHash = HashKey.toSha1Key(tag, artBase.getAuthorUuid());
+            tagHash = HashKey.toSha1Key(tag, authorUuid);
         }
     }
 
@@ -165,6 +173,20 @@ public class ArticleBrief
      */
     public void setArtAttr(ArticleAttr artAttr) {
         this.artAttr = artAttr;
+    }
+
+    /**
+     * @return the authorUuid
+     */
+    public String getAuthorUuid() {
+        return authorUuid;
+    }
+
+    /**
+     * @param authorUuid the authorUuid to set
+     */
+    public void setAuthorUuid(String authorUuid) {
+        this.authorUuid = authorUuid;
     }
 
     /**

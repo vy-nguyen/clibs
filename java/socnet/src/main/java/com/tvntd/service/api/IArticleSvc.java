@@ -53,6 +53,7 @@ public interface IArticleSvc
     List<ArticlePostDTO>  getArticleDTOByAuthor(List<String> authorUuid);
 
     ArticleBriefDTO       getArticleBriefDTO(String artUuid);
+    List<ArticleBriefDTO> getArticleBriefDTOByAuthor(String authorUuid);
     List<ArticleBriefDTO> getArticleBriefDTO(List<String> artUuids);
     List<ArticleBriefDTO> getArticleBriefDTOByAuthor(List<String> authorUuids);
 
@@ -198,6 +199,10 @@ public interface IArticleSvc
             return article.getArticleUuid();
         }
 
+        public String getAuthorUuid() {
+            return article.getAuthorUuid();
+        }
+
         public String getContent() {
             return content;
         }
@@ -238,7 +243,7 @@ public interface IArticleSvc
         }
 
         public String getAuthorUuid() {
-            return artRank.getArtBase().getAuthorUuid();
+            return artRank.getAuthorUuid();
         }
 
         public String getTagName() {

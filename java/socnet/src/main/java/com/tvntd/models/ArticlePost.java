@@ -29,14 +29,22 @@ package com.tvntd.models;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Lob;
+import javax.persistence.Table;
 
 @Entity
+@Table(indexes = {
+    @Index(columnList = "authorUuid", unique = false)
+})
 public class ArticlePost
 {
     @Id
     @Column(length = 64)
     protected String articleUuid;
+
+    @Column(length = 64)
+    protected String authorUuid;
 
     @Lob
     @Column(length = (1 << 16))
@@ -49,8 +57,10 @@ public class ArticlePost
 
     public ArticlePost() {}
 
-    public ArticlePost(String uuid) {
+    public ArticlePost(String author, String uuid)
+    {
         articleUuid = uuid;
+        authorUuid  = author;
     }
 
     /**
@@ -79,6 +89,20 @@ public class ArticlePost
      */
     public void setArtBase(ArticleBase artBase) {
         this.artBase = artBase;
+    }
+
+    /**
+     * @return the authorUuid
+     */
+    public String getAuthorUuid() {
+        return authorUuid;
+    }
+
+    /**
+     * @param authorUuid the authorUuid to set
+     */
+    public void setAuthorUuid(String authorUuid) {
+        this.authorUuid = authorUuid;
     }
 
     /**

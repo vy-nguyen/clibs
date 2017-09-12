@@ -30,7 +30,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -39,8 +38,6 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
-import javax.persistence.MapsId;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.tvntd.service.api.IProfileService.ProfileDTO;
@@ -48,7 +45,6 @@ import com.tvntd.util.Util;
 
 @Entity
 @Table(indexes = {
-    @Index(columnList = "authorUuid", unique = false),
     @Index(columnList = "publicUrlOid", unique = false)
 })
 public class ArticleBase
@@ -56,9 +52,6 @@ public class ArticleBase
     @Id
     @Column(length = 64)
     protected String articleUuid;
-
-    @Column(length = 64)
-    protected String authorUuid;
 
     protected Long authorId;
     protected Long permMask;
@@ -97,9 +90,8 @@ public class ArticleBase
     {
         this();
         if (profile != null) {
-            authorUuid = profile.getUserUuid();
-            authorId   = profile.fetchUserId();
-            permMask   = profile.getRoleMask();
+            authorId = profile.fetchUserId();
+            permMask = profile.getRoleMask();
         }
     }
 
@@ -109,7 +101,6 @@ public class ArticleBase
     public ArticleBase(ArticleRank rank)
     {
         articleUuid  = rank.getArticleUuid();
-        authorUuid   = rank.getAuthorUuid();
         authorId     = rank.getAuthorId();
         permMask     = rank.getPermMask();
         publicUrlOid = rank.getPublicUrlOid();
@@ -137,20 +128,6 @@ public class ArticleBase
      */
     public void setArticleUuid(String articleUuid) {
         this.articleUuid = articleUuid;
-    }
-
-    /**
-     * @return the authorUuid
-     */
-    public String getAuthorUuid() {
-        return authorUuid;
-    }
-
-    /**
-     * @param authorUuid the authorUuid to set
-     */
-    public void setAuthorUuid(String authorUuid) {
-        this.authorUuid = authorUuid;
     }
 
     /**

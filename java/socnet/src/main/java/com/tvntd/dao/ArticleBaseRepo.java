@@ -35,11 +35,9 @@ import com.tvntd.models.ArticleBase;
 public interface ArticleBaseRepo extends JpaRepository<ArticleBase, String>
 {
     ArticleBase findByArticleUuid(String uuid);
-    ArticleBase findByAuthorUuid(String uuid);
     ArticleBase findByPublicUrlOid(String urlOid);
 
     List<ArticleBase> findByArticleUuidIn(List<String> articleUuids);
-    List<ArticleBase> findByAuthorUuidIn(List<String> authorUuids);
     List<ArticleBase> findByPublicUrlOidIn(List<String> urlOids);
 
     @Override
