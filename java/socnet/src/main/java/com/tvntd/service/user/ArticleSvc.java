@@ -26,6 +26,7 @@
  */
 package com.tvntd.service.user;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -41,9 +42,9 @@ import com.tvntd.dao.ArticleRankRepo;
 import com.tvntd.dao.ArticleRepository;
 import com.tvntd.forms.PostForm;
 import com.tvntd.models.Article;
-import com.tvntd.models.ArticleAttr;
 import com.tvntd.models.ArticleBase;
 import com.tvntd.models.ArticleBrief;
+import com.tvntd.models.ArticlePost;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.service.api.IArticleSvc;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
@@ -72,50 +73,65 @@ public class ArticleSvc implements IArticleSvc
 
     // Query
     //
-    public ArticlePostDTO getArticleDTO(String uuid)
+    @Override
+    public ArticlePostDTO getArticleDTO(String articleUuid)
     {
-        return null;
+        ArticlePost art = artPostRepo.findByArticleUuid(articleUuid);
+        if (art == null) {
+            return null;
+        }
+        return new ArticlePostDTO(art);
     }
 
+    @Override
     public List<ArticlePostDTO> getArticleDTO(List<String> artUuids)
     {
-        return null;
+        List<ArticlePost> arts = artPostRepo.findByArticleUuidIn(artUuids);
+        List<ArticlePostDTO> result = new LinkedList<>();
+
+        for (ArticlePost a : arts) {
+            result.add(new ArticlePostDTO(a));
+        }
+        return result;
     }
 
+    @Override
     public List<ArticlePostDTO> getArticleDTOByAuthor(String authorUuid)
     {
         return null;
     }
 
+    @Override
     public List<ArticlePostDTO> getArticleDTOByAuthor(List<String> authorUuid)
     {
         return null;
     }
 
+    @Override
     public ArticleBriefDTO getArticleBriefDTO(String uuid)
     {
-        ArticleBase base = artBaseRepo.findByArticleUuid(uuid);
-        if (base == null) {
-            return null;
-        }
         ArticleBrief art = artBriefRepo.findByArticleUuid(uuid);
         if (art == null) {
             return null;
         }
-        ArticleAttr attr = artAttrRepo.findByArticleUuid(uuid);
-        if (attr == null) {
-            attr = new ArticleAttr(uuid);
-        }
-        art.setArtAttr(attr);
-        art.setArtBase(base);
         return new ArticleBriefDTO(art);
     }
 
+    @Override
     public List<ArticleBriefDTO> getArticleBriefDTO(List<String> artUuids)
     {
-        return null;
+        List<ArticleBrief> raw = artBriefRepo.findByArticleUuidIn(artUuids);
+        List<ArticleBriefDTO> result = new LinkedList<>();
+
+        if (raw != null) {
+            for (ArticleBrief r : raw) {
+                result.add(new ArticleBriefDTO(r));
+            }
+        }
+        return result;
     }
 
+    @Override
     public List<ArticleBriefDTO> getArticleBriefDTOByAuthor(List<String> authorUuids)
     {
         return null;
@@ -123,29 +139,43 @@ public class ArticleSvc implements IArticleSvc
 
     // Save, update
     //
-    public void saveArticlePost(ArticlePostDTO art)
-    {
+    @Override
+    public void saveArticlePost(ArticlePostDTO art) {
+        saveArticlePost(art.fetchArticlePost());
     }
 
+    @Override
     public void saveArticleBrief(ArticleBriefDTO rank) {
         saveArticleBrief(rank.fetchArtRank());
     }
   
-    protected void saveArticleBrief(ArticleBrief art)
-    {
-        artBaseRepo.save(art.getArtBase());
-        artAttrRepo.save(art.getArtAttr());
+    protected void saveArticleBrief(ArticleBrief art) {
         artBriefRepo.save(art);
     }
 
+    protected void saveArticlePost(ArticlePost art) {
+        artPostRepo.save(art);
+    }
+
+    // Save, update list of articles.
+    //
+    @Override
     public void saveArticlePost(List<ArticlePostDTO> arts)
     {
+        for (ArticlePostDTO a : arts) {
+            saveArticlePost(a);
+        }
     }
 
+    @Override
     public void saveArticleBrief(List<ArticleBriefDTO> ranks)
     {
+        for (ArticleBriefDTO r : ranks) {
+            saveArticleBrief(r);
+        }
     }
 
+    @Override
     public void savePost(PostForm form, ArticleBriefDTO artBrief,
             ProfileDTO profile, boolean publish, boolean update)
     {
@@ -153,24 +183,36 @@ public class ArticleSvc implements IArticleSvc
 
     // Delete
     //
-    public void deleteArticlePost(ArticlePostDTO art)
-    {
+    @Override
+    public void deleteArticlePost(ArticlePostDTO art) {
+        artPostRepo.delete(art.fetchArticlePost());
     }
 
+    @Override
     public void deleteArticlePost(List<ArticlePostDTO> arts)
     {
+        for (ArticlePostDTO a : arts) {
+            deleteArticlePost(a);
+        }
     }
 
-    public void deleteArticleBrief(ArticleBriefDTO rank)
-    {
+    @Override
+    public void deleteArticleBrief(ArticleBriefDTO rank) {
+        artBriefRepo.delete(rank.fetchArtRank());
     }
 
+    @Override
     public void deleteArticleBrief(List<ArticleBriefDTO> ranks)
     {
+        for (ArticleBriefDTO r : ranks) {
+            deleteArticleBrief(r);
+        }
     }
 
+    @Override
     public void auditArticleTable()
     {
+        List<String> uuids = new LinkedList<>();
         List<ArticleRank> all = artRankRepo.findAll();
 
         int i = 0;
@@ -187,17 +229,43 @@ public class ArticleSvc implements IArticleSvc
             saveArticleBrief(brief);
 
             String artUuid = base.getArticleUuid();
+            uuids.add(artUuid);
             System.out.println("Saved brief " + artUuid);
 
             ArticleBriefDTO verf = getArticleBriefDTO(artUuid);
             if (verf != null) {
                 i++;
-                System.out.println("Read back " + verf + ", artUuid " +
-                        verf.getArticleUuid() + " author " + verf.getAuthorUuid() +
-                        " img " + verf.getImageUrl());
             }
         }
+        List<Article> arts = artRepo.findAll();
+        for (Article a : arts) {
+            ArticlePost post = new ArticlePost(a.getArticleUuid());
+
+            post.setContent(a.getContent());
+            post.setPending(false);
+            saveArticlePost(post); 
+        }
+
+        i = 0;
+        List<ArticleBriefDTO> briefs = getArticleBriefDTO(uuids);
+        for (ArticleBriefDTO r : briefs) {
+            i++;
+            ArticleBrief b = r.fetchArtRank();
+            System.out.println("Read back artUuid " + r.getArticleUuid() +
+                    " author " + b.getArtBase() + " attr " + b.getArtAttr());
+        }
         System.out.println("Find all ranks, result " + all.size());
+        System.out.println("Verify back " + i);
+
+        i = 0;
+        List<ArticlePostDTO> fulls = getArticleDTO(uuids);
+        for (ArticlePostDTO a : fulls) {
+            i++;
+            ArticlePost p = a.fetchArticlePost();
+            System.out.println("Read back art uuid " + a.getArticleUuid() +
+                    " content len " + p.getContent().length);
+        }
+        System.out.println("Find all arts, result " + arts.size());
         System.out.println("Verify back " + i);
     }
 }

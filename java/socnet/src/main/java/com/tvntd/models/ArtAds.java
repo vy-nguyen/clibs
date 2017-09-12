@@ -28,10 +28,7 @@ package com.tvntd.models;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.MapsId;
-import javax.persistence.OneToOne;
 
 @Entity
 public class ArtAds
@@ -40,9 +37,7 @@ public class ArtAds
     @Column(length = 64)
     protected String articleUuid;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
-    protected ArticleBase artBase;
+    protected transient ArticleBase artBase;
 
     /**
      * @return the articleUuid

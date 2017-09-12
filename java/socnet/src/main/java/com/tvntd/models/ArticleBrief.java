@@ -28,6 +28,7 @@ package com.tvntd.models;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -35,6 +36,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 
 import com.tvntd.key.HashKey;
 import com.tvntd.util.Util;
@@ -73,18 +76,24 @@ public class ArticleBrief
     protected boolean favorite;
     protected boolean hasArticle;
 
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "ArticleLiked",
             joinColumns = @JoinColumn(name = "articleId"))
     private List<String> userLiked;
 
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "ArticleShared",
             joinColumns = @JoinColumn(name = "articleId"))
     private List<String> userShared;
 
-    protected transient ArticleBase artBase;
-    protected transient ArticleAttr artAttr;
+
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @PrimaryKeyJoinColumn
+    protected ArticleBase artBase;
+
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @PrimaryKeyJoinColumn
+    protected ArticleAttr artAttr;
 
     public ArticleBrief() {}
     public ArticleBrief(ArticleBase base)

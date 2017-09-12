@@ -53,6 +53,7 @@ public class ArticleAttr
         likes        = 0L;
         shared       = 0L;
         score        = 0L;
+        rank         = 0L;
     }
 
     /**

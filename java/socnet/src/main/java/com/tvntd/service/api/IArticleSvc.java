@@ -37,7 +37,6 @@ import com.tvntd.models.ArticleBase;
 import com.tvntd.models.ArticleBrief;
 import com.tvntd.models.ArticlePost;
 import com.tvntd.objstore.ObjStore;
-import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.util.Util;
 
@@ -145,7 +144,6 @@ public interface IArticleSvc
     public static class ArticlePostDTO
     {
         protected ArticlePost article;
-        protected String topic;
         protected String content;
         protected String articleUrl;
         protected String uploadFormId;
@@ -159,7 +157,6 @@ public interface IArticleSvc
 
         public void convertUTF()
         {
-            topic   = Util.fromRawByte(article.getArtBase().getArtTitle());
             content = Util.fromRawByte(article.getContent());
         }
 
@@ -191,6 +188,18 @@ public interface IArticleSvc
 
         public Map<String, ObjectId> fetchUploadImgMap() {
             return uploadImgMap;
+        }
+
+        public ArticlePost fetchArticlePost() {
+            return article;
+        }
+
+        public String getArticleUuid() {
+            return article.getArticleUuid();
+        }
+
+        public String getContent() {
+            return content;
         }
     }
 
@@ -225,7 +234,7 @@ public interface IArticleSvc
         }
 
         public String getArticleUuid() {
-            return artRank.getArtBase().getArticleUuid();
+            return artRank.getArticleUuid();
         }
 
         public String getAuthorUuid() {

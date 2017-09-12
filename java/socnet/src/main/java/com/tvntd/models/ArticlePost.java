@@ -28,11 +28,8 @@ package com.tvntd.models;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-import javax.persistence.MapsId;
-import javax.persistence.OneToOne;
 
 @Entity
 public class ArticlePost
@@ -41,15 +38,20 @@ public class ArticlePost
     @Column(length = 64)
     protected String articleUuid;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
-    protected ArticleBase artBase;
-
     @Lob
     @Column(length = (1 << 16))
     protected byte[] content;
 
+    @Column
     protected boolean pending;
+
+    protected transient ArticleBase artBase;
+
+    public ArticlePost() {}
+
+    public ArticlePost(String uuid) {
+        articleUuid = uuid;
+    }
 
     /**
      * @return the articleUuid
