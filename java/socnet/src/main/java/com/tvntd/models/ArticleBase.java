@@ -76,14 +76,18 @@ public class ArticleBase
 
     @Column(length = 64)
     @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "ArtPics",
-            joinColumns = @JoinColumn(name = "articleId"))
+    @CollectionTable(name = "ArticleImgs",
+            joinColumns = @JoinColumn(name = "articleUuid"))
     protected List<String> pictures;
 
     public ArticleBase()
     {
         articleUuid = UUID.randomUUID().toString();
         createdDate = new Date();
+    }
+
+    public ArticleBase(String artUuid) {
+        articleUuid = artUuid;
     }
 
     public ArticleBase(ProfileDTO profile)
@@ -98,7 +102,7 @@ public class ArticleBase
     /**
      * Conversion routines
      */
-    public ArticleBase(ArticleRank rank)
+    public void fromArticleRank(ArticleRank rank)
     {
         articleUuid  = rank.getArticleUuid();
         authorId     = rank.getAuthorId();
@@ -107,13 +111,25 @@ public class ArticleBase
         artTitle     = Util.toRawByte(rank.getArtTitle(), 128);
         artTag       = rank.getArtTag();
         contentOid   = rank.getContentOid();
+        createdDate  = rank.getTimeStamp();
         contentLinkUrl = rank.getContentLinkUrl();
     }
 
-    public void setFromArticle(Article art)
+    public void fromArticle(Article art)
     {
-        publicTag = art.getPublicTag();
-        pictures  = art.getPictures();
+        articleUuid = art.getArticleUuid();
+        artTag      = ArtTag.BLOG;
+        publicTag   = art.getPublicTag();
+        pictures    = art.getPictures();
+        artTitle    = art.getTopic();
+        createdDate = art.getCreatedDate();
+
+        if (art.getContentOId() != null) {
+            contentOid = art.getContentOId();
+        }
+        if (art.getAuthorId() != null) {
+            authorId   = art.getAuthorId();
+        }
     }
 
     /**

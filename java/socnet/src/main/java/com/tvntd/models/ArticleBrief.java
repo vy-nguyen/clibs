@@ -41,6 +41,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
+import com.tvntd.forms.PostForm;
 import com.tvntd.key.HashKey;
 import com.tvntd.util.Util;
 
@@ -94,7 +95,6 @@ public class ArticleBrief
             joinColumns = @JoinColumn(name = "articleId"))
     private List<String> userShared;
 
-
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     @PrimaryKeyJoinColumn
     protected ArticleBase artBase;
@@ -107,6 +107,9 @@ public class ArticleBrief
 
     public ArticleBrief(ArticleBase base)
     {
+        if (base == null) {
+            base = new ArticleBase();
+        }
         artBase     = base;
         articleUuid = base.getArticleUuid();
         artAttr     = new ArticleAttr(articleUuid);
@@ -117,6 +120,11 @@ public class ArticleBrief
 
     public void fromArticleRank(ArticleRank rank)
     {
+        articleUuid  = rank.getArticleUuid();
+        artAttr      = new ArticleAttr(articleUuid);
+        artBase      = new ArticleBase(articleUuid);
+        artBase.fromArticleRank(rank);
+
         tag          = Util.toRawByte(rank.getTag(), 64);
         authorUuid   = rank.getAuthorUuid();
         prevArticle  = rank.getPrevArticle();
@@ -130,6 +138,31 @@ public class ArticleBrief
        
         if (tag != null) {
             tagHash = HashKey.toSha1Key(tag, authorUuid);
+        }
+    }
+
+    public void fromArticle(Article art)
+    {
+        articleUuid = art.getArticleUuid();
+        authorUuid  = art.getAuthorUuid();
+        hasArticle  = true;
+
+        if (artAttr == null) {
+            artAttr = new ArticleAttr(articleUuid);
+        }
+        if (artBase == null) {
+            artBase = new ArticleBase();
+            artBase.fromArticle(art);
+        }
+        if (tag == null) {
+            tag = art.getPublicTag();
+            if (tag != null) {
+                tagHash = HashKey.toSha1Key(tag, authorUuid);
+            }
+        }
+        if (contentBrief == null) {
+            contentBrief = Util.toRawByte(
+                    PostForm.toBriefContent(null, art.getContent()), 256);
         }
     }
 

@@ -26,26 +26,36 @@
  */
 package com.tvntd.service.user;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.tvntd.dao.AdsPostRepo;
+import com.tvntd.dao.ArtAdsRepo;
 import com.tvntd.dao.ArtBriefRepo;
+import com.tvntd.dao.ArtProductRepo;
 import com.tvntd.dao.ArticleAttrRepo;
 import com.tvntd.dao.ArticleBaseRepo;
 import com.tvntd.dao.ArticlePostRepo;
 import com.tvntd.dao.ArticleRankRepo;
 import com.tvntd.dao.ArticleRepository;
+import com.tvntd.dao.ProductRepository;
+import com.tvntd.dao.ProfileRepository;
 import com.tvntd.forms.PostForm;
+import com.tvntd.models.AdsPost;
+import com.tvntd.models.ArtAds;
+import com.tvntd.models.ArtProduct;
 import com.tvntd.models.Article;
-import com.tvntd.models.ArticleBase;
 import com.tvntd.models.ArticleBrief;
 import com.tvntd.models.ArticlePost;
 import com.tvntd.models.ArticleRank;
+import com.tvntd.models.Product;
 import com.tvntd.service.api.IArticleSvc;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 
@@ -66,10 +76,27 @@ public class ArticleSvc implements IArticleSvc
     protected ArticleAttrRepo artAttrRepo;
 
     @Autowired
+    protected ArtAdsRepo artAdsRepo;
+
+    @Autowired
+    protected ArtProductRepo artProdRepo;
+
+    // Will depreicate these tables.
+    //
+    @Autowired
     protected ArticleRankRepo artRankRepo;
 
     @Autowired
     protected ArticleRepository artRepo;
+
+    @Autowired
+    protected AdsPostRepo adsRepo;
+
+    @Autowired
+    protected ProductRepository prodRepo;
+
+    @Autowired
+    protected ProfileRepository profileRepo;
 
     // Query
     //
@@ -221,30 +248,22 @@ public class ArticleSvc implements IArticleSvc
     @Override
     public void auditArticleTable()
     {
-        List<String> uuids = new LinkedList<>();
+        Map<String, String> uuids = new HashMap<>();
+        Map<String, String> authors = new HashMap<>();
         List<ArticleRank> all = artRankRepo.findAll();
 
-        int i = 0;
         for (ArticleRank r : all) {
-            Article art = artRepo.findByArticleUuid(r.getArticleUuid());
-            ArticleBase base = new ArticleBase(r);
-
-            if (art != null) {
-                base.setFromArticle(art);
-            }
-            ArticleBrief brief = new ArticleBrief(base);
+            ArticleBrief brief = new ArticleBrief();
             brief.fromArticleRank(r);
 
-            saveArticleBrief(brief);
-
-            String artUuid = base.getArticleUuid();
-            uuids.add(artUuid);
-            System.out.println("Saved brief " + artUuid);
-
-            ArticleBriefDTO verf = getArticleBriefDTO(artUuid);
-            if (verf != null) {
-                i++;
+            Article art = artRepo.findByArticleUuid(r.getArticleUuid());
+            if (art != null) {
+                brief.getArtBase().fromArticle(art);
+            } else {
+                uuids.put(brief.getArticleUuid(), brief.getAuthorUuid());
             }
+            authors.put(brief.getAuthorUuid(), brief.getArticleUuid());
+            saveArticleBrief(brief);
         }
         List<Article> arts = artRepo.findAll();
         for (Article a : arts) {
@@ -253,28 +272,41 @@ public class ArticleSvc implements IArticleSvc
             post.setContent(a.getContent());
             post.setPending(false);
             saveArticlePost(post); 
-        }
 
-        i = 0;
-        List<ArticleBriefDTO> briefs = getArticleBriefDTO(uuids);
-        for (ArticleBriefDTO r : briefs) {
-            i++;
-            ArticleBrief b = r.fetchArtRank();
-            System.out.println("Read back artUuid " + r.getArticleUuid() +
-                    " author " + b.getArtBase() + " attr " + b.getArtAttr());
-        }
-        System.out.println("Find all ranks, result " + all.size());
-        System.out.println("Verify back " + i);
+            if (uuids.get(a.getArticleUuid()) == null) {
+                ArticleBrief brief = new ArticleBrief();
 
-        i = 0;
-        List<ArticlePostDTO> fulls = getArticleDTO(uuids);
-        for (ArticlePostDTO a : fulls) {
-            i++;
-            ArticlePost p = a.fetchArticlePost();
-            System.out.println("Read back art uuid " + a.getArticleUuid() +
-                    " content len " + p.getContent().length);
+                brief.fromArticle(a);
+                saveArticleBrief(brief);
+            }
         }
-        System.out.println("Find all arts, result " + arts.size());
-        System.out.println("Verify back " + i);
+        List<AdsPost> ads = adsRepo.findAll();
+        for (AdsPost a : ads) {
+            ArtAds artAd = new ArtAds();
+
+            artAd.fromAdsPost(a);
+            artAd.fromProfile(profileRepo.findByUserUuid(artAd.getAuthorUuid()));
+            artAdsRepo.save(artAd);
+        }
+        List<Product> products = prodRepo.findAll();
+        for (Product p : products) {
+            ArtProduct prod = new ArtProduct();
+            prod.fromProduct(p);
+            artProdRepo.save(prod);
+        }
+        /*
+        for (Map.Entry<String, String> e : authors.entrySet()) {
+            List<ArticlePostDTO> fulls   = getArticleDTOByAuthor(e.getKey());
+            List<ArticleBriefDTO> briefs = getArticleBriefDTOByAuthor(e.getKey());
+
+            System.out.println("Author " + e.getKey() + " has brief " +
+                    briefs.size() + ", full " + fulls.size());
+            for (ArticleBriefDTO b : briefs) {
+                ArticleBrief r = b.fetchArtRank();
+                System.out.println("\tArt " + b.getArticleUuid() + ", base " +
+                        r.getArtBase() + " attr " + r.getArtAttr());
+            }
+        }
+        */
     }
 }

@@ -91,16 +91,24 @@ public class PostForm
 
         if (content != null) {
             content = Jsoup.clean(content, wlist);
-            int len = content.length();
-            if (len > 200) {
-                len = 200;
-            }
-            contentBrief = Jsoup.parse(content.substring(0, len)).text();
+            contentBrief = toBriefContent(content, null);
         }
         if (videoUrl != null) {
             parseIframe(videoUrl);
         }
         return true;
+    }
+
+    public static String toBriefContent(String input, byte[] raw)
+    {
+        if (input == null) {
+            input = Util.fromRawByte(raw);
+        }
+        int len = input.length();
+        if (len > 255) {
+            len = 255;
+        }
+        return Jsoup.parse(input.substring(0, len)).text();
     }
 
     public String toString()

@@ -26,18 +26,131 @@
  */
 package com.tvntd.models;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Lob;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Table;
 
 @Entity
+@Table(indexes = {
+    @Index(columnList = "authorUuid", unique = false)
+})
 public class ArtAds
 {
     @Id
     @Column(length = 64)
     protected String articleUuid;
 
-    protected transient ArticleBase artBase;
+    @Column(length = 64)
+    protected String authorUuid;
+
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @PrimaryKeyJoinColumn
+    protected ArticleBase artBase;
+
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @PrimaryKeyJoinColumn
+    protected ArticleAttr artAttr;
+
+    @Column(length = 64)
+    protected String adImgOid0;
+
+    @Column(length = 64)
+    protected String adImgOid1;
+
+    @Column(length = 64)
+    protected String adImgOid2;
+
+    @Column(length = 64)
+    protected String adImgOid3;
+
+    @Column(length = 128)
+    private byte[]   busName;
+
+    @Column(length = 128)
+    private byte[]   busInfo;
+
+    @Column(length = 128)
+    private byte[]   busCat;
+
+    @Column(length = 128)
+    private byte[]   busWeb;
+
+    @Column(length = 128)
+    private byte[]   busEmail;
+
+    @Column(length = 128)
+    private byte[]   busPhone;
+
+    @Column(length = 128)
+    private byte[]   busStreet;
+
+    @Column(length = 64)
+    private byte[]   busCity;
+
+    @Column(length = 32)
+    private byte[]   busState;
+
+    @Column(length = 32)
+    private byte[]   busZip;
+
+    @Column(length = 1024)
+    private byte[]   busHour;
+
+    @Lob
+    @Column(length = 1 << 14)
+    private byte[] busDesc;
+
+    public ArtAds() {}
+    public ArtAds(ArticleBase base)
+    {
+        artBase     = base;
+        articleUuid = base.getArticleUuid();
+        artAttr     = new ArticleAttr(articleUuid);
+    }
+
+    public void fromAdsPost(AdsPost ads)
+    {
+        if (artBase == null) {
+            articleUuid = ads.getArticleUuid();
+            artBase     = new ArticleBase(articleUuid);
+            artAttr     = new ArticleAttr(articleUuid);
+        }
+        articleUuid = ads.getArticleUuid();
+        artBase.setContentOid(ads.getContentOid());
+        artBase.setPictures(null);
+
+        authorUuid = ads.getAuthorUuid();
+        adImgOid0  = ads.getAdImgOId0();
+        adImgOid1  = ads.getAdImgOId1();
+        adImgOid2  = ads.getAdImgOId2();
+        adImgOid3  = ads.getAdImgOId3();
+        busName    = ads.getBusName();
+        busCat     = ads.getBusCat();
+        busWeb     = ads.getBusWeb();
+        busEmail   = ads.getBusEmail();
+        busPhone   = ads.getBusPhone();
+        busStreet  = ads.getBusStreet();
+        busCity    = ads.getBusCity();
+        busState   = ads.getBusState();
+        busZip     = ads.getBusZip();
+        busHour    = ads.getBusHour();
+        busDesc    = ads.getBusDesc();
+    }
+
+    public void fromProfile(Profile prof)
+    {
+        if (prof == null) {
+            artBase.setAuthorId(0L);
+        } else {
+            artBase.setAuthorId(prof.getUserId());
+        }
+    }
 
     /**
      * @return the articleUuid
@@ -54,6 +167,20 @@ public class ArtAds
     }
 
     /**
+     * @return the authorUuid
+     */
+    public String getAuthorUuid() {
+        return authorUuid;
+    }
+
+    /**
+     * @param authorUuid the authorUuid to set
+     */
+    public void setAuthorUuid(String authorUuid) {
+        this.authorUuid = authorUuid;
+    }
+
+    /**
      * @return the artBase
      */
     public ArticleBase getArtBase() {
@@ -65,5 +192,243 @@ public class ArtAds
      */
     public void setArtBase(ArticleBase artBase) {
         this.artBase = artBase;
+    }
+
+    /**
+     * @return the artAttr
+     */
+    public ArticleAttr getArtAttr() {
+        return artAttr;
+    }
+
+    /**
+     * @param artAttr the artAttr to set
+     */
+    public void setArtAttr(ArticleAttr artAttr) {
+        this.artAttr = artAttr;
+    }
+
+    /**
+     * @return the adImgOid0
+     */
+    public String getAdImgOid0() {
+        return adImgOid0;
+    }
+
+    /**
+     * @param adImgOid0 the adImgOid0 to set
+     */
+    public void setAdImgOid0(String adImgOid0) {
+        this.adImgOid0 = adImgOid0;
+    }
+
+    /**
+     * @return the adImgOid1
+     */
+    public String getAdImgOid1() {
+        return adImgOid1;
+    }
+
+    /**
+     * @param adImgOid1 the adImgOid1 to set
+     */
+    public void setAdImgOid1(String adImgOid1) {
+        this.adImgOid1 = adImgOid1;
+    }
+
+    /**
+     * @return the adImgOid2
+     */
+    public String getAdImgOid2() {
+        return adImgOid2;
+    }
+
+    /**
+     * @param adImgOid2 the adImgOid2 to set
+     */
+    public void setAdImgOid2(String adImgOid2) {
+        this.adImgOid2 = adImgOid2;
+    }
+
+    /**
+     * @return the adImgOid3
+     */
+    public String getAdImgOid3() {
+        return adImgOid3;
+    }
+
+    /**
+     * @param adImgOid3 the adImgOid3 to set
+     */
+    public void setAdImgOid3(String adImgOid3) {
+        this.adImgOid3 = adImgOid3;
+    }
+
+    /**
+     * @return the busName
+     */
+    public byte[] getBusName() {
+        return busName;
+    }
+
+    /**
+     * @param busName the busName to set
+     */
+    public void setBusName(byte[] busName) {
+        this.busName = busName;
+    }
+
+    /**
+     * @return the busInfo
+     */
+    public byte[] getBusInfo() {
+        return busInfo;
+    }
+
+    /**
+     * @param busInfo the busInfo to set
+     */
+    public void setBusInfo(byte[] busInfo) {
+        this.busInfo = busInfo;
+    }
+
+    /**
+     * @return the busCat
+     */
+    public byte[] getBusCat() {
+        return busCat;
+    }
+
+    /**
+     * @param busCat the busCat to set
+     */
+    public void setBusCat(byte[] busCat) {
+        this.busCat = busCat;
+    }
+
+    /**
+     * @return the busWeb
+     */
+    public byte[] getBusWeb() {
+        return busWeb;
+    }
+
+    /**
+     * @param busWeb the busWeb to set
+     */
+    public void setBusWeb(byte[] busWeb) {
+        this.busWeb = busWeb;
+    }
+
+    /**
+     * @return the busEmail
+     */
+    public byte[] getBusEmail() {
+        return busEmail;
+    }
+
+    /**
+     * @param busEmail the busEmail to set
+     */
+    public void setBusEmail(byte[] busEmail) {
+        this.busEmail = busEmail;
+    }
+
+    /**
+     * @return the busPhone
+     */
+    public byte[] getBusPhone() {
+        return busPhone;
+    }
+
+    /**
+     * @param busPhone the busPhone to set
+     */
+    public void setBusPhone(byte[] busPhone) {
+        this.busPhone = busPhone;
+    }
+
+    /**
+     * @return the busStreet
+     */
+    public byte[] getBusStreet() {
+        return busStreet;
+    }
+
+    /**
+     * @param busStreet the busStreet to set
+     */
+    public void setBusStreet(byte[] busStreet) {
+        this.busStreet = busStreet;
+    }
+
+    /**
+     * @return the busCity
+     */
+    public byte[] getBusCity() {
+        return busCity;
+    }
+
+    /**
+     * @param busCity the busCity to set
+     */
+    public void setBusCity(byte[] busCity) {
+        this.busCity = busCity;
+    }
+
+    /**
+     * @return the busState
+     */
+    public byte[] getBusState() {
+        return busState;
+    }
+
+    /**
+     * @param busState the busState to set
+     */
+    public void setBusState(byte[] busState) {
+        this.busState = busState;
+    }
+
+    /**
+     * @return the busZip
+     */
+    public byte[] getBusZip() {
+        return busZip;
+    }
+
+    /**
+     * @param busZip the busZip to set
+     */
+    public void setBusZip(byte[] busZip) {
+        this.busZip = busZip;
+    }
+
+    /**
+     * @return the busHour
+     */
+    public byte[] getBusHour() {
+        return busHour;
+    }
+
+    /**
+     * @param busHour the busHour to set
+     */
+    public void setBusHour(byte[] busHour) {
+        this.busHour = busHour;
+    }
+
+    /**
+     * @return the busDesc
+     */
+    public byte[] getBusDesc() {
+        return busDesc;
+    }
+
+    /**
+     * @param busDesc the busDesc to set
+     */
+    public void setBusDesc(byte[] busDesc) {
+        this.busDesc = busDesc;
     }
 }
