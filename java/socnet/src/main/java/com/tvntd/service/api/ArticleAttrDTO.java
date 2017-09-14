@@ -24,22 +24,50 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.dao;
+package com.tvntd.service.api;
 
-import java.util.List;
+import com.tvntd.models.ArticleAttr;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import com.tvntd.models.ArtProduct;
-
-public interface ArtProductRepo extends JpaRepository<ArtProduct, String>
+public class ArticleAttrDTO
 {
-    ArtProduct findByArticleUuid(String uuid);
+    protected ArticleAttr artAttr;
 
-    List<ArtProduct> findByArticleUuidIn(List<String> articleUuids);
-    List<ArtProduct> findByAuthorUuid(String authorUuid);
-    List<ArtProduct> findByAuthorUuidIn(List<String> authorUuids);
+    public ArticleAttrDTO(ArticleAttr attr) {
+        artAttr = attr;
+    }
 
-    @Override
-    void delete(ArtProduct art);
+    public ArticleAttr fetchArtAttr() {
+        return artAttr;
+    }
+
+    /**
+     * JSON gets
+     */
+    public String getArticleUuid() {
+        return artAttr.getArticleUuid();
+    }
+
+    public Long getCreditEarned() {
+        return artAttr.getCreditEarned();
+    }
+
+    public Long getMoneyEarned() {
+        return artAttr.getMoneyEarned();
+    }
+
+    public Long getLikes() {
+        return artAttr.getLikes();
+    }
+
+    public Long getShared() {
+        return artAttr.getShared();
+    }
+
+    public Long getRank() {
+        return artAttr.getRank();
+    }
+
+    public Long getScore() {
+        return artAttr.getScore();
+    }
 }

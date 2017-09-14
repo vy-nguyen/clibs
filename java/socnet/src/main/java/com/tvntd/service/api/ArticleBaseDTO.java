@@ -24,22 +24,51 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.dao;
+package com.tvntd.service.api;
 
-import java.util.List;
+import com.tvntd.models.ArticleBase;
+import com.tvntd.util.Util;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import com.tvntd.models.ArtProduct;
-
-public interface ArtProductRepo extends JpaRepository<ArtProduct, String>
+public class ArticleBaseDTO
 {
-    ArtProduct findByArticleUuid(String uuid);
+    protected ArticleBase artBase;
 
-    List<ArtProduct> findByArticleUuidIn(List<String> articleUuids);
-    List<ArtProduct> findByAuthorUuid(String authorUuid);
-    List<ArtProduct> findByAuthorUuidIn(List<String> authorUuids);
+    public ArticleBaseDTO(ArticleBase base) {
+        artBase = base;
+    }
 
-    @Override
-    void delete(ArtProduct art);
+    public ArticleBase fetchArticleBase() {
+        return artBase;
+    }
+
+    /**
+     * JSON gets
+     */
+    public String getArticleUuid() {
+        return artBase.getArticleUuid();
+    }
+
+    public Long getPermMask() {
+        return artBase.getPermMask();
+    }
+
+    public String getPublicUrlOid() {
+        return artBase.getPublicUrlOid();
+    }
+
+    public String getArtTitle() {
+        return Util.fromRawByte(artBase.getArtTitle());
+    }
+
+    public String getArtTag() {
+        return artBase.getArtTag();
+    }
+
+    public String getContentOid() {
+        return artBase.getContentOid();
+    }
+
+    public String getContentLinkUrl() {
+        return artBase.getContentLinkUrl();
+    }
 }

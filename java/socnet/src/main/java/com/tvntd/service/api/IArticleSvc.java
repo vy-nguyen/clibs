@@ -57,6 +57,16 @@ public interface IArticleSvc
     List<ArticleBriefDTO> getArticleBriefDTO(List<String> artUuids);
     List<ArticleBriefDTO> getArticleBriefDTOByAuthor(List<String> authorUuids);
 
+    ArtProductDTO         getArtProductDTO(String productUuid);
+    List<ArtProductDTO>   getArtProductDTO(List<String> productUuids);
+    List<ArtProductDTO>   getArtProductDTOByOwner(String authorUuid);
+    List<ArtProductDTO>   getArtProductDTOByOnwer(List<String> ownerUuids);
+
+    ArtAdsDTO             getArtAdsDTO(String adUuid);
+    List<ArtAdsDTO>       getArtAdsDTO(List<String> adUuids);
+    List<ArtAdsDTO>       getArtAdsDTOByOwner(String ownerUuid);
+    List<ArtAdsDTO>       getArtAdsDTOByOwner(List<String> ownerUuids);
+
     // Save, update
     //
     void saveArticlePost(ArticlePostDTO art);
@@ -64,6 +74,12 @@ public interface IArticleSvc
 
     void saveArticlePost(List<ArticlePostDTO> arts);
     void saveArticleBrief(List<ArticleBriefDTO> ranks);
+
+    void saveArtAds(ArtAdsDTO ads);
+    void saveArtAds(List<ArtAdsDTO> adsList);
+
+    void saveArtProduct(ArtProductDTO ads);
+    void saveArtProduct(List<ArtProductDTO> prodList);
 
     // Save post
     //
@@ -77,6 +93,12 @@ public interface IArticleSvc
 
     void deleteArticleBrief(ArticleBriefDTO rank);
     void deleteArticleBrief(List<ArticleBriefDTO> ranks);
+
+    void deleteArtAds(ArtAdsDTO ads);
+    void deleteArtAds(List<ArtAdsDTO> adsList);
+
+    void deleteArtProduct(ArtProductDTO prod);
+    void deleteArtProduct(List<ArtProductDTO> prodList);
 
     void auditArticleTable();
 
@@ -338,11 +360,5 @@ public interface IArticleSvc
             }
             return shared;
         }
-    }
-
-    // DTO for Article attributes, such as list of people liked/shared the post.
-    //
-    public static class ArticleAttrDTO
-    {
     }
 }

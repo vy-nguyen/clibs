@@ -56,6 +56,8 @@ import com.tvntd.models.ArticleBrief;
 import com.tvntd.models.ArticlePost;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Product;
+import com.tvntd.service.api.ArtAdsDTO;
+import com.tvntd.service.api.ArtProductDTO;
 import com.tvntd.service.api.IArticleSvc;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 
@@ -100,6 +102,8 @@ public class ArticleSvc implements IArticleSvc
 
     // Query
     //
+    // ArticlePost for posts in blog page.
+    //
     @Override
     public ArticlePostDTO getArticleDTO(String articleUuid)
     {
@@ -135,6 +139,8 @@ public class ArticleSvc implements IArticleSvc
         return convertArtPost(artPostRepo.findByAuthorUuidIn(authorUuid));
     }
 
+    // ArticleBrief for ArticlePost summary.
+    //
     @Override
     public ArticleBriefDTO getArticleBriefDTO(String uuid)
     {
@@ -173,33 +179,101 @@ public class ArticleSvc implements IArticleSvc
         return convertArtBrief(artBriefRepo.findByAuthorUuidIn(authorUuids));
     }
 
-    // Save, update
+    // ArtProduct for products in e-store page.
+    //
+    protected List<ArtProductDTO> convertProductDTO(List<ArtProduct> prods)
+    {
+        List<ArtProductDTO> result = new LinkedList<>();
+
+        for (ArtProduct p : prods) {
+            result.add(new ArtProductDTO(p));
+        }
+        return result;
+    }
+
+    @Override
+    public ArtProductDTO getArtProductDTO(String productUuid)
+    {
+        ArtProduct prod = artProdRepo.findByArticleUuid(productUuid);
+
+        if (prod != null) {
+            return new ArtProductDTO(prod);
+        }
+        return null;
+    }
+
+    @Override
+    public List<ArtProductDTO> getArtProductDTO(List<String> productUuids) {
+        return convertProductDTO(artProdRepo.findByArticleUuidIn(productUuids));
+    }
+
+    @Override
+    public List<ArtProductDTO> getArtProductDTOByOwner(String authorUuid) {
+        return convertProductDTO(artProdRepo.findByAuthorUuid(authorUuid));
+    }
+
+    @Override
+    public List<ArtProductDTO> getArtProductDTOByOnwer(List<String> ownerUuids) {
+        return convertProductDTO(artProdRepo.findByAuthorUuidIn(ownerUuids));
+    }
+
+    // ArtAds for ads in ad page.
+    //
+    protected List<ArtAdsDTO> convertArticleAds(List<ArtAds> artList)
+    {
+        List<ArtAdsDTO> result = new LinkedList<>();
+
+        for (ArtAds a : artList) {
+            result.add(new ArtAdsDTO(a));
+        }
+        return result;
+    }
+
+    @Override
+    public ArtAdsDTO getArtAdsDTO(String adUuid)
+    {
+        ArtAds ads = artAdsRepo.findByArticleUuid(adUuid);
+
+        if (ads != null) {
+            return new ArtAdsDTO(ads);
+        }
+        return null;
+    }
+
+    @Override
+    public List<ArtAdsDTO> getArtAdsDTO(List<String> adUuids) {
+        return convertArticleAds(artAdsRepo.findByArticleUuidIn(adUuids));
+    }
+
+    @Override
+    public List<ArtAdsDTO> getArtAdsDTOByOwner(String ownerUuid) {
+        return convertArticleAds(artAdsRepo.findByAuthorUuid(ownerUuid));
+    }
+
+    @Override
+    public List<ArtAdsDTO> getArtAdsDTOByOwner(List<String> ownerUuids) {
+        return convertArticleAds(artAdsRepo.findByAuthorUuidIn(ownerUuids));
+    }
+
+    // Save/update ArticleBrief/ArticlePost
     //
     @Override
     public void saveArticlePost(ArticlePostDTO art) {
-        saveArticlePost(art.fetchArticlePost());
+        artPostRepo.save(art.fetchArticlePost());
     }
 
     @Override
     public void saveArticleBrief(ArticleBriefDTO rank) {
-        saveArticleBrief(rank.fetchArtRank());
+        artBriefRepo.save(rank.fetchArtRank());
     }
   
-    protected void saveArticleBrief(ArticleBrief art) {
-        artBriefRepo.save(art);
-    }
-
-    protected void saveArticlePost(ArticlePost art) {
-        artPostRepo.save(art);
-    }
-
-    // Save, update list of articles.
+    // Save/update list of ArticlePost/ArticleBrief.
     //
     @Override
     public void saveArticlePost(List<ArticlePostDTO> arts)
     {
         for (ArticlePostDTO a : arts) {
-            saveArticlePost(a);
+            artPostRepo.save(a.fetchArticlePost());
         }
     }
 
@@ -207,10 +281,38 @@ public class ArticleSvc implements IArticleSvc
     public void saveArticleBrief(List<ArticleBriefDTO> ranks)
     {
         for (ArticleBriefDTO r : ranks) {
-            saveArticleBrief(r);
+            artBriefRepo.save(r.fetchArtRank());
         }
     }
 
+    // Save/update Ads
+    @Override
+    public void saveArtAds(ArtAdsDTO ads) {
+        artAdsRepo.save(ads.fetchAds());
+    }
+
+    @Override
+    public void saveArtAds(List<ArtAdsDTO> adsList)
+    {
+        for (ArtAdsDTO ads : adsList) {
+            artAdsRepo.save(ads.fetchAds());
+        }
+    }
+
+    @Override
+    public void saveArtProduct(ArtProductDTO prod) {
+        artProdRepo.save(prod.fetchProduct());
+    }
+
+    @Override
+    public void saveArtProduct(List<ArtProductDTO> prodList)
+    {
+        for (ArtProductDTO p : prodList) {
+            artProdRepo.save(p.fetchProduct());
+        }
+    }
+
+    // Save article post
     @Override
     public void savePost(PostForm form, ArticleBriefDTO artBrief,
             ProfileDTO profile, boolean publish, boolean update)
@@ -246,6 +348,32 @@ public class ArticleSvc implements IArticleSvc
     }
 
     @Override
+    public void deleteArtAds(ArtAdsDTO ads) {
+        artAdsRepo.delete(ads.fetchAds());
+    }
+
+    @Override
+    public void deleteArtAds(List<ArtAdsDTO> adsList)
+    {
+        for (ArtAdsDTO ads : adsList) {
+            artAdsRepo.delete(ads.fetchAds());
+        }
+    }
+
+    @Override
+    public void deleteArtProduct(ArtProductDTO prod) {
+        artProdRepo.delete(prod.fetchProduct());
+    }
+
+    @Override
+    public void deleteArtProduct(List<ArtProductDTO> prodList)
+    {
+        for (ArtProductDTO p : prodList) {
+            artProdRepo.delete(p.fetchProduct());
+        }
+    }
+
+    @Override
     public void auditArticleTable()
     {
         Map<String, String> uuids = new HashMap<>();
@@ -263,7 +391,7 @@ public class ArticleSvc implements IArticleSvc
                 uuids.put(brief.getArticleUuid(), brief.getAuthorUuid());
             }
             authors.put(brief.getAuthorUuid(), brief.getArticleUuid());
-            saveArticleBrief(brief);
+            artBriefRepo.save(brief);
         }
         List<Article> arts = artRepo.findAll();
         for (Article a : arts) {
@@ -271,13 +399,13 @@ public class ArticleSvc implements IArticleSvc
 
             post.setContent(a.getContent());
             post.setPending(false);
-            saveArticlePost(post); 
+            artPostRepo.save(post);
 
             if (uuids.get(a.getArticleUuid()) == null) {
                 ArticleBrief brief = new ArticleBrief();
 
                 brief.fromArticle(a);
-                saveArticleBrief(brief);
+                artBriefRepo.save(brief);
             }
         }
         List<AdsPost> ads = adsRepo.findAll();

@@ -35,7 +35,10 @@ import com.tvntd.models.ArtAds;
 public interface ArtAdsRepo extends JpaRepository<ArtAds, String>
 {
     ArtAds findByArticleUuid(String uuid);
+
     List<ArtAds> findByArticleUuidIn(List<String> articleUuids);
+    List<ArtAds> findByAuthorUuid(String ownerUuid);
+    List<ArtAds> findByAuthorUuidIn(List<String> ownerUuids);
 
     @Override
     void delete(ArtAds art);
