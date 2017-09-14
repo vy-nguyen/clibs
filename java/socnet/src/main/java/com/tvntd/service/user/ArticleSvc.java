@@ -48,6 +48,7 @@ import com.tvntd.dao.ArticleRepository;
 import com.tvntd.dao.ProductRepository;
 import com.tvntd.dao.ProfileRepository;
 import com.tvntd.forms.PostForm;
+import com.tvntd.forms.UuidForm;
 import com.tvntd.models.AdsPost;
 import com.tvntd.models.ArtAds;
 import com.tvntd.models.ArtProduct;
@@ -161,6 +162,21 @@ public class ArticleSvc implements IArticleSvc
             }
         }
         return result;
+    }
+
+    @Override
+    public List<ArticleBriefDTO> getArticleBriefDTO(UuidForm form)
+    {
+        List<String> uuids = new LinkedList<>();
+
+        for (String uid : uuids) {
+            uuids.add(uid);
+        }
+        String type = form.getUuidType();
+        if (type != null && type.equals("product")) {
+            return getArticleBriefDTO(uuids);
+        }
+        return getArticleBriefDTOByAuthor(uuids);
     }
 
     @Override
@@ -378,6 +394,7 @@ public class ArticleSvc implements IArticleSvc
     {
         Map<String, String> uuids = new HashMap<>();
         Map<String, String> authors = new HashMap<>();
+        Map<String, ArticleBrief> artBriefs = new HashMap<>();
         List<ArticleRank> all = artRankRepo.findAll();
 
         for (ArticleRank r : all) {
@@ -390,6 +407,7 @@ public class ArticleSvc implements IArticleSvc
             } else {
                 uuids.put(brief.getArticleUuid(), brief.getAuthorUuid());
             }
+            artBriefs.put(brief.getArticleUuid(), brief);
             authors.put(brief.getAuthorUuid(), brief.getArticleUuid());
             artBriefRepo.save(brief);
         }
@@ -402,8 +420,11 @@ public class ArticleSvc implements IArticleSvc
             artPostRepo.save(post);
 
             if (uuids.get(a.getArticleUuid()) == null) {
-                ArticleBrief brief = new ArticleBrief();
+                ArticleBrief brief = artBriefs.get(a.getArticleUuid());
 
+                if (brief == null) {
+                    brief = new ArticleBrief();
+                }
                 brief.fromArticle(a);
                 artBriefRepo.save(brief);
             }

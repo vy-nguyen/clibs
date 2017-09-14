@@ -26,12 +26,14 @@
  */
 package com.tvntd.service.api;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import com.tvntd.forms.PostForm;
+import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.ObjectId;
 import com.tvntd.models.ArticleBase;
 import com.tvntd.models.ArticleBrief;
@@ -53,6 +55,7 @@ public interface IArticleSvc
     List<ArticlePostDTO>  getArticleDTOByAuthor(List<String> authorUuid);
 
     ArticleBriefDTO       getArticleBriefDTO(String artUuid);
+    List<ArticleBriefDTO> getArticleBriefDTO(UuidForm form);
     List<ArticleBriefDTO> getArticleBriefDTOByAuthor(String authorUuid);
     List<ArticleBriefDTO> getArticleBriefDTO(List<String> artUuids);
     List<ArticleBriefDTO> getArticleBriefDTOByAuthor(List<String> authorUuids);
@@ -280,8 +283,13 @@ public interface IArticleSvc
             return Util.fromRawByte(artRank.getContentBrief());
         }
 
-        public Long getTimeStamp() {
-            return artRank.getArtBase().getCreatedDate().getTime();
+        public Long getTimeStamp()
+        {
+            Date date = artRank.getArtBase().getCreatedDate();
+            if (date == null) {
+                date = new Date();
+            }
+            return date.getTime();
         }
 
         public Long getCreditEarned() {

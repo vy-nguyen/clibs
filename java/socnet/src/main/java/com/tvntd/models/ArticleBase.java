@@ -75,7 +75,7 @@ public class ArticleBase
     protected String contentLinkUrl;
 
     @Column(length = 64)
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "ArticleImgs",
             joinColumns = @JoinColumn(name = "articleUuid"))
     protected List<String> pictures;
