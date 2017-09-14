@@ -427,9 +427,6 @@ class PostPane extends React.Component
     }
 
     _getOwnerMenu(article) {
-        if (article.noData === true) {
-            return null;
-        }
         return [ {
             itemFmt : 'fa fa-thumbs-up txt-color-green',
             itemText: this.state.favorite ?
@@ -457,9 +454,6 @@ class PostPane extends React.Component
     _getAdminMenu(article) {
         let adminItem = null;
 
-        if (article.noData === true) {
-            return null;
-        }
         if (this.state.publish === true) {
             adminItem = [ {
                 itemFmt : 'fa fa-check txt-color-green',
