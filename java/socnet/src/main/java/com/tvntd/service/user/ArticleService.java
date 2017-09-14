@@ -122,8 +122,9 @@ public class ArticleService implements IArticleService
         String tag = form.getTags();
         if (rank == null) {
             profile.assignPendPost(null);
-            rank = new ArticleRank(art, form.fetchContentUrlHost(),
-                    form.fetchContentUrlFile(), tag, form.fetchDocType());
+            rank = new ArticleRank(art, profile.fetchUserId(), form.getContent(),
+                    form.fetchContentUrlHost(), form.fetchContentUrlFile(),
+                    tag, form.fetchDocType());
         }
         if (!tag.equals(rank.getTag())) {
             rank.setTag(tag);
@@ -136,6 +137,7 @@ public class ArticleService implements IArticleService
             art.markPending();
         }
         artRankRepo.save(rank);
+        artDTO.setRank(rank);
 
         if (rank.isHasArticle() == false) {
             System.out.println("Skip saving art " + art.getTopic());

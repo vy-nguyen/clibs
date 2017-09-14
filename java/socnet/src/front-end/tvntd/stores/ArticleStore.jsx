@@ -7,8 +7,8 @@
 import _              from 'lodash';
 import Reflux         from 'reflux';
 import Actions        from 'vntd-root/actions/Actions.jsx';
-import CommonStore    from 'vntd-root/stores/CommonStore.jsx';
 import Startup        from 'vntd-root/pages/login/Startup.jsx';
+import CommonStore    from 'vntd-root/stores/CommonStore.jsx';
 
 let EProductStore = Reflux.createStore({
     store: {},
@@ -185,7 +185,7 @@ let ArticleStore = Reflux.createStore({
     },
 
     addDefaultFromRank: function(artRank) {
-        this.store.addDefaultFromRank(artRank);
+        return this.store.addDefaultFromRank(artRank);
     },
 
     dumpData: function(header) {
@@ -241,6 +241,7 @@ let ArticleStore = Reflux.createStore({
 
     onPublishUserPostCompleted: function(post) {
         let status = "publish";
+
         if (post.error == null) {
             this.store._addItemStore(post);
         } else {
@@ -292,7 +293,8 @@ class GlobStore
         const stores = [ ArticleStore.store, EProductStore.store, AdsStore.store ];
 
         for (let i = 0; i < stores.length; i++) {
-            let article = stores[i].getItemByUuid(artUuid);
+            let article = stores[i].getItemByUuid(artUuid, null);
+
             if (article != null) {
                 return article;
             }

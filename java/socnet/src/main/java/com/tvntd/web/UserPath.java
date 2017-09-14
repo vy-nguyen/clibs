@@ -29,6 +29,7 @@ package com.tvntd.web;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -786,14 +787,25 @@ public class UserPath
 
         TagArtRank[] artList = form.getArtList();
         for (TagArtRank r : artList) {
-            Long order = 0L;
-            List<ArticleRank> artRank = articleSvc.getArtRank(r.getArtUuid());
+            Long order = 10L;
+            String[] artUuids = r.getArtUuid();
+            Map<String, Long> artOrder = new HashMap<>();
 
-            for (ArticleRank rank : artRank) {
-                rank.setRank(order);
+            for (String s : artUuids) {
+                artOrder.put(s, order);
                 order++;
             }
-            articleSvc.saveArtRank(artRank);
+            List<ArticleRank> artRank = articleSvc.getArtRank(artUuids);
+            for (ArticleRank rank : artRank) {
+                order = artOrder.get(rank.getArticleUuid());
+                if (order == null) {
+                    order = 10L;
+                }
+                rank.setRank(order);
+                articleSvc.saveArtRank(artRank);
+            }
+            artOrder.clear();
+            artRank.clear();
         }
         return resp;
     }

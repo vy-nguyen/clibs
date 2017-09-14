@@ -306,9 +306,8 @@ public interface IArticleService
             return article.getContentOId();
         }
 
-        public String getCreatedDate() {
-            DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm");
-            return df.format(article.getCreatedDate());
+        public Long getCreatedDate() {
+            return article.getCreatedDate().getTime();
         }
 
         /**
@@ -449,10 +448,8 @@ public interface IArticleService
         /**
          * @return the timeStamp
          */
-        public String getTimeStamp()
-        {
-            DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm");
-            return df.format(artRank.getTimeStamp());
+        public Long getTimeStamp() {
+            return artRank.getTimeStamp().getTime();
         }
 
         /**

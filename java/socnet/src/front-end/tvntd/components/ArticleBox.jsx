@@ -188,15 +188,10 @@ class ArticleBox extends React.Component
         return (data != null ? <ArtBlogWide data={data}/> : null);
     }
 
-    static artVideo(articleUuid, authorUuid, clickCb) {
-        let data = ArticleBox.getArtCtx(articleUuid, authorUuid, clickCb);
-        return (data != null ? <ArtVideo data={data}/> : null);
-    }
-
     static youtubeLink(article, brief) {
         let rank = article.getArticleRank(), oid, code, url;
 
-        if (rank == null) {
+        if (rank == null || rank.contentLinkUrl == null) {
             return null;
         }
         oid = rank.contentOid;
@@ -248,12 +243,10 @@ class ArtBlogStyle extends React.Component
 
     render() {
         let img, arg = this.props.data, clickBtn = arg.clickBtn,
-            article = arg.article;
+            article = arg.article, artRank = article.getArticleRank();
 
-        if (arg == null) {
-            return null;
-        }
-        if (article.youtube != null) {
+        if (article.youtube != null ||
+            (artRank != null && artRank.contentLinkUrl != null)) {
             img = ArticleBox.youtubeLink(article, true);
         } else {
             img = (

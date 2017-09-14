@@ -427,9 +427,6 @@ class PostPane extends React.Component
     }
 
     _getOwnerMenu(article) {
-        if (article.noData === true) {
-            return null;
-        }
         return [ {
             itemFmt : 'fa fa-thumbs-up txt-color-green',
             itemText: this.state.favorite ?
@@ -457,9 +454,6 @@ class PostPane extends React.Component
     _getAdminMenu(article) {
         let adminItem = null;
 
-        if (article.noData === true) {
-            return null;
-        }
         if (this.state.publish === true) {
             adminItem = [ {
                 itemFmt : 'fa fa-check txt-color-green',
@@ -489,16 +483,11 @@ class PostPane extends React.Component
     render() {
         const fmt = "btn btn-primary pull-right";
         let content, imgs, adminItem = null, ownerItem = null, panelLabel = null,
-            video, pictures, refLink = null, article = this.state.article,
-            modal, publishModal, ownerPostMenu, tagPost = null;
+            modal, publishModal, ownerPostMenu, refLink = null,
+            article = this.state.article, pictures = null, tagPost = null;
 
         if (article.noData === true) {
-            content  = ArticleStore.getArticleByUuid(article.articleUuid, null);
-            if (content == null || content.noData === true) {
-                tagPost = article.requestData();
-            } else {
-                article = content;
-            }
+            tagPost = article.requestData();
         }
         if (tagPost == null) {
             tagPost = <TagPost article={article} notifyId={this._postPaneId}/>;
@@ -534,7 +523,7 @@ class PostPane extends React.Component
             } ]
         };
 
-        if (this.state.editMode === true) {
+        if (this.state.editMode === true && article.noData == null) {
             return <EditorPost article={article}/>
         }
         if (UserStore.amIAdmin() == true) {
@@ -582,9 +571,6 @@ class PostPane extends React.Component
             <div style={VntdGlob.styleContent}
                 dangerouslySetInnerHTML={this._rawMarkup(article)}/>
         );
-        if (article.youtube != null) {
-            video = ArticleBox.youtubeLink(article, false);
-        }
         imgs = article.pictureUrl;
         if (imgs != null) {
             if (imgs.length == 1) {
@@ -592,14 +578,14 @@ class PostPane extends React.Component
             } else {
                 pictures = <PostItem data={imgs}/>
             }
-            content = (
-                <div>
-                    {video}
-                    {pictures}
-                    {content}
-                </div>
-            );
         }
+        content = (
+            <div>
+                {ArticleBox.youtubeLink(article, false)}
+                {pictures}
+                {content}
+            </div>
+        );
         return (
             <Panel className="well no-padding" context={panelData}>
                 {tagPost}

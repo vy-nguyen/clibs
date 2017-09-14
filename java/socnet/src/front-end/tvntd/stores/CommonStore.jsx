@@ -4,291 +4,13 @@
  */
 'use strict';
 
-import _            from 'lodash';
-import moment       from 'moment';
-import Actions      from 'vntd-root/actions/Actions.jsx';
-import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
-import CommentStore from 'vntd-root/stores/CommentStore.jsx';
-import UserStore    from 'vntd-shared/stores/UserStore.jsx';
-import WebUtils     from 'vntd-shared/utils/WebUtils.jsx';
-
-import {Util}       from 'vntd-shared/utils/Enum.jsx';
-import {VConst}     from 'vntd-root/config/constants.js';
-
-class Article {
-    constructor(data) {
-        _.forEach(data, function(v, k) {
-            this[k] = v;
-        }.bind(this));
-
-        this.author       = UserStore.getUserByUuid(data.authorUuid);
-        this.createdDate  = Date.parse(data.createdDate);
-        this.dateString   = moment(this.createdDate).format("DD/MM/YYYY - HH:mm");
-
-        if (data.rank != null) {
-            CommentStore.addArtAttr(data.rank);
-            this.rank = AuthorStore.addArticleRankFromJson(data.rank);
-        }
-        return this;
-    }
-
-    getArticleUuid() {
-        return this.articleUuid;
-    }
-
-    getAuthorUuid() {
-        return this.authorUuid;
-    }
-
-    getTagName() {
-        return this.rank.tagName;
-    }
-
-    getTitle() {
-        return this.topic;        
-    }
-
-    isPublished() {
-        return this.published;
-    }
-
-    getArtTag() {
-        return "blog";
-    }
-
-    getSortedAnchor() {
-        return VConst.blogs;
-    }
-
-    requestData() {
-        if (this.noData === true && this.ownerStore != null) {
-            this.ownerStore.requestItems(Actions.getArticles);
-        } else {
-            console.log("skip Request data...");
-        }
-        return WebUtils.spinner();
-    }
-
-    getArticleRank() {
-        if (this.rank != null) {
-            return this.rank;
-        }
-        if (this.noData === true) {
-            return AuthorStore.lookupArticleRankByUuid(this.articleUui);
-        }
-        return null;
-    }
-
-    updateFromJson(jsonArt) {
-        _.forEach(jsonArt, function(v, k) {
-            this[k] = v;
-        }.bind(this));
-
-        if (jsonArt.noData == null) {
-            delete this.noData;
-        }
-    }
-
-    /*
-     * TODO: rework product and ads to do dynamic loading like article.
-     */
-    getArticle() {
-        return this;
-    }
-
-    static newInstance(kind, data) {
-        if (kind === "blog") {
-            return new Article(data);
-        }
-        if (kind === "estore") {
-            return new Product(data);
-        }
-        return new AdsItem(data);
-    }
-
-    static newDefInstance(kind, store, articleUuid, authorUuid) {
-        let json = {
-            authorUuid : authorUuid,
-            articleUuid: articleUuid,
-        };
-        return Article.newDefInstanceFrmRank(
-            store, kind, AuthorStore.lookupArticleRankByUuid(articleUuid), json
-        );
-    }
-
-    static newDefInstanceFrmRank(store, kind, artRank, json) {
-        if (json == null) {
-            json = {};
-        }
-        json.noData     = true;
-        json.ownerStore = store;
-
-        if (artRank != null) {
-            json.authorUuid  = artRank.authorUuid;
-            json.articleUuid = artRank.articleUuid;
-            json.createdDate = artRank.timeStamp;
-            json.topic       = artRank.getArtTitle();
-            json.content     = artRank.contentBrief;
-            json.published   = true;
-        }
-        store.recordMissingUuid(json.articleUuid);
-        return Article.newInstance(kind, json);
-    }
-}
-
-class Product extends Article {
-    constructor(data) {
-        super(data);
-    }
-
-    getTagName() {
-        return this.publicTag;
-    }
-
-    getTitle() {
-        return this.prodTitle;
-    }
-
-    isPublished() {
-        return true;
-    }
-
-    getArtTag() {
-        return "estore";
-    }
-
-    getSortedAnchor() {
-        return VConst.prods;
-    }
-}
-
-class AdsItem extends Article {
-    constructor(data) {
-        super(data);
-    }
-
-    getTagName() {
-        return this.adsRank.tagName;
-    }
-
-    getTitle() {
-        return this.busName;
-    }
-
-    isPublished() {
-        return true;
-    }
-
-    getArtTag() {
-        return "ads";
-    }
-
-    getSortedAnchor() {
-        return VConst.ads;
-    }
-}
-
-class AuthorShelf {
-    constructor(article, authorUuid) {
-        this.getData   = 0;
-        this.articles  = {};
-        this.savedArts = {};
-
-        this[VConst.ads]     = [];
-        this[VConst.blogs]   = [];
-        this[VConst.prods]   = [];
-        this.sortedSavedArts = [];
-
-        if (article != null) {
-            this.addSortedArticle(article);
-        }
-        return this;
-    }
-
-    addArticle(article) {
-        if (article == null) {
-            return;
-        }
-        if (this.articles[article.articleUuid] != null) {
-            this.removeArticle(article.articleUuid);
-        }
-        this.addSortedArticle(article, true);
-    }
-
-    _cmpArticle(anchor, elm) {
-        if (anchor.createdDate === elm.createdDate) {
-            return 0;
-        }
-        if (anchor.createdDate > elm.createdDate) {
-            return -1;
-        }
-        return 1;
-    }
-
-    removeArticle(articleUuid) {
-        let root, article = this.articles[articleUuid];
-
-        if (article != null) {
-            root = article.getSortedAnchor();
-            Util.removeArray(this[root], article, 0, this._cmpArticle);
-            delete this.articles[articleUuid];
-        }
-        article = this.savedArts[articleUuid];
-        if (article != null) {
-            Util.removeArray(this.sortedSavedArts, article, 0, this._cmpArticle);
-            delete this.savedArts[articleUuid];
-        }
-    }
-
-    addSortedArticle(article, pre) {
-        let root = article.getSortedAnchor();
-
-        if (article.isPublished()) {
-            if (this.articles[article.articleUuid] !== article) {
-                this.articles[article.articleUuid] = article;
-                if (pre === true) {
-                    this[root] = Util.preend(article, this[root]);
-                } else {
-                    Util.insertSorted(article, this[root], this._cmpArticle);
-                }
-            }
-            return;
-        }
-        this.addSortedSavedArts(article);
-    }
-
-    addSortedSavedArts(article) {
-        if (this.savedArts[article.articleUuid] !== article) {
-            this.savedArts[article.articleUuid] = article;
-            Util.insertSorted(article, this.sortedSavedArts, this._cmpArticle);
-        }
-    }
-
-    hasData() {
-        return true;
-    }
-
-    getSortedArticles() {
-        return this[VConst.blogs];
-    }
-
-    getSortedSavedArts() {
-        return this.sortedSavedArts;
-    }
-
-    getArticle(artUuid) {
-        if (this.articles[artUuid] != null) {
-            return this.articles[artUuid];
-        }
-        return this.savedArts[artUuid];
-    }
-
-    iterArticles(func, arg) {
-        _.forOwn(this[VConst.blogs], function(item, key) {
-            func(item, arg);
-        });
-    }
-}
+import _               from 'lodash';
+import UserStore       from 'vntd-shared/stores/UserStore.jsx';
+import Actions         from 'vntd-root/actions/Actions.jsx';
+import AuthorStore     from 'vntd-root/stores/AuthorStore.jsx';
+import CommentStore    from 'vntd-root/stores/CommentStore.jsx';
+import ArticleFactory  from 'vntd-root/stores/ArticleFactory.jsx';
+import {VConst}        from 'vntd-root/config/constants.js';
 
 class CommonStore {
     constructor(kind) {
@@ -323,6 +45,10 @@ class CommonStore {
         _.forOwn(this.data.listenChanges, function(callback, key) {
             callback[key](storeKind, code, changeList);
         });
+    }
+
+    getStoreKind(kind, spec) {
+        return this;
     }
 
     getItemsByAuthor(uuid, fetch) {
@@ -392,7 +118,7 @@ class CommonStore {
             if (authorUuid == null) {
                 return null;
             }
-            item = this._addDefaultItem(this.data.storeKind, this, uuid, authorUuid);
+            item = this._addDefaultItem(this, uuid, authorUuid);
         }
         return item;
     }
@@ -400,13 +126,13 @@ class CommonStore {
     getAuthorUuid(articleUuid) {
         let item = this.data.itemsByUuid[articleUuid];
         if (item != null) {
-            return item.authorUuid;
+            return item.getAuthorUuid();
         }
         return null;
     }
 
     onPublishItemCompleted(item, store) {
-        let it = this._addItemStore(item), pubTag = it.publicTag;
+        let it = this._addItemStore(item, true), pubTag = it.publicTag;
 
         this._notifyListeners("add", [it]);
         store.trigger(this.data, [it], "postOk", true, it.authorUuid);
@@ -421,7 +147,7 @@ class CommonStore {
 
         CommentStore.onGetCommentsCompleted(data);
         _.forEach(data[key], function(item) {
-            items.push(this._addItemStore(item));
+            items.push(this._addItemStore(item, false));
         }.bind(this));
 
         this.data.requestUuids = null;
@@ -509,7 +235,7 @@ class CommonStore {
     }
 
     _createOwnerAnchor(authorUuid, article) {
-        let anchor = new AuthorShelf(article, authorUuid);
+        let anchor = ArticleFactory.newAuthorShelf(article, authorUuid);
 
         this.data.itemsByAuthor[authorUuid] = anchor;
         if (UserStore.isUserMe(authorUuid)) {
@@ -521,9 +247,9 @@ class CommonStore {
     /**
      * Add default article when we only have article uuid and author uuid.
      */
-    _addDefaultItem(kind, store, articleUuid, authorUuid) {
+    _addDefaultItem(store, articleUuid, authorUuid) {
         return this._addItemStore(
-            Article.newDefInstance(kind, store, articleUuid, authorUuid)
+            ArticleFactory.newDefInstance(store, articleUuid, authorUuid), false
         );
     }
 
@@ -532,14 +258,14 @@ class CommonStore {
      */
     addDefaultFromRank(artRank) {
         return this._addItemStore(
-            Article.newDefInstanceFrmRank(this, this.data.storeKind, artRank, null)
+            ArticleFactory.newDefInstanceFrmRank(this, artRank, null), false
         );
     }
 
     /**
      * Add article item to the store where item is in json format or Article type.
      */
-    _addItemStore(item) {
+    _addItemStore(item, preend) {
         let articleUuid, authorUuid, anchor, authorTagMgr, article;
 
         articleUuid = item.articleUuid;
@@ -548,22 +274,21 @@ class CommonStore {
         article     = this.data.itemsByUuid[articleUuid];
 
         if (article == null) {
-            if (item instanceof Article) {
+            if (item.isArticle === true) {
                 article = item;
             } else {
-                article = Article.newInstance(this.data.storeKind, item);
+                article = ArticleFactory.newInstance(this, item);
             }
             this.data.itemsByUuid[articleUuid] = article;
-            anchor.addArticle(article);
+            anchor.addArticle(article, preend);
         } else {
             article.updateFromJson(item);
         }
-        if (item.rank != null) {
+        if (item.rank != null && item.isArticle !== true) {
             authorTagMgr = AuthorStore.getAuthorTagMgr(authorUuid);
             article.rank = authorTagMgr.addArticleRank(item.rank);
-        } else {
-            article.rank = AuthorStore.lookupArticleRankByUuid(articleUuid);
         }
+        article.getArticleRank();
         return article;
     }
 
@@ -588,13 +313,13 @@ class CommonStore {
     }
 
     addFromJson(items, key, index) {
-        let oldArt, kind = this.data.storeKind, itemsByKey = this.data[key];
+        let oldArt, itemsByKey = this.data[key];
 
         _.forOwn(items, function(it, k) {
             oldArt = itemsByKey[it.articleUuid];
 
             if (oldArt == null) {
-                itemsByKey[it.articleUuid] = Article.newInstance(kind, it);
+                itemsByKey[it.articleUuid] = ArticleFactory.newInstance(this, it);
 
             } else if (oldArt.noData == true) {
                 oldArt.updateFromJson(it);
@@ -634,5 +359,4 @@ class CommonStore {
     }
 }
 
-export {CommonStore, Article}
-export default CommonStore;
+export default CommonStore

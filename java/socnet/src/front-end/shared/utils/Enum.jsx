@@ -20,10 +20,10 @@ function Enum() {
  * return the index to insert into the sorted array.
  */
 function _locationOf(elm, array, compareFn) {
-    let cmp = 0;
-    let minIdx = 0;
-    let curIdx = -1;
-    let maxIdx = array.length;
+    let cmp = 0,
+        minIdx = 0,
+        curIdx = -1,
+        maxIdx = array.length;
 
     while (minIdx < maxIdx) {
         curIdx = (minIdx + maxIdx) / 2 | 0;
