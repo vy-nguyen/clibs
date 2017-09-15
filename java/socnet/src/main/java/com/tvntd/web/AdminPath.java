@@ -45,6 +45,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tvntd.forms.ArtTagForm;
+import com.tvntd.models.ArticleRank;
 import com.tvntd.service.api.GenericResponse;
 import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArtTagService.ArtTagDTO;
@@ -163,15 +164,17 @@ public class AdminPath
         s_log.debug("Got change article tag request");
 
         String artUuid = form.getArticleUuid();
-        ArticleDTO article = articleSvc.getArticleDTO(artUuid);
-        if (article == null || !form.getAuthorUuid().equals(article.getAuthorUuid())) {
+	ArticleRank artRank = articleSvc.getRank(artUuid);
+
+        if (artRank == null || !form.getAuthorUuid().equals(artRank.getAuthorUuid())) {
+	    System.out.println("Not owner " + artRank.getAuthorUuid());
             return UserPath.s_invalidArticle;
         }
         ArtTagDTO pubTag = artTagSvc.addPublicTagPost(form.getPublicTag(), artUuid);
         if (pubTag == null) {
             return UserPath.s_invalidArticle;
         }
-        ArticleRankDTO rank = article.getRank();
+        ArticleRankDTO rank = new ArticleRankDTO(artRank);
         rank.setPublicUrl(form.getPublicTag());
         articleSvc.saveRank(rank.fetchArtRank());
 
