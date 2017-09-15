@@ -66,7 +66,6 @@ class Footer extends React.Component
                         </div>
                     </div>
                 </div>
-                <Debug/>
             </div>
         )
     }
