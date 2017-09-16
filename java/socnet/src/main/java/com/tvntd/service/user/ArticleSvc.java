@@ -52,7 +52,9 @@ import com.tvntd.forms.UuidForm;
 import com.tvntd.models.AdsPost;
 import com.tvntd.models.ArtAds;
 import com.tvntd.models.ArtProduct;
+import com.tvntd.models.ArtTag;
 import com.tvntd.models.Article;
+import com.tvntd.models.ArticleBase;
 import com.tvntd.models.ArticleBrief;
 import com.tvntd.models.ArticlePost;
 import com.tvntd.models.ArticleRank;
@@ -457,5 +459,56 @@ public class ArticleSvc implements IArticleSvc
             }
         }
         */
+    }
+
+    public void cleanupDatabase()
+    {
+        List<ArticlePost> arts = artPostRepo.findAll();
+
+        for (ArticlePost a : arts) {
+            if (profileRepo.findByUserUuid(a.getAuthorUuid()) == null) {
+                System.out.println("Delete stale art " + a.getArticleUuid());
+                artPostRepo.delete(a);
+            }
+        }
+
+        List<ArticleBrief> briefs = artBriefRepo.findAll();
+        for (ArticleBrief a : briefs) {
+            ArticleBase b = a.getArtBase();
+            if (b.getArtTag() == null) {
+                String artUuid = b.getArticleUuid();
+                if (artPostRepo.findByArticleUuid(artUuid) == null &&
+                    artAdsRepo.findByArticleUuid(artUuid) == null &&
+                    artProdRepo.findByArticleUuid(artUuid) == null) {
+                    System.out.println("Delete invalid art " + b.getArtTitle());
+                    artBriefRepo.delete(a);
+                    continue;
+                }
+            }
+            if (profileRepo.findByUserId(b.getAuthorId()) == null) {
+                System.out.println("Delete invalid art userId " + b.getAuthorId());
+                artBriefRepo.delete(a);
+            }
+        }
+
+        List<ArtProduct> products = artProdRepo.findAll();
+        for (ArtProduct p : products) {
+            ArticleBase b = p.getArtBase();
+            if (b.getArtTag() == null) {
+                b.setArtTag(ArtTag.ESTORE);
+                System.out.println("Update artTag prod for " + b.getArtTitle());
+                artBaseRepo.save(b);
+            }
+        }
+
+        List<ArtAds> ads = artAdsRepo.findAll();
+        for (ArtAds a : ads) {
+            ArticleBase b = a.getArtBase();
+            if (b.getArtTag() == null) {
+                b.setArtTag(ArtTag.ADS);
+                System.out.println("Update artTag ads for " + b.getArtTitle());
+                artBaseRepo.save(b);
+            }
+        }
     }
 }

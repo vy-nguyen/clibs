@@ -467,9 +467,15 @@ public class PublicPath
         String buf = "hello world x = " + x + ", y = " + y;
         System.out.println("Input x = " + x + ", y = " + y);
 
-        artSvc.auditArticleTable();
+        if (x.equals("delete")) {
+            artSvc.cleanupDatabase();
+
+        } else if (x.equals("conv")) {
+            artSvc.auditArticleTable();
+        }
         resp.setContentType("text/html;charset=UTF-8");
         resp.setCharacterEncoding("utf-8");
+
         try {
             resp.getOutputStream().write(buf.getBytes("utf-8"), 0, buf.length());
         } catch(IOException e) {

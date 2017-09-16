@@ -42,6 +42,8 @@ public interface ArtBriefRepo extends JpaRepository<ArticleBrief, String>
     List<ArticleBrief> findByArticleUuidIn(List<String> articleUuid);
     List<ArticleBrief> findByTagHashIn(List<String> tagHash);
 
+    List<ArticleBrief> findAll();
+
     @Override
     void delete(ArticleBrief art);
 }

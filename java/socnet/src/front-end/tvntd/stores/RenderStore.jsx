@@ -249,9 +249,9 @@ let RenderStore = Reflux.createStore({
     },
 
     onRefreshNotifyCompleted: function(json) {
-        this.data.notifyItems = [json.message, json.notify, json.task];
+        this.data.notifyItems  = [json.message, json.notify, json.task];
         this.data.activeNotify = json.message;
-        this.data.lastUpdated = new Date();
+        this.data.lastUpdated  = new Date();
         this.trigger(this.data);
     },
 

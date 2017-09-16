@@ -40,6 +40,8 @@ public interface ArtAdsRepo extends JpaRepository<ArtAds, String>
     List<ArtAds> findByAuthorUuid(String ownerUuid);
     List<ArtAds> findByAuthorUuidIn(List<String> ownerUuids);
 
+    List<ArtAds> findAll();
+
     @Override
     void delete(ArtAds art);
 }

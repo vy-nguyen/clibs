@@ -275,7 +275,10 @@ class PublishArticle extends React.Component {
     render() {
         const fmt = "btn btn-primary pull-right";
         let selOpt = ArticleTagStore.getPublicTagsSelOpt("blog"),
-            selDef = !_.isEmpty(selOpt) ? selOpt[0].label : null,
+            eduOpt = ArticleTagStore.getPublicTagsSelOpt("edu"),
+            selDef = !_.isEmpty(selOpt) ? selOpt[0].label : null, pubCat;
+
+        Array.prototype.push.apply(selOpt, eduOpt);
         pubCat = {
             select   : true,
             inpName  : "pub-article",
@@ -289,7 +292,6 @@ class PublishArticle extends React.Component {
             labelFmt : 'control-label col-sx-2 col-sm-2 col-md-2 col-lg-2',
             inputFmt : 'control-label col-sx-10 col-sm-10 col-md-10 col-lg-10'
         };
-
         return (
             <div className="product-deatil">
                 <div className="row">

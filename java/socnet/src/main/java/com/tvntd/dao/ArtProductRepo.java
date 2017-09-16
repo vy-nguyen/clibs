@@ -40,6 +40,8 @@ public interface ArtProductRepo extends JpaRepository<ArtProduct, String>
     List<ArtProduct> findByAuthorUuid(String authorUuid);
     List<ArtProduct> findByAuthorUuidIn(List<String> authorUuids);
 
+    List<ArtProduct> findAll();
+
     @Override
     void delete(ArtProduct art);
 }

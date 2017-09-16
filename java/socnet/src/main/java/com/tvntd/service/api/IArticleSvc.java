@@ -104,6 +104,7 @@ public interface IArticleSvc
     void deleteArtProduct(List<ArtProductDTO> prodList);
 
     void auditArticleTable();
+    void cleanupDatabase();
 
     // Collection of article DTOs to send back to user.
     //

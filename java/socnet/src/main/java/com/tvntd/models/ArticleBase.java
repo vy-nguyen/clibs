@@ -113,6 +113,10 @@ public class ArticleBase
         contentOid   = rank.getContentOid();
         createdDate  = rank.getTimeStamp();
         contentLinkUrl = rank.getContentLinkUrl();
+
+        if (artTag == null) {
+            artTag = ArtTag.BLOG;
+        }
     }
 
     public void fromArticle(Article art)
