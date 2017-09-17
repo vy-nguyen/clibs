@@ -62,7 +62,6 @@ import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.ITimeLineService;
 import com.tvntd.service.api.ITimeLineService.TimeLineDTO;
-import com.tvntd.service.user.ArticleService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration

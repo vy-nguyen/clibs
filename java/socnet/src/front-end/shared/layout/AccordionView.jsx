@@ -51,7 +51,7 @@ class AccordionView extends React.Component {
     }
 
     render() {
-        let activeKey = this.state.activeKey, elmView = [], header, content;
+        let activeKey = this.state.activeKey || "0", elmView = [], header, content;
 
         _.forOwn(this.props.items, function(item) {
             if (!item.children || !item.children.length) {

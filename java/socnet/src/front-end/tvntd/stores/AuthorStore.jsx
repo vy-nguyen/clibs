@@ -197,7 +197,6 @@ let AuthorStore = Reflux.createStore({
      * Update article ranks with data returned from the server.
      */
     _updateArticleRank: function(articleRank, trigger) {
-        console.log(articleRank);
         _.forOwn(articleRank, function(rank) {
             this.addArticleRankFromJson(rank);
         }.bind(this));

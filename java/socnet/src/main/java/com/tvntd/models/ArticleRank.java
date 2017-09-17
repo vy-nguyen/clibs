@@ -183,8 +183,10 @@ public class ArticleRank
         authorUuid  = article.getAuthorUuid();
         artTitle    = article.getTopic();
         this.tag    = Util.toRawByte(tag, 64);
-        tagHash     = HashKey.toSha1Key(this.tag, authorUuid);
 
+        if (this.tag != null) {
+            tagHash = HashKey.toSha1Key(this.tag, authorUuid);
+        }
         List<String> imgs = article.getPictures();
         if (imgs != null && !imgs.isEmpty()) {
             imageOid = imgs.get(0);

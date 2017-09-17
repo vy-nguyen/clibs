@@ -9,13 +9,18 @@ import StarRating      from 'react-star-rating';
 
 import NavStore        from 'vntd-shared/stores/NavigationStore.jsx';
 import UserStore       from 'vntd-shared/stores/UserStore.jsx';
+import AccordionView   from 'vntd-shared/layout/AccordionView.jsx';
 import ArticleStore    from 'vntd-root/stores/ArticleStore.jsx';
 import AuthorStore     from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleTagStore from 'vntd-root/stores/ArticleTagStore.jsx';
 import Lang            from 'vntd-root/stores/LanguageStore.jsx';
 import LikeStat        from 'vntd-root/components/LikeStat.jsx';
+
 import {VntdGlob}      from 'vntd-root/config/constants.js';
+import {UserSection}   from 'vntd-root/components/UserIcon.jsx';
 import {Util}          from 'vntd-shared/utils/Enum.jsx';
+
+import AuthorLinks      from 'vntd-root/components/AuthorLinks.jsx';
 
 const _artDefStyle  = { maxHeight: "auto", minHeight: "100%" },
     _artBoxStyle    = { border: "1px", marginBottom: "10px", background: "#fff" },
@@ -110,8 +115,8 @@ class ArticleBox extends React.Component
             return null;
         }
         if (artRank.contentBrief == null) {
-            if (article.content != null && article.content.length > 100) {
-                artRank.contentBrief = article.content.substring(0, 100);
+            if (article.content != null && article.content.length > 255) {
+                artRank.contentBrief = article.content.substring(0, 255);
             } else {
                 artRank.contentBrief = "";
             }
@@ -186,6 +191,12 @@ class ArticleBox extends React.Component
     static artBlogWide(articleUuid, authorUuid, clickCb) {
         let data = ArticleBox.getArtCtx(articleUuid, authorUuid, clickCb);
         return (data != null ? <ArtBlogWide data={data}/> : null);
+    }
+
+    static artBlogList(data, state, clickFn, cbArg) {
+        return (
+            <ArtBlogListWide data={data} state={state} clickFn={clickFn} cbArg={cbArg}/>
+        );
     }
 
     static youtubeLink(article, brief) {
@@ -307,6 +318,89 @@ class ArtBlogWide extends React.Component
                             {clickBtn.btnText}
                         </a>
                     </div>
+                </div>
+            </div>
+        );
+    }
+}
+
+class ArtBlogListWide extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this._renderTag     = this._renderTag.bind(this);
+        this._renderArtLink = this._renderArtLink.bind(this);
+    }
+
+    _clickLink(artRank) {
+        this.props.clickFn(artRank.getArticleUuid(), artRank);
+    }
+
+    _renderTag(tag) {
+        return <span>{tag.tagName}</span>;
+    }
+
+    _renderArtLink(artRank) {
+        let text = artRank.artTitle.substring(0, 40);
+        return (
+            <p><a onClick={this._clickLink.bind(this, artRank)}>{text}</a></p>
+        );
+    }
+
+    _genArtTree(data, artTree) {
+        let artTag, anchor, evenRow = true, tagList = {};
+
+        _.forEach(data.artArray, function(pubArt) {
+            artTag = pubArt.getTagObj();
+            anchor = tagList[artTag.tagName];
+            if (anchor == null) {
+                anchor = {
+                    children : [],
+                    iconOpen : "fa fa-folder-open",
+                    iconClose: "fa fa-folder",
+                    renderFn : this._renderTag,
+                    renderArg: artTag,
+                    fontSize : "12",
+                    defLabel : true,
+                    textStyle: evenRow ? "label label-info" : "label label-primary"
+                };
+                evenRow = !evenRow;
+                tagList[artTag.tagName] = anchor;
+            }
+            anchor.children.push({
+                children : null,
+                parent   : anchor,
+                renderFn : this._renderArtLink,
+                renderArg: pubArt.getArticleRank()
+            });
+        }.bind(this));
+
+        _.forOwn(tagList, function(elm) {
+            artTree.push(elm);
+        });
+    }
+
+    render() {
+        let pub, articleUuid, authorUuid, artTree = [], data = this.props.data;
+
+        if (data.artArray.length == 1) {
+            let { state, clickFn, cbArg } = this.props;
+
+            pub         = data.artArray[0];
+            authorUuid  = pub.getAuthorUuid();
+            articleUuid = pub.getArticleUuid();
+
+            return ArticleBox.artBlog(articleUuid, authorUuid,
+                ArticleBox.getClickCb(state, articleUuid, clickFn, cbArg)
+            );
+        }
+        this._genArtTree(data, artTree);
+
+        return (
+            <div className="row">
+                <UserSection userUuid={data.authorUuid}/>
+                <div style={{maxHeight:300, overflow: "auto"}}>
+                    <AccordionView items={artTree}/>
                 </div>
             </div>
         );

@@ -126,7 +126,7 @@ public class ArticleService implements IArticleService
                     form.fetchContentUrlHost(), form.fetchContentUrlFile(),
                     tag, form.fetchDocType());
         }
-        if (!tag.equals(rank.getTag())) {
+        if (tag != null && !tag.equals(rank.getTag())) {
             rank.setTag(tag);
         }
         if (publish == true) {

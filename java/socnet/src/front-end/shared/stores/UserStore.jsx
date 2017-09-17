@@ -69,6 +69,12 @@ class User {
         this.country   = self.country;
     }
 
+    getCoverImgStyle() {
+        return {
+            backgroundImage: 'url(' + this.coverImg0 + ')'
+        };
+    }
+
     _reqDomainData() {
         return {
             authorUuid: this.userUuid,
