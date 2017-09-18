@@ -35,11 +35,13 @@ import com.tvntd.models.ArtAds;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.util.Util;
 
-public class ArtAdsDTO
+public class ArtAdsDTO extends GenericResponse
 {
     protected ArtAds adPost;
 
-    public ArtAdsDTO(ArtAds ads) {
+    public ArtAdsDTO(ArtAds ads)
+    {
+        super(null);
         adPost = ads;
     }
 
@@ -85,6 +87,10 @@ public class ArtAdsDTO
             img.add(url);
         }
         return img;
+    }
+
+    public String getArtTag() {
+        return adPost.getArtBase().getArtTag();
     }
 
     public String getCreatedDate() {

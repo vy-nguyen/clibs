@@ -41,7 +41,7 @@ import com.tvntd.lib.ObjectId;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Product;
 import com.tvntd.objstore.ObjStore;
-import com.tvntd.service.api.IArticleService.ArticleRankDTO;
+import com.tvntd.service.api.IArticleSvc.ArticleBriefDTO;
 import com.tvntd.service.api.ICommentService.CommentDTO;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 
@@ -116,21 +116,24 @@ public interface IProductService
         private List<ProductDTO> products;
         private List<ProductDTO> pendings;
         private List<CommentDTO> comments;
-        private List<ArticleRankDTO> articleRank;
+        private List<ArticleBriefDTO> articleRank;
 
+            /*
         public ProductDTOResponse(List<ProductDTO> prods, List<ProductDTO> pend)
         {
             super(GenericResponse.USER_HOME, null, null);
             products = prods;
             pendings = pend;
             articleRank = new LinkedList<>();
+
             for (ProductDTO p : products) {
                 articleRank.add(new ArticleRankDTO(p.fetchRank()));
             }
         }
+            */
 
         public ProductDTOResponse(List<ProductDTO> prods, List<ProductDTO> pend,
-                List<ArticleRankDTO> ranks, List<CommentDTO> comments)
+                List<ArticleBriefDTO> ranks, List<CommentDTO> comments)
         {
             super(GenericResponse.USER_HOME, null, null);
             this.products = prods;
@@ -139,7 +142,7 @@ public interface IProductService
             this.comments = comments;
         }
 
-        public ProductDTOResponse(List<ArticleRankDTO> rank)
+        public ProductDTOResponse(List<ArticleBriefDTO> rank)
         {
             super(GenericResponse.USER_HOME, null, null);
             articleRank = rank;
@@ -176,7 +179,7 @@ public interface IProductService
         /**
          * @return the articleRank
          */
-        public List<ArticleRankDTO> getArticleRank() {
+        public List<ArticleBriefDTO> getArticleRank() {
             return articleRank;
         }
     }

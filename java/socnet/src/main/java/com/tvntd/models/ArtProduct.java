@@ -26,6 +26,7 @@
  */
 package com.tvntd.models;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -106,6 +107,7 @@ public class ArtProduct
     {
         if (base == null) {
             base = new ArticleBase();
+            base.setCreatedDate(new Date());
         }
         articleUuid = base.getArticleUuid();
         artBase     = base;
@@ -121,7 +123,10 @@ public class ArtProduct
         }
         articleUuid = prod.getArticleUuid();
         authorUuid  = prod.getAuthorUuid();
+
+        artBase.setArtTag(ArtTag.ESTORE);
         artBase.setAuthorId(prod.getAuthorId());
+        artBase.setCreatedDate(prod.getCreatedDate());
       
         pending    = prod.isPending();
         logoImg    = prod.getLogoImg();

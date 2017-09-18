@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -60,11 +61,11 @@ import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.Constants;
 import com.tvntd.lib.FileResources;
 import com.tvntd.lib.ObjectId;
-import com.tvntd.models.ArticleRank;
+import com.tvntd.models.ArticleBrief;
 import com.tvntd.models.Profile;
 import com.tvntd.objstore.ObjStore;
+import com.tvntd.service.api.ArtAdsDTO;
 import com.tvntd.service.api.GenericResponse;
-import com.tvntd.service.api.IAdsPostService;
 import com.tvntd.service.api.IAdsPostService.AdsPostDTO;
 import com.tvntd.service.api.IAdsPostService.AdsPostDTOResponse;
 import com.tvntd.service.api.IAnnonService;
@@ -75,8 +76,8 @@ import com.tvntd.service.api.IArtTagService.ArtTagList;
 import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleService.ArticleDTOResponse;
-import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.IArticleSvc;
+import com.tvntd.service.api.IArticleSvc.ArticleBriefDTO;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.ICommentService;
 import com.tvntd.service.api.ICommentService.CommentDTOResponse;
@@ -88,7 +89,7 @@ import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.ImageUploadResp;
 import com.tvntd.service.api.StartupResponse;
-import com.tvntd.service.user.AdsPostService;
+import com.tvntd.service.user.ArticleSvc;
 
 @Controller
 public class PublicPath
@@ -117,9 +118,6 @@ public class PublicPath
 
     @Autowired
     private IAnnonService annonSvc;
-
-    @Autowired
-    private IAdsPostService adsSvc;
 
     @Autowired
     private IDomainService domainSvc;
@@ -234,7 +232,7 @@ public class PublicPath
         } else {
             list = productSvc.getProductsByUuids(uuids.getUuids());
         }
-        List<ArticleRankDTO> ranks = articleSvc.getArticleRank(uuids);
+        List<ArticleBriefDTO> ranks = artSvc.getArticleBriefDTO(uuids);
         ArrayList<String> artUuids = new ArrayList<>(list.size());
 
         for (ProductDTO prod : list) {
@@ -353,7 +351,7 @@ public class PublicPath
     publishAds(@RequestBody AdsForm form,
             HttpServletRequest reqt, HttpServletResponse resp, HttpSession session)
     {
-        AdsPostDTO ads = null;
+        ArtAdsDTO ads = null;
         AnnonUserDTO user = null;
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
 
@@ -363,20 +361,21 @@ public class PublicPath
             if (profile == null) {
                 // Annon user can only have 1 ad/cookie.
                 //
-                adsSvc.deleteAnnonAds(user.getUserUuid());
+                artSvc.deleteAnnonAds(user.getUserUuid());
             }
-            ads = user.genPendAds();
+            ads = user.genPendArtAds();
         } else {
-            ads = profile.genPendAds();
+            ads = profile.genPendArtAds();
         }
         if (form.cleanInput() == false) {
             return UserPath.s_saveObjFailed;
         }
-        AdsPostService.applyPostAds(form, ads);
-        adsSvc.saveAds(ads);
+        ArticleSvc.applyPostAds(form, ads);
+        ArticleBrief brief = new ArticleBrief(ads.fetchAds());
 
-        ArticleRank rank = authorSvc.createAdsRank(ads.fetchAdPost(), form, user);
-        ads.setAdsRank(new ArticleRankDTO(rank));
+        authorSvc.updateAuthor(ads, user);
+        artSvc.saveArtAds(ads);
+        artSvc.saveArticleBrief(brief);
 
         artTagSvc.addPublicTagPost(form.getBusCat(), ads.getArticleUuid());
         if (profile != null) {
@@ -385,7 +384,6 @@ public class PublicPath
         if (user != null) {
             user.assignPendAds(null);
         }
-        ads.convertUTF();
         return ads;
     }
 
@@ -407,12 +405,11 @@ public class PublicPath
             return UserPath.s_invalidArticle;
         }
         */
-        List<AdsPostDTO> ads = adsSvc.getAdsPostByUuids(uuids.getUuids());
-        ArrayList<String> artUuids = new ArrayList<>(ads.size());
-
-        for (AdsPostDTO a : ads) {
-            artUuids.add(a.getArticleUuid());
+        List<String> artUuids = new LinkedList<>();
+        for (String uid : uuids.getUuids()) {
+            artUuids.add(uid);
         }
+        List<ArtAdsDTO> ads = artSvc.getArtAdsDTO(artUuids);
         CommentDTOResponse co = commentSvc.getCommentPost(artUuids);
         return new AdsPostDTOResponse(ads, co.getComments());
     }
@@ -443,7 +440,7 @@ public class PublicPath
             @PathVariable(value = "title") String title,
             HttpSession session, HttpServletRequest request, HttpServletResponse resp)
     {
-        ArticleRank rank = articleSvc.getRank(tag, title);
+        ArticleBriefDTO rank = artSvc.getArticleBriefDTO(tag, title);
         if (rank != null) {
             session.setAttribute("startPage", "load author=" +
                     rank.getAuthorUuid() + " articleUuid=" + rank.getArticleUuid());

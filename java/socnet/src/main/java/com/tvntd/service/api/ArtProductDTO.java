@@ -66,6 +66,10 @@ public class ArtProductDTO
         return product.getAuthorUuid();
     }
 
+    public String getArtTag() {
+        return product.getArtBase().getArtTag();
+    }
+
     public boolean isPending() {
         return product.isPending();
     }

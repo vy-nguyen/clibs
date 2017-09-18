@@ -33,8 +33,10 @@ import javax.servlet.http.HttpSession;
 import com.tvntd.lib.ObjectId;
 import com.tvntd.models.AdsPost;
 import com.tvntd.models.AnnonUser;
+import com.tvntd.models.ArtAds;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.IAdsPostService.AdsPostDTO;
+import com.tvntd.util.Constants;
 
 public interface IAnnonService
 {
@@ -55,6 +57,7 @@ public interface IAnnonService
         private static String s_baseUri = "/rs/objs";
         private AnnonUser user;
         private AdsPostDTO pendAds;
+        private ArtAdsDTO pendArtAds;
 
         public AnnonUserDTO(AnnonUser user) {
             this.user = user;
@@ -75,8 +78,17 @@ public interface IAnnonService
             return pendAds;
         }
 
-        public void assignPendAds(AdsPostDTO ads) {
-            pendAds = ads;
+        public void assignPendAds(ArtAdsDTO ads) {
+            pendArtAds = ads;
+        }
+
+        public ArtAdsDTO genPendArtAds()
+        {
+            if (pendArtAds == null) {
+                ArtAds ads = new ArtAds(user.getUserUuid(), Constants.PublicId);
+                pendArtAds = new ArtAdsDTO(ads);
+            }
+            return pendArtAds;
         }
 
         /**

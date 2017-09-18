@@ -26,6 +26,8 @@
  */
 package com.tvntd.models;
 
+import java.util.Date;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -107,8 +109,23 @@ public class ArtAds
     private byte[] busDesc;
 
     public ArtAds() {}
+    public ArtAds(String authorUuid, Long authorId)
+    {
+        artBase = new ArticleBase();
+        artAttr = new ArticleAttr(artBase.getArticleUuid());
+
+        this.authorUuid = authorUuid;
+        artBase.setAuthorId(authorId);
+        artBase.setArtTag(ArtTag.ADS);
+        artBase.setCreatedDate(new Date());
+    }
+
     public ArtAds(ArticleBase base)
     {
+        if (base == null) {
+            base = new ArticleBase();
+            base.setCreatedDate(new Date());
+        }
         artBase     = base;
         articleUuid = base.getArticleUuid();
         artAttr     = new ArticleAttr(articleUuid);
@@ -122,8 +139,10 @@ public class ArtAds
             artAttr     = new ArticleAttr(articleUuid);
         }
         articleUuid = ads.getArticleUuid();
+        artBase.setArtTag(ArtTag.ADS);
         artBase.setContentOid(ads.getContentOid());
         artBase.setPictures(null);
+        artBase.setCreatedDate(ads.getCreatedDate());
 
         authorUuid = ads.getAuthorUuid();
         adImgOid0  = ads.getAdImgOId0();

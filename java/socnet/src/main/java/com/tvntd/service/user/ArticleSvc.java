@@ -33,6 +33,8 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,8 +49,10 @@ import com.tvntd.dao.ArticleRankRepo;
 import com.tvntd.dao.ArticleRepository;
 import com.tvntd.dao.ProductRepository;
 import com.tvntd.dao.ProfileRepository;
+import com.tvntd.forms.AdsForm;
 import com.tvntd.forms.PostForm;
 import com.tvntd.forms.UuidForm;
+import com.tvntd.key.HashKey;
 import com.tvntd.models.AdsPost;
 import com.tvntd.models.ArtAds;
 import com.tvntd.models.ArtProduct;
@@ -63,11 +67,14 @@ import com.tvntd.service.api.ArtAdsDTO;
 import com.tvntd.service.api.ArtProductDTO;
 import com.tvntd.service.api.IArticleSvc;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
+import com.tvntd.util.Util;
 
 @Service
 @Transactional
 public class ArticleSvc implements IArticleSvc
 {
+    private static Logger s_log = LoggerFactory.getLogger(ArticleSvc.class);
+
     @Autowired
     protected ArticleBaseRepo artBaseRepo;
 
@@ -103,6 +110,27 @@ public class ArticleSvc implements IArticleSvc
     @Autowired
     protected ProfileRepository profileRepo;
 
+    // --------------------------------------------------------------------------------
+    // Static APIs
+    //
+    public static void applyPostAds(AdsForm form, ArtAdsDTO adsDTO)
+    {
+        ArtAds ads = adsDTO.fetchAds();
+        ads.setBusName(Util.toRawByte(form.getBusName(), 128));
+        ads.setBusInfo(Util.toRawByte(form.getBusInfo(), 128));
+        ads.setBusCat(Util.toRawByte(form.getBusCat(), 128));
+        ads.setBusWeb(Util.toRawByte(form.getBusWeb(), 128));
+        ads.setBusEmail(Util.toRawByte(form.getBusEmail(), 128));
+        ads.setBusPhone(Util.toRawByte(form.getBusPhone(), 128));
+        ads.setBusStreet(Util.toRawByte(form.getBusStreet(), 128));
+        ads.setBusCity(Util.toRawByte(form.getBusCity(), 64));
+        ads.setBusState(Util.toRawByte(form.getBusState(), 32));
+        ads.setBusZip(Util.toRawByte(form.getBusZip(), 32));
+        ads.setBusHour(Util.toRawByte(form.getBusHour(), 1024));
+        ads.setBusDesc(Util.toRawByte(form.getBusDesc(), 1 << 14));
+    }
+    
+    // --------------------------------------------------------------------------------
     // Query
     //
     // ArticlePost for posts in blog page.
@@ -152,6 +180,23 @@ public class ArticleSvc implements IArticleSvc
             return null;
         }
         return new ArticleBriefDTO(art);
+    }
+
+    @Override
+    public ArticleBriefDTO getArticleBriefDTO(String tagName, String title)
+    {
+        String asciiTag = Util.utf8ToUrlString(tagName);
+        String asciiTitle = Util.utf8ToUrlString(title);
+        String key = HashKey.toSha1Key(asciiTag, asciiTitle);
+
+        s_log.info("Lookup " + asciiTag + ", " + asciiTitle + ": " + key);
+        ArticleBase base = artBaseRepo.findByPublicUrlOid(key);
+
+        if (base != null) {
+            ArticleBrief rank = artBriefRepo.findByArticleUuid(base.getArticleUuid());
+            return new ArticleBriefDTO(rank);
+        }
+        return null;
     }
 
     protected List<ArticleBriefDTO> convertArtBrief(List<ArticleBrief> raw)
@@ -273,6 +318,7 @@ public class ArticleSvc implements IArticleSvc
         return convertArticleAds(artAdsRepo.findByAuthorUuidIn(ownerUuids));
     }
 
+    // --------------------------------------------------------------------------------
     // Save/update ArticleBrief/ArticlePost
     //
     @Override
@@ -293,6 +339,11 @@ public class ArticleSvc implements IArticleSvc
         for (ArticlePostDTO a : arts) {
             artPostRepo.save(a.fetchArticlePost());
         }
+    }
+
+    @Override
+    public void saveArticleBrief(ArticleBrief rank) {
+        artBriefRepo.save(rank);
     }
 
     @Override
@@ -337,6 +388,7 @@ public class ArticleSvc implements IArticleSvc
     {
     }
 
+    // --------------------------------------------------------------------------------
     // Delete
     //
     @Override
@@ -371,6 +423,20 @@ public class ArticleSvc implements IArticleSvc
     }
 
     @Override
+    public void deleteAnnonAds(String authorUuid)
+    {
+        List<ArtAds> adsList = artAdsRepo.findByAuthorUuid(authorUuid);
+
+        if (adsList != null) {
+            System.out.println("Delete ads " + adsList.size());
+            for (ArtAds a : adsList) {
+                s_log.info("Delete ads " + a.getBusName());
+                artAdsRepo.delete(a);
+            }
+        }
+    }
+
+    @Override
     public void deleteArtAds(List<ArtAdsDTO> adsList)
     {
         for (ArtAdsDTO ads : adsList) {
@@ -391,6 +457,9 @@ public class ArticleSvc implements IArticleSvc
         }
     }
 
+    // --------------------------------------------------------------------------------
+    // Internal API
+    //
     @Override
     public void auditArticleTable()
     {

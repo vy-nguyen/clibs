@@ -59,10 +59,10 @@ public interface IAdsPostService
      */
     public static class AdsPostDTOResponse extends GenericResponse
     {
-        private List<AdsPostDTO> ads;
+        private List<ArtAdsDTO> ads;
         private List<CommentDTO> comments;
 
-        public AdsPostDTOResponse(List<AdsPostDTO> ads, List<CommentDTO> comments)
+        public AdsPostDTOResponse(List<ArtAdsDTO> ads, List<CommentDTO> comments)
         {
             super(GenericResponse.USER_HOME, null, null);
             this.ads = ads;
@@ -72,7 +72,7 @@ public interface IAdsPostService
         /**
          * @return the ads
          */
-        public List<AdsPostDTO> getAds() {
+        public List<ArtAdsDTO> getAds() {
             return ads;
         }
 

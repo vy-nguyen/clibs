@@ -27,7 +27,6 @@
 package com.tvntd.service.user;
 
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -77,7 +76,7 @@ public class CommentService implements ICommentService
     }
 
     @Override
-    public CommentDTOResponse getCommentPost(ArrayList<String> uuidList)
+    public CommentDTOResponse getCommentPost(List<String> uuidList)
     {
         CommentDTOResponse out = new CommentDTOResponse();
         for (String uuid : uuidList) {

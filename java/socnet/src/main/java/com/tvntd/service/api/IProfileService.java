@@ -39,6 +39,7 @@ import org.springframework.data.domain.Page;
 
 import com.tvntd.lib.ObjectId;
 import com.tvntd.models.AdsPost;
+import com.tvntd.models.ArtAds;
 import com.tvntd.models.Profile;
 import com.tvntd.models.Role;
 import com.tvntd.models.User;
@@ -98,6 +99,7 @@ public interface IProfileService
         private LinkedList<ProductDTO> savedProds;
 
         private AdsPostDTO             pendAds;
+        private ArtAdsDTO              pendArtAds;
 
         // NewsFeed for this profile.
         //
@@ -431,8 +433,17 @@ public interface IProfileService
             return pendAds;
         }
 
-        public void assignPendAds(AdsPostDTO ads) {
-            pendAds = ads;
+        public void assignPendAds(ArtAdsDTO ads) {
+            pendArtAds = ads;
+        }
+
+        public ArtAdsDTO genPendArtAds()
+        {
+            if (pendArtAds == null) {
+                ArtAds ad = new ArtAds(getUserUuid(), fetchUserId());
+                pendArtAds = new ArtAdsDTO(ad);
+            }
+            return pendArtAds;
         }
 
         /**

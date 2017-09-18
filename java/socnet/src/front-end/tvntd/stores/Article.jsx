@@ -656,7 +656,12 @@ export class AdsItem extends Article {
     // @Override
     //
     getTagName() {
-        return this.adsRank.tagName;
+        let artRank = this.getArticleRank();
+
+        if (artRank != null) {
+            return artRank.tagName;
+        }
+        return "Default";
     }
 
     // @Override

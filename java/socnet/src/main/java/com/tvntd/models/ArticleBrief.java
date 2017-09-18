@@ -26,6 +26,7 @@
  */
 package com.tvntd.models;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -116,6 +117,18 @@ public class ArticleBrief
         favorite    = false;
         hasArticle  = false;
         transRoot   = null;
+    }
+
+    public ArticleBrief(ArtAds ads)
+    {
+        artBase      = ads.getArtBase();
+        artAttr      = ads.getArtAttr();
+        authorUuid   = ads.getAuthorUuid();
+        articleUuid  = ads.getArticleUuid();
+        favorite     = false;
+        contentBrief = Arrays.copyOfRange(ads.getBusDesc(), 0, 256);
+        this.tag     = ads.getBusCat();
+        tagHash      = HashKey.toSha1Key(this.tag, authorUuid);
     }
 
     public void fromArticleRank(ArticleRank rank)

@@ -35,6 +35,7 @@ import java.util.Map;
 import com.tvntd.forms.PostForm;
 import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.ObjectId;
+import com.tvntd.models.ArtTag;
 import com.tvntd.models.ArticleBase;
 import com.tvntd.models.ArticleBrief;
 import com.tvntd.models.ArticlePost;
@@ -55,6 +56,7 @@ public interface IArticleSvc
     List<ArticlePostDTO>  getArticleDTOByAuthor(List<String> authorUuid);
 
     ArticleBriefDTO       getArticleBriefDTO(String artUuid);
+    ArticleBriefDTO       getArticleBriefDTO(String tagName, String title);
     List<ArticleBriefDTO> getArticleBriefDTO(UuidForm form);
     List<ArticleBriefDTO> getArticleBriefDTOByAuthor(String authorUuid);
     List<ArticleBriefDTO> getArticleBriefDTO(List<String> artUuids);
@@ -73,6 +75,7 @@ public interface IArticleSvc
     // Save, update
     //
     void saveArticlePost(ArticlePostDTO art);
+    void saveArticleBrief(ArticleBrief rank);
     void saveArticleBrief(ArticleBriefDTO rank);
 
     void saveArticlePost(List<ArticlePostDTO> arts);
@@ -89,6 +92,7 @@ public interface IArticleSvc
     void savePost(PostForm form, ArticleBriefDTO artBrief,
             ProfileDTO profile, boolean publish, boolean update);
 
+
     // Delete
     //
     void deleteArticlePost(ArticlePostDTO art);
@@ -97,6 +101,7 @@ public interface IArticleSvc
     void deleteArticleBrief(ArticleBriefDTO rank);
     void deleteArticleBrief(List<ArticleBriefDTO> ranks);
 
+    void deleteAnnonAds(String authorUuid);
     void deleteArtAds(ArtAdsDTO ads);
     void deleteArtAds(List<ArtAdsDTO> adsList);
 
@@ -219,6 +224,10 @@ public interface IArticleSvc
 
         public ArticlePost fetchArticlePost() {
             return article;
+        }
+
+        public String getArtTag() {
+            return ArtTag.BLOG;
         }
 
         public String getArticleUuid() {

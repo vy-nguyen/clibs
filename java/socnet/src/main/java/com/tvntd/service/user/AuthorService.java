@@ -47,15 +47,18 @@ import com.tvntd.forms.AdsForm;
 import com.tvntd.forms.ArticleForm;
 import com.tvntd.forms.ProductForm;
 import com.tvntd.models.AdsPost;
+import com.tvntd.models.ArtAds;
 import com.tvntd.models.Article;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Author;
 import com.tvntd.models.AuthorTag;
 import com.tvntd.models.Product;
+import com.tvntd.service.api.ArtAdsDTO;
 import com.tvntd.service.api.IAnnonService.AnnonUserDTO;
 import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
+import com.tvntd.util.Util;
 
 @Service
 @Transactional
@@ -327,5 +330,22 @@ public class AuthorService implements IAuthorService
 
         rankRepo.save(rank);
         return rank;
+    }
+
+    public void updateAuthor(ArtAdsDTO adsDTO, AnnonUserDTO user)
+    {
+        ArtAds ads = adsDTO.fetchAds();
+        String authorUuid = ads.getAuthorUuid();
+
+        if (user != null) {
+            authorUuid = com.tvntd.util.Constants.PublicUuid;
+        }
+        System.out.println("Create with author uuid " + authorUuid);
+        Author author = authorRepo.findByAuthorUuid(authorUuid);
+
+        if (author == null) {
+            author = new Author(authorUuid, ads.getArticleUuid());
+        }
+        updateAuthorTag(author, Util.fromRawByte(ads.getBusCat()), 0L, false);
     }
 }

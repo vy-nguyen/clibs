@@ -68,6 +68,7 @@ public interface IAuthorService
     void saveAuthor(Author author);
     void deleteAuthor(String uuid);
 
+    void updateAuthor(ArtAdsDTO adsDTO, AnnonUserDTO user);
     ArticleRank createArticleRank(Article article, String tagName);
     ArticleRank createProductRank(Product product, ProductForm form);
     ArticleRank createAdsRank(AdsPost ads, AdsForm form, AnnonUserDTO user);
