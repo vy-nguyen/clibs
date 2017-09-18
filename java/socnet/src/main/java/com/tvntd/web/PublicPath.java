@@ -65,8 +65,8 @@ import com.tvntd.models.ArticleBrief;
 import com.tvntd.models.Profile;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.ArtAdsDTO;
+import com.tvntd.service.api.ArtProductDTO;
 import com.tvntd.service.api.GenericResponse;
-import com.tvntd.service.api.IAdsPostService.AdsPostDTO;
 import com.tvntd.service.api.IAdsPostService.AdsPostDTOResponse;
 import com.tvntd.service.api.IAnnonService;
 import com.tvntd.service.api.IAnnonService.AnnonUserDTO;
@@ -82,8 +82,6 @@ import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.ICommentService;
 import com.tvntd.service.api.ICommentService.CommentDTOResponse;
 import com.tvntd.service.api.IDomainService;
-import com.tvntd.service.api.IProductService;
-import com.tvntd.service.api.IProductService.ProductDTO;
 import com.tvntd.service.api.IProductService.ProductDTOResponse;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
@@ -112,9 +110,6 @@ public class PublicPath
 
     @Autowired
     private ICommentService commentSvc;
-
-    @Autowired
-    private IProductService productSvc;
 
     @Autowired
     private IAnnonService annonSvc;
@@ -224,22 +219,21 @@ public class PublicPath
         if (uuids == null) {
             return UserPath.s_genOkResp;
         }
-        List<ProductDTO> list = null;
         String type = uuids.getUuidType();
+        List<ArtProductDTO> prodList = null;
+        List<String> uuidList = new LinkedList<>();
 
+        for (String uid : uuids.getUuids()) {
+            uuidList.add(uid);
+        }
         if (type.equals("user")) {
-            list = productSvc.getProductsByUser(uuids.getUuids());
+            prodList = artSvc.getArtProductDTOByOnwer(uuidList);
         } else {
-            list = productSvc.getProductsByUuids(uuids.getUuids());
+            prodList = artSvc.getArtProductDTO(uuidList);
         }
         List<ArticleBriefDTO> ranks = artSvc.getArticleBriefDTO(uuids);
-        ArrayList<String> artUuids = new ArrayList<>(list.size());
-
-        for (ProductDTO prod : list) {
-            artUuids.add(prod.getArticleUuid());
-        }
-        CommentDTOResponse co = commentSvc.getCommentPost(artUuids);
-        return new ProductDTOResponse(list, null, ranks, co.getComments());
+        CommentDTOResponse co = commentSvc.getCommentPost(uuidList);
+        return new ProductDTOResponse(prodList, null, ranks, co.getComments());
     }
 
     /**
@@ -312,22 +306,22 @@ public class PublicPath
             MultipartHttpServletRequest reqt,
             HttpServletResponse resp, HttpSession session)
     {
-        AdsPostDTO ads;
+        ArtAdsDTO ads;
         ObjStore store = ObjStore.getInstance();
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
 
         if (profile == null) {
             AnnonUserDTO user = annonSvc.getAnnonUser(reqt, resp, session);
-            ads = user.genPendAds();
+            ads = user.genPendArtAds();
         } else {
-            ads = profile.genPendAds();
+            ads = profile.genPendArtAds();
         }
         try {
             InputStream is = file.getInputStream();
             ObjectId oid = store.putPublicImg(is, (int)file.getSize());
 
             if (oid != null) {
-                ads.setAdImgOId0(oid.name());
+                ads.setAdImgOid0(oid.name());
             }
             ImageUploadResp out =
                 new ImageUploadResp(ads.getArticleUuid(), ads.getAuthorUuid(), oid);

@@ -38,13 +38,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 
 import com.tvntd.lib.ObjectId;
-import com.tvntd.models.AdsPost;
 import com.tvntd.models.ArtAds;
 import com.tvntd.models.Profile;
 import com.tvntd.models.Role;
 import com.tvntd.models.User;
 import com.tvntd.objstore.ObjStore;
-import com.tvntd.service.api.IAdsPostService.AdsPostDTO;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IProductService.ProductDTO;
 import com.tvntd.util.Constants;
@@ -98,7 +96,6 @@ public interface IProfileService
         private LinkedList<ProductDTO> publishedProds;
         private LinkedList<ProductDTO> savedProds;
 
-        private AdsPostDTO             pendAds;
         private ArtAdsDTO              pendArtAds;
 
         // NewsFeed for this profile.
@@ -422,17 +419,6 @@ public interface IProfileService
         /**
          * ------------------ Ads Posting ----------------------
          */
-        public AdsPostDTO genPendAds()
-        {
-            if (pendAds != null) {
-                return pendAds;
-            }
-            AdsPost ads = new AdsPost();
-            ads.setAuthorUuid(getUserUuid());
-            pendAds = new AdsPostDTO(ads, null);
-            return pendAds;
-        }
-
         public void assignPendAds(ArtAdsDTO ads) {
             pendArtAds = ads;
         }
@@ -697,20 +683,6 @@ public interface IProfileService
          */
         public Long getRoleMask() {
             return roleMask;
-        }
-
-       /**
-         * @return the pendAds
-         */
-        public AdsPostDTO getPendAds() {
-            return pendAds;
-        }
-
-        /**
-         * @param pendAds the pendAds to set
-         */
-        public void setPendAds(AdsPostDTO pendAds) {
-            this.pendAds = pendAds;
         }
 
         /**

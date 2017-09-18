@@ -113,26 +113,12 @@ public interface IProductService
 
     public static class ProductDTOResponse extends GenericResponse
     {
-        private List<ProductDTO> products;
-        private List<ProductDTO> pendings;
+        private List<ArtProductDTO> products;
+        private List<ArtProductDTO> pendings;
         private List<CommentDTO> comments;
         private List<ArticleBriefDTO> articleRank;
 
-            /*
-        public ProductDTOResponse(List<ProductDTO> prods, List<ProductDTO> pend)
-        {
-            super(GenericResponse.USER_HOME, null, null);
-            products = prods;
-            pendings = pend;
-            articleRank = new LinkedList<>();
-
-            for (ProductDTO p : products) {
-                articleRank.add(new ArticleRankDTO(p.fetchRank()));
-            }
-        }
-            */
-
-        public ProductDTOResponse(List<ProductDTO> prods, List<ProductDTO> pend,
+        public ProductDTOResponse(List<ArtProductDTO> prods, List<ArtProductDTO> pend,
                 List<ArticleBriefDTO> ranks, List<CommentDTO> comments)
         {
             super(GenericResponse.USER_HOME, null, null);
@@ -151,14 +137,14 @@ public interface IProductService
         /**
          * @return the products
          */
-        public List<ProductDTO> getProducts() {
+        public List<ArtProductDTO> getProducts() {
             return products;
         }
 
         /**
          * @return the pendings
          */
-        public List<ProductDTO> getPendings() {
+        public List<ArtProductDTO> getPendings() {
             return pendings;
         }
 
