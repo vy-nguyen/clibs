@@ -51,6 +51,7 @@ import com.tvntd.dao.ProductRepository;
 import com.tvntd.dao.ProfileRepository;
 import com.tvntd.forms.AdsForm;
 import com.tvntd.forms.PostForm;
+import com.tvntd.forms.ProductForm;
 import com.tvntd.forms.UuidForm;
 import com.tvntd.key.HashKey;
 import com.tvntd.models.AdsPost;
@@ -65,7 +66,9 @@ import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Product;
 import com.tvntd.service.api.ArtAdsDTO;
 import com.tvntd.service.api.ArtProductDTO;
+import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArticleSvc;
+import com.tvntd.service.api.ICommentService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.util.Util;
 
@@ -92,6 +95,12 @@ public class ArticleSvc implements IArticleSvc
 
     @Autowired
     protected ArtProductRepo artProdRepo;
+
+    @Autowired
+    protected ICommentService commentSvc;
+
+    @Autowired
+    protected IArtTagService artTagSvc;
 
     // Will depreicate these tables.
     //
@@ -129,7 +138,30 @@ public class ArticleSvc implements IArticleSvc
         ads.setBusHour(Util.toRawByte(form.getBusHour(), 1024));
         ads.setBusDesc(Util.toRawByte(form.getBusDesc(), 1 << 14));
     }
-    
+   
+    public static void
+    applyPostProduct(ProductForm form, ArtProductDTO prodDTO, boolean publish)
+    {
+        ArtProduct prod = prodDTO.fetchProduct();
+        
+        prod.markPending(!publish);
+        String str = form.getProdNotice();
+        if (str != null) {
+            prod.setProdNotice(Util.toRawByte(str, 128));
+        }
+        prod.setProdName(Util.toRawByte(form.getProdName(), 128));
+        prod.setProdTitle(Util.toRawByte(form.getProdTitle(), 128));
+        prod.setProdDesc(Util.toRawByte(form.getProdDesc(), 1 << 16));
+        prod.setProdSpec(Util.toRawByte(form.getProdSpec(), 1 << 16));
+        prod.setProdDetail(Util.toRawByte(form.getProdDetail(), 1 << 16));
+        prod.setPublicTag(Util.toRawByte(form.getPubTag(), 128));
+        prod.setProdSub(Util.toRawByte(form.getProdSub(), 128));
+
+        prod.setProdPrice(0L);
+        prod.setPriceUnit("$");
+        prod.setLogoTag("");
+    }
+
     // --------------------------------------------------------------------------------
     // Query
     //
@@ -327,13 +359,6 @@ public class ArticleSvc implements IArticleSvc
     }
 
     @Override
-    public void saveArticleBrief(ArticleBriefDTO rank) {
-        artBriefRepo.save(rank.fetchArtRank());
-    }
-  
-    // Save/update list of ArticlePost/ArticleBrief.
-    //
-    @Override
     public void saveArticlePost(List<ArticlePostDTO> arts)
     {
         for (ArticlePostDTO a : arts) {
@@ -341,6 +366,11 @@ public class ArticleSvc implements IArticleSvc
         }
     }
 
+    @Override
+    public void saveArticleBrief(ArticleBriefDTO rank) {
+        artBriefRepo.save(rank.fetchArtRank());
+    }
+  
     @Override
     public void saveArticleBrief(ArticleBrief rank) {
         artBriefRepo.save(rank);
@@ -352,6 +382,11 @@ public class ArticleSvc implements IArticleSvc
         for (ArticleBriefDTO r : ranks) {
             artBriefRepo.save(r.fetchArtRank());
         }
+    }
+
+    @Override
+    public void saveArticleBrief(ArtProductDTO prod, ProductForm form)
+    {
     }
 
     // Save/update Ads
@@ -455,6 +490,28 @@ public class ArticleSvc implements IArticleSvc
         for (ArtProductDTO p : prodList) {
             artProdRepo.delete(p.fetchProduct());
         }
+    }
+
+    @Override
+    public ArtProduct deleteArtProduct(String articleUuid, ProfileDTO owner)
+    {
+        ArtProduct prod = artProdRepo.findByArticleUuid(articleUuid);
+
+        if (prod == null || !prod.getAuthorUuid().equals(owner.getUserUuid())) {
+            return null;
+        }
+        s_log.info("Delete product " +
+                prod.getArticleUuid() + ", name " + prod.getProdName());
+
+        ArticleBrief brief = artBriefRepo.findByArticleUuid(articleUuid);
+        if (brief != null) {
+            artBriefRepo.delete(brief);
+        }
+        commentSvc.deleteComment(articleUuid);
+        artTagSvc.deletePublicTagPost(prod.getPublicTag(), articleUuid);
+        artProdRepo.delete(prod);
+
+        return prod;
     }
 
     // --------------------------------------------------------------------------------

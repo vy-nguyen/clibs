@@ -40,6 +40,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
+import com.tvntd.lib.ObjectId;
+
 @Entity
 @Table(indexes = {
     @Index(columnList = "authorUuid", unique = false)
@@ -103,6 +105,17 @@ public class ArtProduct
     protected boolean    pending;
 
     public ArtProduct() {}
+    public ArtProduct(String authorUuid, Long authorId)
+    {
+        artBase     = new ArticleBase();
+        articleUuid = artBase.getArticleUuid();
+        artAttr     = new ArticleAttr(articleUuid);
+
+        this.authorUuid = authorUuid;
+        artBase.setAuthorId(authorId);
+        artBase.setArtTag(ArtTag.ESTORE);
+    }
+
     public ArtProduct(ArticleBase base)
     {
         if (base == null) {
@@ -157,6 +170,14 @@ public class ArtProduct
                 pics.add(uuid);
             }
         }
+    }
+
+    public void addPicture(ObjectId img) {
+        artBase.addPicture(img);
+    }
+
+    public void markPending(boolean flag) {
+        pending = flag;
     }
 
     /**

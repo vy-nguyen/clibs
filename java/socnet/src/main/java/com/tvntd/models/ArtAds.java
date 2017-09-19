@@ -111,13 +111,13 @@ public class ArtAds
     public ArtAds() {}
     public ArtAds(String authorUuid, Long authorId)
     {
-        artBase = new ArticleBase();
-        artAttr = new ArticleAttr(artBase.getArticleUuid());
+        artBase     = new ArticleBase();
+        articleUuid = artBase.getArticleUuid();
+        artAttr     = new ArticleAttr(articleUuid);
 
         this.authorUuid = authorUuid;
         artBase.setAuthorId(authorId);
         artBase.setArtTag(ArtTag.ADS);
-        artBase.setCreatedDate(new Date());
     }
 
     public ArtAds(ArticleBase base)

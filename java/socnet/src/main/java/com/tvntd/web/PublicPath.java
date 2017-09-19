@@ -322,6 +322,10 @@ public class PublicPath
 
             if (oid != null) {
                 ads.setAdImgOid0(oid.name());
+                System.out.println("Store img " + oid.name() + ", ads " +
+                        ads.fetchAds().getAdImgOid0() + ", uuid " +
+                        ads.getArticleUuid() + " obj " +
+                        System.identityHashCode(ads));
             }
             ImageUploadResp out =
                 new ImageUploadResp(ads.getArticleUuid(), ads.getAuthorUuid(), oid);
@@ -362,6 +366,7 @@ public class PublicPath
             ads = profile.genPendArtAds();
         }
         if (form.cleanInput() == false) {
+            System.out.println("Failed to validate ads input...");
             return UserPath.s_saveObjFailed;
         }
         ArticleSvc.applyPostAds(form, ads);

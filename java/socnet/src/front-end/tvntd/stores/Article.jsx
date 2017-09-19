@@ -775,8 +775,10 @@ export class AuthorShelf {
         return this.savedArts[artUuid];
     }
 
-    iterArticles(func, arg) {
-        _.forOwn(this[VConst.blogs], function(item, key) {
+    iterArticles(func, arg, listKey) {
+        let anchorKey = listKey == null ? VConst.blogs : listKey;
+
+        _.forOwn(this[anchorKey], function(item, key) {
             func(item, arg);
         });
     }

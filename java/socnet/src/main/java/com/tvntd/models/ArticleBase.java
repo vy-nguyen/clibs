@@ -26,6 +26,7 @@
  */
 package com.tvntd.models;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -40,6 +41,11 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.tvntd.key.HashKey;
+import com.tvntd.lib.ObjectId;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.util.Util;
 
@@ -49,6 +55,8 @@ import com.tvntd.util.Util;
 })
 public class ArticleBase
 {
+    static private Logger s_log = LoggerFactory.getLogger(ArticleBase.class);
+
     @Id
     @Column(length = 64)
     protected String articleUuid;
@@ -86,8 +94,10 @@ public class ArticleBase
         createdDate = new Date();
     }
 
-    public ArticleBase(String artUuid) {
+    public ArticleBase(String artUuid)
+    {
         articleUuid = artUuid;
+        createdDate = new Date();
     }
 
     public ArticleBase(ProfileDTO profile)
@@ -133,6 +143,21 @@ public class ArticleBase
         }
         if (art.getAuthorId() != null) {
             authorId   = art.getAuthorId();
+        }
+    }
+
+    public void addPicture(ObjectId img)
+    {
+        if (pictures == null) {
+            pictures = new ArrayList<>();
+        }
+        pictures.add(img.name());
+    }
+
+    public void removePicture(ObjectId img)
+    {
+        if (pictures != null) {
+            pictures.remove(img.name());
         }
     }
 
@@ -288,5 +313,17 @@ public class ArticleBase
      */
     public void setPictures(List<String> pictures) {
         this.pictures = pictures;
+    }
+
+    public boolean setPublicUrl(String urlTag)
+    {
+        if (artTitle == null) {
+            return false;
+        }
+        String title = Util.utf8ToUrlString(Util.fromRawByte(artTitle));
+        publicUrlOid = HashKey.toSha1Key(urlTag, title);
+
+        s_log.info("Convert " + urlTag + ", title " + publicUrlOid);
+        return false;
     }
 }

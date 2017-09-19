@@ -64,7 +64,6 @@ public class ArtAdsDTO extends GenericResponse
         adPost.setAdImgOid0(oid);
     }
 
-
     public List<String> getImageUrl()
     {
         List<String> img = new LinkedList<>();

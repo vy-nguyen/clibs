@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 
+import com.tvntd.dao.ArtBriefRepo;
 import com.tvntd.dao.ArticleRankRepo;
 import com.tvntd.dao.ArticleRepository;
 import com.tvntd.dao.AuthorRepo;
@@ -45,14 +46,14 @@ import com.tvntd.dao.AuthorTagRepo.AuthorTagDTO;
 import com.tvntd.dao.AuthorTagRepo.AuthorTagRespDTO;
 import com.tvntd.forms.AdsForm;
 import com.tvntd.forms.ArticleForm;
-import com.tvntd.forms.ProductForm;
 import com.tvntd.models.AdsPost;
 import com.tvntd.models.ArtAds;
+import com.tvntd.models.ArtProduct;
 import com.tvntd.models.Article;
+import com.tvntd.models.ArticleBrief;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Author;
 import com.tvntd.models.AuthorTag;
-import com.tvntd.models.Product;
 import com.tvntd.service.api.ArtAdsDTO;
 import com.tvntd.service.api.IAnnonService.AnnonUserDTO;
 import com.tvntd.service.api.IArticleService.ArticleRankDTO;
@@ -75,6 +76,9 @@ public class AuthorService implements IAuthorService
 
     @Autowired
     protected ArticleRankRepo rankRepo;
+
+    @Autowired
+    protected ArtBriefRepo artBriefRepo;
 
     @Autowired
     protected ArticleRepository articleRepo;
@@ -296,17 +300,18 @@ public class AuthorService implements IAuthorService
     }
 
     @Override
-    public ArticleRank createProductRank(Product product, ProductForm form)
+    public ArticleBrief createProductRank(ArtProduct product)
     {
         String authorUuid = product.getAuthorUuid();
         Author author = authorRepo.findByAuthorUuid(authorUuid);
         if (author == null) {
             author = new Author(authorUuid, product.getArticleUuid());
         }
-        AuthorTag tag = updateAuthorTag(author, form.getProdCat(), 0L, false);
-        ArticleRank rank = new ArticleRank(tag, product);
+        String prodCat = Util.fromRawByte(product.getProdCat());
+        updateAuthorTag(author, prodCat, 0L, false);
 
-        rankRepo.save(rank);
+        ArticleBrief rank = new ArticleBrief(product);
+        artBriefRepo.save(rank);
         return rank;
     }
 
@@ -332,6 +337,7 @@ public class AuthorService implements IAuthorService
         return rank;
     }
 
+    @Override
     public void updateAuthor(ArtAdsDTO adsDTO, AnnonUserDTO user)
     {
         ArtAds ads = adsDTO.fetchAds();

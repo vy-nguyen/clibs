@@ -9,6 +9,7 @@ import Reflux         from 'reflux';
 import Actions        from 'vntd-root/actions/Actions.jsx';
 import Startup        from 'vntd-root/pages/login/Startup.jsx';
 import CommonStore    from 'vntd-root/stores/CommonStore.jsx';
+import { VConst }     from 'vntd-root/config/constants.js';
 
 let EProductStore = Reflux.createStore({
     store: {},
@@ -19,7 +20,7 @@ let EProductStore = Reflux.createStore({
     },
 
     getProductsByAuthor: function(uuid) {
-        return this.store.getItemsByAuthor(uuid, true);
+        return this.store.getItemsByAuthor(uuid, true, VConst.prods);
     },
 
     iterAuthorEStores: function(uuid, func, arg) {

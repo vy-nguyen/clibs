@@ -126,9 +126,27 @@ public class ArticleBrief
         authorUuid   = ads.getAuthorUuid();
         articleUuid  = ads.getArticleUuid();
         favorite     = false;
+        hasArticle   = true;
         contentBrief = Arrays.copyOfRange(ads.getBusDesc(), 0, 256);
         this.tag     = ads.getBusCat();
         tagHash      = HashKey.toSha1Key(this.tag, authorUuid);
+
+        artBase.setArtTitle(ads.getBusName());
+    }
+
+    public ArticleBrief(ArtProduct prod)
+    {
+        artBase      = prod.getArtBase();
+        artAttr      = prod.getArtAttr();
+        authorUuid   = prod.getAuthorUuid();
+        articleUuid  = prod.getArticleUuid();
+        favorite     = false;
+        hasArticle   = true;
+        tag          = prod.getProdCat();
+        tagHash      = HashKey.toSha1Key(tag, authorUuid);
+        contentBrief = Arrays.copyOfRange(prod.getProdDesc(), 0, 256);
+
+        artBase.setArtTitle(prod.getProdName());
     }
 
     public void fromArticleRank(ArticleRank rank)

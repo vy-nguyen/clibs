@@ -45,14 +45,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tvntd.forms.ArtTagForm;
-import com.tvntd.models.ArticleRank;
 import com.tvntd.service.api.GenericResponse;
 import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArtTagService.ArtTagDTO;
 import com.tvntd.service.api.IArtTagService.ArtTagList;
 import com.tvntd.service.api.IArticleService;
-import com.tvntd.service.api.IArticleService.ArticleDTO;
-import com.tvntd.service.api.IArticleService.ArticleRankDTO;
+import com.tvntd.service.api.IArticleSvc;
+import com.tvntd.service.api.IArticleSvc.ArticleBriefDTO;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IDomainService;
 import com.tvntd.service.api.IProfileService;
@@ -84,6 +83,9 @@ public class AdminPath
 
     @Autowired
     protected IDomainService domainSvc;
+
+    @Autowired
+    protected IArticleSvc artSvc;
 
     @Secured({"ROLE_Admin"})
     @RequestMapping(value = "/admin", params = {"user"}, method = RequestMethod.GET)
@@ -161,23 +163,21 @@ public class AdminPath
         if (profile == null) {
             return UserPath.s_noProfile;
         }
-        s_log.debug("Got change article tag request");
-
+        s_log.info("Got change article tag request");
         String artUuid = form.getArticleUuid();
-	ArticleRank artRank = articleSvc.getRank(artUuid);
+        ArticleBriefDTO brief = artSvc.getArticleBriefDTO(artUuid);
 
-        if (artRank == null || !form.getAuthorUuid().equals(artRank.getAuthorUuid())) {
-	    System.out.println("Not owner " + artRank.getAuthorUuid());
+        if (brief == null || !form.getAuthorUuid().equals(brief.getAuthorUuid())) {
+            s_log.info("Change art tag, not owner " +
+                    form.getAuthorUuid() + ", " + brief.getAuthorUuid());
             return UserPath.s_invalidArticle;
         }
         ArtTagDTO pubTag = artTagSvc.addPublicTagPost(form.getPublicTag(), artUuid);
         if (pubTag == null) {
             return UserPath.s_invalidArticle;
         }
-        ArticleRankDTO rank = new ArticleRankDTO(artRank);
-        rank.setPublicUrl(form.getPublicTag());
-        articleSvc.saveRank(rank.fetchArtRank());
-
+        brief.setPublicUrl(form.getPublicTag());
+        artSvc.saveArticleBrief(brief);
         return new ArtTagList(pubTag);
     }
 }

@@ -33,8 +33,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.tvntd.forms.PostForm;
+import com.tvntd.forms.ProductForm;
 import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.ObjectId;
+import com.tvntd.models.ArtProduct;
 import com.tvntd.models.ArtTag;
 import com.tvntd.models.ArticleBase;
 import com.tvntd.models.ArticleBrief;
@@ -75,16 +77,17 @@ public interface IArticleSvc
     // Save, update
     //
     void saveArticlePost(ArticlePostDTO art);
+    void saveArticlePost(List<ArticlePostDTO> arts);
+
     void saveArticleBrief(ArticleBrief rank);
     void saveArticleBrief(ArticleBriefDTO rank);
-
-    void saveArticlePost(List<ArticlePostDTO> arts);
     void saveArticleBrief(List<ArticleBriefDTO> ranks);
+    void saveArticleBrief(ArtProductDTO prod, ProductForm form);
 
     void saveArtAds(ArtAdsDTO ads);
     void saveArtAds(List<ArtAdsDTO> adsList);
 
-    void saveArtProduct(ArtProductDTO ads);
+    void saveArtProduct(ArtProductDTO prod);
     void saveArtProduct(List<ArtProductDTO> prodList);
 
     // Save post
@@ -107,6 +110,7 @@ public interface IArticleSvc
 
     void deleteArtProduct(ArtProductDTO prod);
     void deleteArtProduct(List<ArtProductDTO> prodList);
+    ArtProduct deleteArtProduct(String articleUuid, ProfileDTO owner);
 
     void auditArticleTable();
     void cleanupDatabase();
@@ -377,6 +381,14 @@ public interface IArticleSvc
                 return new LinkedList<String>();
             }
             return shared;
+        }
+
+        public boolean setPublicUrl(String publicTag)
+        {
+            String urlTag = Util.utf8ToUrlString(publicTag);
+
+            artRank.setUrlTag(urlTag);
+            return artRank.getArtBase().setPublicUrl(urlTag);
         }
     }
 }

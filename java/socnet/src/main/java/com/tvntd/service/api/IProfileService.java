@@ -44,7 +44,6 @@ import com.tvntd.models.Role;
 import com.tvntd.models.User;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.IArticleService.ArticleDTO;
-import com.tvntd.service.api.IProductService.ProductDTO;
 import com.tvntd.util.Constants;
 import com.tvntd.util.Util;
 
@@ -88,15 +87,15 @@ public interface IProfileService
         private String state;
         private String country;
 
-        private ArticleDTO             pendPost;
-        private LinkedList<ArticleDTO> publishedArts;
-        private LinkedList<ArticleDTO> savedArts;
+        private ArticleDTO                pendPost;
+        private LinkedList<ArticleDTO>    publishedArts;
+        private LinkedList<ArticleDTO>    savedArts;
 
-        private ProductDTO             pendProd;
-        private LinkedList<ProductDTO> publishedProds;
-        private LinkedList<ProductDTO> savedProds;
+        private ArtProductDTO             pendProd;
+        private LinkedList<ArtProductDTO> publishedProds;
+        private LinkedList<ArtProductDTO> savedProds;
 
-        private ArtAdsDTO              pendArtAds;
+        private ArtAdsDTO                 pendArtAds;
 
         // NewsFeed for this profile.
         //
@@ -376,15 +375,15 @@ public interface IProfileService
         /**
          * ------------------ Product Posting ----------------------
          */
-        public LinkedList<ProductDTO> fetchPublishProds() {
+        public LinkedList<ArtProductDTO> fetchPublishProds() {
             return publishedProds;
         }
 
-        public void assignPublishedProds(LinkedList<ProductDTO> products) {
+        public void assignPublishedProds(LinkedList<ArtProductDTO> products) {
             this.publishedProds = products;
         }
 
-        public void pushPublishProduct(ProductDTO product)
+        public void pushPublishProduct(ArtProductDTO product)
         {
             if (publishedProds == null) {
                 publishedProds = new LinkedList<>();
@@ -392,15 +391,15 @@ public interface IProfileService
             publishedProds.addFirst(product);
         }
 
-        public LinkedList<ProductDTO> fetchSavedProducts() {
+        public LinkedList<ArtProductDTO> fetchSavedProducts() {
             return savedProds;
         }
 
-        public void assignSavedProducts(LinkedList<ProductDTO> products) {
+        public void assignSavedProducts(LinkedList<ArtProductDTO> products) {
             this.savedProds = products;
         }
 
-        public void pushSavedProduct(ProductDTO product)
+        public void pushSavedProduct(ArtProductDTO product)
         {
             if (savedProds == null) {
                 savedProds = new LinkedList<>();
@@ -408,11 +407,11 @@ public interface IProfileService
             savedProds.addFirst(product);
         }
 
-        public ProductDTO fetchPendProduct() {
+        public ArtProductDTO fetchPendProduct() {
             return pendProd;
         }
 
-        public void assignPendProduct(ProductDTO product) {
+        public void assignPendProduct(ArtProductDTO product) {
             this.pendProd = product;
         }
 

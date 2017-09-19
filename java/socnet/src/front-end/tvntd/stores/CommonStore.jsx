@@ -51,7 +51,7 @@ class CommonStore {
         return this;
     }
 
-    getItemsByAuthor(uuid, fetch) {
+    getItemsByAuthor(uuid, fetch, listKey) {
         let anchor, items = [], owners;
 
         if (fetch === true) {
@@ -69,7 +69,7 @@ class CommonStore {
         if (anchor.hasData() === true) {
             anchor.iterArticles(function(it) {
                 items.push(it);
-            });
+            }, null, listKey);
         }
         return items;
     }

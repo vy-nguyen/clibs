@@ -35,13 +35,13 @@ import com.tvntd.dao.AuthorTagRepo.AuthorTagDTO;
 import com.tvntd.dao.AuthorTagRepo.AuthorTagRespDTO;
 import com.tvntd.forms.AdsForm;
 import com.tvntd.forms.ArticleForm;
-import com.tvntd.forms.ProductForm;
 import com.tvntd.models.AdsPost;
+import com.tvntd.models.ArtProduct;
 import com.tvntd.models.Article;
+import com.tvntd.models.ArticleBrief;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Author;
 import com.tvntd.models.AuthorTag;
-import com.tvntd.models.Product;
 import com.tvntd.service.api.IAnnonService.AnnonUserDTO;
 import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
@@ -70,8 +70,8 @@ public interface IAuthorService
 
     void updateAuthor(ArtAdsDTO adsDTO, AnnonUserDTO user);
     ArticleRank createArticleRank(Article article, String tagName);
-    ArticleRank createProductRank(Product product, ProductForm form);
     ArticleRank createAdsRank(AdsPost ads, AdsForm form, AnnonUserDTO user);
+    ArticleBrief createProductRank(ArtProduct product);
 
     /**
      *

@@ -40,7 +40,7 @@ import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.IProductService.LikeStat;
 import com.tvntd.util.Util;
 
-public class ArtProductDTO
+public class ArtProductDTO extends GenericResponse
 {
     public static String s_baseUri = "/rs/user/";
 
@@ -48,11 +48,20 @@ public class ArtProductDTO
 
     public ArtProductDTO(ArtProduct prod)
     {
+        super(GenericResponse.USER_HOME, null, null);
         product = prod;
     }
 
     public ArtProduct fetchProduct() {
         return product;
+    }
+
+    public void assignLogo(String img) {
+        product.setLogoImg(img);
+    }
+
+    public void addPicture(ObjectId img) {
+        product.addPicture(img);
     }
 
     /**

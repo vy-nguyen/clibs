@@ -59,9 +59,9 @@ import com.tvntd.models.User;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.GenericResponse;
 import com.tvntd.service.api.IArtTagService;
-import com.tvntd.service.api.IArticleService;
-import com.tvntd.service.api.IArticleService.ArticleDTO;
-import com.tvntd.service.api.IArticleService.ArticleDTOResponse;
+import com.tvntd.service.api.IArticleSvc;
+import com.tvntd.service.api.IArticleSvc.ArticleDTOResponse;
+import com.tvntd.service.api.IArticleSvc.ArticlePostDTO;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IDomainService;
 import com.tvntd.service.api.IMenuItemService;
@@ -85,9 +85,6 @@ public class ApiPath
     private IUserNotifService userNotifSvc;
 
     @Autowired
-    private IArticleService articleSvc;
-
-    @Autowired
     protected IAuthorService authorSvc;
 
     @Autowired
@@ -104,6 +101,9 @@ public class ApiPath
 
     @Autowired
     protected IProfileService profileSvc;
+
+    @Autowired
+    protected IArticleSvc artSvc;
 
     /**
      * Handle Api REST calls.
@@ -128,17 +128,18 @@ public class ApiPath
      */
     @RequestMapping(value = "/api/user-articles", method = RequestMethod.GET)
     @ResponseBody
-    public ArticleDTOResponse
+    public GenericResponse
     getUserArticles(Locale locale, HttpSession session,
             HttpServletRequest reqt, HttpServletResponse resp)
     {
-        User user = (User) session.getAttribute("user");
-        if (user != null) {
-            List<ArticleDTO> articles = articleSvc.getArticlesByUser(user.getId());
-            return new ArticleDTOResponse(articles, null);
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return UserPath.s_noProfile;
         }
-        s_log.info("User is not login");
-        return null;
+        List<ArticlePostDTO> articles =
+            artSvc.getArticleDTOByAuthor(profile.getUserUuid());
+        
+        return new ArticleDTOResponse(articles, null, null);
     }
 
     /**
