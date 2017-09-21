@@ -36,8 +36,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.tvntd.service.api.IArtTagService.ArtTagList;
-import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleSvc.ArticleBriefDTO;
+import com.tvntd.service.api.IArticleSvc.ArticlePostDTO;
 import com.tvntd.service.api.IAuthorService.AuthorDTO;
 import com.tvntd.service.api.IDomainService.DomainDTO;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
@@ -48,7 +48,7 @@ public class StartupResponse
     private String                 domainUuid;
     private DomainDTO              domain;
     private List<ProfileDTO>       linkedUsers;
-    private List<ArticleDTO>       articles;
+    private List<ArticlePostDTO>   articles;
     private List<AuthorDTO>        authors;
 
     private List<Language>         languages;
@@ -181,14 +181,14 @@ public class StartupResponse
     /**
      * @return the articles
      */
-    public List<ArticleDTO> getArticles() {
+    public List<ArticlePostDTO> getArticles() {
         return articles;
     }
 
     /**
      * @param articles the articles to set
      */
-    public void setArticles(List<ArticleDTO> list)
+    public void setArticles(List<ArticlePostDTO> list)
     {
         if (articles == null) {
             articles = list;

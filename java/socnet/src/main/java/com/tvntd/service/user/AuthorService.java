@@ -44,9 +44,7 @@ import com.tvntd.dao.AuthorRepo;
 import com.tvntd.dao.AuthorTagRepo;
 import com.tvntd.dao.AuthorTagRepo.AuthorTagDTO;
 import com.tvntd.dao.AuthorTagRepo.AuthorTagRespDTO;
-import com.tvntd.forms.AdsForm;
 import com.tvntd.forms.ArticleForm;
-import com.tvntd.models.AdsPost;
 import com.tvntd.models.ArtAds;
 import com.tvntd.models.ArtProduct;
 import com.tvntd.models.Article;
@@ -54,7 +52,6 @@ import com.tvntd.models.ArticleBrief;
 import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Author;
 import com.tvntd.models.AuthorTag;
-import com.tvntd.service.api.ArtAdsDTO;
 import com.tvntd.service.api.IAnnonService.AnnonUserDTO;
 import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.IAuthorService;
@@ -307,8 +304,7 @@ public class AuthorService implements IAuthorService
         if (author == null) {
             author = new Author(authorUuid, product.getArticleUuid());
         }
-        String prodCat = Util.fromRawByte(product.getProdCat());
-        updateAuthorTag(author, prodCat, 0L, false);
+        updateAuthorTag(author, Util.fromRawByte(product.getProdCat()), 0L, false);
 
         ArticleBrief rank = new ArticleBrief(product);
         artBriefRepo.save(rank);
@@ -316,7 +312,7 @@ public class AuthorService implements IAuthorService
     }
 
     @Override
-    public ArticleRank createAdsRank(AdsPost ads, AdsForm form, AnnonUserDTO user)
+    public ArticleBrief createAdsRank(ArtAds ads, AnnonUserDTO user)
     {
         String authorUuid = ads.getAuthorUuid();
 
@@ -330,28 +326,10 @@ public class AuthorService implements IAuthorService
         if (author == null) {
             author = new Author(authorUuid, ads.getArticleUuid());
         }
-        AuthorTag tag = updateAuthorTag(author, form.getBusCat(), 0L, false);
-        ArticleRank rank = new ArticleRank(tag, ads);
-
-        rankRepo.save(rank);
-        return rank;
-    }
-
-    @Override
-    public void updateAuthor(ArtAdsDTO adsDTO, AnnonUserDTO user)
-    {
-        ArtAds ads = adsDTO.fetchAds();
-        String authorUuid = ads.getAuthorUuid();
-
-        if (user != null) {
-            authorUuid = com.tvntd.util.Constants.PublicUuid;
-        }
-        System.out.println("Create with author uuid " + authorUuid);
-        Author author = authorRepo.findByAuthorUuid(authorUuid);
-
-        if (author == null) {
-            author = new Author(authorUuid, ads.getArticleUuid());
-        }
         updateAuthorTag(author, Util.fromRawByte(ads.getBusCat()), 0L, false);
+
+        ArticleBrief rank = new ArticleBrief(ads);
+        artBriefRepo.save(rank);
+        return rank;
     }
 }

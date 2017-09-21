@@ -32,12 +32,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.tvntd.forms.ArticleForm;
+import com.tvntd.forms.CommentChangeForm;
 import com.tvntd.forms.PostForm;
 import com.tvntd.forms.ProductForm;
 import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.ObjectId;
 import com.tvntd.models.ArtProduct;
 import com.tvntd.models.ArtTag;
+import com.tvntd.models.ArticleAttr;
 import com.tvntd.models.ArticleBase;
 import com.tvntd.models.ArticleBrief;
 import com.tvntd.models.ArticlePost;
@@ -92,9 +95,11 @@ public interface IArticleSvc
 
     // Save post
     //
-    void savePost(PostForm form, ArticleBriefDTO artBrief,
+    ArticleBrief savePost(PostForm form, ArticlePostDTO artPost,
             ProfileDTO profile, boolean publish, boolean update);
 
+    ArticleAttr     updateArtAttr(CommentChangeForm form, ProfileDTO profile);
+    ArticleBriefDTO updateArtBrief(ArticleForm form);
 
     // Delete
     //
@@ -110,6 +115,8 @@ public interface IArticleSvc
 
     void deleteArtProduct(ArtProductDTO prod);
     void deleteArtProduct(List<ArtProductDTO> prodList);
+
+    ArticlePost deleteArticlePost(String artUuid, ProfileDTO profile);
     ArtProduct deleteArtProduct(String articleUuid, ProfileDTO owner);
 
     void auditArticleTable();
@@ -119,8 +126,8 @@ public interface IArticleSvc
     //
     public static class ArticleDTOResponse extends GenericResponse
     {
-        protected List<ArticlePostDTO> articles;
-        protected List<ArticlePostDTO> pendPosts;
+        protected List<ArticlePostDTO>  articles;
+        protected List<ArticlePostDTO>  pendPosts;
         protected List<ArticleBriefDTO> articleRank;
 
         public ArticleDTOResponse(List<ArticlePostDTO> arts,
@@ -129,6 +136,12 @@ public interface IArticleSvc
             super(GenericResponse.USER_HOME, null, null);
             this.articles    = arts;
             this.pendPosts   = pend;
+            this.articleRank = ranks;
+        }
+
+        public ArticleDTOResponse(List<ArticleBriefDTO> ranks)
+        {
+            super(GenericResponse.USER_HOME, null, null);
             this.articleRank = ranks;
         }
 
@@ -177,18 +190,33 @@ public interface IArticleSvc
 
     // DTO for ArticlePost
     //
-    public static class ArticlePostDTO
+    public static class ArticlePostDTO extends GenericResponse
     {
-        protected ArticlePost article;
-        protected String content;
-        protected String articleUrl;
-        protected String uploadFormId;
+        public static String s_baseUri = "/rs/user/";
+
+        protected ArticlePost           article;
+        protected String                content;
+        protected String                articleUrl;
+        protected String                uploadFormId;
         protected Map<String, ObjectId> uploadImgMap;
 
         public ArticlePostDTO(ArticlePost article)
         {
+            super(GenericResponse.USER_HOME, null, null);
             this.article = article;
             convertUTF();
+        }
+
+        public ArticlePostDTO(String authorUuid, Long authorId)
+        {
+            super(GenericResponse.USER_HOME, null, null);
+            article = new ArticlePost(authorUuid, authorId);
+        }
+
+        public ArticlePostDTO(String artUuid, String authorUuid, Long authorId)
+        {
+            super(GenericResponse.USER_HOME, null, null);
+            article = new ArticlePost(artUuid, authorUuid, authorId);
         }
 
         public void convertUTF()
@@ -230,6 +258,17 @@ public interface IArticleSvc
             return article;
         }
 
+        public void addPicture(ObjectId oid) {
+            article.getArtBase().addPicture(oid);
+        }
+
+        public void removePicture(ObjectId oid) {
+            article.getArtBase().removePicture(oid);
+        }
+
+        /**
+         * JSON Get
+         */
         public String getArtTag() {
             return ArtTag.BLOG;
         }
@@ -245,15 +284,21 @@ public interface IArticleSvc
         public String getContent() {
             return content;
         }
+
+        public boolean isPublished() {
+            return !article.isPending();
+        }
     }
 
     // DTO for ArticleBrief, if article is small, it may not have ArticlePost.
     //
-    public static class ArticleBriefDTO
+    public static class ArticleBriefDTO extends GenericResponse
     {
         protected ArticleBrief artRank;
 
-        public ArticleBriefDTO(ArticleBrief rank) {
+        public ArticleBriefDTO(ArticleBrief rank)
+        {
+            super(GenericResponse.USER_HOME, null, null);
             artRank = rank;
         }
 
@@ -324,6 +369,10 @@ public interface IArticleSvc
 
         public Long getRank() {
             return artRank.getArtAttr().getRank();
+        }
+
+        public void setRank(Long rank) {
+            artRank.getArtAttr().setRank(rank);
         }
 
         public Long getScore() {

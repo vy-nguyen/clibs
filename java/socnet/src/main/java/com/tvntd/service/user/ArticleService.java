@@ -148,11 +148,11 @@ public class ArticleService implements IArticleService
         artDTO.convertUTF();
 
         if (publish == true) {
-            profile.pushPublishArticle(artDTO);
+            // profile.pushPublishArticle(artDTO);
             timeLineSvc.saveTimeLine(profile.getUserUuid(),
                     art.getArticleUuid(), null, art.getContentBrief());
         } else {
-            profile.pushSavedArticle(artDTO);
+            // profile.pushSavedArticle(artDTO);
         }
         articleRepo.save(art);
     }

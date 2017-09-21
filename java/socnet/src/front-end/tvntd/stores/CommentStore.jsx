@@ -7,6 +7,7 @@ import Reflux       from 'reflux';
 import _            from 'lodash';
 import moment       from 'moment';
 import Actions      from 'vntd-root/actions/Actions.jsx';
+import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleStore from 'vntd-root/stores/ArticleStore.jsx';
 import UserStore    from 'vntd-shared/stores/UserStore.jsx';
 
@@ -17,32 +18,35 @@ class CommentAttr {
         this.creditEarned = data.creditEarned;
         this.moneyEarned  = data.moneyEarned;
         this.score        = data.score;
-        this.likeCount    = data.likes;
-        this.shareCount   = data.shared;
         this.favorite     = data.favorite;
-        this.userLiked    = data.userLiked;
-        this.userShared   = data.userShared;
-        this.updateCount(data);
+        this.userLiked    = this.updateCount(null, data.userLiked);
+        this.userShared   = this.updateCount(null, data.userShared);
+        this.likeCount    = this.userLiked.count;
+        this.shareCount   = this.userShared.count;
         return this;
     }
 
-    updateCount(data) {
-        if (data.kind === 'like') {
-            this.likeCount = data.amount;
-
-        } else if (data.kind == 'share') {
-            this.shareCount = data.amount;
+    updateCount(result, list) {
+        if (result == null) {
+            result = {
+                count: 0
+            };
         }
+        _.forEach(list, function(uuid) {
+            result.count++;
+            result[uuid] = UserStore.getUserByUuid(uuid);
+        });
+        return result;
     }
 
     updateAttr(attr) {
         if (attr.userLiked != null) {
-            this.userLiked = attr.userLiked;
-            this.likeCount = attr.userLiked.length;
+            this.userLiked = this.updateCount(this.userLiked, attr.userLiked);
+            this.likeCount = this.userLiked.count;
         }
         if (attr.userShared != null) {
-            this.userShared = attr.userShared;
-            this.shareCount = attr.userShared.length;
+            this.userShared = this.updateCount(this.userShared, attr.userShared);
+            this.shareCount = this.userShared.count;
         }
         this.score       = attr.score;
         this.favorite    = attr.favorite;
@@ -58,6 +62,7 @@ class CommentAttr {
     }
 
     getUserLiked() {
+        return this.likeCount;
     }
 
     toggleFavorite() {
@@ -65,23 +70,16 @@ class CommentAttr {
     }
 
     didILikeIt() {
-        let ret = false;
         let myUuid = UserStore.getSelf().userUuid;
-        _.forOwn(this.userLiked, function(it, idx) {
-            if (it === myUuid) {
-                ret = true;
-                return false;
-            }
-            return true;
-        });
-        return ret;
+
+        return this.userLiked[myUuid] != null ? true : false;
     }
 
     getUserLiked() {
         let out = [];
-        _.forOwn(this.userLiked, function(it, idx) {
-            let user = UserStore.getUserByUuid(it);
-            if (user != null) {
+
+        _.forOwn(this.userLiked, function(user, key) {
+            if (user != null && key !== "count") {
                 out.push(user.lastName + " " + user.firstName);
             }
         });
@@ -139,13 +137,20 @@ class CommentText {
 
 class ArticleComment {
     constructor(data) {
+        let rank = AuthorStore.lookupArticleRankByUuid(data.articleUuid);
+
         this.articleUuid = data.articleUuid;
         this.showComment = data.showComment;
-        this.favorites = {};
-        this.normals = {};
-        this.normalSorted = [];
+        this.favorites   = {};
+        this.normals     = {};
+        this.normalSorted   = [];
         this.favoriteSorted = [];
-        this.articleAttr = null;
+
+        if (rank == null) {
+            this.articleAttr = null;
+        } else {
+            this.articleAttr = new CommentAttr(rank);
+        }
         return this;
     }
 
@@ -328,7 +333,7 @@ let CommentStore = Reflux.createStore({
         this.trigger(this.data, cmtArt);
     },
 
-    postCmtSelectCompleted: function(data) {
+    onPostCmtSelectCompleted: function(data) {
         let cmtArt = this.addArtComment(data);
         cmtArt.updateAttr(data);
         this.trigger(this.data, cmtArt);

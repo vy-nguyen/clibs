@@ -30,14 +30,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Index;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
@@ -52,6 +48,18 @@ import com.tvntd.util.Util;
 })
 public class ArticleBrief
 {
+    /*
+     * contentOId format:
+     * HEX:abcdef123... for OID
+     * DOC:docs.google.com for doc link.
+     * VID:youtube.com for video link.
+     */
+    public static int MaxTitleLength = 128;
+    public static int MaxContentLength = 1 << 16;
+    public static int DOC_TYPE = 100;
+    public static int VID_TYPE = 200;
+    public static int DRV_TYPE = 300;
+
     @Id
     @Column(length = 64)
     protected String articleUuid;
@@ -85,16 +93,6 @@ public class ArticleBrief
 
     protected boolean favorite;
     protected boolean hasArticle;
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "ArticleLiked",
-            joinColumns = @JoinColumn(name = "articleId"))
-    private List<String> userLiked;
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "ArticleShared",
-            joinColumns = @JoinColumn(name = "articleId"))
-    private List<String> userShared;
 
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     @PrimaryKeyJoinColumn
@@ -149,6 +147,58 @@ public class ArticleBrief
         artBase.setArtTitle(prod.getProdName());
     }
 
+    public ArticleBrief(ArticlePost post, PostForm form)
+    {
+        artBase      = post.getArtBase();
+        artAttr      = new ArticleAttr(artBase.getArticleUuid());
+        authorUuid   = post.getAuthorUuid();
+        articleUuid  = post.getArticleUuid();
+        favorite     = true;
+        hasArticle   = true;
+
+        updateFrom(form);
+        if (post.isPending() == true) {
+            artBase.setPermMask(ArticleBase.PERM_PRIVATE);
+        }
+    }
+
+    public void updateFrom(PostForm form)
+    {
+        tag          = Util.toRawByte(form.getTags(), 64);
+        tagHash      = HashKey.toSha1Key(tag, authorUuid);
+        contentBrief = Util.toRawByte(form.getContentBrief(), 256);
+
+        String host  = form.fetchContentUrlHost();
+        String url   = form.fetchContentUrlFile();
+        if (host != null && url != null) {
+            hasArticle = false;
+            artBase.setContentLinkUrl(url);
+            artBase.setContentOid(
+                ArticleBase.makeUrlLink(null, host, form.fetchDocType())
+            );
+        }
+        artBase.setArtTitle(Util.toRawByte(form.getTopic(), 128));
+    }
+
+    static public String makeUrlLink(Article self, String host, int mode)
+    {
+        String oid;
+
+        if (mode == DOC_TYPE) {
+            oid = "DOC:" + host;
+        } else if (mode == VID_TYPE) {
+            oid = "VID:" + host;
+        } else if (mode == DRV_TYPE) {
+            oid = "DRV:" + host;
+        } else {
+            oid = "HEX:" + host;
+        }
+        if (self != null) {
+            self.contentOId = oid;
+        }
+        return oid;
+    }
+
     public void fromArticleRank(ArticleRank rank)
     {
         articleUuid  = rank.getArticleUuid();
@@ -164,12 +214,13 @@ public class ArticleBrief
         contentBrief = Util.toRawByte(rank.getContentBrief(), 256);
         favorite     = rank.isFavorite();
         hasArticle   = rank.isHasArticle();
-        userLiked    = rank.getUserLiked();
-        userShared   = rank.getUserShared();
        
         if (tag != null) {
             tagHash = HashKey.toSha1Key(tag, authorUuid);
         }
+        artAttr.setUserLiked(rank.getUserLiked());
+        artAttr.setUserShared(rank.getUserShared());
+        artBase.setPermMask(rank.getPermMask());
     }
 
     public void fromArticle(Article art)
@@ -194,6 +245,9 @@ public class ArticleBrief
         if (contentBrief == null) {
             contentBrief = Util.toRawByte(
                     PostForm.toBriefContent(null, art.getContent()), 256);
+        }
+        if (art.isPending() == true) {
+            artBase.setPermMask(ArticleBase.PERM_PRIVATE);
         }
     }
 
@@ -397,27 +451,27 @@ public class ArticleBrief
      * @return the userLiked
      */
     public List<String> getUserLiked() {
-        return userLiked;
+        return artAttr.getUserLiked();
     }
 
     /**
      * @param userLiked the userLiked to set
      */
     public void setUserLiked(List<String> userLiked) {
-        this.userLiked = userLiked;
+        artAttr.setUserLiked(userLiked);
     }
 
     /**
      * @return the userShared
      */
     public List<String> getUserShared() {
-        return userShared;
+        return artAttr.getUserShared();
     }
 
     /**
      * @param userShared the userShared to set
      */
     public void setUserShared(List<String> userShared) {
-        this.userShared = userShared;
+        artAttr.setUserShared(userShared);
     }
 }

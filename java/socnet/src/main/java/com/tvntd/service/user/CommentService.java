@@ -36,11 +36,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.tvntd.dao.ArticleAttrRepo;
 import com.tvntd.dao.CommentRankRepo;
 import com.tvntd.dao.CommentRepo;
 import com.tvntd.forms.CommentChangeForm;
 import com.tvntd.forms.CommentForm;
-import com.tvntd.models.ArticleRank;
+import com.tvntd.models.ArticleAttr;
 import com.tvntd.models.Comment;
 import com.tvntd.models.CommentRank;
 import com.tvntd.service.api.ICommentService;
@@ -53,10 +54,13 @@ public class CommentService implements ICommentService
     static private Logger s_log = LoggerFactory.getLogger(CommentService.class);
 
     @Autowired
-    CommentRepo commentRepo;
+    protected CommentRepo commentRepo;
 
     @Autowired
-    CommentRankRepo rankRepo;
+    protected ArticleAttrRepo artAttrRepo;
+
+    @Autowired
+    protected CommentRankRepo rankRepo;
 
     @Override
     public CommentDTOResponse getCommentPost(String articleUuid)
@@ -150,7 +154,7 @@ public class CommentService implements ICommentService
     }
 
     @Override
-    public ArticleRank updateComment(CommentChangeForm form, ProfileDTO me)
+    public ArticleAttr updateComment(CommentChangeForm form, ProfileDTO me)
     {
         String artUuid = form.getArticleUuid();
         String kind = form.getKind();
@@ -175,13 +179,14 @@ public class CommentService implements ICommentService
             } else {
                 rank.removeUserLiked(me.getUserUuid());
             }
-            ArticleRank result = new ArticleRank(form, me.getUserUuid());
-            result.setUserLiked(rank.getUserLiked());
-
-            rankRepo.save(rank);
-            return result;
+            ArticleAttr result = artAttrRepo.findByArticleUuid(form.getArticleUuid());
+            if (result != null) {
+                result.applyCommentRank(rank);
+                artAttrRepo.save(result);
+                return result;
+            }
         }
-        return new ArticleRank(form, me.getUserUuid());
+        return new ArticleAttr(form);
     }
 
     public static void applyForm(CommentForm form, Comment comment)

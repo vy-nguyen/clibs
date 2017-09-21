@@ -26,6 +26,7 @@
  */
 package com.tvntd.service.user;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -50,6 +51,8 @@ import com.tvntd.dao.ArticleRepository;
 import com.tvntd.dao.ProductRepository;
 import com.tvntd.dao.ProfileRepository;
 import com.tvntd.forms.AdsForm;
+import com.tvntd.forms.ArticleForm;
+import com.tvntd.forms.CommentChangeForm;
 import com.tvntd.forms.PostForm;
 import com.tvntd.forms.ProductForm;
 import com.tvntd.forms.UuidForm;
@@ -59,6 +62,7 @@ import com.tvntd.models.ArtAds;
 import com.tvntd.models.ArtProduct;
 import com.tvntd.models.ArtTag;
 import com.tvntd.models.Article;
+import com.tvntd.models.ArticleAttr;
 import com.tvntd.models.ArticleBase;
 import com.tvntd.models.ArticleBrief;
 import com.tvntd.models.ArticlePost;
@@ -418,9 +422,143 @@ public class ArticleSvc implements IArticleSvc
 
     // Save article post
     @Override
-    public void savePost(PostForm form, ArticleBriefDTO artBrief,
+    public ArticleBrief savePost(PostForm form, ArticlePostDTO artPost,
             ProfileDTO profile, boolean publish, boolean update)
     {
+        ArticlePost art = artPost.fetchArticlePost();
+        ArticleBrief brief = null;
+        ArticleBriefDTO briefDTO = null;
+        
+        if (update == true) {
+            briefDTO = getArticleBriefDTO(art.getArticleUuid());
+            brief = briefDTO.fetchArtRank();
+            brief.updateFrom(form);
+        } else {
+            brief = new ArticleBrief(art, form);
+            briefDTO = new ArticleBriefDTO(brief);
+        }
+        art.setPending(!publish);
+        if (publish == true) {
+            // Record in timeline.
+        }
+        if (brief.isHasArticle() == false) {
+            saveArticleBrief(briefDTO);
+            return brief;
+        }
+        saveArticlePost(artPost);
+        return brief;
+    }
+
+    public ArticleBriefDTO updateArtBrief(ArticleForm form)
+    {
+        String artUuid = form.getArticleUuid();
+        ArticleBrief brief = artBriefRepo.findByArticleUuid(artUuid);
+
+        if (brief == null) {
+            return null;
+        }
+        ArticleAttr attr = brief.getArtAttr();
+        Long likeInc     = form.getLikeInc();
+        Long likes       = attr.getLikes();
+        Long shares      = attr.getShared();
+        Long shareInc    = form.getShareInc();
+
+        System.out.println("Like inc " + likeInc + " count " + likes);
+        if (likeInc > 0) {
+            attr.setLikes(likes + 1);
+
+        } else if (likeInc < 0 && likes > 0) {
+            attr.setLikes(likes - 1);
+        }
+        if (shareInc > 0) {
+            attr.setShared(shares + 1);
+
+        } else if (shareInc < 0 && shares > 0) {
+            attr.setShared(shares - 1);
+        }
+        String oid = form.getPrevArticle();
+        if (oid != null) {
+            brief.setPrevArticle(oid);
+        }
+        oid = form.getNextArticle();
+        if (oid != null) {
+            brief.setNextArticle(oid);
+        }
+        oid = form.getTopArticle();
+        if (oid != null) {
+            brief.setTopArticle(oid);
+        }
+        artBriefRepo.save(brief);
+        System.out.println("Update uuid " + brief.getArticleUuid());
+        return new ArticleBriefDTO(brief);
+    }
+
+    protected Long toggleList(List<String> users, Long val, String myUuid)
+    {
+        if (Util.<String>isInList(users, myUuid) == null) {
+            val++;
+            Util.<String>addUnique(users, myUuid);
+        } else {
+            val--;
+            Util.<String>removeFrom(users, myUuid);
+        }
+        return val;
+    }
+
+    @Override
+    public ArticleAttr updateArtAttr(CommentChangeForm form, ProfileDTO profile)
+    {
+        String artUuid = form.getArticleUuid();
+        ArticleAttr attr = artAttrRepo.findByArticleUuid(artUuid);
+        
+        if (attr == null) {
+            s_log.info("Failed to locate uuid " + artUuid);
+            return null;
+        }
+        boolean save  = false;
+        String kind   = form.getKind();
+        String myUuid = profile.getUserUuid();
+
+        System.out.println("Update attr " + artUuid + " kind " + kind);
+
+        if (kind.equals("like")) {
+            List<String> users = attr.getUserLiked();
+
+            if (users == null) {
+                users = new ArrayList<>();
+                attr.setUserLiked(users);
+            }
+            save = true;
+            Long val = toggleList(users, attr.getLikes(), myUuid);
+
+            attr.setLikes(val);
+            form.setAmount(val);
+            System.out.println("Set art likes " + val + " art " +
+                    attr.getLikes());
+
+        } else if (kind.equals("share")) {
+            List<String> users = attr.getUserShared();
+
+            if (users == null) {
+                users = new ArrayList<>();
+                attr.setUserShared(users);
+            }
+            save = true;
+            Long val = toggleList(users, attr.getShared(), myUuid);
+
+            attr.setShared(val);
+            form.setAmount(val);
+
+        } else if (kind.equals("fav")) {
+            save = true;
+            attr.setFavorite(true);
+        }
+            System.out.println("Set art likes " + attr.getUserLiked().size() + " art " +
+                    attr.getLikes() + ", save " + save);
+        if (save == true) {
+            artAttrRepo.save(attr);
+        }
+        return attr;
     }
 
     // --------------------------------------------------------------------------------
@@ -492,6 +630,12 @@ public class ArticleSvc implements IArticleSvc
         }
     }
 
+    @Override
+    public ArticlePost deleteArticlePost(String artUuid, ProfileDTO profile)
+    {
+        return null;
+    }
+    
     @Override
     public ArtProduct deleteArtProduct(String articleUuid, ProfileDTO owner)
     {

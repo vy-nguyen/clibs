@@ -61,7 +61,6 @@ import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.Constants;
 import com.tvntd.lib.FileResources;
 import com.tvntd.lib.ObjectId;
-import com.tvntd.models.ArticleBrief;
 import com.tvntd.models.Profile;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.ArtAdsDTO;
@@ -73,11 +72,10 @@ import com.tvntd.service.api.IAnnonService.AnnonUserDTO;
 import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArtTagService.ArtTagDTO;
 import com.tvntd.service.api.IArtTagService.ArtTagList;
-import com.tvntd.service.api.IArticleService;
-import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleService.ArticleDTOResponse;
 import com.tvntd.service.api.IArticleSvc;
 import com.tvntd.service.api.IArticleSvc.ArticleBriefDTO;
+import com.tvntd.service.api.IArticleSvc.ArticlePostDTO;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.ICommentService;
 import com.tvntd.service.api.ICommentService.CommentDTOResponse;
@@ -101,9 +99,6 @@ public class PublicPath
 
     @Autowired
     private IAuthorService authorSvc;
-
-    @Autowired
-    private IArticleService articleSvc;
 
     @Autowired
     private IArtTagService artTagSvc;
@@ -253,7 +248,7 @@ public class PublicPath
         for (String u : uuids.getUuids()) {
             input.add(u);
         }
-        List<ArticleDTO> arts = articleSvc.getArticles(input);
+        List<ArticlePostDTO> arts = artSvc.getArticleDTO(input);
         System.out.println("Result art lengh " + arts.size());
         return new ArticleDTOResponse(arts, null);
     }
@@ -370,13 +365,10 @@ public class PublicPath
             return UserPath.s_saveObjFailed;
         }
         ArticleSvc.applyPostAds(form, ads);
-        ArticleBrief brief = new ArticleBrief(ads.fetchAds());
-
-        authorSvc.updateAuthor(ads, user);
+        authorSvc.createAdsRank(ads.fetchAds(), user);
         artSvc.saveArtAds(ads);
-        artSvc.saveArticleBrief(brief);
-
         artTagSvc.addPublicTagPost(form.getBusCat(), ads.getArticleUuid());
+
         if (profile != null) {
             profile.assignPendAds(null);
         }

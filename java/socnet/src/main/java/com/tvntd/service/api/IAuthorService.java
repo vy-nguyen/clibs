@@ -33,9 +33,8 @@ import java.util.UUID;
 
 import com.tvntd.dao.AuthorTagRepo.AuthorTagDTO;
 import com.tvntd.dao.AuthorTagRepo.AuthorTagRespDTO;
-import com.tvntd.forms.AdsForm;
 import com.tvntd.forms.ArticleForm;
-import com.tvntd.models.AdsPost;
+import com.tvntd.models.ArtAds;
 import com.tvntd.models.ArtProduct;
 import com.tvntd.models.Article;
 import com.tvntd.models.ArticleBrief;
@@ -68,9 +67,8 @@ public interface IAuthorService
     void saveAuthor(Author author);
     void deleteAuthor(String uuid);
 
-    void updateAuthor(ArtAdsDTO adsDTO, AnnonUserDTO user);
     ArticleRank createArticleRank(Article article, String tagName);
-    ArticleRank createAdsRank(AdsPost ads, AdsForm form, AnnonUserDTO user);
+    ArticleBrief createAdsRank(ArtAds ads, AnnonUserDTO user);
     ArticleBrief createProductRank(ArtProduct product);
 
     /**

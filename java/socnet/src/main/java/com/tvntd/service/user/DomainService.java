@@ -47,10 +47,9 @@ import com.tvntd.models.Domain;
 import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArtTagService.ArtTagDTO;
 import com.tvntd.service.api.IArtTagService.ArtTagList;
-import com.tvntd.service.api.IArticleService;
-import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleSvc;
 import com.tvntd.service.api.IArticleSvc.ArticleBriefDTO;
+import com.tvntd.service.api.IArticleSvc.ArticlePostDTO;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IAuthorService.AuthorDTO;
 import com.tvntd.service.api.IDomainService;
@@ -76,8 +75,8 @@ public class DomainService implements IDomainService
     @Autowired
     protected IAuthorService authorSvc;
 
-    @Autowired
-    protected IArticleService articleSvc;
+    // @Autowired
+    // protected IArticleService articleSvc;
 
     @Autowired
     protected IProfileService profileSvc;
@@ -123,7 +122,7 @@ public class DomainService implements IDomainService
 
     @Override
     public boolean
-    updateDomain(String name, DomainForm form, ArticleDTO pend, ProfileDTO profile)
+    updateDomain(String name, DomainForm form, ArticlePostDTO pend, ProfileDTO profile)
     {
         Domain domain = getDomain(name);
         if (domain == null) {
@@ -268,7 +267,7 @@ public class DomainService implements IDomainService
         uuids.setUuids(author);
 
         List<ArticleBriefDTO> artRanks = artSvc.getArticleBriefDTO(uuids);
-        List<ArticleDTO> articles = new LinkedList<>();
+        List<ArticlePostDTO> articles = new LinkedList<>();
 
         resp.setArticles(articles);
         resp.setArtRanks(artRanks);

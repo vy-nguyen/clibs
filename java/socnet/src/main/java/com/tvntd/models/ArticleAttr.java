@@ -26,9 +26,17 @@
  */
 package com.tvntd.models;
 
+import java.util.List;
+
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+
+import com.tvntd.forms.CommentChangeForm;
 
 @Entity
 public class ArticleAttr
@@ -37,12 +45,23 @@ public class ArticleAttr
     @Column(length = 64)
     protected String articleUuid;
 
+    protected boolean favorite;
     protected Long creditEarned;
     protected Long moneyEarned;
     protected Long likes;
     protected Long shared;
     protected Long rank;
     protected Long score;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "ArticleLiked",
+            joinColumns = @JoinColumn(name = "articleId"))
+    protected List<String> userLiked;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "ArticleShared",
+            joinColumns = @JoinColumn(name = "articleId"))
+    protected List<String> userShared;
 
     public ArticleAttr() {}
     public ArticleAttr(String uuid)
@@ -54,6 +73,18 @@ public class ArticleAttr
         shared       = 0L;
         score        = 0L;
         rank         = 0L;
+    }
+
+    public ArticleAttr(CommentChangeForm form)
+    {
+        articleUuid  = form.getArticleUuid();
+        favorite     = form.isFavorite();
+        creditEarned = form.getCommentId();
+    }
+
+    public void applyCommentRank(CommentRank rank)
+    {
+        // TODO
     }
 
     /**
@@ -68,6 +99,20 @@ public class ArticleAttr
      */
     public void setArticleUuid(String articleUuid) {
         this.articleUuid = articleUuid;
+    }
+
+    /**
+     * @return the favorite
+     */
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    /**
+     * @param favorite the favorite to set
+     */
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
     }
 
     /**
@@ -152,5 +197,33 @@ public class ArticleAttr
      */
     public void setScore(Long score) {
         this.score = score;
+    }
+
+    /**
+     * @return the userLiked
+     */
+    public List<String> getUserLiked() {
+        return userLiked;
+    }
+
+    /**
+     * @param userLiked the userLiked to set
+     */
+    public void setUserLiked(List<String> userLiked) {
+        this.userLiked = userLiked;
+    }
+
+    /**
+     * @return the userShared
+     */
+    public List<String> getUserShared() {
+        return userShared;
+    }
+
+    /**
+     * @param userShared the userShared to set
+     */
+    public void setUserShared(List<String> userShared) {
+        this.userShared = userShared;
     }
 }

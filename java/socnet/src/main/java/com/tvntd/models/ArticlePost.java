@@ -63,6 +63,26 @@ public class ArticlePost
         authorUuid  = author;
     }
 
+    public ArticlePost(String authorUuid, Long authorId)
+    {
+        this.artBase     = new ArticleBase();
+        this.pending     = true;
+        this.authorUuid  = authorUuid;
+        this.articleUuid = artBase.getArticleUuid();
+
+        artBase.setAuthorId(authorId);
+    }
+
+    public ArticlePost(String articleUuid, String authorUuid, Long authorId)
+    {
+        this.artBase = new ArticleBase(articleUuid);
+        this.pending     = true;
+        this.authorUuid  = authorUuid;
+        this.articleUuid = artBase.getArticleUuid();
+
+        artBase.setAuthorId(authorId);
+    }
+
     /**
      * @return the articleUuid
      */

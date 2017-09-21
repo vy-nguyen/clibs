@@ -57,6 +57,20 @@ public class ArticleBase
 {
     static private Logger s_log = LoggerFactory.getLogger(ArticleBase.class);
 
+    /*
+     * contentOId format:
+     * HEX:abcdef123... for OID
+     * DOC:docs.google.com for doc link.
+     * VID:youtube.com for video link.
+     */
+    public static int MaxTitleLength = 128;
+    public static int MaxContentLength = 1 << 16;
+    public static int DOC_TYPE = 100;
+    public static int VID_TYPE = 200;
+    public static int DRV_TYPE = 300;
+
+    public static Long PERM_PRIVATE = 0x80000000L;
+
     @Id
     @Column(length = 64)
     protected String articleUuid;
@@ -88,16 +102,15 @@ public class ArticleBase
             joinColumns = @JoinColumn(name = "articleUuid"))
     protected List<String> pictures;
 
-    public ArticleBase()
-    {
-        articleUuid = UUID.randomUUID().toString();
-        createdDate = new Date();
-    }
-
     public ArticleBase(String artUuid)
     {
         articleUuid = artUuid;
         createdDate = new Date();
+        permMask    = 0L;
+    }
+
+    public ArticleBase() {
+        this(UUID.randomUUID().toString());
     }
 
     public ArticleBase(ProfileDTO profile)
@@ -144,6 +157,25 @@ public class ArticleBase
         if (art.getAuthorId() != null) {
             authorId   = art.getAuthorId();
         }
+    }
+
+    static public String makeUrlLink(Article self, String host, int mode)
+    {
+        String oid;
+
+        if (mode == DOC_TYPE) {
+            oid = "DOC:" + host;
+        } else if (mode == VID_TYPE) {
+            oid = "VID:" + host;
+        } else if (mode == DRV_TYPE) {
+            oid = "DRV:" + host;
+        } else {
+            oid = "HEX:" + host;
+        }
+        if (self != null) {
+            self.contentOId = oid;
+        }
+        return oid;
     }
 
     public void addPicture(ObjectId img)

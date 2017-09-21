@@ -26,8 +26,6 @@
  */
 package com.tvntd.service.api;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,6 +43,8 @@ import com.tvntd.models.ArticleRank;
 import com.tvntd.models.AuthorTag;
 import com.tvntd.models.Profile;
 import com.tvntd.objstore.ObjStore;
+import com.tvntd.service.api.IArticleSvc.ArticleBriefDTO;
+import com.tvntd.service.api.IArticleSvc.ArticlePostDTO;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.util.Util;
 
@@ -90,11 +90,11 @@ public interface IArticleService
 
     public static class ArticleDTOResponse extends GenericResponse
     {
-        private List<ArticleDTO> articles;
-        private List<ArticleDTO> pendPosts;
-        private List<ArticleRankDTO> articleRank;
+        private List<ArticlePostDTO>  articles;
+        private List<ArticlePostDTO>  pendPosts;
+        private List<ArticleBriefDTO> articleRank;
 
-        public ArticleDTOResponse(List<ArticleDTO> arts, List<ArticleDTO> pend)
+        public ArticleDTOResponse(List<ArticlePostDTO> arts, List<ArticlePostDTO> pend)
         {
             super(GenericResponse.USER_HOME, null, null);
             this.articles = arts;
@@ -102,7 +102,7 @@ public interface IArticleService
             this.articleRank = null;
         }
 
-        public ArticleDTOResponse(List<ArticleRankDTO> rank)
+        public ArticleDTOResponse(List<ArticleBriefDTO> rank)
         {
             super(GenericResponse.USER_HOME, null, null);
             this.articleRank = rank;
@@ -113,21 +113,21 @@ public interface IArticleService
         /**
          * @return the articles
          */
-        public List<ArticleDTO> getArticles() {
+        public List<ArticlePostDTO> getArticles() {
             return articles;
         }
 
         /**
          * @return the pendPosts
          */
-        public List<ArticleDTO> getPendPosts() {
+        public List<ArticlePostDTO> getPendPosts() {
             return pendPosts;
         }
 
         /**
          * @return the articleRank
          */
-        public List<ArticleRankDTO> getArticleRank() {
+        public List<ArticleBriefDTO> getArticleRank() {
             return articleRank;
         }
     }
