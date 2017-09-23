@@ -36,8 +36,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.tvntd.service.api.IArtTagService.ArtTagList;
-import com.tvntd.service.api.IArticleService.ArticleDTO;
-import com.tvntd.service.api.IArticleService.ArticleRankDTO;
+import com.tvntd.service.api.IArticleSvc.ArticleBriefDTO;
+import com.tvntd.service.api.IArticleSvc.ArticlePostDTO;
 import com.tvntd.service.api.IAuthorService.AuthorDTO;
 import com.tvntd.service.api.IDomainService.DomainDTO;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
@@ -48,16 +48,12 @@ public class StartupResponse
     private String                 domainUuid;
     private DomainDTO              domain;
     private List<ProfileDTO>       linkedUsers;
-    private List<ArticleDTO>       articles;
+    private List<ArticlePostDTO>   articles;
     private List<AuthorDTO>        authors;
 
     private List<Language>         languages;
     private ArtTagList             publicTags;
-
-    // Only use this list to reduce the amount of full articles fetched back from
-    // one shot.
-    //
-    private List<ArticleRankDTO>   artRanks;
+    private List<ArticleBriefDTO>  artRanks;
 
     public StartupResponse(String uuid) {
         domainUuid = uuid;
@@ -181,14 +177,14 @@ public class StartupResponse
     /**
      * @return the articles
      */
-    public List<ArticleDTO> getArticles() {
+    public List<ArticlePostDTO> getArticles() {
         return articles;
     }
 
     /**
      * @param articles the articles to set
      */
-    public void setArticles(List<ArticleDTO> list)
+    public void setArticles(List<ArticlePostDTO> list)
     {
         if (articles == null) {
             articles = list;
@@ -200,14 +196,14 @@ public class StartupResponse
     /**
      * @return the artRanks
      */
-    public List<ArticleRankDTO> getArtRanks() {
+    public List<ArticleBriefDTO> getArtRanks() {
         return artRanks;
     }
 
     /**
      * @param artRanks the artRanks to set
      */
-    public void setArtRanks(List<ArticleRankDTO> rankList)
+    public void setArtRanks(List<ArticleBriefDTO> rankList)
     {
         if (artRanks == null) {
             artRanks = rankList;

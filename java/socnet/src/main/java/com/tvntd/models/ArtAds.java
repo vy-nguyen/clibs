@@ -27,116 +27,116 @@
 package com.tvntd.models;
 
 import java.util.Date;
-import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Index;
-import javax.persistence.Inheritance;
 import javax.persistence.Lob;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
-import com.tvntd.lib.ObjectId;
 
 @Entity
-@Inheritance
-@DiscriminatorColumn(name = "AdType")
 @Table(indexes = {
-    @Index(columnList = "authorUuid", name = "authorUuid", unique = false)
+    @Index(columnList = "authorUuid", unique = false)
 })
-public class AdsPost
+public class ArtAds
 {
     @Id
     @Column(length = 64)
-    private String      articleUuid;
+    protected String articleUuid;
 
     @Column(length = 64)
-    private String      authorUuid;
+    protected String authorUuid;
+
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @PrimaryKeyJoinColumn
+    protected ArticleBase artBase;
+
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @PrimaryKeyJoinColumn
+    protected ArticleAttr artAttr;
 
     @Column(length = 64)
-    private String      contentOid;
+    protected String adImgOid0;
 
     @Column(length = 64)
-    private String      adImgOId0;
+    protected String adImgOid1;
 
     @Column(length = 64)
-    private String      adImgOId1;
+    protected String adImgOid2;
 
     @Column(length = 64)
-    private String      adImgOId2;
+    protected String adImgOid3;
+
+    @Column(length = 128)
+    private byte[]   busName;
+
+    @Column(length = 128)
+    private byte[]   busInfo;
+
+    @Column(length = 128)
+    private byte[]   busCat;
+
+    @Column(length = 128)
+    private byte[]   busWeb;
+
+    @Column(length = 128)
+    private byte[]   busEmail;
+
+    @Column(length = 128)
+    private byte[]   busPhone;
+
+    @Column(length = 128)
+    private byte[]   busStreet;
 
     @Column(length = 64)
-    private String      adImgOId3;
-
-    @Column
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date        createdDate;
-
-    @Column(length = 128)
-    private byte[]      busName;
-
-    @Column(length = 128)
-    private byte[]      busInfo;
-
-    @Column(length = 128)
-    private byte[]      busCat;
-
-    @Column(length = 128)
-    private byte[]      busWeb;
-
-    @Column(length = 128)
-    private byte[]      busEmail;
-
-    @Column(length = 128)
-    private byte[]      busPhone;
-
-    @Column(length = 128)
-    private byte[]      busStreet;
-
-    @Column(length = 64)
-    private byte[]      busCity;
+    private byte[]   busCity;
 
     @Column(length = 32)
-    private byte[]      busState;
+    private byte[]   busState;
 
     @Column(length = 32)
-    private byte[]      busZip;
+    private byte[]   busZip;
 
     @Column(length = 1024)
-    private byte[]      busHour;
+    private byte[]   busHour;
 
     @Lob
-    @Column(length = 1 << 14) 
+    @Column(length = 1 << 14)
     private byte[] busDesc;
 
-    public AdsPost()
+    public ArtAds() {}
+    public ArtAds(String authorUuid, Long authorId)
     {
-        articleUuid = UUID.randomUUID().toString();
-        createdDate = new Date();
+        artBase     = new ArticleBase();
+        articleUuid = artBase.getArticleUuid();
+        artAttr     = new ArticleAttr(articleUuid);
+
+        this.authorUuid = authorUuid;
+        artBase.setAuthorId(authorId);
+        artBase.setArtTag(ArtTag.ADS);
     }
 
-    public AdsPost(String uuid)
+    public ArtAds(ArticleBase base)
     {
-        articleUuid = uuid;
-        createdDate = new Date();
+        if (base == null) {
+            base = new ArticleBase();
+            base.setCreatedDate(new Date());
+        }
+        artBase     = base;
+        articleUuid = base.getArticleUuid();
+        artAttr     = new ArticleAttr(articleUuid);
     }
 
-    public void addPicture(ObjectId img, int idx)
+    public void fromProfile(Profile prof)
     {
-        String oid = img.name();
-
-        if (idx == 0) {
-            adImgOId0 = oid;
-        } else if (idx == 1) {
-            adImgOId1 = oid;
-        } else if (idx == 2) {
-            adImgOId2 = oid;
+        if (prof == null) {
+            artBase.setAuthorId(0L);
         } else {
-            adImgOId3 = oid;
+            artBase.setAuthorId(prof.getUserId());
         }
     }
 
@@ -169,87 +169,87 @@ public class AdsPost
     }
 
     /**
-     * @return the contentOid
+     * @return the artBase
      */
-    public String getContentOid() {
-        return contentOid;
+    public ArticleBase getArtBase() {
+        return artBase;
     }
 
     /**
-     * @param contentOid the contentOid to set
+     * @param artBase the artBase to set
      */
-    public void setContentOid(String contentOid) {
-        this.contentOid = contentOid;
+    public void setArtBase(ArticleBase artBase) {
+        this.artBase = artBase;
+    }
+
+    /**
+     * @return the artAttr
+     */
+    public ArticleAttr getArtAttr() {
+        return artAttr;
+    }
+
+    /**
+     * @param artAttr the artAttr to set
+     */
+    public void setArtAttr(ArticleAttr artAttr) {
+        this.artAttr = artAttr;
     }
 
     /**
      * @return the adImgOid0
      */
-    public String getAdImgOId0() {
-        return adImgOId0;
+    public String getAdImgOid0() {
+        return adImgOid0;
     }
 
     /**
      * @param adImgOid0 the adImgOid0 to set
      */
-    public void setAdImgOId0(String adImgOId0) {
-        this.adImgOId0 = adImgOId0;
+    public void setAdImgOid0(String adImgOid0) {
+        this.adImgOid0 = adImgOid0;
     }
 
     /**
      * @return the adImgOid1
      */
-    public String getAdImgOId1() {
-        return adImgOId1;
+    public String getAdImgOid1() {
+        return adImgOid1;
     }
 
     /**
      * @param adImgOid1 the adImgOid1 to set
      */
-    public void setAdImgOId1(String adImgOId1) {
-        this.adImgOId1 = adImgOId1;
+    public void setAdImgOid1(String adImgOid1) {
+        this.adImgOid1 = adImgOid1;
     }
 
     /**
-     * @return the adImgOId2
+     * @return the adImgOid2
      */
-    public String getAdImgOId2() {
-        return adImgOId2;
+    public String getAdImgOid2() {
+        return adImgOid2;
     }
 
     /**
-     * @param adImgOId2 the adImgOId2 to set
+     * @param adImgOid2 the adImgOid2 to set
      */
-    public void setAdImgOId2(String adImgOId2) {
-        this.adImgOId2 = adImgOId2;
+    public void setAdImgOid2(String adImgOid2) {
+        this.adImgOid2 = adImgOid2;
     }
 
     /**
      * @return the adImgOid3
      */
-    public String getAdImgOId3() {
-        return adImgOId3;
+    public String getAdImgOid3() {
+        return adImgOid3;
     }
 
     /**
      * @param adImgOid3 the adImgOid3 to set
      */
-    public void setAdImgOId3(String adImgOid3) {
-        this.adImgOId3 = adImgOid3;
-    }
-
-    /**
-     * @return the createdDate
-     */
-    public Date getCreatedDate() {
-        return createdDate;
-    }
-
-    /**
-     * @param createdDate the createdDate to set
-     */
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
+    public void setAdImgOid3(String adImgOid3) {
+        this.adImgOid3 = adImgOid3;
     }
 
     /**

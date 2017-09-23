@@ -13,7 +13,7 @@ import Startup          from 'vntd-root/pages/login/Startup.jsx';
 import NavActions       from 'vntd-shared/actions/NavigationActions.jsx';
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import {Util}           from 'vntd-shared/utils/Enum.jsx';
-import {ArticleRank}    from 'vntd-root/stores/Article.jsx';
+import {ArticleBrief}   from 'vntd-root/stores/Article.jsx';
 import ArticleFactory   from 'vntd-root/stores/ArticleFactory.jsx';
 import ArticleTagStore  from 'vntd-root/stores/ArticleTagStore.jsx';
 import {
@@ -197,7 +197,6 @@ let AuthorStore = Reflux.createStore({
      * Update article ranks with data returned from the server.
      */
     _updateArticleRank: function(articleRank, trigger) {
-        console.log(articleRank);
         _.forOwn(articleRank, function(rank) {
             this.addArticleRankFromJson(rank);
         }.bind(this));
@@ -223,7 +222,7 @@ let AuthorStore = Reflux.createStore({
      */
     _updateArtRankFromArticles: function(articles) {
         _.forOwn(articles, function(art) {
-            if (art.rank != null && !(art.rank instanceof ArticleRank)) {
+            if (art.rank != null && !(art.rank instanceof ArticleBrief)) {
                 this.addArticleRankFromJson(art.rank);
             }
         }.bind(this));

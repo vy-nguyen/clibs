@@ -13,6 +13,30 @@ import WebUtils         from 'vntd-shared/utils/WebUtils.jsx';
 import {Util}           from 'vntd-shared/utils/Enum.jsx';
 import {VConst}         from 'vntd-root/config/constants.js';
 
+class ArticleSort {
+    static compareRank(r1, r2) {
+        if (r1.rank == null) {
+            r1.rank = 0;
+        }
+        if (r2.rank == null) {
+            r2.rank = 0;
+        }
+        return r1.rank - r2.rank;
+    }
+
+    static compareArticle(anchor, elm) {
+        return anchor.getRankOrder() - elm.getRankOrder();
+    }
+
+    static compareArtByTitle(anchor, elm) {
+        return anchor.artTitle.localeCompare(elm.artTitle);
+    }
+
+    static compareByDate(anchor, elm) {
+        return elm.createdDate - anchor.createdDate;
+    }
+}
+
 export class Author {
     constructor(data) {
         _.forOwn(data, function(v, k) {
@@ -45,7 +69,7 @@ export class Author {
 }
 
 /*
- * Maintains binding from articles to a name tag.
+ * Maintains binding from articles to a name tag owned by a user.
  */
 export class AuthorTag {
     constructor(tag, authorStore) {
@@ -67,33 +91,15 @@ export class AuthorTag {
         let store, rank = this.articles[json.articleUuid];
 
         if (rank != null) {
-            if (json !== rank && !(json instanceof ArticleRank)) {
+            if (json !== rank && !(json instanceof ArticleBrief)) {
                 rank.updateFromJson(json);
             }
             return rank;
         }
         store = globStore.getStoreKind(json.artTag);
         return this.addArticleRankObj(
-            ArticleRank.newArticleRank(json, store, this, null)
+            ArticleBrief.newArticleRank(json, store, this, null)
         );
-    }
-
-    static compareRank(r1, r2) {
-        if (r1.rank == null) {
-            r1.rank = 0;
-        }
-        if (r2.rank == null) {
-            r2.rank = 0;
-        }
-        return r1.rank - r2.rank;
-    }
-
-    static compareArticle(anchor, elm) {
-        return anchor.getRankOrder() - elm.getRankOrder();
-    }
-
-    static compareArtByTitle(anchor, elm) {
-        return anchor.artTitle.localeCompare(elm.artTitle);
     }
 
     addArticleRankObj(rank) {
@@ -102,7 +108,7 @@ export class AuthorTag {
         if (artRank == null) {
             artRank = rank;
             this.articles[rank.articleUuid] = rank;
-            Util.insertSorted(rank, this.sortedArts, AuthorTag.compareArticle);
+            Util.insertSorted(rank, this.sortedArts, ArticleSort.compareArticle);
         }
         return artRank;
     }
@@ -121,7 +127,7 @@ export class AuthorTag {
     }
 
     resortArtRank() {
-        this.sortedArts.sort(AuthorTag.compareArticle);
+        this.sortedArts.sort(ArticleSort.compareArticle);
     }
 
     getArticleRank(artUuid) {
@@ -137,6 +143,9 @@ export class AuthorTag {
     }
 }
 
+/**
+ * Manager managed tags/articles owned by an author/user.
+ */
 export class AuthorTagMgr {
     constructor(uuid, authorStore) {
         this.authorUuid  = uuid;
@@ -179,7 +188,7 @@ export class AuthorTagMgr {
         authorTag = new AuthorTag(tag, this.authorStore);
         this.authorTags[tag.tagName] = authorTag;
 
-        Util.insertSorted(authorTag, this.sortedTags, AuthorTag.compareRank);
+        Util.insertSorted(authorTag, this.sortedTags, ArticleSort.compareRank);
         this.stringTags = _.map(this.sortedTags, function(it) {
             return it.tagName;
         });
@@ -336,7 +345,7 @@ export class AuthorTagMgr {
             };
             artList.push(tagRank);
             if (sortedArts != null) {
-                sortedArts.sort(AuthorTag.compareArtByTitle);
+                sortedArts.sort(ArticleSort.compareArtByTitle);
                 _.forEach(sortedArts, function(rank, idx) {
                     rank.rank = 10 + idx;
                     tagRank.artUuid.push(rank.getArticleUuid());
@@ -352,7 +361,7 @@ export class AuthorTagMgr {
                 }
             });
             if (sortedArts != null) {
-                sortedArts.sort(AuthorTag.compareRank);
+                sortedArts.sort(ArticleSort.compareRank);
             }
                  */
         }.bind(this));
@@ -416,22 +425,23 @@ class ArticleBase {
         return this.artTag;
     }
 
+    getPictureUrl() {
+        return this.pictureUrl;
+    }
+
     getRankOrder() {
         if (this.rank !== 0) {
             return this.rank;
         }
-        if (this.msTime == null) {
-            this.msTime = Date.parse(this.timeStamp);
-        }
-        return -this.msTime;
+        return -this.timeStamp;
     }
 }
 
-export class ArticleRank extends ArticleBase {
+export class ArticleBrief extends ArticleBase {
     constructor(data, store, authorTag, article) {
         super(store);
         if (data == null) {
-            data = ArticleRank.genArticleRankJson(article);
+            data = ArticleBrief.genArticleRankJson(article);
         }
         _.forEach(data, function(v, k) {
             this[k] = v;
@@ -488,7 +498,7 @@ export class ArticleRank extends ArticleBase {
     }
 
     static newArticleRank(data, store, authorTag, article) {
-        let artRank = new ArticleRank(data, store, authorTag, article);
+        let artRank = new ArticleBrief(data, store, authorTag, article);
 
         if (article == null) {
             article = store.addDefaultFromRank(artRank);
@@ -509,9 +519,7 @@ export class Article extends ArticleBase {
             this[k] = v;
         }.bind(this));
 
-        date            = new Date(data.createdDate);
-        this.dateString = moment(date).format("DD/MM/YYYY - HH:mm");
-        this.author     = UserStore.getUserByUuid(data.authorUuid);
+        this.author = UserStore.getUserByUuid(data.authorUuid);
         return this;
     }
 
@@ -545,6 +553,17 @@ export class Article extends ArticleBase {
         return VConst.blog;
     }
 
+    // @Override
+    //
+    getPictureUrl() {
+        let brief = this.getArticleRank();
+
+        if (brief != null) {
+            return brief.pictureUrl;
+        }
+        return null;
+    }
+
     getSortedAnchor() {
         return VConst.blogs;
     }
@@ -560,11 +579,15 @@ export class Article extends ArticleBase {
     }
 
     getArticleRank() {
-        if (this.rank != null) {
-            return this.rank;
+        if (this.rank == null) {
+            if (this.noData === true) {
+                this.rank = this.authorStore.lookupArticleRankByUuid(this.articleUuid);
+            } else {
+                return null;
+            }
         }
-        if (this.noData === true) {
-            this.rank = this.authorStore.lookupArticleRankByUuid(this.articleUuid);
+        if (this.createdDate == null) {
+            this._fillDateString(this.rank);
         }
         return this.rank;
     }
@@ -599,7 +622,31 @@ export class Article extends ArticleBase {
     }
 
     genArticleRankJson() {
-        return ArticleRank.genArticleRankJson(this);
+        return ArticleBrief.genArticleRankJson(this);
+    }
+
+    getTopic() {
+        let artRank = this.getArticleRank();
+        return artRank.artTitle;
+    }
+
+    getContent() {
+        return this.content;
+    }
+
+    getDateString() {
+        if (this.dateString == null) {
+            this._fillDateString(this.getArticleRank());
+        }
+        return this.dateString;
+    }
+
+    _fillDateString(artRank) {
+        if (artRank != null) {
+            let date = new Date(artRank.timeStamp);
+            this.createdDate = artRank.timeStamp;
+            this.dateString  = moment(date).format("DD/MM/YYYY HH:mm");
+        }
     }
 }
 
@@ -647,7 +694,12 @@ export class AdsItem extends Article {
     // @Override
     //
     getTagName() {
-        return this.adsRank.tagName;
+        let artRank = this.getArticleRank();
+
+        if (artRank != null) {
+            return artRank.tagName;
+        }
+        return "Default";
     }
 
     // @Override
@@ -703,21 +755,17 @@ export class AuthorShelf {
         this.addSortedArticle(article, preend);
     }
 
-    _cmpArticle(anchor, elm) {
-        return elm.createdDate - anchor.createdDate;
-    }
-
     removeArticle(articleUuid) {
         let root, article = this.articles[articleUuid];
 
         if (article != null) {
             root = article.getSortedAnchor();
-            Util.removeArray(this[root], article, 0, this._cmpArticle);
+            Util.removeArray(this[root], article, 0, ArticleSort.compareByDate);
             delete this.articles[articleUuid];
         }
         article = this.savedArts[articleUuid];
         if (article != null) {
-            Util.removeArray(this.sortedSavedArts, article, 0, this._cmpArticle);
+            Util.removeArray(this.sortedSavedArts, article, 0, ArticleSort.compareByDate);
             delete this.savedArts[articleUuid];
         }
     }
@@ -731,7 +779,7 @@ export class AuthorShelf {
                 if (pre === true) {
                     this[root] = Util.preend(article, this[root]);
                 } else {
-                    Util.insertSorted(article, this[root], this._cmpArticle);
+                    Util.insertSorted(article, this[root], ArticleSort.compareByDate);
                 }
             }
             return;
@@ -742,7 +790,7 @@ export class AuthorShelf {
     addSortedSavedArts(article) {
         if (this.savedArts[article.articleUuid] !== article) {
             this.savedArts[article.articleUuid] = article;
-            Util.insertSorted(article, this.sortedSavedArts, this._cmpArticle);
+            Util.insertSorted(article, this.sortedSavedArts, ArticleSort.compareByDate);
         }
     }
 
@@ -765,15 +813,13 @@ export class AuthorShelf {
         return this.savedArts[artUuid];
     }
 
-    iterArticles(func, arg) {
-        _.forOwn(this[VConst.blogs], function(item, key) {
+    iterArticles(func, arg, listKey) {
+        let anchorKey = listKey == null ? VConst.blogs : listKey;
+
+        _.forOwn(this[anchorKey], function(item, key) {
             func(item, arg);
         });
     }
-}
-
-function sortArticle(pivot, article) {
-    return article.createdDate - pivot.createdDate;
 }
 
 export class PublishArtTag {
@@ -804,6 +850,10 @@ export class PublishArtTag {
     }
 }
 
+/**
+ * ArtTag stores the binding between articles belonging to a public tag (e.g. all
+ * articles published under 'politics' tag.
+ */
 export class ArtTag {
     constructor(data, authorStore) {
         let artUuids;
@@ -869,7 +919,7 @@ export class ArtTag {
                 unResolved[artUuid] = this;
             } else {
                 this.articleRank[rank.getArticleUuid()] = rank;
-                Util.insertSorted(rank, sortedArts, sortArticle);
+                Util.insertSorted(rank, sortedArts, ArticleSort.compareByDate);
             }
         }.bind(this));
 
@@ -890,7 +940,7 @@ export class ArtTag {
             this.sortedArts = [artRank];
         } else {
             this.articleRank[artRank.getArticleUuid()] = artRank;
-            Util.insertSorted(artRank, this.sortedArts, sortArticle);
+            Util.insertSorted(artRank, this.sortedArts, ArticleSort.compareByDate);
         }
     }
 

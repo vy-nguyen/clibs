@@ -28,31 +28,18 @@ package com.tvntd.dao;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.tvntd.models.Article;
+import com.tvntd.models.ArticleBase;
 
-public interface ArticleRepository extends JpaRepository<Article, String>
+public interface ArticleBaseRepo extends JpaRepository<ArticleBase, String>
 {
-    Article findByArticleUuid(String uuid);
-    List<Article> findByArticleUuidIn(List<String> uuids);
+    ArticleBase findByArticleUuid(String uuid);
+    ArticleBase findByPublicUrlOid(String urlOid);
 
-    Article findByAuthorUuid(String uuid);
-    List<Article> findByAuthorUuidIn(List<String> authorUUids);
-
-    List<Article> findAllByAuthorId(Long authorId);
-    List<Article> findAllByAuthorUuid(String authorUuidid);
-    List<Article> findAllByAuthorIdOrderByCreatedDateDesc(Long authorId);
-    List<Article> findAllByAuthorUuidOrderByCreatedDateAsc(String uuid);
-
-    Page<Article>
-    findByAuthorIdOrderByCreatedDateDesc(Long author, Pageable pageable);
-
-    Page<Article>
-    findByAuthorUuidOrderByCreatedDateDesc(String authorUuid, Pageable pageable);
+    List<ArticleBase> findByArticleUuidIn(List<String> articleUuids);
+    List<ArticleBase> findByPublicUrlOidIn(List<String> urlOids);
 
     @Override
-    void delete(Article article);
+    void delete(ArticleBase art);
 }

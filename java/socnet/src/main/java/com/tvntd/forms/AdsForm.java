@@ -31,12 +31,16 @@ import javax.validation.constraints.Size;
 
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.tvntd.util.Util;
 import com.tvntd.util.ValidEmail;
 
 public class AdsForm
 {
+    static private Logger s_log = LoggerFactory.getLogger(AdsForm.class);
+
     @NotNull
     @Size(max = 128)
     private String busName;
@@ -97,54 +101,67 @@ public class AdsForm
     {
         Whitelist wlist = Util.allowedTags;
         if (articleUuid == null) {
+            s_log.info("Missing article uuid");
             return false;
         }
         articleUuid = Jsoup.clean(articleUuid, wlist);
         if (busCat == null) {
+            s_log.info("Missing busCat");
             return false;
         }
         busCat = Jsoup.clean(busCat, wlist);
         if (busName == null) {
+            s_log.info("Missing busName");
             return false;
         }
         busName = Jsoup.clean(busName, wlist);
         if (busInfo == null) {
+            s_log.info("Missing busInfo");
             return false;
         }
         busInfo = Jsoup.clean(busInfo, wlist);
         if (busWeb == null) {
+            s_log.info("Missing busWeb");
             return false;
         }
         busWeb = Jsoup.clean(busWeb, wlist);
         if (busEmail == null) {
+            s_log.info("Missing busEmail");
             return false;
         }
         busEmail = Jsoup.clean(busEmail, wlist);
         if (busPhone == null) {
+            s_log.info("Missing busPhone");
             return false;
         }
         busPhone = Jsoup.clean(busPhone, wlist);
         if (busStreet == null) {
+            s_log.info("Missing busStreet");
             return false;
         }
         busStreet = Jsoup.clean(busStreet, wlist);
         if (busCity == null) {
+            s_log.info("Missing busCity");
             return false;
         }
         busCity = Jsoup.clean(busCity, wlist);
         if (busState == null) {
+            s_log.info("Missing busState");
             return false;
         }
         busState = Jsoup.clean(busState, wlist);
         if (busZip == null) {
+            s_log.info("Missing busZip");
             return false;
         }
         busZip = Jsoup.clean(busZip, wlist);
         if (busHour == null) {
+            s_log.info("Missing busHour");
             return false;
         }
         busHour = Jsoup.clean(busHour, wlist);
         if (busDesc == null) {
+            s_log.info("Missing busDesc");
             return false;
         }
         busDesc = Jsoup.clean(busDesc, wlist);

@@ -13,7 +13,7 @@ import WebUtils     from 'vntd-shared/utils/WebUtils.jsx';
 
 import {VConst}     from 'vntd-root/config/constants.js';
 import {
-    Article,      Product,        AdsItem,    ArticleRank,
+    Article,      Product,        AdsItem,    ArticleBrief,
     AuthorShelf,  AuthorTagMgr,   Author,     PublishArtTag, ArtTag
 } from 'vntd-root/stores/Article.jsx';
 
@@ -70,7 +70,7 @@ class ArticleFactory {
     }
 
     static newArticleRank(data, store, authorTag, article) {
-        return ArticleRank.newArticleRank(data, store, authorTag, article);
+        return ArticleBrief.newArticleRank(data, store, authorTag, article);
     }
 
     static newAuthorShelf(articleUuid, authorUuid) {

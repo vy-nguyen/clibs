@@ -24,24 +24,19 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.dao;
+package com.tvntd.junit;
 
-import java.util.List;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import com.tvntd.models.ArticleRank;
-
-public interface ArticleRankRepo extends JpaRepository<ArticleRank, Long>
+public class TestRunner
 {
-    ArticleRank findByArticleUuid(String uuid);
-    ArticleRank findByTagHash(String tagHash);
-    ArticleRank findByPublicUrlOid(String urlOid);
-
-    List<ArticleRank> findByAuthorUuid(String uuid);
-    List<ArticleRank> findByArticleUuidIn(List<String> uuids);
-    List<ArticleRank> findByAuthorUuidIn(List<String> authorUuids);
-
-    @Override
-    void delete(ArticleRank rank);
+    public static void main(String[] args)
+    {
+        Result res = JUnitCore.runClasses(UtilTest.class);
+        for (Failure f : res.getFailures()) {
+            System.out.println(f.toString());
+        }
+    }
 }

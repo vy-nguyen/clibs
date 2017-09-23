@@ -28,31 +28,20 @@ package com.tvntd.dao;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.tvntd.models.Product;
+import com.tvntd.models.ArtAds;
 
-public interface ProductRepository extends JpaRepository<Product, String>
+public interface ArtAdsRepo extends JpaRepository<ArtAds, String>
 {
-    Product findByArticleUuid(String uuid);
-    Product findByAuthorUuid(String uuid);
+    ArtAds findByArticleUuid(String uuid);
 
-    List<Product> findAllByAuthorId(Long authorId);
-    List<Product> findAllByAuthorUuid(String authorUuid);
-    List<Product> findByArticleUuidIn(List<String> articleUuids);
-    List<Product> findByAuthorUuidIn(List<String> authorUuids);
+    List<ArtAds> findByArticleUuidIn(List<String> articleUuids);
+    List<ArtAds> findByAuthorUuid(String ownerUuid);
+    List<ArtAds> findByAuthorUuidIn(List<String> ownerUuids);
 
-    List<Product> findAllByAuthorIdOrderByCreatedDateDesc(Long authorId);
-    List<Product> findAllByAuthorUuidOrderByCreatedDateAsc(String uuid);
-
-    Page<Product>
-    findByAuthorIdOrderByCreatedDateDesc(Long authorId, Pageable pageable);
-
-    Page<Product>
-    findByAuthorUuidOrderByCreatedDateDesc(String authorUuid, Pageable pageable);
+    List<ArtAds> findAll();
 
     @Override
-    void delete(Product product);
+    void delete(ArtAds art);
 }

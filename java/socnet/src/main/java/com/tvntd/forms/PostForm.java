@@ -39,7 +39,7 @@ import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.tvntd.models.Article;
+import com.tvntd.models.ArticleBrief;
 import com.tvntd.util.Constants;
 import com.tvntd.util.Util;
 
@@ -91,16 +91,24 @@ public class PostForm
 
         if (content != null) {
             content = Jsoup.clean(content, wlist);
-            int len = content.length();
-            if (len > 200) {
-                len = 200;
-            }
-            contentBrief = Jsoup.parse(content.substring(0, len)).text();
+            contentBrief = toBriefContent(content, null);
         }
         if (videoUrl != null) {
             parseIframe(videoUrl);
         }
         return true;
+    }
+
+    public static String toBriefContent(String input, byte[] raw)
+    {
+        if (input == null) {
+            input = Util.fromRawByte(raw);
+        }
+        int len = input.length();
+        if (len > 255) {
+            len = 255;
+        }
+        return Jsoup.parse(input.substring(0, len)).text();
     }
 
     public String toString()
@@ -144,17 +152,17 @@ public class PostForm
             }
         }
         if (host.contains("docs.google.com")) {
-            docType = Article.DOC_TYPE;
+            docType = ArticleBrief.DOC_TYPE;
             contentUrlHost = host;
             contentUrlFile = parseFileId(contentUrlFile);
 
         } else if (host.contains("youtube.com") || host.contains("youtu.be")) {
-            docType = Article.VID_TYPE;
+            docType = ArticleBrief.VID_TYPE;
             contentUrlHost = host;
             contentUrlFile = parseFileId(contentUrlFile);
 
         } else if (host.contains("drive.google.com")) {
-            docType = Article.DRV_TYPE;
+            docType = ArticleBrief.DRV_TYPE;
             contentUrlHost = host;
             contentUrlFile = parseFileId(contentUrlFile);
 

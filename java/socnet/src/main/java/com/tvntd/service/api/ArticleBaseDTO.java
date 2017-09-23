@@ -24,47 +24,51 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.models;
+package com.tvntd.service.api;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import com.tvntd.models.ArticleBase;
+import com.tvntd.util.Util;
 
-@Entity
-@DiscriminatorValue(value = "video")
-public class ArtVideo extends Article
+public class ArticleBaseDTO
 {
-    protected String videoUrl;
+    protected ArticleBase artBase;
 
-    public ArtVideo() {
-        super();
+    public ArticleBaseDTO(ArticleBase base) {
+        artBase = base;
     }
 
-    public ArtVideo(Article org, String video)
-    {
-        this.articleUuid = org.articleUuid;
-        this.authorUuid  = org.authorUuid;
-        this.authorId    = org.authorId;
-        this.pending     = org.pending;
-        this.contentOId  = org.contentOId;
-        this.createdDate = org.createdDate;
-        this.topic       = org.topic;
-        this.publicTag   = org.publicTag;
-        this.content     = org.content;
-        this.pictures    = org.pictures;
-        this.videoUrl    = video;
+    public ArticleBase fetchArticleBase() {
+        return artBase;
     }
 
     /**
-     * @return the videoUrl
+     * JSON gets
      */
-    public String getVideoUrl() {
-        return videoUrl;
+    public String getArticleUuid() {
+        return artBase.getArticleUuid();
     }
 
-    /**
-     * @param videoUrl the videoUrl to set
-     */
-    public void setVideoUrl(String videoUrl) {
-        this.videoUrl = videoUrl;
+    public Long getPermMask() {
+        return artBase.getPermMask();
+    }
+
+    public String getPublicUrlOid() {
+        return artBase.getPublicUrlOid();
+    }
+
+    public String getArtTitle() {
+        return Util.fromRawByte(artBase.getArtTitle());
+    }
+
+    public String getArtTag() {
+        return artBase.getArtTag();
+    }
+
+    public String getContentOid() {
+        return artBase.getContentOid();
+    }
+
+    public String getContentLinkUrl() {
+        return artBase.getContentLinkUrl();
     }
 }

@@ -26,53 +26,48 @@
  */
 package com.tvntd.service.api;
 
-import java.util.List;
-import com.tvntd.service.api.IArticleSvc.ArticleBriefDTO;
-import com.tvntd.service.api.IArticleSvc.ArticlePostDTO;
+import com.tvntd.models.ArticleAttr;
 
-public interface IArticleService
+public class ArticleAttrDTO
 {
-    public static class ArticleDTOResponse extends GenericResponse
-    {
-        private List<ArticlePostDTO>  articles;
-        private List<ArticlePostDTO>  pendPosts;
-        private List<ArticleBriefDTO> articleRank;
+    protected ArticleAttr artAttr;
 
-        public ArticleDTOResponse(List<ArticlePostDTO> arts, List<ArticlePostDTO> pend)
-        {
-            super(GenericResponse.USER_HOME, null, null);
-            this.articles = arts;
-            this.pendPosts = pend;
-            this.articleRank = null;
-        }
+    public ArticleAttrDTO(ArticleAttr attr) {
+        artAttr = attr;
+    }
 
-        public ArticleDTOResponse(List<ArticleBriefDTO> rank)
-        {
-            super(GenericResponse.USER_HOME, null, null);
-            this.articleRank = rank;
-            this.articles = null;
-            this.pendPosts = null;
-        }
+    public ArticleAttr fetchArtAttr() {
+        return artAttr;
+    }
 
-        /**
-         * @return the articles
-         */
-        public List<ArticlePostDTO> getArticles() {
-            return articles;
-        }
+    /**
+     * JSON gets
+     */
+    public String getArticleUuid() {
+        return artAttr.getArticleUuid();
+    }
 
-        /**
-         * @return the pendPosts
-         */
-        public List<ArticlePostDTO> getPendPosts() {
-            return pendPosts;
-        }
+    public Long getCreditEarned() {
+        return artAttr.getCreditEarned();
+    }
 
-        /**
-         * @return the articleRank
-         */
-        public List<ArticleBriefDTO> getArticleRank() {
-            return articleRank;
-        }
+    public Long getMoneyEarned() {
+        return artAttr.getMoneyEarned();
+    }
+
+    public Long getLikes() {
+        return artAttr.getLikes();
+    }
+
+    public Long getShared() {
+        return artAttr.getShared();
+    }
+
+    public Long getRank() {
+        return artAttr.getRank();
+    }
+
+    public Long getScore() {
+        return artAttr.getScore();
     }
 }

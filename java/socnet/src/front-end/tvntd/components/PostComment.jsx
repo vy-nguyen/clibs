@@ -67,23 +67,23 @@ class CommentBox extends React.Component
     }
 
     _updateState(data) {
-        if (this.state.submiting !== true) {
+        let newState = {},
+            artAttr  = CommentStore.getArticleAttr(this.props.articleUuid);
+
+        if (artAttr == null) {
             return;
         }
-        let newState = {}
-        let artAttr  = CommentStore.getArticleAttr(this.props.articleUuid);
 
-        if (artAttr != null) {
-            if (artAttr.didILikeIt() === true) {
-                newState = this._selectButton('like', true, false);
-            }
-            newState.artAttr = artAttr;
+        if (artAttr.didILikeIt() === true) {
+            newState = this._selectButton('like', true, false);
         }
+        newState.artAttr     = artAttr;
+        newState.submiting   = false;
+        newState.sendDisable = "";
+
         if (this.refs.comment != null) {
             this.refs.comment.value = "";
         }
-        newState.sendDisable = "";
-        newState.submiting = false;
         this.setState(newState);
     }
 

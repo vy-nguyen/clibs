@@ -28,28 +28,15 @@ package com.tvntd.dao;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.tvntd.models.ArtVideo;
+import com.tvntd.models.ArticleAttr;
 
-public interface ArtVideoRepo extends JpaRepository<ArtVideo, String>
+public interface ArticleAttrRepo extends JpaRepository<ArticleAttr, String>
 {
-    ArtVideo findByArticleUuid(String uuid);
-    ArtVideo findByAuthorUuid(String uuid);
-
-    List<ArtVideo> findAllByAuthorId(Long authorId);
-    List<ArtVideo> findAllByAuthorUuid(String authorUuid);
-    List<ArtVideo> findAllByAuthorIdOrderByCreatedDateDesc(Long authorId);
-    List<ArtVideo> findAllByAuthorUuidOrderByCreatedDateAsc(String uuid);
-
-    Page<ArtVideo>
-    findByAuthorIdOrderByCreatedDateDesc(Long authorId, Pageable pageable);
-
-    Page<ArtVideo>
-    findByAuthorUuidOrderByCreatedDateDesc(String authorUuid, Pageable pageable);
+    ArticleAttr findByArticleUuid(String uuid);
+    List<ArticleAttr> findByArticleUuidIn(List<String> uuids);
 
     @Override
-    void delete(ArtVideo video);
+    void delete(ArticleAttr attr);
 }

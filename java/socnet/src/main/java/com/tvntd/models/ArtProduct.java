@@ -26,149 +26,114 @@
  */
 package com.tvntd.models;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.UUID;
 
-import javax.persistence.CollectionTable;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Index;
-import javax.persistence.Inheritance;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import com.tvntd.lib.ObjectId;
-import com.tvntd.service.api.IProductService.ProductDTO;
 
 @Entity
-@Inheritance
-@DiscriminatorColumn(name = "ProdType")
 @Table(indexes = {
-    @Index(columnList = "authorUuid", name = "authorUuid", unique = false)
+    @Index(columnList = "authorUuid", unique = false)
 })
-public class Product
+public class ArtProduct
 {
-    static public int MaxHeaderLength = 128;
-    static public int MaxContentLength = 1 << 16;
+    public static final int MaxHeaderLength  = 64;
+    public static final int MaxContentLength = 1 << 16;
 
     @Id
     @Column(length = 64)
-    private String     articleUuid;
+    protected String articleUuid;
 
     @Column(length = 64)
-    private String     authorUuid;
+    protected String authorUuid;
 
-    private Long       authorId;
-    private boolean    pending;
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @PrimaryKeyJoinColumn
+    protected ArticleBase artBase;
+
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @PrimaryKeyJoinColumn
+    protected ArticleAttr artAttr;
 
     @Column(length = 64)
-    private String     logoImg;
+    protected String     logoImg;
 
     @Column(length = 64)
-    private String     logoTag;
+    protected String     logoTag;
 
-    private Long       prodPrice;
-    private String     priceUnit;
-
-    @Column(length = 128)
-    private byte[]     prodCat;
+    protected Long       prodPrice;
+    protected String     priceUnit;
 
     @Column(length = 128)
-    private byte[]     prodName;
+    protected byte[]     prodCat;
 
     @Column(length = 128)
-    private byte[]     prodNotice;
+    protected byte[]     prodName;
 
     @Column(length = 128)
-    private byte[]     prodTitle;
+    protected byte[]     prodNotice;
 
     @Column(length = 128)
-    private byte[]     prodSub;
+    protected byte[]     prodTitle;
 
     @Column(length = 128)
-    private byte[]     publicTag;
+    protected byte[]     prodSub;
+
+    @Column(length = 128)
+    protected byte[]     publicTag;
 
     @Lob
     @Column(length = 1 << 16)
-    private byte[]     prodDesc;
+    protected byte[]     prodDesc;
 
     @Lob
     @Column(length = 1 << 16)
-    private byte[]     prodDetail;
+    protected byte[]     prodDetail;
 
     @Lob
     @Column(length = 1 << 16)
-    private byte[]     prodSpec;
+    protected byte[]     prodSpec;
 
-    @Column
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date       createdDate;
+    protected boolean    pending;
 
-    @Column(length = 64)
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "ProductImages",
-            joinColumns = @JoinColumn(name = "articleId"))
-    private List<String> images;
-
-    /**
-     * Methods.
-     */
-    public Product()
+    public ArtProduct() {}
+    public ArtProduct(String authorUuid, Long authorId)
     {
-        super();
-        articleUuid = UUID.randomUUID().toString();
-        createdDate = new Date();
+        artBase     = new ArticleBase();
+        articleUuid = artBase.getArticleUuid();
+        artAttr     = new ArticleAttr(articleUuid);
+
+        this.authorUuid = authorUuid;
+        artBase.setAuthorId(authorId);
+        artBase.setArtTag(ArtTag.ESTORE);
     }
 
-    public String toString()
+    public ArtProduct(ArticleBase base)
     {
-        StringBuilder sb = new StringBuilder();
-        sb.append("articleUuid: ").append(articleUuid)
-            .append(", authorUuid: ").append(authorUuid)
-            .append(", logo image: ").append(logoImg).append("\n");
-
-        for (String s : images) {
-            sb.append("Image: ").append(s);
+        if (base == null) {
+            base = new ArticleBase();
+            base.setCreatedDate(new Date());
         }
-        sb.append("\nprodCat  : ").append(ProductDTO.convertUTF(prodCat));
-        sb.append("\nprodName : ").append(ProductDTO.convertUTF(prodName));
-        sb.append("\nprodTitle: ").append(ProductDTO.convertUTF(prodTitle));
-        sb.append("\nprodDesc : ").append(ProductDTO.convertUTF(prodDesc));
-        sb.append("\nprodSpec : ").append(ProductDTO.convertUTF(prodSpec));
-        sb.append("\n");
-        return sb.toString();
+        articleUuid = base.getArticleUuid();
+        artBase     = base;
+        artAttr     = new ArticleAttr(articleUuid);
     }
 
-    public void markPending() {
-        pending = true;
+    public void addPicture(ObjectId img) {
+        artBase.addPicture(img);
     }
 
-    public void markActive() {
-        pending = false;
-    }
-
-    public void addPicture(ObjectId img)
-    {
-        if (images == null) {
-            images = new ArrayList<>();
-        }
-        images.add(img.name());
-    }
-
-    public void removePicture(ObjectId img)
-    {
-        if (images != null) {
-            images.remove(img.name());
-        }
+    public void markPending(boolean flag) {
+        pending = flag;
     }
 
     /**
@@ -200,31 +165,31 @@ public class Product
     }
 
     /**
-     * @return the authorId
+     * @return the artBase
      */
-    public Long getAuthorId() {
-        return authorId;
+    public ArticleBase getArtBase() {
+        return artBase;
     }
 
     /**
-     * @param authorId the authorId to set
+     * @param artBase the artBase to set
      */
-    public void setAuthorId(Long authorId) {
-        this.authorId = authorId;
+    public void setArtBase(ArticleBase artBase) {
+        this.artBase = artBase;
     }
 
     /**
-     * @return the pending
+     * @return the artAttr
      */
-    public boolean isPending() {
-        return pending;
+    public ArticleAttr getArtAttr() {
+        return artAttr;
     }
 
     /**
-     * @param pending the pending to set
+     * @param artAttr the artAttr to set
      */
-    public void setPending(boolean pending) {
-        this.pending = pending;
+    public void setArtAttr(ArticleAttr artAttr) {
+        this.artAttr = artAttr;
     }
 
     /**
@@ -410,16 +375,16 @@ public class Product
     }
 
     /**
-     * @return the createdDate
+     * @return the pending
      */
-    public Date getCreatedDate() {
-        return createdDate;
+    public boolean isPending() {
+        return pending;
     }
 
     /**
-     * @return the images
+     * @param pending the pending to set
      */
-    public List<String> getImages() {
-        return images;
+    public void setPending(boolean pending) {
+        this.pending = pending;
     }
 }

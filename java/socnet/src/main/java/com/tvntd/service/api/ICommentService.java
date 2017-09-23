@@ -37,25 +37,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.tvntd.forms.CommentChangeForm;
-import com.tvntd.models.ArticleRank;
+import com.tvntd.models.ArticleAttr;
 import com.tvntd.models.Comment;
 import com.tvntd.models.CommentRank;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 
 public interface ICommentService
 {
-    public CommentDTOResponse getCommentPost(String articleUuid);
-    public CommentDTOResponse getCommentPost(String[] uuidList);
-    public CommentDTOResponse getCommentPost(ArrayList<String> uuidList);
+    CommentDTOResponse getCommentPost(String articleUuid);
+    CommentDTOResponse getCommentPost(String[] uuidList);
+    CommentDTOResponse getCommentPost(List<String> uuidList);
 
-    public void deleteComment(String articleUuid);
-    public void saveComment(CommentDTO comment);
-    public Comment saveComment(Comment comment);
+    void deleteComment(String articleUuid);
+    void saveComment(CommentDTO comment);
+    Comment saveComment(Comment comment);
 
-    public ArticleRank updateComment(CommentChangeForm form, ProfileDTO me);
-    public void likeComment(String articleUuid, String user);
-    public void unLikeComment(String articleUuid, String user);
-    public void setFavorite(Long id, String articleUuid, boolean favorite);
+    ArticleAttr updateComment(CommentChangeForm form, ProfileDTO me);
+    void likeComment(String articleUuid, String user);
+    void unLikeComment(String articleUuid, String user);
+    void setFavorite(Long id, String articleUuid, boolean favorite);
 
     public static class CommentDTOResponse extends GenericResponse
     {
@@ -197,13 +197,13 @@ public interface ICommentService
             this.resp = resp;
         }
 
-        public void updateArticleRank(ArticleRank rank)
+        public void updateArticleAttr(ArticleAttr attr)
         {
-            score = rank.getScore();
-            creditEarned = rank.getCreditEarned();
-            moneyEarned = rank.getMoneyEarned();
-            userLiked = rank.getUserLiked();
-            userShared = rank.getUserShared();
+            score        = attr.getScore();
+            creditEarned = attr.getCreditEarned();
+            moneyEarned  = attr.getMoneyEarned();
+            userLiked    = attr.getUserLiked();
+            userShared   = attr.getUserShared();
         }
 
         /**

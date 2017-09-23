@@ -33,32 +33,30 @@ import java.util.UUID;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Index;
-import javax.persistence.Inheritance;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.tvntd.key.HashKey;
 import com.tvntd.lib.ObjectId;
+import com.tvntd.service.api.IProfileService.ProfileDTO;
+import com.tvntd.util.Util;
 
 @Entity
-@Inheritance
-@DiscriminatorColumn(name = "ArtType")
-@DiscriminatorValue(value = "Article")
 @Table(indexes = {
-    @Index(columnList = "authorUuid", name = "authorUuid", unique = false)
+    @Index(columnList = "publicUrlOid", unique = false)
 })
-public class Article
+public class ArticleBase
 {
+    static private Logger s_log = LoggerFactory.getLogger(ArticleBase.class);
+
     /*
      * contentOId format:
      * HEX:abcdef123... for OID
@@ -71,65 +69,60 @@ public class Article
     public static int VID_TYPE = 200;
     public static int DRV_TYPE = 300;
 
+    public static Long PERM_PRIVATE = 0x80000000L;
+
     @Id
     @Column(length = 64)
-    protected String   articleUuid;
+    protected String articleUuid;
+
+    protected Long authorId;
+    protected Long permMask;
 
     @Column(length = 64)
-    protected String   authorUuid;
-
-    protected Long     authorId;
-    protected boolean  pending;
-
-    @Column(length = 64)
-    protected String contentOId;
-
-    @Column
-    @Temporal(TemporalType.TIMESTAMP)
-    protected Date createdDate;
+    protected String publicUrlOid;
 
     @Column(length = 128)
-    protected byte[] topic;
+    protected byte[] artTitle;
 
     @Column(length = 128)
     protected byte[] publicTag;
 
-    @Lob
-    @Column(length = 1 << 16)
-    protected byte[] content;
+    protected Date createdDate;
+
+    /**
+     * Contain values from ArtTag to specify article type.
+     */
+    protected String artTag;
+    protected String contentOid;
+    protected String contentLinkUrl;
 
     @Column(length = 64)
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "ArtPics",
-            joinColumns = @JoinColumn(name = "articleId"))
+    @CollectionTable(name = "ArticleImgs",
+            joinColumns = @JoinColumn(name = "articleUuid"))
     protected List<String> pictures;
 
-    @Transient
-    private byte[] contentBrief;
-
-    public Article()
+    public ArticleBase(String artUuid)
     {
-        super();
-        articleUuid = UUID.randomUUID().toString();
+        articleUuid = artUuid;
         createdDate = new Date();
+        permMask    = 0L;
     }
 
-    public Article(String uuid)
+    public ArticleBase() {
+        this(UUID.randomUUID().toString());
+    }
+
+    public ArticleBase(ProfileDTO profile)
     {
-        super();
-        articleUuid = uuid;
-        createdDate = new Date();
+        this();
+        if (profile != null) {
+            authorId = profile.fetchUserId();
+            permMask = profile.getRoleMask();
+        }
     }
 
-    public void markPending() {
-        pending = true;
-    }
-
-    public void markActive() {
-        pending = false;
-    }
-
-    static public String makeUrlLink(Article self, String host, int mode)
+    static public String makeUrlLink(ArticleBase self, String host, int mode)
     {
         String oid;
 
@@ -143,27 +136,9 @@ public class Article
             oid = "HEX:" + host;
         }
         if (self != null) {
-            self.contentOId = oid;
+            self.contentOid = oid;
         }
         return oid;
-    }
-
-    /**
-     * @return the authorId
-     */
-    public Long getAuthorId() {
-        return authorId;
-    }
-
-    /**
-     * @param authorId the authorId to set
-     */
-    public void setAuthorId(Long authorId) {
-        this.authorId = authorId;
-    }
-
-    public boolean isPending() {
-        return pending;
     }
 
     public void addPicture(ObjectId img)
@@ -182,20 +157,6 @@ public class Article
     }
 
     /**
-     * @return the authorUuid
-     */
-    public String getAuthorUuid() {
-        return authorUuid;
-    }
-
-    /**
-     * @param authorUuid the authorUuid to set
-     */
-    public void setAuthorUuid(String authorUuid) {
-        this.authorUuid = authorUuid;
-    }
-
-    /**
      * @return the articleUuid
      */
     public String getArticleUuid() {
@@ -210,17 +171,73 @@ public class Article
     }
 
     /**
-     * @return the contentOId
+     * @return the authorId
      */
-    public String getContentOId() {
-        return contentOId;
+    public Long getAuthorId() {
+        return authorId;
     }
 
     /**
-     * @param contentOId the contentOId to set
+     * @param authorId the authorId to set
      */
-    public void setContentOId(String contentOId) {
-        this.contentOId = contentOId;
+    public void setAuthorId(Long authorId) {
+        this.authorId = authorId;
+    }
+
+    /**
+     * @return the permMask
+     */
+    public Long getPermMask() {
+        return permMask;
+    }
+
+    /**
+     * @param permMask the permMask to set
+     */
+    public void setPermMask(Long permMask) {
+        this.permMask = permMask;
+    }
+
+    /**
+     * @return the publicUrlOid
+     */
+    public String getPublicUrlOid() {
+        return publicUrlOid;
+    }
+
+    /**
+     * @param publicUrlOid the publicUrlOid to set
+     */
+    public void setPublicUrlOid(String publicUrlOid) {
+        this.publicUrlOid = publicUrlOid;
+    }
+
+    /**
+     * @return the artTitle
+     */
+    public byte[] getArtTitle() {
+        return artTitle;
+    }
+
+    /**
+     * @param artTitle the artTitle to set
+     */
+    public void setArtTitle(byte[] artTitle) {
+        this.artTitle = artTitle;
+    }
+
+    /**
+     * @return the publicTag
+     */
+    public byte[] getPublicTag() {
+        return publicTag;
+    }
+
+    /**
+     * @param publicTag the publicTag to set
+     */
+    public void setPublicTag(byte[] publicTag) {
+        this.publicTag = publicTag;
     }
 
     /**
@@ -238,38 +255,45 @@ public class Article
     }
 
     /**
-     * @return the topic
+     * @return the artTag
      */
-    public byte[] getTopic() {
-        return topic;
+    public String getArtTag() {
+        return artTag;
     }
 
     /**
-     * @param topic the topic to set
+     * @param artTag the artTag to set
      */
-    public void setTopic(byte[] topic) {
-        this.topic = topic;
+    public void setArtTag(String artTag) {
+        this.artTag = artTag;
     }
 
     /**
-     * @return the publicTag
+     * @return the contentOid
      */
-    public byte[] getPublicTag() {
-        return publicTag;
+    public String getContentOid() {
+        return contentOid;
     }
 
     /**
-     * @return the content
+     * @param contentOid the contentOid to set
      */
-    public byte[] getContent() {
-        return content;
+    public void setContentOid(String contentOid) {
+        this.contentOid = contentOid;
     }
 
     /**
-     * @param content the content to set
+     * @return the contentLinkUrl
      */
-    public void setContent(byte[] content) {
-        this.content = content;
+    public String getContentLinkUrl() {
+        return contentLinkUrl;
+    }
+
+    /**
+     * @param contentLinkUrl the contentLinkUrl to set
+     */
+    public void setContentLinkUrl(String contentLinkUrl) {
+        this.contentLinkUrl = contentLinkUrl;
     }
 
     /**
@@ -286,17 +310,15 @@ public class Article
         this.pictures = pictures;
     }
 
-    /**
-     * @return the contentBrief
-     */
-    public byte[] getContentBrief() {
-        return contentBrief;
-    }
+    public boolean setPublicUrl(String urlTag)
+    {
+        if (artTitle == null) {
+            return false;
+        }
+        String title = Util.utf8ToUrlString(Util.fromRawByte(artTitle));
+        publicUrlOid = HashKey.toSha1Key(urlTag, title);
 
-    /**
-     * @param contentBrief the contentBrief to set
-     */
-    public void setContentBrief(byte[] contentBrief) {
-        this.contentBrief = contentBrief;
+        s_log.info("Convert " + urlTag + ", title " + publicUrlOid);
+        return false;
     }
 }

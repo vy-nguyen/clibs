@@ -32,6 +32,7 @@ public interface Constants
     String DefaultTopic = "Post";
     String PublicUuid   = "00000000-ffff-0000-ffff-00ff00ff00ff";
 
+    Long PublicId      = 1L; 
     Long Role_Public   = 0x0000L;
     Long Role_Circle1  = 0x0001L;
     Long Role_Circle2  = 0x0002L | Role_Circle1;

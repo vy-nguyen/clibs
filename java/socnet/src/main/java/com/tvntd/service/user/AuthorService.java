@@ -37,25 +37,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 
-import com.tvntd.dao.ArticleRankRepo;
-import com.tvntd.dao.ArticleRepository;
+import com.tvntd.dao.ArtBriefRepo;
 import com.tvntd.dao.AuthorRepo;
 import com.tvntd.dao.AuthorTagRepo;
 import com.tvntd.dao.AuthorTagRepo.AuthorTagDTO;
 import com.tvntd.dao.AuthorTagRepo.AuthorTagRespDTO;
-import com.tvntd.forms.AdsForm;
-import com.tvntd.forms.ArticleForm;
-import com.tvntd.forms.ProductForm;
-import com.tvntd.models.AdsPost;
-import com.tvntd.models.Article;
-import com.tvntd.models.ArticleRank;
+import com.tvntd.models.ArtAds;
+import com.tvntd.models.ArtProduct;
+import com.tvntd.models.ArticleBrief;
 import com.tvntd.models.Author;
 import com.tvntd.models.AuthorTag;
-import com.tvntd.models.Product;
 import com.tvntd.service.api.IAnnonService.AnnonUserDTO;
-import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
+import com.tvntd.util.Util;
 
 @Service
 @Transactional
@@ -71,10 +66,7 @@ public class AuthorService implements IAuthorService
     protected AuthorTagRepo authorTagRepo;
 
     @Autowired
-    protected ArticleRankRepo rankRepo;
-
-    @Autowired
-    protected ArticleRepository articleRepo;
+    protected ArtBriefRepo artBriefRepo;
 
     @Override
     public Author getAuthor(String uuid)
@@ -234,38 +226,6 @@ public class AuthorService implements IAuthorService
         authorTagRepo.delete(tag.fetchAuthorTag());
     }
 
-    @Override
-    public Author updateAuthor(ProfileDTO me, ArticleForm form, ArticleRankDTO rankDto)
-    {
-        String artUuid = form.getArticleUuid();
-        String authorUuid = me.getUserUuid();
-        Author author = getAuthor(authorUuid);
-
-        if (author == null || artUuid == null ||
-            artUuid.isEmpty() || form.getTagName() == null) {
-            return null;
-        }
-        Long order = form.getTagRank();
-        boolean isFav = form.isFavorite();
-        AuthorTag tag = updateAuthorTag(author, form.getTagName(), order, isFav);
-        ArticleRank rank = rankRepo.findByArticleUuid(artUuid);
-
-        if (rank == null) {
-            form.setUserUuid(authorUuid);
-            Article article = articleRepo.findByArticleUuid(artUuid);
-
-            if (article == null) {
-                return null;
-            }
-            rank = new ArticleRank(tag, article);
-        } else {
-            rank.updateFromUser(form);
-        }
-        rankRepo.save(rank);
-        rankDto.setRank(rank, tag);
-        return author;
-    }
-
     public AuthorTag
     updateAuthorTag(Author author, String tagName, Long order, boolean isFav)
     {
@@ -278,37 +238,22 @@ public class AuthorService implements IAuthorService
     }
 
     @Override
-    public ArticleRank createArticleRank(Article article, String tagName)
-    {
-        String authorUuid = article.getAuthorUuid();
-        Author author = authorRepo.findByAuthorUuid(authorUuid);
-        if (author == null) {
-            author = new Author(authorUuid, article.getArticleUuid());
-        }
-        AuthorTag tag = updateAuthorTag(author, tagName, 0L, false);
-        ArticleRank rank = new ArticleRank(tag, article);
-
-        rankRepo.save(rank);
-        return rank;
-    }
-
-    @Override
-    public ArticleRank createProductRank(Product product, ProductForm form)
+    public ArticleBrief createProductRank(ArtProduct product)
     {
         String authorUuid = product.getAuthorUuid();
         Author author = authorRepo.findByAuthorUuid(authorUuid);
         if (author == null) {
             author = new Author(authorUuid, product.getArticleUuid());
         }
-        AuthorTag tag = updateAuthorTag(author, form.getProdCat(), 0L, false);
-        ArticleRank rank = new ArticleRank(tag, product);
+        updateAuthorTag(author, Util.fromRawByte(product.getProdCat()), 0L, false);
 
-        rankRepo.save(rank);
+        ArticleBrief rank = new ArticleBrief(product);
+        artBriefRepo.save(rank);
         return rank;
     }
 
     @Override
-    public ArticleRank createAdsRank(AdsPost ads, AdsForm form, AnnonUserDTO user)
+    public ArticleBrief createAdsRank(ArtAds ads, AnnonUserDTO user)
     {
         String authorUuid = ads.getAuthorUuid();
 
@@ -322,10 +267,10 @@ public class AuthorService implements IAuthorService
         if (author == null) {
             author = new Author(authorUuid, ads.getArticleUuid());
         }
-        AuthorTag tag = updateAuthorTag(author, form.getBusCat(), 0L, false);
-        ArticleRank rank = new ArticleRank(tag, ads);
+        updateAuthorTag(author, Util.fromRawByte(ads.getBusCat()), 0L, false);
 
-        rankRepo.save(rank);
+        ArticleBrief rank = new ArticleBrief(ads);
+        artBriefRepo.save(rank);
         return rank;
     }
 }

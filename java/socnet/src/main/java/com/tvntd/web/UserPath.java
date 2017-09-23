@@ -69,24 +69,22 @@ import com.tvntd.forms.TagForm.TagRank;
 import com.tvntd.forms.UserProfile;
 import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.ObjectId;
-import com.tvntd.models.ArticleRank;
-import com.tvntd.models.Author;
+import com.tvntd.models.ArtProduct;
+import com.tvntd.models.ArticleAttr;
 import com.tvntd.models.Comment;
-import com.tvntd.models.Product;
 import com.tvntd.objstore.ObjStore;
+import com.tvntd.service.api.ArtProductDTO;
 import com.tvntd.service.api.GenericResponse;
 import com.tvntd.service.api.IArtTagService;
-import com.tvntd.service.api.IArticleService;
-import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleService.ArticleDTOResponse;
-import com.tvntd.service.api.IArticleService.ArticleRankDTO;
+import com.tvntd.service.api.IArticleSvc;
+import com.tvntd.service.api.IArticleSvc.ArticleBriefDTO;
+import com.tvntd.service.api.IArticleSvc.ArticlePostDTO;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.ICommentService;
 import com.tvntd.service.api.ICommentService.CommentDTOResponse;
 import com.tvntd.service.api.ICommentService.CommentRespDTO;
 import com.tvntd.service.api.IDomainService;
-import com.tvntd.service.api.IProductService;
-import com.tvntd.service.api.IProductService.ProductDTO;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.IUserService;
@@ -94,7 +92,7 @@ import com.tvntd.service.api.ImageUploadResp;
 import com.tvntd.service.api.LoginResponse;
 import com.tvntd.service.api.UuidResponse;
 import com.tvntd.service.user.ArtTagService;
-import com.tvntd.service.user.ProductService;
+import com.tvntd.service.user.ArticleSvc;
 import com.tvntd.util.Util;
 
 @Controller
@@ -115,9 +113,6 @@ public class UserPath
         new GenericResponse("Bad input value", "Missing or invalid input values");
 
     @Autowired
-    private IArticleService articleSvc;
-
-    @Autowired
     private IAuthorService authorSvc;
 
     @Autowired
@@ -133,11 +128,10 @@ public class UserPath
     protected IArtTagService artTagSvc;
 
     @Autowired
-    protected IProductService productSvc;
-
-    @Autowired
     protected IDomainService domainSvc;
 
+    @Autowired
+    protected IArticleSvc artSvc;
 
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     @ResponseBody
@@ -163,7 +157,7 @@ public class UserPath
         if (profile == null) {
             return s_noProfile;
         }
-        LinkedList<ArticleDTO> saved = null;
+        LinkedList<ArticlePostDTO> saved = null;
           
         if (!uuid.equals(profile.getUserUuid())) {
             profile = profileSvc.getProfile(uuid);
@@ -174,16 +168,17 @@ public class UserPath
         } else {
             saved = profile.fetchSavedArts();
         }
-        LinkedList<ArticleDTO> published = profile.fetchPublishedArts();
-
+        LinkedList<ArticlePostDTO> published = profile.fetchPublishedArts();
         if (published != null) {
             return new ArticleDTOResponse(published, saved);
         }
-        saved = new LinkedList<>();
+        if (saved == null) {
+            saved = new LinkedList<>();
+        }
         published = new LinkedList<>();
-        List<ArticleDTO> all = articleSvc.getArticlesByUser(profile.fetchUserId());
+        List<ArticlePostDTO> all = artSvc.getArticleDTOByAuthor(profile.getUserUuid());
 
-        for (ArticleDTO art : all) {
+        for (ArticlePostDTO art : all) {
             if (art.isPublished()) {
                 published.add(art);
             } else {
@@ -212,12 +207,13 @@ public class UserPath
             return s_noProfile;
         }
         */
-        List<String> input = new ArrayList<>();
+        List<String> input = new LinkedList<>();
         for (String u : uuids.getUuids()) {
             input.add(u);
         }
-        List<ArticleDTO> arts = articleSvc.getArticles(input);
+        List<ArticlePostDTO> arts = artSvc.getArticleDTO(input);
         System.out.println("Result art lengh " + arts.size());
+
         return new ArticleDTOResponse(arts, null);
     }
 
@@ -255,10 +251,11 @@ public class UserPath
             return s_noProfile;
         }
         if (form.cleanInput() == false) {
+            System.out.println("Bad article input " + form.getTags());
             return s_badInput;
         }
-        ArticleDTO art = genPendPost(profile, true, form.getArticleUuid());
-        articleSvc.savePost(form, art, profile, publish, false);
+        ArticlePostDTO art = genPendPost(profile, true, form.getArticleUuid());
+        art.assignArtBrief(artSvc.savePost(form, art, profile, publish, false));
         return art;
     }
 
@@ -290,12 +287,13 @@ public class UserPath
             return s_badInput;
         }
         String artUuid = form.getArticleUuid();
-        ArticleDTO art = articleSvc.getArticleDTO(artUuid);
+        ArticlePostDTO art = artSvc.getArticleDTO(artUuid);
 
         if (art == null) {
-            art = new ArticleDTO(artUuid, profile.getUserUuid(), profile.fetchUserId());
+            Long id = profile.fetchUserId();
+            art = new ArticlePostDTO(artUuid, profile.getUserUuid(), id);
         }
-        articleSvc.savePost(form, art, profile, publish, true);
+        artSvc.savePost(form, art, profile, publish, true);
         return art;
     }
 
@@ -319,7 +317,7 @@ public class UserPath
 
         for (int idx = 0; idx < uuidList.length; idx++) {
             String uid = uuidList[idx];
-            if (articleSvc.deleteArticle(uid, profile) == null) {
+            if (artSvc.deleteArticlePost(uid, profile) == null) {
                 if (failedUuids == null) {
                     failedUuids = new ArrayList<>();
                     okUuids = new ArrayList<>();
@@ -374,29 +372,26 @@ public class UserPath
         if (form.cleanInput() == false) {
             return s_noProfile;
         }
-        ProductDTO prodDto = genPendProduct(profile, true, form.getArticleUuid());
-        Product prod = prodDto.fetchProduct();
-        ProductService.applyPostProduct(form, prodDto, publish);
+        ArtProductDTO artProd = genPendProduct(profile, true, form.getArticleUuid());
+        ArticleSvc.applyPostProduct(form, artProd, publish);
+        artSvc.saveArtProduct(artProd);
 
         if (publish == true) {
-            prod.markActive();
-            productSvc.saveProduct(prod);
-
             profile.assignPendProduct(null);
-            profile.pushPublishProduct(prodDto);
+            profile.pushPublishProduct(artProd);
         } else {
-            productSvc.saveProduct(prodDto);
-            profile.pushSavedProduct(prodDto);
+            artSvc.saveArtProduct(artProd);
+            profile.pushSavedProduct(artProd);
         }
-        ArticleRank rank = authorSvc.createProductRank(prod, form);
-        prodDto.assignRank(rank);
+        authorSvc.createProductRank(artProd.fetchProduct());
 
         // Publish the product to public space.
+        //
         String pubTag = form.getPubTag();
         if (publish == true && pubTag != null) {
-            artTagSvc.addPublicTagPost(pubTag, rank.getArticleUuid());
+            artTagSvc.addPublicTagPost(pubTag, artProd.getArticleUuid());
         }
-        return prodDto;
+        return artProd;
     }
 
     /**
@@ -418,9 +413,10 @@ public class UserPath
         if (profile == null) {
             return s_noProfile;
         }
-        ArticleDTO art = genPendPost(profile, true, artUuid);
+        ArticlePostDTO art = genPendPost(profile, true, artUuid);
         try {
-            String uid = profile.fetchUserId().toString();
+            Long userId = profile.fetchUserId();
+            String uid  = userId.toString();
             ObjStore store = ObjStore.getInstance();
             InputStream is = file.getInputStream();
             ObjectId oid = store.putUserImage(is, (int)file.getSize(), uid);
@@ -435,7 +431,7 @@ public class UserPath
             ImageUploadResp resp =
                 new ImageUploadResp(art.getArticleUuid(), art.getAuthorUuid(), oid);
 
-            resp.setLocation(ArticleDTO.getPictureUrl(profile.fetchProfile(), oid));
+            resp.setLocation(ArticleBriefDTO.getPictureUrl(userId, oid));
             return resp;
 
         } catch(IOException e) {
@@ -488,20 +484,20 @@ public class UserPath
         if (file.getSize() <= 0) {
             return s_saveObjFailed;
         }
-        ProductDTO prod = genPendProduct(profile, true, artUuid);
+        ArtProductDTO prod = genPendProduct(profile, true, artUuid);
         try {
-            String uid = profile.fetchUserId().toString();
+            Long userId    = profile.fetchUserId();
+            String uid     = userId.toString();
             ObjStore store = ObjStore.getInstance();
             InputStream is = file.getInputStream();
-            ObjectId oid = store.putUserImage(is, (int)file.getSize(), uid);
+            ObjectId oid   = store.putUserImage(is, (int)file.getSize(), uid);
 
             if (oid != null) {
                 ImageUploadResp resp = new ImageUploadResp(
                         prod.getArticleUuid(), prod.getAuthorUuid(), oid);
 
                 resp.setPostUrl(url);
-                resp.setLocation(ArticleDTO
-                        .getPictureUrl(profile.fetchProfile(), oid));
+                resp.setLocation(ArticleBriefDTO.getPictureUrl(userId, oid));
 
                 if (logo == true) {
                     resp.setPostType("logo");
@@ -520,20 +516,20 @@ public class UserPath
     /**
      * Generate or retrieve a pending article post.
      */
-    private ArticleDTO
+    private ArticlePostDTO
     genPendPost(ProfileDTO profile, boolean creat, String articleUuid)
     {
-        ArticleDTO pendPost = profile.fetchPendPost();
+        ArticlePostDTO pendPost = profile.fetchPendPost();
 
         if (pendPost != null) {
             return pendPost;
         }
         if (articleUuid != null) {
-            pendPost = articleSvc.getArticleDTO(articleUuid);
+            pendPost = artSvc.getArticleDTO(articleUuid);
         }
         if (creat == true && pendPost == null) {
             String authorUuid = profile.getUserUuid();
-            pendPost = new ArticleDTO(authorUuid, profile.toProfile().getUserId());
+            pendPost = new ArticlePostDTO(authorUuid, profile.toProfile().getUserId());
         }
         if (pendPost != null) {
             profile.assignPendPost(pendPost);
@@ -544,20 +540,21 @@ public class UserPath
     /**
      * Generate or retrieve a pending product listing.
      */
-    private ProductDTO
+    private ArtProductDTO
     genPendProduct(ProfileDTO profile, boolean creat, String articleUuid)
     {
-        ProductDTO product = profile.fetchPendProduct();
+        ArtProductDTO product = profile.fetchPendProduct();
 
         if (product != null) {
             return product;
         }
         if (articleUuid != null) {
-            product = productSvc.getProductDTO(articleUuid);
+            product = artSvc.getArtProductDTO(articleUuid);
         }
         if (creat == true && product == null) {
             String authorUuid = profile.getUserUuid();
-            product = new ProductDTO(authorUuid, profile.toProfile().getUserId());
+            Long userId = profile.toProfile().getUserId();
+            product = new ArtProductDTO(new ArtProduct(authorUuid, userId));
         }
         if (product != null) {
             profile.assignPendProduct(product);
@@ -580,18 +577,8 @@ public class UserPath
         if (profile == null) {
             return s_noProfile;
         }
-        String[] uuidList = uuids.getUuids();
-        for (String uid : uuidList) {
-            productSvc.deleteProduct(uid, profile);
-            /*
-            if (prod != null) {
-                commentSvc.deleteComment(uid);
-                String pubTag = ProductDTO.convertUTF(prod.getPublicTag());
-                if (pubTag != null) {
-                    artTagSvc.deletePublicTagPost(pubTag, uid);
-                }
-            }
-            */
+        for (String uid : uuids.getUuids()) {
+            artSvc.deleteArtProduct(uid, profile);
         }
         return new UuidResponse(uuids);
     }
@@ -671,18 +658,16 @@ public class UserPath
         if (profile == null) {
             return s_noProfile;
         }
-        ArticleRank rank = null;
+        ArticleAttr attr = null;
         CommentRespDTO resp = new CommentRespDTO(form);
 
         if (form.isArticle() == true) {
-            rank = articleSvc.updateRank(form, profile);
-            if (rank == null) {
-                return s_invalidArticle;
-            }
+            attr = artSvc.updateArtAttr(form, profile);
+            resp.updateArticleAttr(attr);
         } else {
-            rank = commentSvc.updateComment(form, profile);
+            attr = commentSvc.updateComment(form, profile);
+            resp.updateArticleAttr(attr);
         }
-        resp.updateArticleRank(rank);
         return resp;
     }
 
@@ -717,7 +702,11 @@ public class UserPath
         if (profile == null) {
             return s_noProfile;
         }
-        return new ArticleDTOResponse(articleSvc.getArticleRank(uuids));
+        List<String> uuidList = new LinkedList<>();
+        for (String uid : uuids.getUuids()) {
+            uuidList.add(uid);
+        }
+        return new ArticleDTOResponse(artSvc.getArticleBriefDTO(uuidList));
     }
 
     /**
@@ -734,12 +723,7 @@ public class UserPath
         if (profile == null) {
             return s_noProfile;
         }
-        ArticleRankDTO rank = new ArticleRankDTO();
-        Author author = authorSvc.updateAuthor(profile, form, rank);
-        if (author != null) {
-            return rank;
-        }
-        return s_invalidArticle;
+        return artSvc.updateArtBrief(form);
     }
 
     /**
@@ -788,21 +772,21 @@ public class UserPath
         TagArtRank[] artList = form.getArtList();
         for (TagArtRank r : artList) {
             Long order = 10L;
-            String[] artUuids = r.getArtUuid();
+            List<String> artUuids = new LinkedList<>();
             Map<String, Long> artOrder = new HashMap<>();
 
-            for (String s : artUuids) {
+            for (String s : r.getArtUuid()) {
                 artOrder.put(s, order);
                 order++;
             }
-            List<ArticleRank> artRank = articleSvc.getArtRank(artUuids);
-            for (ArticleRank rank : artRank) {
+            List<ArticleBriefDTO> artRank = artSvc.getArticleBriefDTO(artUuids);
+            for (ArticleBriefDTO rank : artRank) {
                 order = artOrder.get(rank.getArticleUuid());
                 if (order == null) {
                     order = 10L;
                 }
                 rank.setRank(order);
-                articleSvc.saveArtRank(artRank);
+                artSvc.saveArticleBrief(artRank);
             }
             artOrder.clear();
             artRank.clear();
@@ -878,14 +862,13 @@ public class UserPath
         if (profile == null) {
             return s_noProfile;
         }
-        ArticleDTO pend = profile.fetchPendPost();
+        ArticlePostDTO pend = profile.fetchPendPost();
         if (pend == null) {
-            pend = new ArticleDTO(profile.getUserUuid(), profile.fetchUserId());
+            pend = new ArticlePostDTO(profile.getUserUuid(), profile.fetchUserId());
         }
         domainSvc.updateDomain(profile.getDomain(), form, pend, profile);
         profile.assignPendPost(null);
-        LoginResponse res = new LoginResponse(profile, request, session, false);
-        return res;
+
+        return new LoginResponse(profile, request, session, false);
     }
- 
 }

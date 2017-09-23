@@ -30,18 +30,19 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.tvntd.models.AdsPost;
+import com.tvntd.models.ArticlePost;
 
-public interface AdsPostRepo extends JpaRepository<AdsPost, String>
+public interface ArticlePostRepo extends JpaRepository<ArticlePost, String>
 {
-    AdsPost findByArticleUuid(String uuid);
-    AdsPost findByAuthorUuid(String uuid);
+    ArticlePost       findByArticleUuid(String uuid);
+    List<ArticlePost> findByAuthorUuid(String authorUuid);
+    List<ArticlePost> findByAuthorUuidIn(List<String> authorUuid);
+    List<ArticlePost> findByArticleUuidIn(List<String> articleUuids);
 
-    List<AdsPost> findByArticleUuidIn(List<String> uuids);
-    List<AdsPost> findAllByAuthorUuid(String uuid);
-    List<AdsPost> findByAuthorUuidIn(List<String> authorUuids);
-    List<AdsPost> findAllByAuthorUuidOrderByCreatedDateAsc(String uuid);
+    List<ArticlePost> findAll();
+
+    // Page<ArticlePost> findByAuthorUuidOrderByCreatedDateDesc(String uuid, Pageable);
 
     @Override
-    void delete(AdsPost ads);
+    void delete(ArticlePost art);
 }

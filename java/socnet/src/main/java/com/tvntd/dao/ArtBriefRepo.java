@@ -24,15 +24,26 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.service.api;
+package com.tvntd.dao;
 
 import java.util.List;
 
-import com.tvntd.models.ArtVideo;
-import com.tvntd.service.api.IArticleService.ArticleDTO;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface IArtVideoService
+import com.tvntd.models.ArticleBrief;
+
+public interface ArtBriefRepo extends JpaRepository<ArticleBrief, String>
 {
-    ArtVideo getArticle(String artUuid);
-    List<ArticleDTO> getArticlesByUser(String userUuid);
+    ArticleBrief findByArticleUuid(String articleUuid);
+    ArticleBrief findByTagHash(String tagHash);
+
+    List<ArticleBrief> findByAuthorUuid(String authorUuid);
+    List<ArticleBrief> findByAuthorUuidIn(List<String> authorUuids);
+    List<ArticleBrief> findByArticleUuidIn(List<String> articleUuid);
+    List<ArticleBrief> findByTagHashIn(List<String> tagHash);
+
+    List<ArticleBrief> findAll();
+
+    @Override
+    void delete(ArticleBrief art);
 }

@@ -24,36 +24,24 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.service.user;
+package com.tvntd.dao;
 
 import java.util.List;
 
-import javax.transaction.Transactional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.tvntd.models.ArtProduct;
 
-import com.tvntd.dao.ArtVideoRepo;
-import com.tvntd.models.ArtVideo;
-import com.tvntd.service.api.IArtVideoService;
-import com.tvntd.service.api.IArticleService.ArticleDTO;
-
-@Service
-@Transactional
-public class ArtVideoService implements IArtVideoService
+public interface ArtProductRepo extends JpaRepository<ArtProduct, String>
 {
-    @Autowired
-    protected ArtVideoRepo artVideoRepo;
+    ArtProduct findByArticleUuid(String uuid);
+
+    List<ArtProduct> findByArticleUuidIn(List<String> articleUuids);
+    List<ArtProduct> findByAuthorUuid(String authorUuid);
+    List<ArtProduct> findByAuthorUuidIn(List<String> authorUuids);
+
+    List<ArtProduct> findAll();
 
     @Override
-    public ArtVideo getArticle(String artUuid)
-    {
-        return null;
-    }
-
-    @Override
-    public List<ArticleDTO> getArticlesByUser(String userUuid)
-    {
-        return null;
-    }
+    void delete(ArtProduct art);
 }
