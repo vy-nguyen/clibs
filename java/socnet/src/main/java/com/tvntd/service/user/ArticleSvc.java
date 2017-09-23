@@ -153,6 +153,7 @@ public class ArticleSvc implements IArticleSvc
         if (str != null) {
             prod.setProdNotice(Util.toRawByte(str, 128));
         }
+        prod.setProdCat(Util.toRawByte(form.getProdCat(), 128));
         prod.setProdName(Util.toRawByte(form.getProdName(), 128));
         prod.setProdTitle(Util.toRawByte(form.getProdTitle(), 128));
         prod.setProdDesc(Util.toRawByte(form.getProdDesc(), 1 << 16));
@@ -422,7 +423,7 @@ public class ArticleSvc implements IArticleSvc
 
     // Save article post
     @Override
-    public ArticleBrief savePost(PostForm form, ArticlePostDTO artPost,
+    public ArticleBriefDTO savePost(PostForm form, ArticlePostDTO artPost,
             ProfileDTO profile, boolean publish, boolean update)
     {
         ArticlePost art = artPost.fetchArticlePost();
@@ -438,15 +439,24 @@ public class ArticleSvc implements IArticleSvc
             briefDTO = new ArticleBriefDTO(brief);
         }
         art.setPending(!publish);
+        brief.setPublish(publish);
+        brief.getArtBase().setArtTag(ArtTag.BLOG);
+
         if (publish == true) {
             // Record in timeline.
         }
+        // We've done with the article.
+        //
+        profile.assignPendPost(null);
+
         if (brief.isHasArticle() == false) {
             saveArticleBrief(briefDTO);
-            return brief;
+            return briefDTO;
         }
+        art.setContent(Util.toRawByte(form.getContent(), 1 << 16));
+        saveArticleBrief(briefDTO);
         saveArticlePost(artPost);
-        return brief;
+        return briefDTO;
     }
 
     public ArticleBriefDTO updateArtBrief(ArticleForm form)
@@ -463,7 +473,6 @@ public class ArticleSvc implements IArticleSvc
         Long shares      = attr.getShared();
         Long shareInc    = form.getShareInc();
 
-        System.out.println("Like inc " + likeInc + " count " + likes);
         if (likeInc > 0) {
             attr.setLikes(likes + 1);
 
@@ -489,7 +498,6 @@ public class ArticleSvc implements IArticleSvc
             brief.setTopArticle(oid);
         }
         artBriefRepo.save(brief);
-        System.out.println("Update uuid " + brief.getArticleUuid());
         return new ArticleBriefDTO(brief);
     }
 
@@ -519,8 +527,6 @@ public class ArticleSvc implements IArticleSvc
         String kind   = form.getKind();
         String myUuid = profile.getUserUuid();
 
-        System.out.println("Update attr " + artUuid + " kind " + kind);
-
         if (kind.equals("like")) {
             List<String> users = attr.getUserLiked();
 
@@ -533,8 +539,6 @@ public class ArticleSvc implements IArticleSvc
 
             attr.setLikes(val);
             form.setAmount(val);
-            System.out.println("Set art likes " + val + " art " +
-                    attr.getLikes());
 
         } else if (kind.equals("share")) {
             List<String> users = attr.getUserShared();
@@ -553,8 +557,6 @@ public class ArticleSvc implements IArticleSvc
             save = true;
             attr.setFavorite(true);
         }
-            System.out.println("Set art likes " + attr.getUserLiked().size() + " art " +
-                    attr.getLikes() + ", save " + save);
         if (save == true) {
             artAttrRepo.save(attr);
         }

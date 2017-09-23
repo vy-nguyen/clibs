@@ -153,7 +153,7 @@ public class ArticleBrief
         artAttr      = new ArticleAttr(artBase.getArticleUuid());
         authorUuid   = post.getAuthorUuid();
         articleUuid  = post.getArticleUuid();
-        favorite     = true;
+        favorite     = false;
         hasArticle   = true;
 
         updateFrom(form);
@@ -176,6 +176,9 @@ public class ArticleBrief
             artBase.setContentOid(
                 ArticleBase.makeUrlLink(null, host, form.fetchDocType())
             );
+        }
+        if (form.getContent().length() < 256) {
+            hasArticle = false;
         }
         artBase.setArtTitle(Util.toRawByte(form.getTopic(), 128));
     }
@@ -249,6 +252,23 @@ public class ArticleBrief
         if (art.isPending() == true) {
             artBase.setPermMask(ArticleBase.PERM_PRIVATE);
         }
+    }
+
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Uuid: ").append(articleUuid).append(", author: ").append(authorUuid)
+            .append(", title: ").append(artBase.getArtTitle())
+            .append(", permMask: ").append(artBase.getPermMask())
+            .append(", hasArt: ").append(hasArticle).append("\n");
+        return sb.toString();
+    }
+
+    public void setPublish(boolean pub)
+    {
+        Long mask = pub == true ? 0L : ArticleBase.PERM_PRIVATE;
+        artBase.setPermMask(mask);
     }
 
     /**

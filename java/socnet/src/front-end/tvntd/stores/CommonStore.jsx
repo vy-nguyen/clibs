@@ -266,7 +266,7 @@ class CommonStore {
      * Add article item to the store where item is in json format or Article type.
      */
     _addItemStore(item, preend) {
-        let articleUuid, authorUuid, anchor, authorTagMgr, article;
+        let articleUuid, authorUuid, anchor, authorTagMgr, article, add = false;
 
         articleUuid = item.articleUuid;
         authorUuid  = item.authorUuid;
@@ -279,16 +279,21 @@ class CommonStore {
             } else {
                 article = ArticleFactory.newInstance(this, item);
             }
+            add = true;
             this.data.itemsByUuid[articleUuid] = article;
-            anchor.addArticle(article, preend);
         } else {
             article.updateFromJson(item);
         }
         if (item.rank != null && item.isArticle !== true) {
             authorTagMgr = AuthorStore.getAuthorTagMgr(authorUuid);
-            article.rank = authorTagMgr.addArticleRank(item.rank);
+            article.rank = authorTagMgr.addArticleRank(item.rank, this);
         }
         article.getArticleRank();
+
+        // Add to anchor only after getting correct timestamp from ArticleBrief.
+        if (add === true) {
+            anchor.addArticle(article, preend);
+        }
         return article;
     }
 

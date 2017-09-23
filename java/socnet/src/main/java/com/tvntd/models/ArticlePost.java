@@ -83,6 +83,15 @@ public class ArticlePost
         artBase.setAuthorId(authorId);
     }
 
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("articleUuid: ").append(articleUuid)
+            .append(", author ").append(authorUuid).append("\n");
+        return sb.toString();
+    }
+
     /**
      * @return the articleUuid
      */

@@ -91,14 +91,14 @@ export class AuthorTag {
         let store, rank = this.articles[json.articleUuid];
 
         if (rank != null) {
-            if (json !== rank && !(json instanceof ArticleRank)) {
+            if (json !== rank && !(json instanceof ArticleBrief)) {
                 rank.updateFromJson(json);
             }
             return rank;
         }
         store = globStore.getStoreKind(json.artTag);
         return this.addArticleRankObj(
-            ArticleRank.newArticleRank(json, store, this, null)
+            ArticleBrief.newArticleRank(json, store, this, null)
         );
     }
 
@@ -429,18 +429,15 @@ class ArticleBase {
         if (this.rank !== 0) {
             return this.rank;
         }
-        if (this.msTime == null) {
-            this.msTime = Date.parse(this.timeStamp);
-        }
-        return -this.msTime;
+        return -this.timeStamp;
     }
 }
 
-export class ArticleRank extends ArticleBase {
+export class ArticleBrief extends ArticleBase {
     constructor(data, store, authorTag, article) {
         super(store);
         if (data == null) {
-            data = ArticleRank.genArticleRankJson(article);
+            data = ArticleBrief.genArticleRankJson(article);
         }
         _.forEach(data, function(v, k) {
             this[k] = v;
@@ -497,7 +494,7 @@ export class ArticleRank extends ArticleBase {
     }
 
     static newArticleRank(data, store, authorTag, article) {
-        let artRank = new ArticleRank(data, store, authorTag, article);
+        let artRank = new ArticleBrief(data, store, authorTag, article);
 
         if (article == null) {
             article = store.addDefaultFromRank(artRank);
@@ -518,9 +515,7 @@ export class Article extends ArticleBase {
             this[k] = v;
         }.bind(this));
 
-        date            = new Date(data.createdDate);
-        this.dateString = moment(date).format("DD/MM/YYYY - HH:mm");
-        this.author     = UserStore.getUserByUuid(data.authorUuid);
+        this.author = UserStore.getUserByUuid(data.authorUuid);
         return this;
     }
 
@@ -569,11 +564,15 @@ export class Article extends ArticleBase {
     }
 
     getArticleRank() {
-        if (this.rank != null) {
-            return this.rank;
+        if (this.rank == null) {
+            if (this.noData === true) {
+                this.rank = this.authorStore.lookupArticleRankByUuid(this.articleUuid);
+            } else {
+                return null;
+            }
         }
-        if (this.noData === true) {
-            this.rank = this.authorStore.lookupArticleRankByUuid(this.articleUuid);
+        if (this.createdDate == null) {
+            this._fillDateString(this.rank);
         }
         return this.rank;
     }
@@ -608,7 +607,36 @@ export class Article extends ArticleBase {
     }
 
     genArticleRankJson() {
-        return ArticleRank.genArticleRankJson(this);
+        return ArticleBrief.genArticleRankJson(this);
+    }
+
+    getTopic() {
+        let artRank = this.getArticleRank();
+        return artRank.artTitle;
+    }
+
+    getPictureUrl() {
+        let artRank = this.getArticleRank();
+        return artRank.imageUrl;
+    }
+
+    getContent() {
+        return this.content;
+    }
+
+    getDateString() {
+        if (this.dateString == null) {
+            this._fillDateString(this.getArticleRank());
+        }
+        return this.dateString;
+    }
+
+    _fillDateString(artRank) {
+        if (artRank != null) {
+            let date = new Date(artRank.timeStamp);
+            this.createdDate = artRank.timeStamp;
+            this.dateString  = moment(date).format("DD/MM/YYYY HH:mm");
+        }
     }
 }
 

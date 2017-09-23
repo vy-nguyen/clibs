@@ -252,10 +252,11 @@ public class UserPath
             return s_noProfile;
         }
         if (form.cleanInput() == false) {
+            System.out.println("Bad article input " + form.getTags());
             return s_badInput;
         }
         ArticlePostDTO art = genPendPost(profile, true, form.getArticleUuid());
-        artSvc.savePost(form, art, profile, publish, false);
+        art.assignArtBrief(artSvc.savePost(form, art, profile, publish, false));
         return art;
     }
 

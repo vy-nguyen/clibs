@@ -171,7 +171,7 @@ class TagPost extends React.Component
         let article = this.props.article, refLink = null,
             artRank, value, tagEntry, titleEntry, rankEntry;
 
-        artRank = article.rank;
+        artRank = article.getArticleRank();
         value = this._getTitleValue(artRank);
 
         if (!UserStore.isUserMe(article.authorUuid)) {
@@ -386,7 +386,7 @@ class PostPane extends React.Component
     }
 
     _rawMarkup(article) {
-        return { __html: article.content };
+        return { __html: article.getContent() };
     }
 
     _deletePost(article) {

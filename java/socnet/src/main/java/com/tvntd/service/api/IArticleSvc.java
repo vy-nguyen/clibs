@@ -95,11 +95,11 @@ public interface IArticleSvc
 
     // Save post
     //
-    ArticleBrief savePost(PostForm form, ArticlePostDTO artPost,
-            ProfileDTO profile, boolean publish, boolean update);
-
     ArticleAttr     updateArtAttr(CommentChangeForm form, ProfileDTO profile);
     ArticleBriefDTO updateArtBrief(ArticleForm form);
+
+    ArticleBriefDTO savePost(PostForm form, ArticlePostDTO artPost,
+            ProfileDTO profile, boolean publish, boolean update);
 
     // Delete
     //
@@ -195,7 +195,7 @@ public interface IArticleSvc
         public static String s_baseUri = "/rs/user/";
 
         protected ArticlePost           article;
-        protected String                content;
+        protected ArticleBriefDTO       artBrief;
         protected String                articleUrl;
         protected String                uploadFormId;
         protected Map<String, ObjectId> uploadImgMap;
@@ -204,7 +204,6 @@ public interface IArticleSvc
         {
             super(GenericResponse.USER_HOME, null, null);
             this.article = article;
-            convertUTF();
         }
 
         public ArticlePostDTO(String authorUuid, Long authorId)
@@ -217,11 +216,6 @@ public interface IArticleSvc
         {
             super(GenericResponse.USER_HOME, null, null);
             article = new ArticlePost(artUuid, authorUuid, authorId);
-        }
-
-        public void convertUTF()
-        {
-            content = Util.fromRawByte(article.getContent());
         }
 
         public ObjectId fetchUploadImg(String name)
@@ -266,6 +260,10 @@ public interface IArticleSvc
             article.getArtBase().removePicture(oid);
         }
 
+        public void assignArtBrief(ArticleBriefDTO brief) {
+            artBrief = brief;
+        }
+
         /**
          * JSON Get
          */
@@ -282,11 +280,15 @@ public interface IArticleSvc
         }
 
         public String getContent() {
-            return content;
+            return Util.fromRawByte(article.getContent());
         }
 
         public boolean isPublished() {
             return !article.isPending();
+        }
+
+        public ArticleBriefDTO getRank() {
+            return artBrief;
         }
     }
 
@@ -349,6 +351,10 @@ public interface IArticleSvc
                 date = new Date();
             }
             return date.getTime();
+        }
+
+        public Long getPermMask() {
+            return artRank.getArtBase().getPermMask();
         }
 
         public Long getCreditEarned() {

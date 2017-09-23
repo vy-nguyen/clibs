@@ -53,10 +53,6 @@ public class StartupResponse
 
     private List<Language>         languages;
     private ArtTagList             publicTags;
-
-    // Only use this list to reduce the amount of full articles fetched back from
-    // one shot.
-    //
     private List<ArticleBriefDTO>  artRanks;
 
     public StartupResponse(String uuid) {

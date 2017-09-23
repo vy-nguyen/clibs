@@ -75,9 +75,6 @@ public class DomainService implements IDomainService
     @Autowired
     protected IAuthorService authorSvc;
 
-    // @Autowired
-    // protected IArticleService articleSvc;
-
     @Autowired
     protected IProfileService profileSvc;
 
