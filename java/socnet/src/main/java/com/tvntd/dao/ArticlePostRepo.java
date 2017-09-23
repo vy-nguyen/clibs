@@ -41,6 +41,8 @@ public interface ArticlePostRepo extends JpaRepository<ArticlePost, String>
 
     List<ArticlePost> findAll();
 
+    // Page<ArticlePost> findByAuthorUuidOrderByCreatedDateDesc(String uuid, Pageable);
+
     @Override
     void delete(ArticlePost art);
 }

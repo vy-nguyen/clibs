@@ -27,10 +27,8 @@
 package com.tvntd.service.user;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.transaction.Transactional;
 
@@ -39,17 +37,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.tvntd.dao.AdsPostRepo;
 import com.tvntd.dao.ArtAdsRepo;
 import com.tvntd.dao.ArtBriefRepo;
 import com.tvntd.dao.ArtProductRepo;
 import com.tvntd.dao.ArticleAttrRepo;
 import com.tvntd.dao.ArticleBaseRepo;
 import com.tvntd.dao.ArticlePostRepo;
-import com.tvntd.dao.ArticleRankRepo;
-import com.tvntd.dao.ArticleRepository;
-import com.tvntd.dao.ProductRepository;
-import com.tvntd.dao.ProfileRepository;
 import com.tvntd.forms.AdsForm;
 import com.tvntd.forms.ArticleForm;
 import com.tvntd.forms.CommentChangeForm;
@@ -57,17 +50,13 @@ import com.tvntd.forms.PostForm;
 import com.tvntd.forms.ProductForm;
 import com.tvntd.forms.UuidForm;
 import com.tvntd.key.HashKey;
-import com.tvntd.models.AdsPost;
 import com.tvntd.models.ArtAds;
 import com.tvntd.models.ArtProduct;
 import com.tvntd.models.ArtTag;
-import com.tvntd.models.Article;
 import com.tvntd.models.ArticleAttr;
 import com.tvntd.models.ArticleBase;
 import com.tvntd.models.ArticleBrief;
 import com.tvntd.models.ArticlePost;
-import com.tvntd.models.ArticleRank;
-import com.tvntd.models.Product;
 import com.tvntd.service.api.ArtAdsDTO;
 import com.tvntd.service.api.ArtProductDTO;
 import com.tvntd.service.api.IArtTagService;
@@ -105,23 +94,6 @@ public class ArticleSvc implements IArticleSvc
 
     @Autowired
     protected IArtTagService artTagSvc;
-
-    // Will depreicate these tables.
-    //
-    @Autowired
-    protected ArticleRankRepo artRankRepo;
-
-    @Autowired
-    protected ArticleRepository artRepo;
-
-    @Autowired
-    protected AdsPostRepo adsRepo;
-
-    @Autowired
-    protected ProductRepository prodRepo;
-
-    @Autowired
-    protected ProfileRepository profileRepo;
 
     // --------------------------------------------------------------------------------
     // Static APIs
@@ -395,6 +367,7 @@ public class ArticleSvc implements IArticleSvc
     }
 
     // Save/update Ads
+    //
     @Override
     public void saveArtAds(ArtAdsDTO ads) {
         artAdsRepo.save(ads.fetchAds());
@@ -421,7 +394,8 @@ public class ArticleSvc implements IArticleSvc
         }
     }
 
-    // Save article post
+    // Save/update article post
+    //
     @Override
     public ArticleBriefDTO savePost(PostForm form, ArticlePostDTO artPost,
             ProfileDTO profile, boolean publish, boolean update)
@@ -451,6 +425,9 @@ public class ArticleSvc implements IArticleSvc
 
         if (brief.isHasArticle() == false) {
             saveArticleBrief(briefDTO);
+            if (update == true) {
+                artPostRepo.delete(art);
+            }
             return briefDTO;
         }
         art.setContent(Util.toRawByte(form.getContent(), 1 << 16));
@@ -564,11 +541,30 @@ public class ArticleSvc implements IArticleSvc
     }
 
     // --------------------------------------------------------------------------------
-    // Delete
+    // Delete post
     //
+    private void commonDelete(ArticleBrief brief, byte[] tag)
+    {
+        String artUuid = brief.getArticleUuid();
+
+        artTagSvc.deletePublicTagPost(tag, artUuid);
+        artBriefRepo.delete(brief);
+        commentSvc.deleteComment(artUuid);
+        s_log.info("Delete article uuid " + artUuid);
+    }
+
+    private void deleteArticlePost(ArticlePost post)
+    {
+        ArticleBase base   = post.getArtBase();
+        ArticleBrief brief = new ArticleBrief(base);
+
+        commonDelete(brief, base.getPublicTag());
+        artPostRepo.delete(post);
+    }
+
     @Override
     public void deleteArticlePost(ArticlePostDTO art) {
-        artPostRepo.delete(art.fetchArticlePost());
+        deleteArticlePost(art.fetchArticlePost());
     }
 
     @Override
@@ -580,8 +576,15 @@ public class ArticleSvc implements IArticleSvc
     }
 
     @Override
-    public void deleteArticleBrief(ArticleBriefDTO rank) {
-        artBriefRepo.delete(rank.fetchArtRank());
+    public void deleteArticleBrief(ArticleBriefDTO rank)
+    {
+        ArticleBrief brief = rank.fetchArtRank();
+        ArticlePost post = new ArticlePost(brief.getAuthorUuid(), rank.getArticleUuid());
+
+        commonDelete(brief, brief.getArtBase().getPublicTag());
+        if (post != null) {
+            artPostRepo.delete(post);
+        }
     }
 
     @Override
@@ -593,8 +596,36 @@ public class ArticleSvc implements IArticleSvc
     }
 
     @Override
-    public void deleteArtAds(ArtAdsDTO ads) {
-        artAdsRepo.delete(ads.fetchAds());
+    public ArticlePost deleteArticlePost(String artUuid, ProfileDTO owner)
+    {
+        ArticlePost post = artPostRepo.findByArticleUuid(artUuid);
+
+        if (post == null) {
+            return null;
+        }
+        String author = post.getAuthorUuid();
+        if (!author.equals(owner.getUserUuid())) {
+            s_log.info("Owner miss-match " + author + " vs " + owner.getUserUuid());
+            return null;
+        }
+        deleteArticlePost(post);
+        return post;
+    }
+ 
+    // --------------------------------------------------------------------------------
+    // Delete ads
+    //
+    private void deleteArtAds(ArtAds ads)
+    {
+        ArticleBrief brief = new ArticleBrief(ads.getArtBase());
+
+        commonDelete(brief, ads.getBusCat());
+        artAdsRepo.delete(ads);
+    }
+
+    @Override
+    public void deleteArtAds(ArtAdsDTO adsDTO) {
+        deleteArtAds(adsDTO.fetchAds());
     }
 
     @Override
@@ -606,7 +637,7 @@ public class ArticleSvc implements IArticleSvc
             System.out.println("Delete ads " + adsList.size());
             for (ArtAds a : adsList) {
                 s_log.info("Delete ads " + a.getBusName());
-                artAdsRepo.delete(a);
+                deleteArtAds(a);
             }
         }
     }
@@ -615,29 +646,34 @@ public class ArticleSvc implements IArticleSvc
     public void deleteArtAds(List<ArtAdsDTO> adsList)
     {
         for (ArtAdsDTO ads : adsList) {
-            artAdsRepo.delete(ads.fetchAds());
+            deleteArtAds(ads);
         }
+    }
+
+    // --------------------------------------------------------------------------------
+    // Delete products
+    //
+    private void deleteArtProduct(ArtProduct prod)
+    {
+        ArticleBrief brief = new ArticleBrief(prod.getArtBase());
+
+        commonDelete(brief, prod.getPublicTag());
+        artProdRepo.delete(prod);
     }
 
     @Override
     public void deleteArtProduct(ArtProductDTO prod) {
-        artProdRepo.delete(prod.fetchProduct());
+        deleteArtProduct(prod.fetchProduct());
     }
 
     @Override
     public void deleteArtProduct(List<ArtProductDTO> prodList)
     {
         for (ArtProductDTO p : prodList) {
-            artProdRepo.delete(p.fetchProduct());
+            deleteArtProduct(p);
         }
     }
-
-    @Override
-    public ArticlePost deleteArticlePost(String artUuid, ProfileDTO profile)
-    {
-        return null;
-    }
-    
+   
     @Override
     public ArtProduct deleteArtProduct(String articleUuid, ProfileDTO owner)
     {
@@ -646,17 +682,8 @@ public class ArticleSvc implements IArticleSvc
         if (prod == null || !prod.getAuthorUuid().equals(owner.getUserUuid())) {
             return null;
         }
-        s_log.info("Delete product " +
-                prod.getArticleUuid() + ", name " + prod.getProdName());
-
-        ArticleBrief brief = artBriefRepo.findByArticleUuid(articleUuid);
-        if (brief != null) {
-            artBriefRepo.delete(brief);
-        }
-        commentSvc.deleteComment(articleUuid);
-        artTagSvc.deletePublicTagPost(prod.getPublicTag(), articleUuid);
-        artProdRepo.delete(prod);
-
+        s_log.info("Delete product " + prod.getArticleUuid());
+        deleteArtProduct(prod);
         return prod;
     }
 
@@ -664,8 +691,13 @@ public class ArticleSvc implements IArticleSvc
     // Internal API
     //
     @Override
-    public void auditArticleTable()
-    {
+    public void auditArticleTable() {}
+
+    @Override
+    public void cleanupDatabase() {}
+}
+
+    /*
         Map<String, String> uuids = new HashMap<>();
         Map<String, String> authors = new HashMap<>();
         Map<String, ArticleBrief> artBriefs = new HashMap<>();
@@ -717,7 +749,6 @@ public class ArticleSvc implements IArticleSvc
             prod.fromProduct(p);
             artProdRepo.save(prod);
         }
-        /*
         for (Map.Entry<String, String> e : authors.entrySet()) {
             List<ArticlePostDTO> fulls   = getArticleDTOByAuthor(e.getKey());
             List<ArticleBriefDTO> briefs = getArticleBriefDTOByAuthor(e.getKey());
@@ -730,7 +761,6 @@ public class ArticleSvc implements IArticleSvc
                         r.getArtBase() + " attr " + r.getArtAttr());
             }
         }
-        */
     }
 
     public void cleanupDatabase()
@@ -783,4 +813,4 @@ public class ArticleSvc implements IArticleSvc
             }
         }
     }
-}
+    */

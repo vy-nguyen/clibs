@@ -122,44 +122,7 @@ public class ArticleBase
         }
     }
 
-    /**
-     * Conversion routines
-     */
-    public void fromArticleRank(ArticleRank rank)
-    {
-        articleUuid  = rank.getArticleUuid();
-        authorId     = rank.getAuthorId();
-        permMask     = rank.getPermMask();
-        publicUrlOid = rank.getPublicUrlOid();
-        artTitle     = Util.toRawByte(rank.getArtTitle(), 128);
-        artTag       = rank.getArtTag();
-        contentOid   = rank.getContentOid();
-        createdDate  = rank.getTimeStamp();
-        contentLinkUrl = rank.getContentLinkUrl();
-
-        if (artTag == null) {
-            artTag = ArtTag.BLOG;
-        }
-    }
-
-    public void fromArticle(Article art)
-    {
-        articleUuid = art.getArticleUuid();
-        artTag      = ArtTag.BLOG;
-        publicTag   = art.getPublicTag();
-        pictures    = art.getPictures();
-        artTitle    = art.getTopic();
-        createdDate = art.getCreatedDate();
-
-        if (art.getContentOId() != null) {
-            contentOid = art.getContentOId();
-        }
-        if (art.getAuthorId() != null) {
-            authorId   = art.getAuthorId();
-        }
-    }
-
-    static public String makeUrlLink(Article self, String host, int mode)
+    static public String makeUrlLink(ArticleBase self, String host, int mode)
     {
         String oid;
 
@@ -173,7 +136,7 @@ public class ArticleBase
             oid = "HEX:" + host;
         }
         if (self != null) {
-            self.contentOId = oid;
+            self.contentOid = oid;
         }
         return oid;
     }

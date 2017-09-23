@@ -39,7 +39,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tvntd.dao.ArtTagRepo;
-import com.tvntd.dao.ArticleRankRepo;
 import com.tvntd.forms.TagForm.TagRank;
 import com.tvntd.models.ArtTag;
 import com.tvntd.service.api.IArtTagService;
@@ -54,9 +53,6 @@ public class ArtTagService implements IArtTagService
 
     @Autowired
     protected ArtTagRepo artTagRepo;
-
-    @Autowired
-    protected ArticleRankRepo artRankRepo;
 
     @Autowired
     protected IAuthorService authorSvc;

@@ -131,37 +131,6 @@ public class ArtAds
         artAttr     = new ArticleAttr(articleUuid);
     }
 
-    public void fromAdsPost(AdsPost ads)
-    {
-        if (artBase == null) {
-            articleUuid = ads.getArticleUuid();
-            artBase     = new ArticleBase(articleUuid);
-            artAttr     = new ArticleAttr(articleUuid);
-        }
-        articleUuid = ads.getArticleUuid();
-        artBase.setArtTag(ArtTag.ADS);
-        artBase.setContentOid(ads.getContentOid());
-        artBase.setPictures(null);
-        artBase.setCreatedDate(ads.getCreatedDate());
-
-        authorUuid = ads.getAuthorUuid();
-        adImgOid0  = ads.getAdImgOId0();
-        adImgOid1  = ads.getAdImgOId1();
-        adImgOid2  = ads.getAdImgOId2();
-        adImgOid3  = ads.getAdImgOId3();
-        busName    = ads.getBusName();
-        busCat     = ads.getBusCat();
-        busWeb     = ads.getBusWeb();
-        busEmail   = ads.getBusEmail();
-        busPhone   = ads.getBusPhone();
-        busStreet  = ads.getBusStreet();
-        busCity    = ads.getBusCity();
-        busState   = ads.getBusState();
-        busZip     = ads.getBusZip();
-        busHour    = ads.getBusHour();
-        busDesc    = ads.getBusDesc();
-    }
-
     public void fromProfile(Profile prof)
     {
         if (prof == null) {

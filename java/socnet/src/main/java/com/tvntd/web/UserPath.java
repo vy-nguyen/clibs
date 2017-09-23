@@ -76,7 +76,6 @@ import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.ArtProductDTO;
 import com.tvntd.service.api.GenericResponse;
 import com.tvntd.service.api.IArtTagService;
-import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleService.ArticleDTOResponse;
 import com.tvntd.service.api.IArticleSvc;
 import com.tvntd.service.api.IArticleSvc.ArticleBriefDTO;
@@ -431,7 +430,9 @@ public class UserPath
             ImageUploadResp resp =
                 new ImageUploadResp(art.getArticleUuid(), art.getAuthorUuid(), oid);
 
-            resp.setLocation(ArticleDTO.getPictureUrl(profile.fetchProfile(), oid));
+            resp.setLocation(
+                ArticleBriefDTO.getPictureUrl(profile.fetchProfile(), oid)
+            );
             return resp;
 
         } catch(IOException e) {
@@ -496,9 +497,9 @@ public class UserPath
                         prod.getArticleUuid(), prod.getAuthorUuid(), oid);
 
                 resp.setPostUrl(url);
-                resp.setLocation(ArticleDTO
-                        .getPictureUrl(profile.fetchProfile(), oid));
-
+                resp.setLocation(
+                    ArticleBriefDTO.getPictureUrl(profile.fetchProfile(), oid)
+                );
                 if (logo == true) {
                     resp.setPostType("logo");
                     prod.assignLogo(oid.name());

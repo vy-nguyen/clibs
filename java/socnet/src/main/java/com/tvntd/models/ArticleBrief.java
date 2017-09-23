@@ -183,7 +183,7 @@ public class ArticleBrief
         artBase.setArtTitle(Util.toRawByte(form.getTopic(), 128));
     }
 
-    static public String makeUrlLink(Article self, String host, int mode)
+    static public String makeUrlLink(ArticleBrief self, String host, int mode)
     {
         String oid;
 
@@ -197,61 +197,9 @@ public class ArticleBrief
             oid = "HEX:" + host;
         }
         if (self != null) {
-            self.contentOId = oid;
+            self.artBase.setContentOid(oid);
         }
         return oid;
-    }
-
-    public void fromArticleRank(ArticleRank rank)
-    {
-        articleUuid  = rank.getArticleUuid();
-        artAttr      = new ArticleAttr(articleUuid);
-        artBase      = new ArticleBase(articleUuid);
-        artBase.fromArticleRank(rank);
-
-        tag          = Util.toRawByte(rank.getTag(), 64);
-        authorUuid   = rank.getAuthorUuid();
-        prevArticle  = rank.getPrevArticle();
-        nextArticle  = rank.getNextArticle();
-        topArticle   = rank.getTopArticle();
-        contentBrief = Util.toRawByte(rank.getContentBrief(), 256);
-        favorite     = rank.isFavorite();
-        hasArticle   = rank.isHasArticle();
-       
-        if (tag != null) {
-            tagHash = HashKey.toSha1Key(tag, authorUuid);
-        }
-        artAttr.setUserLiked(rank.getUserLiked());
-        artAttr.setUserShared(rank.getUserShared());
-        artBase.setPermMask(rank.getPermMask());
-    }
-
-    public void fromArticle(Article art)
-    {
-        articleUuid = art.getArticleUuid();
-        authorUuid  = art.getAuthorUuid();
-        hasArticle  = true;
-
-        if (artAttr == null) {
-            artAttr = new ArticleAttr(articleUuid);
-        }
-        if (artBase == null) {
-            artBase = new ArticleBase();
-            artBase.fromArticle(art);
-        }
-        if (tag == null) {
-            tag = art.getPublicTag();
-            if (tag != null) {
-                tagHash = HashKey.toSha1Key(tag, authorUuid);
-            }
-        }
-        if (contentBrief == null) {
-            contentBrief = Util.toRawByte(
-                    PostForm.toBriefContent(null, art.getContent()), 256);
-        }
-        if (art.isPending() == true) {
-            artBase.setPermMask(ArticleBase.PERM_PRIVATE);
-        }
     }
 
     public String toString()

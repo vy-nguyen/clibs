@@ -27,8 +27,6 @@
 package com.tvntd.models;
 
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -48,6 +46,9 @@ import com.tvntd.lib.ObjectId;
 })
 public class ArtProduct
 {
+    public static final int MaxHeaderLength  = 64;
+    public static final int MaxContentLength = 1 << 16;
+
     @Id
     @Column(length = 64)
     protected String articleUuid;
@@ -125,51 +126,6 @@ public class ArtProduct
         articleUuid = base.getArticleUuid();
         artBase     = base;
         artAttr     = new ArticleAttr(articleUuid);
-    }
-
-    public void fromProduct(Product prod)
-    {
-        if (artBase == null) {
-            articleUuid = prod.getArticleUuid();
-            artBase     = new ArticleBase(articleUuid);
-            artAttr     = new ArticleAttr(articleUuid);
-        }
-        articleUuid = prod.getArticleUuid();
-        authorUuid  = prod.getAuthorUuid();
-
-        artBase.setArtTag(ArtTag.ESTORE);
-        artBase.setAuthorId(prod.getAuthorId());
-        artBase.setCreatedDate(prod.getCreatedDate());
-      
-        pending    = prod.isPending();
-        logoImg    = prod.getLogoImg();
-        logoTag    = prod.getLogoTag();
-        prodPrice  = prod.getProdPrice();
-        priceUnit  = prod.getPriceUnit();
-        prodCat    = prod.getProdCat();
-        prodName   = prod.getProdName();
-        prodNotice = prod.getProdNotice();
-        prodTitle  = prod.getProdTitle();
-        prodSub    = prod.getProdSub();
-        publicTag  = prod.getPublicTag();
-        prodDesc   = prod.getProdDesc();
-        prodDetail = prod.getProdDetail();
-        prodSpec   = prod.getProdSpec();
-
-        List<String> imgs = prod.getImages();
-        if (imgs != null && !imgs.isEmpty()) {
-            List<String> pics = artBase.getPictures();
-
-            if (pics != null) {
-                pics.size();
-            } else {
-                pics = new LinkedList<>();
-                artBase.setPictures(pics);
-            }
-            for (String uuid : imgs) {
-                pics.add(uuid);
-            }
-        }
     }
 
     public void addPicture(ObjectId img) {

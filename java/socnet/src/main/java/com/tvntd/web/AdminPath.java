@@ -49,7 +49,6 @@ import com.tvntd.service.api.GenericResponse;
 import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArtTagService.ArtTagDTO;
 import com.tvntd.service.api.IArtTagService.ArtTagList;
-import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IArticleSvc;
 import com.tvntd.service.api.IArticleSvc.ArticleBriefDTO;
 import com.tvntd.service.api.IAuthorService;
@@ -74,9 +73,6 @@ public class AdminPath
 
     @Autowired
     protected IArtTagService artTagSvc;
-
-    @Autowired
-    protected IArticleService articleSvc;
 
     @Autowired
     protected IPublicUrlService urlSvc;

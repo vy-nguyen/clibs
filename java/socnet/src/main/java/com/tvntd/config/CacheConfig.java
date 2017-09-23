@@ -35,11 +35,9 @@ import org.springframework.cache.interceptor.SimpleKeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.tvntd.service.api.IArticleService;
 import com.tvntd.service.api.IArticleSvc;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.IProfileService;
-import com.tvntd.service.user.ArticleService;
 import com.tvntd.service.user.ArticleSvc;
 import com.tvntd.service.user.AuthorService;
 import com.tvntd.service.user.ProfileService;
@@ -48,11 +46,6 @@ import com.tvntd.service.user.ProfileService;
 @EnableCaching
 public class CacheConfig extends CachingConfigurerSupport
 {
-    @Bean
-    public IArticleService articleSvc() {
-        return new ArticleService();
-    }
-
     @Bean
     public IArticleSvc artSvc() {
         return new ArticleSvc();

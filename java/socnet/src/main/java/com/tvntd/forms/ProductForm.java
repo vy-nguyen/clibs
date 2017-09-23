@@ -32,7 +32,7 @@ import javax.validation.constraints.Size;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
-import com.tvntd.models.Product;
+import com.tvntd.models.ArtProduct;
 import com.tvntd.util.Util;
 
 public class ProductForm
@@ -69,8 +69,8 @@ public class ProductForm
         authorUuid = Jsoup.clean(authorUuid, wlist);
         articleUuid = Jsoup.clean(articleUuid, wlist);
 
-        int headerLen = Product.MaxHeaderLength;
-        int contentLen = Product.MaxContentLength;
+        int headerLen = ArtProduct.MaxHeaderLength;
+        int contentLen = ArtProduct.MaxContentLength;
         prodName   = Util.clean(prodName, wlist, headerLen);
         prodCat    = Util.clean(prodCat, wlist, headerLen);
         prodTitle  = Util.clean(prodTitle, wlist, headerLen);

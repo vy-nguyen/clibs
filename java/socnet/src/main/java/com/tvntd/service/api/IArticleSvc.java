@@ -44,6 +44,7 @@ import com.tvntd.models.ArticleAttr;
 import com.tvntd.models.ArticleBase;
 import com.tvntd.models.ArticleBrief;
 import com.tvntd.models.ArticlePost;
+import com.tvntd.models.Profile;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.util.Util;
@@ -302,6 +303,16 @@ public interface IArticleSvc
         {
             super(GenericResponse.USER_HOME, null, null);
             artRank = rank;
+        }
+
+        public static String getPictureUrl(Profile profile, ObjectId oid)
+        {
+            if (oid != null) {
+                ObjStore objStore = ObjStore.getInstance();
+                String store = s_baseUri + Long.toString(profile.getUserId());
+                return objStore.imgObjUri(oid, store);
+            }
+            return null;
         }
 
         public ArticleBrief fetchArtRank() {
