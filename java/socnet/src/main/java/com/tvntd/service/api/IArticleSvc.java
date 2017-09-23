@@ -44,7 +44,6 @@ import com.tvntd.models.ArticleAttr;
 import com.tvntd.models.ArticleBase;
 import com.tvntd.models.ArticleBrief;
 import com.tvntd.models.ArticlePost;
-import com.tvntd.models.Profile;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.util.Util;
@@ -305,11 +304,11 @@ public interface IArticleSvc
             artRank = rank;
         }
 
-        public static String getPictureUrl(Profile profile, ObjectId oid)
+        public static String getPictureUrl(Long id, ObjectId oid)
         {
             if (oid != null) {
                 ObjStore objStore = ObjStore.getInstance();
-                String store = s_baseUri + Long.toString(profile.getUserId());
+                String store = s_baseUri + Long.toString(id);
                 return objStore.imgObjUri(oid, store);
             }
             return null;
@@ -321,6 +320,22 @@ public interface IArticleSvc
 
         public void assignRank(ArticleBrief rank) {
             artRank = rank;
+        }
+
+        /**
+         * JSON gets.
+         */
+        public List<String> getPictureUrl()
+        {
+            ArticleBase base  = artRank.getArtBase();
+            Long userId       = base.getAuthorId();
+            List<String> oids = base.getPictures();
+            List<String> rets = new LinkedList<>();
+
+            for (String o : oids) {
+                rets.add(ArticleBriefDTO.getPictureUrl(userId, ObjectId.fromString(o)));
+            }
+            return rets;
         }
 
         public String getPrevArticle() {

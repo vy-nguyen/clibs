@@ -425,6 +425,10 @@ class ArticleBase {
         return this.artTag;
     }
 
+    getPictureUrl() {
+        return this.pictureUrl;
+    }
+
     getRankOrder() {
         if (this.rank !== 0) {
             return this.rank;
@@ -549,6 +553,17 @@ export class Article extends ArticleBase {
         return VConst.blog;
     }
 
+    // @Override
+    //
+    getPictureUrl() {
+        let brief = this.getArticleRank();
+
+        if (brief != null) {
+            return brief.pictureUrl;
+        }
+        return null;
+    }
+
     getSortedAnchor() {
         return VConst.blogs;
     }
@@ -613,11 +628,6 @@ export class Article extends ArticleBase {
     getTopic() {
         let artRank = this.getArticleRank();
         return artRank.artTitle;
-    }
-
-    getPictureUrl() {
-        let artRank = this.getArticleRank();
-        return artRank.imageUrl;
     }
 
     getContent() {

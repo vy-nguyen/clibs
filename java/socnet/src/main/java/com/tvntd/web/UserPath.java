@@ -415,7 +415,8 @@ public class UserPath
         }
         ArticlePostDTO art = genPendPost(profile, true, artUuid);
         try {
-            String uid = profile.fetchUserId().toString();
+            Long userId = profile.fetchUserId();
+            String uid  = userId.toString();
             ObjStore store = ObjStore.getInstance();
             InputStream is = file.getInputStream();
             ObjectId oid = store.putUserImage(is, (int)file.getSize(), uid);
@@ -430,9 +431,7 @@ public class UserPath
             ImageUploadResp resp =
                 new ImageUploadResp(art.getArticleUuid(), art.getAuthorUuid(), oid);
 
-            resp.setLocation(
-                ArticleBriefDTO.getPictureUrl(profile.fetchProfile(), oid)
-            );
+            resp.setLocation(ArticleBriefDTO.getPictureUrl(userId, oid));
             return resp;
 
         } catch(IOException e) {
@@ -487,7 +486,8 @@ public class UserPath
         }
         ArtProductDTO prod = genPendProduct(profile, true, artUuid);
         try {
-            String uid     = profile.fetchUserId().toString();
+            Long userId    = profile.fetchUserId();
+            String uid     = userId.toString();
             ObjStore store = ObjStore.getInstance();
             InputStream is = file.getInputStream();
             ObjectId oid   = store.putUserImage(is, (int)file.getSize(), uid);
@@ -497,9 +497,8 @@ public class UserPath
                         prod.getArticleUuid(), prod.getAuthorUuid(), oid);
 
                 resp.setPostUrl(url);
-                resp.setLocation(
-                    ArticleBriefDTO.getPictureUrl(profile.fetchProfile(), oid)
-                );
+                resp.setLocation(ArticleBriefDTO.getPictureUrl(userId, oid));
+
                 if (logo == true) {
                     resp.setPostType("logo");
                     prod.assignLogo(oid.name());

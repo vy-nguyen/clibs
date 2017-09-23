@@ -573,7 +573,7 @@ class PostPane extends React.Component
             <div style={VntdGlob.styleContent}
                 dangerouslySetInnerHTML={this._rawMarkup(article)}/>
         );
-        imgs = article.pictureUrl;
+        imgs = article.getPictureUrl();
         if (imgs != null) {
             if (imgs.length == 1) {
                 pictures = <PostItem style={VntdGlob.styleImg} data={imgs}/>
