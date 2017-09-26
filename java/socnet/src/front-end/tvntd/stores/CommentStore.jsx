@@ -8,49 +8,36 @@ import _            from 'lodash';
 import moment       from 'moment';
 import Actions      from 'vntd-root/actions/Actions.jsx';
 import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';
-import ArticleStore from 'vntd-root/stores/ArticleStore.jsx';
 import UserStore    from 'vntd-shared/stores/UserStore.jsx';
 
 class CommentAttr {
-    constructor(data) {
-        this.articleUuid  = data.articleUuid;
-        this.commentId    = data.commentId;
-        this.creditEarned = data.creditEarned;
-        this.moneyEarned  = data.moneyEarned;
-        this.score        = data.score;
-        this.favorite     = data.favorite;
-        this.userLiked    = this.updateCount(null, data.userLiked);
-        this.userShared   = this.updateCount(null, data.userShared);
-        this.likeCount    = this.userLiked.count;
-        this.shareCount   = this.userShared.count;
+    constructor(brief) {
+        this.articleUuid = brief.articleUuid;
+        this.commentId   = brief.commentId;
+        this.updateAttr(brief);
         return this;
     }
 
-    updateCount(result, list) {
-        if (result == null) {
+    _updateCount(result, list) {
+        if (result == null || _.isEmpty(list)) {
             result = {
                 count: 0
             };
         }
-        _.forEach(list, function(uuid) {
-            result.count++;
-            result[uuid] = UserStore.getUserByUuid(uuid);
-        });
+        if (list != null) {
+            _.forEach(list, function(uuid) {
+                result.count++;
+                result[uuid] = UserStore.getUserByUuid(uuid);
+            });
+        }
         return result;
     }
 
     updateAttr(attr) {
-        if (attr.userLiked != null) {
-            this.userLiked = this.updateCount(this.userLiked, attr.userLiked);
-            this.likeCount = this.userLiked.count;
-        }
-        if (attr.userShared != null) {
-            this.userShared = this.updateCount(this.userShared, attr.userShared);
-            this.shareCount = this.userShared.count;
-        }
+        this.userLiked   = this._updateCount(this.userLiked, attr.userLiked);
+        this.userShared  = this._updateCount(this.userShared, attr.userShared);
         this.score       = attr.score;
         this.favorite    = attr.favorite;
-        this.moneyEarned = attr.moneyEarned;
     }
 
     getUsersLiked() {
@@ -61,8 +48,16 @@ class CommentAttr {
         return this.userShared;
     }
 
+    getSharedCount() {
+        return this.userShared.count;
+    }
+
     getUserLiked() {
-        return this.likeCount;
+        return this.userLiked;
+    }
+
+    getLikedCount() {
+        return this.userLiked.count;
     }
 
     toggleFavorite() {
@@ -71,34 +66,61 @@ class CommentAttr {
 
     didILikeIt() {
         let myUuid = UserStore.getSelf().userUuid;
-
         return this.userLiked[myUuid] != null ? true : false;
     }
 
-    getUserLiked() {
+    getUserLikedList() {
         let out = [];
 
-        _.forOwn(this.userLiked, function(user, key) {
-            if (user != null && key !== "count") {
-                out.push(user.lastName + " " + user.firstName);
-            }
+        this.userListIter('like', function(user) {
+            out.push(user.lastName + " " + user.firstName);
         });
         if (!_.isEmpty(out)) {
             return out.join(", ");
         }
         return null;
     }
+
+    userListIter(kind, iterFn) {
+        let list = kind === 'like' ? this.userLiked : this.userShared;
+
+        _.forOwn(list, function(uuid,  key) {
+            if (uuid != null && key !== "count") {
+                iterFn(uuid);
+            }
+        });
+    }
+}
+
+/**
+ * Store comment attributes for Article.
+ */
+class CommentArtAttr extends CommentAttr
+{
+    constructor(brief) {
+        super(brief);
+    }
+
+    updateAttr(attr) {
+        super.updateAttr(attr);
+
+        if (attr.creditEarned != null) {
+            this.creditEarned = attr.creditEarned;
+        }
+        if (attr.moneyEarned != null) {
+            this.moneyEarned  = attr.moneyEarned;
+        }
+    }
 }
 
 class CommentText {
     constructor(data, artOwner) {
-        this._id          = _.uniqueId('id-comment-');
-        this.commentDate  = data.commentDate;
-        this.comment      = data.comment;
-        this.userUuid     = data.userUuid;
-        this.moment       = moment(data.commentDate, "MM/DD/YY h:mm").fromNow();
-        this.artOwner     = artOwner;
-        this.commentAttr  = new CommentAttr(data);
+        this.commentDate = data.commentDate;
+        this.comment     = data.comment;
+        this.userUuid    = data.userUuid;
+        this.moment      = moment(data.commentDate, "MM/DD/YY h:mm").fromNow();
+        this.artOwner    = artOwner;
+        this.commentAttr = new CommentAttr(data);
         return this;
     }
 
@@ -110,8 +132,12 @@ class CommentText {
         return this.commentAttr.favorite;
     }
 
+    getLikedCount() {
+        return this.commentAttr.getLikedCount();
+    }
+
     getUserLiked() {
-        return this.commentAttr.userLiked;
+        return this.commentAttr.getUserLiked();
     }
 
     getCommentId() {
@@ -130,43 +156,38 @@ class CommentText {
         return UserStore.isUserMe(this.artOwner.getAuthorUuid());
     }
 
-    getUserLikedList() {
+    getUserLiked() {
         return this.commentAttr.getUserLiked();
+    }
+
+    getUserLikedList() {
+        return this.commentAttr.getUserLikedList();
+    }
+
+    userListIter(kind, iterFn) {
+        this.commentAttr.userListIter(kind, iterFn);
     }
 }
 
 class ArticleComment {
-    constructor(data) {
-        let rank = AuthorStore.lookupArticleRankByUuid(data.articleUuid);
-
-        this.articleUuid = data.articleUuid;
-        this.showComment = data.showComment;
-        this.favorites   = {};
-        this.normals     = {};
+    constructor(brief) {
+        this.articleUuid    = brief.getArticleUuid();
+        this.authorUuid     = brief.getAuthorUuid();
+        this.showComment    = true;
+        this.favorites      = {};
+        this.normals        = {};
         this.normalSorted   = [];
         this.favoriteSorted = [];
-
-        if (rank == null) {
-            this.articleAttr = null;
-        } else {
-            this.articleAttr = new CommentAttr(rank);
-        }
+        this.articleAttr    = new CommentArtAttr(brief);
         return this;
     }
 
     getAuthorUuid() {
-        if (this.authorUuid == null) {
-            this.authorUuid = ArticleStore.getAuthorUuid(this.articleUuid);
-        }
         return this.authorUuid;
     }
 
     updateArtAttr(data) {
-        if (this.articleAttr == null) {
-            this.articleAttr = new CommentAttr(data);
-        } else {
-            this.articleAttr.updateCount(data);
-        }
+        this.articleAttr.updateAttr(data);
     }
 
     updateAttr(data) {
@@ -188,8 +209,22 @@ class ArticleComment {
         return this.articleAttr;
     }
 
+    getCommentAttr(id) {
+        let cmt = this.favorites[id];
+
+        if (cmt != null) {
+            return cmt.commentAttr;
+        }
+        cmt = this.normals[id];
+        if (cmt != null) {
+            return cmt.commentAttr;
+        }
+        return null;
+    }
+
     getComment(id) {
         let cmt = this.favorites[id];
+
         if (cmt != null) {
             return cmt;
         }
@@ -205,7 +240,7 @@ class ArticleComment {
                 this.favorites[data.commentId] = new CommentText(data, this);
             }
         } else {
-            if (this.favorites[data.commentId] == null) {
+            if (this.normals[data.commentId] == null) {
                 this.normals[data.commentId] = new CommentText(data, this);
             }
         }
@@ -213,14 +248,17 @@ class ArticleComment {
     }
 
     toggleFavComment(id) {
+        let comment;
+
         if (this.favorites[id] == null) {
-            let comment = this.normals[id];
+            comment = this.normals[id];
             comment.toggleFavorite();
+
             this.favorites[id] = comment;
             delete this.normals[id];
             return comment;
         }
-        let comment = this.favorites[id];
+        comment = this.favorites[id];
         comment.toggleFavorite();
         this.normals[id] = comment;
         delete this.favorites[id];
@@ -230,8 +268,13 @@ class ArticleComment {
     iterFavComments(func) {
         _.forOwn(this.favorites, func);
     }
+
     iterNormalComments(func) {
         _.forOwn(this.normals, func);
+    }
+
+    userListIter(kind, iterFn) {
+        this.articleAttr.userListIter(kind, iterFn);
     }
 
     getFavorites() {
@@ -275,41 +318,10 @@ let CommentStore = Reflux.createStore({
         }
     },
 
-    onPreloadCompleted: function(raw) {
-        this._updateComments(raw.comments, false, false);
-        this.trigger(this.data);
-    },
-
-    /*
-     * Main entry at startup after getting data returned back from the server.
-     */
-    onStartupCompleted: function(data) {
-        let uuidList = [], uuidDict = {};
-
-        if (data.articles != null) {
-            _.forOwn(data.articles, function(it, key) {
-                uuidDict[it.articleUuid] = it.articleUuid;
-            });
-        }
-        if (data.artRanks != null) {
-            _.forOwn(data.artRanks, function(it, key) {
-                uuidDict[it.articleUuid] = it.articleUuid;
-            });
-        }
-        _.forOwn(uuidDict, function(it) {
-            uuidList.push(it);
-        });
-        if (!_.isEmpty(uuidList)) {
-            Actions.getComments({
-                authorUuid: UserStore.getSelfUuid(),
-                uuidType  : "artCmt",
-                uuids     : uuidList 
-            });
-        }
-    },
-
     onGetCommentsCompleted: function(data) {
         if (data.comments != null) {
+            console.log("Get comments data");
+            console.log(data);
             this._updateComments(data.comments, true, false);
             this.trigger(this.data, null);
         }
@@ -334,9 +346,50 @@ let CommentStore = Reflux.createStore({
     },
 
     onPostCmtSelectCompleted: function(data) {
-        let cmtArt = this.addArtComment(data);
+        console.log("select completed...");
+        console.log(data);
+
+        let cmtArt = this.getByArticleUuid(data.articleUuid);
         cmtArt.updateAttr(data);
         this.trigger(this.data, cmtArt);
+    },
+
+    /*
+     * Main entry at startup after getting data returned back from the server.
+     */
+    mainStartup(data) {
+        let uuidList = [], uuidDict = {};
+
+        if (data.articles != null) {
+            _.forOwn(data.articles, function(it, key) {
+                uuidDict[it.articleUuid] = it.articleUuid;
+            });
+        }
+        if (data.artRanks != null) {
+            _.forOwn(data.artRanks, function(it, key) {
+                uuidDict[it.articleUuid] = it.articleUuid;
+            });
+        }
+        _.forOwn(uuidDict, function(it) {
+            uuidList.push(it);
+        });
+        if (!_.isEmpty(uuidList)) {
+            Actions.getComments({
+                authorUuid: UserStore.getSelfUuid(),
+                uuidType  : "artCmt",
+                uuids     : uuidList 
+            });
+        }
+        this.updateArticleRanks(data.artRanks);
+    },
+
+    updateArticleRanks(artRanks) {
+        let brief, anchor = this.data.commentByArticleUuid;
+
+        _.forEach(artRanks, function(rank) {
+            brief = AuthorStore.lookupArticleRankByUuid(rank.articleUuid);
+            anchor[brief.getArticleUuid()] = new ArticleComment(brief);
+        });
     },
 
     getArticleAttr: function(articleUuid) {
@@ -349,6 +402,7 @@ let CommentStore = Reflux.createStore({
 
     getArticleCommentAttr: function(articleUuid, commentId) {
         let cmtArt = this.getByArticleUuid(articleUuid);
+
         if (cmtArt != null) {
             return cmtArt.getCommentAttr(commentId);
         }
@@ -364,25 +418,9 @@ let CommentStore = Reflux.createStore({
         console.log(this.data);
     },
 
-    addArtComment: function(data) {
-        let cmtArt = this.data.commentByArticleUuid[data.articleUuid];
-        if (cmtArt == null) {
-            cmtArt = new ArticleComment(data);
-            this.data.commentByArticleUuid[data.articleUuid] = cmtArt;
-        }
-        return cmtArt;
-    },
-
-    addArtAttr: function(attr) {
-        let cmtArt = this.addArtComment({
-            articleUuid: attr.articleUuid,
-            showComment: false
-        });
-        cmtArt.updateArtAttr(attr);
-    },
-
     _addComment: function(it, show, newCmt) {
-        let cmtArt = this.addArtComment(it);
+        let cmtArt = this.getByArticleUuid(it.articleUuid);
+
         cmtArt.showComment = show;
         cmtArt.addComment(it);
         return cmtArt;

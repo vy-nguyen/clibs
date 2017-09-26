@@ -55,7 +55,6 @@ public interface ICommentService
     ArticleAttr updateComment(CommentChangeForm form, ProfileDTO me);
     void likeComment(String articleUuid, String user);
     void unLikeComment(String articleUuid, String user);
-    void setFavorite(Long id, String articleUuid, boolean favorite);
 
     public static class CommentDTOResponse extends GenericResponse
     {
@@ -199,11 +198,23 @@ public interface ICommentService
 
         public void updateArticleAttr(ArticleAttr attr)
         {
-            score        = attr.getScore();
-            creditEarned = attr.getCreditEarned();
-            moneyEarned  = attr.getMoneyEarned();
-            userLiked    = attr.getUserLiked();
-            userShared   = attr.getUserShared();
+            if (attr != null) {
+                score        = attr.getScore();
+                creditEarned = attr.getCreditEarned();
+                moneyEarned  = attr.getMoneyEarned();
+                userLiked    = attr.getUserLiked();
+                userShared   = attr.getUserShared();
+                resp.setCommentId(attr.getCommentId());
+            }
+        }
+
+        public String toString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Uuid: ").append(resp.getArticleUuid())
+                .append(", id ").append(resp.getCommentId())
+                .append(", likes: ").append(userLiked).append("\n");
+            return sb.toString();
         }
 
         /**

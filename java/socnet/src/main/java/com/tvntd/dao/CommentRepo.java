@@ -39,6 +39,9 @@ public interface CommentRepo extends JpaRepository<Comment, Long>
     Comment findById(Long id);
     List<Comment> findByIdIn(List<Long> ids);
     List<Comment> findAllByArticleUuid(String uuid);
+    List<Comment> findByArticleUuidIn(List<String> artUuids);
+    List<Comment> findByUserUuidIn(List<String> authorUuids);
+
     Page<Comment> findAllByArticleUuid(Pageable page, String uuid);
 
     @Override

@@ -63,6 +63,8 @@ public class ArticleAttr
             joinColumns = @JoinColumn(name = "articleId"))
     protected List<String> userShared;
 
+    transient protected Long commentId;
+
     public ArticleAttr() {}
     public ArticleAttr(String uuid)
     {
@@ -225,5 +227,19 @@ public class ArticleAttr
      */
     public void setUserShared(List<String> userShared) {
         this.userShared = userShared;
+    }
+
+    /**
+     * @return the commentId
+     */
+    public Long getCommentId() {
+        return commentId;
+    }
+
+    /**
+     * @param commentId the commentId to set
+     */
+    public void setCommentId(Long commentId) {
+        this.commentId = commentId;
     }
 }

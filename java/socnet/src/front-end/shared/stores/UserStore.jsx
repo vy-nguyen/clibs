@@ -315,7 +315,7 @@ let UserStore = Reflux.createStore({
     },
 
     /* Startup actions. */
-    onStartupCompleted: function(json) {
+    mainStartup: function(json) {
         this.data.domain     = json.domain;
         this.data.domainUuid = json.domainUuid;
         this._addFromJson(json.linkedUsers);

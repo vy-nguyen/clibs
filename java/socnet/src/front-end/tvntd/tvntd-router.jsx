@@ -7,6 +7,7 @@
 import React from 'react-mod';
 import {Route, Redirect, IndexRoute, DefaultRoute} from 'react-router';
 
+import MainStore     from 'vntd-root/stores/MainStore.jsx';
 import Layout        from './pages/layout/Layout.jsx';
 import {Login}       from './pages/login/Login.jsx';
 import Logout        from './pages/login/Logout.jsx';

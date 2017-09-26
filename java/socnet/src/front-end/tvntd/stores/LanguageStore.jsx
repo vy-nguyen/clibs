@@ -69,7 +69,7 @@ let LanguageStore = Reflux.createStore({
         this.trigger(this.data)
     },
 
-    onStartupCompleted: function(json) {
+    mainStartup: function(json) {
         if (json.languages != null) {
             _.forEach(json.languages, function(lang) {
                 this.data.langIndex[lang.key] = lang;

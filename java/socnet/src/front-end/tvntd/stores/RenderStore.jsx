@@ -219,7 +219,7 @@ let RenderStore = Reflux.createStore({
         Actions.clickMenuItem(item);
     },
 
-    onStartupCompleted: function(json) {
+    mainStartup: function(json) {
         let menuItems = [_menuHome];
 
         if (UserStore.isLogin() == true) {

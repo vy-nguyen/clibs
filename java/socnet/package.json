@@ -54,6 +54,7 @@
     "react-markdown-area": "0.3.8",
     "react-tinymce": "0.6.0",
     "react-star-rating": "1.4.2",
+    "react-tooltip": "3.3.0",
     "reflux": "0.4.1",
     "history": "^1.17.x",
 
