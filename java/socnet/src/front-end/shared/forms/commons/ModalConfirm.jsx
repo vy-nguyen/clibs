@@ -4,6 +4,7 @@
  */
 'use strict';
 
+import $           from 'jquery';
 import React       from 'react-mod';
 import Modal       from 'react-modal';
 import NavStore    from 'vntd-shared/stores/NavigationStore.jsx';
@@ -90,7 +91,7 @@ class ModalChoice extends React.Component
         const fmt = "btn btn-primary pull-right";
         let mesg = this.props.closeWarning != null ?
             this.props.closeWarning :
-            "You may loose unsaved data, ok to close?",
+            "You may lose unsaved data, ok to close?",
 
         cancelBtn = this.props.cancelFn == null ? null :
             <button className={fmt} onClick={this._cancelClick}>
@@ -204,7 +205,7 @@ class ModalConfirm extends React.Component
             </Modal>
         );
     }
-};
+}
 
 export { ModalConfirm, ModalChoice, modalStyle, dialogStyle }
 export default ModalConfirm;

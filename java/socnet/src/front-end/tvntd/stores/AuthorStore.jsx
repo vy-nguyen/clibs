@@ -9,7 +9,6 @@ import Reflux from 'reflux';
 import React  from 'react-mod';
 
 import Actions          from 'vntd-root/actions/Actions.jsx';
-import Startup          from 'vntd-root/pages/login/Startup.jsx';
 import NavActions       from 'vntd-shared/actions/NavigationActions.jsx';
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import {Util}           from 'vntd-shared/utils/Enum.jsx';
@@ -279,9 +278,20 @@ let AuthorStore = Reflux.createStore({
         this._updateArticleRank(data.articleRank, "update");
     },
 
+    mainStartup(data) {
+        let authors = data.authors;
+        if (authors != null) {
+            this._addAuthorList(authors);
+        }
+        this._updateArticleRank(data.artRanks, null);
+    },
+
+    mainTrigger(data) {
+        this.trigger(this.data, data, "startup");
+    },
+
     /**
      * Main entry at startup after getting data returned back from the server.
-     */
     onStartupCompleted: function(data) {
         let authors = data.authors;
         if (authors != null) {
@@ -290,10 +300,11 @@ let AuthorStore = Reflux.createStore({
         this._updateArticleRank(data.artRanks, null);
         ArticleStore.mainStartup(data);
         ArticleTagStore.mainStartup(data);
+        CommentStore.mainStartup(data);
         Startup.mainStartup();
 
-        this.trigger(this.data, data, "startup");
     },
+     */
 
     onGetDomainDataCompleted: function(data, context) {
         this._updateArticleRank(data.artRanks, "domain");

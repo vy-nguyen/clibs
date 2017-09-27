@@ -668,6 +668,7 @@ public class UserPath
             attr = commentSvc.updateComment(form, profile);
             resp.updateArticleAttr(attr);
         }
+        System.out.println("Change comment " + resp);
         return resp;
     }
 
