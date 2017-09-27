@@ -201,7 +201,7 @@ class ArticleComment {
         }
     }
 
-    didILikeArticle() {
+    didILikeIt() {
         return this.articleAttr != null ? this.articleAttr.didILikeIt() : false;
     }
 

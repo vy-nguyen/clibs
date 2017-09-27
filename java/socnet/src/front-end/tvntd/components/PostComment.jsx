@@ -69,53 +69,23 @@ class LikeDialog extends React.Component
 class CommentBox extends React.Component
 {
     constructor(props) {
-        let clickMuted = false,
-            likeFmt    = "text-info",
-            shareFmt   = "text-info";
-
         super(props);
+        this._getFormat     = this._getFormat.bind(this);
         this._updateState   = this._updateState.bind(this);
-        this._selectButton  = this._selectButton.bind(this);
+        this._selectValue   = this._selectValue.bind(this);
         this._submitComment = this._submitComment.bind(this);
         this._toggleComment = this._toggleComment.bind(this);
 
-        if (!UserStore.isLogin()) {
-            clickMuted = true;
-            likeFmt    = "text-muted";
-            shareFmt   = "text-muted";
-        }
         this.state = {
-            clickMuted : clickMuted,
+            articleUuid: null,
             sendDisable: "",
             submiting  : false,
-            like       : true,
-            share      : true,
-            likeFmt    : likeFmt,
-            shareFmt   : shareFmt,
-            commentShow: props.cmtShow,
             cmtBoxId   : _.uniqueId('comment-box-')
-        }
-        this.likesOpt = [ {
-            like    : false,
-            value   : -1,
-            likeFmt: "text-danger"
-        }, {
-            like    : true,
-            value   : 1,
-            likeFmt: "text-info"
-        } ];
-        this.sharesOpt = [ {
-            share   : false,
-            value   : -1,
-            shareFmt: "text-danger"
-        }, {
-            share   : true,
-            value   : 1,
-            shareFmt: "text-info"
-        } ];
+        };
     }
 
     componentDidMount() {
+        this.unsub = CommentStore.listen(this._updateState);
         $('#' + this.state.cmtBoxId).on('input', function() {
             $(this).css({'height': 'auto', 'overflow-y': 'hidden'})
                 .height(this.scrollHeight);
@@ -123,33 +93,82 @@ class CommentBox extends React.Component
     }
 
     componentWillUmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    _getFormat() {
+        let artAttr, likeFmt, shareFmt, shareCount, likedList, likeCount,
+            likedListSpan = null;
+
+        if (!UserStore.isLogin()) {
+            return {
+                likeFmt   : "text-muted",
+                shareFmt  : "text-muteed",
+                likedList : null,
+                likeCount : 0,
+                shareCount: 0,
+                clickMuted: true,
+                userLiked : <p><br/>{likedListSpan}</p>
+            }
+        }
+        artAttr = this.props.artAttr;
+        if (artAttr != null) {
+            shareCount = artAttr.getSharedCount();
+            likeCount  = artAttr.getLikedCount();
+            likedList  = artAttr.getUserLikedList();
+
+            if (likedList != null) {
+                likedListSpan = (
+                    <span>
+                        <i className="fa fa-thumbs-up text-danger"></i> {likedList}
+                    </span>
+                );
+            }
+            if (artAttr.didILikeIt() === true) {
+                likeFmt    = "text-muted text-danger";
+                shareFmt   = "text-muted text-danger";
+            } else {
+                likeFmt    = "text-info";
+                shareFmt   = "text-info";
+            }
+        } else {
+            likedList  = null;
+            likeCount  = 0;
+            shareCount = 0;
+            likeFmt    = "text-info";
+            shareFmt   = "text-info";
+        }
+        return {
+            likeFmt   : likeFmt,
+            shareFmt  : shareFmt,
+            likedList : likedList,
+            likeCount : likeCount,
+            shareCount: shareCount,
+            clickMuted: false,
+            userLiked : <p><br/>{likedListSpan}</p>
+        }
     }
 
     _updateState(data, cmt) {
-        let artAttr, artUuid = this.props.articleUuid, newState = {};
+        let artUuid = this.state.articleUuid;
 
         if (cmt == null || cmt.articleUuid !== artUuid) {
             return;
         }
-        artAttr = CommentStore.getArticleAttr(artUuid);
-        if (artAttr == null) {
-            return;
-        }
         console.log("comment update...");
-        console.log(artAttr);
-            console.log(cmt);
-
-        if (artAttr.didILikeIt() === true) {
-            newState = this._selectButton('like', true, false);
-        }
-        newState.artAttr     = artAttr;
-        newState.submiting   = false;
-        newState.sendDisable = "";
+        console.log(cmt);
 
         if (this.refs.comment != null) {
             this.refs.comment.value = "";
         }
-        this.setState(newState);
+        this.setState({
+            articleUuid: null,
+            sendDisable: "",
+            submiting  : false,
+        });
     }
 
     _submitComment(e) {
@@ -159,37 +178,28 @@ class CommentBox extends React.Component
             articleUuid: this.props.articleUuid,
         });
         this.setState({
+            articleUuid: this.props.articleUuid,
             sendDisable: " disabled",
             submiting  : true
         });
     }
 
-    _selectButton(type, likeState, shareState) {
-        if (type === "like") {
-            let choose = !likeState;
-            if (choose === true) {
-                return this.likesOpt[1];
-            }
-            return this.likesOpt[0];
-        } else if (type === "share") {
-            let choose = !shareState;
-            if (choose === true) {
-                return this.sharesOpt[1];
-            }
-            return this.sharesOpt[0];
+    _selectValue(type) {
+        let liked, artAttr = this.props.artAttr;
+
+        liked = (artAttr != null && artAttr.didILikeIt() === true);
+        if (liked === true) {
+            return -1;
         }
-        return null;
+        return 1;
     }
 
     _submitSelect(type, e) {
-        let newState = this._selectButton(type, this.state.like, this.state.share);
+        let value = this._selectValue(type);
 
-        if (newState != null) {
-            this.setState(newState);
-        }
         Actions.postCmtSelect({
             kind       : type,
-            amount     : newState.value,
+            amount     : value,
             article    : true,
             favorite   : false,
             commentId  : 0,
@@ -198,7 +208,7 @@ class CommentBox extends React.Component
     }
 
     _toggleComment(e) {
-        let show  = !this.state.commentShow,
+        let show  = !this.props.cmtShow,
             boxId = "#comment-" + this.props.articleUuid;
 
         this.setState({commentShow: show});
@@ -210,32 +220,18 @@ class CommentBox extends React.Component
     }
 
     render() {
-        let submitFmt, btnFmt, btnRows, likeCount = 0, shareCount = 0,
-            likedList, userLiked = <p><br/></p>,
+        let submitFmt, btnFmt, btnRows, statusFmt,
             artAttr = this.props.artAttr, error = this.state.error,
             placeHolder = (error != null) ?
                 this.state.error.text :
                 LanguageStore.tooltip("Place your comments here...");
 
-        if (artAttr != null) {
-            likedList  = artAttr.getUserLikedList();
-            likeCount  = artAttr.getLikedCount();
-            shareCount = artAttr.getSharedCount();
-
-            if (likedList != null) {
-                userLiked = (
-                    <p>
-                        <br/>
-                        <i className="fa fa-thumbs-up text-danger"></i> {likedList}
-                    </p>
-                );
-            }
-        }
+        statusFmt = this._getFormat();
         submitFmt = "btn btn-danger btn-primary pull-right " + this.state.sendDisable;
-        btnFmt = "btn btn-link profile-link-btn";
-        btnRows = (
+        btnFmt    = "btn btn-link profile-link-btn";
+        btnRows   = (
             <div className="margin-top-10">
-                <button className={submitFmt} type="submit"
+                <button className={submitFmt}
                     disabled={this.state.submiting} onClick={this._submitComment}>
                     <Mesg text="Post"/>
                 </button>
@@ -255,10 +251,10 @@ class CommentBox extends React.Component
                 <hr/>
                 <div className="btn-group inline">
                     <button onClick={this._submitSelect.bind(this, "like")}
-                        disabled={this.state.clickMuted} className={this.state.likeFmt}
-                        data-tip={likedList}>
-                        <i className="fa fa-thumbs-up"></i>
-                        <Mesg text="Like"/> ({likeCount})
+                        disabled={statusFmt.clickMuted} className={statusFmt.likeFmt}
+                        data-tip={statusFmt.likedList}>
+                        <i className="fa fa-thumbs-up"/>
+                        <Mesg text="Like"/> ({statusFmt.likeCount})
                     </button>
                     <button onClick={this._toggleComment} className="text-info"
                         data-tip={LanguageStore.tip("toggle to hide/show comments")}>
@@ -266,24 +262,24 @@ class CommentBox extends React.Component
                         <Mesg text="Comments"/> ({this.props.cmtCount})
                     </button>
                     <button onClick={this._submitSelect.bind(this, "share")}
-                        disabled={this.state.clickMuted} className={this.state.shareFmt}
+                        disabled={statusFmt.clickMuted} className={statusFmt.shareFmt}
                         data-tip={LanguageStore.tip("Not yet available")}>
                         <i className="fa fa-share"></i>
-                        <Mesg text="Share"/> ({shareCount})
+                        <Mesg text="Share"/> ({statusFmt.shareCount})
                     </button>
                     <button onClick={this._submitSelect.bind(this, "save")}
-                        disabled={this.state.clickMuted} className="text-info"
+                        disabled={statusFmt.clickMuted} className="text-info"
                         data-tip={LanguageStore.tip("Not yet available")}>
                         <i className="fa fa-book"></i><Mesg text="Save"/>
                     </button>
                     <button onClick={this._submitSelect.bind(this, "pay")}
-                        disabled={this.state.clickMuted} className="text-info"
+                        disabled={statusFmt.clickMuted} className="text-info"
                         data-tip={LanguageStore.tip("Not yet available")}>
                         <i className="fa fa-money"></i><Mesg text="Micropay"/>
                     </button>
                 </div>
                 <ReactTooltip/>
-                {userLiked}
+                {statusFmt.userLiked}
                 <form encType="multipart/form-data"
                     acceptCharset="utf-8" className="form-horizontal">
                     <div className="row">
