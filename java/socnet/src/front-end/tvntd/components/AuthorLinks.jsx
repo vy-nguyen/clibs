@@ -104,11 +104,10 @@ class AuthorLinks extends AuthorBase
     }
 
     render() {
-        let tagMgr = this.state.tagMgr;
+        let json = [], tagMgr = this.state.tagMgr;
         if (tagMgr == null) {
             return null;
         }
-        let json = [];
         tagMgr.getTreeViewJson(this._renderElement, json);
         return <AccordionView items={json}/>;
     }

@@ -555,10 +555,12 @@ public class ArticleSvc implements IArticleSvc
 
     private void deleteArticlePost(ArticlePost post)
     {
-        ArticleBase base   = post.getArtBase();
-        ArticleBrief brief = new ArticleBrief(base);
+        ArticleBase base = artBaseRepo.findByArticleUuid(post.getArticleUuid());
 
-        commonDelete(brief, base.getPublicTag());
+        if (base != null) {
+            ArticleBrief brief = new ArticleBrief(base);
+            commonDelete(brief, base.getPublicTag());
+        }
         artPostRepo.delete(post);
     }
 
@@ -619,6 +621,7 @@ public class ArticleSvc implements IArticleSvc
     {
         ArticleBrief brief = new ArticleBrief(ads.getArtBase());
 
+        s_log.info("Delete ads uuid " + ads.getArticleUuid());
         commonDelete(brief, ads.getBusCat());
         artAdsRepo.delete(ads);
     }
@@ -657,6 +660,7 @@ public class ArticleSvc implements IArticleSvc
     {
         ArticleBrief brief = new ArticleBrief(prod.getArtBase());
 
+        s_log.info("Delete product uuid " + prod.getArticleUuid());
         commonDelete(brief, prod.getPublicTag());
         artProdRepo.delete(prod);
     }
