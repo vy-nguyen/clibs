@@ -29,8 +29,8 @@ class ArticleFactory {
             article = new AdsItem(data, store);
         }
         if (data.rank != null) {
-            CommentStore.addArtAttr(data.rank);
             article.rank = AuthorStore.addArticleRankFromJson(data.rank);
+            CommentStore.addArtAttr(article.rank);
         }
         if (article.rank == null) {
             article.authorStore = AuthorStore;

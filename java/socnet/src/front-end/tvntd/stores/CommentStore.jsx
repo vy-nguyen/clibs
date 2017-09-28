@@ -320,8 +320,6 @@ let CommentStore = Reflux.createStore({
 
     onGetCommentsCompleted: function(data) {
         if (data.comments != null) {
-            console.log("Get comments data");
-            console.log(data);
             this._updateComments(data.comments, true, false);
             this.trigger(this.data, null);
         }
@@ -346,9 +344,6 @@ let CommentStore = Reflux.createStore({
     },
 
     onPostCmtSelectCompleted: function(data) {
-        console.log("select completed...");
-        console.log(data);
-
         let cmtArt = this.getByArticleUuid(data.articleUuid);
         cmtArt.updateAttr(data);
         this.trigger(this.data, cmtArt);
@@ -390,6 +385,14 @@ let CommentStore = Reflux.createStore({
             brief = AuthorStore.lookupArticleRankByUuid(rank.articleUuid);
             anchor[brief.getArticleUuid()] = new ArticleComment(brief);
         });
+    },
+
+    addArtAttr(brief) {
+        let anchor = this.data.commentByArticleUuid, artUuid = brief.getArticleUuid();
+
+        if (anchor[artUuid] == null) {
+            anchor[artUuid] = new ArticleComment(brief);
+        }
     },
 
     getArticleAttr: function(articleUuid) {

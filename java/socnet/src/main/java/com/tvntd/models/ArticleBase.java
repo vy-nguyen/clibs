@@ -141,6 +141,15 @@ public class ArticleBase
         return oid;
     }
 
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Uuid: ").append(articleUuid).append(", tag ").append(artTag)
+            .append(", contentOid ").append(contentOid).append("\n");
+        return sb.toString();
+    }
+
     public void addPicture(ObjectId img)
     {
         if (pictures == null) {
