@@ -290,22 +290,6 @@ let AuthorStore = Reflux.createStore({
         this.trigger(this.data, data, "startup");
     },
 
-    /**
-     * Main entry at startup after getting data returned back from the server.
-    onStartupCompleted: function(data) {
-        let authors = data.authors;
-        if (authors != null) {
-            this._addAuthorList(authors);
-        }
-        this._updateArticleRank(data.artRanks, null);
-        ArticleStore.mainStartup(data);
-        ArticleTagStore.mainStartup(data);
-        CommentStore.mainStartup(data);
-        Startup.mainStartup();
-
-    },
-     */
-
     onGetDomainDataCompleted: function(data, context) {
         this._updateArticleRank(data.artRanks, "domain");
     }

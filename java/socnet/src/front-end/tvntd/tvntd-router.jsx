@@ -20,6 +20,7 @@ import UserAccount   from './pages/user/UserAccount.jsx';
 import UserTrans     from './pages/user/UserTransaction.jsx';
 import UserProfile   from './pages/user/UserProfile.jsx';
 import UserConnect   from './pages/user/UserConnect.jsx';
+import UserTags      from './pages/user/UserTags.jsx';
 import ListUsers     from './pages/admin/ListUsers.jsx';
 import SetTags       from './pages/admin/SetTags.jsx';
 import MainAds       from './pages/ads/MainAds.jsx';
@@ -98,6 +99,7 @@ _loginRequired = (
         <Route path="/user">
             <IndexRoute component={UserHome}/>
             <Route path="profile" component={UserProfile}/>
+            <Route path="tag-posts" component={UserTags}/>
             <Route path="account" component={UserAccount}/>
             <Route path="transaction" component={UserTrans}/>
             <Route path="all" component={UserConnect} userList={null}/>

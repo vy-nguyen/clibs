@@ -141,6 +141,36 @@ export class AuthorTag {
     resortArticleRank(opt) {
         this.sortedArts.sort();
     }
+
+    /*
+     * Return articles belonging to a tag in table format.
+     */
+    getTagTableData(tagSelect) {
+        let data = [];
+
+        _.forOwn(this.sortedArts, function(brief) {
+            data.push({
+                rowId    : _.uniqueId(this.tagName),
+                artTag   : brief.artTag,
+                artTitle : brief.artTitle,
+                tagSelect: {
+                    select   : true,
+                    inpHolder: this.tagName,
+                    inpDefVal: this.tagName,
+                    selectOpt: tagSelect,
+                    inpName  : _.uniqueId()
+                },
+                rank: {
+                    inpValue : brief.rank,
+                    inpDefVal: brief.rank,
+                    inpHolder: 0,
+                    inpName  : _.uniqueId()
+                },
+                contentBrief: brief.contentBrief
+            });
+        }.bind(this));
+        return data;
+    }
 }
 
 /**
@@ -274,6 +304,18 @@ export class AuthorTagMgr {
             out.push({
                 value: rank.articleUuid,
                 label: rank.artTitle
+            });
+        });
+        return out;
+    }
+
+    getAuthorTagSelect() {
+        let out = [];
+        
+        _.forOwn(this.authorTags, function(tag, key) {
+            out.push({
+                value: tag.tagName,
+                label: key
             });
         });
         return out;
@@ -564,6 +606,12 @@ export class Article extends ArticleBase {
         return null;
     }
 
+    // @Override
+    //
+    getArtTitle() {
+        return this.topic;
+    }
+
     getSortedAnchor() {
         return VConst.blogs;
     }
@@ -684,6 +732,12 @@ export class Product extends Article {
     getSortedAnchor() {
         return VConst.prods;
     }
+
+    // @Override
+    //
+    getArtTitle() {
+        return this.prodName;
+    }
 }
 
 export class AdsItem extends Article {
@@ -724,6 +778,12 @@ export class AdsItem extends Article {
     //
     getSortedAnchor() {
         return VConst.ads;
+    }
+
+    // @Override
+    //
+    getArtTitle() {
+        return this.busName;
     }
 }
 

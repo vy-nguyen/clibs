@@ -29,7 +29,7 @@ module.exports = {
         loaders: [ {
             test: /\.jsx?$/, // Test the require path. accepts either js or jsx
             loaders: (
-                argv.inline && argv.hot ?  [ 'react-hot', babel_args ] : [ babel_args ]
+                argv.inline && argv.hot ? [ 'react-hot', babel_args ] : [ babel_args ]
             ),
             exclude: [
                 /node_modules/,

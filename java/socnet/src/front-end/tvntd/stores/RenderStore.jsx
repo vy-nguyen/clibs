@@ -45,6 +45,12 @@ const _menuProfile = {
         title: 'Edit Profile'
     }, {
         badge: null,
+        icon : 'fa fa-tag',
+        items: null,
+        route: 'user/tag-posts',
+        title: 'Manage Posts'
+    }, {
+        badge: null,
         icon : 'fa fa-money',
         items: null,
         route: '/user/account',
