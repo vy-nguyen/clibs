@@ -348,7 +348,7 @@ class PostPane extends React.Component
             publish : artRank.publishPost,
             editMode: artRank.editMode
         };
-        if (ArticleTagStore.hasPublishedArticle(articleUuid)) {
+        if (article.getArticleUrl() != null) {
             this.state.publish = true;
         }
         this._cancelDel      = this._cancelDel.bind(this);
@@ -592,7 +592,7 @@ class PostPane extends React.Component
             <Panel className="well no-padding" context={panelData}>
                 {tagPost}
                 <p className="hidden-xs hidden-sm" style={{fontSize: "140%"}}>
-                    {article.articleUrl}
+                    {article.getArticleUrl()}
                 </p>
                 {refLink}
                 {modal}

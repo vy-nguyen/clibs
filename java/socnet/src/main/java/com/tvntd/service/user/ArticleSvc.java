@@ -603,7 +603,12 @@ public class ArticleSvc implements IArticleSvc
         ArticlePost post = artPostRepo.findByArticleUuid(artUuid);
 
         if (post == null) {
-            return null;
+            ArticleBrief brief = artBriefRepo.findByArticleUuid(artUuid);
+            if (brief == null) {
+                return null;
+            }
+            deleteArticleBrief(new ArticleBriefDTO(brief));
+            return new ArticlePost(owner.getUserUuid(), owner.fetchUserId());
         }
         String author = post.getAuthorUuid();
         if (!author.equals(owner.getUserUuid())) {

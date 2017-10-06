@@ -471,6 +471,10 @@ class ArticleBase {
         return this.pictureUrl;
     }
 
+    getArticleUrl() {
+        return this.articleUrl;
+    }
+
     getRankOrder() {
         if (this.rank !== 0) {
             return this.rank;
@@ -610,6 +614,17 @@ export class Article extends ArticleBase {
     //
     getArtTitle() {
         return this.topic;
+    }
+
+    // @Override
+    //
+    getArticleUrl() {
+        let brief = this.getArticleRank();
+
+        if (brief != null) {
+            return brief.articleUrl;
+        }
+        return null;
     }
 
     getSortedAnchor() {
