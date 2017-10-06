@@ -196,7 +196,6 @@ public interface IArticleSvc
 
         protected ArticlePost           article;
         protected ArticleBriefDTO       artBrief;
-        protected String                articleUrl;
         protected String                uploadFormId;
         protected Map<String, ObjectId> uploadImgMap;
 
@@ -330,12 +329,17 @@ public interface IArticleSvc
             ArticleBase base  = artRank.getArtBase();
             Long userId       = base.getAuthorId();
             List<String> oids = base.getPictures();
-            List<String> rets = new LinkedList<>();
 
-            for (String o : oids) {
-                rets.add(ArticleBriefDTO.getPictureUrl(userId, ObjectId.fromString(o)));
+            if (oids != null) {
+                List<String> rets = new LinkedList<>();
+
+                for (String o : oids) {
+                    rets.add(ArticleBriefDTO.getPictureUrl(userId,
+                                ObjectId.fromString(o)));
+                }
+                return rets;
             }
-            return rets;
+            return null;
         }
 
         public String getPrevArticle() {
@@ -442,6 +446,21 @@ public interface IArticleSvc
                 String store = s_baseUri + Long.toString(base.getAuthorId());
 
                 return objStore.imgObjUri(ObjectId.fromString(img), store);
+            }
+            return null;
+        }
+
+        public String getArticleUrl()
+        {
+            String urlTag = artRank.getUrlTag();
+            if (urlTag != null) {
+                ArticleBase base = artRank.getArtBase();
+                StringBuilder sb = new StringBuilder();
+                sb.append("https://www.tvntd.com/public/article/")
+                    .append(Util.utf8ToUrlString(artRank.getUrlTag()))
+                    .append("/")
+                    .append(Util.utf8ToUrlString(Util.fromRawByte(base.getArtTitle())));
+                return sb.toString();
             }
             return null;
         }
