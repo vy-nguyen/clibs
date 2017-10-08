@@ -95,8 +95,12 @@ public class ArtTagService implements IArtTagService
 
     public static Map<String, TagRank> fixupTagList(TagRank[] in)
     {
-        List<TagRank> top = new LinkedList<>();
         Map<String, TagRank> dict = new HashMap<>();
+
+        if (in == null) {
+            return dict;
+        }
+        List<TagRank> top = new LinkedList<>();
         Map<String, List<TagRank>> levels = new HashMap<>();
 
         for (TagRank r : in) {

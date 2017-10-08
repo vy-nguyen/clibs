@@ -73,7 +73,7 @@ public class AuthorService implements IAuthorService
     {
         Author author = authorRepo.findByAuthorUuid(uuid);
         if (author != null) {
-            author.setAuthorTags(authorTagRepo.findByAuthorUuid(uuid));
+            author.setAuthorTags(authorTagRepo.findAllByAuthorUuid(uuid));
         }
         return author;
     }
@@ -91,7 +91,7 @@ public class AuthorService implements IAuthorService
     @Override
     public AuthorTagRespDTO getAuthorTag(String uuid)
     {
-        List<AuthorTag> raw = authorTagRepo.findByAuthorUuid(uuid);
+        List<AuthorTag> raw = authorTagRepo.findAllByAuthorUuid(uuid);
         if (raw != null) {
             List<AuthorTagDTO> tags = new LinkedList<>();
 

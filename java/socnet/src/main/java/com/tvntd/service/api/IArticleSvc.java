@@ -366,6 +366,10 @@ public interface IArticleSvc
             return Util.fromRawByte(artRank.getTag());
         }
 
+        public void setTagName(String tag) {
+            artRank.setTag(Util.toRawByte(tag, 64));
+        }
+
         public String getArtTitle() {
             return Util.fromRawByte(artRank.getArtBase().getArtTitle());
         }
