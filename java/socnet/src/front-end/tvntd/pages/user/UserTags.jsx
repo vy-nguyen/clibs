@@ -64,8 +64,6 @@ class ListUserTags extends React.Component
     }
 
     _submitChanges(changes) {
-        console.log("submit changes");
-        console.log(changes);
         if (_.isEmpty(changes)) {
             ErrorStore.reportErrMesg(this._getErrorId(),
                 "You don't have any changed data", null);
@@ -88,8 +86,6 @@ class ListUserTags extends React.Component
                 artUuid: it.articleUuid
             });
         });
-        console.log(cmd);
-        console.log(authorTag);
         Actions.commitTagRanks(authorTag.getMyTagMgr(), cmd);
         return true;
     }
@@ -98,13 +94,17 @@ class ListUserTags extends React.Component
         let authorTag = this.props.authorTag,
             sortedArts = authorTag.getSortedArticleRank();
 
-        console.log("submit delete table");
-        console.log(changes);
         if (!_.isEmpty(sortedArts)) {
             ErrorStore.reportErrMesg(this._getErrorId(),
                 "You need to move or delete articles in this table", null);
             return false;
         }
+        Actions.deleteUserTag(authorTag.getMyTagMgr(), {
+            userUuid: UserStore.getSelfUuid(),
+            tagRanks: [ {
+                tagName: authorTag.tagName
+            } ]
+        });
         return true;
     }
 
@@ -179,9 +179,29 @@ class UserTags extends ArticleBase
         let self = UserStore.getSelf();
 
         super(props);
+        this._updateArts   = this._updateArts.bind(this);
+        this._updateAuthor = this._updateAuthor.bind(this);
+
         if (self != null) {
             this.state.self   = self;
             this.state.tagMgr = AuthorStore.getAuthorTagMgr(self.userUuid);
+        }
+    }
+
+    // @Override
+    //
+    componentDidMount() {
+        super.componentDidMount();
+        this.unsubAuthor = AuthorStore.listen(this._updateAuthor);
+    }
+
+    // @Override
+    //
+    componentWillUnmount() {
+        super.componentWillUnmount();
+        if (this.unsubAuthor != null) {
+            this.unsubAuthor();
+            this.unsubAuthor = null;
         }
     }
 
@@ -198,10 +218,15 @@ class UserTags extends ArticleBase
     }
 
     _updateAuthor(data, elm, what) {
-        console.log("------------- update author ---");
-        if (this._hasAuthorUpdate(this.state.self, elm, what) === true) {
-            console.log(elm);
-            console.log(what);
+        let self = this.state.self;
+
+        if (self == null) {
+            return;
+        }
+        if (what === "delTag") {
+            this.setState({
+                tagMgr: AuthorStore.getAuthorTagMgr(self.userUuid)
+            });
         }
     }
 

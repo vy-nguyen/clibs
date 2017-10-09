@@ -76,6 +76,7 @@ const Actions = Reflux.createActions({
     updateArtRank:   completedFailedFn,
     postArtSelect:   completedFailedFn,
     commitTagRanks:  completedFailedFn,
+    deleteUserTag:   completedFailedFn,
     reRankTag:       completedFn,
 
     // Get public JSON objs.
@@ -364,22 +365,14 @@ Actions.getDomainData.listen(function(data, context) {
 });
 
 /*
- * userTags: {
- *     userUuid:
- *     tagRanks: [ {
- *         tagName:
- *         parent :
- *         pubTag : true | false
- *         rank   :
- *     } ],
- *     artList: [ {
- *         tagName:
- *         artUuid: []
- *     } ]
- * }
+ * userTags: TagForm.java
  */
 Actions.commitTagRanks.listen(function(tagMgr, userTags) {
     postRestCall(userTags, "/user/update-tag-rank", true, this, true, tagMgr);
+});
+
+Actions.deleteUserTag.listen(function(tagMgr, userTags) {
+    postRestCall(userTags, "/user/delete-tag", true, this, true, tagMgr);
 });
 
 Actions.reRankTag.listen(function(tagMgr) {

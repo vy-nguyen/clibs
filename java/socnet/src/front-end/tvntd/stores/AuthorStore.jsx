@@ -278,6 +278,15 @@ let AuthorStore = Reflux.createStore({
         this._updateArticleRank(data.articleRank, "update");
     },
 
+    onDeleteUserTagCompleted: function(data) {
+        let tagMgr = data.cbContext;
+
+        _.forEach(data.tagRanks, function(it) {
+            tagMgr.removeAuthorTag(it);
+        });
+        this.trigger(this.data, data, "delTag");
+    },
+
     mainStartup(data) {
         let authors = data.authors;
         if (authors != null) {

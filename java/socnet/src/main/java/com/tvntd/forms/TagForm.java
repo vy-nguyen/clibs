@@ -71,18 +71,27 @@ public class TagForm
 
     public static class TagOrderResponse extends GenericResponse
     {
-        private TagRank[] tagRanks;
+        private String       userUuid;
+        private TagRank[]    tagRanks;
         private TagArtRank[] artList;
 
         public TagOrderResponse() {
             super(GenericResponse.USER_HOME, "ok", null);
         }
 
-        public TagOrderResponse(TagRank[] tagRanks, TagArtRank[] artList)
+        public TagOrderResponse(String userUuid, TagRank[] tagRanks, TagArtRank[] artList)
         {
             super(GenericResponse.USER_HOME, "ok", null);
             this.tagRanks = tagRanks;
-            this.artList = artList;
+            this.userUuid = userUuid;
+            this.artList  = artList;
+        }
+
+        /**
+         * @return the userUuid
+         */
+        public String getUserUuid() {
+            return userUuid;
         }
 
         /**

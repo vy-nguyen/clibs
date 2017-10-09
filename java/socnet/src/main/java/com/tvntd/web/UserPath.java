@@ -752,7 +752,7 @@ public class UserPath
         TagRank[] tagRanks = form.getTagRanks();
         Map<String, TagRank> dict = ArtTagService.fixupTagList(tagRanks);
         if (tagRanks != null) {
-            for (TagRank r : form.getTagRanks()) {
+            for (TagRank r : tagRanks) {
                 if (r.isPubTag() == false && r.isArticle() == false) {
                     artTagSvc.saveTag(uuid, r.getTagName(), r.getParent(), r.getRank());
                 }
@@ -760,7 +760,7 @@ public class UserPath
         }
         AuthorTagRespDTO ownerTags = authorSvc.getAuthorTag(uuid);
         TagOrderResponse resp =
-            new TagOrderResponse(form.getTagRanks(), form.getArtList());
+            new TagOrderResponse(uuid, form.getTagRanks(), form.getArtList());
 
         if (ownerTags == null) {
             System.out.println("No owner tag for " + uuid);
@@ -816,6 +816,35 @@ public class UserPath
             artRank.clear();
         }
         return resp;
+    }
+
+    /**
+     * Update tag ranking.
+     */
+    @RequestMapping(value = "/user/delete-tag",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    deleteTag(@RequestBody TagForm form, HttpSession session)
+    {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            s_log.info("Session doesn't have profile");
+            return s_noProfile;
+        }
+        String uuid = form.getUserUuid();
+        if (!profile.getUserUuid().equals(uuid)) {
+            s_log.info("Not author " + profile.getUserUuid() + " request " + uuid);
+            return s_noProfile;
+        }
+        TagRank[] tagRanks = form.getTagRanks();
+        if (tagRanks != null) {
+            for (TagRank r : tagRanks) {
+                artTagSvc.deleteTag(r.getTagName(), uuid);
+            }
+        }
+        return new TagOrderResponse(uuid, form.getTagRanks(), null);
     }
 
     /**
