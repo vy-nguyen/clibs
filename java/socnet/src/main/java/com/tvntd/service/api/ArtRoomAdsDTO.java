@@ -31,35 +31,22 @@ import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.tvntd.models.ArtAds;
 import com.tvntd.models.ArtRoomAds;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.util.Util;
 
-public class ArtAdsDTO extends GenericResponse
+public class ArtRoomAdsDTO extends GenericResponse
 {
-    protected ArtAds adPost;
-    protected ArtRoomAds roomAds;
+    protected ArtRoomAds adPost;
 
-    public ArtAdsDTO(ArtAds ads)
+    public ArtRoomAdsDTO(ArtRoomAds ads)
     {
         super(null);
         adPost = ads;
     }
 
-    public ArtAds fetchAds() {
+    public ArtRoomAds fetchAds() {
         return adPost;
-    }
-
-    public ArtRoomAds fetchRoomAds() {
-        return roomAds;
-    }
-
-    /**
-     * @param roomAd the roomAd to set
-     */
-    public void setRoomAd(ArtRoomAds roomAd) {
-        this.roomAds = roomAd;
     }
 
     /**
@@ -73,32 +60,20 @@ public class ArtAdsDTO extends GenericResponse
         return adPost.getAuthorUuid();
     }
 
-    public void setAdImgOid0(String oid) {
-        adPost.setAdImgOid0(oid);
-    }
-
     public List<String> getImageUrl()
     {
-        List<String> img = new LinkedList<>();
-        ObjStore store = ObjStore.getInstance();
-        String url = store.imgObjPublicUri(adPost.getAdImgOid0());
+        List<String> imgs = adPost.getArtBase().getPictures();
 
-        if (url != null) {
-            img.add(url);
+        if (imgs == null) {
+            return null;
         }
-        url = store.imgObjPublicUri(adPost.getAdImgOid1());
-        if (url != null) {
-            img.add(url);
+        ObjStore store = ObjStore.getInstance();
+        List<String> res = new LinkedList<>();
+
+        for (String oid : imgs) {
+            res.add(store.imgObjPublicUri(oid));
         }
-        url = store.imgObjPublicUri(adPost.getAdImgOid2());
-        if (url != null) {
-            img.add(url);
-        }
-        url = store.imgObjPublicUri(adPost.getAdImgOid3());
-        if (url != null) {
-            img.add(url);
-        }
-        return img;
+        return null;
     }
 
     public String getArtTag() {
@@ -110,51 +85,39 @@ public class ArtAdsDTO extends GenericResponse
         return df.format(adPost.getArtBase().getCreatedDate());
     }
 
-    public String getBusName() {
-        return Util.fromRawByte(adPost.getBusName());
+    public String getOwnerName() {
+        return Util.fromRawByte(adPost.getOwnerName());
     }
 
-    public String getBusInfo() {
-        return Util.fromRawByte(adPost.getBusInfo());
+    public String getOwnerPhone() {
+        return adPost.getOwnerPhone();
     }
 
-    public String getBusCat() {
-        return Util.fromRawByte(adPost.getBusCat());
+    public String getOwnerEmail() {
+        return adPost.getOwnerEmail();
     }
 
-    public String getBusWeb() {
-        return Util.fromRawByte(adPost.getBusWeb());
+    public String getRentPrice() {
+        return adPost.getRentPrice();
     }
 
-    public String getBusEmail() {
-        return Util.fromRawByte(adPost.getBusEmail());
+    public String getStreet() {
+        return Util.fromRawByte(adPost.getStreet());
     }
 
-    public String getBusPhone() {
-        return Util.fromRawByte(adPost.getBusPhone());
+    public String getCity() {
+        return adPost.getCity();
     }
 
-    public String getBusStreet() {
-        return Util.fromRawByte(adPost.getBusStreet());
+    public String getState() {
+        return adPost.getState();
     }
 
-    public String getBusState() {
-        return Util.fromRawByte(adPost.getBusState());
+    public String getZip() {
+        return adPost.getZip();
     }
 
-    public String getBusCity() {
-        return Util.fromRawByte(adPost.getBusCity());
-    }
-
-    public String getBusZip() {
-        return Util.fromRawByte(adPost.getBusZip());
-    }
-
-    public String getBusHour() {
-        return Util.fromRawByte(adPost.getBusHour());
-    }
-
-    public String getBusDesc() {
-        return Util.fromRawByte(adPost.getBusDesc());
+    public String getDesc() {
+        return Util.fromRawByte(adPost.getPropDesc());
     }
 }

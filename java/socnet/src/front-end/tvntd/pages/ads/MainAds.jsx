@@ -11,10 +11,11 @@ import Actions          from 'vntd-root/actions/Actions.jsx';
 import TabPanel         from 'vntd-shared/layout/TabPanel.jsx';
 import SmallBreadcrumbs from 'vntd-shared/layout/SmallBreadcrumbs.jsx';
 
-import Mesg            from 'vntd-root/components/Mesg.jsx';
-import YellowPage      from './YellowPage.jsx';
-import PostAds         from './PostAds.jsx';
-import FeatureAds      from './FeatureAds.jsx';
+import Mesg             from 'vntd-root/components/Mesg.jsx';
+import YellowPage       from './YellowPage.jsx';
+import PostAds          from './PostAds.jsx';
+import FeatureAds       from './FeatureAds.jsx';
+import AdsRoomRenting   from './AdsRoomRenting.jsx';
 
 class MainAds extends React.Component
 {
@@ -84,9 +85,13 @@ class MainAds extends React.Component
                 tabText: 'Feature Ads',
                 tabIdx : 1
             }, {
-                domId  : 'post-ads',
-                tabText: 'Post Your Ads',
+                domId  : 'share-room',
+                tabText: 'Post Renting Ads',
                 tabIdx : 2
+            }, {
+                domId  : 'post-ads',
+                tabText: 'Post Business Ads',
+                tabIdx : 3
             } ]
         };
     }
@@ -97,6 +102,10 @@ class MainAds extends React.Component
 
     _renderYellowPage() {
         return <YellowPage/>
+    }
+
+    _renderRentAds() {
+        return <AdsRoomRenting id="room-ads"/>
     }
 
     _renderPostAds() {
@@ -113,6 +122,7 @@ class MainAds extends React.Component
                         <TabPanel className="padding-top-10" context={tabData}>
                             {this._renderYellowPage()}
                             {this._renderFeatureAds()}
+                            {this._renderRentAds()}
                             {this._renderPostAds()}
                         </TabPanel>
                     </div>

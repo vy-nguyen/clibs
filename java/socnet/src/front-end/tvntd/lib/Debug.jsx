@@ -16,6 +16,7 @@ import CommentStore     from 'vntd-root/stores/CommentStore.jsx';
 import RenderStore      from 'vntd-root/stores/RenderStore.jsx';
 import AdminStore       from 'vntd-root/stores/AdminStore.jsx';
 import ArtTagStore      from 'vntd-root/stores/ArticleTagStore.jsx';
+import AdPropertyStore  from 'vntd-root/stores/AdPropertyStore.jsx';
 import LanguageStore    from 'vntd-root/stores/LanguageStore.jsx';
 
 import {
@@ -84,6 +85,7 @@ class Debug extends React.Component {
 
     debugAdsStore() {
         AdsStore.dumpData("Ads Store");
+        AdPropertyStore.dumpData("Ads Realtor Store");
     }
 
     render() {

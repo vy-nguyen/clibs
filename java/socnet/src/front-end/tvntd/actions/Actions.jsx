@@ -69,6 +69,7 @@ const Actions = Reflux.createActions({
 
     // Public ads posting
     publicPostAds:   completedFailedFn,
+    publicRoomAds:   completedFailedFn,
     getPublishAds:   completedFailedFn,
 
     // Rank article
@@ -324,6 +325,11 @@ Actions.deleteProduct.listen(function(data) {
  */
 Actions.publicPostAds.listen(function(data) {
     postRestCall(data, "/public/publish-ads", true, this, false);
+});
+
+Actions.publicRoomAds.listen(function(data) {
+    console.log(data);
+    postRestCall(data, "/public/publish-room-ads", true, this, false);
 });
 
 Actions.getPublishAds.listen(function(data) {

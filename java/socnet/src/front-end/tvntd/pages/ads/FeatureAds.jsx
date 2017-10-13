@@ -10,6 +10,7 @@ import BrowseSelection    from 'vntd-shared/layout/BrowseSelection.jsx';
 import ArticleTagStore    from 'vntd-root/stores/ArticleTagStore.jsx';
 import ArticleTagBrief    from 'vntd-root/components/ArticleTagBrief.jsx';
 import AdsTableListing    from './AdsTableListing.jsx';
+import AdsRealtor         from './AdsRealtor.jsx';
 
 class AdsCategory
 {
@@ -89,6 +90,13 @@ class FeatureAds extends React.Component
 
         this._browse = [
         {
+            label: "Share Room",
+            start: 'S',
+            exact: true,
+            apps : <AdsRealtor/>,
+            entry: {}
+        },
+        {
             label: "A-N",
             start: 'A',
             end  : 'N',
@@ -167,6 +175,7 @@ class FeatureAds extends React.Component
         } ];
         this._adFilter = new AdsCategory(this._browse, "fea-ads-", this._onSelected);
         this.state = {
+            currLabel : this._browse[0],
             currentTag: null
         };
     }
@@ -215,6 +224,8 @@ class FeatureAds extends React.Component
 
     _onSelected(entry, val) {
         if (val != null) {
+            console.log("current tag " + val);
+            console.log(entry);
             this.setState({
                 currentTag: val
             });
@@ -228,23 +239,31 @@ class FeatureAds extends React.Component
             currTag.push(item.value);
         });
         this.setState({
+            currLabel : label,
             currentTag: currTag
         });
     }
 
     render() {
-        let current = this.state.currentTag;
+        let out, current = this.state.currentTag, label = this.state.currLabel;
 
-        return (
-            <div className="padding-top-10">
-                <div className="row">
-                    <BrowseSelection labels={this._browse} onClick={this._clickLabel}/>
-                </div>
+        if (label.apps == null) {
+            out = (
                 <div className="row">
                     <div className="panel-body">
                         <AdsTableListing tagList={current} detail={true}/>
                     </div>
                 </div>
+            );
+        } else {
+            out = label.apps;
+        }
+        return (
+            <div className="padding-top-10">
+                <div className="row">
+                    <BrowseSelection labels={this._browse} onClick={this._clickLabel}/>
+                </div>
+                {out}
             </div>
         );
     }

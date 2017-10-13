@@ -6,7 +6,8 @@ var baseConfig = require('./tvntd.base.config')
 
 var scripts    = require('./scripts');
 var app_main   = {
-    "tvntd-bundle": path.resolve(__dirname, '../tvntd/main.jsx')
+    "tvntd-bundle": path.resolve(__dirname, '../tvntd/main.jsx'),
+    "tvntd-ads"   : path.resolve(__dirname, '../tvntd/ads-main.jsx')
 };
 
 var config =  _.merge(baseConfig, {

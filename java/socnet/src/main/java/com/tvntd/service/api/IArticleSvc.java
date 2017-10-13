@@ -51,6 +51,9 @@ import com.tvntd.util.Util;
 public interface IArticleSvc
 {
     public static String s_baseUri = "/rs/user/";
+    public final int CITY  = 0x1;
+    public final int STATE = 0x2;
+    public final int ZIP   = 0x3;
 
     // Query
     //
@@ -76,6 +79,9 @@ public interface IArticleSvc
     List<ArtAdsDTO>       getArtAdsDTO(List<String> adUuids);
     List<ArtAdsDTO>       getArtAdsDTOByOwner(String ownerUuid);
     List<ArtAdsDTO>       getArtAdsDTOByOwner(List<String> ownerUuids);
+
+    List<ArtRoomAdsDTO>   getRoomAdsByPrice(String lo, String hi);
+    List<ArtRoomAdsDTO>   getRoomAds(String city, int type);
 
     // Save, update
     //

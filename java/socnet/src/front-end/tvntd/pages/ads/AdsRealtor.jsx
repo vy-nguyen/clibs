@@ -4,15 +4,21 @@
 'use strict';
 
 import _                  from 'lodash';
+import Spinner            from 'react-spinjs';
 import React, {PropTypes} from 'react-mod';
+
+import AdPropertyStore    from 'vntd-root/stores/AdPropertyStore.jsx';
+import {VntdGlob}         from 'vntd-root/config/constants.js';
 
 class AdsRealtor extends React.Component
 {
     constructor(props) {
         super(props);
+        this._updateAds = this._updateAds.bind(this);
     }
 
     componentDidMount() {
+        this.unsub = AdPropertyStore.listen(this._updateAds);
     }
 
     componentWillUnmount() {
@@ -22,9 +28,12 @@ class AdsRealtor extends React.Component
         }
     }
 
+    _updateAds(store, data, elm, status) {
+    }
+
     render() {
         return (
-            null
+            <Spinner config={VntdGlob.spinner}/>
         );
     }
 }

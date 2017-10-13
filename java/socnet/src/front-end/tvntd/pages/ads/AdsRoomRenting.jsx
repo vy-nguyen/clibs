@@ -7,9 +7,13 @@
 import React               from 'react-mod';
 import _                   from 'lodash';
 
+import History             from 'vntd-shared/utils/History.jsx';
+import Lang                from 'vntd-root/stores/LanguageStore.jsx';
 import StateButton         from 'vntd-shared/utils/StateButton.jsx';
 import ErrorView           from 'vntd-shared/layout/ErrorView.jsx';
+import Actions             from 'vntd-root/actions/Actions.jsx';
 import { AdsStore }        from 'vntd-root/stores/ArticleStore.jsx';
+import { GenericAds }      from './PostAds.jsx';
 import { FormData, ProcessForm } from 'vntd-shared/forms/commons/ProcessForm.jsx';
 
 class RoomRenting extends FormData
@@ -22,7 +26,7 @@ class RoomRenting extends FormData
             inpHolder: 'Enter your name',
             labelTxt : "Owner Name"
         }, {
-            field    : 'ownerPhones',
+            field    : 'ownerPhone',
             inpName  : this._getId('ownerPhones-'),
             inpHolder: 'Enter your phone',
             labelTxt : 'Contact Phones'
@@ -31,6 +35,31 @@ class RoomRenting extends FormData
             inpName  : this._getId('ownerEmail-'),
             inpHolder: 'Enter your email',
             labelTxt : 'Contact Email'
+        }, {
+            field    : 'rentPrice',
+            inpName  : this._getId('ads-rent-'),
+            inpHolder: '$500',
+            labelTxt : 'Rent Price'
+        } ],
+        propertyAddr = [ {
+            field    : 'street',
+            inpName  : this._getId('ads-street-'),
+            inpHolder: 'Property street address',
+            labelTxt : 'Street Address'
+        }, {
+            field    : 'city',
+            inpName  : this._getId('ads-city-'),
+            inpHolder: 'Property city',
+            labelTxt : 'City'
+        }, {
+            field    : 'state',
+            inpName  : this._getId('ads-state-'),
+            inpHolder: 'CA',
+            labelTxt : 'State'
+        }, {
+            field    : 'zip',
+            inpName  : this._getId('ads-zip-'),
+            labelTxt : 'Zip Code'
         } ],
         propertyInfo = [ {
             field    : 'image',
@@ -39,19 +68,15 @@ class RoomRenting extends FormData
             dropzone : true,
             labelTxt : 'Drop Images'
         }, {
-            field    : 'street',
-            inpName  : this._getId('street-'),
-            inpHolder: 'Property street address',
-            labelTxt : 'Street Address'
-        }, {
-            field    : 'city',
-            inpName  : this._getId('city-'),
-            inpHolder: 'Property city',
-            labelTxt : 'City'
+            field    : 'desc',
+            editor   : true,
+            inpName  : this._getId('desc-'),
+            labelTxt : 'Property Description'
         } ];
         this.forms = {
             formId     : 'room-ads',
             formFmt    : 'client-form',
+            submitFn   : Actions.publicRoomAds,
             hiddenHead : null,
             hiddenTail : null,
             formEntries: [ {
@@ -60,11 +85,17 @@ class RoomRenting extends FormData
                 sectFmt: 'product-deatil',
                 entries: owerInfo
             }, {
+                twoCols: true,
+                legend : 'Property Address',
+                sectFmt: 'product-deatil',
+                entries: propertyAddr
+            }, {
                 legend : 'Property Info',
                 sectFmt: 'product-deatil',
                 entries: propertyInfo
             } ],
             buttons: [ {
+                btnCancel: true,
                 btnName  : 'room-ads-cancel',
                 btnCreate: function() {
                     return StateButton.basicButton("Cancel");
@@ -80,27 +111,44 @@ class RoomRenting extends FormData
         return this;
     }
 
-    submitAct(data) {
-        super.submitAct();
+    validateInput(data, errFlags) {
+        let price, rawPrice = data.rentPrice;
+
+        price = Number(rawPrice.replace(/[^0-9\.-]+/g, ""));
+        if (price == 0) {
+            errFlags['rentPrice'] = true;
+            errFlags['errText'] = Lang.translate("You need to enter the valid price");
+        }
+        data.rentPrice = price;
+        return data;
+    }
+
+    onClick(btn, btnState) {
+        if (btn.btnCancel === true) {
+            this.clearData();
+            History.goBack();
+        } else {
+            super.onClick(btn, btnState);
+        }
     }
 }
 
-class AdsRoomRenting extends React.Component
+class AdsRoomRenting extends GenericAds
 {
     constructor(props) {
         super(props);
-        this.data = new RoomRenting(props, "abc");
+        this.data = new RoomRenting(props, "ads-");
     }
 
-    render() {
-        let defValue = {
-            ownerName  : "Vy Nguyen",
+    // @Override
+    //
+    _renderForm() {
+        const defValue = {
+            ownerName  : "Your name",
             ownerPhones: "123-123-1234",
-            ownerEmail : "vnguyen@abc.com"
+            ownerEmail : "Your Email"
         };
-        return (
-            <ProcessForm form={this.data} defValue={defValue} store={AdsStore}/>
-        );
+        return <ProcessForm form={this.data} store={AdsStore}/>
     }
 }
 

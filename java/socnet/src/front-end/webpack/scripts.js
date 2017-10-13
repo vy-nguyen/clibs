@@ -36,6 +36,8 @@ var scripts = {
             "react-dom",
             "react-bootstrap",
             "react-router",
+            "react-dropzone-component",
+            "history/lib",
             "jquery",
             "moment",
             "he"
