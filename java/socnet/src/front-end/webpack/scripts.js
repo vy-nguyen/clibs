@@ -28,7 +28,7 @@ var scripts = {
 
         "he"          : "/node_modules/he/he.js",
         "clockpicker" : "/node_modules/clockpicker/dist/bootstrap-clockpicker.min.js",
-        "smartwidgets": "/src/front-end/smartadmin-plugin/smartwidgets/jarvis.widget.js",
+        "smartwidgets": "/src/front-end/smartadmin-plugin/smartwidgets/jarvis.widget.js"
     },
     "chunks": {
         "vendor": [

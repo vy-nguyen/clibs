@@ -3,5 +3,3 @@
  * BSD License
  */
 'use strict';
-
-
