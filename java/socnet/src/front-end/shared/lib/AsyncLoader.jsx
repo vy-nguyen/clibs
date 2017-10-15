@@ -65,7 +65,6 @@ export function asyncLoader(key, script) {
                 let props;
 
                 if (this.state.loaded === false) {
-                    console.log("async loader...not yet loaded");
                     return null;
                 }
                 props = Object.assign({}, this.props, this.state);
