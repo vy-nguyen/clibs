@@ -72,7 +72,7 @@ export class Author {
  * Maintains binding from articles to a name tag owned by a user.
  */
 export class AuthorTag {
-    constructor(tag, authorStore) {
+    constructor(tag, authorStore, tagMgr) {
         this.articles   = {};
         this.sortedArts = [];
         this._id = _.uniqueId('atag-');
@@ -80,11 +80,18 @@ export class AuthorTag {
         _.forEach(tag, function(v, k) {
             this[k] = v;
         }.bind(this));
+
+        this.tagMgr      = tagMgr;
+        this.authorStore = authorStore;
         return this;
     }
 
     getId(prefix) {
         return (prefix || '') + this._id;
+    }
+
+    getMyTagMgr() {
+        return this.tagMgr;
     }
 
     addArticleRank(json, globStore) {
@@ -141,36 +148,6 @@ export class AuthorTag {
     resortArticleRank(opt) {
         this.sortedArts.sort();
     }
-
-    /*
-     * Return articles belonging to a tag in table format.
-     */
-    getTagTableData(tagSelect) {
-        let data = [];
-
-        _.forOwn(this.sortedArts, function(brief) {
-            data.push({
-                rowId    : _.uniqueId(this.tagName),
-                artTag   : brief.artTag,
-                artTitle : brief.artTitle,
-                tagSelect: {
-                    select   : true,
-                    inpHolder: this.tagName,
-                    inpDefVal: this.tagName,
-                    selectOpt: tagSelect,
-                    inpName  : _.uniqueId()
-                },
-                rank: {
-                    inpValue : brief.rank,
-                    inpDefVal: brief.rank,
-                    inpHolder: 0,
-                    inpName  : _.uniqueId()
-                },
-                contentBrief: brief.contentBrief
-            });
-        }.bind(this));
-        return data;
-    }
 }
 
 /**
@@ -215,7 +192,7 @@ export class AuthorTagMgr {
         if (authorTag != null) {
             return authorTag;
         }
-        authorTag = new AuthorTag(tag, this.authorStore);
+        authorTag = new AuthorTag(tag, this.authorStore, this);
         this.authorTags[tag.tagName] = authorTag;
 
         Util.insertSorted(authorTag, this.sortedTags, ArticleSort.compareRank);

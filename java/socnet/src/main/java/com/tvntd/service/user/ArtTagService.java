@@ -39,8 +39,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tvntd.dao.ArtTagRepo;
+import com.tvntd.dao.AuthorTagRepo;
 import com.tvntd.forms.TagForm.TagRank;
 import com.tvntd.models.ArtTag;
+import com.tvntd.models.AuthorTag;
 import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.util.Constants;
@@ -53,6 +55,9 @@ public class ArtTagService implements IArtTagService
 
     @Autowired
     protected ArtTagRepo artTagRepo;
+
+    @Autowired
+    protected AuthorTagRepo authorTagRepo;
 
     @Autowired
     protected IAuthorService authorSvc;
@@ -95,8 +100,12 @@ public class ArtTagService implements IArtTagService
 
     public static Map<String, TagRank> fixupTagList(TagRank[] in)
     {
-        List<TagRank> top = new LinkedList<>();
         Map<String, TagRank> dict = new HashMap<>();
+
+        if (in == null) {
+            return dict;
+        }
+        List<TagRank> top = new LinkedList<>();
         Map<String, List<TagRank>> levels = new HashMap<>();
 
         for (TagRank r : in) {
@@ -200,12 +209,28 @@ public class ArtTagService implements IArtTagService
     }
 
     @Override
-    public void deleteTag(String tag, String uuid)
+    public boolean deleteTag(String tag, String uuid)
     {
         String key = ArtTagDTO.makeTagOidKey(tag, uuid);
         if (key != null) {
-            artTagRepo.delete(key);
+            ArtTag t = artTagRepo.findByTagOid(key);
+            if (t != null) {
+                List<String> ranks = t.getTagArtRanks();
+                if (ranks != null && !ranks.isEmpty()) {
+                    System.out.println("Found " + ranks);
+                }
+                artTagRepo.delete(t);
+            }
+            AuthorTag atag = authorTagRepo.findByTagOid(key);
+            if (atag != null) {
+                authorTagRepo.delete(atag);
+            }
+            if (t != null || atag != null) {
+                return true;
+            }
         }
+        System.out.println("Failed to find " + tag + " uuid " + uuid + " key " + key);
+        return false;
     }
 
     @Override
@@ -225,32 +250,34 @@ public class ArtTagService implements IArtTagService
     }
 
     @Override
-    public synchronized void deletePublicTagPost(String pubTag, String uuid)
+    public synchronized boolean deletePublicTagPost(String pubTag, String uuid)
     {
         if (pubTag == null) {
-            return;
+            return false;
         }
         ArtTagDTO pub = getTag(pubTag, Constants.PublicUuid);
         if (pub != null) {
             pub.removeArtRank(uuid);
             saveTag(pub);
-        } else {
-            s_log.info("Public tag " + pubTag + " doesn't exist");
+            return true;
         }
+        s_log.info("Public tag " + pubTag + " doesn't exist");
+        return false;
     }
 
     @Override
-    public synchronized void deletePublicTagPost(byte[] pubTag, String uuid)
+    public synchronized boolean deletePublicTagPost(byte[] pubTag, String uuid)
     {
         if (pubTag == null) {
-            return;
+            return false;
         }
         ArtTagDTO pub = getTag(pubTag, Constants.PublicUuid);
         if (pub != null) {
             pub.removeArtRank(uuid);
             saveTag(pub);
-        } else {
-            s_log.info("Public tag " + pubTag + " doesn't exist");
+            return true;
         }
+        s_log.info("Public tag " + pubTag + " doesn't exist");
+        return false;
     }
 }

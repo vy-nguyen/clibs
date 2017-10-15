@@ -63,6 +63,7 @@ import com.tvntd.forms.DomainForm;
 import com.tvntd.forms.PostForm;
 import com.tvntd.forms.ProductForm;
 import com.tvntd.forms.TagForm;
+import com.tvntd.forms.TagForm.ArtRankInfo;
 import com.tvntd.forms.TagForm.TagArtRank;
 import com.tvntd.forms.TagForm.TagOrderResponse;
 import com.tvntd.forms.TagForm.TagRank;
@@ -739,6 +740,7 @@ public class UserPath
     {
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
         if (profile == null) {
+            s_log.info("Session doesn't have profile");
             return s_noProfile;
         }
         String uuid = form.getUserUuid();
@@ -747,18 +749,21 @@ public class UserPath
             return s_noProfile;
         }
 
-        Map<String, TagRank> dict = ArtTagService.fixupTagList(form.getTagRanks());
-        for (TagRank r : form.getTagRanks()) {
-            if (r.isPubTag() == false && r.isArticle() == false) {
-                artTagSvc.saveTag(uuid, r.getTagName(), r.getParent(), r.getRank());
+        TagRank[] tagRanks = form.getTagRanks();
+        Map<String, TagRank> dict = ArtTagService.fixupTagList(tagRanks);
+        if (tagRanks != null) {
+            for (TagRank r : tagRanks) {
+                if (r.isPubTag() == false && r.isArticle() == false) {
+                    artTagSvc.saveTag(uuid, r.getTagName(), r.getParent(), r.getRank());
+                }
             }
         }
-
         AuthorTagRespDTO ownerTags = authorSvc.getAuthorTag(uuid);
         TagOrderResponse resp =
-            new TagOrderResponse(form.getTagRanks(), form.getArtList());
+            new TagOrderResponse(uuid, form.getTagRanks(), form.getArtList());
 
         if (ownerTags == null) {
+            System.out.println("No owner tag for " + uuid);
             return resp;
         }
         List<AuthorTagDTO> tags = ownerTags.getAuthorTags();
@@ -772,27 +777,74 @@ public class UserPath
 
         TagArtRank[] artList = form.getArtList();
         for (TagArtRank r : artList) {
-            Long order = 10L;
+            String tagName = r.getTagName();
             List<String> artUuids = new LinkedList<>();
-            Map<String, Long> artOrder = new HashMap<>();
+            Map<String, ArtRankInfo> artOrder = new HashMap<>();
+            String[] uuidList = r.getArtUuid();
 
-            for (String s : r.getArtUuid()) {
-                artOrder.put(s, order);
-                order++;
+            if (uuidList != null) {
+                Long order = 10L;
+                for (String s : uuidList) {
+                    artOrder.put(s, new ArtRankInfo(tagName, s, order));
+                    artUuids.add(s);
+                    order++;
+                }
+            }
+            ArtRankInfo[] ranks = r.getArtRanks();
+            if (ranks != null) {
+                for (ArtRankInfo info : ranks) {
+                    String s = info.getArtUuid();
+                    artUuids.add(s);
+                    artOrder.put(s, info); 
+                }
             }
             List<ArticleBriefDTO> artRank = artSvc.getArticleBriefDTO(artUuids);
             for (ArticleBriefDTO rank : artRank) {
-                order = artOrder.get(rank.getArticleUuid());
-                if (order == null) {
-                    order = 10L;
+                ArtRankInfo info = artOrder.get(rank.getArticleUuid());
+
+                if (info == null) {
+                    rank.setRank(10L);
+                } else {
+                    rank.setRank(info.getOrder());
+                    rank.setTagName(info.getTagName());
                 }
-                rank.setRank(order);
+                System.out.println("Changed art " + rank.getArticleUuid() +
+                        ", tag " + rank.getTagName() + ", order " + rank.getRank());
                 artSvc.saveArticleBrief(artRank);
             }
             artOrder.clear();
             artRank.clear();
         }
         return resp;
+    }
+
+    /**
+     * Update tag ranking.
+     */
+    @RequestMapping(value = "/user/delete-tag",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    deleteTag(@RequestBody TagForm form, HttpSession session)
+    {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            s_log.info("Session doesn't have profile");
+            return s_noProfile;
+        }
+        String uuid = form.getUserUuid();
+        if (!profile.getUserUuid().equals(uuid)) {
+            s_log.info("Not author " + profile.getUserUuid() + " request " + uuid);
+            return s_noProfile;
+        }
+        TagRank[] tagRanks = form.getTagRanks();
+        if (tagRanks != null) {
+            for (TagRank r : tagRanks) {
+                artTagSvc.deleteTag(r.getTagName(), uuid);
+            }
+        }
+        return new TagOrderResponse(uuid, form.getTagRanks(), null);
     }
 
     /**

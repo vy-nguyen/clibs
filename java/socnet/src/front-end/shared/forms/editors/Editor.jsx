@@ -7,7 +7,6 @@ import React          from 'react';
 import $              from 'jquery';
 import TinyMCE        from 'react-tinymce';
 import NestableStore  from 'vntd-shared/stores/NestableStore.jsx';
-import ErrorView      from 'vntd-shared/layout/ErrorView.jsx';
 import {Util}         from 'vntd-shared/utils/Enum.jsx';
 
 class Editor extends React.Component

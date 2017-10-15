@@ -39,7 +39,9 @@ class ArticleBase extends React.Component
             this.setState({
                 articles: articles
             });
+            return true;
         }
+        return false;
     }
 }
 

@@ -271,7 +271,7 @@ class RenderRow extends React.Component
                 } else {
                     row[key] = cell;
                 }
-                if (row[key] == null) {
+                if (row[key] == null && cell != null) {
                     row.invalid = true
                 }
             });
@@ -345,6 +345,9 @@ class DynamicTable extends React.Component
             }
             change[row.rowId] = row;
         }
+        if (this.props.selectCallback != null) {
+            this.props.selectCallback(entry, row);
+        }
     }
 
     _addNewRows(data, rowEdit) {
@@ -386,7 +389,9 @@ class DynamicTable extends React.Component
         if (this.state.newRows != null) {
             RenderRow.fetchTableData(this.state.newRows, changes, null);
         }
-        footer.onSubmit(changes);
+        if (footer.onSubmit(changes) === true) {
+            InputStore.freeItemIndex(this.props.tableId);
+        }
         this.setState({
             newRows: {}
         });
@@ -479,6 +484,7 @@ class DynamicTable extends React.Component
                                 <div className="widget-body no-padding">{table}</div>
                             </div>
                             {this._renderFooter()}
+                            {this.props.children}
                         </JarvisWidget>
                     </article>
                 </div>

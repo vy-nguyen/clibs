@@ -11,7 +11,6 @@ import JarvisWidget        from 'vntd-shared/widgets/JarvisWidget.jsx';
 import ArticleTagStore     from 'vntd-root/stores/ArticleTagStore.jsx';
 import Actions             from 'vntd-root/actions/Actions.jsx';
 import Mesg                from 'vntd-root/components/Mesg.jsx';
-import AdsRoomRenting      from './AdsRoomRenting.jsx';
 import { AdsStore }        from 'vntd-root/stores/ArticleStore.jsx';
 import { FormData, ProcessForm } from 'vntd-shared/forms/commons/ProcessForm.jsx';
 
@@ -158,28 +157,43 @@ class BusAds extends FormData
     }
 }
 
-class PostAds extends React.Component
+export class GenericAds extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
+
+    _renderForm() {
+    }
+
+    render() {
+        let id = this.props.id || "ads-post";
+        return (
+            <JarvisWidget id={id} color="purple">
+                <header>
+                    <span className="widget-icon"><i className="fa fa-pencil"/></span>
+                    <h2><Mesg text="Post Your Ads"/></h2>
+                </header>
+                <div className="widget-body">
+                    {this._renderForm()}
+                </div>
+            </JarvisWidget>
+        );
+    }
+}
+
+export class PostAds extends GenericAds
 {
     constructor(props) {
         super(props);
         this.data = new BusAds(props, "");
     }
 
-    render() {
+    // @Override
+    //
+    _renderForm() {
         return (
-            <JarvisWidget id="ads-post" color="purple">
-                <header>
-                    <span className="widget-icon"><i className="fa fa-pencil"/></span>
-                    <h2><Mesg text="Post Your Ads"/></h2>
-                </header>
-                <div className="widget-body">
-                    <ProcessForm form={this.data}
-                            store={AdsStore} value={this.props.ads}/>
-                </div>
-                <div className="widget-body">
-                    <AdsRoomRenting/>
-                </div>
-            </JarvisWidget>
+            <ProcessForm form={this.data} store={AdsStore} value={this.props.ads}/>
         );
     }
 }

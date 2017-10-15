@@ -40,10 +40,12 @@ import org.springframework.stereotype.Service;
 import com.tvntd.dao.ArtAdsRepo;
 import com.tvntd.dao.ArtBriefRepo;
 import com.tvntd.dao.ArtProductRepo;
+import com.tvntd.dao.ArtRoomAdsRepo;
 import com.tvntd.dao.ArticleAttrRepo;
 import com.tvntd.dao.ArticleBaseRepo;
 import com.tvntd.dao.ArticlePostRepo;
 import com.tvntd.forms.AdsForm;
+import com.tvntd.forms.AdsRoomForm;
 import com.tvntd.forms.ArticleForm;
 import com.tvntd.forms.CommentChangeForm;
 import com.tvntd.forms.PostForm;
@@ -52,6 +54,7 @@ import com.tvntd.forms.UuidForm;
 import com.tvntd.key.HashKey;
 import com.tvntd.models.ArtAds;
 import com.tvntd.models.ArtProduct;
+import com.tvntd.models.ArtRoomAds;
 import com.tvntd.models.ArtTag;
 import com.tvntd.models.ArticleAttr;
 import com.tvntd.models.ArticleBase;
@@ -59,6 +62,7 @@ import com.tvntd.models.ArticleBrief;
 import com.tvntd.models.ArticlePost;
 import com.tvntd.service.api.ArtAdsDTO;
 import com.tvntd.service.api.ArtProductDTO;
+import com.tvntd.service.api.ArtRoomAdsDTO;
 import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArticleSvc;
 import com.tvntd.service.api.ICommentService;
@@ -95,6 +99,9 @@ public class ArticleSvc implements IArticleSvc
     @Autowired
     protected IArtTagService artTagSvc;
 
+    @Autowired
+    protected ArtRoomAdsRepo adRoomRepo;
+
     // --------------------------------------------------------------------------------
     // Static APIs
     //
@@ -114,7 +121,23 @@ public class ArticleSvc implements IArticleSvc
         ads.setBusHour(Util.toRawByte(form.getBusHour(), 1024));
         ads.setBusDesc(Util.toRawByte(form.getBusDesc(), 1 << 14));
     }
-   
+  
+    public static void applyPostAds(AdsRoomForm form, ArtAdsDTO adsDTO)
+    {
+        ArtRoomAds ads = new ArtRoomAds(adsDTO.fetchAds());
+
+        ads.setOwnerEmail(form.getOwnerEmail());
+        ads.setOwnerName(Util.toRawByte(form.getOwnerName(), 128));
+        ads.setOwnerPhone(form.getOwnerPhone());
+        ads.setRentPrice(form.getRentPrice());
+        ads.setStreet(Util.toRawByte(form.getStreet(), 128));
+        ads.setState(form.getState());
+        ads.setCity(form.getCity());
+        ads.setZip(form.getZip());
+        ads.setPropDesc(Util.toRawByte(form.getDesc(), 2048));
+        adsDTO.setRoomAd(ads);
+    }
+
     public static void
     applyPostProduct(ProductForm form, ArtProductDTO prodDTO, boolean publish)
     {
@@ -327,6 +350,34 @@ public class ArticleSvc implements IArticleSvc
         return convertArticleAds(artAdsRepo.findByAuthorUuidIn(ownerUuids));
     }
 
+    protected List<ArtRoomAdsDTO> convertRoomAds(List<ArtRoomAds> list)
+    {
+        List<ArtRoomAdsDTO> out = new LinkedList<>();
+
+        for (ArtRoomAds a : list) {
+            out.add(new ArtRoomAdsDTO(a));
+        }
+        return out;
+    }
+
+    @Override
+    public List<ArtRoomAdsDTO> getRoomAdsByPrice(String lo, String hi) {
+        return convertRoomAds(adRoomRepo.findAll());
+    }
+
+    @Override
+    public List<ArtRoomAdsDTO> getRoomAds(String name, int type)
+    {
+        if (type == IArticleSvc.CITY) {
+            return convertRoomAds(adRoomRepo.findByCityIgnoreCase(name));
+        }
+        if (type == IArticleSvc.STATE) {
+            return convertRoomAds(adRoomRepo.findByStateIgnoreCase(name));
+        }
+        return convertRoomAds(adRoomRepo.findByZipIgnoreCase(name));
+    }
+
+
     // --------------------------------------------------------------------------------
     // Save/update ArticleBrief/ArticlePost
     //
@@ -369,15 +420,21 @@ public class ArticleSvc implements IArticleSvc
     // Save/update Ads
     //
     @Override
-    public void saveArtAds(ArtAdsDTO ads) {
-        artAdsRepo.save(ads.fetchAds());
+    public void saveArtAds(ArtAdsDTO ads)
+    {
+        ArtRoomAds r = ads.fetchRoomAds();
+        if (r == null) {
+            artAdsRepo.save(ads.fetchAds());
+        } else {
+            adRoomRepo.save(r);
+        }
     }
 
     @Override
     public void saveArtAds(List<ArtAdsDTO> adsList)
     {
         for (ArtAdsDTO ads : adsList) {
-            artAdsRepo.save(ads.fetchAds());
+            saveArtAds(ads);
         }
     }
 

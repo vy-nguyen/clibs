@@ -48,11 +48,11 @@ public interface IArtTagService
 
     List<ArtTagDTO> getUserTags(String uuid);
     ArtTagList getUserTagsDTO(String uuid);
-    void deleteTag(String tag, String uuid);
+    boolean deleteTag(String tag, String uuid);
 
     ArtTagDTO addPublicTagPost(String pubTag, String uuid);
-    void deletePublicTagPost(String pubTag, String uuid);
-    void deletePublicTagPost(byte[] pubTag, String uuid);
+    boolean deletePublicTagPost(String pubTag, String uuid);
+    boolean deletePublicTagPost(byte[] pubTag, String uuid);
 
     public static class ArtTagList extends GenericResponse
     {

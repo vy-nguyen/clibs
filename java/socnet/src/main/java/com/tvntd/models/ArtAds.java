@@ -118,6 +118,7 @@ public class ArtAds
         this.authorUuid = authorUuid;
         artBase.setAuthorId(authorId);
         artBase.setArtTag(ArtTag.ADS);
+        artBase.setCreatedDate(new Date());
     }
 
     public ArtAds(ArticleBase base)

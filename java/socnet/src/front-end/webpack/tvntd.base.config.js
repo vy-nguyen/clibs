@@ -58,6 +58,13 @@ module.exports = {
     },
     plugins: [
         new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+        new webpack.DefinePlugin({
+            'process.env': {
+                'NODE_ENV': JSON.stringify('production')
+            }
+        }),
+        new webpack.optimize.UglifyJsPlugin(),
+        new webpack.optimize.AggressiveMergingPlugin(),
         new webpack.optimize.CommonsChunkPlugin({
             name     : "vendor",
             filename : "tvntd-vendor-bundle.js",

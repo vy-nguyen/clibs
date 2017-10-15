@@ -57,6 +57,8 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tvntd.forms.AdsForm;
+import com.tvntd.forms.AdsRequest;
+import com.tvntd.forms.AdsRoomForm;
 import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.Constants;
 import com.tvntd.lib.FileResources;
@@ -65,6 +67,7 @@ import com.tvntd.models.Profile;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.ArtAdsDTO;
 import com.tvntd.service.api.ArtProductDTO;
+import com.tvntd.service.api.ArtRoomAdsDTO;
 import com.tvntd.service.api.GenericResponse;
 import com.tvntd.service.api.IAdsPostService.AdsPostDTOResponse;
 import com.tvntd.service.api.IAnnonService;
@@ -84,6 +87,7 @@ import com.tvntd.service.api.IProductService.ProductDTOResponse;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.service.api.ImageUploadResp;
+import com.tvntd.service.api.RoomAdsResponse;
 import com.tvntd.service.api.StartupResponse;
 import com.tvntd.service.user.ArticleSvc;
 
@@ -317,10 +321,6 @@ public class PublicPath
 
             if (oid != null) {
                 ads.setAdImgOid0(oid.name());
-                System.out.println("Store img " + oid.name() + ", ads " +
-                        ads.fetchAds().getAdImgOid0() + ", uuid " +
-                        ads.getArticleUuid() + " obj " +
-                        System.identityHashCode(ads));
             }
             ImageUploadResp out =
                 new ImageUploadResp(ads.getArticleUuid(), ads.getAuthorUuid(), oid);
@@ -376,6 +376,87 @@ public class PublicPath
             user.assignPendAds(null);
         }
         return ads;
+    }
+
+    @RequestMapping(value = "/public/publish-room-ads",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    publishRoomAds(@RequestBody AdsRoomForm form,
+            HttpServletRequest reqt, HttpServletResponse resp, HttpSession session)
+    {
+        ArtAdsDTO ads = null;
+        AnnonUserDTO user = null;
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+
+        if (profile == null) {
+            user = annonSvc.getAnnonUser(reqt, resp, session);
+            profile = profileSvc.getProfile(user.getUserUuid());
+            ads = user.genPendArtAds();
+        } else {
+            ads = profile.genPendArtAds();
+        }
+        if (form.cleanInput() == false) {
+            s_log.info("Failed to validate ads form");
+            return UserPath.s_saveObjFailed;
+        }
+        ArticleSvc.applyPostAds(form, ads);
+        artSvc.saveArtAds(ads);
+
+        if (profile != null) {
+            profile.assignPendAds(null);
+        }
+        if (user != null) {
+            user.assignPendAds(null);
+        }
+        return ads;
+    }
+
+    @RequestMapping(value = "/public/get-room-ads",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    publicGetRoomAds(@RequestBody AdsRequest form)
+    {
+        List<ArtRoomAdsDTO> ads = new LinkedList<>();
+        RoomAdsResponse out = new RoomAdsResponse(null);
+
+        form.cleanInput();
+        if (form.getState() != null) {
+            ads.addAll(artSvc.getRoomAds(form.getState(), IArticleSvc.STATE));
+        } else {
+            if (form.getCity() != null) {
+                ads.addAll(artSvc.getRoomAds(form.getCity(), IArticleSvc.CITY));
+            }
+            if (form.getZip() != null) {
+                ads.addAll(artSvc.getRoomAds(form.getZip(), IArticleSvc.ZIP));
+            }
+        }
+        if (ads.isEmpty()) {
+            ads.addAll(artSvc.getRoomAdsByPrice(
+                        form.getRentPriceLo(), form.getRentPriceHi()));
+        }
+        for (ArtRoomAdsDTO a : ads) {
+            out.addAds(a);
+        }
+        return out;
+    }
+
+    @RequestMapping(value = "/public/ads/room", method = RequestMethod.GET)
+    @ResponseBody
+    public GenericResponse
+    publicGetRoomAds(HttpSession session, HttpServletResponse resp)
+    {
+        List<ArtRoomAdsDTO> ads;
+        RoomAdsResponse out = new RoomAdsResponse(null);
+
+        ads = artSvc.getRoomAdsByPrice(null, null);
+        for (ArtRoomAdsDTO a : ads) {
+            out.addAds(a);
+        }
+        return out;
     }
 
     /**
