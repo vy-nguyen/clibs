@@ -18,6 +18,10 @@ let ElementHolder = {
     },
     componentDidMount: function(){
         let node = ReactDOM.findDOMNode(this);
+        console.log("did mount elementhoder");
+        console.log(node);
+        console.log(this);
+
         this.setHold(node)
     },
     componentWillUnmount: function() {

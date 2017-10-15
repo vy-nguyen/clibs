@@ -85,6 +85,7 @@ export const ScriptCache = (function(global) {
                     tag
                 }
                 scriptMap.set(key, initialState);
+                console.log("Request script " + src);
             }
             return scriptMap.get(key);
         }
