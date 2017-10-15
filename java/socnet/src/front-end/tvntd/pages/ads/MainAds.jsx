@@ -10,6 +10,7 @@ import React           from 'react-mod'
 import Actions          from 'vntd-root/actions/Actions.jsx';
 import TabPanel         from 'vntd-shared/layout/TabPanel.jsx';
 import SmallBreadcrumbs from 'vntd-shared/layout/SmallBreadcrumbs.jsx';
+import GoogleApi        from 'vntd-shared/lib/GoogleApi.js';
 
 import Mesg             from 'vntd-root/components/Mesg.jsx';
 import YellowPage       from './YellowPage.jsx';

@@ -8,8 +8,10 @@ import Spinner            from 'react-spinjs';
 import React, {PropTypes} from 'react-mod';
 
 import {
-    Map, Marker, InfoWindow, GoogleApiWrapper
+    Map, Marker, InfoWindow
 } from 'google-maps-react';
+
+import {GoogleApiLoad}    from 'vntd-shared/lib/AsyncLoader.jsx';
 import AdPropertyStore    from 'vntd-root/stores/AdPropertyStore.jsx';
 import {VntdGlob}         from 'vntd-root/config/constants.js';
 
@@ -39,13 +41,17 @@ export class MapContainer extends React.Component
 
     render() {
         console.log(this.props);
+        let initLoc = {
+            lat: 40.854885,
+            lng: -88.081807
+        },
+        style = {
+            width: '100%',
+            height: '500px'
+        };
         return (
             <Map google={this.props.google} zoom={14}
-                initialCenter={{
-                    lat: 40.854885,
-                    lng: -88.081807
-                }}
-            >
+                style={style} initialCenter={initLoc}>
                 <Marker onClick={this._onMarkerClick} name="My Location"/>
                 <InfoWindow onClose={this._onInfoWinClose}>
                     <div>
@@ -88,7 +94,7 @@ export class AdsRealtor extends React.Component
 AdsRealtor.propTypes = {
 };
 
-export default GoogleApiWrapper({
+export default GoogleApiLoad({
     version  : "3.28",
     apiKey   : "AIzaSyD2c0dE19Ubh3F5wgkuI-y_jnvKFAd2NDo",
     libraries: [ "places", "visualization" ]

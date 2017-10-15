@@ -7,7 +7,6 @@ import React           from 'react-mod';
 import Spinner         from 'react-spinjs';
 import {VntdGlob}      from 'vntd-root/config/constants.js';
 
-
 class WebUtils
 {
     constructor() {
