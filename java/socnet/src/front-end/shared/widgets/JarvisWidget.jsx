@@ -75,7 +75,7 @@ class JarvisWidget extends React.Component
     }
 }
 
-class JarvisWidget.Body extends React.Component
+class JarvisWidget_Body extends React.Component
 {
     render() {
         let {children, props} = {...this.props};

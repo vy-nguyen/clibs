@@ -85,7 +85,7 @@ class UiValidate extends React.Component
         form.validate(_.extend(validate, this.props.options))
     }
 
-    render: function() {
+    render() {
         return (
             this.props.children
         )
