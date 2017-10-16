@@ -1,41 +1,45 @@
 'use strict';
 
-import React from 'react-mod';
-import _     from 'lodash';
+import _             from 'lodash';
+import React         from 'react-mod';
+import ReactDOM      from 'react-dom';
 
-import {findDOMNode} from 'react-dom';
-import ScriptLoader  from 'vntd-shared/utils/mixins/ScriptLoader.jsx';
+import asyncLoader   from 'vntd-shared/lib/AsyncLoader.jsx';
+import Colorpicker   from 'vntd-shared/forms/inputs/Colorpicker.jsx';
 
-let Timepicker = React.createClass({
-    mixins: [ScriptLoader],
+class Timepicker extends Colorpicker
+{
+    constructor(props) {
+        super(props);
+        this._onClick = this._onClick.bind(this);
+    }
 
-    componentDidMount: function() {
-        this.loadScript('/rs/client/vendor.ui.js').then(function() {
-            this.xEditable()
-        }.bind(this))
-    },
-
-    componentDidUpdate: function() {
+    componentDidUpdate() {
         this.xEditable()
-    },
+    }
 
-    xEditable: function() {
-        let element = $(findDOMNode(this));
-        let props = this.props;
+    xEditable() {
+        this._getElement();
+        let props = this.props, options = _.extend(props, {});
 
-        var options = _.extend(props, {});
+        this.element.editable('destroy');
+        this.element.editable(options);
 
-        // $log.log(initOptions);
-        element.editable('destroy');
-        element.editable(options);
-
-        element.on('save', function(e, params) {
-            if(_.isFunction(this.props.onChange)) {
-                this.props.onChange(params.newValue)
+        this.element.on('save', function(e, params) {
+            if(_.isFunction(props.onChange)) {
+                props.onChange(params.newValue)
             }
-        }.bind(this));
-    },
-    render: function() {
+        });
+    }
+
+    _onClick(e) {
+        e.preventDefault();
+        if (_.isFunction(this.props.onClick)) {
+            this.props.onClick();
+        }
+    }
+
+    render() {
         let {children, ...props} = this.props;
         let id = props.id || _.uniqueId('x-editable');
 
@@ -44,14 +48,7 @@ let Timepicker = React.createClass({
                 {children}
             </a>
         )
-    },
-
-    _onClick: function(e){
-        e.preventDefault();
-        if (_.isFunction(this.props.onClick)) {
-            this.props.onClick();
-        }
     }
-});
+}
 
-export default Timepicker
+export default asyncLoader("tvntd-ui", "/rs/client/vendor.ui.js")(Timepicker);

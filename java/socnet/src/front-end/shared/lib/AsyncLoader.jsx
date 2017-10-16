@@ -36,7 +36,7 @@ export function asyncImport(importComponent) {
     return AsyncComponent;
 }
 
-export function asyncLoader(key, scriptKV) {
+export function asyncLoader(key, script) {
     return function(Component) {
         class WrapComponent extends React.Component
         {
@@ -44,7 +44,7 @@ export function asyncLoader(key, scriptKV) {
                 super(props, context);
 
                 this.scriptCache = ScriptCache({
-                    [key]: scriptKV
+                    [key]: script
                 });
                 this.scriptCache[key].onLoad(this._onLoad.bind(this));
                 this.state = {
@@ -62,10 +62,12 @@ export function asyncLoader(key, scriptKV) {
             }
 
             render() {
-                let props = Object.assign({}, this.props, this.state);
-                console.log("async loader...");
-                console.log(props);
+                let props;
 
+                if (this.state.loaded === false) {
+                    return null;
+                }
+                props = Object.assign({}, this.props, this.state);
                 return (
                     <Component {...props}/>
                 );
