@@ -1,24 +1,33 @@
 'use strict';
 
 import React         from 'react-mod';
-import ScriptLoader  from 'vntd-shared/utils/mixins/ScriptLoader.jsx';
-import {findDOMNode} from 'react-dom';
+import ReactDOM      from 'react-dom';
+import asyncLoader   from 'vntd-shared/lib/AsyncLoader.jsx';
 
-let Colorpicker = React.createClass({
-    mixins: [ScriptLoader],
+class Colorpicker extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
 
-    componentDidMount: function() {
-        this.loadScript('/rs/client/vendor.ui.js').then(function() {
-            let element = $(findDOMNode(this));
-            element.colorpicker();
-        }.bind(this))
-    },
+    _getElement() {
+        if (this.element != null) {
+            return;
+        }
+        this.element = $(ReactDOM.findDOMNode(this));
+        return this.element;
+    }
 
-    render: function() {
+    componentDidMount() {
+        this._getElement();
+        this.element.colorpicker();
+    }
+
+    render() {
         return (
             <input type="text" {...this.props}/>
-        )
+        );
     }
-});
+};
 
-export default Colorpicker
+export default asyncLoader("tvntd-ui", "/rs/client/vendor.ui.js")(Colorpicker);

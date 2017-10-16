@@ -1,23 +1,32 @@
 /**
- * Created by griga on 12/1/15.
+ * Ported to Class by Vy Nguyen (2017)
  */
-import React from 'react-mod'
-import ElementHolder from '../utils/mixins/ElementHolder.jsx'
-import jarvisWidgetsDefaults from './WidgetDefaults.jsx' ;
+import React    from 'react-mod';
+import ReactDOM from 'react-dom';
 
-let WidgetGrid = React.createClass({
-    mixins: [ElementHolder],
+import jarvisWidgetsDefaults from './WidgetDefaults.jsx';
 
-    render: function() {
+class WidgetGrid extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this.element = null;
+    }
+
+    componentDidMount() {
+        if (this.element == null) {
+            this.element = $(ReactDOM.findDOMNode(this));
+        }
+        this.element.jarvisWidgets(jarvisWidgetsDefaults);
+    }
+
+    render() {
         return (
             <section id="widget-grid">
                 {this.props.children}
             </section>
         )
-    },
-    componentDidMount: function(){
-        $(this.getHold()).jarvisWidgets(jarvisWidgetsDefaults);
     }
-});
+}
 
-export default WidgetGrid
+export default WidgetGrid;

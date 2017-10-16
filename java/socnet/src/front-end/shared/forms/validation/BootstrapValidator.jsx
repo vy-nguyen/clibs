@@ -1,23 +1,30 @@
-import React from 'react-mod'
-import _     from 'lodash'
+/**
+ * Written by Vy Nguyen (2017)
+ */
+'use strict';
 
-import {findDOMNode} from 'react-dom'
-import ScriptLoader  from 'vntd-shared/utils/mixins/ScriptLoader.jsx'
+import React         from 'react-mod';
+import ReactDOM      from 'react-dom';
 
-let BootstrapValidator = React.createClass({
-    mixins: [ScriptLoader],
+import asyncLoader   from 'vntd-shared/lib/AsyncLoader.jsx';
+import Colorpicker   from 'vntd-shared/forms/inputs/Colorpicker.jsx';
 
-    componentDidMount: function() {
-        this.loadScript('/rs/client/vendor.ui.js').then(function() {
-            $(findDOMNode(this)).bootstrapValidator(this.props.options || {})
-        }.bind(this))
-    },
+class BootstrapValidator extends Colorpicker
+{
+    constructor(props) {
+        super(props);
+    }
 
-    render: function() {
+    componentDidMount() {
+        let element = this._getElement();
+        this.element.bootstrapValidator(this.props.options || {});
+    }
+
+    render() {
         return (
             this.props.children
-        )
+        );
     }
-});
+}
 
-export default BootstrapValidator
+export default asyncLoader("tvntd-ui", "/rs/client/vendor.ui.js")(BootstrapValidator);
