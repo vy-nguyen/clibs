@@ -1,0 +1,108 @@
+/**
+ * Code modified from 'https://maps.googleapis.com/maps/api/js'
+ */
+'use strict';
+
+import React        from 'react-mod';
+import PropTypes    from 'prop-types';
+
+import {Util}           from 'vntd-shared/utils/Enum.jsx';
+import {wrappedPromise} from './HeatMap.jsx';
+
+const evtNames = [
+    'click',
+    'dblclick',
+    'dragend',
+    'mousedown',
+    'mouseout',
+    'mouseover',
+    'mouseup',
+    'recenter',
+];
+
+export class Marker extends React.Component {
+
+    componentDidMount() {
+        this.markerPromise = wrappedPromise();
+        this.renderMarker();
+    }
+
+    componentDidUpdate(prevProps) {
+        if ((this.props.map !== prevProps.map) ||
+            (this.props.position !== prevProps.position) ||
+            (this.props.icon !== prevProps.icon)) {
+            if (this.marker) {
+                this.marker.setMap(null);
+            }
+            this.renderMarker();
+        }
+    }
+
+    componentWillUnmount() {
+        if (this.marker) {
+            this.marker.setMap(null);
+        }
+    }
+
+    renderMarker() {
+        let {
+            map, google, position, mapCenter, icon, label, draggable, title
+        } = this.props;
+
+        if (!google) {
+            return null
+        }
+        let pos = position || mapCenter;
+        if (!(pos instanceof google.maps.LatLng)) {
+            position = new google.maps.LatLng(pos.lat, pos.lng);
+        }
+
+        const pref = {
+            map      : map,
+            position : position,
+            icon     : icon,
+            label    : label,
+            title    : title,
+            draggable: draggable
+        };
+        this.marker = new google.maps.Marker(pref);
+
+        evtNames.forEach(e => {
+            this.marker.addListener(e, this.handleEvent(e));
+        });
+        this.markerPromise.resolve(this.marker);
+        return null;
+    }
+
+    getMarker() {
+        return this.markerPromise;
+    }
+
+    handleEvent(evt) {
+        return (e) => {
+            const evtName = `on${Util.camelize(evt)}`
+            if (this.props[evtName]) {
+                this.props[evtName](this.props, this.marker, e);
+            }
+        }
+    }
+
+    render() {
+        return null;
+    }
+}
+
+Marker.propTypes = {
+    position: PropTypes.object,
+    map     : PropTypes.object
+}
+
+evtNames.forEach(function(e) {
+    Marker.propTypes[e] = PropTypes.func;
+})
+
+Marker.defaultProps = {
+    name: 'Marker'
+}
+
+export default Marker;

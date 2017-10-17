@@ -7,7 +7,7 @@ import _            from 'lodash';
 import React        from 'react-mod';
 import ReactDOM     from 'react-dom';
 
-import syncLoader   from 'vntd-shared/lib/AsyncLoader.jsx';
+import asyncLoader   from 'vntd-shared/lib/AsyncLoader.jsx';
 
 const validateCommonOptions = {
     rules       : {},

@@ -7,10 +7,9 @@ import _                  from 'lodash';
 import Spinner            from 'react-spinjs';
 import React, {PropTypes} from 'react-mod';
 
-import {
-    Map, Marker, InfoWindow
-} from 'google-maps-react';
-
+import Map                from 'vntd-shared/google-map/Map.jsx';
+import Marker             from 'vntd-shared/google-map/Marker.jsx';
+import InfoWindow         from 'vntd-shared/google-map/InfoWindow.jsx';
 import {GoogleApiLoad}    from 'vntd-shared/lib/AsyncLoader.jsx';
 import AdPropertyStore    from 'vntd-root/stores/AdPropertyStore.jsx';
 import {VntdGlob}         from 'vntd-root/config/constants.js';
@@ -46,12 +45,13 @@ export class MapContainer extends React.Component
             lng: -88.081807
         },
         style = {
-            width: '100%',
-            height: '500px'
+            width: '100vw',
+            height: '100vh'
         };
         return (
             <Map google={this.props.google} zoom={14}
-                style={style} initialCenter={initLoc}>
+                style={style} centerAroundCurrentLocation={true}
+            >
                 <Marker onClick={this._onMarkerClick} name="My Location"/>
                 <InfoWindow onClose={this._onInfoWinClose}>
                     <div>
