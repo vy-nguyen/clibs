@@ -2,7 +2,6 @@
 
 import React         from 'react-mod'
 import ReactDOM      from 'react-dom'
-import asyncLoader   from 'vntd-shared/lib/AsyncLoader.jsx';
 import Colorpicker   from 'vntd-shared/forms/inputs/Colorpicker.jsx';
 
 class UiSpinner extends Colorpicker

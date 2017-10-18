@@ -9,6 +9,7 @@ import _            from 'lodash';
 import React        from 'react-mod';
 import {Link}       from 'react-router';
 
+import UiValidate   from 'vntd-shared/forms/validation/UiValidate.jsx';
 import LoadHtml     from 'vntd-shared/utils/LoadHtml.jsx';
 import UserStore    from 'vntd-shared/stores/UserStore.jsx';
 import ErrorStore   from 'vntd-shared/stores/ErrorStore.jsx';
@@ -297,6 +298,7 @@ class RegisterForm extends React.Component
         ),
         mainForm = (
             <div className="well no-padding">
+                <UiValidate>
                     <form id="smart-form-register" className="smart-form client-form">
                         <header>
                             <Mesg text="Register to open your account"/>
@@ -325,6 +327,7 @@ class RegisterForm extends React.Component
                             <p><Mesg text="Thank you for your registration!"/></p>
                         </div>
                     </form>
+                </UiValidate>
                 <h5 className="text-center"><Mesg text="- Or sign in using -"/></h5>
                 <LoginSocial/>
             </div>

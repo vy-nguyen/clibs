@@ -40,6 +40,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
+import com.google.maps.GeoApiContext;
 import com.tvntd.exports.LibModule;
 import com.tvntd.util.EmailValidator;
 import com.tvntd.util.PasswordMatchesValidator;
@@ -48,10 +49,11 @@ import com.tvntd.util.PasswordMatchesValidator;
 public class TvntdRootConfig
 {
     @Bean
-    public CommonsMultipartResolver multipartResolver() {
+    public CommonsMultipartResolver multipartResolver()
+    {
         CommonsMultipartResolver mpart = new CommonsMultipartResolver();
 
-        mpart.setMaxUploadSize(10 << 20);
+        mpart.setMaxUploadSize(1 << 20);
         return mpart;
     }
 
@@ -120,5 +122,13 @@ public class TvntdRootConfig
     {
         LibModule.initialize();
         return null;
+    }
+
+    @Bean
+    public GeoApiContext googleGeoApi()
+    {
+        return new GeoApiContext.Builder()
+            .apiKey("AIzaSyD2c0dE19Ubh3F5wgkuI-y_jnvKFAd2NDo")
+            .build();
     }
 }
