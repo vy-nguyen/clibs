@@ -101,6 +101,8 @@ dependencies {
     compile "javax.mail:mail:${javax_mail_version}"
     compile "javax.servlet:servlet-api:2.5"
     compile "org.jsoup:jsoup:1.8.3"
+    compile "com.google.maps:google-maps-services:${google_map_version}"
+    compile "org.slf4j:slf4j-nop:1.7.25"
 
     compile project(":socialauth")
     compile project(":common")

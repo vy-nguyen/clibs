@@ -63,7 +63,7 @@ export class MapContainer extends React.Component
                     lat: loc.lat(),
                     lng: loc.lng()
                 };
-            console.log(cord);
+            console.log(results[0]);
             console.log("$$$$$");
             this.setState({
                 initialCenter: cord
@@ -76,8 +76,6 @@ export class MapContainer extends React.Component
             width: '100vw',
             height: '600px'
         };
-        console.log("---------------");
-        console.log(this.state);
         return (
             <Map google={this.props.google} zoom={14}
                 draggable={true} clickableIcons={true}

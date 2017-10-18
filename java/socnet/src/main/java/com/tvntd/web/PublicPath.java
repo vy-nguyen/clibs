@@ -56,6 +56,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.maps.model.GeocodingResult;
 import com.tvntd.forms.AdsForm;
 import com.tvntd.forms.AdsRequest;
 import com.tvntd.forms.AdsRoomForm;
@@ -83,6 +86,7 @@ import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.ICommentService;
 import com.tvntd.service.api.ICommentService.CommentDTOResponse;
 import com.tvntd.service.api.IDomainService;
+import com.tvntd.service.api.IMapService;
 import com.tvntd.service.api.IProductService.ProductDTOResponse;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
@@ -118,6 +122,9 @@ public class PublicPath
 
     @Autowired
     private IArticleSvc artSvc;
+
+    @Autowired
+    private IMapService mapSvc;
 
     /**
      * Handle public pages.
@@ -536,12 +543,14 @@ public class PublicPath
         String buf = "hello world x = " + x + ", y = " + y;
         System.out.println("Input x = " + x + ", y = " + y);
 
-        if (x.equals("delete")) {
-            artSvc.cleanupDatabase();
-
-        } else if (x.equals("conv")) {
-            artSvc.auditArticleTable();
+        GeocodingResult result = mapSvc.mapZipLocation("94566");
+        if (result != null) {
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            System.out.println(gson.toJson(result.addressComponents));
+        } else {
+            System.out.println("Invalid zip");
         }
+
         resp.setContentType("text/html;charset=UTF-8");
         resp.setCharacterEncoding("utf-8");
 
