@@ -35,7 +35,10 @@ import com.tvntd.models.AddressMap;
 public interface AddressMapRepo extends JpaRepository<AddressMap, String>
 {
     AddressMap findByArticleUuid(String articleUuid);
+    AddressMap findByPlaceId(String placeId);
+
     List<AddressMap> findByArticleUuidIn(List<String> artUuids);
+    List<AddressMap> findByPlaceIdIn(List<String> placeIds);
 
     List<AddressMap> findAll();
 

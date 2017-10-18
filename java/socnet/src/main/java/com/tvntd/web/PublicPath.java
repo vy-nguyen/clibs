@@ -543,14 +543,19 @@ public class PublicPath
         String buf = "hello world x = " + x + ", y = " + y;
         System.out.println("Input x = " + x + ", y = " + y);
 
-        GeocodingResult result = mapSvc.mapZipLocation("94566");
-        if (result != null) {
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            System.out.println(gson.toJson(result.addressComponents));
+        if (x.equals("gen")) {
+            System.out.println("Generate dbase for known locations...");
+            mapSvc.genKnownLocations();
         } else {
-            System.out.println("Invalid zip");
+            GenericResponse out = new GenericResponse("");
+            GeocodingResult result = mapSvc.mapZipLocation("94566", out);
+            if (result != null) {
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                System.out.println(gson.toJson(result.addressComponents));
+            } else {
+                System.out.println("Invalid zip: " + out.getMessage());
+            }
         }
-
         resp.setContentType("text/html;charset=UTF-8");
         resp.setCharacterEncoding("utf-8");
 

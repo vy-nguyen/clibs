@@ -29,11 +29,16 @@ package com.tvntd.models;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Table;
 
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.Geometry;
 
 @Entity
+@Table(indexes = {
+    @Index(columnList = "placeId", unique = false)
+})
 public class AddressMap
 {
     @Id

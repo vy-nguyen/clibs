@@ -30,6 +30,7 @@ export class MapContainer extends React.Component
         console.log("constructor, reset ...");
         this._onMarkerClick  = this._onMarkerClick.bind(this);
         this._onInfoWinClose = this._onInfoWinClose.bind(this);
+        this._onBoundChange  = this._onBoundChange.bind(this);
     }
 
     _onMarkerClick(props, marker, e) {
@@ -43,6 +44,13 @@ export class MapContainer extends React.Component
     }
 
     _onInfoWinClose() {
+    }
+
+    _onBoundChange(props, mapObj, e) {
+        console.log("On bound change...");
+        console.log(props);
+        console.log(mapObj);
+        console.log(e);
     }
 
     componentWillMount() {
@@ -79,6 +87,9 @@ export class MapContainer extends React.Component
         return (
             <Map google={this.props.google} zoom={14}
                 draggable={true} clickableIcons={true}
+                onBoundsChanged={this._onBoundChange}
+                onHeadingChange={this._onBoundChange}
+                onDragend={this._onBoundChange}
                 style={style} initialCenter={this.state.initialCenter}>
                 <Marker onClick={this._onMarkerClick}
                     draggable={true} title="I'm here"

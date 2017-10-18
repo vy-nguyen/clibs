@@ -26,11 +26,56 @@
  */
 package com.tvntd.service.api;
 
+import java.util.List;
+
 import com.google.maps.model.GeocodingResult;
+import com.tvntd.models.AddressMap;
 
 public interface IMapService
 {
-    GeocodingResult mapAddress(String street, String city, String state);
-    GeocodingResult mapZipLocation(String zip);
-    GeocodingResult mapStateLocation(String state);
+    GeocodingResult mapAddress(String street,
+            String city, String state, GenericResponse out);
+
+    GeocodingResult mapZipLocation(String zip, GenericResponse out);
+    GeocodingResult mapStateLocation(String state, GenericResponse out);
+
+    AddressMapDTO saveAddress(String artUuid, GeocodingResult result);
+    AddressMapDTO getAddressFromUuid(String artUuid);
+    AddressMapDTO getAddressFromPlace(String placeId);
+
+    List<AddressMapDTO> getAddressFromUuids(List<String> artUuid);
+    List<AddressMapDTO> getAddressFromPlaces(List<String> placeId);
+
+    void deleteAddress(String artUuid);
+    void deletePlaceId(String placeId);
+
+    void genKnownLocations();
+
+    /**
+     * DTO wrapper object.
+     */
+    public static class AddressMapDTO
+    {
+        protected AddressMap addrMap;
+
+        public AddressMapDTO(AddressMap addr) {
+            addrMap = addr;
+        }
+
+        public String getArticleUuid() {
+            return addrMap.getArticleUuid();
+        }
+
+        public String getPlaceId() {
+            return addrMap.getPlaceId();
+        }
+
+        public Double getLat() {
+            return addrMap.getLat();
+        }
+
+        public Double getLng() {
+            return addrMap.getLng();
+        }
+    }
 }

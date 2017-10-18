@@ -27,6 +27,8 @@
 package com.tvntd.service.google;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.transaction.Transactional;
 
@@ -37,6 +39,9 @@ import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.GeocodingResult;
+import com.tvntd.dao.AddressMapRepo;
+import com.tvntd.models.AddressMap;
+import com.tvntd.service.api.GenericResponse;
 import com.tvntd.service.api.IMapService;
 
 @Service
@@ -44,24 +49,28 @@ import com.tvntd.service.api.IMapService;
 public class MapService implements IMapService
 {
     @Autowired
-    private GeoApiContext geoContext;
+    protected GeoApiContext geoContext;
+
+    @Autowired
+    protected AddressMapRepo addrRepo;
 
     @Override
-    public GeocodingResult mapAddress(String street, String city, String state) {
-        return getLocation(street + " " + city + ", " + state);
+    public GeocodingResult mapAddress(String street,
+            String city, String state, GenericResponse out) {
+        return getLocation(street + " " + city + ", " + state, out);
     }
 
     @Override
-    public GeocodingResult mapZipLocation(String zip) {
-        return getLocation(zip);
+    public GeocodingResult mapZipLocation(String zip, GenericResponse out) {
+        return getLocation(zip, out);
     }
 
     @Override
-    public GeocodingResult mapStateLocation(String state) {
-        return getLocation(state);
+    public GeocodingResult mapStateLocation(String state, GenericResponse out) {
+        return getLocation(state, out);
     }
 
-    protected GeocodingResult getLocation(String addr)
+    protected GeocodingResult getLocation(String addr, GenericResponse out)
     {
         try {
             GeocodingResult[] results = GeocodingApi.geocode(geoContext, addr).await();
@@ -69,7 +78,119 @@ public class MapService implements IMapService
 
         } catch(ApiException | InterruptedException | IOException e) {
             System.out.println(e.getMessage());
+            out.setMessage(e.getMessage());
         }
         return null;
+    }
+
+    @Override
+    public AddressMapDTO saveAddress(String artUuid, GeocodingResult result)
+    {
+        AddressMap adr = new AddressMap(artUuid, result);
+
+        addrRepo.save(adr);
+        return new AddressMapDTO(adr);
+    }
+
+    public AddressMapDTO getAddressFromUuid(String artUuid)
+    {
+        AddressMap adr = addrRepo.findByArticleUuid(artUuid);
+
+        if (adr != null) {
+            return new AddressMapDTO(adr);
+        }
+        return null;
+    }
+
+    public AddressMapDTO getAddressFromPlace(String placeId)
+    {
+        AddressMap adr = addrRepo.findByPlaceId(placeId);
+
+        if (adr != null) {
+            return new AddressMapDTO(adr);
+        }
+        return null;
+    }
+
+    protected List<AddressMapDTO> convertList(List<AddressMap> src)
+    {
+        List<AddressMapDTO> out = new LinkedList<>();
+
+        for (AddressMap adr : src) {
+            out.add(new AddressMapDTO(adr));
+        }
+        return out;
+    }
+
+    public List<AddressMapDTO> getAddressFromUuids(List<String> artUuid) {
+        return convertList(addrRepo.findByArticleUuidIn(artUuid));
+    }
+
+    public List<AddressMapDTO> getAddressFromPlaces(List<String> placeId) {
+        return convertList(addrRepo.findByPlaceIdIn(placeId));
+    }
+
+    public void deleteAddress(String artUuid)
+    {
+        AddressMap adr = addrRepo.findByArticleUuid(artUuid);
+
+        if (adr != null) {
+            addrRepo.delete(adr);
+        }
+    }
+
+    public void deletePlaceId(String placeId)
+    {
+        AddressMap adr = addrRepo.findByPlaceId(placeId);
+
+        if (adr != null) {
+            addrRepo.delete(adr);
+        }
+    }
+
+    public void genKnownLocations()
+    {
+        AddressMap adr = addrRepo.findByArticleUuid("CA");
+
+        if (adr != null) {
+            return;
+        }
+        String[] knownLoc = {
+            "Alabama",       "AL", "Montana",        "MT",
+            "Alaska",        "AK", "Nebraska",       "NE",
+            "Arizona",       "AZ", "Nevada",         "NV",
+            "Arkansas",      "AR", "New Hampshire",  "NH",
+            "California",    "CA", "New Jersey",     "NJ",
+            "Colorado",      "CO", "New Mexico",     "NM",
+            "Connecticut",   "CT", "New York",       "NY",
+            "Delaware",      "DE", "North Carolina", "NC",
+            "Florida",       "FL", "North Dakota",   "ND",
+            "Georgia",       "GA", "Ohio",           "OH",
+            "Hawaii",        "HI", "Oklahoma",       "OK",
+            "Idaho",         "ID", "Oregon",         "OR",
+            "Illinois",      "IL", "Pennsylvania",   "PA",
+            "Indiana",       "IN", "Rhode Island",   "RI",
+            "Iowa",          "IA", "South Carolina", "SC",
+            "Kansas",        "KS", "South Dakota",   "SD",
+            "Kentucky",      "KY", "Tennessee",      "TN",
+            "Louisiana",     "LA", "Texas",          "TX",
+            "Maine",         "ME", "Utah",           "UT",
+            "Maryland",      "MD", "Vermont",        "VT",
+            "Massachusetts", "MA", "Virginia",       "VA",
+            "Michigan",      "MI", "Washington",     "WA",
+            "Minnesota",     "MN", "West Virginia",  "WV",
+            "Mississippi",   "MS", "Wisconsin",      "WI",
+            "Missouri",      "MO", "Wyoming",        "WY"
+        };
+        GenericResponse out = new GenericResponse("");
+
+        for (String s : knownLoc) {
+            GeocodingResult res = mapStateLocation(s, out);
+            if (res != null) {
+                saveAddress(s, res);
+            } else {
+                System.out.println("Failed to lookup " + s + ": " + out.getMessage());
+            }
+        }
     }
 }
