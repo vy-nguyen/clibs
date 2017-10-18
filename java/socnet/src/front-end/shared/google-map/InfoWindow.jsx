@@ -1,5 +1,5 @@
 /**
- * Code modified from 'https://maps.googleapis.com/maps/api/js'
+ * Code modified from https://github.com/fullstackreact/google-maps-react
  */
 'use strict';
 
@@ -8,8 +8,8 @@ import PropTypes      from 'prop-types';
 import ReactDOM       from 'react-dom';
 import ReactDOMServer from 'react-dom-server';
 
-export class InfoWindow extends React.Component {
-
+export class InfoWindow extends React.Component
+{
     componentDidMount() {
         this.renderInfoWindow();
     }

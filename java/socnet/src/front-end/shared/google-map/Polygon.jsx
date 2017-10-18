@@ -1,18 +1,20 @@
 /**
- * Code modified from 'https://maps.googleapis.com/maps/api/js'
+ * Code modified from https://github.com/fullstackreact/google-maps-react
  */
 'use strict';
 
 import React, { PropTypes as T } from 'react-mod';
-
-import {Util}           from 'vntd-shared/utils/Enum.jsx';
-import {wrappedPromise} from './HeatMap.jsx';
+import MapBase from './MapBase.jsx';
 
 const evtNames = ['click', 'mouseout', 'mouseover'];
 
-export class Polygon extends React.Component {
+export class Polygon extends MapBase
+{
+    constructor(props) {
+        super(props);
+    }
+
     componentDidMount() {
-        this.polygonPromise = wrappedPromise();
         this.renderPolygon();
     }
 
@@ -32,54 +34,23 @@ export class Polygon extends React.Component {
     }
 
     renderPolygon() {
-        const {
-            map,
-            google,
-            paths,
-            strokeColor,
-            strokeOpacity,
-            strokeWeight,
-            fillColor,
-            fillOpacity
+        const { map, google, paths, strokeColor, strokeOpacity,
+            strokeWeight, fillColor, fillOpacity
         } = this.props;
 
         if (!google) {
             return null;
         }
-
         const params = {
-            map,
-            paths,
-            strokeColor,
-            strokeOpacity,
-            strokeWeight,
-            fillColor,
-            fillOpacity
+            map, paths, strokeColor, strokeOpacity, strokeWeight, fillColor, fillOpacity
         };
 
-        this.polygon = new google.maps.Polygon(params);
-
-        evtNames.forEach(e => {
-            this.polygon.addListener(e, this.handleEvent(e));
-        });
-        this.polygonPromise.resolve(this.polygon);
+        this.polygon = this.mapObj = new google.maps.Polygon(params);
+        this._listenEvents(evtNames);
         return null;
     }
 
     getPolygon() {
-        return this.polygonPromise;
-    }
-
-    handleEvent(evt) {
-        return (e) => {
-            const evtName = `on${Util.camelize(evt)}`
-            if (this.props[evtName]) {
-                this.props[evtName](this.props, this.polygon, e);
-            }
-        }
-    }
-
-    render() {
         return null;
     }
 }

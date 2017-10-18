@@ -8,6 +8,7 @@ import ReactDOM     from 'react-dom';
 import PropTypes    from 'prop-types';
 import invariant    from 'invariant';
 
+import MapBase      from './MapBase.jsx';
 import {Util}       from 'vntd-shared/utils/Enum.jsx';
 
 const mapStyles = {
@@ -48,19 +49,26 @@ const evtNames = [
     'zoom_changed'
 ];
 
-export class Map extends React.Component {
+export class Map extends MapBase
+{
     constructor(props) {
         super(props);
-
         invariant(props.hasOwnProperty('google'), 'You must include a `google` prop.');
 
-        this.listeners = {};
         this.state = {
             currentLocation: {
                 lat: this.props.initialCenter.lat,
                 lng: this.props.initialCenter.lng
             }
         };
+    }
+
+    componentWillReceiveProps(nextProps) {
+        console.log("Will receive props");
+        console.log(nextProps);
+        this.setState({
+            currentLocation: nextProps.initialCenter
+        });
     }
 
     componentDidMount() {
@@ -114,15 +122,16 @@ export class Map extends React.Component {
         if (this.geoPromise) {
             this.geoPromise.cancel();
         }
-        Object.keys(this.listeners).forEach(e => {
-            google.maps.event.removeListener(this.listeners[e]);
-        });
+        this._unListenEvents(google.maps);
     }
 
     loadMap() {
         if (!this.props || !this.props.google) {
             return;
         }
+        console.log("Do map");
+        console.log(this.state.currentLocation);
+
         const {google} = this.props;
         const maps   = google.maps;
         const mapRef = this.refs.map;
@@ -164,30 +173,11 @@ export class Map extends React.Component {
                 delete mapConfig[key];
             }
         });
-        this.map = new maps.Map(node, mapConfig);
+        this.map = this.mapObj = new maps.Map(node, mapConfig);
 
-        evtNames.forEach(e => {
-            this.listeners[e] = this.map.addListener(e, this.handleEvent(e));
-        });
+        this._listenEvents(evtNames);
         maps.event.trigger(this.map, 'ready');
         this.forceUpdate();
-    }
-
-    handleEvent(evtName) {
-        let timeout;
-        const handlerName = `on${Util.camelize(evtName)}`;
-
-        return e => {
-            if (timeout) {
-                clearTimeout(timeout);
-                timeout = null;
-            }
-            timeout = setTimeout(() => {
-                if (this.props[handlerName]) {
-                    this.props[handlerName](this.props, this.map, e);
-                }
-            }, 0);
-        };
     }
 
     recenterMap() {

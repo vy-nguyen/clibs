@@ -21,14 +21,21 @@ export class MapContainer extends React.Component
         this.state = {
             showingInfoWindow: true,
             activeMarker     : {},
-            selectedPlace    : {}
+            selectedPlace    : {},
+            initialCenter    : {
+                lat: 37.774929,
+                lng: -122.419416
+            }
         };
-
+        console.log("constructor, reset ...");
         this._onMarkerClick  = this._onMarkerClick.bind(this);
         this._onInfoWinClose = this._onInfoWinClose.bind(this);
     }
 
     _onMarkerClick(props, marker, e) {
+        console.log("on marker click");
+        console.log(props);
+
         this.setState({
             selectedPlace : props,
             activeMarker  : marker
@@ -38,21 +45,46 @@ export class MapContainer extends React.Component
     _onInfoWinClose() {
     }
 
+    componentWillMount() {
+        let geocoder = this.geocoder, google = this.props.google;
+
+        if (google == null) {
+            return;
+        }
+        if (geocoder == null) {
+            this.geocoder = geocoder = new google.maps.Geocoder();
+        }
+        geocoder.geocode({
+            address: "Pleasanton, CA"
+        }, function(results, status) {
+            console.log("Lookup pleasanton address");
+            let loc = results[0].geometry.location,
+                cord = {
+                    lat: loc.lat(),
+                    lng: loc.lng()
+                };
+            console.log(cord);
+            console.log("$$$$$");
+            this.setState({
+                initialCenter: cord
+            });
+        }.bind(this));
+    }
+
     render() {
-        console.log(this.props);
-        let initLoc = {
-            lat: 40.854885,
-            lng: -88.081807
-        },
-        style = {
+        let style = {
             width: '100vw',
-            height: '100vh'
+            height: '600px'
         };
+        console.log("---------------");
+        console.log(this.state);
         return (
             <Map google={this.props.google} zoom={14}
-                style={style} centerAroundCurrentLocation={true}
-            >
-                <Marker onClick={this._onMarkerClick} name="My Location"/>
+                draggable={true} clickableIcons={true}
+                style={style} initialCenter={this.state.initialCenter}>
+                <Marker onClick={this._onMarkerClick}
+                    draggable={true} title="I'm here"
+                    label="My Location"/>
                 <InfoWindow onClose={this._onInfoWinClose}>
                     <div>
                         <h1>{this.state.selectedPlace.name}</h1>
@@ -85,6 +117,7 @@ export class AdsRealtor extends React.Component
     }
 
     render() {
+        console.log("ads realtor render");
         return (
             <MapContainer google={this.props.google}/>
         );

@@ -1,13 +1,11 @@
 /**
- * Code modified from 'https://maps.googleapis.com/maps/api/js'
+ * Code modified from https://github.com/fullstackreact/google-maps-react
  */
 'use strict';
 
 import React        from 'react-mod';
 import PropTypes    from 'prop-types';
-
-import {Util}           from 'vntd-shared/utils/Enum.jsx';
-import {wrappedPromise} from './HeatMap.jsx';
+import MapBase      from './MapBase.jsx';
 
 const evtNames = [
     'click',
@@ -20,10 +18,13 @@ const evtNames = [
     'recenter',
 ];
 
-export class Marker extends React.Component {
+export class Marker extends MapBase
+{
+    constructor(props) {
+        super(props);
+    }
 
     componentDidMount() {
-        this.markerPromise = wrappedPromise();
         this.renderMarker();
     }
 
@@ -65,29 +66,12 @@ export class Marker extends React.Component {
             title    : title,
             draggable: draggable
         };
-        this.marker = new google.maps.Marker(pref);
-
-        evtNames.forEach(e => {
-            this.marker.addListener(e, this.handleEvent(e));
-        });
-        this.markerPromise.resolve(this.marker);
+        this.marker = this.mapObj = new google.maps.Marker(pref);
+        this._listenEvents(evtNames);
         return null;
     }
 
     getMarker() {
-        return this.markerPromise;
-    }
-
-    handleEvent(evt) {
-        return (e) => {
-            const evtName = `on${Util.camelize(evt)}`
-            if (this.props[evtName]) {
-                this.props[evtName](this.props, this.marker, e);
-            }
-        }
-    }
-
-    render() {
         return null;
     }
 }

@@ -1,32 +1,22 @@
 /**
- * Code modified from 'https://maps.googleapis.com/maps/api/js'
+ * Code modified from https://github.com/fullstackreact/google-maps-react
  */
 'use strict';
 
 import React     from 'react-mod';
 import PropTypes from 'prop-types';
-
-import {Util}    from 'vntd-shared/utils/Enum.jsx';
+import MapBase   from './MapBase.jsx';
 
 const evtNames = ['click', 'mouseover', 'recenter'];
 
-export const wrappedPromise = function() {
-    let wPromise = {},
-        promise = new Promise(function (resolve, reject) {
-            wPromise.resolve = resolve;
-            wPromise.reject = reject;
-        });
-
-    wPromise.then    = promise.then.bind(promise);
-    wPromise.catch   = promise.catch.bind(promise);
-    wPromise.promise = promise;
-    return wPromise;
-}
-
-export class HeatMap extends React.Component {
+export class HeatMap extends MapBase
+{
+    constructor(props) {
+        super(props);
+    }
 
     componentDidMount() {
-        this.heatMapPromise = wrappedPromise();
+        // this.heatMapPromise = wrappedPromise();
         this.renderHeatMap();
     }
 
@@ -63,33 +53,16 @@ export class HeatMap extends React.Component {
             data: positions,
         };
 
-        this.heatMap = new google.maps.visualization.HeatmapLayer(pref);
+        this.heatMap = this.mapObj = new google.maps.visualization.HeatmapLayer(pref);
 
         this.heatMap.set('gradient', gradient);
         this.heatMap.set('radius', radius == null ? 20 : radius);
         this.heatMap.set('opacity', opacity == null ? 0.2 : opacity);
-
-        evtNames.forEach(e => {
-            this.heatMap.addListener(e, this.handleEvent(e));
-        });
-        this.heatMapPromise.resolve(this.heatMap);
+        this._listenEvents(evtNames);
         return null;
     }
 
     getHeatMap() {
-        return this.heatMapPromise;
-    }
-
-    handleEvent(evt) {
-        return (e) => {
-            const evtName = `on${Util.camelize(evt)}`
-            if (this.props[evtName]) {
-                this.props[evtName](this.props, this.heatMap, e);
-            }
-        }
-    }
-
-    render() {
         return null;
     }
 }
