@@ -141,6 +141,15 @@ public class ArtAds
         }
     }
 
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Uuid ").append(articleUuid).append(", img0 ").append(adImgOid0)
+            .append("\n");
+        return sb.toString();
+    }
+
     /**
      * @return the articleUuid
      */

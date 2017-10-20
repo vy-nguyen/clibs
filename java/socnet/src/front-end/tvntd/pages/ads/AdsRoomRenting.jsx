@@ -12,7 +12,7 @@ import Lang                from 'vntd-root/stores/LanguageStore.jsx';
 import StateButton         from 'vntd-shared/utils/StateButton.jsx';
 import ErrorView           from 'vntd-shared/layout/ErrorView.jsx';
 import Actions             from 'vntd-root/actions/Actions.jsx';
-import { AdsStore }        from 'vntd-root/stores/ArticleStore.jsx';
+import AdPropertyStore     from 'vntd-root/stores/AdPropertyStore.jsx';
 import { GenericAds }      from './PostAds.jsx';
 import { FormData, ProcessForm } from 'vntd-shared/forms/commons/ProcessForm.jsx';
 
@@ -76,7 +76,7 @@ class RoomRenting extends FormData
         this.forms = {
             formId     : 'room-ads',
             formFmt    : 'client-form',
-            submitFn   : Actions.publicRoomAds,
+            submitFn   : Actions.postRealtorAds,
             hiddenHead : null,
             hiddenTail : null,
             formEntries: [ {
@@ -148,7 +148,7 @@ class AdsRoomRenting extends GenericAds
             ownerPhones: "123-123-1234",
             ownerEmail : "Your Email"
         };
-        return <ProcessForm form={this.data} store={AdsStore}/>
+        return <ProcessForm form={this.data} store={AdPropertyStore}/>
     }
 }
 

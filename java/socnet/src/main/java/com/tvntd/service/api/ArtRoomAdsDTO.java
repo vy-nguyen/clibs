@@ -26,98 +26,100 @@
  */
 package com.tvntd.service.api;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.LinkedList;
-import java.util.List;
-
 import com.tvntd.models.ArtRoomAds;
-import com.tvntd.objstore.ObjStore;
+import com.tvntd.models.ArticleBase;
 import com.tvntd.util.Util;
 
-public class ArtRoomAdsDTO extends GenericResponse
+public class ArtRoomAdsDTO extends ArtAdsDTO
 {
-    protected ArtRoomAds adPost;
+    protected ArtRoomAds roomAds;
 
     public ArtRoomAdsDTO(ArtRoomAds ads)
     {
-        super(null);
-        adPost = ads;
+        super();
+        roomAds = ads;
     }
 
     public ArtRoomAds fetchAds() {
-        return adPost;
+        return roomAds;
     }
 
-    /**
-     * Json gets
-     */
-    public String getArticleUuid() {
-        return adPost.getArticleUuid();
+    @Override
+    public ArticleBase fetchBaseAds() {
+        return roomAds.getArtBase();
     }
 
-    public String getAuthorUuid() {
-        return adPost.getAuthorUuid();
+    @Override
+    public void setAdImgOid0(String oid) {
     }
 
-    public List<String> getImageUrl()
-    {
-        List<String> imgs = adPost.getArtBase().getPictures();
-
-        if (imgs == null) {
-            return null;
-        }
-        ObjStore store = ObjStore.getInstance();
-        List<String> res = new LinkedList<>();
-
-        for (String oid : imgs) {
-            res.add(store.imgObjPublicUri(oid));
-        }
+    @Override
+    public String fetchAdImgOid0() {
         return null;
     }
 
-    public String getArtTag() {
-        return adPost.getArtBase().getArtTag();
+    @Override
+    public String fetchAdImgOid1() {
+        return null;
     }
 
-    public String getCreatedDate() {
-        DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm");
-        return df.format(adPost.getArtBase().getCreatedDate());
+    @Override
+    public String fetchAdImgOid2() {
+        return null;
     }
 
-    public String getOwnerName() {
-        return Util.fromRawByte(adPost.getOwnerName());
+    @Override
+    public String fetchAdImgOid3() {
+        return null;
     }
 
-    public String getOwnerPhone() {
-        return adPost.getOwnerPhone();
+    @Override
+    public String getAdsType() {
+        return "room";
     }
 
-    public String getOwnerEmail() {
-        return adPost.getOwnerEmail();
+    @Override
+    public String getArticleUuid() {
+        return roomAds.getArticleUuid();
     }
 
-    public String getRentPrice() {
-        return adPost.getRentPrice();
+    @Override
+    public String getAuthorUuid() {
+        return roomAds.getAuthorUuid();
     }
 
-    public String getStreet() {
-        return Util.fromRawByte(adPost.getStreet());
+    @Override
+    public String getBusEmail() {
+        return Util.fromRawByte(roomAds.getOwnerName());
     }
 
-    public String getCity() {
-        return adPost.getCity();
+    @Override
+    public String getBusPhone() {
+        return roomAds.getOwnerPhone();
     }
 
-    public String getState() {
-        return adPost.getState();
+    @Override
+    public String getBusStreet() {
+        return Util.fromRawByte(roomAds.getStreet());
     }
 
-    public String getZip() {
-        return adPost.getZip();
+    @Override
+    public String getBusState() {
+        return roomAds.getState();
     }
 
-    public String getDesc() {
-        return Util.fromRawByte(adPost.getPropDesc());
+    @Override
+    public String getBusCity() {
+        return roomAds.getCity();
+    }
+
+    @Override
+    public String getBusZip() {
+        return roomAds.getZip();
+    }
+
+    @Override
+    public String getBusDesc() {
+        return Util.fromRawByte(roomAds.getPropDesc());
     }
 }

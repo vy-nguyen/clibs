@@ -120,6 +120,8 @@ gretty {
     //port  = 8080
     contextPath = '/'
     servletContainer = 'jetty9'
+    debugPort = 5005
+    debugSuspend = false
     jvmArgs = ['-Djava.net.preferIPv4Stack=true']
 
     if (System.properties['org.eclipse.jetty.annotations.maxWait'] != null) {

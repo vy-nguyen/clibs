@@ -74,13 +74,24 @@ public class MapService implements IMapService
     {
         try {
             GeocodingResult[] results = GeocodingApi.geocode(geoContext, addr).await();
+            System.out.println("Lookup addr " + results + " len " + results.length);
             return results[0];
 
         } catch(ApiException | InterruptedException | IOException e) {
             System.out.println(e.getMessage());
-            out.setMessage(e.getMessage());
+            out.setError(e.getMessage(), "Invalid address: " + addr);
         }
         return null;
+    }
+
+    @Override
+    public AddressMapDTO saveAddress(String artUuid, String address, GenericResponse out)
+    {
+        GeocodingResult geo = getLocation(address, out);
+        if (geo == null) {
+            return null;
+        }
+        return saveAddress(artUuid, geo);
     }
 
     @Override

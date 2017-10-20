@@ -515,6 +515,8 @@ class ProcessForm extends React.Component
     _updateState(data, result, status, resp) {
         let context = this.props.form;
 
+        console.log("-- update state...");
+        console.log(result);
         if (context.isSubmitting() === true) {
             context.submitNotif(this.props.store, data, result, status);
 
