@@ -45,7 +45,6 @@ Build.*
 build
 logs/
 java/socnet/foss
-java/socnet/bin
 java/socnet/node_modules
 java/socnet/bower_components
 java/socnet/src/main/webapp/client
@@ -55,6 +54,14 @@ java/socnet/tvntd-*.log
 java/socnet/src/front-end/vntd-*
 java/socnet/src/main/css/*.dep
 java/socnet/src/main/webapp/css/tvntd*
+java/socnet/src/main/webapp/WEB-INF/*
+java/socialauth/.classpath
+java/socialauth/.gitignore
+java/socialauth/.project
+java/socialauth/.settings/*
+java/.project
+java/.settings/*
+java/skel/bin/*
 foss/**
 include/foss/*
 */include/*-def.cpp
