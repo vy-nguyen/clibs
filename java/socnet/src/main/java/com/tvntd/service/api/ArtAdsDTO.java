@@ -32,129 +32,214 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.tvntd.models.ArtAds;
-import com.tvntd.models.ArtRoomAds;
+import com.tvntd.models.ArticleBase;
 import com.tvntd.objstore.ObjStore;
+import com.tvntd.service.api.IMapService.AddressMapDTO;
 import com.tvntd.util.Util;
 
-public class ArtAdsDTO extends GenericResponse
+public abstract class ArtAdsDTO extends GenericResponse
 {
-    protected ArtAds adPost;
-    protected ArtRoomAds roomAds;
+    protected AddressMapDTO location;
 
-    public ArtAdsDTO(ArtAds ads)
-    {
+    public ArtAdsDTO() {
         super(null);
-        adPost = ads;
     }
 
-    public ArtAds fetchAds() {
-        return adPost;
+    public void setLocation(AddressMapDTO loc) {
+        location = loc;
     }
 
-    public ArtRoomAds fetchRoomAds() {
-        return roomAds;
-    }
-
-    /**
-     * @param roomAd the roomAd to set
-     */
-    public void setRoomAd(ArtRoomAds roomAd) {
-        this.roomAds = roomAd;
+    public AddressMapDTO fetchLocation() {
+        return location;
     }
 
     /**
-     * Json gets
+     * External JSON gets.
      */
-    public String getArticleUuid() {
-        return adPost.getArticleUuid();
+    public abstract String getAdsType();
+    public abstract String getArticleUuid();
+    public abstract String getAuthorUuid();
+    public abstract String getBusEmail();
+    public abstract String getBusPhone();
+    public abstract String getBusStreet();
+    public abstract String getBusState();
+    public abstract String getBusCity();
+    public abstract String getBusZip();
+    public abstract String getBusDesc();
+
+    public Double getLat() {
+        return location != null ? location.getLat() : 0.0;
     }
 
-    public String getAuthorUuid() {
-        return adPost.getAuthorUuid();
+    public Double getLng() {
+        return location != null ? location.getLng() : 0.0;
     }
 
-    public void setAdImgOid0(String oid) {
-        adPost.setAdImgOid0(oid);
+    public String getPlaceId() {
+        return location != null ? location.getPlaceId() : null;
     }
 
     public List<String> getImageUrl()
     {
         List<String> img = new LinkedList<>();
         ObjStore store = ObjStore.getInstance();
-        String url = store.imgObjPublicUri(adPost.getAdImgOid0());
+        String url = store.imgObjPublicUri(this.fetchAdImgOid0());
 
         if (url != null) {
             img.add(url);
         }
-        url = store.imgObjPublicUri(adPost.getAdImgOid1());
+        url = store.imgObjPublicUri(this.fetchAdImgOid1());
         if (url != null) {
             img.add(url);
         }
-        url = store.imgObjPublicUri(adPost.getAdImgOid2());
+        url = store.imgObjPublicUri(this.fetchAdImgOid2());
         if (url != null) {
             img.add(url);
         }
-        url = store.imgObjPublicUri(adPost.getAdImgOid3());
+        url = store.imgObjPublicUri(this.fetchAdImgOid3());
         if (url != null) {
             img.add(url);
         }
         return img;
     }
 
+    /**
+     * Internal fetches.
+     */
+    public abstract void setAdImgOid0(String oid);
+    public abstract String fetchAdImgOid0();
+    public abstract String fetchAdImgOid1();
+    public abstract String fetchAdImgOid2();
+    public abstract String fetchAdImgOid3();
+    protected abstract ArticleBase fetchBaseAds();
+
     public String getArtTag() {
-        return adPost.getArtBase().getArtTag();
+        return fetchBaseAds().getArtTag();
     }
 
     public String getCreatedDate() {
         DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm");
-        return df.format(adPost.getArtBase().getCreatedDate());
+        return df.format(fetchBaseAds().getCreatedDate());
     }
 
-    public String getBusName() {
-        return Util.fromRawByte(adPost.getBusName());
-    }
+    /**
+     * Business Ads.
+     */
+    public static class BusAdsDTO extends ArtAdsDTO
+    {
+        protected ArtAds adPost;
 
-    public String getBusInfo() {
-        return Util.fromRawByte(adPost.getBusInfo());
-    }
+        public BusAdsDTO(ArtAds ads)
+        {
+            super();
+            adPost = ads;
+        }
 
-    public String getBusCat() {
-        return Util.fromRawByte(adPost.getBusCat());
-    }
+        public ArtAds fetchAds() {
+            return adPost;
+        }
 
-    public String getBusWeb() {
-        return Util.fromRawByte(adPost.getBusWeb());
-    }
+        @Override
+        public void setAdImgOid0(String oid) {
+            adPost.setAdImgOid0(oid);
+        }
 
-    public String getBusEmail() {
-        return Util.fromRawByte(adPost.getBusEmail());
-    }
+        @Override
+        public String fetchAdImgOid0() {
+            return adPost.getAdImgOid0();
+        }
 
-    public String getBusPhone() {
-        return Util.fromRawByte(adPost.getBusPhone());
-    }
+        @Override
+        public String fetchAdImgOid1() {
+            return adPost.getAdImgOid1();
+        }
 
-    public String getBusStreet() {
-        return Util.fromRawByte(adPost.getBusStreet());
-    }
+        @Override
+        public String fetchAdImgOid2() {
+            return adPost.getAdImgOid2();
+        }
 
-    public String getBusState() {
-        return Util.fromRawByte(adPost.getBusState());
-    }
+        @Override
+        public String fetchAdImgOid3() {
+            return adPost.getAdImgOid3();
+        }
 
-    public String getBusCity() {
-        return Util.fromRawByte(adPost.getBusCity());
-    }
+        @Override
+        protected ArticleBase fetchBaseAds() {
+            return adPost.getArtBase();
+        }
 
-    public String getBusZip() {
-        return Util.fromRawByte(adPost.getBusZip());
-    }
+        /**
+         * Json gets
+         */
+        @Override
+        public String getAdsType() {
+            return "bus";
+        }
 
-    public String getBusHour() {
-        return Util.fromRawByte(adPost.getBusHour());
-    }
+        @Override
+        public String getArticleUuid() {
+            return adPost.getArticleUuid();
+        }
 
-    public String getBusDesc() {
-        return Util.fromRawByte(adPost.getBusDesc());
+        @Override
+        public String getAuthorUuid() {
+            return adPost.getAuthorUuid();
+        }
+
+        public String getBusName() {
+            return Util.fromRawByte(adPost.getBusName());
+        }
+
+        public String getBusInfo() {
+            return Util.fromRawByte(adPost.getBusInfo());
+        }
+
+        public String getBusCat() {
+            return Util.fromRawByte(adPost.getBusCat());
+        }
+
+        public String getBusWeb() {
+            return Util.fromRawByte(adPost.getBusWeb());
+        }
+
+        @Override
+        public String getBusEmail() {
+            return Util.fromRawByte(adPost.getBusEmail());
+        }
+
+        @Override
+        public String getBusPhone() {
+            return Util.fromRawByte(adPost.getBusPhone());
+        }
+
+        @Override
+        public String getBusStreet() {
+            return Util.fromRawByte(adPost.getBusStreet());
+        }
+
+        @Override
+        public String getBusState() {
+            return Util.fromRawByte(adPost.getBusState());
+        }
+
+        @Override
+        public String getBusCity() {
+            return Util.fromRawByte(adPost.getBusCity());
+        }
+
+        @Override
+        public String getBusZip() {
+            return Util.fromRawByte(adPost.getBusZip());
+        }
+
+        public String getBusHour() {
+            return Util.fromRawByte(adPost.getBusHour());
+        }
+
+        @Override
+        public String getBusDesc() {
+            return Util.fromRawByte(adPost.getBusDesc());
+        }
     }
 }

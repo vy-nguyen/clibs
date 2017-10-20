@@ -61,11 +61,13 @@ import com.tvntd.models.ArticleBase;
 import com.tvntd.models.ArticleBrief;
 import com.tvntd.models.ArticlePost;
 import com.tvntd.service.api.ArtAdsDTO;
+import com.tvntd.service.api.ArtAdsDTO.BusAdsDTO;
 import com.tvntd.service.api.ArtProductDTO;
 import com.tvntd.service.api.ArtRoomAdsDTO;
 import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArticleSvc;
 import com.tvntd.service.api.ICommentService;
+import com.tvntd.service.api.IMapService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.util.Util;
 
@@ -102,10 +104,13 @@ public class ArticleSvc implements IArticleSvc
     @Autowired
     protected ArtRoomAdsRepo adRoomRepo;
 
+    @Autowired
+    protected IMapService mapSvc;
+
     // --------------------------------------------------------------------------------
     // Static APIs
     //
-    public static void applyPostAds(AdsForm form, ArtAdsDTO adsDTO)
+    public static void applyPostAds(AdsForm form, BusAdsDTO adsDTO, IMapService map)
     {
         ArtAds ads = adsDTO.fetchAds();
         ads.setBusName(Util.toRawByte(form.getBusName(), 128));
@@ -120,11 +125,19 @@ public class ArticleSvc implements IArticleSvc
         ads.setBusZip(Util.toRawByte(form.getBusZip(), 32));
         ads.setBusHour(Util.toRawByte(form.getBusHour(), 1024));
         ads.setBusDesc(Util.toRawByte(form.getBusDesc(), 1 << 14));
+
+        adsDTO.setLocation(
+                map.saveAddress(
+                    ads.getArticleUuid(),
+                    Util.makeAddress(form.getBusStreet(), form.getBusCity(),
+                        form.getBusState(), form.getBusZip()),
+                    adsDTO));
     }
   
-    public static void applyPostAds(AdsRoomForm form, ArtAdsDTO adsDTO)
+    public static ArtRoomAdsDTO
+    applyPostAds(AdsRoomForm form, BusAdsDTO inDTO, IMapService map)
     {
-        ArtRoomAds ads = new ArtRoomAds(adsDTO.fetchAds());
+        ArtRoomAds ads = new ArtRoomAds(inDTO.fetchAds());
 
         ads.setOwnerEmail(form.getOwnerEmail());
         ads.setOwnerName(Util.toRawByte(form.getOwnerName(), 128));
@@ -135,7 +148,15 @@ public class ArticleSvc implements IArticleSvc
         ads.setCity(form.getCity());
         ads.setZip(form.getZip());
         ads.setPropDesc(Util.toRawByte(form.getDesc(), 2048));
-        adsDTO.setRoomAd(ads);
+
+        ArtRoomAdsDTO adsDTO = new ArtRoomAdsDTO(ads);
+        adsDTO.setLocation(
+                map.saveAddress(
+                    ads.getArticleUuid(),
+                    Util.makeAddress(form.getStreet(), form.getCity(),
+                        form.getState(), form.getZip()),
+                    adsDTO));
+        return adsDTO;
     }
 
     public static void
@@ -319,7 +340,9 @@ public class ArticleSvc implements IArticleSvc
         List<ArtAdsDTO> result = new LinkedList<>();
 
         for (ArtAds a : artList) {
-            result.add(new ArtAdsDTO(a));
+            BusAdsDTO bus = new BusAdsDTO(a);
+            bus.setLocation(mapSvc.getAddressFromUuid(a.getArticleUuid()));
+            result.add(bus);
         }
         return result;
     }
@@ -330,7 +353,9 @@ public class ArticleSvc implements IArticleSvc
         ArtAds ads = artAdsRepo.findByArticleUuid(adUuid);
 
         if (ads != null) {
-            return new ArtAdsDTO(ads);
+            BusAdsDTO result = new BusAdsDTO(ads);
+            result.setLocation(mapSvc.getAddressFromUuid(adUuid));
+            return result;
         }
         return null;
     }
@@ -355,7 +380,9 @@ public class ArticleSvc implements IArticleSvc
         List<ArtRoomAdsDTO> out = new LinkedList<>();
 
         for (ArtRoomAds a : list) {
-            out.add(new ArtRoomAdsDTO(a));
+            ArtRoomAdsDTO ads = new ArtRoomAdsDTO(a);
+            ads.setLocation(mapSvc.getAddressFromUuid(a.getArticleUuid()));
+            out.add(ads);
         }
         return out;
     }
@@ -422,11 +449,13 @@ public class ArticleSvc implements IArticleSvc
     @Override
     public void saveArtAds(ArtAdsDTO ads)
     {
-        ArtRoomAds r = ads.fetchRoomAds();
-        if (r == null) {
-            artAdsRepo.save(ads.fetchAds());
-        } else {
-            adRoomRepo.save(r);
+        if (ads instanceof BusAdsDTO) {
+            System.out.println("Save ad " + ((BusAdsDTO)ads).fetchAds());
+            artAdsRepo.save(((BusAdsDTO) ads).fetchAds());
+            return;
+        }
+        if (ads instanceof ArtRoomAdsDTO) {
+            adRoomRepo.save(((ArtRoomAdsDTO) ads).fetchAds());
         }
     }
 
@@ -688,9 +717,25 @@ public class ArticleSvc implements IArticleSvc
         artAdsRepo.delete(ads);
     }
 
+    private void deleteArtAds(ArtRoomAds ads)
+    {
+        ArticleBrief brief = new ArticleBrief(ads.getArtBase());
+
+        s_log.info("Delete ads uuid " + ads.getArticleUuid());
+        commonDelete(brief, null);
+        adRoomRepo.delete(ads);
+    }
+
     @Override
-    public void deleteArtAds(ArtAdsDTO adsDTO) {
-        deleteArtAds(adsDTO.fetchAds());
+    public void deleteArtAds(ArtAdsDTO adsDTO)
+    {
+        if (adsDTO instanceof BusAdsDTO) {
+            deleteArtAds(((BusAdsDTO) adsDTO).fetchAds());
+            return;
+        }
+        if (adsDTO instanceof ArtRoomAdsDTO) {
+            deleteArtAds(((ArtRoomAdsDTO) adsDTO).fetchAds());
+        }
     }
 
     @Override
@@ -762,121 +807,3 @@ public class ArticleSvc implements IArticleSvc
     @Override
     public void cleanupDatabase() {}
 }
-
-    /*
-        Map<String, String> uuids = new HashMap<>();
-        Map<String, String> authors = new HashMap<>();
-        Map<String, ArticleBrief> artBriefs = new HashMap<>();
-        List<ArticleRank> all = artRankRepo.findAll();
-
-        for (ArticleRank r : all) {
-            ArticleBrief brief = new ArticleBrief();
-            brief.fromArticleRank(r);
-
-            Article art = artRepo.findByArticleUuid(r.getArticleUuid());
-            if (art != null) {
-                brief.getArtBase().fromArticle(art);
-            } else {
-                uuids.put(brief.getArticleUuid(), brief.getAuthorUuid());
-            }
-            artBriefs.put(brief.getArticleUuid(), brief);
-            authors.put(brief.getAuthorUuid(), brief.getArticleUuid());
-            artBriefRepo.save(brief);
-        }
-        List<Article> arts = artRepo.findAll();
-        for (Article a : arts) {
-            ArticlePost post = new ArticlePost(a.getAuthorUuid(), a.getArticleUuid());
-
-            post.setContent(a.getContent());
-            post.setPending(false);
-            artPostRepo.save(post);
-
-            if (uuids.get(a.getArticleUuid()) == null) {
-                ArticleBrief brief = artBriefs.get(a.getArticleUuid());
-
-                if (brief == null) {
-                    brief = new ArticleBrief();
-                }
-                brief.fromArticle(a);
-                artBriefRepo.save(brief);
-            }
-        }
-        List<AdsPost> ads = adsRepo.findAll();
-        for (AdsPost a : ads) {
-            ArtAds artAd = new ArtAds();
-
-            artAd.fromAdsPost(a);
-            artAd.fromProfile(profileRepo.findByUserUuid(artAd.getAuthorUuid()));
-            artAdsRepo.save(artAd);
-        }
-        List<Product> products = prodRepo.findAll();
-        for (Product p : products) {
-            ArtProduct prod = new ArtProduct();
-            prod.fromProduct(p);
-            artProdRepo.save(prod);
-        }
-        for (Map.Entry<String, String> e : authors.entrySet()) {
-            List<ArticlePostDTO> fulls   = getArticleDTOByAuthor(e.getKey());
-            List<ArticleBriefDTO> briefs = getArticleBriefDTOByAuthor(e.getKey());
-
-            System.out.println("Author " + e.getKey() + " has brief " +
-                    briefs.size() + ", full " + fulls.size());
-            for (ArticleBriefDTO b : briefs) {
-                ArticleBrief r = b.fetchArtRank();
-                System.out.println("\tArt " + b.getArticleUuid() + ", base " +
-                        r.getArtBase() + " attr " + r.getArtAttr());
-            }
-        }
-    }
-
-    public void cleanupDatabase()
-    {
-        List<ArticlePost> arts = artPostRepo.findAll();
-
-        for (ArticlePost a : arts) {
-            if (profileRepo.findByUserUuid(a.getAuthorUuid()) == null) {
-                System.out.println("Delete stale art " + a.getArticleUuid());
-                artPostRepo.delete(a);
-            }
-        }
-
-        List<ArticleBrief> briefs = artBriefRepo.findAll();
-        for (ArticleBrief a : briefs) {
-            ArticleBase b = a.getArtBase();
-            if (b.getArtTag() == null) {
-                String artUuid = b.getArticleUuid();
-                if (artPostRepo.findByArticleUuid(artUuid) == null &&
-                    artAdsRepo.findByArticleUuid(artUuid) == null &&
-                    artProdRepo.findByArticleUuid(artUuid) == null) {
-                    System.out.println("Delete invalid art " + b.getArtTitle());
-                    artBriefRepo.delete(a);
-                    continue;
-                }
-            }
-            if (profileRepo.findByUserId(b.getAuthorId()) == null) {
-                System.out.println("Delete invalid art userId " + b.getAuthorId());
-                artBriefRepo.delete(a);
-            }
-        }
-
-        List<ArtProduct> products = artProdRepo.findAll();
-        for (ArtProduct p : products) {
-            ArticleBase b = p.getArtBase();
-            if (b.getArtTag() == null) {
-                b.setArtTag(ArtTag.ESTORE);
-                System.out.println("Update artTag prod for " + b.getArtTitle());
-                artBaseRepo.save(b);
-            }
-        }
-
-        List<ArtAds> ads = artAdsRepo.findAll();
-        for (ArtAds a : ads) {
-            ArticleBase b = a.getArtBase();
-            if (b.getArtTag() == null) {
-                b.setArtTag(ArtTag.ADS);
-                System.out.println("Update artTag ads for " + b.getArtTitle());
-                artBaseRepo.save(b);
-            }
-        }
-    }
-    */

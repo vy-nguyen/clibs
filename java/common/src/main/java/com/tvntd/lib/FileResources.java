@@ -30,8 +30,6 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.nio.ByteBuffer;
 
-import com.sun.management.UnixOperatingSystemMXBean;
-
 public final class FileResources
 {
     private static ThreadLocal<byte[]> s_buffer = new ThreadLocal<byte[]>() {
@@ -76,10 +74,6 @@ public final class FileResources
     public static long getOpenedFiles()
     {
         OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
-        if (os instanceof UnixOperatingSystemMXBean) {
-            UnixOperatingSystemMXBean unix = (UnixOperatingSystemMXBean)os;
-            return unix.getOpenFileDescriptorCount();
-        }
         return 0;
     }
 

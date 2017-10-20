@@ -26,6 +26,8 @@
  */
 package com.tvntd.service.user;
 
+import java.util.Date;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,21 +51,36 @@ public class AnnonService implements IAnnonService
     @Autowired
     protected AnnonUserRepo annonRepo;
 
+    protected void updateAnnonVisit(AnnonUser user, String ip)
+    {
+        user.setRemoteIp(ip);
+        user.setVisitSessions(user.getVisitSessions() + 1);
+        user.setLastSession(new Date());
+        annonRepo.save(user);
+    }
+
     @Override
     public AnnonUserDTO getAnnonUser(HttpServletRequest reqt,
             HttpServletResponse resp, HttpSession session)
     {
         AnnonUser user;
-        AnnonUserDTO dto;
         String ip = ServiceUser.getClientIP(reqt);
         Cookie cookie = WebUtils.getCookie(reqt, annonKey);
+        AnnonUserDTO dto = (AnnonUserDTO) session.getAttribute(annonKey);
 
+        if (dto != null) {
+            user = dto.fetchAnnonUser();
+            if (cookie != null && !cookie.getValue().equals(user.getUserUuid())) {
+                user.setUserUuid(cookie.getValue());
+                updateAnnonVisit(user, ip);
+            }
+            return dto;
+        }
         if (cookie == null) {
             user = new AnnonUser();
             dto = new AnnonUserDTO(user);
 
-            user.setRemoteIp(ip);
-            annonRepo.save(user);
+            updateAnnonVisit(user, ip);
             session.setAttribute(annonKey, dto);
 
             cookie = new Cookie(annonKey, user.getUserUuid());
@@ -73,22 +90,12 @@ public class AnnonService implements IAnnonService
             resp.addCookie(cookie);
             return dto;
         }
-        dto = (AnnonUserDTO) session.getAttribute(annonKey);
-        if (dto != null) {
-            user = dto.fetchAnnonUser();
-            if (!cookie.getValue().equals(user.getUserUuid())) {
-                user.setUserUuid(cookie.getValue());
-                user.setRemoteIp(ip);
-                annonRepo.save(user);
-            }
-            return dto;
-        }
-        user = annonRepo.findByUserUuid(cookie.getValue());
+        String uuid = cookie.getValue();
+        user = annonRepo.findByUserUuid(uuid);
         if (user == null) {
-            user = new AnnonUser(cookie.getValue());
+            user = new AnnonUser(uuid);
         }
-        user.setRemoteIp(ip);
-        annonRepo.save(user);
+        updateAnnonVisit(user, ip);
 
         dto = new AnnonUserDTO(user);
         session.setAttribute(annonKey, dto);

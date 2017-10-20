@@ -69,6 +69,7 @@ import com.tvntd.lib.ObjectId;
 import com.tvntd.models.Profile;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.ArtAdsDTO;
+import com.tvntd.service.api.ArtAdsDTO.BusAdsDTO;
 import com.tvntd.service.api.ArtProductDTO;
 import com.tvntd.service.api.ArtRoomAdsDTO;
 import com.tvntd.service.api.GenericResponse;
@@ -326,6 +327,7 @@ public class PublicPath
             InputStream is = file.getInputStream();
             ObjectId oid = store.putPublicImg(is, (int)file.getSize());
 
+            System.out.println("Save oid img " + oid.name());
             if (oid != null) {
                 ads.setAdImgOid0(oid.name());
             }
@@ -351,7 +353,7 @@ public class PublicPath
     publishAds(@RequestBody AdsForm form,
             HttpServletRequest reqt, HttpServletResponse resp, HttpSession session)
     {
-        ArtAdsDTO ads = null;
+        BusAdsDTO ads = null;
         AnnonUserDTO user = null;
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
 
@@ -371,7 +373,7 @@ public class PublicPath
             System.out.println("Failed to validate ads input...");
             return UserPath.s_saveObjFailed;
         }
-        ArticleSvc.applyPostAds(form, ads);
+        ArticleSvc.applyPostAds(form, ads, mapSvc);
         authorSvc.createAdsRank(ads.fetchAds(), user);
         artSvc.saveArtAds(ads);
         artTagSvc.addPublicTagPost(form.getBusCat(), ads.getArticleUuid());
@@ -393,7 +395,7 @@ public class PublicPath
     publishRoomAds(@RequestBody AdsRoomForm form,
             HttpServletRequest reqt, HttpServletResponse resp, HttpSession session)
     {
-        ArtAdsDTO ads = null;
+        BusAdsDTO ads = null;
         AnnonUserDTO user = null;
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
 
@@ -408,8 +410,8 @@ public class PublicPath
             s_log.info("Failed to validate ads form");
             return UserPath.s_saveObjFailed;
         }
-        ArticleSvc.applyPostAds(form, ads);
-        artSvc.saveArtAds(ads);
+        ArtRoomAdsDTO save = ArticleSvc.applyPostAds(form, ads, mapSvc);
+        artSvc.saveArtAds(save);
 
         if (profile != null) {
             profile.assignPendAds(null);
@@ -417,7 +419,7 @@ public class PublicPath
         if (user != null) {
             user.assignPendAds(null);
         }
-        return ads;
+        return save;
     }
 
     @RequestMapping(value = "/public/get-room-ads",

@@ -69,8 +69,9 @@ const Actions = Reflux.createActions({
 
     // Public ads posting
     publicPostAds:   completedFailedFn,
-    publicRoomAds:   completedFailedFn,
     getPublishAds:   completedFailedFn,
+    postRealtorAds:  completedFailedFn,
+    getRealtorAds:   completedFailedFn,
 
     // Rank article
     getArticleRank:  completedFailedFn,
@@ -327,13 +328,19 @@ Actions.publicPostAds.listen(function(data) {
     postRestCall(data, "/public/publish-ads", true, this, false);
 });
 
-Actions.publicRoomAds.listen(function(data) {
+Actions.getPublishAds.listen(function(data) {
+    postRestCall(data, "/public/get-ads", true, this, false);
+});
+
+Actions.postRealtorAds.listen(function(data) {
     console.log(data);
     postRestCall(data, "/public/publish-room-ads", true, this, false);
 });
 
-Actions.getPublishAds.listen(function(data) {
-    postRestCall(data, "/public/get-ads", true, this, false);
+Actions.getRealtorAds.listen(function(data) {
+    console.log("get realtor ads");
+    console.log(data);
+    postRestCall(data, "/public/get-room-ads", true, this, false);
 });
 
 /**

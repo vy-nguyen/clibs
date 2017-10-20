@@ -39,6 +39,7 @@ public interface IMapService
     GeocodingResult mapZipLocation(String zip, GenericResponse out);
     GeocodingResult mapStateLocation(String state, GenericResponse out);
 
+    AddressMapDTO saveAddress(String artUuid, String address, GenericResponse out);
     AddressMapDTO saveAddress(String artUuid, GeocodingResult result);
     AddressMapDTO getAddressFromUuid(String artUuid);
     AddressMapDTO getAddressFromPlace(String placeId);

@@ -34,6 +34,7 @@ import com.tvntd.lib.ObjectId;
 import com.tvntd.models.AnnonUser;
 import com.tvntd.models.ArtAds;
 import com.tvntd.objstore.ObjStore;
+import com.tvntd.service.api.ArtAdsDTO.BusAdsDTO;
 import com.tvntd.util.Constants;
 
 public interface IAnnonService
@@ -54,7 +55,7 @@ public interface IAnnonService
     {
         private static String s_baseUri = "/rs/objs";
         private AnnonUser user;
-        private ArtAdsDTO pendArtAds;
+        private BusAdsDTO pendArtAds;
 
         public AnnonUserDTO(AnnonUser user) {
             this.user = user;
@@ -64,15 +65,15 @@ public interface IAnnonService
             return this.user;
         }
 
-        public void assignPendAds(ArtAdsDTO ads) {
+        public void assignPendAds(BusAdsDTO ads) {
             pendArtAds = ads;
         }
 
-        public ArtAdsDTO genPendArtAds()
+        public BusAdsDTO genPendArtAds()
         {
             if (pendArtAds == null) {
                 ArtAds ads = new ArtAds(user.getUserUuid(), Constants.PublicId);
-                pendArtAds = new ArtAdsDTO(ads);
+                pendArtAds = new BusAdsDTO(ads);
             }
             return pendArtAds;
         }

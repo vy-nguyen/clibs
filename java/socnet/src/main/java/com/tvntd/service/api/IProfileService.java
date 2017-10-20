@@ -43,6 +43,7 @@ import com.tvntd.models.Profile;
 import com.tvntd.models.Role;
 import com.tvntd.models.User;
 import com.tvntd.objstore.ObjStore;
+import com.tvntd.service.api.ArtAdsDTO.BusAdsDTO;
 import com.tvntd.service.api.IArticleSvc.ArticlePostDTO;
 import com.tvntd.util.Constants;
 import com.tvntd.util.Util;
@@ -96,7 +97,7 @@ public interface IProfileService
         private LinkedList<ArtProductDTO>  publishedProds;
         private LinkedList<ArtProductDTO>  savedProds;
 
-        private ArtAdsDTO                  pendArtAds;
+        private BusAdsDTO                  pendArtAds;
 
         // NewsFeed for this profile.
         //
@@ -416,15 +417,15 @@ public interface IProfileService
 
         // ------------------ Ads Posting ----------------------
         //
-        public void assignPendAds(ArtAdsDTO ads) {
+        public void assignPendAds(BusAdsDTO ads) {
             pendArtAds = ads;
         }
 
-        public ArtAdsDTO genPendArtAds()
+        public BusAdsDTO genPendArtAds()
         {
             if (pendArtAds == null) {
                 ArtAds ad = new ArtAds(getUserUuid(), fetchUserId());
-                pendArtAds = new ArtAdsDTO(ad);
+                pendArtAds = new BusAdsDTO(ad);
             }
             return pendArtAds;
         }
