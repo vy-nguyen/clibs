@@ -51,12 +51,21 @@ class FormData
     }
 
     clearData() {
+        let entryInfo = [];
+
         this.iterFormFields(null, null, function(arg, entry) {
             InputStore.freeItemIndex(entry.inpName);
         });
         if (this.dzImage != null) {
             this.dzImage.removeAllFiles();
         }
+        this.iterFormFields(entryInfo, null, function(einfo, entry, section) {
+            if (entry.editor === true) {
+                entry.inpDefVal = "";
+            } else {
+                entry.inpDefVal = null;
+            }
+        });
     }
 
     setImageId(imgId) {
@@ -421,9 +430,20 @@ class FormData
         this._onClickBtn = null;
     }
 
-    submitFailure(result, status) {
+    submitError(store, result, status) {}
+    submitFailure(store, result, status) {}
+
+    submitFailureBase(store, result, status) {
+        this.submitFailure(store, result, status);
         this.changeSubmitState("failure", false);
         this._setAllDefValues();
+    }
+
+
+    submitErrorBase(store, result, status) {
+        this.changeSubmitState("failure", false);
+        ErrorStore.reportErrMesg(this.getFormId(), result.error, result.message);
+        return this.submitError(store, result, status);
     }
 
     submitAct(data) {
@@ -512,20 +532,32 @@ class ProcessForm extends React.Component
         });
     }
 
-    _updateState(data, result, status, resp) {
-        let context = this.props.form;
+    _updateState(data, result, status, isArr) {
+        let errFlags = null, context = this.props.form;
 
-        console.log("-- update state...");
-        console.log(result);
-        if (context.isSubmitting() === true) {
-            context.submitNotif(this.props.store, data, result, status);
-
-            if (this._imgDz != null) {
-                this._imgDz.removeAllFiles();
-            }
-            this.setState(this._getInitState());
+        if (context.isSubmitting() !== true) {
             return;
         }
+        if (status === "failure" || result.error != null) {
+            if (status === "failure") {
+                errFlags = context.submitFailureBase(this.props.store, result, status);
+            }
+            if (result.error != null) {
+                errFlags = context.submitErrorBase(this.props.store, result, status);
+            }
+            if (errFlags != null && ! _.isEmpty(errFlags)) {
+                this.setState({
+                    errFlags: errFlags
+                });
+            }
+            return;
+        }
+        context.submitNotif(this.props.store, data, result, status);
+
+        if (this._imgDz != null) {
+            this._imgDz.removeAllFiles();
+        }
+        this.setState(this._getInitState());
     }
 
     _submitClick() {

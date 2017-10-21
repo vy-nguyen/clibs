@@ -68,6 +68,7 @@ import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArticleSvc;
 import com.tvntd.service.api.ICommentService;
 import com.tvntd.service.api.IMapService;
+import com.tvntd.service.api.IMapService.AddressMapDTO;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.util.Util;
 
@@ -736,6 +737,7 @@ public class ArticleSvc implements IArticleSvc
         if (adsDTO instanceof ArtRoomAdsDTO) {
             deleteArtAds(((ArtRoomAdsDTO) adsDTO).fetchAds());
         }
+        mapSvc.deleteAddress(adsDTO.getArticleUuid());
     }
 
     @Override

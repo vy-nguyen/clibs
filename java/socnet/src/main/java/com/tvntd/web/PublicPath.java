@@ -411,8 +411,9 @@ public class PublicPath
             return UserPath.s_saveObjFailed;
         }
         ArtRoomAdsDTO save = ArticleSvc.applyPostAds(form, ads, mapSvc);
-        artSvc.saveArtAds(save);
-
+        if (save.getError() == null) {
+            artSvc.saveArtAds(save);
+        }
         if (profile != null) {
             profile.assignPendAds(null);
         }

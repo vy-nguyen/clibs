@@ -72,15 +72,19 @@ public class MapService implements IMapService
 
     protected GeocodingResult getLocation(String addr, GenericResponse out)
     {
+        String mesg = null;
         try {
             GeocodingResult[] results = GeocodingApi.geocode(geoContext, addr).await();
-            System.out.println("Lookup addr " + results + " len " + results.length);
-            return results[0];
+            if (results != null && results.length > 0) {
+                return results[0];
+            }
+            mesg = "Address is not in Google map";
 
         } catch(ApiException | InterruptedException | IOException e) {
-            System.out.println(e.getMessage());
-            out.setError(e.getMessage(), "Invalid address: " + addr);
+            mesg = e.getMessage();
+            System.out.println(mesg);
         }
+        out.setError(mesg, "Invalid address: " + addr);
         return null;
     }
 

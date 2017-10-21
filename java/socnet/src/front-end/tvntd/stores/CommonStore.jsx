@@ -135,11 +135,15 @@ class CommonStore {
         let it = this._addItemStore(item, true), pubTag = it.publicTag;
 
         this._notifyListeners("add", [it]);
-        store.trigger(this.data, [it], "postOk", true, it.authorUuid);
+        store.trigger(this.data, it, "postOk", false, it.authorUuid);
+
+        if (it.error != null) {
+            this._removeItemStore([it.articleUuid], it.authorUuid, true);
+        }
     }
 
     onPublishItemFailure(item, store) {
-        store.trigger(this.data, null, "failure", false, item.authorUuid);
+        store.trigger(this.data, item, "failure", false, item.authorUuid);
     }
 
     onGetPublishItemCompleted(data, key, store) {

@@ -88,8 +88,10 @@ public class ArtRoomAds
 
     public ArtRoomAds() {}
 
-    public ArtRoomAds(ArtAds ads) {
+    public ArtRoomAds(ArtAds ads)
+    {
         this(ads.getArtBase());
+        authorUuid = ads.getAuthorUuid();
     }
 
     public ArtRoomAds(String authorUuid, Long authorId)
