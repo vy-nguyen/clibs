@@ -329,7 +329,7 @@ let UserStore = Reflux.createStore({
     },
 
     onRefreshNotifyCompleted: function(resp) {
-        this.trigger(this.data, "refresh", resp);
+        this.trigger(this.data, resp, "refresh");
     },
 
     /* Login actions. */
@@ -374,16 +374,16 @@ let UserStore = Reflux.createStore({
         if (self.userUuid === response.userSelf.userUuid) {
             self.updateProfile(response.userSelf);
         }
-        this.trigger(this.data, "update-profile", response);
+        this.trigger(this.data, response, "update-profile", false);
     },
 
     onUpdateDomainCompleted: function(resp) {
-        this.trigger(this.data, "update-domain", resp);
+        this.trigger(this.data, resp, "update-domain", false);
     },
 
     onGetDomainDataCompleted: function(resp, context) {
         context.user._reqDataResult(resp, context);
-        this.trigger(this.data, "get-domain", resp);
+        this.trigger(this.data, resp, "get-domain", false);
     },
 
     /* Logout actions. */
@@ -395,11 +395,11 @@ let UserStore = Reflux.createStore({
 
     /* Password reset actions. */
     onResetPasswordCompleted: function(response) {
-        this.trigger(this.data, "reset-password", response);
+        this.trigger(this.data, response, "reset-password");
     },
 
     onResetPasswordFailed: function(error) {
-        this.trigger(this.data, "reset-password-failed", error);
+        this.trigger(this.data, error, "reset-password-failed");
     },
 
     /* Init. action. */
@@ -418,7 +418,7 @@ let UserStore = Reflux.createStore({
         this._setFriendStatus(raw.result.follow, "followed");
         this._setFriendStatus(raw.result.connect, "connected");
         this._setFriendStatus(raw.result.connecting, "connecting");
-        this.trigger(this.data, "change-users", raw);
+        this.trigger(this.data, raw, "change-users");
     },
 
     onUploadAvataDoneCompleted: function(data) {
@@ -470,7 +470,7 @@ let UserStore = Reflux.createStore({
                 this.data.authMesg = resp.error;
             }
         }
-        this.trigger(this.data, startPage, resp);
+        this.trigger(this.data, resp, startPage);
     },
 
     _addFromJson: function(items) {

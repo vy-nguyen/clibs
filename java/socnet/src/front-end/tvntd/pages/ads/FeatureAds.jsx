@@ -6,6 +6,7 @@
 import _                  from 'lodash';
 import React, {PropTypes} from 'react-mod';
 
+import SelectComp         from 'vntd-shared/component/SelectComp.jsx';
 import BrowseSelection    from 'vntd-shared/layout/BrowseSelection.jsx';
 import ArticleTagStore    from 'vntd-root/stores/ArticleTagStore.jsx';
 import ArticleTagBrief    from 'vntd-root/components/ArticleTagBrief.jsx';
@@ -244,6 +245,97 @@ class FeatureAds extends React.Component
         });
     }
 
+    _renderBrowse() {
+        let current = this.state.currentTag;
+
+        return (
+            <div className="padding-top-10">
+                <div className="row">
+                    <BrowseSelection labels={this._browse} onClick={this._clickLabel}/>
+                </div>
+                <div className="row">
+                    <div className="panel-body">
+                        <AdsTableListing tagList={current} detail={true}/>
+                    </div>
+                </div>
+            </div>
+        ); 
+    }
+
+    _renderAdsRealtor(opt) {
+        console.log("render ads realtor " + opt);
+        return <AdsRealtor location={opt}/>;
+    }
+
+    render() {
+        let selOpt = {
+            value: "main",
+            label: "Feature Ads",
+            argFn: "USA",
+            selFn: this._renderAdsRealtor,
+            selOpt: [ {
+                value: "room",
+                label: "Share Room",
+                argFn: "USA",
+                selFn: this._renderAdsRealtor,
+                selOpt: [ {
+                    value: "CA",
+                    label: "California",
+                    argFn: "CA",
+                    selFn: this._renderAdsRealtor,
+                    selOpt: [ {
+                        value: "Al",
+                        label: "Alameda County",
+                        argFn: "CA Alameda",
+                        selFn: this._renderAdsRealtor
+                    }, {
+                        value: "SC",
+                        label: "Santa Clara County",
+                        argFn: "CA SC",
+                        selFn: this._renderAdsRealtor
+                    }, {
+                        value: "SM",
+                        label: "San Mateo County",
+                        argFn: "CA SM",
+                        selFn: this._renderAdsRealtor
+                    }, {
+                        value: "SF",
+                        label: "San Francisco",
+                        argFn: "CA SF",
+                        selFn: this._renderAdsRealtor
+                    } ]
+                }, {
+                    value: "TX",
+                    label: "Texas",
+                    argFn: "CA",
+                    selFn: this._renderAdsRealtor
+                }, {
+                    value: "VA",
+                    label: "Virgina",
+                    argFn: "VA",
+                    selFn: this._renderAdsRealtor
+                } ]
+            }, {
+                value: "doctor",
+                label: "Doctor & Dentist",
+                argFn: null,
+                selFn: function(opt) {
+                    return <h1>Doctor</h1>;
+                }
+            }, {
+                value: "realtor",
+                label: "Housing & Renting",
+                argFn: null,
+                selFn: this._renderBrowse
+            } ]
+        };
+
+        return (
+            <SelectComp id="feature-ads" selectOpt={selOpt}/>
+        );
+    }
+
+        /*
     render() {
         let out, current = this.state.currentTag, label = this.state.currLabel;
 
@@ -267,6 +359,7 @@ class FeatureAds extends React.Component
             </div>
         );
     }
+         */
 }
 
 FeatureAds.propTypes = {
