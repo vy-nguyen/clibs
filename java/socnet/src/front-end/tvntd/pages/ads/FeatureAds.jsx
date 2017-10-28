@@ -84,107 +84,108 @@ class FeatureAds extends React.Component
         let index;
 
         super(props);
-        this._onSelected    = this._onSelected.bind(this);
-        this._clickLabel    = this._clickLabel.bind(this);
-        this._updateArtTags = this._updateArtTags.bind(this);
         this._updateArtTagsState = this._updateArtTagsState.bind(this);
 
-        this._browse = [
-        {
-            label: "Share Room",
-            start: 'S',
-            exact: true,
-            apps : <AdsRealtor/>,
-            entry: {}
-        },
-        {
-            label: "A-N",
-            start: 'A',
-            end  : 'N',
-            exact: false,
-            entry: {}
-        }, {
-            label: "M-Z",
-            start: 'N',
-            end  : 'Z',
-            exact: false,
-            entry: {}
-        }, {
-            label: "Tutoring",
-            start: 'T',
-            exact: true,
-            entry: {}
-        }, {
-            label: "Doctor",
-            start: 'D',
-            exact: true,
-            entry: {},
-            alias: [
-                "Doctors"
-            ]
-        }, {
-            label: "Dentist",
-            start: 'D',
-            exact: true,
-            entry: {}
-        }, {
-            label: "Pharmacy",
-            start: 'P',
-            exact: true,
-            entry: {}
-        }, {
-            label: "Real Estates",
-            start: 'R',
-            exact: true,
-            entry: {},
-            alias: [
-                "Realtor"
-            ]
-        }, {
-            label: "Legal",
-            start: 'L',
-            exact: true,
-            entry: {}
-        }, {
-            label: "Loan/Tax",
-            start: 'L',
-            exact: true,
-            entry: {}
-        }, {
-            label: "Insurance",
-            start: 'I',
-            exact: true,
-            entry: {}
-        }, {
-            label: "Food",
-            start: 'F',
-            exact: true,
-            entry: {}
-        }, {
-            label: "Home",
-            start: 'H',
-            exact: true,
-            entry: {}
-        }, {
-            label: "Car",
-            start: 'C',
-            exact: true,
-            entry: {},
-            alias: [
-                "Automobile"
-            ]
-        } ];
-        this._adFilter = new AdsCategory(this._browse, "fea-ads-", this._onSelected);
         this.state = {
-            currLabel : this._browse[0],
-            currentTag: null
+        };
+        this._locMenu = [ {
+            value: "CA",
+            label: "California",
+            title: "Select County",
+            selFn: this._renderAdsRealtor,
+            selOpt: [ {
+                value: "Al",
+                label: "Alameda County"
+            }, {
+                value: "SC",
+                label: "Santa Clara County"
+            }, {
+                value: "SM",
+                label: "San Mateo County"
+            }, {
+                value: "SF",
+                label: "San Francisco"
+            } ]
+        }, {
+            value: "TX",
+            label: "Texas"
+        }, {
+            value: "VA",
+            label: "Virgina"
+        } ];
+        this._adsMenu = {
+            value: "main",
+            title: "Feature Ads",
+            selFn: this._renderAdsRealtor,
+            selOpt: [ {
+                value: "room",
+                label: "Share Room",
+                title: "Select State",
+                selFn: this._renderAdsRealtor,
+                selOpt: this._locMenu
+            }, {
+                value: "doctor",
+                label: "Doctor/Dentist/Pharmacy",
+                tags : [ "doctor", "ba", "hospital", "dentist", "pharma" ],
+                title: "Select State",
+                selFn: function(opt) {
+                    return <h1>Doctor</h1>;
+                },
+                selOpt: this._locMenu
+            }, {
+                value: "realtor",
+                label: "Realtor & Renting",
+                tags : [ "real", "renting" ],
+                title: "Select State",
+                selFn: this._renderTag,
+                selOpt: this._locMenu
+            }, {
+                value: "house",
+                label: "Housing Contractor/Plumber",
+                tags : [ "contractor", "housing", "paniting", "plumber" ],
+                title: "Select State",
+                selFn: this._renderTag,
+                selOpt: this._locMenu
+            }, {
+                value: "tutor",
+                label: "Tutoring",
+                tags : [ "tutor", "day", "hoc" ],
+                title: "Select State",
+                selFn: this._renderTag,
+                selOpt: this._locMenu
+            }, {
+                value: "loan",
+                label: "Loan/Tax",
+                tags : [ "loan", "tax", "refi" ],
+                title: "Select State",
+                selFn: this._renderTag,
+                selOpt: this._locMenu
+            }, {
+                value: "food",
+                label: "Food Ordering",
+                tags : [ "food", "cartering", "com" ],
+                title: "Select State",
+                selFn: this._renderTag,
+                selOpt: this._locMenu
+            }, {
+                value: "car",
+                label: "Automobile",
+                tags : [ "car", "xe" ],
+                title: "Select State",
+                selFn: this._renderTag,
+                selOpt: this._locMenu
+            }, {
+                value: "legal",
+                label: "Legal",
+                tags : [ "legal", "lua", "attoney" ],
+                title: "Select State",
+                selFn: this._renderTag,
+                selOpt: this._locMenu
+            } ]
         };
     }
 
     componentWillMount() {
-        this.setState({
-            currentTag: this._updateArtTags()
-        });
     }
 
     componentDidMount() {
@@ -199,139 +200,38 @@ class FeatureAds extends React.Component
     }
 
     _updateArtTagsState() {
-        this.setState({
-            currentTag: this._updateArtTags()
-        });
     }
 
-    _updateArtTags() {
-        let label, select, defTag = [],
-            tags = ArticleTagStore.getFilterTag("ads", this._adFilter.filterTagBuckets);
-
-        _.forEach(tags, function(item, key) {
-            label  = this._browse[key];
-            select = [];
-            _.forEach(item, function(tag) {
-                defTag.push(tag.tagName);
-                select.push({
-                    label: tag.tagName,
-                    value: tag.tagName
-                });
-            });
-            label.entry.selectOpt = select;
-        }.bind(this));
-        return defTag;
-    }
-
-    _onSelected(entry, val) {
-        if (val != null) {
-            console.log("current tag " + val);
-            console.log(entry);
-            this.setState({
-                currentTag: val
-            });
-        }
-    }
-
-    _clickLabel(label, entry) {
-        let currTag = [];
-
-        _.forEach(entry.selectOpt, function(item) {
-            currTag.push(item.value);
-        });
-        this.setState({
-            currLabel : label,
-            currentTag: currTag
-        });
-    }
-
-    _renderBrowse() {
-        let current = this.state.currentTag;
+    _renderTag(selected, arg) {
+        console.log("----- render tag---");
+        console.log(selected);
+        console.log(arg);
 
         return (
             <div className="padding-top-10">
                 <div className="row">
-                    <BrowseSelection labels={this._browse} onClick={this._clickLabel}/>
-                </div>
-                <div className="row">
                     <div className="panel-body">
-                        <AdsTableListing tagList={current} detail={true}/>
+                        <AdsTableListing tagList={arg} detail={true}/>
                     </div>
                 </div>
             </div>
         ); 
     }
 
-    _renderAdsRealtor(opt) {
-        console.log("render ads realtor " + opt);
-        return <AdsRealtor location={opt}/>;
+    _renderAdsRealtor(selected, entry) {
+        console.log("render ads realtor ");
+        console.log(selected);
+        console.log(entry);
+        return (
+            <div className="padding-top-10">
+                <AdsRealtor location={entry}/>
+            </div>
+        );
     }
 
     render() {
-        let selOpt = {
-            value: "main",
-            label: "Feature Ads",
-            argFn: "USA",
-            selFn: this._renderAdsRealtor,
-            selOpt: [ {
-                value: "room",
-                label: "Share Room",
-                argFn: "USA",
-                selFn: this._renderAdsRealtor,
-                selOpt: [ {
-                    value: "CA",
-                    label: "California",
-                    argFn: "CA",
-                    selFn: this._renderAdsRealtor,
-                    selOpt: [ {
-                        value: "Al",
-                        label: "Alameda County",
-                        argFn: "CA Alameda",
-                        selFn: this._renderAdsRealtor
-                    }, {
-                        value: "SC",
-                        label: "Santa Clara County",
-                        argFn: "CA SC",
-                        selFn: this._renderAdsRealtor
-                    }, {
-                        value: "SM",
-                        label: "San Mateo County",
-                        argFn: "CA SM",
-                        selFn: this._renderAdsRealtor
-                    }, {
-                        value: "SF",
-                        label: "San Francisco",
-                        argFn: "CA SF",
-                        selFn: this._renderAdsRealtor
-                    } ]
-                }, {
-                    value: "TX",
-                    label: "Texas",
-                    argFn: "CA",
-                    selFn: this._renderAdsRealtor
-                }, {
-                    value: "VA",
-                    label: "Virgina",
-                    argFn: "VA",
-                    selFn: this._renderAdsRealtor
-                } ]
-            }, {
-                value: "doctor",
-                label: "Doctor & Dentist",
-                argFn: null,
-                selFn: function(opt) {
-                    return <h1>Doctor</h1>;
-                }
-            }, {
-                value: "realtor",
-                label: "Housing & Renting",
-                argFn: null,
-                selFn: this._renderBrowse
-            } ]
-        };
-
         return (
-            <SelectComp id="feature-ads" selectOpt={selOpt}/>
+            <SelectComp id="feature-ads" selectOpt={this._adsMenu}/>
         );
     }
 
