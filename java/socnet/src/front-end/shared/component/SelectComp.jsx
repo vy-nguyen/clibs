@@ -111,7 +111,7 @@ class SelectComp extends React.Component
         };
     }
 
-    _findEntry(select, key) {
+    static findEntry(select, key) {
         if (select.value === key) {
             return select;
         }
@@ -148,7 +148,7 @@ class SelectComp extends React.Component
         }
         for (let i = 0; select != null; i++) {
             if (i < selectKeys.length) {
-                entry = this._findEntry(select, selectKeys[i]);
+                entry = SelectComp.findEntry(select, selectKeys[i]);
             } else {
                 entry = null;
             }

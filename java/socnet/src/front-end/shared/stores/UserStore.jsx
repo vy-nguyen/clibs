@@ -89,6 +89,11 @@ class User {
 
     getPublicData() {
         if ((this.hasData & this.PublicData) == 0) {
+            if (this.getDomainReq != null) {
+                this.getDomainReq++;
+                return false;
+            }
+            this.getDomainReq = 1;
             let context = {
                 user: this,
                 mask: this.PublicData

@@ -5,11 +5,14 @@
 
 import _                  from 'lodash';
 import React, {PropTypes} from 'react-mod';
+import Spinner            from 'react-spinjs';
 
 import SelectComp         from 'vntd-shared/component/SelectComp.jsx';
 import BrowseSelection    from 'vntd-shared/layout/BrowseSelection.jsx';
 import ArticleTagStore    from 'vntd-root/stores/ArticleTagStore.jsx';
+import AdPropertyStore    from 'vntd-root/stores/AdPropertyStore.jsx';
 import ArticleTagBrief    from 'vntd-root/components/ArticleTagBrief.jsx';
+import {VntdGlob}         from 'vntd-root/config/constants.js';
 import AdsTableListing    from './AdsTableListing.jsx';
 import AdsRealtor         from './AdsRealtor.jsx';
 
@@ -78,21 +81,88 @@ class AdsCategory
     }
 }
 
+class TagsFilter
+{
+    constructor(selOpt) {
+        this.selOpt = selOpt;
+        this.tagMap = {};
+        this._iterSelectOpt(selOpt);
+
+        this.filterTagBuckets = this.filterTagBuckets.bind(this);
+    }
+
+    _iterSelectOpt(selOpt) {
+        if (selOpt.tags != null) {
+            let value = [];
+            this.tagMap[selOpt.value.toUpperCase()] = value;
+            _.forEach(selOpt.tags, function(t) {
+                this.tagMap[t.toUpperCase()] = value;
+            }.bind(this));
+        }
+        if (selOpt.selOpt != null) {
+            _.forEach(selOpt.selOpt, function(it) {
+                this._iterSelectOpt(it);
+            }.bind(this));
+        }
+    }
+
+    filterTagBuckets(tags) {
+        let out = [];
+
+        _.forEach(tags, function(tag) {
+            let value = this.tagMap[tag.tagName.toUpperCase()];
+
+            if (value != null) {
+                out.push(tag.tagName);
+                value.push(tag.tagName);
+            }
+        }.bind(this));
+        return out;
+    }
+
+    lookupTag(entry) {
+        console.log("lookup entry " + entry.value.toUpperCase());
+        console.log(entry);
+        console.log(this);
+        return this.tagMap[entry.value.toUpperCase()];
+    }
+
+    lookupSelection(selected) {
+        let prev, curr;
+
+        prev = null;
+        curr = this.selOpt;
+        for (let i = 0; i < selected.length; i++) {
+            prev = curr;
+            console.log("lookup matching " + selected[i]);
+            curr = SelectComp.findEntry(curr, selected[i]);
+            if (curr == null) {
+                return prev;
+            }
+        }
+        console.log(selected);
+        return curr;
+    }
+}
+
 class FeatureAds extends React.Component
 {
     constructor(props) {
         let index;
 
         super(props);
+        this._renderTag          = this._renderTag.bind(this);
+        this._renderAdsRealtor   = this._renderAdsRealtor.bind(this);
         this._updateArtTagsState = this._updateArtTagsState.bind(this);
+        this._updateFeatureAds   = this._updateFeatureAds.bind(this);
 
         this.state = {
+            adsMenu: AdPropertyStore.getAdsFeatures()
         };
         this._locMenu = [ {
             value: "CA",
             label: "California",
             title: "Select County",
-            selFn: this._renderAdsRealtor,
             selOpt: [ {
                 value: "Al",
                 label: "Alameda County"
@@ -183,6 +253,8 @@ class FeatureAds extends React.Component
                 selOpt: this._locMenu
             } ]
         };
+        this._filterTag = new TagsFilter(this._adsMenu);
+        ArticleTagStore.getFilterTag("ads", this._filterTag.filterTagBuckets);
     }
 
     componentWillMount() {
@@ -190,38 +262,46 @@ class FeatureAds extends React.Component
 
     componentDidMount() {
         this.unsub = ArticleTagStore.listen(this._updateArtTagsState);
+        this.unsubAds = AdPropertyStore.listen(this._updateFeatureAds);
     }
 
     componentWillUnmount() {
         if (this.unsub != null) {
             this.unsub();
+            this.unsubAds();
             this.unsub = null;
+            this.unsubAds = null;
         }
     }
 
-    _updateArtTagsState() {
+    _updateFeatureAds() {
+        this.setState({
+            adsMenu: AdPropertyStore.getAdsFeatures()
+        });
     }
 
-    _renderTag(selected, arg) {
-        console.log("----- render tag---");
-        console.log(selected);
-        console.log(arg);
+    _updateArtTagsState() {
+        ArticleTagStore.getFilterTag("ads", this._filterTag.filterTagBuckets);
+    }
+
+    _renderTag(entry, args, active) {
+        let tags = this._filterTag.lookupTag(entry);
 
         return (
             <div className="padding-top-10">
                 <div className="row">
                     <div className="panel-body">
-                        <AdsTableListing tagList={arg} detail={true}/>
+                        <AdsTableListing tagList={tags} detail={true}/>
                     </div>
                 </div>
             </div>
         ); 
     }
 
-    _renderAdsRealtor(selected, entry) {
-        console.log("render ads realtor ");
+    _renderAdsRealtor(entry, args, active) {
+        let selected = this._filterTag.lookupSelection(args);
+        console.log("Selected entry");
         console.log(selected);
-        console.log(entry);
         return (
             <div className="padding-top-10">
                 <AdsRealtor location={entry}/>
@@ -234,32 +314,6 @@ class FeatureAds extends React.Component
             <SelectComp id="feature-ads" selectOpt={this._adsMenu}/>
         );
     }
-
-        /*
-    render() {
-        let out, current = this.state.currentTag, label = this.state.currLabel;
-
-        if (label.apps == null) {
-            out = (
-                <div className="row">
-                    <div className="panel-body">
-                        <AdsTableListing tagList={current} detail={true}/>
-                    </div>
-                </div>
-            );
-        } else {
-            out = label.apps;
-        }
-        return (
-            <div className="padding-top-10">
-                <div className="row">
-                    <BrowseSelection labels={this._browse} onClick={this._clickLabel}/>
-                </div>
-                {out}
-            </div>
-        );
-    }
-         */
 }
 
 FeatureAds.propTypes = {

@@ -454,6 +454,25 @@ public class PublicPath
         return out;
     }
 
+    @RequestMapping(value = "/public/get-feature-ads",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    publicGetFeatureAds(@RequestBody AdsRequest form)
+    {
+        List<ArtRoomAdsDTO> ads;
+        System.out.println(">>> get feature ads");
+
+        RoomAdsResponse out = new RoomAdsResponse("ok");
+
+        ads = artSvc.getRoomAdsByPrice(null, null);
+        for (ArtRoomAdsDTO a : ads) {
+            out.addAds(a);
+        }
+        return out;
+    }
+ 
     @RequestMapping(value = "/public/ads/room", method = RequestMethod.GET)
     @ResponseBody
     public GenericResponse

@@ -22,6 +22,14 @@ let AdPropertyStore = Reflux.createStore({
         return this.store.getItemByUuid(uuid, authorUuid);
     },
 
+    getAdsFeatures: function() {
+        if (this.featureMenu == null) {
+            Actions.getFeatureAds({});
+            return null;
+        }
+        return this.featureMenu;
+    },
+
     onPostRealtorAdsCompleted: function(res) {
         console.log("result from store ads");
         console.log(res);
@@ -42,6 +50,11 @@ let AdPropertyStore = Reflux.createStore({
 
     onGetRealtorAdsFailure: function(data) {
         this.store.onGetPublishItemFailure(data, this);
+    },
+
+    onGetFeatureAdsCompleted: function(res) {
+        console.log("complete get feature ads");
+        console.log(res);
     },
 
     updateMissingUuid: function(uuids) {

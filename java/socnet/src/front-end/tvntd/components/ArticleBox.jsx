@@ -216,8 +216,8 @@ class ArticleBox extends React.Component
                 if (idx > 0) {
                     linkId = linkId.substring(idx);
                 }
-                url = "https://docs.google.com/fileview?id=" + linkId +
-                    "&hl=en&pid=explore&efh=false&a=v&chrome=false&embedded=true";
+                url = "https://docs.google.com/viewer?srcid=" + linkId +
+                    "&pid=explorer&efh=false&a=v&chrome=false&embedded=true";
             } else {
                 return null;
             }

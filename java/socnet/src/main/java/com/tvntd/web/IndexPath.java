@@ -29,7 +29,6 @@ package com.tvntd.web;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,6 +47,7 @@ import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web
     .authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -100,8 +100,9 @@ public class IndexPath
     UrlAuthenticationSuccessHandler urlAuthenticationSuccessHandler;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String tvntd(Map<String, Object> model, HttpSession session)
+    public String tvntd(ModelMap model, HttpSession session)
     {
+        model.addAttribute("domain", "tudoviet");
         model.put("domain", "tudoviet");
         return "tvntd";
     }
