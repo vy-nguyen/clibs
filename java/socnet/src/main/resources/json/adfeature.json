@@ -1,0 +1,81 @@
+{
+    "usa": {
+        "selOpt": [ {
+            "value": "CA",
+            "label": "California",
+            "title": "Select County",
+            "selOpt": [ {
+                "value": "Al",
+                "label": "Alameda County"
+            }, {
+                "value": "SC",
+                "label": "Santa Clara County"
+            }, {
+                "value": "SM",
+                "label": "San Mateo County"
+            }, {
+                "value": "SF",
+                "label": "San Francisco"
+            } ]
+        }, {
+            "value": "TX",
+            "label": "Texas"
+        }, {
+            "value": "VA",
+            "label": "Virgina"
+        }, {
+            "value": "FL",
+            "label": "Florida"
+        } ]
+    },
+    "tagMenu": {
+        "selOpt": [ {
+            "value": "room",
+            "label": "Share Room",
+            "title": "Select State"
+        }, {
+            "value": "doctor",
+            "label": "Doctor/Dentist/Pharmacy",
+            "tags" : [
+                "doctor", "bác sĩ", "hospital", "dentist", "pharma",
+                "nha sĩ", "dược sĩ", "nhà thương", "bệnh viện"
+            ],
+            "title": "Select State"
+        }, {
+            "value": "realtor",
+            "label": "Realtor & Renting",
+            "tags" : [ "real", "renting" ],
+            "title": "Select State"
+        }, {
+            "value": "house",
+            "label": "Housing Contractor/Plumber",
+            "tags" : [ "contractor", "housing", "paniting", "plumber" ],
+            "title": "Select State"
+        }, {
+            "value": "tutor",
+            "label": "Tutoring",
+            "tags" : [ "tutor", "dạy", "học" ],
+            "title": "Select State"
+        }, {
+            "value": "loan",
+            "label": "Loan/Tax",
+            "tags" : [ "loan", "tax", "refi" ],
+            "title": "Select State"
+        }, {
+            "value": "food",
+            "label": "Food Ordering",
+            "tags" : [ "food", "cartering", "cơm tháng" ],
+            "title": "Select State"
+        }, {
+            "value": "car",
+            "label": "Automobile",
+            "tags" : [ "car", "xe" ],
+            "title": "Select State"
+        }, {
+            "value": "legal",
+            "label": "Legal",
+            "tags" : [ "legal", "luật", "attoney" ],
+            "title": "Select State"
+        } ]
+    }
+}

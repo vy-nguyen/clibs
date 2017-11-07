@@ -121,9 +121,6 @@ class TagsFilter
     }
 
     lookupTag(entry) {
-        console.log("lookup entry " + entry.value.toUpperCase());
-        console.log(entry);
-        console.log(this);
         return this.tagMap[entry.value.toUpperCase()];
     }
 
@@ -134,7 +131,6 @@ class TagsFilter
         curr = this.selOpt;
         for (let i = 0; i < selected.length; i++) {
             prev = curr;
-            console.log("lookup matching " + selected[i]);
             curr = SelectComp.findEntry(curr, selected[i]);
             if (curr == null) {
                 return prev;
@@ -159,102 +155,8 @@ class FeatureAds extends React.Component
         this.state = {
             adsMenu: AdPropertyStore.getAdsFeatures()
         };
-        this._locMenu = [ {
-            value: "CA",
-            label: "California",
-            title: "Select County",
-            selOpt: [ {
-                value: "Al",
-                label: "Alameda County"
-            }, {
-                value: "SC",
-                label: "Santa Clara County"
-            }, {
-                value: "SM",
-                label: "San Mateo County"
-            }, {
-                value: "SF",
-                label: "San Francisco"
-            } ]
-        }, {
-            value: "TX",
-            label: "Texas"
-        }, {
-            value: "VA",
-            label: "Virgina"
-        } ];
-        this._adsMenu = {
-            value: "main",
-            title: "Feature Ads",
-            selFn: this._renderAdsRealtor,
-            selOpt: [ {
-                value: "room",
-                label: "Share Room",
-                title: "Select State",
-                selFn: this._renderAdsRealtor,
-                selOpt: this._locMenu
-            }, {
-                value: "doctor",
-                label: "Doctor/Dentist/Pharmacy",
-                tags : [ "doctor", "ba", "hospital", "dentist", "pharma" ],
-                title: "Select State",
-                selFn: function(opt) {
-                    return <h1>Doctor</h1>;
-                },
-                selOpt: this._locMenu
-            }, {
-                value: "realtor",
-                label: "Realtor & Renting",
-                tags : [ "real", "renting" ],
-                title: "Select State",
-                selFn: this._renderTag,
-                selOpt: this._locMenu
-            }, {
-                value: "house",
-                label: "Housing Contractor/Plumber",
-                tags : [ "contractor", "housing", "paniting", "plumber" ],
-                title: "Select State",
-                selFn: this._renderTag,
-                selOpt: this._locMenu
-            }, {
-                value: "tutor",
-                label: "Tutoring",
-                tags : [ "tutor", "day", "hoc" ],
-                title: "Select State",
-                selFn: this._renderTag,
-                selOpt: this._locMenu
-            }, {
-                value: "loan",
-                label: "Loan/Tax",
-                tags : [ "loan", "tax", "refi" ],
-                title: "Select State",
-                selFn: this._renderTag,
-                selOpt: this._locMenu
-            }, {
-                value: "food",
-                label: "Food Ordering",
-                tags : [ "food", "cartering", "com" ],
-                title: "Select State",
-                selFn: this._renderTag,
-                selOpt: this._locMenu
-            }, {
-                value: "car",
-                label: "Automobile",
-                tags : [ "car", "xe" ],
-                title: "Select State",
-                selFn: this._renderTag,
-                selOpt: this._locMenu
-            }, {
-                value: "legal",
-                label: "Legal",
-                tags : [ "legal", "lua", "attoney" ],
-                title: "Select State",
-                selFn: this._renderTag,
-                selOpt: this._locMenu
-            } ]
-        };
-        this._filterTag = new TagsFilter(this._adsMenu);
-        ArticleTagStore.getFilterTag("ads", this._filterTag.filterTagBuckets);
+        this._updateArtTagsState();
+        return this;
     }
 
     componentWillMount() {
@@ -275,16 +177,40 @@ class FeatureAds extends React.Component
     }
 
     _updateFeatureAds() {
+        let curr = this.state.adsMenu, menu = AdPropertyStore.getAdsFeatures();
+
         this.setState({
-            adsMenu: AdPropertyStore.getAdsFeatures()
+            adsMenu: menu
         });
+        if (menu != curr) {
+            _.forEach(menu.selOpt, function(entry) {
+                if (entry.tags == null) {
+                    entry.selFn = this._renderAdsRealtor;
+                } else {
+                    entry.selFn = this._renderTag;
+                }
+            }.bind(this));
+        }
+        if (this._filterTag == null) {
+            this._updateArtTagsState();
+        }
     }
 
     _updateArtTagsState() {
-        ArticleTagStore.getFilterTag("ads", this._filterTag.filterTagBuckets);
+        let adsMenu = this.state.adsMenu;
+
+        if (adsMenu != null) {
+            if (this._filterTag == null) {
+                this._filterTag = new TagsFilter(adsMenu);
+            }
+            ArticleTagStore.getFilterTag("ads", this._filterTag.filterTagBuckets);
+        }
     }
 
     _renderTag(entry, args, active) {
+        if (this._filterTag == null) {
+            return null;
+        }
         let tags = this._filterTag.lookupTag(entry);
 
         return (
@@ -299,9 +225,10 @@ class FeatureAds extends React.Component
     }
 
     _renderAdsRealtor(entry, args, active) {
+        if (this._filterTag == null) {
+            return null;
+        }
         let selected = this._filterTag.lookupSelection(args);
-        console.log("Selected entry");
-        console.log(selected);
         return (
             <div className="padding-top-10">
                 <AdsRealtor location={entry}/>
@@ -310,8 +237,14 @@ class FeatureAds extends React.Component
     }
 
     render() {
+        let adsMenu = this.state.adsMenu;
+
+        if (adsMenu == null) {
+            return null;
+        }
+        console.log(this);
         return (
-            <SelectComp id="feature-ads" selectOpt={this._adsMenu}/>
+            <SelectComp id="feature-ads" selectOpt={adsMenu}/>
         );
     }
 }

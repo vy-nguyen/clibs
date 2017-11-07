@@ -55,6 +55,25 @@ let AdPropertyStore = Reflux.createStore({
     onGetFeatureAdsCompleted: function(res) {
         console.log("complete get feature ads");
         console.log(res);
+        if (res.featureMenu != null) {
+            this.updateFeatureMenu(res.featureMenu);
+        }
+        this.store.onGetPublishItemCompleted(res, 'uuidList', this);
+    },
+
+    updateFeatureMenu(menu) {
+        if (this.featureMenu == null) {
+            this.featureMenu = {
+                value: "main",
+                title: "Feature Ads"
+            };
+        }
+        let usa = menu.usa.selOpt;
+        this.featureMenu.selOpt = menu.tagMenu.selOpt;
+        _.forEach(this.featureMenu.selOpt, function(entry) {
+            entry.selOpt = usa;
+        });
+        console.log(this);
     },
 
     updateMissingUuid: function(uuids) {
@@ -69,8 +88,13 @@ let AdPropertyStore = Reflux.createStore({
         this.store.requestItems(Actions.getPublishAds);
     },
 
+    getAllAds: function() {
+        return this.store.data.itemsByUuid;
+    },
+
     dumpData: function(header) {
         this.store.dumpData(header);
+        console.log(this.featureMenu);
     }
 });
 

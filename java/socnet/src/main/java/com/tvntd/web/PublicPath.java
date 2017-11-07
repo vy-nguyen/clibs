@@ -467,6 +467,8 @@ public class PublicPath
         RoomAdsResponse out = new RoomAdsResponse("ok");
 
         ads = artSvc.getRoomAdsByPrice(null, null);
+        out.loadJson("adfeature.json");
+
         for (ArtRoomAdsDTO a : ads) {
             out.addAds(a);
         }
