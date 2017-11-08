@@ -136,7 +136,6 @@ class TagsFilter
                 return prev;
             }
         }
-        console.log(selected);
         return curr;
     }
 }
@@ -228,10 +227,14 @@ class FeatureAds extends React.Component
         if (this._filterTag == null) {
             return null;
         }
-        let selected = this._filterTag.lookupSelection(args);
+        let selected = this._filterTag.lookupSelection(args),
+        pos = {
+            lat: selected.lat,
+            lng: selected.lng
+        };
         return (
             <div className="padding-top-10">
-                <AdsRealtor location={entry}/>
+                <AdsRealtor center={pos} location={selected}/>
             </div>
         );
     }
@@ -242,7 +245,6 @@ class FeatureAds extends React.Component
         if (adsMenu == null) {
             return null;
         }
-        console.log(this);
         return (
             <SelectComp id="feature-ads" selectOpt={adsMenu}/>
         );

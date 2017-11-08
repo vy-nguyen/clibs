@@ -68,6 +68,26 @@ export const VntdGlob = {
         width   : "100%",
         height  : "100%"
     },
+    styleModal: {
+        content: {
+            top        : '50%',
+            left       : '50%',
+            right      : 'auto',
+            bottom     : 'auto',
+            marginRight: '-50%',
+            transform  : 'translate(-50%, -50%)'
+        }
+    },
+    styleMarker: {
+        content: {
+            top        : '50%',
+            left       : '50%',
+            right      : 'auto',
+            bottom     : 'auto',
+            marginRight: '-10%',
+            transform  : 'translate(-50%, -50%)'
+        }
+    },
     smallBox: {
         width : "60px",
         height: "60px"

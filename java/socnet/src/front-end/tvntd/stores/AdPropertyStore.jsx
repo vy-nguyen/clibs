@@ -53,8 +53,6 @@ let AdPropertyStore = Reflux.createStore({
     },
 
     onGetFeatureAdsCompleted: function(res) {
-        console.log("complete get feature ads");
-        console.log(res);
         if (res.featureMenu != null) {
             this.updateFeatureMenu(res.featureMenu);
         }
@@ -73,7 +71,6 @@ let AdPropertyStore = Reflux.createStore({
         _.forEach(this.featureMenu.selOpt, function(entry) {
             entry.selOpt = usa;
         });
-        console.log(this);
     },
 
     updateMissingUuid: function(uuids) {

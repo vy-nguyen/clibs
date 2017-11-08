@@ -150,6 +150,8 @@ public class RoomAdsResponse extends GenericResponse
         protected String value;
         protected String label;
         protected String title;
+        protected Float lat;
+        protected Float lng;
         protected String[] tags;
         protected SelectMenu[] selOpt;
 
@@ -193,6 +195,34 @@ public class RoomAdsResponse extends GenericResponse
          */
         public void setTitle(String title) {
             this.title = title;
+        }
+
+        /**
+         * @return the lat
+         */
+        public Float getLat() {
+            return lat;
+        }
+
+        /**
+         * @param lat the lat to set
+         */
+        public void setLat(Float lat) {
+            this.lat = lat;
+        }
+
+        /**
+         * @return the lng
+         */
+        public Float getLng() {
+            return lng;
+        }
+
+        /**
+         * @param lng the lng to set
+         */
+        public void setLng(Float lng) {
+            this.lng = lng;
         }
 
         /**

@@ -4,28 +4,64 @@
             "value": "CA",
             "label": "California",
             "title": "Select County",
+            "lat"  : 37.1844023,
+            "lng"  : -123.7949828,
             "selOpt": [ {
                 "value": "Al",
-                "label": "Alameda County"
+                "label": "Alameda County",
+                "lat"  : 37.67985,
+                "lng"  : -122.201674
             }, {
                 "value": "SC",
-                "label": "Santa Clara County"
+                "label": "Santa Clara County",
+                "lat"  : 37.1890661,
+                "lng"  : -121.9855032
             }, {
                 "value": "SM",
-                "label": "San Mateo County"
+                "label": "San Mateo County",
+                "lat"  : 37.380814,
+                "lng"  : -122.6150012
             }, {
                 "value": "SF",
-                "label": "San Francisco"
+                "label": "San Francisco",
+                "lat"  : 37.7576948,
+                "lng"  : -122.4726193
             } ]
         }, {
             "value": "TX",
-            "label": "Texas"
+            "label": "Texas",
+            "lat"  : 31.0909914,
+            "lng"  : -104.5670647
         }, {
             "value": "VA",
-            "label": "Virgina"
+            "label": "Virgina",
+            "lat"  : 37.9820867,
+            "lng"  : -81.6636402
+        }, {
+            "value": "MA",
+            "label": "Massachusetts",
+            "lat"  : 42.0314678,
+            "lng"  : -72.8044549
+        }, {
+            "value": "NY",
+            "label": "New York",
+            "lat"  : 40.6974034,
+            "lng"  : -74.1197626
+        }, {
+            "value": "WA",
+            "label": "Washington State",
+            "lat"  : 47.2511117,
+            "lng"  : -123.1244963
+        }, {
+            "value": "OR",
+            "label": "Oregan",
+            "lat"  : 44.1235108,
+            "lng"  : -122.8257931
         }, {
             "value": "FL",
-            "label": "Florida"
+            "label": "Florida",
+            "lat"  : 27.5224074,
+            "lng"  : -88.2958066
         } ]
     },
     "tagMenu": {

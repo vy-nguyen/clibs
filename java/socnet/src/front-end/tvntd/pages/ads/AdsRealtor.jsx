@@ -4,6 +4,7 @@
 'use strict';
 
 import _                  from 'lodash';
+import Modal              from 'react-modal';
 import Spinner            from 'react-spinjs';
 import React, {PropTypes} from 'react-mod';
 
@@ -13,24 +14,71 @@ import InfoWindow         from 'vntd-shared/google-map/InfoWindow.jsx';
 import {GoogleApiLoad}    from 'vntd-shared/lib/AsyncLoader.jsx';
 import AdPropertyStore    from 'vntd-root/stores/AdPropertyStore.jsx';
 import {VntdGlob}         from 'vntd-root/config/constants.js';
+import AdsBox             from 'vntd-root/pages/ads/AdsBox.jsx';
 
 class MapMarker extends React.Component
 {
     constructor(props) {
         super(props);
 
-        this._onMarkerClick  = this._onMarkerClick.bind(this);
+        this._closeModal    = this._closeModal.bind(this);
+        this._onMarkerClick = this._onMarkerClick.bind(this);
+
+        this.state = {
+            modalIsOpen: false
+        };
     }
 
     _onMarkerClick(props, marker, e) {
-        console.log("on marker click");
-        console.log(props);
-        console.log(marker);
-
         this.setState({
             selectedPlace: props,
-            activeMarker : marker
+            activeMarker : marker,
+            modalIsOpen  : true
         });
+    }
+
+    _closeModal() {
+        this.setState({
+            modalIsOpen: false
+        });
+    }
+
+    _modalHeader() {
+        let marker = this.props.marker;
+
+        return (
+            <div className="modal-header">
+                <button type="button" aria-label="close"
+                    className="close" onClick={this._closeModal}>
+                    <i className="fa fa-times"/>
+                </button>
+                <h3 className="modal-title">
+                    {marker.createdDate}
+                </h3>
+            </div>
+        );
+    }
+
+    _modalBody() {
+        let marker = this.props.marker;
+
+        return (
+            <div>
+                <p>{AdsBox.businessAddr(marker)}</p>
+                <h3>{marker.busEmail} | {marker.busPhone}</h3>
+                <div dangerouslySetInnerHTML= {{__html: marker.busDesc}}/>
+            </div>
+        );
+    }
+
+    _renderModal() {
+        return (
+            <Modal style={VntdGlob.styleMarker} isOpen={this.state.modalIsOpen}
+                onRequestClose={this._closeModal}>
+                {this._modalHeader()}
+                {this._modalBody()}
+            </Modal>
+        );
     }
 
     render() {
@@ -39,11 +87,12 @@ class MapMarker extends React.Component
             lat: marker.lat,
             lng: marker.lng
         };
-        console.log(marker);
         return (
             <Marker map={this.props.map} google={this.props.google}
                 onClick={this._onMarkerClick}
-                draggable={true} title="abc" position={pos} />
+                draggable={true} title="abc" position={pos}>
+                {this._renderModal()}
+            </Marker>
         );
     }
 }
@@ -106,26 +155,19 @@ export class MapContainer extends React.Component
             width: '100vw',
             height: '600px'
         };
-        let ads = AdPropertyStore.getAllAds(), markers = [], ex = null, center;
+        let ads = AdPropertyStore.getAllAds(), markers = [], 
+            center = this.props.center;
 
         _.forOwn(ads, function(a) {
-            if (ex == null) {
-                ex = a;
-            }
             markers.push(<MapMarker marker={a}/>);
         });
-        center = {
-            lat: ex.lat,
-            lng: ex.lng
-        };
-
         return (
-            <Map google={this.props.google} zoom={14}
+            <Map google={this.props.google} zoom={11}
                 draggable={true} clickableIcons={true}
                 onBoundsChanged={this._onBoundChange}
                 onHeadingChange={this._onBoundChange}
                 onDragend={this._onBoundChange}
-                style={style} initialCenter={ex}>
+                style={style} initialCenter={center}>
                 {markers}
                 <InfoWindow onClose={this._onInfoWinClose}>
                     <div>
@@ -159,9 +201,8 @@ export class AdsRealtor extends React.Component
     }
 
     render() {
-        console.log("ads realtor render");
         return (
-            <MapContainer google={this.props.google}/>
+            <MapContainer center={this.props.center} google={this.props.google}/>
         );
     }
 }

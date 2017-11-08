@@ -6,18 +6,8 @@ import _             from 'lodash';
 import React         from 'react';
 import Modal         from 'react-modal';
 
+import {VntdGlob}    from 'vntd-root/config/constants.js';
 import ImageCarousel from 'vntd-shared/layout/ImageCarousel.jsx';
-
-const modalStyle = {
-    content: {
-        top        : '50%',
-        left       : '50%',
-        right      : 'auto',
-        bottom     : 'auto',
-        marginRight: '-50%',
-        transform  : 'translate(-50%, -50%)'
-    }
-};
 
 class Gallery extends React.Component
 {
@@ -57,7 +47,7 @@ class Gallery extends React.Component
             }
         } = this;
         let modal = (
-            <Modal style={modalStyle}
+            <Modal style={VntdGlob.styleModal}
                 isOpen={this.state.modalIsOpen}
                 onRequestClose={this._closeModal}>
 
