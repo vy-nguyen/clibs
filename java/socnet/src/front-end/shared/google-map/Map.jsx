@@ -109,7 +109,7 @@ export class Map extends MapBase
                 currentLocation: this.props.center
             });
         }
-        if (prevState.currentLocation !== this.state.currentLocation) {
+        if (prevState.currentLocation.lat !== this.state.currentLocation.lat) {
             this.recenterMap();
         }
     }

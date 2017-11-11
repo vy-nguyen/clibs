@@ -183,6 +183,9 @@ class FeatureAds extends React.Component
         });
         if (menu != curr) {
             _.forEach(menu.selOpt, function(entry) {
+                if (entry.zoom == null) {
+                    entry.zoom = 11;
+                }
                 if (entry.tags == null) {
                     entry.selFn = this._renderAdsRealtor;
                 } else {
@@ -229,8 +232,9 @@ class FeatureAds extends React.Component
         }
         let selected = this._filterTag.lookupSelection(args),
         pos = {
-            lat: selected.lat,
-            lng: selected.lng
+            lat : selected.lat,
+            lng : selected.lng,
+            zoom: selected.zoom === 10 ? 7 : 11
         };
         return (
             <div className="padding-top-10">

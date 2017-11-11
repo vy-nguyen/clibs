@@ -78,6 +78,11 @@ export const VntdGlob = {
             transform  : 'translate(-50%, -50%)'
         }
     },
+    styleMap: {
+        width   : '100vw',
+        height  : '100vh',
+        overflow: 'auto'
+    },
     styleMarker: {
         content: {
             top        : '50%',

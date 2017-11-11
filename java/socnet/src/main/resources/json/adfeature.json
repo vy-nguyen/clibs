@@ -4,8 +4,9 @@
             "value": "CA",
             "label": "California",
             "title": "Select County",
-            "lat"  : 37.1844023,
-            "lng"  : -123.7949828,
+            "lat"  : 36.5314767,
+            "lng"  : -118.34127224,
+            "zoom" : 10,
             "selOpt": [ {
                 "value": "Al",
                 "label": "Alameda County",
@@ -14,8 +15,8 @@
             }, {
                 "value": "SC",
                 "label": "Santa Clara County",
-                "lat"  : 37.1890661,
-                "lng"  : -121.9855032
+                "lat"  : 37.33085661,
+                "lng"  : -121.92489624
             }, {
                 "value": "SM",
                 "label": "San Mateo County",
@@ -30,36 +31,43 @@
         }, {
             "value": "TX",
             "label": "Texas",
+            "zoom" : 10,
             "lat"  : 31.0909914,
             "lng"  : -104.5670647
         }, {
             "value": "VA",
             "label": "Virgina",
+            "zoom" : 10,
             "lat"  : 37.9820867,
             "lng"  : -81.6636402
         }, {
             "value": "MA",
             "label": "Massachusetts",
+            "zoom" : 10,
             "lat"  : 42.0314678,
             "lng"  : -72.8044549
         }, {
             "value": "NY",
             "label": "New York",
+            "zoom" : 10,
             "lat"  : 40.6974034,
             "lng"  : -74.1197626
         }, {
             "value": "WA",
             "label": "Washington State",
+            "zoom" : 10,
             "lat"  : 47.2511117,
             "lng"  : -123.1244963
         }, {
             "value": "OR",
             "label": "Oregan",
+            "zoom" : 10,
             "lat"  : 44.1235108,
             "lng"  : -122.8257931
         }, {
             "value": "FL",
             "label": "Florida",
+            "zoom" : 10,
             "lat"  : 27.5224074,
             "lng"  : -88.2958066
         } ]

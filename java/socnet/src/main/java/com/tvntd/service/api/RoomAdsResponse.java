@@ -152,6 +152,7 @@ public class RoomAdsResponse extends GenericResponse
         protected String title;
         protected Float lat;
         protected Float lng;
+        protected Integer zoom;
         protected String[] tags;
         protected SelectMenu[] selOpt;
 
@@ -223,6 +224,20 @@ public class RoomAdsResponse extends GenericResponse
          */
         public void setLng(Float lng) {
             this.lng = lng;
+        }
+
+        /**
+         * @return the zoom
+         */
+        public Integer getZoom() {
+            return zoom;
+        }
+
+        /**
+         * @param zoom the zoom to set
+         */
+        public void setZoom(Integer zoom) {
+            this.zoom = zoom;
         }
 
         /**
