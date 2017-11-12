@@ -63,7 +63,7 @@ class RoomRenting extends FormData
         } ],
         propertyInfo = [ {
             field    : 'image',
-            url      : '/user/upload-img',
+            url      : '/public/upload-ad-img',
             inpName  : this._getId('room-img-'),
             dropzone : true,
             labelTxt : 'Drop Images'

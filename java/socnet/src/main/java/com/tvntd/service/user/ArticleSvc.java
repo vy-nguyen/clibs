@@ -149,6 +149,12 @@ public class ArticleSvc implements IArticleSvc
         ads.setCity(form.getCity());
         ads.setZip(form.getZip());
         ads.setPropDesc(Util.toRawByte(form.getDesc(), 2048));
+        ads.setAdImgOid0(inDTO.fetchAdImgOid0());
+        ads.setAdImgOid1(inDTO.fetchAdImgOid1());
+        ads.setAdImgOid2(inDTO.fetchAdImgOid2());
+        ads.setAdImgOid3(inDTO.fetchAdImgOid3());
+
+        System.out.println("Save " + ads + " orig " + inDTO.fetchAds());
 
         ArtRoomAdsDTO adsDTO = new ArtRoomAdsDTO(ads);
         adsDTO.setLocation(

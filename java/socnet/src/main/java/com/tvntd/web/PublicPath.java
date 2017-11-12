@@ -329,7 +329,7 @@ public class PublicPath
 
             System.out.println("Save oid img " + oid.name());
             if (oid != null) {
-                ads.setAdImgOid0(oid.name());
+                ads.assignAdImgOid(oid.name());
             }
             ImageUploadResp out =
                 new ImageUploadResp(ads.getArticleUuid(), ads.getAuthorUuid(), oid);

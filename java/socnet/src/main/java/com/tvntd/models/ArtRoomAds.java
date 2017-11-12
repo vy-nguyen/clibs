@@ -82,6 +82,18 @@ public class ArtRoomAds
     @Column(length = 32)
     protected String zip;
 
+    @Column(length = 64)
+    protected String adImgOid0;
+
+    @Column(length = 64)
+    protected String adImgOid1;
+
+    @Column(length = 64)
+    protected String adImgOid2;
+
+    @Column(length = 64)
+    protected String adImgOid3;
+
     @Lob
     @Column(length = 2048)
     protected byte[] propDesc;
@@ -113,6 +125,15 @@ public class ArtRoomAds
         }
         artBase     = base;
         articleUuid = base.getArticleUuid();
+    }
+
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Name ").append(ownerName).append(", oid ")
+            .append(adImgOid0).append(", ").append(adImgOid1).append("\n");
+        return sb.toString();
     }
 
     /**
@@ -267,6 +288,62 @@ public class ArtRoomAds
      */
     public void setZip(String zip) {
         this.zip = zip;
+    }
+
+    /**
+     * @return the adImgOid0
+     */
+    public String getAdImgOid0() {
+        return adImgOid0;
+    }
+
+    /**
+     * @param adImgOid0 the adImgOid0 to set
+     */
+    public void setAdImgOid0(String adImgOid0) {
+        this.adImgOid0 = adImgOid0;
+    }
+
+    /**
+     * @return the adImgOid1
+     */
+    public String getAdImgOid1() {
+        return adImgOid1;
+    }
+
+    /**
+     * @param adImgOid1 the adImgOid1 to set
+     */
+    public void setAdImgOid1(String adImgOid1) {
+        this.adImgOid1 = adImgOid1;
+    }
+
+    /**
+     * @return the adImgOid2
+     */
+    public String getAdImgOid2() {
+        return adImgOid2;
+    }
+
+    /**
+     * @param adImgOid2 the adImgOid2 to set
+     */
+    public void setAdImgOid2(String adImgOid2) {
+        this.adImgOid2 = adImgOid2;
+    }
+
+    /**
+     * @return the adImgOid3
+     */
+    public String getAdImgOid3() {
+        return adImgOid3;
+    }
+
+    /**
+     * @param adImgOid3 the adImgOid3 to set
+     */
+    public void setAdImgOid3(String adImgOid3) {
+        this.adImgOid3 = adImgOid3;
     }
 
     /**

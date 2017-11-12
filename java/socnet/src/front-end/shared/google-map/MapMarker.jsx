@@ -86,7 +86,7 @@ export class MapMarker extends React.Component
                     <i className="fa fa-times"/>
                 </button>
                 <h3 className="modal-title">
-                    {marker.createdDate}
+                    {marker.busName} | {marker.createdDate}
                 </h3>
             </div>
         );
@@ -96,7 +96,7 @@ export class MapMarker extends React.Component
         let marker = this.props.marker;
 
         return (
-            <div>
+            <div className="row">
                 <p>{AdsBox.businessAddr(marker)}</p>
                 <h3>{marker.busEmail} | {marker.busPhone}</h3>
                 <div dangerouslySetInnerHTML= {{__html: marker.busDesc}}/>

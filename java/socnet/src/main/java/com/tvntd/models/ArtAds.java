@@ -146,7 +146,7 @@ public class ArtAds
         StringBuilder sb = new StringBuilder();
 
         sb.append("Uuid ").append(articleUuid).append(", img0 ").append(adImgOid0)
-            .append("\n");
+            .append(", ").append(adImgOid1).append("\n");
         return sb.toString();
     }
 
