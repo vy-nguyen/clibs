@@ -10,6 +10,7 @@ import React, {PropTypes} from 'react-mod';
 import Marker             from 'vntd-shared/google-map/Marker.jsx';
 import {VntdGlob}         from 'vntd-root/config/constants.js';
 import AdsBox             from 'vntd-root/pages/ads/AdsBox.jsx';
+import ImageCarousel      from 'vntd-shared/layout/ImageCarousel.jsx';
 
 export class MarkerEntry extends React.Component
 {
@@ -78,7 +79,6 @@ export class MapMarker extends React.Component
     _modalHeader() {
         let marker = this.props.marker;
 
-        console.log(marker);
         return (
             <div className="modal-header">
                 <button type="button" aria-label="close"
@@ -93,13 +93,23 @@ export class MapMarker extends React.Component
     }
 
     _modalBody() {
-        let marker = this.props.marker;
+        let marker = this.props.marker, pics = null;
 
+        if (!_.isEmpty(marker.imageUrl)) {
+            const style = {
+                width  : "400px",
+                height : "400px"
+            };
+            pics = (
+                <ImageCarousel imageList={marker.imageUrl} select={0} imgStyle={style}/>
+            );
+        }
         return (
-            <div className="row">
+            <div className="row padding-10">
                 <p>{AdsBox.businessAddr(marker)}</p>
                 <h3>{marker.busEmail} | {marker.busPhone}</h3>
                 <div dangerouslySetInnerHTML= {{__html: marker.busDesc}}/>
+                {pics}
             </div>
         );
     }

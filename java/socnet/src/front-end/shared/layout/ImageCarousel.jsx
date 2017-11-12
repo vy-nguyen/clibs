@@ -41,6 +41,7 @@ class ImageCarousel extends React.Component
 
     render() {
         let imgHdr, imgList,
+            imgStyle = this.props.imgStyle,
             imageList = this.props.imageList,
             select = this.props.select || "0",
             carouselId = _.uniqueId('img-list-'), cTag = '#' + carouselId;
@@ -54,28 +55,27 @@ class ImageCarousel extends React.Component
         });
         imgList = imageList.map(function(item, idx) {
             let classn = idx.toString() === select ? 'item active' : 'item';
+
             return (
                 <div key={_.uniqueId('img-')} className={classn}>
-                    <img src={item}/>
+                    <img src={item} style={imgStyle}/>
                 </div>
             )
         });
         return (
-            <div className="container">
-                <div className="row">
-                    <div id={carouselId} data-ride="carousel"
-                        data-interval={this.props.delay || 2000}
-                        className={"carousel slde " + this.props.className}>
-                        {this._renderEmbeded()}
-                        <ol className="carousel-indicators">
-                            {imgHdr}
-                        </ol>
-                        <div className="carousel-inner">
-                            {imgList}
-                        </div>
-                        {this._renderLeftArrow(cTag)}
-                        {this._renderRightArrow(cTag)}
+            <div className="row">
+                <div id={carouselId} data-ride="carousel"
+                    data-interval={this.props.delay || 2000}
+                    className={"carousel slde " + this.props.className}>
+                    {this._renderEmbeded()}
+                    <ol className="carousel-indicators">
+                        {imgHdr}
+                    </ol>
+                    <div className="carousel-inner">
+                        {imgList}
                     </div>
+                    {this._renderLeftArrow(cTag)}
+                    {this._renderRightArrow(cTag)}
                 </div>
             </div>
         );
