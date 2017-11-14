@@ -439,7 +439,6 @@ class FormData
         this._setAllDefValues();
     }
 
-
     submitErrorBase(store, result, status) {
         this.changeSubmitState("failure", false);
         ErrorStore.reportErrMesg(this.getFormId(), result.error, result.message);

@@ -77,6 +77,7 @@ import com.tvntd.util.Util;
 public class ArticleSvc implements IArticleSvc
 {
     private static Logger s_log = LoggerFactory.getLogger(ArticleSvc.class);
+    private static ArticlePost s_defPost = new ArticlePost();
 
     @Autowired
     protected ArticleBaseRepo artBaseRepo;
@@ -699,6 +700,20 @@ public class ArticleSvc implements IArticleSvc
             ArticleBrief brief = artBriefRepo.findByArticleUuid(artUuid);
             if (brief == null) {
                 return null;
+            }
+            ArticleBase base = brief.getArtBase();
+            String artTag = base.getArtTag();
+
+            if (artTag.equals(ArtTag.ADS)) {
+                ArtAds ads = artAdsRepo.findByArticleUuid(artUuid);
+                if (ads != null) {
+                    deleteArtAds(ads);
+                }
+                return s_defPost;
+            }
+            if (artTag.equals(ArtTag.ESTORE)) {
+                System.out.println("Delete product " + base);
+                return s_defPost;
             }
             deleteArticleBrief(new ArticleBriefDTO(brief));
             return new ArticlePost(owner.getUserUuid(), owner.fetchUserId());

@@ -83,14 +83,10 @@ class ErrorView extends React.Component
                 style    = error.getFormatStyle();
                 codeText = <Mesg text={codeText}/>;
             } else {
-                codeText = (
-                    <span>
-                        <Mesg text="Status"/> {errCode}: {codeText}
-                    </span>
-                );
+                codeText = <span><Mesg text="Status"/> {errCode}: {codeText}</span>;
             }
         } else {
-            codeText = <span>Error</span>
+            codeText = <span>Error</span>;
         }
         return (
             <div className={style}>

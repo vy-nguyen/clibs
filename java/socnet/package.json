@@ -6,6 +6,7 @@
     "build": "./node_modules/.bin/webpack --config src/front-end/webpack/webpack.build.config.js --progress --colors",
     "watch": "./node_modules/.bin/webpack --config src/front-end/webpack/webpack.build.config.js --progress --watch",
     "vntd" : "./node_modules/.bin/webpack --config src/front-end/webpack/webpack.tvntd.config.js --progress --watch",
+    "debug": "./node_modules/.bin/webpack --config src/front-end/webpack/webpack.tvntd.debug.js --progress --watch",
     "dev"  : "./node_modules/.bin/webpack-dev-server --config src/front-end/webpack/webpack.dev.config.js --progress --colors --inline --hot"
   },
   "repository": {
