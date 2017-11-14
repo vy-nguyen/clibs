@@ -346,7 +346,8 @@ class EmailLayout extends FormData
             LoginLayout.authResult(this.getFormId(), this.emailSent, result, status);
 
         if (0 < this.emailSent && this.emailSent < 9) {
-            this.changeSubmitState("saved", false, "Sent Email " + this.emailSent, false);
+            this.changeSubmitState("saved", false,
+                "Sent Email " + this.emailSent, false);
         } else {
             if (this.emailSent < 0) {
                 this.emailSent = 0;

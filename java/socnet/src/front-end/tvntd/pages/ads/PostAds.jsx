@@ -74,7 +74,6 @@ class BusAds extends FormData
             select   : true,
             field    : 'busCat',
             inpName  : 'bus-ad-cat',
-            inpDefVal: adsOptDef,
             inpHolder: adsOptDef,
             selectOpt: adsOpt,
             labelTxt : 'Category',

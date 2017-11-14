@@ -4,105 +4,11 @@
 'use strict';
 
 import _                  from 'lodash';
-import Spinner            from 'react-spinjs';
 import React, {PropTypes} from 'react-mod';
 
-import Map                from 'vntd-shared/google-map/Map.jsx';
-import Marker             from 'vntd-shared/google-map/Marker.jsx';
-import InfoWindow         from 'vntd-shared/google-map/InfoWindow.jsx';
+import MapContainer       from 'vntd-shared/google-map/MapContainer.jsx';
 import {GoogleApiLoad}    from 'vntd-shared/lib/AsyncLoader.jsx';
 import AdPropertyStore    from 'vntd-root/stores/AdPropertyStore.jsx';
-import {VntdGlob}         from 'vntd-root/config/constants.js';
-
-export class MapContainer extends React.Component
-{
-    constructor(props) {
-        super(props);
-        this.state = {
-            showingInfoWindow: true,
-            activeMarker     : {},
-            selectedPlace    : {},
-            initialCenter    : {
-                lat: 37.774929,
-                lng: -122.419416
-            }
-        };
-        console.log("constructor, reset ...");
-        this._onMarkerClick  = this._onMarkerClick.bind(this);
-        this._onInfoWinClose = this._onInfoWinClose.bind(this);
-        this._onBoundChange  = this._onBoundChange.bind(this);
-    }
-
-    _onMarkerClick(props, marker, e) {
-        console.log("on marker click");
-        console.log(props);
-
-        this.setState({
-            selectedPlace : props,
-            activeMarker  : marker
-        });
-    }
-
-    _onInfoWinClose() {
-    }
-
-    _onBoundChange(props, mapObj, e) {
-        console.log("On bound change...");
-        console.log(props);
-        console.log(mapObj);
-        console.log(e);
-    }
-
-    componentWillMount() {
-        let geocoder = this.geocoder, google = this.props.google;
-
-        if (google == null) {
-            return;
-        }
-        if (geocoder == null) {
-            this.geocoder = geocoder = new google.maps.Geocoder();
-        }
-        geocoder.geocode({
-            address: "Pleasanton, CA"
-        }, function(results, status) {
-            console.log("Lookup pleasanton address");
-            let loc = results[0].geometry.location,
-                cord = {
-                    lat: loc.lat(),
-                    lng: loc.lng()
-                };
-            console.log(results[0]);
-            console.log("$$$$$");
-            this.setState({
-                initialCenter: cord
-            });
-        }.bind(this));
-    }
-
-    render() {
-        let style = {
-            width: '100vw',
-            height: '600px'
-        };
-        return (
-            <Map google={this.props.google} zoom={14}
-                draggable={true} clickableIcons={true}
-                onBoundsChanged={this._onBoundChange}
-                onHeadingChange={this._onBoundChange}
-                onDragend={this._onBoundChange}
-                style={style} initialCenter={this.state.initialCenter}>
-                <Marker onClick={this._onMarkerClick}
-                    draggable={true} title="I'm here"
-                    label="My Location"/>
-                <InfoWindow onClose={this._onInfoWinClose}>
-                    <div>
-                        <h1>{this.state.selectedPlace.name}</h1>
-                    </div>
-                </InfoWindow>
-            </Map>
-        );
-    }
-}
 
 export class AdsRealtor extends React.Component
 {
@@ -126,9 +32,8 @@ export class AdsRealtor extends React.Component
     }
 
     render() {
-        console.log("ads realtor render");
         return (
-            <MapContainer google={this.props.google}/>
+            <MapContainer center={this.props.center} google={this.props.google}/>
         );
     }
 }

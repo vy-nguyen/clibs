@@ -10,6 +10,12 @@ import ReactDOMServer from 'react-dom-server';
 
 export class InfoWindow extends React.Component
 {
+    constructor(props) {
+        super(props);
+        this.onOpen  = this.onOpen.bind(this);
+        this.onClose = this.onClose.bind(this);
+    }
+
     componentDidMount() {
         this.renderInfoWindow();
     }
@@ -46,12 +52,13 @@ export class InfoWindow extends React.Component
         if (!google || !google.maps) {
             return;
         }
+        let content = this.renderChildren();
         const iw = this.infowindow = new google.maps.InfoWindow({
-            content: ''
+            content: content
         });
 
-        google.maps.event.addListener(iw, 'closeclick', this.onClose.bind(this))
-        google.maps.event.addListener(iw, 'domready', this.onOpen.bind(this));
+        google.maps.event.addListener(iw, 'closeclick', this.onClose)
+        google.maps.event.addListener(iw, 'domready', this.onOpen);
     }
 
     onOpen() {
@@ -80,6 +87,7 @@ export class InfoWindow extends React.Component
 
     updateContent() {
         const content = this.renderChildren();
+        console.log(content);
         this.infowindow.setContent(content);
     }
 
@@ -89,7 +97,7 @@ export class InfoWindow extends React.Component
 
     renderChildren() {
         const {children} = this.props;
-        return ReactDOMServer.renderToString(children);
+        return ReactDOMServer.renderToString(this.props.children);
     }
 
     render() {

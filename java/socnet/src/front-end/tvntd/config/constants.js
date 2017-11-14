@@ -68,6 +68,31 @@ export const VntdGlob = {
         width   : "100%",
         height  : "100%"
     },
+    styleModal: {
+        content: {
+            top        : '50%',
+            left       : '50%',
+            right      : 'auto',
+            bottom     : 'auto',
+            marginRight: '-50%',
+            transform  : 'translate(-50%, -50%)'
+        }
+    },
+    styleMap: {
+        width   : '100vw',
+        height  : '100vh',
+        overflow: 'auto'
+    },
+    styleMarker: {
+        content: {
+            top        : '50%',
+            left       : '50%',
+            right      : 'auto',
+            bottom     : 'auto',
+            marginRight: '-10%',
+            transform  : 'translate(-50%, -50%)'
+        }
+    },
     smallBox: {
         width : "60px",
         height: "60px"
@@ -80,3 +105,13 @@ export const VntdGlob = {
         color : "black"
     }
 };
+
+export const ColFmtMap = [
+    "col-xs-12 col-sm-12 col-md-12 col-lg-12", // 0
+    "col-xs-12 col-sm-12 col-md-12 col-lg-12", // 1
+    "col-xs-6 col-sm-6 col-md-6 col-lg-6",     // 2
+    "col-xs-4 col-sm-4 col-md-4 col-lg-4",     // 3
+    "col-xs-3 col-sm-3 col-md-3 col-lg-3",     // 4
+    "col-xs-2 col-sm-2 col-md-2 col-lg-2",     // 5
+    "col-xs-2 col-sm-2 col-md-2 col-lg-2"      // 6
+];

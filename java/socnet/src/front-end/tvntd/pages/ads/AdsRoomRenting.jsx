@@ -63,7 +63,7 @@ class RoomRenting extends FormData
         } ],
         propertyInfo = [ {
             field    : 'image',
-            url      : '/user/upload-img',
+            url      : '/public/upload-ad-img',
             inpName  : this._getId('room-img-'),
             dropzone : true,
             labelTxt : 'Drop Images'
@@ -111,6 +111,16 @@ class RoomRenting extends FormData
         return this;
     }
 
+    submitError(store, result, status) {
+        // Return field names to highlight the error.
+        return {
+            street: true,
+            city  : true,
+            state : true,
+            zip   : true
+        };
+    }
+
     validateInput(data, errFlags) {
         let price, rawPrice = data.rentPrice;
 
@@ -143,11 +153,6 @@ class AdsRoomRenting extends GenericAds
     // @Override
     //
     _renderForm() {
-        const defValue = {
-            ownerName  : "Your name",
-            ownerPhones: "123-123-1234",
-            ownerEmail : "Your Email"
-        };
         return <ProcessForm form={this.data} store={AdPropertyStore}/>
     }
 }

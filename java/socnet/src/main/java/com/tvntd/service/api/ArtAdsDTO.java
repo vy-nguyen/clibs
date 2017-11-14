@@ -39,10 +39,12 @@ import com.tvntd.util.Util;
 
 public abstract class ArtAdsDTO extends GenericResponse
 {
+    protected int currImgOid;
     protected AddressMapDTO location;
 
     public ArtAdsDTO() {
         super(null);
+        currImgOid = 0;
     }
 
     public void setLocation(AddressMapDTO loc) {
@@ -59,6 +61,7 @@ public abstract class ArtAdsDTO extends GenericResponse
     public abstract String getAdsType();
     public abstract String getArticleUuid();
     public abstract String getAuthorUuid();
+    public abstract String getBusName();
     public abstract String getBusEmail();
     public abstract String getBusPhone();
     public abstract String getBusStreet();
@@ -103,10 +106,28 @@ public abstract class ArtAdsDTO extends GenericResponse
         return img;
     }
 
+    public abstract void setAdImgOid0(String oid);
+    public abstract void setAdImgOid1(String oid);
+    public abstract void setAdImgOid2(String oid);
+    public abstract void setAdImgOid3(String oid);
+
+    public void assignAdImgOid(String oid)
+    {
+        if (currImgOid == 0) {
+            setAdImgOid0(oid);
+        } else if (currImgOid == 1) {
+            setAdImgOid1(oid);
+        } else if (currImgOid == 2) {
+            setAdImgOid2(oid);
+        } else {
+            setAdImgOid3(oid);
+        }
+        currImgOid++;
+    }
+
     /**
      * Internal fetches.
      */
-    public abstract void setAdImgOid0(String oid);
     public abstract String fetchAdImgOid0();
     public abstract String fetchAdImgOid1();
     public abstract String fetchAdImgOid2();
@@ -142,6 +163,21 @@ public abstract class ArtAdsDTO extends GenericResponse
         @Override
         public void setAdImgOid0(String oid) {
             adPost.setAdImgOid0(oid);
+        }
+
+        @Override
+        public void setAdImgOid1(String oid) {
+            adPost.setAdImgOid1(oid);
+        }
+
+        @Override
+        public void setAdImgOid2(String oid) {
+            adPost.setAdImgOid2(oid);
+        }
+
+        @Override
+        public void setAdImgOid3(String oid) {
+            adPost.setAdImgOid3(oid);
         }
 
         @Override
@@ -187,6 +223,7 @@ public abstract class ArtAdsDTO extends GenericResponse
             return adPost.getAuthorUuid();
         }
 
+        @Override
         public String getBusName() {
             return Util.fromRawByte(adPost.getBusName());
         }

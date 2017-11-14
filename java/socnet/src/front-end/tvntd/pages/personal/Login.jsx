@@ -80,7 +80,6 @@ class CustLogin extends React.Component
     }
 
     render() {
-        console.log("render cust login");
         return (
             <div id="extr-page" >
                 <LoginHeader/>

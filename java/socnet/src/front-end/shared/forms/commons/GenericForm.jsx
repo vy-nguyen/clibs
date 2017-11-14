@@ -7,6 +7,8 @@
 import _                 from 'lodash';
 import $                 from 'jquery';
 import React             from 'react-mod';
+import PropTypes         from 'prop-types';
+
 import TA                from 'react-typeahead';
 import Select            from 'react-select';
 import DropzoneComponent from 'react-dropzone-component';
@@ -49,17 +51,33 @@ class SelectWrap extends React.Component
     }
 
     render() {
-        let entry = this.props.entry,
+        let entry = this.props.entry, title = this.props.title, out,
             value = this.props.value != null ? this.props.value : this.state.value;
 
-        return (
+        out = (
             <Select options={entry.selectOpt}
                 name={entry.inpName} value={value}
                 onChange={this._defOnSelect.bind(this, entry)}
             />
         );
+        if (title != null) {
+            return (
+                <div>
+                    <b>{title}</b>
+                    {out}
+                </div>
+            );
+        }
+        return out;
     }
 }
+
+SelectWrap.propTypes = {
+    title : PropTypes.string,
+    name  : PropTypes.string,
+    value : PropTypes.string,
+    entry : PropTypes.object.isRequired
+};
 
 class TAWrap extends React.Component
 {

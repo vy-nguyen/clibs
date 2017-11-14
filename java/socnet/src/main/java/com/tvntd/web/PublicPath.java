@@ -329,7 +329,7 @@ public class PublicPath
 
             System.out.println("Save oid img " + oid.name());
             if (oid != null) {
-                ads.setAdImgOid0(oid.name());
+                ads.assignAdImgOid(oid.name());
             }
             ImageUploadResp out =
                 new ImageUploadResp(ads.getArticleUuid(), ads.getAuthorUuid(), oid);
@@ -411,8 +411,9 @@ public class PublicPath
             return UserPath.s_saveObjFailed;
         }
         ArtRoomAdsDTO save = ArticleSvc.applyPostAds(form, ads, mapSvc);
-        artSvc.saveArtAds(save);
-
+        if (save.getError() == null) {
+            artSvc.saveArtAds(save);
+        }
         if (profile != null) {
             profile.assignPendAds(null);
         }
@@ -453,6 +454,27 @@ public class PublicPath
         return out;
     }
 
+    @RequestMapping(value = "/public/get-feature-ads",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    publicGetFeatureAds(@RequestBody AdsRequest form)
+    {
+        List<ArtRoomAdsDTO> ads;
+        System.out.println(">>> get feature ads");
+
+        RoomAdsResponse out = new RoomAdsResponse("ok");
+
+        ads = artSvc.getRoomAdsByPrice(null, null);
+        out.loadJson("adfeature.json");
+
+        for (ArtRoomAdsDTO a : ads) {
+            out.addAds(a);
+        }
+        return out;
+    }
+ 
     @RequestMapping(value = "/public/ads/room", method = RequestMethod.GET)
     @ResponseBody
     public GenericResponse

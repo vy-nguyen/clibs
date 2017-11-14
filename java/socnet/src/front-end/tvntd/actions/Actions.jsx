@@ -59,7 +59,7 @@ const Actions = Reflux.createActions({
     pendingProduct:  completedFn,
     getPublishProds: completedFailedFn,
     deleteProduct:   completedFailedFn,
-
+    getFeatureAds:   completedFailedFn,
     getDomainData:   completedFailedFn,
 
     // Comment actions
@@ -341,6 +341,10 @@ Actions.getRealtorAds.listen(function(data) {
     console.log("get realtor ads");
     console.log(data);
     postRestCall(data, "/public/get-room-ads", true, this, false);
+});
+
+Actions.getFeatureAds.listen(function(data) {
+    postRestCall(data, "/public/get-feature-ads", true, this, false);
 });
 
 /**

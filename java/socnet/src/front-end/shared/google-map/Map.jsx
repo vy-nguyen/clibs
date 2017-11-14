@@ -64,8 +64,6 @@ export class Map extends MapBase
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log("Will receive props");
-        console.log(nextProps);
         this.setState({
             currentLocation: nextProps.initialCenter
         });
@@ -111,7 +109,7 @@ export class Map extends MapBase
                 currentLocation: this.props.center
             });
         }
-        if (prevState.currentLocation !== this.state.currentLocation) {
+        if (prevState.currentLocation.lat !== this.state.currentLocation.lat) {
             this.recenterMap();
         }
     }
@@ -129,9 +127,6 @@ export class Map extends MapBase
         if (!this.props || !this.props.google) {
             return;
         }
-        console.log("Do map");
-        console.log(this.state.currentLocation);
-
         const {google} = this.props;
         const maps   = google.maps;
         const mapRef = this.refs.map;

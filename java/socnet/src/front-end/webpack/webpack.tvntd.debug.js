@@ -22,21 +22,9 @@ var config =  _.merge(baseConfig, {
     },
     devtool: 'cheap-module-source-map ',
     plugins: [
-        new Clean('../../main/webapp/client'),
-        new webpack.optimize.UglifyJsPlugin({
-            compress: {
-                warnings: false
-            },
-            minimize : false,
-            sourceMap: false,
-            exclude: [
-                /node_modules/,
-                /bower_components/
-            ]
-        }),
         new webpack.DefinePlugin({
             'process.env': {
-                'NODE_ENV': JSON.stringify('production')
+                'NODE_ENV': JSON.stringify('development')
             }
         })
     ].concat(baseConfig.plugins)

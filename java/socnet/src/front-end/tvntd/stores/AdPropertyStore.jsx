@@ -22,6 +22,14 @@ let AdPropertyStore = Reflux.createStore({
         return this.store.getItemByUuid(uuid, authorUuid);
     },
 
+    getAdsFeatures: function() {
+        if (this.featureMenu == null) {
+            Actions.getFeatureAds({});
+            return null;
+        }
+        return this.featureMenu;
+    },
+
     onPostRealtorAdsCompleted: function(res) {
         console.log("result from store ads");
         console.log(res);
@@ -44,6 +52,27 @@ let AdPropertyStore = Reflux.createStore({
         this.store.onGetPublishItemFailure(data, this);
     },
 
+    onGetFeatureAdsCompleted: function(res) {
+        if (res.featureMenu != null) {
+            this.updateFeatureMenu(res.featureMenu);
+        }
+        this.store.onGetPublishItemCompleted(res, 'uuidList', this);
+    },
+
+    updateFeatureMenu(menu) {
+        if (this.featureMenu == null) {
+            this.featureMenu = {
+                value: "main",
+                title: "Feature Ads"
+            };
+        }
+        let usa = menu.usa.selOpt;
+        this.featureMenu.selOpt = menu.tagMenu.selOpt;
+        _.forEach(this.featureMenu.selOpt, function(entry) {
+            entry.selOpt = usa;
+        });
+    },
+
     updateMissingUuid: function(uuids) {
         this.store.updateMissingUuid(uuids);
     },
@@ -56,8 +85,13 @@ let AdPropertyStore = Reflux.createStore({
         this.store.requestItems(Actions.getPublishAds);
     },
 
+    getAllAds: function() {
+        return this.store.data.itemsByUuid;
+    },
+
     dumpData: function(header) {
         this.store.dumpData(header);
+        console.log(this.featureMenu);
     }
 });
 

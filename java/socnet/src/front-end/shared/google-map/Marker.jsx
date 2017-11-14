@@ -74,6 +74,10 @@ export class Marker extends MapBase
     getMarker() {
         return null;
     }
+
+    render() {
+        return <div>{this.props.children}</div>;
+    }
 }
 
 Marker.propTypes = {

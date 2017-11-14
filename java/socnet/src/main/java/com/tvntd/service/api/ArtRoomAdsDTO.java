@@ -51,26 +51,42 @@ public class ArtRoomAdsDTO extends ArtAdsDTO
 
     @Override
     public void setAdImgOid0(String oid) {
+        roomAds.setAdImgOid0(oid);
+    }
+
+    @Override
+    public void setAdImgOid1(String oid) {
+        roomAds.setAdImgOid1(oid);
+    }
+
+    @Override
+    public void setAdImgOid2(String oid) {
+        roomAds.setAdImgOid2(oid);
+    }
+
+    @Override
+    public void setAdImgOid3(String oid) {
+        roomAds.setAdImgOid3(oid);
     }
 
     @Override
     public String fetchAdImgOid0() {
-        return null;
+        return roomAds.getAdImgOid0();
     }
 
     @Override
     public String fetchAdImgOid1() {
-        return null;
+        return roomAds.getAdImgOid1();
     }
 
     @Override
     public String fetchAdImgOid2() {
-        return null;
+        return roomAds.getAdImgOid2();
     }
 
     @Override
     public String fetchAdImgOid3() {
-        return null;
+        return roomAds.getAdImgOid3();
     }
 
     @Override
@@ -89,8 +105,13 @@ public class ArtRoomAdsDTO extends ArtAdsDTO
     }
 
     @Override
-    public String getBusEmail() {
+    public String getBusName() {
         return Util.fromRawByte(roomAds.getOwnerName());
+    }
+
+    @Override
+    public String getBusEmail() {
+        return roomAds.getOwnerEmail();
     }
 
     @Override

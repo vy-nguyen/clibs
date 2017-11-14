@@ -174,7 +174,15 @@ let ErrorStore = Reflux.createStore({
         }
         let err = this.data[id];
         if (err == null) {
-            this.data[id] = new ErrorResp(id, null, text, null);
+            if (text instanceof ErrorResp) {
+                text.errorId  = id;
+                this.data[id] = err = text;
+
+                text     = err.userText;
+                helpText = err.userHelp;
+            } else {
+                this.data[id] = new ErrorResp(id, null, text, null);
+            }
             err = this.data[id];
         }
         err.updateUserText(text, helpText);

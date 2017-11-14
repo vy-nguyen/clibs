@@ -108,6 +108,11 @@ let AdsStore = Reflux.createStore({
         this.store.onGetPublishItemFailure(data, this);
     },
 
+    onDeleteUserPostCompleted: function(data) {
+        this.store._removeItemStore(data.uuids, data.authorUuid, true);
+        this.trigger(this.store, data, "delOk", true, data.authorUuid);
+    },
+
     updateMissingUuid: function(uuids) {
         this.store.updateMissingUuid(uuids);
     },

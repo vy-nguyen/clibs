@@ -1,0 +1,125 @@
+{
+    "usa": {
+        "selOpt": [ {
+            "value": "CA",
+            "label": "California",
+            "title": "Select County",
+            "lat"  : 36.5314767,
+            "lng"  : -118.34127224,
+            "zoom" : 10,
+            "selOpt": [ {
+                "value": "Al",
+                "label": "Alameda County",
+                "lat"  : 37.67985,
+                "lng"  : -122.201674
+            }, {
+                "value": "SC",
+                "label": "Santa Clara County",
+                "lat"  : 37.33085661,
+                "lng"  : -121.92489624
+            }, {
+                "value": "SM",
+                "label": "San Mateo County",
+                "lat"  : 37.380814,
+                "lng"  : -122.6150012
+            }, {
+                "value": "SF",
+                "label": "San Francisco",
+                "lat"  : 37.7576948,
+                "lng"  : -122.4726193
+            } ]
+        }, {
+            "value": "TX",
+            "label": "Texas",
+            "zoom" : 10,
+            "lat"  : 31.0909914,
+            "lng"  : -104.5670647
+        }, {
+            "value": "VA",
+            "label": "Virgina",
+            "zoom" : 10,
+            "lat"  : 37.9820867,
+            "lng"  : -81.6636402
+        }, {
+            "value": "MA",
+            "label": "Massachusetts",
+            "zoom" : 10,
+            "lat"  : 42.0314678,
+            "lng"  : -72.8044549
+        }, {
+            "value": "NY",
+            "label": "New York",
+            "zoom" : 10,
+            "lat"  : 40.6974034,
+            "lng"  : -74.1197626
+        }, {
+            "value": "WA",
+            "label": "Washington State",
+            "zoom" : 10,
+            "lat"  : 47.2511117,
+            "lng"  : -123.1244963
+        }, {
+            "value": "OR",
+            "label": "Oregan",
+            "zoom" : 10,
+            "lat"  : 44.1235108,
+            "lng"  : -122.8257931
+        }, {
+            "value": "FL",
+            "label": "Florida",
+            "zoom" : 10,
+            "lat"  : 27.5224074,
+            "lng"  : -88.2958066
+        } ]
+    },
+    "tagMenu": {
+        "selOpt": [ {
+            "value": "room",
+            "label": "Share Room",
+            "title": "Select State"
+        }, {
+            "value": "doctor",
+            "label": "Doctor/Dentist/Pharmacy",
+            "tags" : [
+                "doctor", "bác sĩ", "hospital", "dentist", "pharma",
+                "nha sĩ", "dược sĩ", "nhà thương", "bệnh viện"
+            ],
+            "title": "Select State"
+        }, {
+            "value": "realtor",
+            "label": "Realtor & Renting",
+            "tags" : [ "real", "renting" ],
+            "title": "Select State"
+        }, {
+            "value": "house",
+            "label": "Housing Contractor/Plumber",
+            "tags" : [ "contractor", "housing", "paniting", "plumber" ],
+            "title": "Select State"
+        }, {
+            "value": "tutor",
+            "label": "Tutoring",
+            "tags" : [ "tutor", "dạy", "học" ],
+            "title": "Select State"
+        }, {
+            "value": "loan",
+            "label": "Loan/Tax",
+            "tags" : [ "loan", "tax", "refi" ],
+            "title": "Select State"
+        }, {
+            "value": "food",
+            "label": "Food Ordering",
+            "tags" : [ "food", "cartering", "cơm tháng" ],
+            "title": "Select State"
+        }, {
+            "value": "car",
+            "label": "Automobile",
+            "tags" : [ "car", "xe" ],
+            "title": "Select State"
+        }, {
+            "value": "legal",
+            "label": "Legal",
+            "tags" : [ "legal", "luật", "attoney" ],
+            "title": "Select State"
+        } ]
+    }
+}

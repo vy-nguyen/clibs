@@ -68,6 +68,7 @@ import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArticleSvc;
 import com.tvntd.service.api.ICommentService;
 import com.tvntd.service.api.IMapService;
+import com.tvntd.service.api.IMapService.AddressMapDTO;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.util.Util;
 
@@ -76,6 +77,7 @@ import com.tvntd.util.Util;
 public class ArticleSvc implements IArticleSvc
 {
     private static Logger s_log = LoggerFactory.getLogger(ArticleSvc.class);
+    private static ArticlePost s_defPost = new ArticlePost();
 
     @Autowired
     protected ArticleBaseRepo artBaseRepo;
@@ -148,6 +150,12 @@ public class ArticleSvc implements IArticleSvc
         ads.setCity(form.getCity());
         ads.setZip(form.getZip());
         ads.setPropDesc(Util.toRawByte(form.getDesc(), 2048));
+        ads.setAdImgOid0(inDTO.fetchAdImgOid0());
+        ads.setAdImgOid1(inDTO.fetchAdImgOid1());
+        ads.setAdImgOid2(inDTO.fetchAdImgOid2());
+        ads.setAdImgOid3(inDTO.fetchAdImgOid3());
+
+        System.out.println("Save " + ads + " orig " + inDTO.fetchAds());
 
         ArtRoomAdsDTO adsDTO = new ArtRoomAdsDTO(ads);
         adsDTO.setLocation(
@@ -693,6 +701,20 @@ public class ArticleSvc implements IArticleSvc
             if (brief == null) {
                 return null;
             }
+            ArticleBase base = brief.getArtBase();
+            String artTag = base.getArtTag();
+
+            if (artTag.equals(ArtTag.ADS)) {
+                ArtAds ads = artAdsRepo.findByArticleUuid(artUuid);
+                if (ads != null) {
+                    deleteArtAds(ads);
+                }
+                return s_defPost;
+            }
+            if (artTag.equals(ArtTag.ESTORE)) {
+                System.out.println("Delete product " + base);
+                return s_defPost;
+            }
             deleteArticleBrief(new ArticleBriefDTO(brief));
             return new ArticlePost(owner.getUserUuid(), owner.fetchUserId());
         }
@@ -736,6 +758,7 @@ public class ArticleSvc implements IArticleSvc
         if (adsDTO instanceof ArtRoomAdsDTO) {
             deleteArtAds(((ArtRoomAdsDTO) adsDTO).fetchAds());
         }
+        mapSvc.deleteAddress(adsDTO.getArticleUuid());
     }
 
     @Override
