@@ -261,7 +261,6 @@ public class PublicPath
             input.add(u);
         }
         List<ArticlePostDTO> arts = artSvc.getArticleDTO(input);
-        System.out.println("Result art lengh " + arts.size());
         return new ArticleDTOResponse(arts, null);
     }
 
@@ -327,7 +326,6 @@ public class PublicPath
             InputStream is = file.getInputStream();
             ObjectId oid = store.putPublicImg(is, (int)file.getSize());
 
-            System.out.println("Save oid img " + oid.name());
             if (oid != null) {
                 ads.assignAdImgOid(oid.name());
             }
@@ -370,7 +368,6 @@ public class PublicPath
             ads = profile.genPendArtAds();
         }
         if (form.cleanInput() == false) {
-            System.out.println("Failed to validate ads input...");
             return UserPath.s_saveObjFailed;
         }
         ArticleSvc.applyPostAds(form, ads, mapSvc);
@@ -462,8 +459,6 @@ public class PublicPath
     publicGetFeatureAds(@RequestBody AdsRequest form)
     {
         List<ArtRoomAdsDTO> ads;
-        System.out.println(">>> get feature ads");
-
         RoomAdsResponse out = new RoomAdsResponse("ok");
 
         ads = artSvc.getRoomAdsByPrice(null, null);
@@ -527,8 +522,6 @@ public class PublicPath
         if (uuids == null) {
             return new StartupResponse(null);
         }
-        System.out.println("Request domain " + uuids.getAuthorUuid() +
-                ", type " + uuids.getUuidType());
         StartupResponse resp = new StartupResponse(uuids.getAuthorUuid());
         domainSvc.fillDomainData(resp, uuids);
         return resp;

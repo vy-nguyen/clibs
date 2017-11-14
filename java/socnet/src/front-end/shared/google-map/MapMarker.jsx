@@ -8,9 +8,10 @@ import Modal              from 'react-modal';
 import React, {PropTypes} from 'react-mod';
 
 import Marker             from 'vntd-shared/google-map/Marker.jsx';
+import ImageCarousel      from 'vntd-shared/layout/ImageCarousel.jsx';
+import Mesg               from 'vntd-root/components/Mesg.jsx';
 import {VntdGlob}         from 'vntd-root/config/constants.js';
 import AdsBox             from 'vntd-root/pages/ads/AdsBox.jsx';
-import ImageCarousel      from 'vntd-shared/layout/ImageCarousel.jsx';
 
 export class MarkerEntry extends React.Component
 {
@@ -86,7 +87,7 @@ export class MapMarker extends React.Component
                     <i className="fa fa-times"/>
                 </button>
                 <h3 className="modal-title">
-                    {marker.busName} | {marker.createdDate}
+                    {marker.busName} - {marker.createdDate}
                 </h3>
             </div>
         );
@@ -105,9 +106,11 @@ export class MapMarker extends React.Component
             );
         }
         return (
-            <div className="row padding-10">
+            <div className="well">
+                <h3><Mesg text="Rent Price"/>: {marker.rentPrice}</h3>
+                <h4>{marker.busEmail} | {marker.busPhone}</h4>
                 <p>{AdsBox.businessAddr(marker)}</p>
-                <h3>{marker.busEmail} | {marker.busPhone}</h3>
+                <br/>
                 <div dangerouslySetInnerHTML= {{__html: marker.busDesc}}/>
                 {pics}
             </div>

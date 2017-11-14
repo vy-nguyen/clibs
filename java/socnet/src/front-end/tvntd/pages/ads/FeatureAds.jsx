@@ -13,8 +13,8 @@ import ArticleTagStore    from 'vntd-root/stores/ArticleTagStore.jsx';
 import AdPropertyStore    from 'vntd-root/stores/AdPropertyStore.jsx';
 import ArticleTagBrief    from 'vntd-root/components/ArticleTagBrief.jsx';
 import {VntdGlob}         from 'vntd-root/config/constants.js';
-import AdsTableListing    from './AdsTableListing.jsx';
 import AdsRealtor         from './AdsRealtor.jsx';
+import AdsBusMap          from './AdsBusMap.jsx';
 
 class AdsCategory
 {
@@ -209,12 +209,28 @@ class FeatureAds extends React.Component
         }
     }
 
+    _lookupSelected(args) {
+        let selected = this._filterTag.lookupSelection(args);
+        return {
+            lat : selected.lat,
+            lng : selected.lng,
+            zoom: selected.zoom || 11,
+            selected: selected
+        };
+    }
+
     _renderTag(entry, args, active) {
         if (this._filterTag == null) {
             return null;
         }
-        let tags = this._filterTag.lookupTag(entry);
+        let tags = this._filterTag.lookupTag(entry), pos = this._lookupSelected(args);
 
+        return (
+            <div className="padding-top-10">
+                <AdsBusMap tagList={tags} center={pos} location={pos.selected}/>
+            </div>
+        );
+        /*
         return (
             <div className="padding-top-10">
                 <div className="row">
@@ -224,21 +240,18 @@ class FeatureAds extends React.Component
                 </div>
             </div>
         ); 
+        */
     }
 
     _renderAdsRealtor(entry, args, active) {
         if (this._filterTag == null) {
             return null;
         }
-        let selected = this._filterTag.lookupSelection(args),
-        pos = {
-            lat : selected.lat,
-            lng : selected.lng,
-            zoom: selected.zoom === 10 ? 7 : 11
-        };
+        let pos = this._lookupSelected(args);
+
         return (
             <div className="padding-top-10">
-                <AdsRealtor center={pos} location={selected}/>
+                <AdsRealtor center={pos} location={pos.selected}/>
             </div>
         );
     }

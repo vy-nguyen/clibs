@@ -8,27 +8,17 @@ import React, {PropTypes} from 'react-mod';
 
 import MapContainer       from 'vntd-shared/google-map/MapContainer.jsx';
 import {GoogleApiLoad}    from 'vntd-shared/lib/AsyncLoader.jsx';
-import AdPropertyStore    from 'vntd-root/stores/AdPropertyStore.jsx';
 
 export class AdsRealtor extends React.Component
 {
     constructor(props) {
         super(props);
-        this._updateAds = this._updateAds.bind(this);
     }
 
     componentDidMount() {
-        this.unsub = AdPropertyStore.listen(this._updateAds);
     }
 
     componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsub = null;
-        }
-    }
-
-    _updateAds(store, data, elm, status) {
     }
 
     render() {

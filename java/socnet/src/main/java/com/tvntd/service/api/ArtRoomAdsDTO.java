@@ -94,6 +94,10 @@ public class ArtRoomAdsDTO extends ArtAdsDTO
         return "room";
     }
 
+    public String getRentPrice() {
+        return roomAds.getRentPrice();
+    }
+
     @Override
     public String getArticleUuid() {
         return roomAds.getArticleUuid();

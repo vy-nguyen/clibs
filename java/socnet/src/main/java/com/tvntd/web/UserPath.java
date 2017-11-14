@@ -213,8 +213,6 @@ public class UserPath
             input.add(u);
         }
         List<ArticlePostDTO> arts = artSvc.getArticleDTO(input);
-        System.out.println("Result art lengh " + arts.size());
-
         return new ArticleDTOResponse(arts, null);
     }
 
@@ -252,7 +250,6 @@ public class UserPath
             return s_noProfile;
         }
         if (form.cleanInput() == false) {
-            System.out.println("Bad article input " + form.getTags());
             return s_badInput;
         }
         ArticlePostDTO art = genPendPost(profile, true, form.getArticleUuid());
@@ -269,8 +266,6 @@ public class UserPath
     updateUserPost(@RequestBody PostForm form,
             @PathVariable(value = "opt") String opt, HttpSession session)
     {
-        System.out.println("Value param " + opt);
-        System.out.println("Update art " + form);
         return updatePost(form, session, true);
     }
 
@@ -669,7 +664,6 @@ public class UserPath
             attr = commentSvc.updateComment(form, profile);
             resp.updateArticleAttr(attr);
         }
-        System.out.println("Change comment " + resp);
         return resp;
     }
 
@@ -763,7 +757,6 @@ public class UserPath
             new TagOrderResponse(uuid, form.getTagRanks(), form.getArtList());
 
         if (ownerTags == null) {
-            System.out.println("No owner tag for " + uuid);
             return resp;
         }
         List<AuthorTagDTO> tags = ownerTags.getAuthorTags();
@@ -808,8 +801,6 @@ public class UserPath
                     rank.setRank(info.getOrder());
                     rank.setTagName(info.getTagName());
                 }
-                System.out.println("Changed art " + rank.getArticleUuid() +
-                        ", tag " + rank.getTagName() + ", order " + rank.getRank());
                 artSvc.saveArticleBrief(artRank);
             }
             artOrder.clear();
