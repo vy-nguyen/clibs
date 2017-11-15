@@ -121,8 +121,7 @@ class AdsTableListing extends React.Component
             return null;
         }
         return (
-            <EStoreFeed adsRec={ads} authorUuid={ads.artObj.authorUuid}
-                onClick={this._readAds.bind(this, ads)}/>
+            <EStoreFeed adsRec={ads} authorUuid={ads.artObj.authorUuid}/>
         )
     }
 

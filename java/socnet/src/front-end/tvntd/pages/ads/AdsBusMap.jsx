@@ -9,23 +9,44 @@ import React, {PropTypes} from 'react-mod';
 import {GoogleApiLoad}    from 'vntd-shared/lib/AsyncLoader.jsx';
 import MapContainer       from 'vntd-shared/google-map/MapContainer.jsx';
 import {AdsStore}         from 'vntd-root/stores/ArticleStore.jsx';
+import {VntdGlob}         from 'vntd-root/config/constants.js';
 import ArticleTagStore    from 'vntd-root/stores/ArticleTagStore.jsx';
+import EStoreFeed         from './EStoreFeed.jsx';
 
 import {MapMarker, MarkerEntry} from 'vntd-shared/google-map/MapMarker.jsx';
+
+class BusMapMarker extends MapMarker
+{
+    constructor(props) {
+        super(props);
+        this.modalStyle = VntdGlob.styleBusMarker;
+    }
+
+    _modalTitle() {
+        let marker = this.props.marker;
+        return <h1 className="modal-title">{marker.busName}</h1>;
+    }
+
+    _modalBody() {
+        let adsRec = this.props.adsRec,
+            authorUuid = adsRec.artObj != null ? adsRec.artObj.authorUuid : null;
+
+        return <EStoreFeed adsRec={adsRec} authorUuid={authorUuid}/>;
+    }
+}
 
 class BusMapContainer extends MapContainer
 {
     constructor(props) {
         super(props);
+
         this._getArtListing = this._getArtListing.bind(this);
+        this._updateListing = this._updateListing.bind(this);
+        this.state = this._getArtListing(props.tagList);
     }
 
     componentDidMount() {
         this.unsub = ArticleTagStore.listen(this._updateListing); 
-    }
-
-    componentWillMount() {
-
     }
 
     componentWillUnmount() {
@@ -35,6 +56,10 @@ class BusMapContainer extends MapContainer
         }
     }
 
+    _updateListing() {
+        this.setState(this._getArtListing(this.props.tagList));
+    }
+
     _getArtListing(tagList) {
         let adsList = [], out = [], unique = {};
 
@@ -42,31 +67,27 @@ class BusMapContainer extends MapContainer
             ArticleTagStore.getPublishedArticles(tagName, adsList, unique);
         });
         _.forEach(adsList, function(adsRec) {
+            unique[adsRec.articleUuid] = adsRec;
             out.push(adsRec.getArticle());
         });
-        return out;
+        return {
+            busAds: out,
+            adsRec: unique
+        };
     }
 
     // @Override
     //
     _getMapData() {
-        console.log("get tag...");
-        return this._getArtListing(this.props.tagList);
+        return this.state.busAds;
     }
 
-    renderEntry(data, label) {
-        console.log("Data entry....");
-        console.log(data);
-        return (
-            <MarkerEntry marker={data} label={label} onClick={this._onMarkerClick}/>
-        );
-    }
-
+    // @Override
+    //
     renderMarker(data, label) {
-        console.log("marker entry....");
-        console.log(data);
         return (
-            <MapMarker ref={label} key={_.uniqueId()} marker={data} label={label}/>
+            <BusMapMarker ref={label} key={_.uniqueId()} marker={data}
+                adsRec={this.state.adsRec[data.articleUuid]} label={label}/>
         );
     }
 }
