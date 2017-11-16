@@ -4,9 +4,9 @@ var scripts = {
         "vntd-root"  : "/src/front-end/tvntd",
         "node-module": "/node_modules",
 
-        "react-mod": "/node_modules/react/dist/react.min.js",
+        "react-mod": "/node_modules/react/umd/react.production.min.js",
         "react-lib": "/node_modules/react/lib",
-        "react-dom": "/node_modules/react-dom/dist/react-dom.min.js",
+        "react-dom": "/node_modules/react-dom/umd/react-dom.production.min.js",
         "react-dom-server": "/node_modules/react-dom/server.js",
         "react-bootstrap" : "/node_modules/react-bootstrap/dist/react-bootstrap.min.js",
         "react-router"    : "/node_modules/react-router/umd/react-router.min.js",
