@@ -11,19 +11,10 @@ import {GoogleApiLoad}    from 'vntd-shared/lib/AsyncLoader.jsx';
 
 export class AdsRealtor extends React.Component
 {
-    constructor(props) {
-        super(props);
-    }
-
-    componentDidMount() {
-    }
-
-    componentWillUnmount() {
-    }
-
     render() {
         return (
-            <MapContainer center={this.props.center} google={this.props.google}/>
+            <MapContainer {...this.props}/>
+            // <MapContainer center={this.props.center} google={this.props.google}/>
         );
     }
 }

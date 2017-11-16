@@ -99,10 +99,7 @@ class AdsBusMap extends React.Component
     }
 
     render() {
-        return (
-            <BusMapContainer center={this.props.center} google={this.props.google}
-                tagList={this.props.tagList}/>
-        );
+        return <BusMapContainer {...this.props}/>;
     }
 }
 

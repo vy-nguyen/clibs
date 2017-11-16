@@ -29,20 +29,12 @@ export class InfoWindow extends React.Component
         if (map !== prevProps.map) {
             this.renderInfoWindow();
         }
-        if (this.props.position !== prevProps.position) {
-            this.updatePosition();
-        }
-        if (this.props.children !== prevProps.children) {
-            this.updateContent();
-        }
-        if (this.props.visible !== prevProps.visible ||
-            this.props.marker !== prevProps.marker ||
-            this.props.position !== prevProps.position) {
-            if (this.props.visible) {
-                this.openWindow();
-            } else {
-                this.closeWindow();
-            }
+        this.updatePosition();
+        this.updateContent();
+        if (this.props.visible) {
+            this.openWindow();
+        } else {
+            this.closeWindow();
         }
     }
 
@@ -74,20 +66,28 @@ export class InfoWindow extends React.Component
     }
 
     openWindow() {
-        this.infowindow.open(this.props.map, this.props.marker);
+        this.infowindow.open(this.props.map, this.marker);
     }
 
     updatePosition() {
-        let pos = this.props.position;
-        if (!(pos instanceof this.props.google.maps.LatLng)) {
-            pos = pos && new this.props.google.maps.LatLng(pos.lat, pos.lng);
+        let pos = this.position, google = this.props.google;
+
+        if (pos == null || !(pos instanceof google.maps.LatLng)) {
+            pos = this.props.position;
+            pos = pos && new google.maps.LatLng(pos.lat, pos.lng);
+
+            this.position = pos;
+            this.marker = new google.maps.Marker({
+                map     : this.props.map,
+                position: pos,
+                lable   : "business"
+            });
         }
         this.infowindow.setPosition(pos);
     }
 
     updateContent() {
         const content = this.renderChildren();
-        console.log(content);
         this.infowindow.setContent(content);
     }
 
