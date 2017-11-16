@@ -4,6 +4,7 @@
 'use strict';
 
 import React          from 'react';
+import PropTypes      from 'prop-types';
 import $              from 'jquery';
 import TinyMCE        from 'react-tinymce';
 import NestableStore  from 'vntd-shared/stores/NestableStore.jsx';
@@ -13,8 +14,8 @@ class Editor extends React.Component
 {
     static propTypes() {
         return {
-            content : React.PropTypes.string.isRequired,
-            onChange: React.PropTypes.func.isRequired
+            content : PropTypes.string.isRequired,
+            onChange: PropTypes.func.isRequired
         }
     }
 

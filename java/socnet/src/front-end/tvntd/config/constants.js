@@ -75,13 +75,11 @@ export const VntdGlob = {
             right      : 'auto',
             bottom     : 'auto',
             marginRight: '-50%',
-            transform  : 'translate(-50%, -50%)'
+            transform  : 'translate(-50%, -50%)',
+            overflowX  : 'auto',
+            overflow   : 'scroll',
+            maxHeight  : '95vh'
         }
-    },
-    styleMap: {
-        width   : '100vw',
-        height  : '100vh',
-        overflow: 'auto'
     },
     styleMarker: {
         content: {
@@ -90,8 +88,28 @@ export const VntdGlob = {
             right      : 'auto',
             bottom     : 'auto',
             marginRight: '-10%',
-            transform  : 'translate(-50%, -50%)'
+            transform  : 'translate(-50%, -50%)',
+            overflowX  : 'auto',
+            overflow   : 'scroll',
+            maxHeight  : '95vh'
         }
+    },
+    styleBusMarker: {
+        content: {
+            top        : '30%',
+            left       : '30%',
+            right      : 'auto',
+            bottom     : 'auto',
+            marginRight: '-10%',
+            transform  : 'translate(-30%, -30%)',
+            overflow   : 'scroll',
+            maxHeight  : '95vh'
+        }
+    },
+    styleMap: {
+        width   : '100vw',
+        height  : '100vh',
+        overflow: 'auto'
     },
     smallBox: {
         width : "60px",

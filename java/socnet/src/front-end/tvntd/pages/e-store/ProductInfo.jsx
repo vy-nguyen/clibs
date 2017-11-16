@@ -2,9 +2,10 @@
  * Copyright by Vy Nguyen (2016)
  * BSD License
  */
-import _                    from 'lodash';
-import React, { PropTypes } from 'react-mod';
-import StarRating           from 'react-star-rating';
+import _                from 'lodash';
+import React            from 'react-mod';
+import PropTypes        from 'prop-types';
+import StarRating       from 'react-star-rating';
 
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import TabPanel         from 'vntd-shared/layout/TabPanel.jsx';

@@ -4,7 +4,8 @@
 'use strict';
 
 import _                  from 'lodash';
-import React, {PropTypes} from 'react-mod';
+import React              from 'react-mod';
+import PropTypes          from 'prop-types';
 
 import {
     SelectWrap, TAWrap
@@ -126,7 +127,7 @@ class BrowseSelection extends React.Component
             </div>
         );
     }
-};
+}
 
 BrowseSelection.propTypes = {
 };

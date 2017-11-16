@@ -3,9 +3,10 @@
  */
 'use strict';
 
-import _                  from 'lodash';
-import $                  from 'jquery';
-import React, {PropTypes} from 'react-mod';
+import _                 from 'lodash';
+import $                 from 'jquery';
+import React             from 'react-mod';
+import PropTypes         from 'prop-types';
 
 import WidgetGrid        from 'vntd-shared/widgets/WidgetGrid.jsx';
 import JarvisWidget      from 'vntd-shared/widgets/JarvisWidget.jsx';

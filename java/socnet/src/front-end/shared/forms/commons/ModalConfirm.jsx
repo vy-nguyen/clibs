@@ -6,6 +6,7 @@
 
 import $           from 'jquery';
 import React       from 'react-mod';
+import PropTypes   from 'prop-types';
 import Modal       from 'react-modal';
 import NavStore    from 'vntd-shared/stores/NavigationStore.jsx';
 import Mesg        from 'vntd-root/components/Mesg.jsx';
@@ -123,10 +124,10 @@ class ModalConfirm extends React.Component
 {
     static propTypes() {
         return {
-            openCb    : React.PropTypes.func,
-            closeCb   : React.PropTypes.func,
-            modalTitle: React.PropTypes.string.isRequired,
-            any       : React.PropTypes.any
+            openCb    : PropTypes.func,
+            closeCb   : PropTypes.func,
+            modalTitle: PropTypes.string.isRequired,
+            any       : PropTypes.any
         }
     }
 
