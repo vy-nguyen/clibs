@@ -4,7 +4,8 @@
 'use strict';
 
 import _                  from 'lodash';
-import React, {PropTypes} from 'react-mod';
+import React              from 'react-mod';
+import PropTypes          from 'prop-types';
 
 import {GoogleApiLoad}    from 'vntd-shared/lib/AsyncLoader.jsx';
 import MapContainer       from 'vntd-shared/google-map/MapContainer.jsx';

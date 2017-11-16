@@ -3,8 +3,9 @@
  */
 'use strict';
 
-import React, { PropTypes as T } from 'react-mod';
-import MapBase from './MapBase.jsx';
+import React        from 'react-mod';
+import PropTypes    from 'prop-types';
+import MapBase      from './MapBase.jsx';
 
 const evtNames = ['click', 'mouseout', 'mouseover'];
 
@@ -56,16 +57,16 @@ export class Polygon extends MapBase
 }
 
 Polygon.propTypes = {
-    paths        : T.array,
-    strokeColor  : T.string,
-    strokeOpacity: T.number,
-    strokeWeight : T.number,
-    fillColor    : T.string,
-    fillOpacity  : T.number
+    paths        : PropTypes.array,
+    strokeColor  : PropTypes.string,
+    strokeOpacity: PropTypes.number,
+    strokeWeight : PropTypes.number,
+    fillColor    : PropTypes.string,
+    fillOpacity  : PropTypes.number
 }
 
 evtNames.forEach(function(e) {
-    Polygon.propTypes[e] = T.func;
+    Polygon.propTypes[e] = PropTypes.func;
 });
 
 Polygon.defaultProps = {

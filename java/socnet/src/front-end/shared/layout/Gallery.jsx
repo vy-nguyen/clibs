@@ -4,6 +4,7 @@
  */
 import _             from 'lodash';
 import React         from 'react';
+import PropTypes     from 'prop-types';
 import Modal         from 'react-modal';
 
 import {VntdGlob}    from 'vntd-root/config/constants.js';
@@ -13,7 +14,7 @@ class Gallery extends React.Component
 {
     static propTypes() {
         return {
-            isLoading: React.PropTypes.bool
+            isLoading: PropTypes.bool
         }
     }
 

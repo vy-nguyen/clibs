@@ -4,7 +4,8 @@
 'use strict';
 
 import _                  from 'lodash';
-import React, {PropTypes} from 'react-mod';
+import React              from 'react-mod';
+import PropTypes          from 'prop-types';
 
 import StateButtonStore   from 'vntd-shared/stores/StateButtonStore.jsx';
 import InputStore         from 'vntd-shared/stores/NestableStore.jsx';

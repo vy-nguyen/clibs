@@ -6,7 +6,8 @@
 import _                  from 'lodash';
 import Modal              from 'react-modal';
 import Spinner            from 'react-spinjs';
-import React, {PropTypes} from 'react-mod';
+import React              from 'react-mod';
+import PropTypes          from 'prop-types';
 
 import Map                from 'vntd-shared/google-map/Map.jsx';
 import {VntdGlob}         from 'vntd-root/config/constants.js';

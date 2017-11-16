@@ -4,7 +4,8 @@
 'use strict';
 
 import _                  from 'lodash';
-import React, {PropTypes} from 'react-mod';
+import React              from 'react-mod';
+import PropTypes          from 'prop-types';
 
 import AuthorFeed         from 'vntd-root/components/AuthorFeed.jsx';
 import {GlobStore}        from 'vntd-root/stores/ArticleStore.jsx';

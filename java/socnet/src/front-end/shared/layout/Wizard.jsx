@@ -5,7 +5,8 @@
 
 import _                  from 'lodash';
 import classnames         from 'classnames';
-import React, {PropTypes} from 'react-mod';
+import React              from 'react-mod';
+import PropTypes          from 'prop-types';
 
 import Mesg               from 'vntd-root/components/Mesg.jsx';
 

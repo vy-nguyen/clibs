@@ -4,7 +4,8 @@
 'use strict';
 
 import _                  from 'lodash';
-import React, {PropTypes} from 'react-mod';
+import React              from 'react-mod';
+import PropTypes          from 'prop-types';
 import Spinner            from 'react-spinjs';
 
 import SelectComp         from 'vntd-shared/component/SelectComp.jsx';

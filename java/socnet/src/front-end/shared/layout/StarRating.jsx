@@ -2,7 +2,8 @@
  * Copyright by Vy Nguyen (2016)
  * BSD License
  */
-import React, { PropTypes } from 'react-mod';
+import React            from 'react-mod';
+import PropTypes        from 'prop-types';
 
 const _starScores = [
     { solid: 0, half: 0, hollow: 5 },  // 0
