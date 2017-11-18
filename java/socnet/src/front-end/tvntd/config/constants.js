@@ -127,9 +127,9 @@ export const VntdGlob = {
 export const ColFmtMap = [
     "col-xs-12 col-sm-12 col-md-12 col-lg-12", // 0
     "col-xs-12 col-sm-12 col-md-12 col-lg-12", // 1
-    "col-xs-6 col-sm-6 col-md-6 col-lg-6",     // 2
+    "col-xs-2 col-sm-2 col-md-2 col-lg-2",     // 2
     "col-xs-4 col-sm-4 col-md-4 col-lg-4",     // 3
     "col-xs-3 col-sm-3 col-md-3 col-lg-3",     // 4
-    "col-xs-2 col-sm-2 col-md-2 col-lg-2",     // 5
-    "col-xs-2 col-sm-2 col-md-2 col-lg-2"      // 6
+    "col-xs-6 col-sm-6 col-md-6 col-lg-6",     // 5
+    "col-xs-6 col-sm-6 col-md-6 col-lg-6"      // 6
 ];

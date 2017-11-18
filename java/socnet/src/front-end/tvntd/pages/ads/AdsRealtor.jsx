@@ -15,7 +15,6 @@ export class AdsRealtor extends React.Component
     render() {
         return (
             <MapContainer {...this.props}/>
-            // <MapContainer center={this.props.center} google={this.props.google}/>
         );
     }
 }

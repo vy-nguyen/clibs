@@ -137,23 +137,4 @@ export class MapContainer extends React.Component
     }
 }
 
-/*
-        if (geocoder == null) {
-            this.geocoder = geocoder = new google.maps.Geocoder();
-        }
-        geocoder.geocode({
-            address: "Pleasanton, CA"
-        }, function(results, status) {
-            console.log("Lookup pleasanton address");
-            let loc = results[0].geometry.location,
-            cord = {
-                lat: loc.lat(),
-                lng: loc.lng()
-            };
-            this.setState({
-                initialCenter: cord
-            });
-        }.bind(this));
-*/
-
 export default MapContainer;

@@ -10,7 +10,6 @@ import _                   from 'lodash';
 import History             from 'vntd-shared/utils/History.jsx';
 import Lang                from 'vntd-root/stores/LanguageStore.jsx';
 import StateButton         from 'vntd-shared/utils/StateButton.jsx';
-import ErrorView           from 'vntd-shared/layout/ErrorView.jsx';
 import Actions             from 'vntd-root/actions/Actions.jsx';
 import AdPropertyStore     from 'vntd-root/stores/AdPropertyStore.jsx';
 import { GenericAds }      from './PostAds.jsx';
@@ -155,6 +154,7 @@ class AdsRoomRenting extends GenericAds
     _renderForm() {
         return <ProcessForm form={this.data} store={AdPropertyStore}/>
     }
+
 }
 
 export default AdsRoomRenting;

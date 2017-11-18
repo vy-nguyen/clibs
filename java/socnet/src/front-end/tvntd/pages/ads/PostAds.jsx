@@ -15,6 +15,8 @@ import Mesg                from 'vntd-root/components/Mesg.jsx';
 import { AdsStore }        from 'vntd-root/stores/ArticleStore.jsx';
 import { FormData, ProcessForm } from 'vntd-shared/forms/commons/ProcessForm.jsx';
 
+import ErrorView from 'vntd-shared/layout/ErrorView.jsx';
+
 class BusAds extends FormData
 {
     constructor(props, suffix) {
@@ -161,12 +163,17 @@ export class GenericAds extends React.Component
 {
     constructor(props) {
         super(props);
+        this.state = {
+            ads: "none"
+        }
+        this._renderForm   = this._renderForm.bind(this);
+        this._renderWindow = this._renderWindow.bind(this);
     }
 
     _renderForm() {
     }
 
-    render() {
+    _renderWindow() {
         let id = this.props.id || "ads-post";
         return (
             <JarvisWidget id={id} color="purple">
@@ -179,6 +186,10 @@ export class GenericAds extends React.Component
                 </div>
             </JarvisWidget>
         );
+    }
+
+    render() {
+        return this._renderWindow();
     }
 }
 
