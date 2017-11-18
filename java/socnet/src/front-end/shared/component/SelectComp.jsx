@@ -143,7 +143,7 @@ class SelectComp extends React.Component
         let selectKeys = this.state.selectKeys, active = [],
             select = this.props.selectOpt, entry, actLen, curKey,
             cols = parseInt(12 / this.selDepth);
-        
+
         if (cols < 2) {
             cols = 2;
         }
