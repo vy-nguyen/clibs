@@ -12,14 +12,13 @@ import UserStore           from 'vntd-shared/stores/UserStore.jsx';
 import TabPanel            from 'vntd-shared/layout/TabPanel.jsx';
 import ArticleBase         from 'vntd-shared/layout/ArticleBase.jsx';
 import SmallBreadcrumbs    from 'vntd-shared/layout/SmallBreadcrumbs.jsx';
-import EditorPost          from 'vntd-shared/forms/commons/EditorPost.jsx';
 import UserPostView        from 'vntd-root/pages/user/UserPostView.jsx';
-import EStorePost          from 'vntd-root/pages/e-store/EStorePost.jsx';
 import EStore              from 'vntd-root/pages/e-store/EStore.jsx';
 import ArticleStore        from 'vntd-root/stores/ArticleStore.jsx';
 import PostArticles        from 'vntd-root/components/PostArticles.jsx';
 import ProfileCover        from 'vntd-root/components/ProfileCover.jsx';
 import Actions             from 'vntd-root/actions/Actions.jsx';
+import SubmitPost          from './SubmitPost.jsx';
 import UserAvatar          from './UserAvatar.jsx';
 import Friends             from './Friends.jsx';
 
@@ -31,11 +30,9 @@ class UserHome extends ArticleBase
 
         this.getUserTab     = this.getUserTab.bind(this);
         this.getMyUserTab   = this.getMyUserTab.bind(this);
-        this._getEditTab    = this._getEditTab.bind(this);
         this._getActivePane = this._getActivePane.bind(this);
         this._setActivePane = this._setActivePane.bind(this);
 
-        this._getActEditPane   = this._getActEditPane.bind(this);
         this._setActEditPane   = this._setActEditPane.bind(this);
         this._getActPaneCommon = this._getActPaneCommon.bind(this);
         this._setActPaneCommon = this._setActPaneCommon.bind(this);
@@ -131,33 +128,12 @@ class UserHome extends ArticleBase
         };
     }
 
-    _getEditTab() {
-        const editTab = {
-            getActivePane: this._getActEditPane,
-            setActivePane: this._setActEditPane,
-            tabItems: [ {
-                domId  : 'post-article',
-                tabText: 'Post Article',
-                tabIdx : 0
-            }, {
-                domId  : 'post-product',
-                tabText: 'Post Product',
-                tabIdx : 1
-            } ]
-        };
-        return editTab;
-    }
-
     _getOwner() {
         return UserStore.getUserByUuid(this.props.params.userUuid);
     }
 
     _getActivePane() {
         return this._getActPaneCommon('tabPanelIdx');
-    }
-
-    _getActEditPane() {
-        return this._getActPaneCommon('editPanelIdx');
     }
 
     _getActPaneCommon(key) {
@@ -220,12 +196,7 @@ class UserHome extends ArticleBase
         }
         editTab = null;
         if (me === true) {
-            editTab = (
-                <TabPanel context={this._getEditTab()}>
-                    <EditorPost/>
-                    <EStorePost/>
-                </TabPanel>
-            );
+            editTab = <SubmitPost/>;
         }
         return (
             <div id="user-home">

@@ -15,8 +15,6 @@ import Mesg                from 'vntd-root/components/Mesg.jsx';
 import { AdsStore }        from 'vntd-root/stores/ArticleStore.jsx';
 import { FormData, ProcessForm } from 'vntd-shared/forms/commons/ProcessForm.jsx';
 
-import ErrorView from 'vntd-shared/layout/ErrorView.jsx';
-
 class BusAds extends FormData
 {
     constructor(props, suffix) {
@@ -174,12 +172,13 @@ export class GenericAds extends React.Component
     }
 
     _renderWindow() {
-        let id = this.props.id || "ads-post";
+        let id = this.props.id || "ads-post",
+            title = this.props.title || <Mesg text="Post Your Ads"/>;
         return (
             <JarvisWidget id={id} color="purple">
                 <header>
                     <span className="widget-icon"><i className="fa fa-pencil"/></span>
-                    <h2><Mesg text="Post Your Ads"/></h2>
+                    <h2>{title}</h2>
                 </header>
                 <div className="widget-body">
                     {this._renderForm()}

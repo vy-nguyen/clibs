@@ -162,7 +162,7 @@ class FormData
         this.initialized = true;
 
         this.iterFormFields(null, null, function(sub, entry, section) {
-            entry.inpName = this._getId(entry.inpName);
+            entry.inpName = this._getId(entry.inpName || entry.field);
             if (entry.dropzone === true) {
                 this.setImageId(entry.inpName);
                 entry.handlers = {
@@ -305,9 +305,16 @@ class FormData
     }
 
     renderTwoCols(section, onBlur) {
-        let blur, col1, col2, entry,
+        let blur, col1, col2, entry, leftFmt, rightFmt,
             out = [], entries = section.entries, length = entries.length;
 
+        if (section.leftFmt != null) {
+            leftFmt  = section.leftFmt;
+            rightFmt = section.rightFmt ? section.rightFmt : section.leftFmt;
+        } else {
+            leftFmt  = "col-xs-12 col-sm-12 col-md-6 col-lg-6";
+            rightFmt = leftFmt;
+        }
         for (let i = 0; i < length; i = i + 2) {
             col2  = null;
             entry = entries[i];
@@ -319,10 +326,10 @@ class FormData
             }
             out.push(
                 <div className="row" key={_.uniqueId('form-col-')}>
-                    <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                    <div className={leftFmt}>
                         {col1}             
                     </div>
-                    <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                    <div className={rightFmt}>
                         {col2}             
                     </div>
                 </div>
@@ -507,6 +514,12 @@ class ProcessForm extends React.Component
         this.unsub = this.props.store.listen(this._updateState);
     }
 
+    componentWillUpdate(nextProps, nextState) {
+        if (this.props.form != nextProps.form) {
+            this._setContext(nextProps);
+        }
+    }
+
     componentWillUnmount() {
         if (this.unsub != null) {
             this.unsub();
@@ -523,6 +536,9 @@ class ProcessForm extends React.Component
             this.setState({
                 errFlags: {}
             });
+        }
+        if (this.props.onBlur != null) {
+            this.props.onBlur(context);
         }
     }
 

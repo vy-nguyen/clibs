@@ -220,9 +220,7 @@ class InputWrap extends React.Component
             return <DropZoneWrap entry={entry} eventHandlers={handlers}/>
         }
         if (entry.editor === true) {
-            return (
-                <EditorEntry entry={entry} onBlur={this._onBlur}/>
-            );
+            return <EditorEntry entry={entry} onBlur={this._onBlur}/>;
         }
         if (entry.button != null) {
             return (
@@ -243,15 +241,18 @@ class InputWrap extends React.Component
         }
         if (entry.checkedBox != null) {
             return (
-                <section>
+                <div>
                     <label className="checkbox">
                         <input type="checkbox" ref={entry.inpName} name={entry.inpName}
                             defaultChecked={entry.inpDefVal}
                             onFocus={this._onFocus} onChange={this._onChange}/>
                         <i/><Mesg text={entry.labelTxt}/>
                     </label>
-                </section>
+                </div>
             );
+        }
+        if (entry.component != null) {
+            return entry.component;
         }
         handlers = entry.inpHolder ? Lang.translate(entry.inpHolder) : null;
         return (
@@ -303,20 +304,18 @@ class InputBox extends React.Component
 
         style = entry.errorFlag == true ? { color:'red' } : null,
         label = (
-            <label className={labelFmt} style={style} for="textinput">
+            <label className={labelFmt} style={style}>
                 <Mesg text={entry.labelTxt}/>
             </label>
         );
 
         return (
-            <div className="row" key={_.uniqueId('gen-inp-')}>
-                <div className="form-group">
-                    {label}
-                    <div className={inputFmt}>
-                        <InputWrap entry={entry} bind={bind}
-                            onBlur={onBlur} onSelected={onSelected}/>
-                        <ErrorView mesg={true} errorId={entry.errorId}/>
-                    </div>
+            <div className="form-group" key={_.uniqueId('gen-inp-')}>
+                {label}
+                <div className={inputFmt}>
+                    <InputWrap entry={entry} bind={bind}
+                        onBlur={onBlur} onSelected={onSelected}/>
+                    <ErrorView mesg={true} errorId={entry.errorId}/>
                 </div>
             </div>
         );

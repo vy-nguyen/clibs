@@ -55,6 +55,12 @@ java/socnet/src/front-end/vntd-*
 java/socnet/src/main/css/*.dep
 java/socnet/src/main/webapp/css/tvntd*
 java/socnet/src/main/webapp/WEB-INF/*
+java/socnet/out
+java/common/out
+java/.idea
+java/account/out
+java/skel/out
+java/socialauth/out
 java/socialauth/.classpath
 java/socialauth/.gitignore
 java/socialauth/.project
