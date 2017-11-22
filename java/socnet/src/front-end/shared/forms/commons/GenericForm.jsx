@@ -241,8 +241,8 @@ class InputWrap extends React.Component
         }
         if (entry.checkedBox != null) {
             return (
-                <div>
-                    <label className="checkbox">
+                <div className="form-check">
+                    <label className="form-check-label">
                         <input type="checkbox" ref={entry.inpName} name={entry.inpName}
                             defaultChecked={entry.inpDefVal}
                             onFocus={this._onFocus} onChange={this._onChange}/>

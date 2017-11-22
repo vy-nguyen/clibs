@@ -11,13 +11,18 @@ import SelectComp          from 'vntd-shared/component/SelectComp.jsx';
 import StateButton         from 'vntd-shared/utils/StateButton.jsx';
 import JarvisWidget        from 'vntd-shared/widgets/JarvisWidget.jsx';
 import UserStore           from 'vntd-shared/stores/UserStore.jsx';
+import InputStore          from 'vntd-shared/stores/NestableStore.jsx';
 import AuthorStore         from 'vntd-root/stores/AuthorStore.jsx';
 import Actions             from 'vntd-root/actions/Actions.jsx';
 import Mesg                from 'vntd-root/components/Mesg.jsx';
 import { GenericAds }      from 'vntd-root/pages/ads/PostAds.jsx';
-import { FormData, ProcessForm } from 'vntd-shared/forms/commons/ProcessForm.jsx';
 
-class ChoiceForm extends FormData
+import { FormData, ProcessForm }      from 'vntd-shared/forms/commons/ProcessForm.jsx';
+import { SelectSubForm, SelectForms } from 'vntd-shared/forms/commons/SelectForms.jsx';
+
+const _QuestSuffix = "-qu";
+
+class ChoiceForm extends SelectSubForm
 {
     constructor(props, suffix) {
         super(props, suffix);
@@ -48,22 +53,14 @@ class ChoiceForm extends FormData
             formId     : 'answer-choice',
             formEntries: [ {
                 legend  : 'Provide answer in multiple choice form',
-                twoCols : true,
                 inline  : true,
-                leftFmt : 'col-xs-2 col-sm-2 col-md-2 col-lg-2',
-                rightFmt: 'col-xs-10 col-sm-10 col-md-10 col-lg-10',
                 entries : choices
             } ]
         };
     }
-
-    validateInput(data, errFlags) {
-        errFlags.errText = null;
-        return data;
-    }
 }
 
-class InputForm extends FormData
+class InputForm extends SelectSubForm
 {
     constructor(props, suffix) {
         super(props, suffix);
@@ -92,59 +89,6 @@ class InputForm extends FormData
             } ]
         };
     }
-
-    validateInput(data, errFlags) {
-        errFlags.errText = null;
-        return data;
-    }
-}
-
-class SelectAnswer extends React.Component
-{
-    constructor(props) {
-        super(props);
-        this._onBlur     = this._onBlur.bind(this);
-        this._selInput   = this._selInput.bind(this);
-        this._selChoices = this._selChoices.bind(this);
-
-        this.selection = {
-            selOpt: [ {
-                label: 'Multiple choices',
-                value: 'choices',
-                selFn: this._selChoices
-            }, {
-                label: 'Input box',
-                value: 'input',
-                selFn: this._selInput
-            } ]
-        };
-        this.initForms();
-    }
-
-    initForms() {
-        this.choice = new ChoiceForm(null, "ch");
-        this.input  = new InputForm(null, "inp");
-    }
-
-    _onBlur(context) {
-        let data, errFlags = {};
-
-        data = context.getAndValidateForm(errFlags);
-        console.log("-- on blue....");
-        console.log(data);
-    }
-
-    _selChoices() {
-        return <ProcessForm form={this.choice} store={UserStore} onBlur={this._onBlur}/>;
-    }
-
-    _selInput() {
-        return <ProcessForm form={this.input} store={UserStore} onBlur={this._onBlur}/>;
-    }
-
-    render() {
-        return <SelectComp id="sel-answer" selectOpt={this.selection}/>;
-    }
 }
 
 class QuestForm extends FormData
@@ -152,7 +96,20 @@ class QuestForm extends FormData
     constructor(props, suffix) {
         super(props, suffix);
         this._submitForm = this._submitForm.bind(this);
-
+        this.selection = {
+            selOpt: [ {
+                form : ChoiceForm,
+                label: 'Multiple choices',
+                value: 'choices',
+                store: UserStore
+            }, {
+                form : InputForm,
+                label: 'Input box',
+                value: 'input',
+                store: UserStore
+            } ]
+        };
+        this.answer = new SelectForms('answer', _QuestSuffix, this.selection);
         this.initData();
         return this;
     }
@@ -199,7 +156,7 @@ class QuestForm extends FormData
         answer = [ {
             field    : 'answer',
             labelTxt : 'Select Answer Type',
-            component: <SelectAnswer inpName="quest-ans"/>
+            component: this.answer.render()
         } ];
         this.forms = {
             formId   : 'bus-ads',
@@ -231,9 +188,11 @@ class QuestForm extends FormData
 
     // @Override
     //
-    validateInput(data) {
+    validateInput(data, errFlags) {
         console.log("validate data.........");
         console.log(data);
+        console.log(this);
+        return this.answer.validateInput(data, errFlags);
     }
 }
 
@@ -241,7 +200,7 @@ export class PostQuestionare extends GenericAds
 {
     constructor(props) {
         super(props);
-        this.data = new QuestForm(props, "");
+        this.data = new QuestForm(props, _QuestSuffix);
     }
 
     // @Override
