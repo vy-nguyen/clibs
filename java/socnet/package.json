@@ -5,9 +5,9 @@
   "scripts": {
     "build": "./node_modules/.bin/webpack --config src/front-end/webpack/webpack.build.config.js --progress --colors",
     "watch": "./node_modules/.bin/webpack --config src/front-end/webpack/webpack.build.config.js --progress --watch",
-    "vntd" : "./node_modules/.bin/webpack --config src/front-end/webpack/webpack.tvntd.config.js --progress --watch",
+    "vntd": "./node_modules/.bin/webpack --config src/front-end/webpack/webpack.tvntd.config.js --progress --watch",
     "debug": "./node_modules/.bin/webpack --config src/front-end/webpack/webpack.tvntd.debug.js --progress --watch",
-    "dev"  : "./node_modules/.bin/webpack-dev-server --config src/front-end/webpack/webpack.dev.config.js --progress --colors --inline --hot"
+    "dev": "./node_modules/.bin/webpack-dev-server --config src/front-end/webpack/webpack.dev.config.js --progress --colors --inline --hot"
   },
   "repository": {
     "type": "git"
@@ -59,7 +59,6 @@
     "reflux": "6.4.1",
     "history": "^1.17.x",
     "invariant": "2.2.2",
-
     "script-loader": "0.7.0",
     "lodash": "^4.17.4",
     "classnames": "^2.2.1",
@@ -69,12 +68,10 @@
     "bootstrap-progressbar": "0.9.0",
     "bootstrap-colorpicker": "2.3.0",
     "bootstrap-tagsinput": "0.7.1",
-
     "chai": "4.0.2",
     "mocha": "3.4.2",
     "mocha-loader": "1.1.1",
     "karma": "1.7.0",
-
     "jsdom": "9.9.0",
     "style-loader": "0.18.2",
     "css-loader": "0.28.0",
@@ -84,7 +81,6 @@
     "exports-loader": "0.6.4",
     "imports-loader": "0.7.1",
     "autoprefixer-loader": "^3.1.0",
-
     "sparkline": "0.2.0",
     "jquery": "3.2.0",
     "jquery-ui": "1.12.1",
@@ -93,15 +89,12 @@
     "jquery.maskedinput": "1.4.1",
     "jquery-knob": "1.2.11",
     "jquery-nestable": "0.8.0",
-
     "datatables": "1.10.13",
     "datatables-buttons": "1.0.3",
     "datatables-responsive": "1.0.7",
     "datatables.net-responsive-bs": "2.1.1",
-
     "moment": "2.18.1",
     "moment-timezone": "0.5.13",
-
     "less": "^2.5.3",
     "jsclass": "4.0.5",
     "chart.js": "1.0.2",
