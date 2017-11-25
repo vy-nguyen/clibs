@@ -45,6 +45,9 @@ class SelectChoices extends React.Component
     }
 
     _compareFn(r1, r2) {
+        console.log("r1... ");
+        console.log(r1);
+        console.log(r2);
         return r1.label.localeCompare(r2.label);
     }
 

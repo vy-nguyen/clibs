@@ -32,8 +32,7 @@ export class SelectFormRender extends React.Component
         opt.selected = true;
 
         return (
-            <ProcessForm form={opt.formObj}
-                value={opt.defVal} store={opt.store} onBlur={this._onBlur}/>
+            <ProcessForm form={opt.formObj} value={opt.defVal} store={opt.store}/>
         );
     }
 
@@ -84,9 +83,6 @@ export class SelectForms
             return true;
         }.bind(this));
 
-        console.log("--------------");
-        console.log(data);
-        console.log(errFlags);
         return data;
     }
 

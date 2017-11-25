@@ -8,10 +8,8 @@ import React               from 'react-mod';
 import PropTypes           from 'prop-types';
 
 import InputBase           from 'vntd-shared/layout/InputBase.jsx';
-import SelectComp          from 'vntd-shared/component/SelectComp.jsx';
 import SelectChoices       from 'vntd-shared/component/SelectChoices.jsx';
 import StateButton         from 'vntd-shared/utils/StateButton.jsx';
-import JarvisWidget        from 'vntd-shared/widgets/JarvisWidget.jsx';
 import UserStore           from 'vntd-shared/stores/UserStore.jsx';
 import InputStore          from 'vntd-shared/stores/NestableStore.jsx';
 import AuthorStore         from 'vntd-root/stores/AuthorStore.jsx';
@@ -257,10 +255,11 @@ class QuestForm extends FormData
     }
 
     _submitForm(data) {
-        console.log("------ submit button ---");
-        console.log(data);
-        let rec = InputStore.getItemIndex(_QuestSuffix), pos = rec.getItemCount();
+        let rec = InputStore.getItemIndex(_QuestSuffix),
+            pos = rec.getItemCount().toString();
 
+        // Save data to the main selection list.
+        //
         rec.push({
             label: pos,
             value: pos,
@@ -284,11 +283,10 @@ class QuestForm extends FormData
     }
 }
 
-export class PostQuestionare extends React.Component
+export class PostQuestionare extends InputBase
 {
     constructor(props) {
-        super(props);
-        this.id = _QuestSuffix;
+        super(props, _QuestSuffix);
         InputStore.storeItemIndex(this.id, new SeqContainer(), false);
 
         this.data = new QuestForm(props, _QuestSuffix);
@@ -300,29 +298,24 @@ export class PostQuestionare extends React.Component
                 component: <ProcessForm form={this.data} store={InputStore}/>
             }
         };
+        this.title = 'Post Questionare';
         this.state = {
             itemCount: 0
         };
         this._updateState = this._updateState.bind(this);
     }
 
-    componentDidMount() {
-        this.unsub = InputStore.listen(this._updateState);
-    }
-
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsub = null;
+    _updateState(item, id, code) {
+        if (id !== this.id) {
+            return;
         }
-    }
-
-    _updateState() {
         let items = InputStore.getItemIndex(this.id);
         this.setState({
             itemCount: items.getItemCount()
         });
+        this.data.modifyField('article', 'disabled', true);
         console.log("update .... post state..");
+        console.log(this.data);
     }
 
     _renderForm() {
@@ -337,21 +330,6 @@ export class PostQuestionare extends React.Component
                     <SelectChoices {...this.args}/>
                 </div>
             </div>
-        );
-    }
-
-    render() {
-        console.log("render post questionare...");
-        return (
-            <JarvisWidget id={this.id} color="purple">
-                <header>
-                    <span className="widget-icon"><i className="fa fa-pencil"/></span>
-                    <h2>Post Questionare</h2>
-                </header>
-                <div className="widget-body">
-                    {this._renderForm()}
-                </div>
-            </JarvisWidget>
         );
     }
 }

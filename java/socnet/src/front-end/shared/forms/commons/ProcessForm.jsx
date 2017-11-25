@@ -62,12 +62,14 @@ class FormData
             this.dzImage.removeAllFiles();
         }
         this.iterFormFields(entryInfo, null, function(einfo, entry, section) {
+            entry.errorFlag = false;
             if (entry.editor === true) {
                 entry.inpDefVal = "";
             } else {
                 entry.inpDefVal = null;
             }
         });
+        this.clearError();
     }
 
     setImageId(imgId) {
@@ -367,7 +369,6 @@ class FormData
                 entries = this.renderTwoCols(section, onBlur);
             } else {
                 entries = section.entries.map(function(entry) {
-                    console.log(entry);
                     return InputEntry.render(entry, onBlur);
                 });
             }

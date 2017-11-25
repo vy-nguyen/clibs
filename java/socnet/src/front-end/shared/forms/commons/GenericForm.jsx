@@ -55,7 +55,7 @@ class SelectWrap extends React.Component
             value = this.props.value != null ? this.props.value : this.state.value;
 
         out = (
-            <Select options={entry.selectOpt}
+            <Select options={entry.selectOpt} disabled={entry.disabled}
                 name={entry.inpName} value={value}
                 onChange={this._defOnSelect.bind(this, entry)}
             />
