@@ -18,5 +18,33 @@ class WebUtils
     }
 }
 
+class SeqContainer
+{
+    constructor() {
+        this.curr = 0;
+        this.dict = {}
+    }
+
+    push(data) {
+        let curr = this.curr.toString();
+
+        this.dict[curr] = data;
+        this.curr = this.curr + 1;
+        return curr;
+    }
+
+    getItem(pos) {
+        return this.dict[pos];
+    }
+
+    getItems() {
+        return this.dict;
+    }
+
+    getItemCount() {
+        return this.curr;
+    }
+}
+
 export default WebUtils;
-export { WebUtils }
+export { WebUtils, SeqContainer }

@@ -11,18 +11,6 @@ import InputStore          from 'vntd-shared/stores/NestableStore.jsx';
 import SelectComp          from 'vntd-shared/component/SelectComp.jsx'; 
 import { FormData, ProcessForm } from 'vntd-shared/forms/commons/ProcessForm.jsx';
 
-export class SelectSubForm extends FormData
-{
-    constructor(props, suffix) {
-        super(props, suffix);
-    }
-
-    validateInput(data, errFlags) {
-        errFlags.errText = null;
-        return data;
-    }
-}
-
 export class SelectFormRender extends React.Component
 {
     constructor(props) {
@@ -75,24 +63,41 @@ export class SelectForms
     }
 
     validateInput(data, errFlags) {
-        console.log("base validate data");
-        console.log(this);
         _.forEach(this.props.selection.selOpt, function(opt) {
             if (opt.selected === true) {
-                let sub, err = {};
+                let sub, err = {}, key = this.props.inpName;
 
                 sub = opt.formObj.getAndValidateForm(err);
-                InputStore.storeItemIndex(this.inpName, sub, true);
-
-                data[this.props.inpName] = sub;
+                if (!_.isEmpty(err)) {
+                    opt.formObj.setErrors(err, true);
+                    _.merge(errFlags, err);
+                } else {
+                    InputStore.storeItemIndex(this.inpName, sub, true);
+                    if (errFlags[key] === true) {
+                        errFlags[key] = null;
+                        errFlags.errText = null;
+                    }
+                }
+                data[key] = sub;
                 return false;
             }
             return true;
         }.bind(this));
 
-        errFlags.errText = null;
+        console.log("--------------");
         console.log(data);
+        console.log(errFlags);
         return data;
+    }
+
+    submitNotif(store, data, id, status) {
+        _.forEach(this.props.selection.selOpt, function(opt) {
+            if (opt.selected === true) {
+                opt.formObj.submitNotif(store, data, id, status);
+                return false;
+            }
+            return true;
+        }.bind(this));
     }
 
     render() {

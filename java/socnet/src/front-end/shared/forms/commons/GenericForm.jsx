@@ -240,9 +240,10 @@ class InputWrap extends React.Component
             );
         }
         if (entry.checkedBox != null) {
+            let style = entry.errorFlag === true ? { color: 'red' } : null;
             return (
                 <div className="form-check">
-                    <label className="form-check-label">
+                    <label className="form-check-label" style={style}>
                         <input type="checkbox" ref={entry.inpName} name={entry.inpName}
                             defaultChecked={entry.inpDefVal}
                             onFocus={this._onFocus} onChange={this._onChange}/>

@@ -49,6 +49,7 @@ class FormData
         if (this.forms.formId != null) {
             ErrorStore.clearError(this.forms.formId);
         }
+        this.errFlags = null;
     }
 
     clearData() {
@@ -181,6 +182,15 @@ class FormData
         }.bind(this));
     }
 
+    modifyField(field, key, value) {
+        this.iterFormFields(null, null, function(sub, entry, section) {
+            if (entry.field === field) {
+                entry[key] = value;
+            }
+            return sub;
+        });
+    }
+
     _setDefValue(value, entry) {
         let defVal;
 
@@ -220,9 +230,20 @@ class FormData
         return img;
     }
 
-    setValues(errFlags) {
+    setErrors(errFlags, save) {
         let val, hasValue = false;
 
+        if (_.isEmpty(errFlags)) {
+            return false;
+        }
+        if (save === true) {
+            this.errFlags = errFlags;
+        } else {
+            // Merge with current errors and clear internal errors.
+            //
+            _.merge(errFlags, this.errFlags);
+            this.errFlags = null;
+        }
         this.iterFormFields(errFlags, null, function(flags, entry, section) {
             if (flags[entry.field] != null) {
                 entry.errorFlag = true;
@@ -346,6 +367,7 @@ class FormData
                 entries = this.renderTwoCols(section, onBlur);
             } else {
                 entries = section.entries.map(function(entry) {
+                    console.log(entry);
                     return InputEntry.render(entry, onBlur);
                 });
             }
@@ -592,7 +614,7 @@ class ProcessForm extends React.Component
     render() {
         let hasVal, context = this.props.form, inpHolder = context.getBriefMesg();
 
-        hasVal = context.setValues(this.state.errFlags);
+        hasVal = context.setErrors(this.state.errFlags, false);
         if (this.state.inpBrief === true && hasVal === false) {
             return (
                 <input ref="briefBox" className="form-control"

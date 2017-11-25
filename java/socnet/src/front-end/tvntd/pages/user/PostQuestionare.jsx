@@ -7,22 +7,28 @@ import _                   from 'lodash';
 import React               from 'react-mod';
 import PropTypes           from 'prop-types';
 
+import InputBase           from 'vntd-shared/layout/InputBase.jsx';
 import SelectComp          from 'vntd-shared/component/SelectComp.jsx';
+import SelectChoices       from 'vntd-shared/component/SelectChoices.jsx';
 import StateButton         from 'vntd-shared/utils/StateButton.jsx';
 import JarvisWidget        from 'vntd-shared/widgets/JarvisWidget.jsx';
 import UserStore           from 'vntd-shared/stores/UserStore.jsx';
 import InputStore          from 'vntd-shared/stores/NestableStore.jsx';
 import AuthorStore         from 'vntd-root/stores/AuthorStore.jsx';
+import Lang                from 'vntd-root/stores/LanguageStore.jsx';
 import Actions             from 'vntd-root/actions/Actions.jsx';
 import Mesg                from 'vntd-root/components/Mesg.jsx';
+import Questionare         from 'vntd-root/pages/user/Questionare.jsx';
+import { ColFmtMap }       from 'vntd-root/config/constants.js';
 import { GenericAds }      from 'vntd-root/pages/ads/PostAds.jsx';
+import { SeqContainer }    from 'vntd-shared/utils/WebUtils.jsx';
+import { SelectForms }     from 'vntd-shared/forms/commons/SelectForms.jsx';
 
 import { FormData, ProcessForm }      from 'vntd-shared/forms/commons/ProcessForm.jsx';
-import { SelectSubForm, SelectForms } from 'vntd-shared/forms/commons/SelectForms.jsx';
 
 const _QuestSuffix = "-qu";
 
-class ChoiceForm extends SelectSubForm
+class ChoiceForm extends FormData
 {
     constructor(props, suffix) {
         super(props, suffix);
@@ -48,6 +54,24 @@ class ChoiceForm extends SelectSubForm
             editor  : true,
             menu    : 'short',
             labelTxt: 'Choice 2'
+        }, {
+            field   : 'correct2',
+            labelTxt: 'Correct Choice',
+            checkedBox: true
+        }, {
+            field   : 'choice3',
+            editor  : true,
+            menu    : 'short',
+            labelTxt: 'Choice 3'
+        }, {
+            field   : 'correct4',
+            labelTxt: 'Correct Choice',
+            checkedBox: true
+        }, {
+            field   : 'choice4',
+            editor  : true,
+            menu    : 'short',
+            labelTxt: 'Choice 4'
         } ];
         this.forms = {
             formId     : 'answer-choice',
@@ -57,10 +81,51 @@ class ChoiceForm extends SelectSubForm
                 entries : choices
             } ]
         };
+        this.needMark = Lang.translate('You must select one or more correct choices');
+        this.needText = Lang.translate('You need to have text for the checked answer');
+    }
+
+    validateInput(data, errFlags) {
+        if (data.correct1 === true || data.correct2 === true ||
+            data.correct3 === true || data.correct4 === true) {
+            errFlags.errText = this.needText;
+            if (data.correct1 === true && data.choice1 === '') {
+                errFlags.choice1 = true;
+
+            } else if (data.correct2 === true && data.choice2 === '') {
+                errFlags.choice2 = true;
+
+            } else if (data.correct3 === true && data.choice3 === '') {
+                errFlags.choice3 = true;
+
+            } else if (data.correct4 === true && data.choice4 === '') {
+                errFlags.choice4 = true;
+
+            } else {
+                errFlags.errText = null;
+            }
+        } else {
+            errFlags.correct1 = true;
+            errFlags.correct2 = true;
+            errFlags.correct3 = true;
+            errFlags.correct4 = true;
+            errFlags.helpText = this.needMark;
+        }
+        return data;
+    }
+
+    submitNotif(store, result, id, status) {
+        console.log("--- mutl choice notif ----");
+        console.log(store);
+        console.log(result);
+        console.log(id);
+        console.log(status);
+        console.log("---- end ----");
+        this.clearData();
     }
 }
 
-class InputForm extends SelectSubForm
+class InputForm extends FormData
 {
     constructor(props, suffix) {
         super(props, suffix);
@@ -88,6 +153,16 @@ class InputForm extends SelectSubForm
                 entries: inpEntries
             } ]
         };
+    }
+
+    validateInput(data, errFlags) {
+        errFlags.errText = null;
+        console.log("choice form get & val");
+        return data;
+    }
+
+    submitNotif(store, result, status, resp) {
+        this.clearData();
     }
 }
 
@@ -184,30 +259,99 @@ class QuestForm extends FormData
     _submitForm(data) {
         console.log("------ submit button ---");
         console.log(data);
+        let rec = InputStore.getItemIndex(_QuestSuffix), pos = rec.getItemCount();
+
+        rec.push({
+            label: pos,
+            value: pos,
+            data : data,
+            component: <Questionare data={data} id={_QuestSuffix} key={pos}/>
+        });
+        InputStore.triggerStore(_QuestSuffix, rec);
+    }
+
+    // @Override
+    //
+    submitNotif(store, result, status, resp) {
+        super.submitNotif(store, result, status, resp);
+        this.answer.submitNotif(store, result, status, resp);
     }
 
     // @Override
     //
     validateInput(data, errFlags) {
-        console.log("validate data.........");
-        console.log(data);
-        console.log(this);
         return this.answer.validateInput(data, errFlags);
     }
 }
 
-export class PostQuestionare extends GenericAds
+export class PostQuestionare extends React.Component
 {
     constructor(props) {
         super(props);
+        this.id = _QuestSuffix;
+        InputStore.storeItemIndex(this.id, new SeqContainer(), false);
+
         this.data = new QuestForm(props, _QuestSuffix);
+        this.args = {
+            id : this.id,
+            top: {
+                label: 'Enter your questionaire',
+                value: 'question',
+                component: <ProcessForm form={this.data} store={InputStore}/>
+            }
+        };
+        this.state = {
+            itemCount: 0
+        };
+        this._updateState = this._updateState.bind(this);
     }
 
-    // @Override
-    //
+    componentDidMount() {
+        this.unsub = InputStore.listen(this._updateState);
+    }
+
+    componentWillUnmount() {
+        if (this.unsub != null) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    _updateState() {
+        let items = InputStore.getItemIndex(this.id);
+        this.setState({
+            itemCount: items.getItemCount()
+        });
+        console.log("update .... post state..");
+    }
+
     _renderForm() {
         return (
-            <ProcessForm form={this.data} store={UserStore} value={this.props.ads}/>
+            <div>
+                <div className="well">
+                    <button className="btn btn-info">
+                        {this.state.itemCount} pending questionares
+                    </button>
+                </div>
+                <div className="well">
+                    <SelectChoices {...this.args}/>
+                </div>
+            </div>
+        );
+    }
+
+    render() {
+        console.log("render post questionare...");
+        return (
+            <JarvisWidget id={this.id} color="purple">
+                <header>
+                    <span className="widget-icon"><i className="fa fa-pencil"/></span>
+                    <h2>Post Questionare</h2>
+                </header>
+                <div className="widget-body">
+                    {this._renderForm()}
+                </div>
+            </JarvisWidget>
         );
     }
 }
