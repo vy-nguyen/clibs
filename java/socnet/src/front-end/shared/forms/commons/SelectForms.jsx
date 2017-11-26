@@ -53,7 +53,7 @@ export class SelectForms
             selection: selection
         };
         _.forEach(selection.selOpt, function(opt) {
-            opt.formObj = new opt.form(null, suffix);
+            opt.formObj = new opt.form(opt.args, suffix);
             if (this.inpName == null) {
                 this.inpName = opt.formObj._getId(inpName);
             }

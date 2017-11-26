@@ -30,49 +30,28 @@ class ChoiceForm extends FormData
 {
     constructor(props, suffix) {
         super(props, suffix);
+        this.choiceCount = props != null ? props.choices || 4 : 4;
         this.initForm();
     }
 
     initForm() {
-        let choices = [ {
-            field   : 'correct1',
-            labelTxt: 'Correct Choice',
-            checkedBox: true
-        }, {
-            field   : 'choice1',
-            editor  : true,
-            menu    : 'short',
-            labelTxt: 'Choice 1'
-        }, {
-            field   : 'correct2',
-            labelTxt: 'Correct Choice',
-            checkedBox: true
-        }, {
-            field   : 'choice2',
-            editor  : true,
-            menu    : 'short',
-            labelTxt: 'Choice 2'
-        }, {
-            field   : 'correct2',
-            labelTxt: 'Correct Choice',
-            checkedBox: true
-        }, {
-            field   : 'choice3',
-            editor  : true,
-            menu    : 'short',
-            labelTxt: 'Choice 3'
-        }, {
-            field   : 'correct4',
-            labelTxt: 'Correct Choice',
-            checkedBox: true
-        }, {
-            field   : 'choice4',
-            editor  : true,
-            menu    : 'short',
-            labelTxt: 'Choice 4'
-        } ];
+        let choices = [];
+
+        for (let count = 1; count <= this.choiceCount; count++) {
+            choices.push({
+                field   : 'correct' + count,
+                labelTxt: 'Correct Choice',
+                checkedBox: true
+            });
+            choices.push({
+                field   : 'choice' + count,
+                editor  : true,
+                menu    : 'short',
+                labelTxt: 'Choice ' + count
+            });
+        }
         this.forms = {
-            formId     : 'answer-choice',
+            formId     : 'ans-choice-' + this.choiceCount,
             formEntries: [ {
                 legend  : 'Provide answer in multiple choice form',
                 inline  : true,
@@ -84,31 +63,48 @@ class ChoiceForm extends FormData
     }
 
     validateInput(data, errFlags) {
-        if (data.correct1 === true || data.correct2 === true ||
-            data.correct3 === true || data.correct4 === true) {
-            errFlags.errText = this.needText;
-            if (data.correct1 === true && data.choice1 === '') {
-                errFlags.choice1 = true;
+        let error = 0, checked = 0, answer = 0;
 
-            } else if (data.correct2 === true && data.choice2 === '') {
-                errFlags.choice2 = true;
+        for (let count = 1; count <= this.choiceCount; count++) {
+            let correct = 'correct' + count, choice = 'choice' + count;
 
-            } else if (data.correct3 === true && data.choice3 === '') {
-                errFlags.choice3 = true;
+            delete errFlags[correct];
+            delete errFlags[choice];
 
-            } else if (data.correct4 === true && data.choice4 === '') {
-                errFlags.choice4 = true;
-
+            if (data[correct] === true) {
+                checked++;
+                if (data[choice] === '') {
+                    error++;
+                    errFlags[choice] = true;
+                    console.log("mark error " + correct + ": " + data[correct]);
+                } else {
+                    answer++;
+                }
             } else {
+                if (data[choice] !== '') {
+                    answer++;
+                }
+            }
+        }
+        console.log("--------------------");
+        console.log(errFlags);
+        console.log(data);
+        console.log("checked : " + checked + ", answer " + answer + " error " + error);
+        if (checked > 0 && answer > 0) {
+            if (error == 0) {
                 errFlags.errText = null;
+            } else {
+                errFlags.errText = this.needText;
+                console.log("set error text " + error);
             }
         } else {
-            errFlags.correct1 = true;
-            errFlags.correct2 = true;
-            errFlags.correct3 = true;
-            errFlags.correct4 = true;
-            errFlags.helpText = this.needMark;
+            console.log("Get here?? ");
+            for (let count = 1; count <= this.choiceCount; count++) {
+                errFlags['correct' + count] = true;
+            }
+            errFlags.errText = this.needMark;
         }
+        console.log(errFlags);
         return data;
     }
 
@@ -155,7 +151,6 @@ class InputForm extends FormData
 
     validateInput(data, errFlags) {
         errFlags.errText = null;
-        console.log("choice form get & val");
         return data;
     }
 
@@ -172,13 +167,32 @@ class QuestForm extends FormData
         this.selection = {
             selOpt: [ {
                 form : ChoiceForm,
-                label: 'Multiple choices',
-                value: 'choices',
-                store: UserStore
+                label: 'Multiple 4 choices',
+                value: '4-choice',
+                store: UserStore,
+                args : {
+                    choices: 4
+                }
+            }, {
+                form : ChoiceForm,
+                label: 'Multiple 6 choices',
+                value: '6-choice',
+                store: UserStore,
+                args : {
+                    choices: 6
+                }
+            }, {
+                form : ChoiceForm,
+                label: 'Multiple 8 choices',
+                value: '8-choice',
+                store: UserStore,
+                args : {
+                    choices: 8
+                }
             }, {
                 form : InputForm,
                 label: 'Input box',
-                value: 'input',
+                value: 'ans-inp',
                 store: UserStore
             } ]
         };
@@ -202,16 +216,10 @@ class QuestForm extends FormData
             editor   : true
         }, {
             field    : 'modalSelect',
-            labelTxt : 'Link Help Id',
+            labelTxt : 'Link Help Topic',
             select   : true,
-            selectOpt: [ {
-                "value": 'abe',
-                "label": 'ds sfsfs ss'
-            } ]
-        }, {
-            field    : 'modalId',
-            labelTxt : 'New Help Id',
-            inpHolder: 'New ID for pop up help',
+            disabled : true,
+            selectOpt: null
         }, {
             field    : 'modalHdr',
             labelTxt : 'Help Header',
@@ -232,7 +240,7 @@ class QuestForm extends FormData
             component: this.answer.render()
         } ];
         this.forms = {
-            formId   : 'bus-ads',
+            formId   : 'question',
             formFmt  : 'product-content product-wrap clearfix',
             submitFn : this._submitForm, // Actions.publicPostAds,
             formEntries: [ {
@@ -266,6 +274,11 @@ class QuestForm extends FormData
             data : data,
             component: <Questionare data={data} id={_QuestSuffix} key={pos}/>
         });
+        // Add modal header to selection link for next question input.
+        //
+        if (data.modalHdr != null) {
+            rec.pushData(data.modalHdr, data.modalContent);
+        }
         InputStore.triggerStore(_QuestSuffix, rec);
     }
 
@@ -279,6 +292,11 @@ class QuestForm extends FormData
     // @Override
     //
     validateInput(data, errFlags) {
+        console.log("validate input...");
+        _.forOwn(errFlags, function(val, key) {
+            delete errFlags[key];
+        });
+        console.log(errFlags);
         return this.answer.validateInput(data, errFlags);
     }
 }
@@ -313,7 +331,12 @@ export class PostQuestionare extends InputBase
         this.setState({
             itemCount: items.getItemCount()
         });
+        // Modify input forms to reflect new states.
+        //
         this.data.modifyField('article', 'disabled', true);
+        this.data.modifyField('modalSelect', 'disabled', false);
+        this.data.modifyField('modalSelect', 'selectOpt', items.getSelectOpt(true));
+
         console.log("update .... post state..");
         console.log(this.data);
     }
