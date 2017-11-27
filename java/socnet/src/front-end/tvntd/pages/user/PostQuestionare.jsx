@@ -292,11 +292,9 @@ class QuestForm extends FormData
     // @Override
     //
     validateInput(data, errFlags) {
-        console.log("validate input...");
         _.forOwn(errFlags, function(val, key) {
             delete errFlags[key];
         });
-        console.log(errFlags);
         return this.answer.validateInput(data, errFlags);
     }
 }

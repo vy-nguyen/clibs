@@ -8,7 +8,7 @@ include ./Makefile.incl
 source_path  := $(web_jsdir)
 test_dir     := $(source_path)/tests
 test_sources := \
-	$(wildcard $(test_dir)/*.js*)
+	$(wildcard $(test_dir)/*.js* $(test_dir)/*/*.js* $(test_dir)/*/*/*.js*)
 
 set_alias_scpt :=                                                                    \
 	cd $(source_path);                                                               \

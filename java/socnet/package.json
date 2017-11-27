@@ -74,8 +74,10 @@
     "mocha": "3.4.2",
     "mocha-loader": "1.1.1",
     "karma": "1.7.0",
-
     "jsdom": "9.9.0",
+    "enzyme": "3.2.0",
+    "enzyme-adapter-react-14": "1.0.5",
+
     "style-loader": "0.18.2",
     "css-loader": "0.28.0",
     "json-loader": "^0.5.4",
