@@ -7,7 +7,8 @@
     "watch": "./node_modules/.bin/webpack --config src/front-end/webpack/webpack.build.config.js --progress --watch",
     "vntd" : "./node_modules/.bin/webpack --config src/front-end/webpack/webpack.tvntd.config.js --progress --watch",
     "debug": "./node_modules/.bin/webpack --config src/front-end/webpack/webpack.tvntd.debug.js --progress --watch",
-    "dev"  : "./node_modules/.bin/webpack-dev-server --config src/front-end/webpack/webpack.dev.config.js --progress --colors --inline --hot"
+    "test" : "./node_modules/.bin/mocha --compilers js:babel-core/register src/front-end/tests/*.js* src/front-end/tests/**/*.js*",
+    "dev"  : "./node_modules/.bin/webpack-dev-server --config src/front-end/webpack/tvntd.test.config.js --progress --colors --inline --hot --watch --content-base ./"
   },
   "repository": {
     "type": "git"
@@ -24,7 +25,7 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "webpack": "^2.6.0",
-    "webpack-dev-server": "^2.5.0",
+    "webpack-dev-server": "^2.9.5",
     "clean-webpack-plugin": "^0.1.16",
     "yargs": "^3.31.0",
     "rewire-webpack": "^1.0.1",
@@ -56,9 +57,9 @@
     "react-tinymce": "0.6.0",
     "react-star-rating": "1.4.2",
     "react-tooltip": "3.3.0",
-    "reflux": "6.4.1",
     "history": "^1.17.x",
     "invariant": "2.2.2",
+    "reflux": "6.4.1",
 
     "script-loader": "0.7.0",
     "lodash": "^4.17.4",
@@ -74,7 +75,7 @@
     "mocha": "3.4.2",
     "mocha-loader": "1.1.1",
     "karma": "1.7.0",
-    "jsdom": "9.9.0",
+    "jsdom": "9.12.0",
     "enzyme": "3.2.0",
     "enzyme-adapter-react-14": "1.0.5",
 
@@ -121,5 +122,8 @@
     "rc-collapse": "1.6.6",
     "utf8": "2.1.1",
     "fixed-data-table": "0.5.0"
+  },
+  "engines": {
+      "node": ">=6.2.2"
   }
 }

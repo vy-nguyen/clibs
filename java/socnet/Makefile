@@ -11,9 +11,13 @@ test_sources := \
 	$(wildcard $(test_dir)/*.js* $(test_dir)/*/*.js* $(test_dir)/*/*/*.js*)
 
 set_alias_scpt :=                                                                    \
+	pushd . > /dev/null;                                                             \
 	cd $(source_path);                                                               \
 	[ ! -e vntd-root ] && ln -s tvntd vntd-root;                                     \
 	[ ! -e vntd-shared ] && ln -s shared vntd-shared;                                \
+	popd > /dev/null;                                                                \
+	cd $(npm_modules);                                                               \
+	[ ! -e react-mod ] && ln -s react react-mod;                                     \
 	exit 0
 
 js_test:

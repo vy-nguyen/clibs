@@ -1,12 +1,13 @@
 /**
  * Written by Vy Nguyen (2016)
  */
-import _                  from 'lodash';
-import React              from 'react';
-import { expect, assert } from 'chai';
-import setup              from './setup.js';
+import _                    from 'lodash';
+import React                from 'react';
+import { describe, it }     from 'mocha';
+import { expect, assert }   from 'chai';
 
-import Startup            from 'vntd-root/pages/login/Startup.jsx';
+import setup                from './common/setup.js';
+import Startup              from 'vntd-root/pages/login/Startup.jsx';
 import { Util, BoundArray } from 'vntd-shared/utils/Enum.jsx';
 
 const testParams = {
@@ -46,9 +47,9 @@ describe('Test Insert Sort Functions', function() {
             }
             verifySorted(array, sortCompare);
         }
-        _.forEach(testParams.insertSorted, function(it) {
-            sortTest(it);
-            console.log("Tested insertSorted with " + it + " elements");
+        _.forEach(testParams.insertSorted, function(item) {
+            sortTest(item);
+            console.log("Tested insertSorted with " + item + " elements");
         });
     });
 })

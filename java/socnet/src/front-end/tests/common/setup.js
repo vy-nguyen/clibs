@@ -1,13 +1,15 @@
-require('../webpack/tvntd.test.config.js');
+require('../../webpack/tvntd.test.config.js');
 require('babel-register')();
 
 import jsdom from 'jsdom';
 
 var FAKE_DOM_HTML = `
-    <html>
-    <body>
-    </body>
-    </html>
+<html>
+<body>
+    <script src="https://cdn.tinymce.com/4/tinymce.min.js"></script>
+    <script src="src/main/webapp/client/tvntd-vendor-bundle.js"></script>
+</body>
+</html>
 `;
 
 function setupFakeDOM() {
@@ -28,16 +30,15 @@ function setupFakeDOM() {
     // the before() and beforeEach() hooks.
     //
     global.document = jsdom.jsdom(FAKE_DOM_HTML);
-    global.window = document.defaultView;
+
+    global.window = global.document.defaultView;
     global.navigator = window.navigator;
 }
 
 setupFakeDOM();
 
+var documentRef = document;
 var exposedProperties = ['window', 'navigator', 'document'];
-
-global.document = jsdom.jsdom('');
-global.window = document.defaultView;
 
 Object.keys(document.defaultView).forEach((property) => {
     if (typeof global[property] === 'undefined') {
@@ -49,6 +50,4 @@ Object.keys(document.defaultView).forEach((property) => {
 global.navigator = {
   userAgent: 'node.js'
 };
-
-var documentRef = document;
 
