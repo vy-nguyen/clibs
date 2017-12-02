@@ -9,3 +9,4 @@ import EnzymeAdapter    from 'enzyme-adapter-react-14';
 Enzyme.configure({
     adapter: new EnzymeAdapter()
 });
+

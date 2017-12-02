@@ -1,7 +1,8 @@
+/**
+ * Common setup file to setup fake dom.
+ */
 require('../../webpack/tvntd.test.config.js');
 require('babel-register')();
-
-import jsdom from 'jsdom';
 
 var FAKE_DOM_HTML = `
 <html>
@@ -12,42 +13,39 @@ var FAKE_DOM_HTML = `
 </html>
 `;
 
-function setupFakeDOM() {
-    if (typeof document !== 'undefined') {
-        // if the fake DOM has already been set up, or
-        // if running in a real browser, do nothing
-        return;
-    }
+const { JSDOM } = require('jsdom');
 
-    // setup the fake DOM environment.
-    //
-    // Note that we use the synchronous jsdom.jsdom() API
-    // instead of jsdom.env() because the 'document' and 'window'
-    // objects must be available when React is require()-d for
-    // the first time.
-    //
-    // If you want to do any async setup in your tests, use
-    // the before() and beforeEach() hooks.
-    //
-    global.document = jsdom.jsdom(FAKE_DOM_HTML);
+const jsdom = new JSDOM(FAKE_DOM_HTML, {
+    runScripts: "dangerously"
+});
 
-    global.window = global.document.defaultView;
-    global.navigator = window.navigator;
+const { window } = jsdom;
+
+function copyProps(src, target) {
+    const props = Object.getOwnPropertyNames(src)
+        .filter(prop => typeof target[prop] === 'undefined')
+        .reduce((result, prop) => ({
+            ...result,
+            [prop]: Object.getOwnPropertyDescriptor(src, prop),
+        }), {});
+    Object.defineProperties(target, props);
 }
 
-setupFakeDOM();
+global.window    = window;
+global.document  = window.document;
+global.navigator = {
+    userAgent: 'node.js',
+};
+copyProps(window, global);
 
 var documentRef = document;
 var exposedProperties = ['window', 'navigator', 'document'];
 
+/*
 Object.keys(document.defaultView).forEach((property) => {
     if (typeof global[property] === 'undefined') {
         exposedProperties.push(property);
         global[property] = document.defaultView[property];
     }
 });
-
-global.navigator = {
-  userAgent: 'node.js'
-};
-
+*/

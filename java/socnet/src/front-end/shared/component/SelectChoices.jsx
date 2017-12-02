@@ -35,7 +35,6 @@ class SelectChoices extends React.Component
     }
 
     _updateState(id, item, code) {
-        console.log("Recv notif new item " + id);
         if (id !== this.props.id) {
             return;
         }
@@ -45,9 +44,6 @@ class SelectChoices extends React.Component
     }
 
     _compareFn(r1, r2) {
-        console.log("r1... ");
-        console.log(r1);
-        console.log(r2);
         return r1.label.localeCompare(r2.label);
     }
 
@@ -74,8 +70,6 @@ class SelectChoices extends React.Component
         let { id, top } = this.props,
             select = this.getSelectForm(top, this.state.select);
 
-        console.log("render select choices..." + id);
-        console.log(select);
         return <SelectComp id={id} selectOpt={select}/>;
     }
 }
