@@ -6,7 +6,7 @@
 
 import React            from 'react-mod';
 
-import SelectComp       from 'vntd-shared/component/SelectComp.jsx';
+import SelectChoices    from 'vntd-shared/component/SelectChoices.jsx';
 import EditorPost       from 'vntd-shared/forms/commons/EditorPost.jsx';
 import Mesg             from 'vntd-root/components/Mesg.jsx';
 import EStorePost       from 'vntd-root/pages/e-store/EStorePost.jsx';
@@ -18,53 +18,33 @@ class SubmitPost extends React.Component
 {
     constructor(props) {
         super(props);
-        this.selection = {
-            selOpt: [ {
-                label: <Mesg text="Post Article"/>,
-                value: "article",
-                selFn: this._postArticle
-            }, {
-                label: <Mesg text="Post Product"/>,
-                value: "product",
-                selFn: this._postProduct
-            }, {
-                label: <Mesg text="Post Education Lesson"/>,
-                value: "education",
-                selFn: this._postEdu
-            }, {
-                label: <Mesg text="Post Business Ads"/>,
-                value: "busads",
-                selFn: this._postBusAds
-            }, {
-                label: <Mesg text="Post Rommsharing Ads"/>,
-                value: "roomads",
-                selFn: this._postRoomAds
-            } ]
-        };
-    }
-
-    _postArticle() {
-        return <EditorPost/>;
-    }
-
-    _postProduct() {
-        return <EStorePost/>;
-    }
-
-    _postEdu() {
-        return <PostQuestionare/>;
-    }
-
-    _postBusAds() {
-        return <PostAds/>;
-    }
-
-    _postRoomAds() {
-        return <AdsRoomRenting/>;
+        this.selection = [ {
+            label: <Mesg text="Post Article"/>,
+            value: "article",
+            component: <EditorPost/>
+        }, {
+            label: <Mesg text="Post Product"/>,
+            value: "product",
+            component: <EStorePost/>
+        }, {
+            label: <Mesg text="Post Education Lesson"/>,
+            value: "education",
+            component: <PostQuestionare/>
+        }, {
+            label: <Mesg text="Post Business Ads"/>,
+            value: "busads",
+            component: <PostAds/>
+        }, {
+            label: <Mesg text="Post Rommsharing Ads"/>,
+            value: "roomads",
+            component: <AdsRoomRenting/>
+        } ];
     }
 
     render() {
-        return <SelectComp id="post-article" selectOpt={this.selection}/>;
+        return (
+            <SelectChoices id="post-article" selectOpt={this.selection} noSort={true}/>
+        );
     }
 }
 

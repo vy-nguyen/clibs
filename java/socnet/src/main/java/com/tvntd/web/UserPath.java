@@ -62,6 +62,7 @@ import com.tvntd.forms.CommentForm;
 import com.tvntd.forms.DomainForm;
 import com.tvntd.forms.PostForm;
 import com.tvntd.forms.ProductForm;
+import com.tvntd.forms.QuestionForm;
 import com.tvntd.forms.TagForm;
 import com.tvntd.forms.TagForm.ArtRankInfo;
 import com.tvntd.forms.TagForm.TagArtRank;
@@ -88,6 +89,9 @@ import com.tvntd.service.api.ICommentService.CommentRespDTO;
 import com.tvntd.service.api.IDomainService;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
+import com.tvntd.service.api.IQuestionSvc;
+import com.tvntd.service.api.IQuestionSvc.QuestionDTO;
+import com.tvntd.service.api.IQuestionSvc.QuestionDTOResponse;
 import com.tvntd.service.api.IUserService;
 import com.tvntd.service.api.ImageUploadResp;
 import com.tvntd.service.api.LoginResponse;
@@ -133,6 +137,9 @@ public class UserPath
 
     @Autowired
     protected IArticleSvc artSvc;
+
+    @Autowired
+    protected IQuestionSvc questSvc;
 
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     @ResponseBody
@@ -915,4 +922,35 @@ public class UserPath
 
         return new LoginResponse(profile, request, session, false);
     }
-}
+
+    /**
+     * Post questions for an article.
+     */
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @RequestMapping(value = "/user/post-question",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    postQuestionForm(@RequestBody QuestionForm form, HttpSession session)
+    {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
+        if (form.cleanInput() == false) {
+            return s_noProfile;
+        }
+        List<String> pictures = null;
+        ArticlePostDTO art = genPendPost(profile, false, null);
+
+        if (art != null) {
+            // Have upload pictures.  Clear out the pending post.
+            //
+            pictures = art.fetchPictureOids();
+            profile.assignPendPost(null);
+        }
+        QuestionDTO out = questSvc.processForm(form, profile, pictures);
+        return new QuestionDTOResponse(out);
+    }
+ }

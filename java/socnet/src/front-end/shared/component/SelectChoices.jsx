@@ -15,11 +15,16 @@ import SelectComp          from 'vntd-shared/component/SelectComp.jsx';
 class SelectChoices extends React.Component
 {
     constructor(props) {
+        let select = props.selectOpt;
         super(props);
 
         this._updateState = this._updateState.bind(this);
+
+        if (select == null) {
+            select = InputStore.getItemIndex(props.id).getItems()
+        }
         this.state = {
-            select: InputStore.getItemIndex(props.id).getItems()
+            select: select
         };
     }
 
@@ -51,24 +56,30 @@ class SelectChoices extends React.Component
         return item.component;
     }
 
-    getSelectForm(top, data) {
+    getSelectForm(top, data, noSort) {
         let out = [];
 
         _.forOwn(data, function(item) {
-            Util.insertSorted(item, out, this._compareFn);
+            if (noSort == null) {
+                Util.insertSorted(item, out, this._compareFn);
+            } else {
+                out.push(item);
+            }
             item.selFn = this._selChoice.bind(this, item);
         }.bind(this));
 
-        top.selFn = this._selChoice.bind(this, top);
-        out.unshift(top);
+        if (top != null) {
+            top.selFn = this._selChoice.bind(this, top);
+            out.unshift(top);
+        }
         return {
             selOpt: out
         };
     }
 
     render() {
-        let { id, top } = this.props,
-            select = this.getSelectForm(top, this.state.select);
+        let { id, top, noSort } = this.props,
+            select = this.getSelectForm(top, this.state.select, noSort);
 
         return <SelectComp id={id} selectOpt={select}/>;
     }

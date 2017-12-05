@@ -65,6 +65,7 @@ class ChoiceForm extends FormData
     validateInput(data, errFlags) {
         let error = 0, checked = 0, answer = 0;
 
+        data.type = 'choices';
         for (let count = 1; count <= this.choiceCount; count++) {
             let correct = 'correct' + count, choice = 'choice' + count;
 
@@ -76,7 +77,6 @@ class ChoiceForm extends FormData
                 if (data[choice] === '') {
                     error++;
                     errFlags[choice] = true;
-                    console.log("mark error " + correct + ": " + data[correct]);
                 } else {
                     answer++;
                 }
@@ -86,36 +86,53 @@ class ChoiceForm extends FormData
                 }
             }
         }
-        console.log("--------------------");
-        console.log(errFlags);
-        console.log(data);
-        console.log("checked : " + checked + ", answer " + answer + " error " + error);
         if (checked > 0 && answer > 0) {
             if (error == 0) {
                 errFlags.errText = null;
             } else {
                 errFlags.errText = this.needText;
-                console.log("set error text " + error);
             }
         } else {
-            console.log("Get here?? ");
             for (let count = 1; count <= this.choiceCount; count++) {
                 errFlags['correct' + count] = true;
             }
             errFlags.errText = this.needMark;
         }
-        console.log(errFlags);
+        console.log("validate mult choice input");
+        console.log(data);
         return data;
     }
 
     submitNotif(store, result, id, status) {
-        console.log("--- mutl choice notif ----");
-        console.log(store);
-        console.log(result);
-        console.log(id);
-        console.log(status);
-        console.log("---- end ----");
         this.clearData();
+    }
+
+    static toInputForm(data) {
+        let out = [], map = {}, index;
+
+        if (data.answer != null && data.answer.type == 'choices') {
+            for (let i = 1; i <= 8; i++) {
+                index = i - 1;
+                map['choice' + i] = {
+                    index: index,
+                    key  : 'choice'
+                };
+                map['correct' + i] = {
+                    index: index,
+                    key  : 'correct'
+                };
+            }
+            _.forOwn(data.answer, function(val, key) {
+                let rec = map[key];
+                if (rec != null) {
+                    if (out[rec.index] == null) {
+                        out[rec.index] = {};
+                    }
+                    out[rec.index][rec.key] = val;
+                }
+            });
+        }
+        return out;
     }
 }
 
@@ -136,7 +153,7 @@ class InputForm extends FormData
         }, {
             editor   : true,
             menu     : 'short',
-            field    : 'asnValidate',
+            field    : 'ansValidate',
             labelTxt : 'Answers',
             inpHolder: 'Answer 1 | Answer 2 | ...'
         } ];
@@ -150,12 +167,37 @@ class InputForm extends FormData
     }
 
     validateInput(data, errFlags) {
-        errFlags.errText = null;
+        let noErr = true;
+        data.type = 'fillin';
+
+        if (data.ansValidate == null || data.ansValidate === '') {
+            noErr = false;
+            errFlags.ansValidate = true;
+        }
+        if (data.ansInput == null || data.ansInput === '') {
+            noErr = false;
+            errFlags.ansInput = true;
+        }
+        if (noErr === true) {
+            errFlags.errText = null;
+        }
         return data;
     }
 
     submitNotif(store, result, status, resp) {
         this.clearData();
+    }
+
+    static toInputForm(data) {
+        let answer = data.answer;
+        if (answer != null && answer.type === 'fillin') {
+            return {
+                ansInput   : answer.ansInput,
+                ansHolder  : answer.ansHolder,
+                ansValidate: answer.ansValidate
+            };
+        }
+        return null;
     }
 }
 
@@ -279,6 +321,21 @@ class QuestForm extends FormData
         if (data.modalHdr != null) {
             rec.pushData(data.modalHdr, data.modalContent);
         }
+        console.log("input data");
+        console.log(data);
+
+        Actions.postQuestForm({
+            articleUuid : data.article,
+            content     : data.content,
+            modalSelect : data.modalSelect,
+            modalHdr    : data.modalHdr,
+            modalContent: data.modalContent,
+            imageRec    : data.imageRec,
+            answer      : {
+                choices : ChoiceForm.toInputForm(data),
+                input   : InputForm.toInputForm(data)
+            }
+        });
         InputStore.triggerStore(_QuestSuffix, rec);
     }
 
@@ -295,6 +352,12 @@ class QuestForm extends FormData
         _.forOwn(errFlags, function(val, key) {
             delete errFlags[key];
         });
+        if (data.article == null || data.article === '') {
+            errFlags.article = true;
+        }
+        if (data.content == null || data.content === '') {
+            errFlags.content = true;
+        }
         return this.answer.validateInput(data, errFlags);
     }
 }
@@ -303,6 +366,7 @@ export class PostQuestionare extends InputBase
 {
     constructor(props) {
         super(props, _QuestSuffix);
+        this.id = _QuestSuffix;
         InputStore.storeItemIndex(this.id, new SeqContainer(), false);
 
         this.data = new QuestForm(props, _QuestSuffix);
@@ -334,9 +398,6 @@ export class PostQuestionare extends InputBase
         this.data.modifyField('article', 'disabled', true);
         this.data.modifyField('modalSelect', 'disabled', false);
         this.data.modifyField('modalSelect', 'selectOpt', items.getSelectOpt(true));
-
-        console.log("update .... post state..");
-        console.log(this.data);
     }
 
     _renderForm() {
