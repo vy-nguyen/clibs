@@ -26,7 +26,10 @@
  */
 package com.tvntd.service.user;
 
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
@@ -36,6 +39,7 @@ import org.springframework.stereotype.Service;
 import com.tvntd.dao.AnswerRepo;
 import com.tvntd.dao.QuestionRepo;
 import com.tvntd.forms.QuestionForm;
+import com.tvntd.forms.UuidForm;
 import com.tvntd.models.Answer;
 import com.tvntd.models.Question;
 import com.tvntd.service.api.IAnswerSvc;
@@ -78,5 +82,72 @@ public class QuestionSvc implements IQuestionSvc
             ansRepo.save(ans);
         }
         return new QuestionDTO(quest);
+    }
+
+    @Override
+    public QuestionDTOResponse getQuestion(UuidForm form)
+    {
+        List<String> artUuids = new LinkedList<>();
+        for (String uuid : form.getUuids()) {
+            artUuids.add(uuid);
+        }
+        List<QuestionDTO> out = getQuestion(artUuids);
+        return new QuestionDTOResponse(out);
+    }
+
+    protected List<QuestionDTO> convertDTO(List<Question> quest, List<Answer> ans)
+    {
+        List<Question> fixup = new LinkedList<>();
+        List<QuestionDTO> out = new LinkedList<>();
+        Map<String, Question> map = new HashMap<>();
+
+        for (Question q : quest) {
+            String linkUuid = q.getLinkUuid();
+
+            if (linkUuid != null) {
+                Question link = map.get(linkUuid);
+                if (link == null) {
+                    fixup.add(q);
+                } else {
+                    q.connectLink(link);     
+                    map.remove(linkUuid);
+                }
+            }
+            map.put(q.getQuestUuid(), q);
+        }
+        for (Question q : fixup) {
+            String linkUuid = q.getLinkUuid();
+            Question link = map.get(linkUuid);
+
+            if (link != null) {
+                q.connectLink(link);
+                map.remove(linkUuid);
+            }
+        }
+        for (Answer a : ans) {
+            Question q = map.get(a.getQuestUuid());
+            if (q != null) {
+                q.setAnswer(a);
+            }
+        }
+        for (Question val : map.values()) {
+            out.add(new QuestionDTO(val));
+        }
+        map.clear();
+        fixup.clear();
+        return out;
+    }
+
+    protected List<QuestionDTO> getQuestion(List<String> artUuids)
+    {
+        List<Question> quest = questRepo.findByArticleUuidIn(artUuids);
+
+        if (quest == null || quest.isEmpty()) {
+            return null;
+        }
+        List<Answer> answer = ansRepo.findByArticleUuidIn(artUuids);
+        List<QuestionDTO> out = convertDTO(quest, answer);
+
+        return out;
     }
 }

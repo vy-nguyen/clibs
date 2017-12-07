@@ -26,10 +26,10 @@
  */
 package com.tvntd.service.api;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import com.tvntd.forms.QuestionForm;
+import com.tvntd.forms.UuidForm;
 import com.tvntd.models.Question;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 
@@ -38,6 +38,8 @@ public interface IQuestionSvc
     List<QuestionDTO> getQuestions(String articleUuid);
     QuestionDTO processForm(QuestionForm form, ProfileDTO profile, List<String> picOid);
 
+    QuestionDTOResponse getQuestion(UuidForm form);
+    
     public static class QuestionDTO
     {
         protected Question question;
@@ -52,11 +54,15 @@ public interface IQuestionSvc
     {
         protected List<QuestionDTO> questions;
 
+        public QuestionDTOResponse(List<QuestionDTO> resp)
+        {
+            super(GenericResponse.USER_HOME, null, null);
+            questions = resp;
+        }
+
         public QuestionDTOResponse(QuestionDTO resp)
         {
             super(GenericResponse.USER_HOME, null, null);
-            questions = new LinkedList<>();
-            questions.add(resp);
         }
     }
 }

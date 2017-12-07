@@ -26,6 +26,8 @@
  */
 package com.tvntd.models;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -71,6 +73,8 @@ public class Question
     protected String linkUuid;
 
     protected transient Question linkQuestion;
+    protected transient Question linkResult;
+    protected transient List<Answer> answer;
 
     public Question()
     {
@@ -106,6 +110,19 @@ public class Question
         authorUuid    = userUuid;
         contentHeader = Util.toRawByte(hdr, 512);
         this.content  = Util.toRawByte(content, 4096);
+    }
+
+    public boolean connectLink(Question link)
+    {
+        if ((link.quesType & HelpModal) != 0) {
+            linkQuestion = link;
+            return true;
+
+        } else if ((link.quesType & ResultLink) != 0) {
+            linkResult = link;
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -197,5 +214,44 @@ public class Question
      */
     public Question getLinkQuestion() {
         return linkQuestion;
+    }
+
+    /**
+     * @param linkQuestion the linkQuestion to set
+     */
+    public void setLinkQuestion(Question linkQuestion) {
+        this.linkQuestion = linkQuestion;
+    }
+
+    /**
+     * @return the linkResult
+     */
+    public Question getLinkResult() {
+        return linkResult;
+    }
+
+    /**
+     * @param linkResult the linkResult to set
+     */
+    public void setLinkResult(Question linkResult) {
+        this.linkResult = linkResult;
+    }
+
+    /**
+     * @return the answer
+     */
+    public List<Answer> getAnswer() {
+        return answer;
+    }
+
+    /**
+     * @param answer the answer to set
+     */
+    public void setAnswer(Answer answer)
+    {
+        if (this.answer == null) {
+            this.answer = new LinkedList<>();
+        }
+        this.answer.add(answer);
     }
 }

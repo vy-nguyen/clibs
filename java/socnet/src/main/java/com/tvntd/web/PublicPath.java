@@ -91,6 +91,7 @@ import com.tvntd.service.api.IMapService;
 import com.tvntd.service.api.IProductService.ProductDTOResponse;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
+import com.tvntd.service.api.IQuestionSvc;
 import com.tvntd.service.api.ImageUploadResp;
 import com.tvntd.service.api.RoomAdsResponse;
 import com.tvntd.service.api.StartupResponse;
@@ -126,6 +127,9 @@ public class PublicPath
 
     @Autowired
     private IMapService mapSvc;
+
+    @Autowired
+    private IQuestionSvc questSvc;
 
     /**
      * Handle public pages.
@@ -544,6 +548,19 @@ public class PublicPath
             session.setAttribute("startPage", "load author=0 articleUuid=0");
         }
         return "tvntd";
+    }
+
+    @RequestMapping(value = "/public/get-question",
+        consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    getPublicQuestion(@RequestBody UuidForm form, HttpSession session)
+    {
+        if (form.cleanInput() == false) {
+            return UserPath.s_badInput;
+        }
+        return questSvc.getQuestion(form);
     }
 
     /**

@@ -401,6 +401,7 @@ export class PostQuestionare extends InputBase
     }
 
     _renderForm() {
+        Actions.getQuestions({});
         return (
             <div>
                 <div className="well">

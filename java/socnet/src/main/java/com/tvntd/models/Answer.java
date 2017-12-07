@@ -101,13 +101,6 @@ public class Answer
     }
 
     /**
-     * @param id the id to set
-     */
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    /**
      * @return the articleUuid
      */
     public String getArticleUuid() {
@@ -115,9 +108,37 @@ public class Answer
     }
 
     /**
-     * @param articleUuid the articleUuid to set
+     * @return the questUuid
      */
-    public void setArticleUuid(String articleUuid) {
-        this.articleUuid = articleUuid;
+    public String getQuestUuid() {
+        return questUuid;
+    }
+
+    /**
+     * @return the inputFlags
+     */
+    public Long getInputFlags() {
+        return inputFlags;
+    }
+
+    /**
+     * @return the inputField
+     */
+    public byte[] getInputField() {
+        return inputField;
+    }
+
+    /**
+     * @return the inputHolder
+     */
+    public byte[] getInputHolder() {
+        return inputHolder;
+    }
+
+    /**
+     * @return the inputValue
+     */
+    public byte[] getInputValue() {
+        return inputValue;
     }
 }

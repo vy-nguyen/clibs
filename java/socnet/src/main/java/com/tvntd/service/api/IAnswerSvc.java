@@ -31,6 +31,7 @@ import java.util.List;
 import com.tvntd.forms.QuestionForm.AnswerForm;
 import com.tvntd.models.Answer;
 import com.tvntd.models.Question;
+import com.tvntd.util.Util;
 
 public interface IAnswerSvc
 {
@@ -40,9 +41,53 @@ public interface IAnswerSvc
     public static class AnswerDTO
     {
         protected Answer answer;
+        protected String inputValue;
 
-        public AnswerDTO()
+        public AnswerDTO(Answer ans) {
+            answer = ans;
+        }
+
+        public String getAnsType()
         {
+            Long type = answer.getInputFlags();
+
+            if ((type & Answer.MultChoices) != 0) {
+                return "choice";
+            }
+            if ((type & Answer.InputAnswer) != 0) {
+                return "input";
+            }
+            return "unknown";
+        }
+
+        public String getAnsInput() {
+            return Util.fromRawByte(answer.getInputField());
+        }
+
+        public String getAnsHolder() {
+            return Util.fromRawByte(answer.getInputHolder());
+        }
+
+        public String getAnsValidate()
+        {
+            if (inputValue == null) {
+                inputValue = Util.fromRawByte(answer.getInputValue());
+            }
+            return inputValue;
+        }
+
+        public String getAnsChoice()
+        {
+            Long type = answer.getInputFlags();
+
+            if ((type & Answer.MultChoices) != 0) {
+                return getAnsValidate();
+            }
+            return null;
+        }
+
+        public Boolean isCorrectChoice() {
+            return (answer.getInputFlags() & Answer.ChoicesCorrect) != 0 ? true : false;
         }
     }
 }

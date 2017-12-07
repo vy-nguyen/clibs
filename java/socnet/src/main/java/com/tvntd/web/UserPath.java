@@ -953,4 +953,18 @@ public class UserPath
         QuestionDTO out = questSvc.processForm(form, profile, pictures);
         return new QuestionDTOResponse(out);
     }
- }
+
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @RequestMapping(value = "/user/get-question",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    getQuestion(@RequestBody UuidForm form, HttpSession session)
+    {
+        if (form.cleanInput() == false) {
+            return s_badInput;
+        }
+        return questSvc.getQuestion(form);
+    }
+}
