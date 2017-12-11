@@ -9,8 +9,8 @@ import React               from 'react-mod';
 import PropTypes           from 'prop-types';
 
 import { Util }            from 'vntd-shared/utils/Enum.jsx';
-import InputStore          from 'vntd-shared/stores/NestableStore.jsx';
 import SelectComp          from 'vntd-shared/component/SelectComp.jsx';
+import QuestionStore       from 'vntd-root/stores/QuestionStore.jsx';
 
 class SelectChoices extends React.Component
 {
@@ -21,7 +21,7 @@ class SelectChoices extends React.Component
         this._updateState = this._updateState.bind(this);
 
         if (select == null) {
-            select = InputStore.getItemIndex(props.id).getItems()
+            select = QuestionStore.getItem(props.id).getItems()
         }
         this.state = {
             select: select
@@ -29,7 +29,7 @@ class SelectChoices extends React.Component
     }
 
     componentDidMount() {
-        this.unsub = InputStore.listen(this._updateState);
+        this.unsub = QuestionStore.listen(this._updateState);
     }
 
     componentWillUnmount() {
@@ -44,7 +44,7 @@ class SelectChoices extends React.Component
             return;
         }
         this.setState({
-            select: InputStore.getItemIndex(this.props.id).getItems()
+            select: QuestionStore.getItem(this.props.id).getItems()
         });
     }
 

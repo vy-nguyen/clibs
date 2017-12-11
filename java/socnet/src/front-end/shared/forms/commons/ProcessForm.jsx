@@ -451,7 +451,7 @@ class FormData
         return data;
     }
 
-    submitNotif(store, result, status, resp) {
+    submitNotif(store, data, result, status, cb) {
         this.clearData();
         this.changeSubmitState("saved", false);
 
@@ -464,8 +464,8 @@ class FormData
     submitError(store, result, status) {}
     submitFailure(store, result, status) {}
 
-    submitFailureBase(store, result, status) {
-        this.submitFailure(store, result, status);
+    submitFailureBase(store, result, status, context) {
+        this.submitFailure(store, result, status, context);
         this.changeSubmitState("failure", false);
         this._setAllDefValues();
     }
@@ -571,18 +571,20 @@ class ProcessForm extends React.Component
         });
     }
 
-    _updateState(data, result, status, isArr) {
+    _updateState(data, result, status, isArr, cb) {
         let errFlags = null, context = this.props.form;
 
         if (context.isSubmitting() !== true) {
             return;
         }
         if (status === "failure" || result.error != null) {
+            let store = this.props.store;
+
             if (status === "failure") {
-                errFlags = context.submitFailureBase(this.props.store, result, status);
+                errFlags = context.submitFailureBase(store, result, status, cb);
             }
             if (result.error != null) {
-                errFlags = context.submitErrorBase(this.props.store, result, status);
+                errFlags = context.submitErrorBase(store, result, status, cb);
             }
             if (errFlags != null && ! _.isEmpty(errFlags)) {
                 this.setState({
@@ -591,7 +593,7 @@ class ProcessForm extends React.Component
             }
             return;
         }
-        context.submitNotif(this.props.store, data, result, status);
+        context.submitNotif(this.props.store, data, result, status, cb);
 
         if (this._imgDz != null) {
             this._imgDz.removeAllFiles();

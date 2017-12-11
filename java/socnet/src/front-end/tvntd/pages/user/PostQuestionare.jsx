@@ -11,7 +11,7 @@ import InputBase           from 'vntd-shared/layout/InputBase.jsx';
 import SelectChoices       from 'vntd-shared/component/SelectChoices.jsx';
 import StateButton         from 'vntd-shared/utils/StateButton.jsx';
 import UserStore           from 'vntd-shared/stores/UserStore.jsx';
-import InputStore          from 'vntd-shared/stores/NestableStore.jsx';
+import QuestionStore       from 'vntd-root/stores/QuestionStore.jsx';
 import AuthorStore         from 'vntd-root/stores/AuthorStore.jsx';
 import Lang                from 'vntd-root/stores/LanguageStore.jsx';
 import Actions             from 'vntd-root/actions/Actions.jsx';
@@ -305,25 +305,6 @@ class QuestForm extends FormData
     }
 
     _submitForm(data) {
-        let rec = InputStore.getItemIndex(_QuestSuffix),
-            pos = rec.getItemCount().toString();
-
-        // Save data to the main selection list.
-        //
-        rec.push({
-            label: pos,
-            value: pos,
-            data : data,
-            component: <Questionare data={data} id={_QuestSuffix} key={pos}/>
-        });
-        // Add modal header to selection link for next question input.
-        //
-        if (data.modalHdr != null) {
-            rec.pushData(data.modalHdr, data.modalContent);
-        }
-        console.log("input data");
-        console.log(data);
-
         Actions.postQuestForm({
             articleUuid : data.article,
             content     : data.content,
@@ -335,15 +316,39 @@ class QuestForm extends FormData
                 choices : ChoiceForm.toInputForm(data),
                 input   : InputForm.toInputForm(data)
             }
-        });
-        InputStore.triggerStore(_QuestSuffix, rec);
+        }, _QuestSuffix);
     }
 
     // @Override
     //
-    submitNotif(store, result, status, resp) {
-        super.submitNotif(store, result, status, resp);
-        this.answer.submitNotif(store, result, status, resp);
+    submitNotif(store, data, result, status, cb) {
+        console.log("Submit notif " + cb);
+        console.log(result);
+
+        let rec = QuestionStore.getItem(_QuestSuffix),
+            pos = rec.getItemCount().toString();
+
+        // Save data to the main selection list.
+        //
+        rec.push({
+            label: pos,
+            value: pos,
+            data : data,
+            component: (
+                <Questionare listStore={QuestionStore} uuid={result.questUuid}
+                    sourceId={_QuestSuffix} key={_.uniqueId(pos)}/>
+            )
+        });
+        // Add modal header to selection link for next question input.
+        //
+        if (result.modalHdr != null) {
+            rec.pushData(result.modalHdr, result.modalContent);
+        }
+        console.log("Question data");
+        console.log(result);
+
+        super.submitNotif(store, data, result, status, cb);
+        this.answer.submitNotif(store, data, result, status, cb);
     }
 
     // @Override
@@ -367,7 +372,7 @@ export class PostQuestionare extends InputBase
     constructor(props) {
         super(props, _QuestSuffix);
         this.id = _QuestSuffix;
-        InputStore.storeItemIndex(this.id, new SeqContainer(), false);
+        QuestionStore.storeItem(this.id, new SeqContainer(), false);
 
         this.data = new QuestForm(props, _QuestSuffix);
         this.args = {
@@ -375,7 +380,7 @@ export class PostQuestionare extends InputBase
             top: {
                 label: 'Enter your questionaire',
                 value: 'question',
-                component: <ProcessForm form={this.data} store={InputStore}/>
+                component: <ProcessForm form={this.data} store={QuestionStore}/>
             }
         };
         this.title = 'Post Questionare';
@@ -385,11 +390,12 @@ export class PostQuestionare extends InputBase
         this._updateState = this._updateState.bind(this);
     }
 
-    _updateState(item, id, code) {
-        if (id !== this.id) {
+    _updateState(store, item, code, arr, context) {
+        if (code !== "post" && context !== _QuestSuffix) {
+            console.log("bail out, context " + context);
             return;
         }
-        let items = InputStore.getItemIndex(this.id);
+        let items = QuestionStore.getItem(this.id);
         this.setState({
             itemCount: items.getItemCount()
         });

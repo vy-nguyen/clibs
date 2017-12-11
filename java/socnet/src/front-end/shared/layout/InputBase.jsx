@@ -6,19 +6,22 @@
 
 import React               from 'react-mod';
 import Mesg                from 'vntd-root/components/Mesg.jsx';
-import InputStore          from 'vntd-shared/stores/NestableStore.jsx';
 import JarvisWidget        from 'vntd-shared/widgets/JarvisWidget.jsx';
 
 class InputBase extends React.Component
 {
     constructor(props, id) {
         super(props);
-        this.id = id;
+        this.id = id || props.id;
+        this._listStore = props.listStore;
         this._updateState = this._updateState.bind(this);
+        console.log("init input " + this.id + ", store");
+        console.log(this._listStore);
     }
 
     componentDidMount() {
-        this.unsub = InputStore.listen(this._updateState);
+        console.log("Listen to store " + this._listStore);
+        this.unsub = this._listStore.listen(this._updateState);
     }
 
     componentWillUnmount() {
@@ -28,11 +31,8 @@ class InputBase extends React.Component
         }
     }
 
-    _updateState(item, id, code) {
-        if (this.id !== id) {
-            return false;
-        }
-        return true;
+    _updateState(data, item, code) {
+        console.log("base update...");
     }
 
     _renderForm() {
@@ -40,6 +40,7 @@ class InputBase extends React.Component
     }
 
     render() {
+        console.log("render input base");
         return (
             <JarvisWidget id={this.id} color="purple">
                 <header>

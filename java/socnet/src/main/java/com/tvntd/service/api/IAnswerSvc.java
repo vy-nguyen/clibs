@@ -26,6 +26,7 @@
  */
 package com.tvntd.service.api;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import com.tvntd.forms.QuestionForm.AnswerForm;
@@ -45,6 +46,15 @@ public interface IAnswerSvc
 
         public AnswerDTO(Answer ans) {
             answer = ans;
+        }
+
+        public static List<AnswerDTO> convertAnswerDTO(List<Answer> in)
+        {
+            List<AnswerDTO> out = new LinkedList<>();
+            for (Answer ans : in) {
+                out.add(new AnswerDTO(ans));
+            }
+            return out;
         }
 
         public String getAnsType()

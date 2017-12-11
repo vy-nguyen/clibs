@@ -8,6 +8,7 @@ import React            from 'react-mod';
 
 import SelectChoices    from 'vntd-shared/component/SelectChoices.jsx';
 import EditorPost       from 'vntd-shared/forms/commons/EditorPost.jsx';
+import QuestionStore    from 'vntd-root/stores/QuestionStore.jsx';
 import Mesg             from 'vntd-root/components/Mesg.jsx';
 import EStorePost       from 'vntd-root/pages/e-store/EStorePost.jsx';
 import PostAds          from 'vntd-root/pages/ads/PostAds.jsx';
@@ -29,7 +30,7 @@ class SubmitPost extends React.Component
         }, {
             label: <Mesg text="Post Education Lesson"/>,
             value: "education",
-            component: <PostQuestionare/>
+            component: <PostQuestionare listStore={QuestionStore}/>
         }, {
             label: <Mesg text="Post Business Ads"/>,
             value: "busads",

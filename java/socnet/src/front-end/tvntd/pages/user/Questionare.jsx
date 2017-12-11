@@ -7,24 +7,25 @@ import _                 from 'lodash';
 import React             from 'react-mod';
 import PropTypes         from 'prop-types';
 
-class Questionare extends React.Component
+import InputBase         from 'vntd-shared/layout/InputBase.jsx';
+import QuestionStore     from 'vntd-root/stores/QuestionStore.jsx';
+
+class Questionare extends InputBase
 {
     constructor(props) {
         super(props);
     }
 
-    componentDidMount() {
+    _updateState(data, item, code, id) {
+        console.log("update state ");
+        console.log(item);
+        console.log(code);
     }
 
-    componentWillUnmount() {
-    }
-
-    render() {
+    _renderForm() {
         console.log("====== Questionare ==== ");
-        console.log(this.props.data);
-        return (
-            <h1>Questionare</h1>
-        );
+        console.log(this.props);
+        return <h1>Questionare</h1>
     }
 }
 

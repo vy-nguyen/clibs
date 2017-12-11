@@ -306,16 +306,17 @@ Actions.updateUserPost.listen(function(data, save) {
     postRestCall(data, url, true, this, true);
 });
 
-Actions.postQuestForm.listen(function(data) {
+Actions.postQuestForm.listen(function(data, callback) {
     console.log("Post question form");
     console.log(data);
-    postRestCall(data, "/user/post-question", true, this, true);
+    postRestCall(data, "/user/post-question", true, this, true, callback);
 });
 
 Actions.getQuestions.listen(function(data) {
     data = {
         uuids: [
-            "ebed78ff-593c-431c-b029-e201319cdeb3"
+            "ebed78ff-593c-431c-b029-e201319cdeb3",
+            "c5cfaca2-cb00-4bf6-9d7d-1a71047025be"
         ],
         reqKind: "article"
     };

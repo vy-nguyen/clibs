@@ -9,7 +9,75 @@ import {Util}         from 'vntd-shared/utils/Enum.jsx';
 
 class BaseStore
 {
-    constructor() {
+    constructor(store) {
+        this.data  = {};
+        this.store = store;
+    }
+
+    storeItem(id, item, force) {
+        let ret = this.data[id];
+
+        if (ret == null || force === true) {
+            this.data[id] = item;
+            ret = item;
+        }
+        return ret;
+    }
+
+    storeItemTrigger(id, item, force, code) {
+        let ret = this.storeItem(id, item, force);
+        this.triggerStore(id, item, code);
+        return ret;
+    }
+
+    removeItem(id) {
+        let item = this.data[id];
+        this.data[id] = null;
+        return item;
+    }
+
+    getItem(id) {
+        return this.data[id];
+    }
+
+    deleteItem(id) {
+        let item = this.data[id];
+        delete this.data[id];
+        return item;
+    }
+
+    storeObject(id, key, value) {
+        let ret = this.data[id];
+
+        if (ret == null) {
+            ret = this.data[id] = {};
+        }
+        ret[key] = value;
+        return ret;
+    }
+
+    pushArray(id, elm) {
+        let ret = this.data[id];
+
+        if (ret == null) {
+            ret = this.data[id] = [];
+        }
+        ret.push(elm);
+        return ret;
+    }
+
+    triggerStore(id, item, code) {
+        if (item == null) {
+            item = this.data[id];
+        }
+        if (item != null) {
+            this.store.trigger(this.data, item, code);
+        }
+    }
+
+    dumpData(hdr) {
+        console.log(hdr);
+        console.log(this.data);
     }
 
     static compareByArt(t1, t2) {

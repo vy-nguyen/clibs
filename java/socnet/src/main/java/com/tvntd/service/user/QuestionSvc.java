@@ -80,6 +80,7 @@ public class QuestionSvc implements IQuestionSvc
         List<Answer> answers = answerSvc.processAnswerForm(form.getAnswer(), quest);
         for (Answer ans : answers) {
             ansRepo.save(ans);
+            quest.setAnswer(ans);
         }
         return new QuestionDTO(quest);
     }
