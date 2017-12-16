@@ -7,6 +7,7 @@
 import _            from 'lodash';
 import React        from 'react-mod';
 import TA           from 'react-typeahead';
+import { Link }     from 'react-router';
 
 import Actions      from 'vntd-root/actions/Actions.jsx';
 import Lang         from 'vntd-root/stores/LanguageStore.jsx';
@@ -22,6 +23,7 @@ import ModalConfirm from 'vntd-shared/forms/commons/ModalConfirm.jsx';
 import EditorPost   from 'vntd-shared/forms/commons/EditorPost.jsx';
 import InputStore   from 'vntd-shared/stores/NestableStore.jsx';
 
+import QuestionStore    from 'vntd-root/stores/QuestionStore.jsx';
 import ArticleStore     from 'vntd-root/stores/ArticleStore.jsx';
 import ArticleTagStore  from 'vntd-root/stores/ArticleTagStore.jsx';
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
@@ -485,7 +487,7 @@ class PostPane extends React.Component
     render() {
         const fmt = "btn btn-primary pull-right";
         let content, imgs, adminItem = null, ownerItem = null, panelLabel = null,
-            modal, publishModal, ownerPostMenu, refLink = null,
+            modal, publishModal, ownerPostMenu, refLink = null, lessonLink = null,
             article = this.state.article, pictures = null, tagPost = null;
 
         if (article.noData === true) {
@@ -588,6 +590,13 @@ class PostPane extends React.Component
                 {content}
             </div>
         );
+        if (QuestionStore.getQuestions(article.articleUuid) != null) {
+            lessonLink = (
+                <Link to={"/public/lesson/" + article.articleUuid}>
+                    <h3>Take lesson</h3>
+                </Link>
+            );
+        }
         return (
             <Panel className="well no-padding" context={panelData}>
                 {tagPost}
@@ -598,7 +607,7 @@ class PostPane extends React.Component
                 {modal}
                 {publishModal}
                 {content}
-                {refLink}
+                {lessonLink}
                 <PostComment articleUuid={article.articleUuid}/>
             </Panel>
         )

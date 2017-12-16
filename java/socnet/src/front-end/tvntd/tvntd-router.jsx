@@ -21,6 +21,7 @@ import UserTrans     from './pages/user/UserTransaction.jsx';
 import UserProfile   from './pages/user/UserProfile.jsx';
 import UserConnect   from './pages/user/UserConnect.jsx';
 import UserTags      from './pages/user/UserTags.jsx';
+import Lesson        from './pages/user/Lesson.jsx';
 import ListUsers     from './pages/admin/ListUsers.jsx';
 import SetTags       from './pages/admin/SetTags.jsx';
 import MainAds       from './pages/ads/MainAds.jsx';
@@ -38,6 +39,7 @@ const _publicRoutes = (
     <Route path="/public">
         <Route path="aboutus" component={AboutUs}/>
         <Route path="article/:author/:articleUuid" component={PublicUrlArt}/>
+        <Route path="lesson/:articleUuid" component={Lesson}/>
         <Route path="ads"     component={MainAds}  subHeader={false}/>
         <Route path=":blog"   component={MainBlog} subHeader={true}/>
         <Route path=":estore" component={MainBlog} subHeader={true}/>

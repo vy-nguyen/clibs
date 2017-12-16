@@ -45,6 +45,7 @@ public interface IAuthorService
 {
     Author getAuthor(String uuid);
     AuthorDTO getAuthorDTO(String uuid);
+    List<AuthorDTO> getAuthorDTO(List<String> userUuids);
     AuthorTagRespDTO getAuthorTag(String uuid);
 
     void addFavoriteArticle(Author author, String articleUuid);
@@ -122,6 +123,18 @@ public interface IAuthorService
 
         public String getAppUuid() {
             return author != null ? author.getAppUuid() : null;
+        }
+
+        public Long getPostMasks()
+        {
+            if (author == null) {
+                return 0L;
+            }
+            Long mask = author.getPostMasks();
+            if (mask == null) {
+                return 0L;
+            }
+            return mask;
         }
 
         public List<AuthorTagDTO> getAuthorTags()

@@ -92,8 +92,17 @@ public class QuestionSvc implements IQuestionSvc
         for (String uuid : form.getUuids()) {
             artUuids.add(uuid);
         }
-        List<QuestionDTO> out = getQuestion(artUuids);
-        return new QuestionDTOResponse(out);
+        List<QuestionDTO> out = null;
+        if (form.getReqKind().equals(UuidForm.author)) {
+            out = getQuestionByAuthor(artUuids);
+        } else {
+            out = getQuestion(artUuids);
+        }
+        QuestionDTOResponse ret = new QuestionDTOResponse(out);
+        ret.setUuids(artUuids);
+        ret.setReqKind(form.getReqKind());
+
+        return ret;
     }
 
     protected List<QuestionDTO> convertDTO(List<Question> quest, List<Answer> ans)
@@ -144,11 +153,26 @@ public class QuestionSvc implements IQuestionSvc
         List<Question> quest = questRepo.findByArticleUuidIn(artUuids);
 
         if (quest == null || quest.isEmpty()) {
-            return null;
+            return new LinkedList<QuestionDTO>();
         }
         List<Answer> answer = ansRepo.findByArticleUuidIn(artUuids);
         List<QuestionDTO> out = convertDTO(quest, answer);
+        return out;
+    }
 
+    protected List<QuestionDTO> getQuestionByAuthor(List<String> authorUuids)
+    {
+        List<Question> quest = questRepo.findByAuthorUuidIn(authorUuids);
+
+        if (quest == null || quest.isEmpty()) {
+            return new LinkedList<QuestionDTO>();
+        }
+        List<String> artUuids = new LinkedList<>();
+        for (Question q : quest) {
+            artUuids.add(q.getArticleUuid());
+        }
+        List<Answer> answer = ansRepo.findByArticleUuidIn(artUuids);
+        List<QuestionDTO> out = convertDTO(quest, answer);
         return out;
     }
 }

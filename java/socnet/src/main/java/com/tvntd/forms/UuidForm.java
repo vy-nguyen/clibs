@@ -40,6 +40,7 @@ public class UuidForm
     public static final String artType  = "article";
     public static final String prodType = "product";
     public static final String domain   = "domain";
+    public static final String author   = "author";
 
     private String authorUuid;
     private String uuidType;

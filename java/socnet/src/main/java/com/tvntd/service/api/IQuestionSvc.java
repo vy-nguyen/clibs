@@ -98,6 +98,8 @@ public interface IQuestionSvc
     public static class QuestionDTOResponse extends GenericResponse
     {
         protected List<QuestionDTO> questions;
+        protected List<String> uuids;
+        protected String reqKind;
 
         public QuestionDTOResponse(List<QuestionDTO> resp)
         {
@@ -117,6 +119,34 @@ public interface IQuestionSvc
          */
         public List<QuestionDTO> getQuestions() {
             return questions;
+        }
+
+        /**
+         * @return the uuids
+         */
+        public List<String> getUuids() {
+            return uuids;
+        }
+
+        /**
+         * @param uuids the uuids to set
+         */
+        public void setUuids(List<String> uuids) {
+            this.uuids = uuids;
+        }
+
+        /**
+         * @return the reqKind
+         */
+        public String getReqKind() {
+            return reqKind;
+        }
+
+        /**
+         * @param reqKind the reqKind to set
+         */
+        public void setReqKind(String reqKind) {
+            this.reqKind = reqKind;
         }
     }
 }

@@ -6,6 +6,8 @@ import _                 from 'lodash';
 import Reflux            from 'reflux';
 
 import {Util}            from 'vntd-shared/utils/Enum.jsx';
+import {KeyTracker}      from 'vntd-shared/utils/WebUtils.jsx';
+
 import Actions           from 'vntd-root/actions/Actions.jsx';
 import Answer            from 'vntd-root/stores/Answer.jsx';
 import Question          from 'vntd-root/stores/Question.jsx';
@@ -14,6 +16,7 @@ import BaseStore         from 'vntd-root/stores/BaseStore.jsx';
 let QuestionStore = Reflux.createStore({
     init: function() {
         this.store     = new BaseStore(this);
+        this.authors   = new KeyTracker();
         this.articles  = {};
         this.questions = {};
     },
@@ -38,6 +41,18 @@ let QuestionStore = Reflux.createStore({
 
     getAnswers(questUuid) {
         return this.questions[questUuid].answer;
+    },
+
+    fetchAuthors(reqUuids) {
+        this.authors.fetchKeyArray(reqUuids);
+        let uuids = this.authors.getMissingKeys();
+
+        if (!_.isEmpty(uuids)) {
+            Actions.getQuestions({
+                uuids  : uuids,
+                reqKind: "author"
+            });
+        }
     },
 
     _convertObj(quest, field) {
@@ -89,11 +104,13 @@ let QuestionStore = Reflux.createStore({
         this.trigger(this, quest, "post", false, ctxId);
     },
 
-    onGetQuestionsCompleted: function(data) {
+    onGetQuestionsCompleted: function(data, cb) {
         console.log("get question completed");
         console.log(data);
         this._addQuestions(data.questions);
-        this.trigger(this, data, "get", false);
+        this.authors.receivedKeys(data.uuids);
+
+        this.trigger(this, data, "get", false, false, cb);
     },
 
     dumpData(hdr) {

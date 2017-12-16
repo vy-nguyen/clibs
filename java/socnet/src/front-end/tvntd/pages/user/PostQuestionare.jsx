@@ -322,9 +322,6 @@ class QuestForm extends FormData
     // @Override
     //
     submitNotif(store, data, result, status, cb) {
-        console.log("Submit notif " + cb);
-        console.log(result);
-
         let rec = QuestionStore.getItem(_QuestSuffix),
             pos = rec.getItemCount().toString();
 
@@ -344,9 +341,6 @@ class QuestForm extends FormData
         if (result.modalHdr != null) {
             rec.pushData(result.modalHdr, result.modalContent);
         }
-        console.log("Question data");
-        console.log(result);
-
         super.submitNotif(store, data, result, status, cb);
         this.answer.submitNotif(store, data, result, status, cb);
     }
@@ -370,8 +364,10 @@ class QuestForm extends FormData
 export class PostQuestionare extends InputBase
 {
     constructor(props) {
-        super(props, _QuestSuffix);
+        super(props, _QuestSuffix, [QuestionStore]);
+
         this.id = _QuestSuffix;
+        this._updateState = this._updateState.bind(this);
         QuestionStore.storeItem(this.id, new SeqContainer(), false);
 
         this.data = new QuestForm(props, _QuestSuffix);
@@ -390,7 +386,7 @@ export class PostQuestionare extends InputBase
         this._updateState = this._updateState.bind(this);
     }
 
-    _updateState(store, item, code, arr, context) {
+    _updateState(store, data, item, code, arr, context) {
         if (code !== "post" && context !== _QuestSuffix) {
             console.log("bail out, context " + context);
             return;
@@ -407,7 +403,6 @@ export class PostQuestionare extends InputBase
     }
 
     _renderForm() {
-        Actions.getQuestions({});
         return (
             <div>
                 <div className="well">

@@ -15,6 +15,7 @@ import {Util}           from 'vntd-shared/utils/Enum.jsx';
 import {ArticleBrief}   from 'vntd-root/stores/Article.jsx';
 import ArticleFactory   from 'vntd-root/stores/ArticleFactory.jsx';
 import ArticleTagStore  from 'vntd-root/stores/ArticleTagStore.jsx';
+import QuestionStore    from 'vntd-root/stores/QuestionStore.jsx';
 import {
     ArticleStore, EProductStore, GlobStore
 } from 'vntd-root/stores/ArticleStore.jsx';
@@ -64,6 +65,23 @@ let AuthorStore = Reflux.createStore({
             return null;
         }
         return article.getArticleRank();
+    },
+
+    fetchExtraArticles: function(mode) {
+        if (mode === "edu") {
+            this.fetchEduArticles();
+        }
+    },
+
+    fetchEduArticles: function() {
+        let reqUuids = [];
+
+        _.forOwn(this.data.authorMap, function(author) {
+            if (author.postMasks & 0x1) {
+                reqUuids.push(author.authorUuid);
+            }
+        });
+        QuestionStore.fetchAuthors(reqUuids);
     },
 
     /**

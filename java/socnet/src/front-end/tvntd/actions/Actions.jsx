@@ -312,15 +312,11 @@ Actions.postQuestForm.listen(function(data, callback) {
     postRestCall(data, "/user/post-question", true, this, true, callback);
 });
 
-Actions.getQuestions.listen(function(data) {
-    data = {
-        uuids: [
-            "ebed78ff-593c-431c-b029-e201319cdeb3",
-            "c5cfaca2-cb00-4bf6-9d7d-1a71047025be"
-        ],
-        reqKind: "article"
-    };
-    postRestCall(data, "/user/get-question", true, this, true);
+Actions.getQuestions.listen(function(data, callback) {
+    let url = !UserStore.isLogin() ? "/public/get-question" : "/user/get-question";
+    console.log("Get questions");
+    console.log(data);
+    postRestCall(data, url, true, this, false, callback);
 });
 
 Actions.publishProduct.listen(function(data) {

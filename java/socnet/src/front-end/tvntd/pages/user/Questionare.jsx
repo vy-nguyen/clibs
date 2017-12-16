@@ -9,11 +9,13 @@ import PropTypes         from 'prop-types';
 
 import InputBase         from 'vntd-shared/layout/InputBase.jsx';
 import QuestionStore     from 'vntd-root/stores/QuestionStore.jsx';
+import RefLinks          from 'vntd-root/components/RefLinks.jsx';
 
 class Questionare extends InputBase
 {
     constructor(props) {
-        super(props);
+        super(props, _.uniqueId(), [QuestionStore]);
+        this.title = "Question";
     }
 
     _updateState(data, item, code, id) {

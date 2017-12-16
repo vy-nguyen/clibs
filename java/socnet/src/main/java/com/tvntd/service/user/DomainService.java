@@ -311,14 +311,7 @@ public class DomainService implements IDomainService
                 return;
             }
         }
-        for (String uuid : userUuids) {
-            if (!myUuid.equals(uuid)) {
-                author = authorSvc.getAuthorDTO(uuid);
-                if (author != null) {
-                    authorList.add(author);
-                }
-            }
-        }
+        authorList.addAll(authorSvc.getAuthorDTO(userUuids));
         resp.setAuthors(authorList);
     }
 }

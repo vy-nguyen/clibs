@@ -89,6 +89,18 @@ public class AuthorService implements IAuthorService
     }
 
     @Override
+    public List<AuthorDTO> getAuthorDTO(List<String> userUuids)
+    {
+        List<Author> out = authorRepo.findByAuthorUuidIn(userUuids);
+        List<AuthorDTO> result = new LinkedList<>();
+
+        for (Author author : out) {
+            result.add(new AuthorDTO(author));
+        }
+        return result;
+    }
+
+    @Override
     public AuthorTagRespDTO getAuthorTag(String uuid)
     {
         List<AuthorTag> raw = authorTagRepo.findAllByAuthorUuid(uuid);
