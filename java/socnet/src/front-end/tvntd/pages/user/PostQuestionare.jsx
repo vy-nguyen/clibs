@@ -21,8 +21,7 @@ import { ColFmtMap }       from 'vntd-root/config/constants.js';
 import { GenericAds }      from 'vntd-root/pages/ads/PostAds.jsx';
 import { SeqContainer }    from 'vntd-shared/utils/WebUtils.jsx';
 import { SelectForms }     from 'vntd-shared/forms/commons/SelectForms.jsx';
-
-import { FormData, ProcessForm }      from 'vntd-shared/forms/commons/ProcessForm.jsx';
+import { FormData, ProcessForm } from 'vntd-shared/forms/commons/ProcessForm.jsx';
 
 const _QuestSuffix = "-qu";
 

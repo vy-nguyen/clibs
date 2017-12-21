@@ -23,6 +23,10 @@ let QuestionStore = Reflux.createStore({
 
     listenables: Actions,
 
+    triggerEvent(data, code, ctxId) {
+        this.trigger(this, data, code, false, ctxId);
+    },
+
     storeItem(id, item, force) {
         return this.store.storeItem(id, item, force);
     },

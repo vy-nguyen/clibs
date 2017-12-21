@@ -130,7 +130,7 @@ class InputWrap extends React.Component
         super(props);
         this._onBlur   = this._onBlur.bind(this);
         this._onFocus  = this._onFocus.bind(this);
-        this._onChange = this._onChange.bind(this);
+        this._onToggle = this._onToggle.bind(this);
     }
 
     componentWillUnmount() {
@@ -168,13 +168,17 @@ class InputWrap extends React.Component
         }
     }
 
-    _onChange() {
-        let entry = this.props.entry;
+    _onToggle(val) {
+        let { entry, onBlur } = this.props;
 
         entry.inpDefVal = !entry.inpDefVal;
         InputStore.storeItemIndex(entry.inpName, entry.inpDefVal, true);
+
         if (entry.onClick != null) {
             entry.onClick(entry);
+        }
+        if (entry.checkedBox != null && onBlur != null) {
+            onBlur(entry, entry.inpDefVal);
         }
     }
 
@@ -240,14 +244,20 @@ class InputWrap extends React.Component
             );
         }
         if (entry.checkedBox != null) {
-            let style = entry.errorFlag === true ? { color: 'red' } : null;
+            let style = entry.errorFlag === true ? { color: 'red' } : null,
+                labelTxt = entry.html === true ?
+                    <span dangerouslySetInnerHTML={{ __html: entry.labelTxt }}/> :
+                    <Mesg text={entry.labelTxt}/>;
+
             return (
                 <div className="form-check">
                     <label className="form-check-label" style={style}>
                         <input type="checkbox" ref={entry.inpName} name={entry.inpName}
                             defaultChecked={entry.inpDefVal}
-                            onFocus={this._onFocus} onChange={this._onChange}/>
-                        <i/><Mesg text={entry.labelTxt}/>
+                            onFocus={this._onFocus} onChange={this._onToggle}
+                            disabled={entry.disabled || false}
+                        />
+                        {labelTxt}
                     </label>
                 </div>
             );
@@ -400,7 +410,7 @@ class InputEntry
             return <InputToolTip entry={entry}/>;
         }
         if (entry.checkedBox != null) {
-            return <InputWrap entry={entry}/>;
+            return <InputWrap entry={entry} onBlur={onBlur}/>;
         }
         if (entry.editor === true && entry.labelTxt == null) {
             return (
