@@ -17,6 +17,7 @@ import Lang                from 'vntd-root/stores/LanguageStore.jsx';
 import Actions             from 'vntd-root/actions/Actions.jsx';
 import Mesg                from 'vntd-root/components/Mesg.jsx';
 import Questionare         from 'vntd-root/pages/user/Questionare.jsx';
+import { ArticleStore }    from 'vntd-root/stores/ArticleStore.jsx';
 import { ColFmtMap }       from 'vntd-root/config/constants.js';
 import { GenericAds }      from 'vntd-root/pages/ads/PostAds.jsx';
 import { SeqContainer }    from 'vntd-shared/utils/WebUtils.jsx';
@@ -321,17 +322,18 @@ class QuestForm extends FormData
     // @Override
     //
     submitNotif(store, data, result, status, cb) {
-        let rec = QuestionStore.getItem(_QuestSuffix),
+        let rec = QuestionStore.getItem(_QuestSuffix), article,
             pos = rec.getItemCount().toString();
 
         // Save data to the main selection list.
         //
+        article = ArticleStore.getArticleByUuid(result.articleUuid);
         rec.push({
             label: pos,
             value: pos,
             data : data,
             component: (
-                <Questionare listStore={QuestionStore} uuid={result.questUuid}
+                <Questionare listStore={QuestionStore} article={article}
                     sourceId={_QuestSuffix} key={_.uniqueId(pos)}/>
             )
         });

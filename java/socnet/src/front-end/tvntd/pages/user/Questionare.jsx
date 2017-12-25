@@ -3,136 +3,19 @@
  */
 'use strict';
 
-import _                 from 'lodash';
-import React             from 'react-mod';
-import PropTypes         from 'prop-types';
+import _                  from 'lodash';
+import React              from 'react-mod';
+import PropTypes          from 'prop-types';
 
-import Wizard            from 'vntd-shared/layout/Wizard.jsx';
-import StateButton       from 'vntd-shared/utils/StateButton.jsx';
-import InputBase         from 'vntd-shared/layout/InputBase.jsx';
-import QuestionStore     from 'vntd-root/stores/QuestionStore.jsx';
-import RefLinks          from 'vntd-root/components/RefLinks.jsx';
-import { VntdGlob }      from 'vntd-root/config/constants.js';
-
-import { FormData, ProcessForm } from 'vntd-shared/forms/commons/ProcessForm.jsx';
-
-class QuizChoiceForm extends FormData
-{
-    constructor(props, suffix) {
-        super(props, suffix);
-        this._submitForm = this._submitForm.bind(this);
-
-        this._initForm(props);
-    }
-
-    _initForm(props) {
-        let num, correct = 0, label = 'A', entries = [], { choices, questUuid } = props;
-
-        this.entries   = entries;
-        this.questUuid = questUuid;
-
-        _.forEach(choices, function(ans) {
-            ans.ansKey = 'choice-' + questUuid + '-' + label;
-            entries.push({
-                answer    : ans,
-                ansType   : ans.ansType,
-                field     : ans.ansKey,
-                html      : true,
-                labelTxt  : '   ' + label + ' / ' + ans.ansChoice,
-                checkedBox: true,
-                inpDefVal : ans.userSelect
-            });
-            if (ans.correctChoice === true) {
-                correct++;
-            }
-            num = label.charCodeAt(0) + 1;
-            label = String.fromCharCode(num);
-        });
-        let legend = correct === 1 ?
-            'Select the correct answer' : 'Select all correct answers';
-
-        this.forms = {
-            formId     : 'choice-' + questUuid,
-            submitFn   : this._submitForm,
-            formEntries: [ {
-                legend : legend,
-                inline : true,
-                twoCols: true,
-                entries: entries
-            } ],
-            buttons: [ {
-                btnName  : 'quiz-submit-' + questUuid,
-                btnSubmit: true,
-                btnCreate: function() {
-                    return StateButton.saveButtonFsm("Select", "Submit", "Result");
-                }
-            } ]
-        };
-    }
-
-    updateForm() {
-        let disable, error, ans;
-
-        if (this.hasAns == null) {
-            _.forEach(this.entries, function(entry) {
-                if (entry.answer.userSelect === true) {
-                    this.hasAns = true;
-                    return false;
-                }
-                return true;
-            }.bind(this));
-        }
-        if (this.hasAns === true) {
-            this.forms.formEntries[0].legend = 'Quiz result, error is marked with red';
-            _.forEach(this.entries, function(entry) {
-                ans = entry.answer;
-                entry.disabled = true;
-                if (ans.correctChoice === true && ans.userSelect !== true) {
-                    entry.errorFlag = true;
-                }
-            });
-        }
-    }
-
-    validateInput(data, errFlags) {
-        let checked = 0;
-
-        _.forEach(this.entries, function(entry) {
-            if (entry.ansType === 'choice') {
-                if (data[entry.field] !== '') {
-                    checked++;
-                }
-            }
-        });
-        if (checked > 0) {
-            _.forEach(this.entries, function(entry) {
-                delete errFlags[entry.field];
-            });
-            delete errFlags.errText;
-            delete errFlags.helpText;
-        } else {
-            return null;
-        }
-        return data;
-    }
-
-    submitNotif(store, data, result, status, cb) {
-        super.submitNotif(store, data, result, status, cb);
-    }
-
-    _submitForm(data) {
-        let question = QuestionStore.getQuestionByUuid(this.questUuid);
-
-        _.forEach(question.answer, function(ans) {
-            if (ans.ansType === 'choice') {
-                if (data[ans.ansKey] !== '') {
-                    ans.userSelect = data[ans.ansKey];
-                }
-            }
-        });
-        QuestionStore.triggerEvent(question, 'answer', question.questUuid);
-    }
-}
+import Wizard             from 'vntd-shared/layout/Wizard.jsx';
+import StateButton        from 'vntd-shared/utils/StateButton.jsx';
+import InputBase          from 'vntd-shared/layout/InputBase.jsx';
+import QuestionStore      from 'vntd-root/stores/QuestionStore.jsx';
+import Lang               from 'vntd-root/stores/LanguageStore.jsx';
+import RefLinks           from 'vntd-root/components/RefLinks.jsx';
+import { VntdGlob }       from 'vntd-root/config/constants.js';
+import { QuizChoiceForm } from 'vntd-root/stores/Question.jsx';
+import { ProcessForm }    from 'vntd-shared/forms/commons/ProcessForm.jsx';
 
 class QuizChoice extends InputBase
 {
@@ -154,14 +37,40 @@ class QuizChoice extends InputBase
     }
 }
 
+class QuizResult extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        let result = [], total = 0, error = 0, questions = this.props.questions;
+
+        _.forEach(questions, function(quest) {
+            if (quest.evalAnswer() === false) {
+                error++;
+            }
+            total++;
+            result.push(quest.renderResult("Quiz " + total));
+        });
+        return (
+            <div key={_.uniqueId()}>
+                <h3>Result: {error} errors out of {total} quizzes</h3>
+                {result}
+            </div>
+        );
+    }
+}
+
 class Questionare extends InputBase
 {
     constructor(props) {
         super(props, _.uniqueId(), [QuestionStore]);
-        this.title = "Question";
+        this.title = Lang.translate("Question");
         this.state = {
             tabIdx: 0
         };
+        this._renderResult     = this._renderResult.bind(this);
         this._getQuestions     = this._getQuestions.bind(this);
         this._getCurrentTabIdx = this._getCurrentTabIdx.bind(this);
         this._setCurrentTabIdx = this._setCurrentTabIdx.bind(this);
@@ -173,7 +82,6 @@ class Questionare extends InputBase
             return;
         }
         if (id !== question.currQuest.questUuid) {
-            console.log("bail out, not match...");
             return;
         }
         this.setState({
@@ -216,11 +124,17 @@ class Questionare extends InputBase
         _.forEach(questions, function(quest) {
             items.push({
                 domId  : 'quiz-' + artUuid + idx,
-                tabText: 'Quiz ' + idx,
+                tabText: Lang.translate('Quiz ') + idx,
                 tabIdx : idx,
                 goback : true
             });
             idx++;
+        });
+        items.push({
+            domId  : 'quiz-' + artUuid + idx,
+            tabText: Lang.translate('Results'),
+            tabIdx : idx,
+            goback : true
         });
         this.artUuid     = artUuid;
         this.questPans   = items;
@@ -236,12 +150,19 @@ class Questionare extends InputBase
 
     _renderQuiz(quest) {
         return (
-            <div>
+            <div key={_.uniqueId()}>
                 <div style={VntdGlob.styleContent}
                     dangerouslySetInnerHTML={{ __html: quest.content }}/>
                 <QuizChoice choices={quest.answer} questUuid={quest.questUuid}/>
             </div>
         );
+    }
+
+    _renderResult(questions) {
+        if ((this.state.tabIdx + 1) !== this.questPans.length) {
+            return null;
+        }
+        return (<QuizResult questions={questions}/>);
     }
 
     _renderForm() {
@@ -256,6 +177,7 @@ class Questionare extends InputBase
             quizRender.push(this._renderQuiz(quest));
         }.bind(this));
 
+        quizRender.push(this._renderResult(questions));
         return (
             <Wizard context={quiz} proText="Quiz">
                 {quizRender}

@@ -244,7 +244,8 @@ class InputWrap extends React.Component
             );
         }
         if (entry.checkedBox != null) {
-            let style = entry.errorFlag === true ? { color: 'red' } : null,
+            let color = entry.errorColor || 'red',
+                style = entry.errorFlag === true ? { color: entry.errorColor } : null,
                 labelTxt = entry.html === true ?
                     <span dangerouslySetInnerHTML={{ __html: entry.labelTxt }}/> :
                     <Mesg text={entry.labelTxt}/>;

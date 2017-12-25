@@ -11,6 +11,7 @@ import InputBase         from 'vntd-shared/layout/InputBase.jsx';
 import ArticleBox        from 'vntd-root/components/ArticleBox.jsx';
 import PostItem          from 'vntd-root/components/PostItem.jsx';
 import RefLinks          from 'vntd-root/components/RefLinks.jsx';
+import Lang              from 'vntd-root/stores/LanguageStore.jsx';
 import { VntdGlob }      from 'vntd-root/config/constants.js';
 import { ArticleStore }  from 'vntd-root/stores/ArticleStore.jsx';
 import QuestionStore     from 'vntd-root/stores/QuestionStore.jsx';
@@ -22,8 +23,8 @@ class Lesson extends InputBase
         super(props, _.uniqueId(), QuestionStore);
         let article = this._getArticle();
 
-        this.title = article != null ? article.getTitle() : "No article";
-        this.crumbLabel = "Lesson";
+        this.title = article != null ? article.getTitle() : Lang.translate("No article");
+        this.crumbLabel = Lang.translate("Lesson");
         this.crumbRoute = "/public/lesson/" + props.params.articleUuid;
     }
 
@@ -38,7 +39,6 @@ class Lesson extends InputBase
     }
 
     _updateState(store, data, item, code) {
-        console.log("update state " + code);
     }
 
     _rawMarkup(article) {
