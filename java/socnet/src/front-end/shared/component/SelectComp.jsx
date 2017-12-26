@@ -15,18 +15,29 @@ import Mesg                from 'vntd-root/components/Mesg.jsx';
 class SelectComp extends React.Component
 {
     constructor(props) {
-        let selectKeys = [], select = props.selectOpt;
-
         super(props);
+        this._selectCall = this._selectCall.bind(this);
+        this._setupProps = this._setupProps.bind(this);
+
+        this._setupProps(props, true);
+    }
+
+    _setupProps(props, init) {
+        let state, selKey, selectKeys = [], select = props.selectOpt;
+
         select.formEntry = this._creatSelForm(select);
         this.selDepth    = this._buildSelectForms(select, 1, 1);
-        this._selectCall = this._selectCall.bind(this);
 
-        let selKey = this._getSelectKeys(select, selectKeys, null, null, null);
-        this.state = {
+        selKey = this._getSelectKeys(select, selectKeys, null, null, null);
+        state = {
             activeKey : selKey,
             selectKeys: selectKeys
         };
+        if (init === true) {
+            this.state = state;
+        } else {
+            this.setState(state);
+        }
     }
 
     _getSelectKeys(select, selectKeys, preKeys, selected, selectedVal) {
@@ -88,6 +99,12 @@ class SelectComp extends React.Component
     }
 
     componentWillUnmount() {
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps !== this.props) {
+            this._setupProps(nextProps, false);
+        }
     }
 
     _selectCall(entry, value) {

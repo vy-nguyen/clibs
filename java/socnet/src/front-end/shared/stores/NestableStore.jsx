@@ -24,6 +24,15 @@ let NestableStore = Reflux.createStore({
         this.trigger(item, id, "store");
     },
 
+    triggerStore: function(id, item) {
+        if (item == null) {
+            item = this.data[id];
+        }
+        if (item != null) {
+            this.trigger(item, id, "store");
+        }
+    },
+
     clearItemIndex: function(id) {
         let ret = this.data[id];
         this.data[id] = null;

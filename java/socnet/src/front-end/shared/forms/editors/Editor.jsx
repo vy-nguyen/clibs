@@ -155,9 +155,15 @@ class EditorEntry extends React.Component
                 });
             };
         }
+        if (global.testMode == null) {
+            return (
+                <TinyMCE id={entry.inpName} content={entry.inpDefVal}
+                    config={config} onChange={this._onChange}/>
+            );
+        }
         return (
-            <TinyMCE id={entry.inpName} content={entry.inpDefVal}
-                config={config} onChange={this._onChange}/>
+            <textarea id={entry.inpName} rows="2" className="form-control input-sm"
+                placeholder={entry.inpDefVal}/>
         );
     }
 }

@@ -100,6 +100,9 @@ class CommonStore {
     }
 
     getMyItems() {
+        if (this.data.myItems == null) {
+            this.data.myItems = this.getItemOwner(UserStore.getSelfUuid());
+        }
         if (this.data.myItems != null) {
             return this.data.myItems.sortedArticles;
         }

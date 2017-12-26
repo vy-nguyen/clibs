@@ -18,6 +18,7 @@ import AdminStore       from 'vntd-root/stores/AdminStore.jsx';
 import ArtTagStore      from 'vntd-root/stores/ArticleTagStore.jsx';
 import AdPropertyStore  from 'vntd-root/stores/AdPropertyStore.jsx';
 import LanguageStore    from 'vntd-root/stores/LanguageStore.jsx';
+import QuestionStore    from 'vntd-root/stores/QuestionStore.jsx';
 
 import {
     ArticleStore, EProductStore, AdsStore
@@ -45,6 +46,7 @@ class Debug extends React.Component {
         ArticleStore.dumpData("Article Store Content");
         EProductStore.dumpData("Product Store Content");
         AdsStore.dumpData("Ads Store Content");
+        QuestionStore.dumpData("Questno Store Content");
     }
 
     debugAuthorStore() {

@@ -261,6 +261,10 @@ public interface IArticleSvc
             article.getArtBase().addPicture(oid);
         }
 
+        public List<String> fetchPictureOids() {
+            return article.getArtBase().getPictures();
+        }
+
         public void removePicture(ObjectId oid) {
             article.getArtBase().removePicture(oid);
         }

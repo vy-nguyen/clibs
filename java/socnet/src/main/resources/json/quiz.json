@@ -1,0 +1,83 @@
+{
+    "modalBox": [ {
+        "modalId": "#abcdef",
+        "title"  : "dsfs dfsfsfs",
+        "content": "dssfsfsfs",
+        "footer" : "dsfsf sfs fs;fs"
+    } ],
+    "question": [ {
+        "content": "abc def gh",
+        "modalId": "#abcdef",
+        "imgUrl" : [
+        ],
+        "answer": {
+            "type"   : "choices",
+            "text"   : "Select the correct answer",
+            "options": [ {
+                "label": "answer 1",
+                "value": "correct",
+                "help" : null
+            }, {
+                "label": "answer 2",
+                "value": "wrong",
+                "help" : null
+            }, {
+                "label": "answer 3",
+                "value": "wrong",
+                "help" : null
+            }, {
+                "label": "answer 4",
+                "value": "wrong",
+                "help" : null
+            } ]
+        }
+    }, {
+        "content": "sfs ;s fsdf;sdf",
+        "imageUrl": [
+        ],
+        "answer": {
+            "type"   : "input",
+            "text"   : "Enter input value",
+            "holder" : "text box holder",
+            "validate": [
+                "abc dffs",
+                "def sd;lfsfs",
+                "sdfss dsfsdfs"
+            ]
+        }
+    }, {
+        "content" : "dsfs fsfsfsfss",
+        "imageUrl": [
+        ],
+        "answer": {
+            "type"  : "match",
+            "text"  : "Match correct order",
+            "fixed" : [ {
+                "match": "abc",
+                "text" : "dfsdfs dsfsdfsfsdf"
+            }, {
+                "match": "Abc",
+                "text" : "df dsfsl; sdfdssdfs dsfsdfsfsdf"
+            }, {
+                "match": "aBc",
+                "text" : "dfsfds sdfsfsdfs dsfsdfsfsdf"
+            }, {
+                "match": "abC",
+                "text" : "dfssfsdf sdfsdfdsdfs dsfsdfsfsdf"
+            } ],
+            "match": [ {
+                "key"  : "abc",
+                "text" : "sdfs sdfs fsd;fsd fsdf; ssa sdfas sdfsdf"
+            }, {
+                "key"  : "Abc",
+                "text" : "sdfs sdfs fsd;fsd sdfs sd;fdsf sfsd; ssa"
+            }, {
+                "key"  : "aBc",
+                "text" : "sdfs sdfsaf ssdfsfsd;fsd fsdf; ssa"
+            }, {
+                "key"  : "abC",
+                "text" : "sdfs sdfs  dsfsfs sfs ; ssa"
+            } ]
+        }
+    } ]
+}

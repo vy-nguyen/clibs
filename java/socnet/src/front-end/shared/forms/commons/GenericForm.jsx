@@ -55,7 +55,7 @@ class SelectWrap extends React.Component
             value = this.props.value != null ? this.props.value : this.state.value;
 
         out = (
-            <Select options={entry.selectOpt}
+            <Select options={entry.selectOpt} disabled={entry.disabled}
                 name={entry.inpName} value={value}
                 onChange={this._defOnSelect.bind(this, entry)}
             />
@@ -130,7 +130,7 @@ class InputWrap extends React.Component
         super(props);
         this._onBlur   = this._onBlur.bind(this);
         this._onFocus  = this._onFocus.bind(this);
-        this._onChange = this._onChange.bind(this);
+        this._onToggle = this._onToggle.bind(this);
     }
 
     componentWillUnmount() {
@@ -168,13 +168,17 @@ class InputWrap extends React.Component
         }
     }
 
-    _onChange() {
-        let entry = this.props.entry;
+    _onToggle(val) {
+        let { entry, onBlur } = this.props;
 
         entry.inpDefVal = !entry.inpDefVal;
         InputStore.storeItemIndex(entry.inpName, entry.inpDefVal, true);
+
         if (entry.onClick != null) {
             entry.onClick(entry);
+        }
+        if (entry.checkedBox != null && onBlur != null) {
+            onBlur(entry, entry.inpDefVal);
         }
     }
 
@@ -220,9 +224,7 @@ class InputWrap extends React.Component
             return <DropZoneWrap entry={entry} eventHandlers={handlers}/>
         }
         if (entry.editor === true) {
-            return (
-                <EditorEntry entry={entry} onBlur={this._onBlur}/>
-            );
+            return <EditorEntry entry={entry} onBlur={this._onBlur}/>;
         }
         if (entry.button != null) {
             return (
@@ -242,16 +244,27 @@ class InputWrap extends React.Component
             );
         }
         if (entry.checkedBox != null) {
+            let color = entry.errorColor || 'red',
+                style = entry.errorFlag === true ? { color: entry.errorColor } : null,
+                labelTxt = entry.html === true ?
+                    <span dangerouslySetInnerHTML={{ __html: entry.labelTxt }}/> :
+                    <Mesg text={entry.labelTxt}/>;
+
             return (
-                <section>
-                    <label className="checkbox">
+                <div className="form-check">
+                    <label className="form-check-label" style={style}>
                         <input type="checkbox" ref={entry.inpName} name={entry.inpName}
                             defaultChecked={entry.inpDefVal}
-                            onFocus={this._onFocus} onChange={this._onChange}/>
-                        <i/><Mesg text={entry.labelTxt}/>
+                            onFocus={this._onFocus} onChange={this._onToggle}
+                            disabled={entry.disabled || false}
+                        />
+                        {labelTxt}
                     </label>
-                </section>
+                </div>
             );
+        }
+        if (entry.component != null) {
+            return entry.component;
         }
         handlers = entry.inpHolder ? Lang.translate(entry.inpHolder) : null;
         return (
@@ -303,20 +316,18 @@ class InputBox extends React.Component
 
         style = entry.errorFlag == true ? { color:'red' } : null,
         label = (
-            <label className={labelFmt} style={style} for="textinput">
+            <label className={labelFmt} style={style}>
                 <Mesg text={entry.labelTxt}/>
             </label>
         );
 
         return (
-            <div className="row" key={_.uniqueId('gen-inp-')}>
-                <div className="form-group">
-                    {label}
-                    <div className={inputFmt}>
-                        <InputWrap entry={entry} bind={bind}
-                            onBlur={onBlur} onSelected={onSelected}/>
-                        <ErrorView mesg={true} errorId={entry.errorId}/>
-                    </div>
+            <div className="form-group" key={_.uniqueId('gen-inp-')}>
+                {label}
+                <div className={inputFmt}>
+                    <InputWrap entry={entry} bind={bind}
+                        onBlur={onBlur} onSelected={onSelected}/>
+                    <ErrorView mesg={true} errorId={entry.errorId}/>
                 </div>
             </div>
         );
@@ -400,7 +411,7 @@ class InputEntry
             return <InputToolTip entry={entry}/>;
         }
         if (entry.checkedBox != null) {
-            return <InputWrap entry={entry}/>;
+            return <InputWrap entry={entry} onBlur={onBlur}/>;
         }
         if (entry.editor === true && entry.labelTxt == null) {
             return (

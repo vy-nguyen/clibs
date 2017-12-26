@@ -23,9 +23,6 @@ class PostAdChoices extends React.Component
 {
     constructor(props) {
         super(props);
-        this._postBusAds  = this._postBusAds.bind(this);
-        this._postRoomAds = this._postRoomAds.bind(this);
-
         this.selection = {
             selOpt: [ {
                 value: "bus",
@@ -48,11 +45,7 @@ class PostAdChoices extends React.Component
     }
 
     render() {
-        return (
-            <div>
-                <SelectComp id="post-ads" selectOpt={this.selection}/>
-            </div>
-        );
+        return <SelectComp id="post-ads" selectOpt={this.selection}/>;
     }
 }
 

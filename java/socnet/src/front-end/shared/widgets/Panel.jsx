@@ -20,10 +20,12 @@ class Panel extends React.Component
         if (panel == null) {
             return null;
         }
-        let dropdownMenu = panel.headerMenus.map(function(item, idx) {
-            return <DropdownMenu key={_.uniqueId('panel-menu-')} context={item}/>;
-        });
-
+        let dropdownMenu = null;
+        if (panel.headerMenus) {
+            dropdownMenu = panel.headerMenus.map(function(item, idx) {
+                return <DropdownMenu key={_.uniqueId('panel-menu-')} context={item}/>;
+            });
+        }
         let panelLabel = "";
         if (panel.panelLabel) {
             panelLabel = panel.panelLabel.map(function(item, idx) {
@@ -34,7 +36,6 @@ class Panel extends React.Component
                 )
             });
         }
-
         return (
             <JarvisWidget colorbutton={false} editbutton={false} togglebutton={false}
                 deletebutton={false} fullscreenbutton={false} color="purple">
