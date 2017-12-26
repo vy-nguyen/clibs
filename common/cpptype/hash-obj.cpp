@@ -24,6 +24,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+#include <string.h>
 #include <cpptype/hash-obj.h>
 #include <cpptype/list-obj.h>
 
