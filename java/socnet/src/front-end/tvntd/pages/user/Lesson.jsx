@@ -8,6 +8,7 @@ import React             from 'react-mod';
 import PropTypes         from 'prop-types';
 
 import InputBase         from 'vntd-shared/layout/InputBase.jsx';
+import UserStore         from 'vntd-shared/stores/UserStore.jsx';
 import ArticleBox        from 'vntd-root/components/ArticleBox.jsx';
 import PostItem          from 'vntd-root/components/PostItem.jsx';
 import RefLinks          from 'vntd-root/components/RefLinks.jsx';
@@ -39,6 +40,23 @@ class Lesson extends InputBase
     }
 
     _updateState(store, data, item, code) {
+    }
+
+    // @Override
+    //
+    _isOwner() {
+        let article = this._getArticle();
+        if (article != null) {
+            return UserStore.isUserMe(article.authorUuid);
+        }
+        return false;
+    }
+
+    // @Override
+    //
+    _deletePost() {
+        super.deletePost();
+        console.log("Delete lesson...");
     }
 
     _rawMarkup(article) {

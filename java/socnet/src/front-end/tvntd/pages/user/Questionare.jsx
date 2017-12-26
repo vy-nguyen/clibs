@@ -10,6 +10,7 @@ import PropTypes          from 'prop-types';
 import Wizard             from 'vntd-shared/layout/Wizard.jsx';
 import StateButton        from 'vntd-shared/utils/StateButton.jsx';
 import InputBase          from 'vntd-shared/layout/InputBase.jsx';
+import UserStore          from 'vntd-shared/stores/UserStore.jsx';
 import QuestionStore      from 'vntd-root/stores/QuestionStore.jsx';
 import Lang               from 'vntd-root/stores/LanguageStore.jsx';
 import RefLinks           from 'vntd-root/components/RefLinks.jsx';
@@ -67,8 +68,12 @@ class Questionare extends InputBase
     constructor(props) {
         super(props, _.uniqueId(), [QuestionStore]);
         this.title = Lang.translate("Question");
+
+        let questions = QuestionStore.getQuestions(props.article.articleUuid);
         this.state = {
-            tabIdx: 0
+            tabIdx   : 0,
+            questions: questions,
+            currQuest: questions != null ? questions[0] : null
         };
         this._renderResult     = this._renderResult.bind(this);
         this._getQuestions     = this._getQuestions.bind(this);
@@ -78,19 +83,46 @@ class Questionare extends InputBase
 
     _updateState(store, data, item, status, isArr, id) {
         let question = this._getQuestions();
-        if (question == null) {
+        if (question == null ||
+            question.questions == null || !Array.isArray(question.questions)) {
             return;
         }
         if (id !== question.currQuest.questUuid) {
             return;
         }
-        this.setState({
-            tabIdx: this.state.tabIdx + 1
-        });
+        question.tabIdx = this.state.tabIdx + 1;
+        if (question.tabIdx >= question.questions.length) {
+            question.currQuest = null;
+        } else {
+            question.currQuest = question.questions[question.tabIdx];
+        }
+        this.setState(question);
+    }
+
+    // @Override
+    //
+    _isOwner() {
+        let questions = this.state.questions;
+        if (questions != null && Array.isArray(questions)) {
+            if (this.state.tabIdx >= questions.length) {
+                return false;
+            }
+        }
+        return UserStore.isUserMe(this.props.article.authorUuid);
+    }
+
+    // @Override
+    //
+    _deletePost() {
+        let currQuest = this.state.currQuest;
+        if (currQuest != null) {
+            console.log("delete question " + this.state.currQuest.questUuid);
+        }
+        super._deletePost();
     }
 
     _getQuestions() {
-        let questions, article = this.props.article;
+        let questions, tabIdx, article = this.props.article;
 
         if (article == null || article.articleUuid == null) {
             return null;
@@ -151,6 +183,7 @@ class Questionare extends InputBase
     _renderQuiz(quest) {
         return (
             <div key={_.uniqueId()}>
+                <h3>{quest.questUuid}</h3>
                 <div style={VntdGlob.styleContent}
                     dangerouslySetInnerHTML={{ __html: quest.content }}/>
                 <QuizChoice choices={quest.answer} questUuid={quest.questUuid}/>
