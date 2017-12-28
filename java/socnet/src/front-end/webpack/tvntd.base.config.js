@@ -5,23 +5,22 @@ var webpack = require('webpack');
 var scripts = require('./scripts');
 // var RewirePlugin = require('rewire-webpack')
 
-var rootDir          = path.resolve(__dirname, '../../../');
-var node_modules     = path.resolve(rootDir, 'node_modules');
-var bower_components = path.resolve(rootDir, 'bower_components');
-
 if (argv.inline && argv.hot) {
     scripts.aliases.react = "/node_modules/react/react.js" // for better debug
 }
 
 var aliases = _.mapValues(scripts.aliases, function(scriptPath) {
-    return path.resolve(rootDir + scriptPath)
+    return path.resolve(scripts.rootDir + scriptPath)
 });
 
 var babel_args =
     'babel-loader?compact=true&presets[]=es2015&presets[]=react&plugins[]=transform-object-rest-spread';
 
+var style_args =
+    'style-loader!css-loader!less-loader!autoprefixer-loader?browsers=last 10 versions';
+
 module.exports = {
-    context: rootDir,
+    context: scripts.rootDir,
     resolve: {
         alias: aliases
     },
@@ -33,12 +32,12 @@ module.exports = {
             ),
             exclude: [
                 /node_modules/,
-                /bower_components/,
+                /bower_components/
             ],
         }, {
             test   : /\.less$/,
             exclude: [/node_modules/],
-            loader : 'style-loader!css-loader!less-loader!autoprefixer-loader?browsers=last 10 versions'
+            loader : style_args
         }, {
             test   : /\.css/,
             exclude: [/node_modules/],
@@ -65,11 +64,6 @@ module.exports = {
         }),
         new webpack.optimize.UglifyJsPlugin(),
         new webpack.optimize.AggressiveMergingPlugin(),
-        new webpack.optimize.CommonsChunkPlugin({
-            name     : "vendor",
-            filename : "tvntd-vendor-bundle.js",
-            minChunks: Infinity
-        })
         // new RewirePlugin()
     ]
 };

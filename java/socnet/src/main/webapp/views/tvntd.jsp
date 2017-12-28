@@ -37,7 +37,7 @@
   <%--
   <script src="/rs/js/tinymce/tinymce.min.js"></script>
   --%>
-  <script src="/rs/client/tvntd-vendor-bundle.js"></script>
-  <script src="/rs/client/tvntd-bundle.js"></script>
+  <script src="/rs/client/common.js"></script>
+  <script src="/rs/client/tvntd.js"></script>
 </body>
 </html>
