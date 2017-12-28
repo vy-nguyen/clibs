@@ -1,43 +1,39 @@
-var _       = require('lodash');
-var path    = require('path');
-var argv    = require('yargs').argv;
-var webpack = require('webpack');
-var scripts = require('./scripts');
-// var RewirePlugin = require('rewire-webpack')
+var _         = require('lodash');
+var path      = require('path');
+var webpack   = require('webpack');
+var argv      = require('yargs').argv;
+var scripts   = require('./scripts.js');
 
-if (argv.inline && argv.hot) {
-    scripts.aliases.react = "/node_modules/react/react.js" // for better debug
-}
+var rootDir        = path.resolve(__dirname, '..');
+var node_modules   = path.resolve(rootDir, 'node_modules');
 
 var aliases = _.mapValues(scripts.aliases, function(scriptPath) {
-    return path.resolve(scripts.rootDir + scriptPath)
+    return path.resolve(rootDir + scriptPath);
 });
 
 var babel_args =
     'babel-loader?compact=true&presets[]=es2015&presets[]=react&plugins[]=transform-object-rest-spread';
 
-var style_args =
-    'style-loader!css-loader!less-loader!autoprefixer-loader?browsers=last 10 versions';
-
 module.exports = {
-    context: scripts.rootDir,
+    context: rootDir,
     resolve: {
         alias: aliases
     },
     module: {
         loaders: [ {
-            test: /\.jsx?$/, // Test the require path. accepts either js or jsx
+            test   : /\.jsx?$/,
             loaders: (
-                argv.inline && argv.hot ? [ 'react-hot', babel_args ] : [ babel_args ]
+                argv.inline && argv.hot ?
+                [ 'react-hot-loader', babel_args ] : [ babel_args ]
             ),
             exclude: [
                 /node_modules/,
-                /bower_components/
-            ],
+                /bower_components/,
+            ]
         }, {
             test   : /\.less$/,
             exclude: [/node_modules/],
-            loader : style_args
+            loader : 'style-loader!css-loader!less-loader!autoprefixer-loader?            browsers=last 10 versions'
         }, {
             test   : /\.css/,
             exclude: [/node_modules/],
@@ -62,8 +58,11 @@ module.exports = {
                 'NODE_ENV': JSON.stringify('production')
             }
         }),
-        new webpack.optimize.UglifyJsPlugin(),
         new webpack.optimize.AggressiveMergingPlugin(),
-        // new RewirePlugin()
+        new webpack.optimize.CommonsChunkPlugin({
+            name     : "vendor",
+            filename : "site-vendor.js",
+            minChunks: Infinity
+        })
     ]
 };
