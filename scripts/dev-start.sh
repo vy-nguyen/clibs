@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Server stuffs
-sudo apt-get install letsencrypt nginx
+sudo apt-get install letsencrypt nginx clang cscope ctags
 wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - 
 sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
 
@@ -34,7 +34,6 @@ sudo apt-get install curl
 curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
 sudo apt-get install -y nodejs
 sudo npm install npm -g
-sudo npm install bower -g
 npm install webpack
 
 # Create links...
@@ -60,5 +59,4 @@ sudo apt-get install mysql-server
 pushd .
 cd java/socnet
 npm install
-bower install
 popd

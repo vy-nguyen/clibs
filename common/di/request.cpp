@@ -25,6 +25,7 @@
  * SUCH DAMAGE.
  */
 #include <stdlib.h>
+#include <string.h>
 #include <di/request.h>
 #include <di/program.h>
 #include "request-impl.h"
