@@ -87,9 +87,15 @@ const _menuBlogs = [ {
 }, {
     badge: null,
     icon : 'fa fa-lg fa-fw fa-money',
-    items: null,
     route: '/public/ads',
-    title: 'Commercial Ads'
+    title: 'Commercial Ads',
+    items: [ {
+        badge: null,
+        icon : 'fa fa-money',
+        items: null,
+        route: '/bus',
+        title: 'Business Pages'
+    } ]
 }, {
     badge: null,
     icon : 'fa fa-lg fa-fw fa-shopping-cart',

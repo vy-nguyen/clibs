@@ -7,7 +7,8 @@ var baseConfig = require('./tvntd.base.config')
 var scripts    = require('./scripts');
 var app_main   = {
     "tvntd"     : path.resolve(scripts.rootSrc, 'tvntd/main.jsx'),
-    "tvntd-ads" : path.resolve(scripts.rootSrc, 'tvntd/ads-main.jsx')
+    "tvntd-ads" : path.resolve(scripts.rootSrc, 'tvntd/app-main/ads-main.jsx'),
+    "business"  : path.resolve(scripts.rootSrc, 'tvntd/app-main/business-main.jsx')
 };
 
 var config =  _.merge(baseConfig, {
@@ -36,7 +37,7 @@ var config =  _.merge(baseConfig, {
         }),
         new webpack.optimize.CommonsChunkPlugin({
             name     : "common",
-            chunks   : [ "tvntd", "tvntd-ads", "vendor", "vendor.lib" ],
+            chunks   : [ "tvntd", "tvntd-ads", "business", "vendor", "vendor.lib" ],
             minChunks: function(module) {
                 return module.context && module.context.includes("node_modules");
             }
