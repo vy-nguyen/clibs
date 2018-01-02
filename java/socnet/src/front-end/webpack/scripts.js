@@ -16,6 +16,7 @@ var scripts = {
         "react-dom"       : "/node_modules/react-dom/dist/react-dom.min.js",
         "react-dom-server": "/node_modules/react-dom/server.js",
         "react-bootstrap" : "/node_modules/react-bootstrap/dist/react-bootstrap.min.js",
+        "bootstrap-lib"   : "/node_modules/react-bootstrap/lib",
         "react-router"    : "/node_modules/react-router/umd/ReactRouter.min.js",
 
         "react-dropzone-component":

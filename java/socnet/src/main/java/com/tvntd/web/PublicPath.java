@@ -144,6 +144,21 @@ public class PublicPath
         return "tvntd";
     }
 
+    @RequestMapping(value = "/public/business", method = RequestMethod.GET)
+    public String business(Map<String, Object> model, HttpSession session)
+    {
+        return "business";
+    }
+
+    @RequestMapping(value = "/public/business/{name}", method = RequestMethod.GET)
+    public String business(Map<String, Object> model,
+            @PathVariable(value = "name") String name, HttpSession session)
+    {
+        System.out.println("Hit business page " + name);
+        model.put("business", name);
+        return "business";
+    }
+
     @RequestMapping(value = "/public/start", method = RequestMethod.GET)
     @ResponseBody
     public StartupResponse

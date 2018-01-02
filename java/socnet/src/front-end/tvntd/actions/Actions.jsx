@@ -11,11 +11,11 @@ import ErrorStore    from 'vntd-shared/stores/ErrorStore.jsx';
 
 const completedFn = {
     children: ['completed']
-};
-const completedFailedFn = {
+},
+completedFailedFn = {
     children: ['completed', 'failed']
-};
-const completedFailedAlwaysFn = {
+},
+completedFailedAlwaysFn = {
     children: ['completed', 'failed', 'always']
 };
 
@@ -455,7 +455,7 @@ Actions.syncServer.listen(function() {
     this.completed();
 });
 
-export { postRestCall, Actions };
+export { postRestCall, getJSON, Actions };
 export default Actions;
 
 /*

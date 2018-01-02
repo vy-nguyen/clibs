@@ -11,43 +11,16 @@ import Lang                from 'vntd-root/stores/LanguageStore.jsx';
 import SmallBreadcrumbs    from 'vntd-shared/layout/SmallBreadcrumbs.jsx';
 import Panel               from 'vntd-shared/widgets/Panel.jsx';
 import ModalConfirm        from 'vntd-shared/forms/commons/ModalConfirm.jsx';
+import ComponentBase       from 'vntd-shared/layout/ComponentBase.jsx';
 
-class InputBase extends React.Component
+class InputBase extends ComponentBase
 {
     constructor(props, id, stores) {
-        super(props);
+        super(props, id, stores);
 
-        this.id = id || props.id;
-        this._listStores = stores;
-        this.delText = Lang.translate(props.delText || 'Delete this item?');
-
+        this.delText     = Lang.translate(props.delText || 'Delete this item?');
         this._cancelDel  = this._cancelDel.bind(this);
         this._deletePost = this._deletePost.bind(this);
-    }
-
-    componentDidMount() {
-        let stores = this._listStores;
-
-        this.unsub = [];
-        if (!Array.isArray(stores)) {
-            stores = [this._listStores];
-        }
-        _.forEach(stores, function(st) {
-            this.unsub.push(st.listen(this._updateState.bind(this, st))); 
-        }.bind(this));
-    }
-
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            _.forEach(this.unsub, function(unsub) {
-                unsub();
-            });
-            this.unsub = null;
-        }
-    }
-
-    _updateState(store, data, item, code) {
-        console.log("base update...");
     }
 
     _renderForm() {

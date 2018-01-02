@@ -59,6 +59,11 @@ _publicApps = (
     </Route>
 ),
 
+_publicBusiness = (
+    <Route path="/bus">
+    </Route>
+),
+
 _publicProtoRoutes = (
     <Route path="/public/proto">
         <IndexRoute component={SocialWall}/>

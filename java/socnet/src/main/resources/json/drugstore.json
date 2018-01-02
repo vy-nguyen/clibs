@@ -1,0 +1,266 @@
+{
+    "navbar": [ {
+        "icon" : null,
+        "title": "HOME",
+        "route": "/",
+        "items": null,
+        "left" : true,
+        "brand": true
+    }, {
+        "icon" : null,
+        "title": "CATALOG",
+        "route": "/catalog",
+        "left" : true,
+        "items": [ {
+            "icon" : null,
+            "title": "Baby & Child Care",
+            "route": "/catalog/baby",
+            "items": null
+        }, {
+            "icon" : null,
+            "title": "Cosmetics",
+            "route": "/catalog/cosmetics",
+            "items": null
+        }, {
+            "icon" : null,
+            "title": "Diet & Nutrition",
+            "route": "/catalog/diet",
+            "items": null
+        }, {
+            "icon" : null,
+            "title": "Gits & Specialty",
+            "route": "/catalog/gifts",
+            "items": null
+        }, {
+            "divider": true
+        }, {
+            "icon" : null,
+            "title": "Household Items",
+            "route": "/catalog/house",
+            "items": null
+        }, {
+            "icon" : null,
+            "title": "Medicine Cabinet",
+            "route": "/catalog/medicine",
+            "items": null
+        }, {
+            "icon" : null,
+            "title": "Natural Products",
+            "route": "/catalog/natural",
+            "items": null
+        } ]
+    }, {
+        "icon" : null,
+        "title": "BLOG",
+        "route": "/blog",
+        "items": null,
+        "left" : true
+    }, {
+        "icon" : null,
+        "title": "ABOUT US",
+        "route": "/aboutus",
+        "items": null,
+        "left" : true
+    }, {
+        "icon" : null,
+        "title": "DOCUMENTATION",
+        "route": "/documentation",
+        "items": null,
+        "left" : true
+    }, {
+        "icon" : null,
+        "title": "CONTACT US",
+        "route": "/contact",
+        "items": null,
+        "left" : true
+    }, {
+        "icon" : null,
+        "title": "Log in",
+        "route": "/login",
+        "items": null,
+        "left" : false
+    }, {
+        "icon" : null,
+        "title": "Link account",
+        "route": "/link",
+        "items": null,
+        "left" : false
+    }, {
+        "icon" : null,
+        "title": "Check out",
+        "route": "/checkout",
+        "items": null,
+        "left" : false
+    }, {
+        "icon" : null,
+        "title": "English",
+        "route": "/lang/en",
+        "left" : false,
+        "items": [ {
+            "icon" : null,
+            "title": "Spanish",
+            "route": "/lang/ep",
+            "items": null
+        } ]
+    } ],
+    "topBanner": {
+        "logo": {
+            "left"    : true,
+            "image"   : "",
+            "slogan"  : "The biggest choice on the Web",
+            "logoText": [ {
+                    "title" : "Drug",
+                    "format": ""
+            }, {
+                "title" : "Store",
+                "format": ""
+            } ]
+        },
+        "items": [ {
+            "icon" : "",
+            "left" : false,
+            "title": "My Cart: {} Item(s)",
+            "route": "/account/cart"
+        }, {
+            "left"     : false,
+            "route"    : "/route",
+            "component": "Search"
+        } ]
+    },
+    "sidebar": [ {
+        "icon" : null,
+        "title": "COLLECTIONS",
+        "route": "/catalog",
+        "items": [ {
+            "icon" : null,
+            "title": "Baby & Child Care",
+            "route": "/catalog/baby"
+        }, {
+            "icon" : null,
+            "title": "Cosmetics",
+            "route": "/catalog/cosmetics",
+            "items": null
+        }, {
+            "icon" : null,
+            "title": "Diet & Nutrition",
+            "route": "/catalog/diet",
+            "items": null
+        }, {
+            "icon" : null,
+            "title": "Gits & Specialty",
+            "route": "/catalog/gifts",
+            "items": null
+        }, {
+            "icon" : null,
+            "title": "Household Items",
+            "route": "/catalog/house",
+            "items": null
+        }, {
+            "icon" : null,
+            "title": "Medicine Cabinet",
+            "route": "/catalog/medicine",
+            "items": null
+        }, {
+            "icon" : null,
+            "title": "Natural Products",
+            "route": "/catalog/natural",
+            "items": null
+        } ]
+    }, {
+        "icon" : null,
+        "title": "PRODUCT TYPES",
+        "route": "/product",
+        "items": [ {
+            "icon" : null,
+            "title": "Mixtures",
+            "route": "/product/mixture"
+        }, {
+            "icon" : null,
+            "title": "Pills",
+            "route": "/product/pills"
+        } ]
+    }, {
+        "icon" : null,
+        "route": "/best",
+        "component": ""
+    } ],
+    "bottomBanner": {
+    },
+    "footer": [ {
+        "title": "INFORMATION",
+        "route": "/",
+        "items": [ {
+            "title": "Home",
+            "route": "/"
+        }, {
+            "title": "Search",
+            "route": "/search"
+        }, {
+            "title": "About us",
+            "route": "/aboutus"
+        }, {
+            "title": "Documentation",
+            "route": "/documentation"
+        } ]
+    }, {
+        "title": "PRODUCTS",
+        "route": "/product",
+        "items": [ {
+            "title": "Baby & Child Care",
+            "route": "/product/baby"
+        }, {
+            "title": "Cosmetics",
+            "route": "/product/cosmetics"
+        }, {
+            "title": "Diet & Nutrition",
+            "route": "/product/diet"
+        }, {
+            "title": "Gifts & Specialty",
+            "route": "/product/gifts"
+        } ]
+    }, {
+        "title": "MY ACCOUNT",
+        "route": "/account",
+        "items": [ {
+            "title": "My Account",
+            "route": "/account"
+        }, {
+            "title": "My Order",
+            "route": "/account/order"
+        }, {
+            "title": "My Cart",
+            "route": "/account/cart"
+        } ]
+    }, {
+        "title": "FOLLOW US",
+        "route": "/follow",
+        "items": [ {
+            "title": "Twitter",
+            "route": "/follow/twitter"
+        }, {
+            "title": "Facebook",
+            "route": "/follow/facebook"
+        }, {
+            "title": "Youtube",
+            "route": "/follow/youtube"
+        } ]
+    }, {
+        "title": "BLOG POSTS",
+        "route": "/blog",
+        "items": null
+    }, {
+        "title": "CONTACT",
+        "route": "/contact",
+        "items": [ {
+            "title": "1-800-123-1234"
+        }, {
+            "title": "Email",
+            "route": "/email"
+        }, {
+            "title": "Inquriy",
+            "route": "/contact/form"
+        } ]
+    } ],
+    "copyright": {
+    }
+}
