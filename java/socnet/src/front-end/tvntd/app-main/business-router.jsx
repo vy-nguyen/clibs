@@ -64,7 +64,7 @@ _loginRequired = (
 
 Routes = (
     <Route>
-        <Route path="/" component={BusLayout}>
+        <Route path="/" component={BusLayout} url="/public/get-json/json/drugstore">
             <IndexRoute component={BusinessMain}/>
             {_publicBusiness}
         </Route>
