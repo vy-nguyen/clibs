@@ -4,19 +4,97 @@
  */
 'use strict';
 
-import React       from 'react-mod';
+import _                 from 'lodash';
+import React             from 'react-mod';
+import { Link }          from 'react-router';
 
-import BaseComponent from 'vntd-shared/layout/BaseComponent.jsx';
-import BusinessStore from 'vntd-root/stores/BusinessStore.jsx';
+import ComponentBase     from 'vntd-shared/layout/ComponentBase.jsx';
+import BusinessStore     from 'vntd-root/stores/BusinessStore.jsx';
+import { VntdGlob, ColWidthMap } from 'vntd-root/config/constants.js';
 
-class BoostFooter extends BaseComponent
+class BoostFooter extends ComponentBase
 {
     constructor(props) {
         super(props, null, [BusinessStore]);
     }
 
+    _renderSection(section, render) {
+        let out = [], title;
+
+        if (section.route != null) {
+            if (section.items != null) {
+                title = <h5>{section.title}</h5>;
+            } else {
+                title = <span>{section.title}</span>;
+            }
+            title = (
+                <Link to={section.route}>{title}</Link>
+            );
+        } else {
+            title = (
+                <Link to=""><h5>{section.title}</h5></Link>
+            );
+        }
+        out.push(<li key={_.uniqueId()} className="no-padding">{title}</li>);
+
+        if (section.items != null) {
+            _.forEach(section.items, function(it) {
+                this._renderSection(it, out);
+            }.bind(this));
+        }
+        render.push(
+            <ul key={_.uniqueId()} className="nav nav-pills nav-stacked no-padding">
+                {out}
+            </ul>
+        );
+    }
+
     render() {
-        return null;
+        let fmt, out = [], footer = this.props.footer;
+
+        if (footer == null) {
+            return null;
+        }
+        fmt = ColWidthMap[footer.length];
+        console.log(fmt);
+        _.forEach(footer, function(section) {
+            let sectOut = [];
+
+            this._renderSection(section, sectOut);
+            out.push(
+                <div className={fmt}>
+                    {sectOut}
+                </div>
+            );
+        }.bind(this));
+
+        return (
+            <div>
+                <footer className="footer">
+                    <div className="container">
+                        <div className="row">
+                            {out}
+                        </div>
+                    </div>
+                </footer>
+                <div style={VntdGlob.footerBottom}>
+                    <div className="container">
+                        <div className="row">
+                            <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                <div style={VntdGlob.copyrightStyle}>
+                                    @Copyright by Drug Store
+                                </div>
+                            </div>
+                            <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                <div style={VntdGlob.designStyle}>
+                                    Design by Vy Nguyen
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
     }
 }
 

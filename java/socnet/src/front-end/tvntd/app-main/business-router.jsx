@@ -8,29 +8,14 @@ import React from 'react-mod';
 import {Route, Redirect, IndexRoute, DefaultRoute} from 'react-router';
 
 import BusLayout     from 'vntd-shared/layout/BusinessLayout.jsx';
-import {Login}       from 'vntd-root/pages/login/Login.jsx';
+import LoginRequired from 'vntd-shared/utils/LoginRequired.jsx';
 import Logout        from 'vntd-root/pages/login/Logout.jsx';
 import Register      from 'vntd-root/pages/login/Register.jsx';
 import RecoverAcct   from 'vntd-root/pages/login/Forgot.jsx';
-import LoginRequired from 'vntd-shared/utils/LoginRequired.jsx';
-
+import CustLogin     from 'vntd-root/pages/personal/Login.jsx';
 import BusinessMain  from 'vntd-root/pages/business/MainPage.jsx';
 
-const _publicBusiness = (
-    <Route path="/bus">
-        <IndexRoute component={BusinessMain}/>
-
-    </Route>
-),
-
-_loginRoutes = (
-    <Route path="/login">
-        <IndexRoute component={Login}/>
-        <Route path="logout" component={Logout}/>
-    </Route>
-),
-
-_registerRoutes = (
+const _registerRoutes = (
     <Route path="/register">
         <IndexRoute component={Register}/>
         <Route path="form" component={Register}/>
@@ -51,14 +36,13 @@ _loginRequired = (
         <Redirect from="/" to="/user"/>
         <Route path="/user">
         </Route>
+    </Route>
+),
 
-        <Redirect from="/" to="/domain"/>
-        <Route path="/domain">
-        </Route>
-
-        <Redirect from="/" to="/newsfeed"/>
-        <Route path="/newsfeed">
-        </Route>
+_custLoginRoutes = (
+    <Route path="/login">
+        <IndexRoute component={CustLogin}/>
+        <Route path="/logout" component={Logout}/>
     </Route>
 ),
 
@@ -66,16 +50,38 @@ Routes = (
     <Route>
         <Route path="/" component={BusLayout} url="/public/get-json/json/drugstore">
             <IndexRoute component={BusinessMain}/>
-            {_publicBusiness}
+        
+            <Route path="/catalog/:name">
+                <IndexRoute component={BusinessMain}/>
+            </Route>
+            <Route path="/blog">
+                <IndexRoute component={BusinessMain}/>
+            </Route>
+            <Route path="/aboutus">
+                <IndexRoute component={BusinessMain}/>
+            </Route>
+            <Route path="/documentation">
+                <IndexRoute component={BusinessMain}/>
+            </Route>
+            <Route path="/account/:name">
+                <IndexRoute component={BusinessMain}/>
+            </Route>
+            <Route path="/product/:name">
+                <IndexRoute component={BusinessMain}/>
+            </Route>
+            <Route path="/email">
+                <IndexRoute component={BusinessMain}/>
+            </Route>
+            <Route path="/contact/:name">
+                <IndexRoute component={BusinessMain}/>
+            </Route>
+
+            {_custLoginRoutes}
+            {_registerRoutes}
+            {_loginRequired}
         </Route>
     </Route>
-),
-    
-_custLoginRoutes = (
-    <Route path="/login">
-        <Route path="/logout" component={Logout}/>
-    </Route>
 );
-
+    
 export default Routes;
 export { Routes };

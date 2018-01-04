@@ -22,6 +22,8 @@ class BusinessMain extends InputBase
     }
 
     render() {
+        console.log("Render business main");
+        console.log(this.props);
         return (
             <div id="content">
                 <h1>Business Page</h1>

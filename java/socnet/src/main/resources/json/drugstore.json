@@ -2,7 +2,7 @@
     "navbar": [ {
         "icon" : null,
         "title": "HOME",
-        "route": "/",
+        "route": "/public/business",
         "items": null,
         "left" : true,
         "brand": true
@@ -65,12 +65,6 @@
         "icon" : null,
         "title": "DOCUMENTATION",
         "route": "/documentation",
-        "items": null,
-        "left" : true
-    }, {
-        "icon" : null,
-        "title": "CONTACT US",
-        "route": "/contact",
         "items": null,
         "left" : true
     }, {
@@ -232,9 +226,15 @@
             "route": "/account/cart"
         } ]
     }, {
-        "title": "FOLLOW US",
-        "route": "/follow",
+        "title": "CONTACT/FOLLOW US",
+        "route": "/contact",
         "items": [ {
+            "title": "1-800-123-1234",
+            "route": "/email"
+        }, {
+            "title": "Email",
+            "route": "/email"
+        }, {
             "title": "Twitter",
             "route": "/follow/twitter"
         }, {
@@ -243,22 +243,6 @@
         }, {
             "title": "Youtube",
             "route": "/follow/youtube"
-        } ]
-    }, {
-        "title": "BLOG POSTS",
-        "route": "/blog",
-        "items": null
-    }, {
-        "title": "CONTACT",
-        "route": "/contact",
-        "items": [ {
-            "title": "1-800-123-1234"
-        }, {
-            "title": "Email",
-            "route": "/email"
-        }, {
-            "title": "Inquriy",
-            "route": "/contact/form"
         } ]
     } ],
     "copyright": {
