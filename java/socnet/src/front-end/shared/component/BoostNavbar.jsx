@@ -6,68 +6,125 @@
 
 import _                    from 'lodash';
 import React                from 'react-mod';
-import Nav                  from 'boostrap-lib/Nav.js';
-import Navbar               from 'boostrap-lib/Navbar.js';
-import NavItem              from 'bootstrap-lib/NavItem.js';
-import NavDropDown          from 'bootstrap-lib/NavDropdown.js';
-import MenuItem             from 'bootstrap-lib/MenuItem.js';
 import { Link }             from 'react-router';
 
-class BoostNavBar extends React.Component
+import Nav                  from 'bootstrap-lib/Nav.js';
+import Navbar               from 'bootstrap-lib/Navbar.js';
+import NavItem              from 'bootstrap-lib/NavItem.js';
+import NavDropdown          from 'bootstrap-lib/NavDropdown.js';
+import MenuItem             from 'bootstrap-lib/MenuItem.js';
+
+import History              from 'vntd-shared/utils/History.jsx';
+
+class BoostNavbar extends React.Component
 {
     constructor(props) {
         super(props);
     }
 
-    _renderBrand(item) {
-        return (
-            <Navbar.Brand>
-                <Link to={item.route}>
+    _onClickItem(item) {
+        History.pushState(null, item.route);
+    }
+
+    _renderBrand(items, render) {
+        let out = [];
+        _.forEach(items, function(item) {
+            out.push(
+                <Link to={item.route} key={_.uniqueId()}>
                     {item.title}
                 </Link>
+            );
+        });
+        render.push(
+            <Navbar.Brand>
+                {out}
             </Navbar.Brand>
         );
     }
 
-    _renderItem(item, evtKey, out) {
+    _renderItem(item, render) {
         if (item.items != null) {
-            return this._renderDropMenu(item, evtKey, out);
+            this._renderDropMenu(item, render);
+            return;
         }
-        return (
-            <NavItem evventKey={evtKey} href={item.route}>
+        render.push(
+            <NavItem evventKey={item} onClick={this._onClickItem.bind(this, item)}>
                 {item.title}
             </NavItem>
         );
     }
 
-    _renderDropMenu(parent, evtKey, out) {
-        let subKey, sub = 0;
+    _renderDropMenu(parent, render) {
+        let out = [];
 
-        if (out == null) {
-            out = [];
-        }
         _.forEach(parent.items, function(item) {
             if (item.divider === true) {
                 out.push(<MenuItem key={_.uniqueId()} divider/>);
                 return;
             }
-            sub++;
-            subKey = evtKey + '.' + sub;
+            if (item.items != null) {
+                this._renderDropMenu(item, render);
+                return;
+            }
             out.push(
-                <MenuItem key={_.uniqueId()} eventKey={subKey}>
+                <MenuItem key={_.uniqueId()}
+                    onClick={this._onClickItem.bind(this, item)}>
                     {item.title}
                 </MenuItem>
             );
-        });
-        return (
-            <NavDropdown eventKey={evtKey} title={parent.title}>
+        }.bind(this));
+
+        render.push(
+            <NavDropdown title={parent.title}>
                 {out}
             </NavDropdown>
         );
     }
 
+    _renderHeader(render) {
+        let out = [];
+
+        this._renderBrand(this.props.brand, out);
+        render.push(
+            <Navbar.Header>
+                {out}
+                <Navbar.Toggle/>
+            </Navbar.Header>
+        );
+    }
+
+    _renderNavMenu(items, render, right) {
+        let out = [];
+
+        _.forEach(items, function(item) {
+            this._renderItem(item, out);
+        }.bind(this));
+
+        render.push(
+            <Nav pullRight={right}>
+                {out}
+            </Nav>
+        );
+    }
+
     render() {
+        let { navLeft, navRight } = this.props, out = [], left = [], right = [];
+
+        this._renderHeader(out);
+        this._renderNavMenu(navLeft, left, false);
+        this._renderNavMenu(navRight, right, true);
+        out.push(
+            <Navbar.Collapse>
+                {left}
+                {right}
+            </Navbar.Collapse>
+        );
+        return (
+            <Navbar inverse collapseOnSelect>
+                {out}
+            </Navbar>
+        );
     }
 }
 
-export default BoostNavBar;
+export default BoostNavbar;

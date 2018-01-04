@@ -7,29 +7,26 @@
 import _                  from 'lodash';
 import React              from 'react-mod';
 import PropTypes          from 'prop-types';
-import Spinner            from 'react-spinjs';
 
 import InputBase          from 'vntd-shared/layout/InputBase.jsx';
-import asyncLoader        from 'vntd-shared/lib/AsyncLoader.jsx';
-import AuthorStore        from 'vntd-root/stores/AuthorStore.jsx';
+import BusinessStore      from 'vntd-root/stores/BusinessStore.jsx';
 
-class BusinessMain extends InputBase
+class Contact  extends InputBase
 {
     constructor(props) {
         let userUuid;
 
-        super(props, _.uniqueId(), [AuthorStore]);
+        super(props, _.uniqueId(), [BusinessStore]);
     }
 
     render() {
         return (
             <div id="content">
-                <h1>Business Page</h1>
+                <h1>Contact</h1>
+                <h5>Param {this.props.params.name}</h5>
             </div>
         );
     }
 }
 
-export default BusinessMain;
-
-// export default asyncLoader("business-page", "/rs/client/business.js")(BusinessMain);
+export default Contact;

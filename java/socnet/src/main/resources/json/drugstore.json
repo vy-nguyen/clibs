@@ -2,7 +2,7 @@
     "navbar": [ {
         "icon" : null,
         "title": "HOME",
-        "route": "/",
+        "route": "/public/business",
         "items": null,
         "left" : true,
         "brand": true
@@ -69,12 +69,6 @@
         "left" : true
     }, {
         "icon" : null,
-        "title": "CONTACT US",
-        "route": "/contact",
-        "items": null,
-        "left" : true
-    }, {
-        "icon" : null,
         "title": "Log in",
         "route": "/login",
         "items": null,
@@ -82,13 +76,13 @@
     }, {
         "icon" : null,
         "title": "Link account",
-        "route": "/link",
+        "route": "/register",
         "items": null,
         "left" : false
     }, {
         "icon" : null,
         "title": "Check out",
-        "route": "/checkout",
+        "route": "/account/cart",
         "items": null,
         "left" : false
     }, {
@@ -232,33 +226,23 @@
             "route": "/account/cart"
         } ]
     }, {
-        "title": "FOLLOW US",
-        "route": "/follow",
-        "items": [ {
-            "title": "Twitter",
-            "route": "/follow/twitter"
-        }, {
-            "title": "Facebook",
-            "route": "/follow/facebook"
-        }, {
-            "title": "Youtube",
-            "route": "/follow/youtube"
-        } ]
-    }, {
-        "title": "BLOG POSTS",
-        "route": "/blog",
-        "items": null
-    }, {
-        "title": "CONTACT",
+        "title": "CONTACT/FOLLOW US",
         "route": "/contact",
         "items": [ {
-            "title": "1-800-123-1234"
+            "title": "1-800-123-1234",
+            "route": "/email"
         }, {
             "title": "Email",
             "route": "/email"
         }, {
-            "title": "Inquriy",
-            "route": "/contact/form"
+            "title": "Twitter",
+            "route": "/contact/twitter"
+        }, {
+            "title": "Facebook",
+            "route": "/contact/facebook"
+        }, {
+            "title": "Youtube",
+            "route": "/contact/youtube"
         } ]
     } ],
     "copyright": {

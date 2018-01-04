@@ -93,7 +93,7 @@ const _menuBlogs = [ {
         badge: null,
         icon : 'fa fa-money',
         items: null,
-        route: '/bus',
+        route: '/public/business',
         title: 'Business Pages'
     } ]
 }, {

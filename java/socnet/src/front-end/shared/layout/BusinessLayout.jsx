@@ -4,86 +4,69 @@
  */
 'use strict';
 
-import React           from 'react-mod';
-import Nav             from 'bootstrap-lib/Nav.js';
-import Navbar          from 'bootstrap-lib/Navbar.js';
-import NavItem         from 'bootstrap-lib/NavItem.js';
-import NavDropdown     from 'bootstrap-lib/NavDropdown.js';
-import MenuItem        from 'bootstrap-lib/MenuItem.js';
+import React             from 'react-mod';
+import Nav               from 'bootstrap-lib/Nav.js';
+import Navbar            from 'bootstrap-lib/Navbar.js';
+import NavItem           from 'bootstrap-lib/NavItem.js';
+import NavDropdown       from 'bootstrap-lib/NavDropdown.js';
+import MenuItem          from 'bootstrap-lib/MenuItem.js';
 
-import Actions         from 'vntd-root/actions/BusinessActions.jsx';
-import BusinessStore   from 'vntd-root/stores/BusinessStore.jsx';
-import ComponentBase   from 'vntd-shared/layout/ComponentBase.jsx';
+import Actions           from 'vntd-root/actions/BusinessActions.jsx';
+import BusinessStore     from 'vntd-root/stores/BusinessStore.jsx';
+import ComponentBase     from 'vntd-shared/layout/ComponentBase.jsx';
+import BoostNavbar       from 'vntd-shared/component/BoostNavbar.jsx';
+import BoostSidebar      from 'vntd-shared/component/BoostSidebar.jsx';
+import BoostFooter       from 'vntd-shared/component/BoostFooter.jsx';
+import SmallBreadcrumbs  from 'vntd-shared/layout/SmallBreadcrumbs.jsx';
 
 class BusinessLayout extends ComponentBase
 {
     constructor(props) {
         super(props, null, [BusinessStore]);
+        this.state = {
+            brand   : null,
+            navLeft : null,
+            navRight: null
+        };
     }
 
     componentWillMount() {
-        console.log("will mount component");
-        console.log(this.props.route);
         Actions.startupLayout(this.props.route.url);
     }
 
 
     _updateState(store, data, item, code) {
-        console.log("update from store");
-        console.log(store);
+        this.setState({
+            brand   : store.getBranchInfo(),
+            navLeft : store.getNavbarLeft(),
+            navRight: store.getNavbarRight(),
+            sideNav : store.getSideNav(),
+            footer  : store.getFooter()
+        });
     }
 
     render() {
+        console.log("----------" + this.props.location.pathname);
+        console.log(this.props);
         return (
-            <Navbar inverse collapseOnSelect>
-                <Navbar.Header>
-                    <Navbar.Brand>
-                        <a href="#">React-Bootstrap</a>
-                    </Navbar.Brand>
-                    <Navbar.Toggle />
-                </Navbar.Header>
-                <Navbar.Collapse>
-                    <Nav>
-                        <NavItem eventKey={1} href="#">Link</NavItem>
-                        <NavItem eventKey={2} href="#">Link</NavItem>
-                        <NavDropdown eventKey={3} title="Dropdown" id="basic-nav-dropdown">
-                            <MenuItem eventKey={3.1}>Action</MenuItem>
-                            <MenuItem eventKey={3.2}>Another action</MenuItem>
-                            <MenuItem eventKey={3.3}>Something else here</MenuItem>
-                            <MenuItem divider />
-                            <MenuItem eventKey={3.3}>Separated link</MenuItem>
-                        </NavDropdown>
-                    </Nav>
-                    <Nav pullRight>
-                        <NavItem eventKey={1} href="#">Link Right</NavItem>
-                        <NavItem eventKey={2} href="#">Link Right</NavItem>
-                    </Nav>
-                </Navbar.Collapse>
-            </Navbar>
+            <div>
+                <BoostNavbar {...this.state}/>
+                <SmallBreadcrumbs id="route-map" crumb="Home" route="/"/>
+                <div className="row">
+                    <div className="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                        <BoostSidebar sideNav={this.state.sideNav}/>
+                    </div>
+                    <div className="col-xs-9 col-sm-9 col-md-9 col-lg-9">
+                        <div id="main" role="main">
+                            {this.props.children}
+                        </div>
+                    </div>
+                </div>
+                <hr/>
+                <BoostFooter footer={this.state.footer}/>
+            </div>
         );
     }
 }
-
-/*
-            <Navbar>
-                <Navbar.Header>
-                    <Navbar.Brand>
-                        <a href="#">React-Bootstrap</a>
-                    </Navbar.Brand>
-                </Navbar.Header>
-                <Nav>
-                    <NavItem eventKey={1} href="#">Link</NavItem>
-                    <NavItem eventKey={2} href="#">Link</NavItem>
-                    <NavDropdown eventKey={3} title="Dropdown" id="basic-nav-dropdown">
-                        <MenuItem eventKey={3.1}>Action</MenuItem>
-                        <MenuItem eventKey={3.2}>Another action</MenuItem>
-                        <MenuItem eventKey={3.3}>Something else here</MenuItem>
-                        <MenuItem divider />
-                        <MenuItem eventKey={3.4}>Separated link</MenuItem>
-                    </NavDropdown>
-                </Nav>
-            </Navbar>
-            
-*/
 
 export default BusinessLayout;
