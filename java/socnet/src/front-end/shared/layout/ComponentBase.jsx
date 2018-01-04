@@ -38,8 +38,6 @@ class ComponentBase extends React.Component
     }
 
     _updateState(store, data, item, code) {
-        console.log("base update... " + code);
-        console.log(item);
     }
 }
 

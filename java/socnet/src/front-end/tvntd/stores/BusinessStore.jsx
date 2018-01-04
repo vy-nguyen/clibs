@@ -17,8 +17,6 @@ let BusinessStore = Reflux.createStore({
     },
 
     onStartupLayoutCompleted(json) {
-        console.log("Startup layout completed");
-        console.log(json);
         this.data.layout = json;
         this._parseLayoutJson(json);
         this.trigger(this.data, json, 'startup');

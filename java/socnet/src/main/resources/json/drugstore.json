@@ -76,13 +76,13 @@
     }, {
         "icon" : null,
         "title": "Link account",
-        "route": "/link",
+        "route": "/register",
         "items": null,
         "left" : false
     }, {
         "icon" : null,
         "title": "Check out",
-        "route": "/checkout",
+        "route": "/account/cart",
         "items": null,
         "left" : false
     }, {
@@ -236,13 +236,13 @@
             "route": "/email"
         }, {
             "title": "Twitter",
-            "route": "/follow/twitter"
+            "route": "/contact/twitter"
         }, {
             "title": "Facebook",
-            "route": "/follow/facebook"
+            "route": "/contact/facebook"
         }, {
             "title": "Youtube",
-            "route": "/follow/youtube"
+            "route": "/contact/youtube"
         } ]
     } ],
     "copyright": {

@@ -23,8 +23,6 @@ class BoostNavbar extends React.Component
     }
 
     _onClickItem(item) {
-        console.log("Click item " + item.route);
-        console.log(item);
         History.pushState(null, item.route);
     }
 

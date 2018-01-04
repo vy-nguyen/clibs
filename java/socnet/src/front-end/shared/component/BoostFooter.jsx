@@ -56,7 +56,6 @@ class BoostFooter extends ComponentBase
             return null;
         }
         fmt = ColWidthMap[footer.length];
-        console.log(fmt);
         _.forEach(footer, function(section) {
             let sectOut = [];
 

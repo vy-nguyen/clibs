@@ -9,8 +9,9 @@ import React           from 'react-mod';
 import Nav             from 'bootstrap-lib/Nav.js';
 import NavItem         from 'bootstrap-lib/NavItem.js';
 
-import BusinessStore   from 'vntd-root/stores/BusinessStore.jsx';
+import History         from 'vntd-shared/utils/History.jsx';
 import BoostNavbar     from 'vntd-shared/component/BoostNavbar.jsx';
+import BusinessStore   from 'vntd-root/stores/BusinessStore.jsx';
 
 class BoostSidebar extends BoostNavbar
 {
@@ -30,6 +31,7 @@ class BoostSidebar extends BoostNavbar
         this.setState({
             activeKey: evtKey
         });
+        History.pushState(null, item.route);
     }
 
     _renderItem(item, eventKey, level, seq, render) {

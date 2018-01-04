@@ -46,6 +46,8 @@ class BusinessLayout extends ComponentBase
     }
 
     render() {
+        console.log("----------" + this.props.location.pathname);
+        console.log(this.props);
         return (
             <div>
                 <BoostNavbar {...this.state}/>
