@@ -48,8 +48,7 @@ class BoostNavbar extends React.Component
             return;
         }
         render.push(
-            <NavItem evventKey={item}
-                onClick={this._onClickItem.bind(this, item)}>
+            <NavItem evventKey={item} onClick={this._onClickItem.bind(this, item)}>
                 {item.title}
             </NavItem>
         );
@@ -112,6 +111,10 @@ class BoostNavbar extends React.Component
         let out = [], left = [], right = [],
             { navLeft, navRight, navFormat } = this.props;
 
+        if (navLeft == null) {
+            return null;
+        }
+        navFormat.ntext = "#f9a44f";
         this._renderHeader(out);
         this._renderNavMenu(navLeft, left, false);
         this._renderNavMenu(navRight, right, true);

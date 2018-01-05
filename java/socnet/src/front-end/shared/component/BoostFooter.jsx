@@ -23,7 +23,7 @@ class BoostFooter extends ComponentBase
 
         if (section.route != null) {
             if (section.items != null) {
-                title = <h5>{section.title}</h5>;
+                title = <h4>{section.title}</h4>;
             } else {
                 title = <span>{section.title}</span>;
             }
@@ -32,7 +32,7 @@ class BoostFooter extends ComponentBase
             );
         } else {
             title = (
-                <Link to=""><h5>{section.title}</h5></Link>
+                <Link to=""><h4>{section.title}</h4></Link>
             );
         }
         out.push(<li key={_.uniqueId()} className="no-padding">{title}</li>);
@@ -43,7 +43,7 @@ class BoostFooter extends ComponentBase
             }.bind(this));
         }
         render.push(
-            <ul key={_.uniqueId()} className="nav nav-pills nav-stacked no-padding">
+            <ul key={_.uniqueId()} className="nav nav-footer no-padding">
                 {out}
             </ul>
         );

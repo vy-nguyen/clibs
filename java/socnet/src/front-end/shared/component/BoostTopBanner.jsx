@@ -12,6 +12,20 @@ import ComponentBase  from 'vntd-shared/layout/ComponentBase.jsx';
 import BusinessStore  from 'vntd-root/stores/BusinessStore.jsx';
 import {HeaderSearch} from 'vntd-root/pages/layout/Header.jsx';
 
+class CartWidget extends React.Component
+{
+    render() {
+        return (
+            <div className="header-cart">
+                <Link to="/account/cart">
+                    <i className="fa fa-lg fa-shopping-cart"/>
+                    <b>My Cart <span className="badge">0</span></b>
+                </Link>
+            </div>
+        );
+    }
+}
+
 class BoostTopBanner extends ComponentBase
 {
     constructor(props) {
@@ -49,8 +63,15 @@ class BoostTopBanner extends ComponentBase
         }.bind(this));
 
         _.forEach(items, function(it) {
-            if (it.widget === "Search") {
-                out.push(<HeaderSearch/>);
+            switch(it.widget) {
+                case 'Search':
+                    out.push(<HeaderSearch/>);
+                    break;
+
+                case 'Cart':
+                    out.push(<CartWidget/>);
+                    break;
+                default:
             }
         });
         return (
