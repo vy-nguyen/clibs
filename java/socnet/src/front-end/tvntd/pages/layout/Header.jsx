@@ -142,14 +142,12 @@ class HeaderSearch extends React.Component
             return <SearchMobile className="btn-header transparent pull-right"/>;
         }
         return (
-            <form className="header-search pull-right">
-                <input id="search-fld" type="text" name="param"
-                    placeholder={this.state.searchText} data-autocomplete='[]' />
-                <button type="submit"><i className="fa fa-search"/></button>
-                <a href="$" id="cancel-search-js" title="Cancel Search">
-                    <i className="fa fa-times"/>
-                </a>
-            </form>
+            <div className="header-search pull-right">
+                <input id="search-fld" type="text"
+                    name="param" className="input-lg"
+                    placeholder={this.state.searchText} data-autocomplete='[]'/>
+                <button><i className="fa fa-search"/></button>
+            </div>
         );
     }
 }
@@ -232,5 +230,5 @@ class Header extends React.Component
 }
 
 export default Header;
-
+export { HeaderSearch };
 

@@ -10,8 +10,16 @@ import PropTypes          from 'prop-types';
 
 import InputBase          from 'vntd-shared/layout/InputBase.jsx';
 import BusinessStore      from 'vntd-root/stores/BusinessStore.jsx';
+import BusinessMap        from 'vntd-root/pages/ads/BusinessMap.jsx';
 
-class Contact  extends InputBase
+class LocationMap extends BusinessMap
+{
+    constructor(props) {
+        super(props);
+    }
+}
+
+class Contact extends InputBase
 {
     constructor(props) {
         let userUuid;
@@ -19,7 +27,22 @@ class Contact  extends InputBase
         super(props, _.uniqueId(), [BusinessStore]);
     }
 
+    _getBusinessInfo() {
+        return BusinessStore.getBusinessInfo();
+    }
+
     render() {
+        let busInfo, select = this.props.params.name;
+
+        if (select === "map") {
+            busInfo = this._getBusinessInfo();
+            console.log("bus info");
+            console.log(busInfo);
+            if (busInfo == null) {
+                return null;
+            }
+            return <LocationMap adsRec={busInfo}/>;
+        }
         return (
             <div id="content">
                 <h1>Contact</h1>

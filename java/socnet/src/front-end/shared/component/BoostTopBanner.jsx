@@ -4,19 +4,69 @@
  */
 'use strict';
 
-import React       from 'react-mod';
+import _              from 'lodash';
+import React          from 'react-mod';
+import {Link}         from 'react-router';
 
-import BaseComponent from 'vntd-shared/layout/BaseComponent.jsx';
-import BusinessStore from 'vntd-root/stores/BusinessStore.jsx';
+import ComponentBase  from 'vntd-shared/layout/ComponentBase.jsx';
+import BusinessStore  from 'vntd-root/stores/BusinessStore.jsx';
+import {HeaderSearch} from 'vntd-root/pages/layout/Header.jsx';
 
-class BoostTopBanner extends BaseComponent
+class BoostTopBanner extends ComponentBase
 {
     constructor(props) {
         super(props, null, [BusinessStore]);
+        this.state = this._updateTopBanner();
+    }
+
+    _updateState(store, data, item, code) {
+        this.setState(this._updateTopBanner());
+    }
+
+    _updateTopBanner() {
+        return BusinessStore.getTopBanner();
+    }
+
+    _renderLogoText(logoText) {
+        return (
+            <span key={_.uniqueId()} style={logoText.format}>
+                {logoText.title}
+            </span>
+        );
     }
 
     render() {
-        return null;
+        let logoText, slogan, image, out = [],
+            { logo, items } = this.state;
+
+        if (logo == null) {
+            return null;
+        }
+        image    = logo.image;
+        slogan   = logo.slogan;
+        logoText = logo.logoText.map(function(text) {
+            return this._renderLogoText(text);
+        }.bind(this));
+
+        _.forEach(items, function(it) {
+            if (it.widget === "Search") {
+                out.push(<HeaderSearch/>);
+            }
+        });
+        return (
+            <div className="container">
+                <div style={this.state.format}>
+                    <Link to="/">
+                        <img style={image.format} src={image.url}/>
+                        <div style={logo.format}>
+                            {logoText}
+                            <span style={slogan.format}>{slogan.title}</span>
+                        </div>
+                    </Link>
+                </div>
+                {out}
+            </div>
+        );
     }
 }
 

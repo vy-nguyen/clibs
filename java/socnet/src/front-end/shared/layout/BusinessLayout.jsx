@@ -11,12 +11,14 @@ import NavItem           from 'bootstrap-lib/NavItem.js';
 import NavDropdown       from 'bootstrap-lib/NavDropdown.js';
 import MenuItem          from 'bootstrap-lib/MenuItem.js';
 
+import {RouteSvc}        from 'vntd-root/app-main/business-router.jsx';
 import Actions           from 'vntd-root/actions/BusinessActions.jsx';
 import BusinessStore     from 'vntd-root/stores/BusinessStore.jsx';
 import ComponentBase     from 'vntd-shared/layout/ComponentBase.jsx';
 import BoostNavbar       from 'vntd-shared/component/BoostNavbar.jsx';
 import BoostSidebar      from 'vntd-shared/component/BoostSidebar.jsx';
 import BoostFooter       from 'vntd-shared/component/BoostFooter.jsx';
+import BoostTopBanner    from 'vntd-shared/component/BoostTopBanner.jsx';
 import SmallBreadcrumbs  from 'vntd-shared/layout/SmallBreadcrumbs.jsx';
 
 class BusinessLayout extends ComponentBase
@@ -41,29 +43,40 @@ class BusinessLayout extends ComponentBase
             navLeft : store.getNavbarLeft(),
             navRight: store.getNavbarRight(),
             sideNav : store.getSideNav(),
-            footer  : store.getFooter()
+            footer  : store.getFooter(),
+
+            copyright : store.getCopyright(),
+            navFormat : store.getNavbarFormat(),
+            sideFormat: store.getSideNavFormat()
         });
     }
 
     render() {
-        console.log("----------" + this.props.location.pathname);
-        console.log(this.props);
+        let path  = this.props.location.pathname,
+            crumb = RouteSvc.getRouteKey(path),
+            {
+                brand, navLeft, navRight, sideNav, footer, navFormat, sideFormat,
+                copyright
+            } = this.state;
+
         return (
             <div>
-                <BoostNavbar {...this.state}/>
-                <SmallBreadcrumbs id="route-map" crumb="Home" route="/"/>
+                <BoostNavbar brand={brand} navLeft={navLeft}
+                    navRight={navRight} navFormat={navFormat}/>
+                <BoostTopBanner/>
+                <SmallBreadcrumbs id="route-map" crumb={crumb} route={path}/>
                 <div className="row">
-                    <div className="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-                        <BoostSidebar sideNav={this.state.sideNav}/>
+                    <div className="hidden-xs hidden-sm col-md-3 col-lg-3">
+                        <BoostSidebar sideNav={sideNav} sideFormat={sideFormat}/>
                     </div>
-                    <div className="col-xs-9 col-sm-9 col-md-9 col-lg-9">
+                    <div className="col-xs-12 col-sm-12 col-md-9 col-lg-9">
                         <div id="main" role="main">
                             {this.props.children}
                         </div>
                     </div>
                 </div>
                 <hr/>
-                <BoostFooter footer={this.state.footer}/>
+                <BoostFooter footer={footer} copyright={copyright}/>
             </div>
         );
     }

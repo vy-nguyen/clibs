@@ -8,16 +8,33 @@ import _            from 'lodash';
 import Reflux       from 'reflux';
 import Actions      from 'vntd-root/actions/BusinessActions.jsx';
 
+class BusinessInfo
+{
+    constructor(json) {
+        _.forOwn(json, function(v, k) {
+            this[k] = v;
+        }.bind(this));
+    }
+
+    getArticle() {
+        return this;
+    }
+}
+
 let BusinessStore = Reflux.createStore({
     data: {},
     listenables: Actions,
 
     init() {
-        this.data = {};
+        this.data = {
+            layout: {}
+        };
     },
 
     onStartupLayoutCompleted(json) {
         this.data.layout = json;
+        this.busInfo = new BusinessInfo(json.busInfo);
+
         this._parseLayoutJson(json);
         this.trigger(this.data, json, 'startup');
     },
@@ -29,6 +46,22 @@ let BusinessStore = Reflux.createStore({
         return this.data.branchInfo;
     },
 
+    getNavbarFormat() {
+        return this.data.layout.navbarFormat;
+    },
+
+    getBusinessInfo() {
+        return this.busInfo;
+    },
+
+    getTopBanner() {
+        return this.data.layout.topBanner || {};
+    },
+
+    getCopyright() {
+        return this.data.layout.copyright || {};
+    },
+
     getNavbarLeft() {
         return this.data.navbarLeft;
     },
@@ -38,11 +71,19 @@ let BusinessStore = Reflux.createStore({
     },
 
     getSideNav() {
-        return this.data.layout.sidebar;
+        return this.data.layout.sidebar || {};
+    },
+
+    getSideNavFormat() {
+        return this.data.layout.sidebarFormat || {};
     },
 
     getFooter() {
-        return this.data.layout.footer;
+        return this.data.layout.footer || {};
+    },
+
+    getMainPage() {
+        return this.data.layout.mainPage || {};
     },
 
     _parseLayoutJson(json) {
