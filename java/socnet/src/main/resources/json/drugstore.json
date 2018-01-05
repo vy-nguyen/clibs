@@ -277,7 +277,7 @@
             "route": "/account/cart"
         } ]
     }, {
-        "title": "CONTACT/FOLLOW US",
+        "title": "CONTACT/FOLLOW",
         "route": "/contact",
         "items": [ {
             "title": "1-800-123-1234",
