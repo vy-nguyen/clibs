@@ -146,7 +146,7 @@ class HeaderSearch extends React.Component
                 <input id="search-fld" type="text"
                     name="param" className="input-lg"
                     placeholder={this.state.searchText} data-autocomplete='[]'/>
-                <button><i className="fa fa-search"/></button>
+                <button><i className="fa fa-lg fa-search"/></button>
             </div>
         );
     }

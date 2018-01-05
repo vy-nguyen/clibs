@@ -11,6 +11,7 @@
 
     <%-- #CSS Links --%>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/drugstore.css">
 
     <link rel="stylesheet" type="text/css" media="screen" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <%--
