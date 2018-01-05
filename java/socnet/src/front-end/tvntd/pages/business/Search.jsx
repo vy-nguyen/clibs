@@ -20,8 +20,6 @@ class Search extends InputBase
     }
 
     render() {
-        console.log("Render business account");
-        console.log(this.props);
         return (
             <div id="content">
                 <h1>Search</h1>

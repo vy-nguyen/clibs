@@ -48,7 +48,8 @@ class BoostNavbar extends React.Component
             return;
         }
         render.push(
-            <NavItem evventKey={item} onClick={this._onClickItem.bind(this, item)}>
+            <NavItem evventKey={item}
+                onClick={this._onClickItem.bind(this, item)}>
                 {item.title}
             </NavItem>
         );
@@ -108,7 +109,8 @@ class BoostNavbar extends React.Component
     }
 
     render() {
-        let { navLeft, navRight } = this.props, out = [], left = [], right = [];
+        let out = [], left = [], right = [],
+            { navLeft, navRight, navFormat } = this.props;
 
         this._renderHeader(out);
         this._renderNavMenu(navLeft, left, false);
@@ -120,7 +122,7 @@ class BoostNavbar extends React.Component
             </Navbar.Collapse>
         );
         return (
-            <Navbar inverse collapseOnSelect>
+            <Navbar collapseOnSelect style={navFormat}>
                 {out}
             </Navbar>
         );

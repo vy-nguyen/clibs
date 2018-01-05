@@ -18,12 +18,12 @@ class BoostSidebar extends BoostNavbar
     constructor(props) {
         super(props);
         this.styles = [
-            "navbar navbar-inverse",
-            "navbar navbar-default"
+            "nav",
+            "nav navbar-default"
         ];
         this.eventKey = "nav.";
         this.state = {
-            activeKey: this.eventKey + "0"
+            activeKey: null
         };
     }
 
@@ -34,41 +34,59 @@ class BoostSidebar extends BoostNavbar
         History.pushState(null, item.route);
     }
 
-    _renderItem(item, eventKey, level, seq, render) {
-        let style  = this.styles[level % this.styles.length],
+    _renderItem(item, eventKey, level, seq, render, sideFormat) {
+        let classn = this.styles[level % this.styles.length],
+            active = false, disable = false,
             seqKey = eventKey + seq,
-            active = false,
-            subSeq = 0;
+            subSeq = 0,
+            style  = {},
+            title  = item.title;
 
         if (seqKey === this.state.activeKey) {
             active = true;
+            title  = ">> " + title;
+        }
+        if (item.route == null) {
+            disable = true;
+            style   = sideFormat.inactive;
         }
         render.push(
-            <NavItem eventKey={seqKey} key={_.uniqueId()} className={style}
-                active={active} onSelect={this._onSelect.bind(this, item)}>
-                {item.title}
+            <NavItem eventKey={seqKey} key={_.uniqueId()} className={classn}
+                style={style} active={active} disabled={disable}
+                onSelect={this._onSelect.bind(this, item)}>
+                {title}
             </NavItem>
         );
         if (item.items != null) {
             eventKey = seqKey + ".";
             _.forEach(item.items, function(it) {
-                subSeq = this._renderItem(it, eventKey, level + 1, subSeq, render);
+                subSeq = this._renderItem(
+                    it, eventKey, level + 1, subSeq, render, sideFormat
+                );
             }.bind(this));
         }
         return seq + 1;
     }
 
     render() {
-        let out = [], eventKey = this.eventKey, seq = 0;
+        let sec, out = [], eventKey = this.eventKey, seq = 0,
+            { sideNav, sideFormat } = this.props;
 
-        _.forEach(this.props.sideNav, function(it) {
-            seq = this._renderItem(it, eventKey, 0, seq, out);
+        _.forEach(sideNav, function(it) {
+            sec = [];
+            seq = this._renderItem(it, eventKey, 0, seq, sec, sideFormat);
+            out.push(
+                <Nav stacked style={sideFormat.nav} bsStyle="pills">
+                    {sec}
+                </Nav>
+            );
+            out.push(<br/>);
         }.bind(this));
 
         return (
-            <Nav stacked bsStyle="pills">
+            <div className="well">
                 {out}
-            </Nav>
+            </div>
         );
     }
 }

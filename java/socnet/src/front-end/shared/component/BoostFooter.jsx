@@ -10,7 +10,7 @@ import { Link }          from 'react-router';
 
 import ComponentBase     from 'vntd-shared/layout/ComponentBase.jsx';
 import BusinessStore     from 'vntd-root/stores/BusinessStore.jsx';
-import { VntdGlob, ColWidthMap } from 'vntd-root/config/constants.js';
+import { ColWidthMap }   from 'vntd-root/config/constants.js';
 
 class BoostFooter extends ComponentBase
 {
@@ -50,9 +50,10 @@ class BoostFooter extends ComponentBase
     }
 
     render() {
-        let fmt, out = [], footer = this.props.footer;
+        let owner, design, fmt, out = [],
+            { footer, copyright } = this.props;
 
-        if (footer == null) {
+        if (footer == null || copyright == null) {
             return null;
         }
         fmt = ColWidthMap[footer.length];
@@ -67,6 +68,8 @@ class BoostFooter extends ComponentBase
             );
         }.bind(this));
 
+        owner  = copyright.owner;
+        design = copyright.design;
         return (
             <div>
                 <footer className="footer">
@@ -76,17 +79,17 @@ class BoostFooter extends ComponentBase
                         </div>
                     </div>
                 </footer>
-                <div style={VntdGlob.footerBottom}>
+                <div style={copyright.format}>
                     <div className="container">
                         <div className="row">
                             <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                                <div style={VntdGlob.copyrightStyle}>
-                                    @Copyright by Drug Store
+                                <div style={owner.format}>
+                                    {owner.title}
                                 </div>
                             </div>
                             <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                                <div style={VntdGlob.designStyle}>
-                                    Design by Vy Nguyen
+                                <div style={design.format}>
+                                    {design.title}
                                 </div>
                             </div>
                         </div>

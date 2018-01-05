@@ -10,6 +10,7 @@ import {Route, Redirect, IndexRoute, DefaultRoute} from 'react-router';
 
 import BusLayout     from 'vntd-shared/layout/BusinessLayout.jsx';
 import LoginRequired from 'vntd-shared/utils/LoginRequired.jsx';
+import {RouteMap}    from 'vntd-shared/utils/History.jsx';
 import Logout        from 'vntd-root/pages/login/Logout.jsx';
 import Register      from 'vntd-root/pages/login/Register.jsx';
 import RecoverAcct   from 'vntd-root/pages/login/Forgot.jsx';
@@ -22,7 +23,7 @@ import Email         from 'vntd-root/pages/business/Email.jsx';
 import Product       from 'vntd-root/pages/business/Product.jsx';
 import Account       from 'vntd-root/pages/business/Account.jsx';
 import Catalog       from 'vntd-root/pages/business/Catalog.jsx';
-import Search        from 'vntd-root/pages/business/Catalog.jsx';
+import Search        from 'vntd-root/pages/business/Search.jsx';
 import Documentation from 'vntd-root/pages/business/Documentation.jsx';
 
 const routeMap = [ {
@@ -46,7 +47,7 @@ const routeMap = [ {
     key : "Account",
     comp: Account
 }, {
-    path: "/product",
+    path: "/product/:name",
     key : "Product",
     comp: Product
 }, {
@@ -69,8 +70,7 @@ let _mainRoutes = routeMap.map(function(entry) {
     );
 });
 
-function lookupPathKey(path) {
-}
+let RouteSvc = new RouteMap(routeMap);
 
 const _registerRoutes = (
     <Route path="/register">
@@ -118,3 +118,4 @@ Routes = (
 );
 
 export default Routes;
+export { RouteSvc };
