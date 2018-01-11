@@ -24,14 +24,12 @@ class ShowCase extends ComponentBase
     render() {
         return (
             <div className="custom-showcase custom-showcase__1">
-                <div className="inside maxheight" style={{height: "168px"}}>
-                    <div className="box-inner">
+                    <div className="thumbnail">
                         <img src="//cdn.shopify.com/s/files/1/0637/5285/t/2/assets/custom_showcase1_img.png" alt=""/>
                         <h2>Free</h2>
                         <h4>Shipping</h4>
                         <h6>on orders over $99</h6>
                     </div>
-                </div>
             </div>
         );
     }

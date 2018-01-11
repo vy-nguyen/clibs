@@ -16,120 +16,28 @@ import PostComment      from 'vntd-root/components/PostComment.jsx';
 import Actions          from 'vntd-root/actions/Actions.jsx';
 import Lang             from 'vntd-root/stores/LanguageStore.jsx';
 import EStorePost       from './EStorePost.jsx';
+import {
+    BoostProdImage, BoostProdTab
+} from 'vntd-shared/component/BoostProduct.jsx';
 
 class ProductInfo extends React.Component
 {
     constructor(props) {
         super(props);
-        this._productImages  = this._productImages.bind(this);
-        this._getProductTabs = this._getProductTabs.bind(this);
-        this._productDetail  = this._productDetail.bind(this);
-        this._renderProduct  = this._renderProduct.bind(this);
     }
 
     openModal() {
         this.refs.modal.openModal();
     }
 
-    componentDidMount() {
-
-    }
-
-    componentWillUnmount() {
-    }
-
-    _productImages(uuid, images) {
-        const itemId = `product-img-${uuid}`;
-        const itemRef = `#${itemId}`;
-
-        if (images == null) {
-            return null;
-        }
-        let inner = [];
-        let indicators = [];
-        for (let i = 0; i < images.length; i++) {
-            const clsn = i === 0 ? "active" : "";
-            indicators.push(
-                <li key={_.uniqueId('prod-car-')}
-                    data-target={itemRef} data-slide-to={i.toString} className={clsn}>
-                </li>
-            );
-            inner.push(
-                <div key={_.uniqueId('prod-car-')} className={`item ${clsn}`}>
-                    <img src={images[i]}/>
-                </div>
-            );
-        }
-        return (
-            <div className="product-image">
-                <div id={itemId} className="carousel slide">
-                    <ol className="carousel-indicators">
-                        {indicators}
-                    </ol>
-                    <div className="carousel-inner">
-                        {inner}
-                    </div>
-                    <a className="left carousel-control" href={itemRef} data-slide="prev">
-                        <span className="glyphicon glyphicon-chevron-left"></span>
-                    </a>
-                    <a className="right carousel-control"
-                        href={itemRef} data-slide="next">
-                        <span className="glyphicon glyphicon-chevron-right"></span>
-                    </a>
-                </div>
-            </div>
-        );
-    }
-
-    _getProductTabs(uuid) {
-        return {
-            containerFmt: 'description description-tabs',
-            headerFmt   : 'nav nav-pills',
-            contentFmt  : 'tab-content',
-            tabItems: [ {
-                domId  : 'prod-tab-desc-' + uuid,
-                tabText: 'Product Description',
-                paneFmt: 'fade in',
-                tabIdx : 0
-            }, {
-                domId  : 'prod-tab-spec-' + uuid,
-                tabText: 'Specifications',
-                paneFmt: 'fade',
-                tabIdx : 1
-            }, {
-                domId  : 'prod-tab-review-' + uuid,
-                tabText: 'Reviews',
-                paneFmt: 'fade in',
-                tabIdx : 2
-            } ]
-        };
-    }
-
-    _productDetail(uuid, prodTitle, prodDetail, prodSpec) {
-        let tabData = this._getProductTabs(uuid);
-        return (
-            <TabPanel context={tabData}>
-                <div>
-                    <strong>{prodTitle}</strong>
-                    <div dangerouslySetInnerHTML={{__html: prodDetail}}/>
-                </div>
-                <div dangerouslySetInnerHTML={{__html: prodSpec}}/>
-                <PostComment articleUuid={uuid}/>
-            </TabPanel>
-        );
-    }
-
     _renderProduct() {
-        let prodTab, prodRank = this.props.product,
+        let prodRank = this.props.product,
             prod = prodRank.getArticle(), productTags = [];
 
         if (prod == null) {
             console.log("not found product");
             return null;
         }
-        prodTab = this._productDetail(prodRank.getArticleUuid(),
-            prod.prodTitle, prod.prodDetail, prod.prodSpec);
-
         if (prod.prodTags != null) {
             let tagLength = prod.prodTags.length;
             for (let i = 0; i < tagLength; i++) {
@@ -144,7 +52,8 @@ class ProductInfo extends React.Component
             <div className="product-content product-wrap clearfix product-deatil">
                 <div className="row">
                     <div className="col-md-12 col-lg-12 col-sm-12 col-xs-12">
-                        {this._productImages(prod.articleUuid, prod.pictureUrl)}
+                        <BoostProdImage articleUuid={prod.articleUuid}
+                            images={prod.pictureUrl}/>
                     </div>
                 </div>
                 <div className="row">
@@ -174,7 +83,7 @@ class ProductInfo extends React.Component
                 </div>
                 <div className="row">
                     <div className="col-md-12 col-lg-12 col-sm-12 col-xs-12">
-                        {prodTab}
+                        <BoostProdTab product={prod}/>
                     </div>
                 </div>
                 <div className="row">
