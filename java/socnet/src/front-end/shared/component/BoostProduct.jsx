@@ -359,6 +359,17 @@ export class BoostProdShopBtn extends React.Component
     }
 }
 
+BoostProdShopBtn.propTypes = {
+    product   : PropTypes.object,
+    cartOnly  : PropTypes.boolean,
+    userUuid  : PropTypes.string.isRequired,
+    addCart   : PropTypes.function,
+    addWish   : PropTypes.function,
+    mailSeller: PropTypes.function,
+    confirmDel: PropTypes.function,
+    editProductRender: PropTypes.function
+};
+
 export class BoostProdDesc extends React.Component
 {
     constructor(props) {
@@ -455,7 +466,10 @@ BoostProduct.propTypes = {
         prodTitle  : PropTypes.string.isRequired,
         prodDesc   : PropTypes.string.isRequired,
         articleUuid: PropTypes.string.isRequired,
-        pictureUrl : PropTypes.arrayOf(PropTypes.string).isRequired
+        pictureUrl : PropTypes.arrayOf(PropTypes.string).isRequired,
+        prodCat    : PropTypes.string,
+        prodPrice  : PropTypes.string,
+        prodName   : PropTypes.string
     })
 };
 

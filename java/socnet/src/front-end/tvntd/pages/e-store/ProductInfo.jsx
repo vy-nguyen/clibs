@@ -48,40 +48,30 @@ class ProductInfo extends React.Component
         return (
             <div className="product-content product-wrap clearfix product-deatil">
                 <div className="row">
-                    <div className="col-md-12 col-lg-12 col-sm-12 col-xs-12">
-                        <BoostProdImage articleUuid={prod.articleUuid}
+                    <BoostProdImage articleUuid={prod.articleUuid}
                             images={prod.pictureUrl}/>
-                    </div>
                 </div>
                 <div className="row">
-                    <div className="col-md-12 col-lg-12 col-sm-12 col-xs-12 ">
-                        <div className="row">
-                            <div className="col-xs-12 col-sm-12 col-md-8 col-lg-8">
-                                <h2 className="name">
-                                    {prod.prodTitle}
-                                    <div dangerouslySetInnerHTML=
-                                        {{__html: prod.prodSub}}/>
-                                </h2>
-                                <StarRating size={15}
-                                    totalStars={5} rating={4} disabled={true}/>
-                            </div>
-                            <div className="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                                <h3 className="price-container">
-                                    {prod.prodPrice}
-                                    <small>{prod.priceNotice}</small>
-                                </h3>
-                            </div>
-                        </div>
-                        <hr/>
-                        <div className="certified">
-                            <ul>{productTags}</ul>
-                        </div>
+                    <div className="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+                        <h2 className="name">
+                            {prod.prodTitle}
+                            <div dangerouslySetInnerHTML={{__html: prod.prodSub}}/>
+                        </h2>
+                        <StarRating size={15} totalStars={5} rating={4} disabled={true}/>
+                    </div>
+                    <div className="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                        <h3 className="price-container">
+                            {prod.prodPrice}
+                            <small>{prod.priceNotice}</small>
+                        </h3>
                     </div>
                 </div>
+                <hr/>
+                <div className="certified">
+                    <ul>{productTags}</ul>
+                </div>
                 <div className="row">
-                    <div className="col-md-12 col-lg-12 col-sm-12 col-xs-12">
-                        <BoostProdTab product={prod}/>
-                    </div>
+                    <BoostProdTab product={prod}/>
                 </div>
                 <BoostProdShopBtn articleUuid={prod.articleUuid}/>
             </div>
@@ -137,8 +127,6 @@ class ProductBrief extends React.Component
     mailSeller() {
     }
 
-    // @Override
-    //
     confirmDel(product) {
         Actions.deleteProduct({
             authorUuid: UserStore.getSelfUuid(),
