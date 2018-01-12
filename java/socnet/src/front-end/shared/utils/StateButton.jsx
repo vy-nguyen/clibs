@@ -54,6 +54,7 @@ class StateButton extends React.Component
         return (
             <button className={className} id={this.props.btnId}
                 onClick={this._btnClick} disabled={btnState.isDisabled()}>
+                {this.props.children}
                 <Mesg text={btnState.getText()}/>
             </button>
         );
@@ -123,6 +124,27 @@ class StateButton extends React.Component
                 disabled : false,
                 nextState: 'failure',
                 className: failure.format || 'btn btn-danger'
+            }
+        };
+    }
+
+    static toggleButton(on, off) {
+        return StateButton.toggleButtonFsmFull({ text: on }, { text: off });
+    }
+
+    static toggleButtonFsmFull(on, off) {
+        return {
+            on: {
+                text     : on.text || 'On',
+                disabled : false,
+                nextState: 'off',
+                className: on.format || 'btn btn-success'
+            },
+            off: {
+                text     : off.text || 'Off',
+                disabled : false,
+                nextState: 'on',
+                className: off.format || 'btn btn-danger'
             }
         };
     }
