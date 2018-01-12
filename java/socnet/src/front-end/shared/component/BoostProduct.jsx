@@ -9,12 +9,16 @@ import React             from 'react-mod';
 import PropTypes         from 'prop-types';
 import StarRating        from 'react-star-rating';
 
+import UserStore         from 'vntd-shared/stores/UserStore.jsx';
 import StateButtonStore  from 'vntd-shared/stores/StateButtonStore.jsx';
 import StateButton       from 'vntd-shared/utils/StateButton.jsx';
 import ModalConfirm      from 'vntd-shared/forms/commons/ModalConfirm.jsx';
 import TabPanel          from 'vntd-shared/layout/TabPanel.jsx';
+import Mesg              from 'vntd-root/components/Mesg.jsx';
 import PostComment       from 'vntd-root/components/PostComment.jsx';
+import Lang              from 'vntd-root/stores/LanguageStore.jsx';
 import {VntdGlob}        from 'vntd-root/config/constants.js';
+import EStorePost        from 'vntd-root/pages/e-store/EStorePost.jsx';
 
 const defaultProps = {
     product: {
@@ -187,52 +191,166 @@ export class BoostProdShopBtn extends React.Component
             wishBtn: 'wish-btn-' + uuid,
             mailBtn: 'mail-btn-' + uuid
         };
-        this._addCart    = this._addCart.bind(this);
-        this._addWish    = this._addWish.bind(this);
-        this._mailSeller = this._mailSeller.bind(this);
+        this._delProduct  = this._delProduct.bind(this);
+        this._editProduct = this._editProduct.bind(this);
+        this._cancelDel   = this._cancelDel.bind(this);
+
+        this.addCart      = this.addCart.bind(this);
+        this.addWish      = this.addWish.bind(this);
+        this.mailSeller   = this.mailSeller.bind(this);
+        this.confirmDel   = this.confirmDel.bind(this);
+        this.editProductRender = this.editProductRender.bind(this);
 
         StateButtonStore.createButton(this.state.shopBtn, () => {
-            return StateButton.toggleButton("Add to cart", "Remove from cart");
-        }, 'on');
+            return StateButton.toggleButton(
+                "Add to cart", "btn btn-lg btn-success",
+                "Remove", "btn btn-lg btn-danger"
+            );
+        });
         StateButtonStore.createButton(this.state.wishBtn, () => {
-            return StateButton.toggleButton("Add to wishlist", "Remove from wishlist");
-        }, 'on');
+            return StateButton.toggleButton(
+                "Add to wishlist", "btn btn-info",
+                "Remove", "btn btn-danger"
+            );
+        });
         StateButtonStore.createButton(this.state.mailBtn, () => {
-            return StateButton.toggleButton("Contact Seller", "Mailed Seller");
-        }, 'on');
+            return StateButton.toggleButton(
+                "Contact Seller", "btn btn-secondary",
+                "Mailed Seller", "btn btn-danger"
+            );
+        });
     }
 
-    _addCart() {
+    _delProduct() {
+        this.refs.confirmRm.openModal();
+    }
+
+    _editProduct() {
+        this.refs.editProd.openModal();
+    }
+
+    _cancelDel() {
+        this.refs.confirmRm.closeModal();
+    }
+
+    _clickSelect(event) {
+        this.refs.modal.openModal();
+    }
+
+    _delConfirmBox() {
+        return (
+            <ModalConfirm ref={"confirmRm"} height={"auto"}
+                modalTitle={Lang.translate("Delete this product listing?")}>
+                <div className="modal-footer">
+                    <button className="btn btn-primary pull-right"
+                        onClick={this.confirmDel}>
+                        <Mesg text="Delete"/>
+                    </button>
+                    <button className="btn btn-default pull-right"
+                        onClick={this._cancelDel}>
+                        <Mesg text="Cancel"/>
+                    </button>
+                </div>
+            </ModalConfirm>
+        );
+    }
+
+    _editProductModal() {
+        return (
+            <ModalConfirm ref={"editProd"}
+                modalTitle={Lang.translate("Edit Product Listing")}>
+                <div className="modal-content">
+                    {this.editProductRender()}
+                </div>
+            </ModalConfirm>
+        );
+    }
+
+    addCart() {
         console.log("add cart...");
         StateButtonStore.goNextState(this.state.shopBtn);
+        if (this.props.addCart != null) {
+            this.props.addCart();
+        }
     }
 
-    _addWish() {
+    addWish() {
         console.log("add wish...");
         StateButtonStore.goNextState(this.state.wishBtn);
+        if (this.props.addWish != null) {
+            this.props.addWish();
+        }
     }
 
-    _mailSeller() {
+    mailSeller() {
         console.log("mail seller...");
+        if (this.props.mailSeller != null) {
+            this.props.mailSeller();
+        }
+    }
+
+    confirmDel() {
+        this.refs.confirmRm.closeModal();
+
+        console.log("confirm delete");
+        if (this.props.confirmDel != null) {
+            this.props.confirmDel();
+        }
+    }
+
+    editProductRender() {
+        if (this.props.editProductRender != null) {
+            return this.props.editProductRender();
+        }
+        return <EStorePost product={this.props.product}/>;
     }
 
     render() {
-        return (
-            <div>
+        let state = this.state, buttons, editBox, delBox;
+
+        if (UserStore.isUserMe(this.props.userUuid)) {
+            delBox  = this._delConfirmBox();
+            editBox = this._editProductModal();
+            buttons = (
+                <div className="btn-group" role="group">
+                    <button className="btn btn-info" onClick={this._editProduct}>
+                        <Mesg text="Edit"/>
+                    </button>
+                    <button className="btn btn-danger" onClick={this._delProduct}>
+                        <Mesg text="Remove Product"/>
+                    </button>
+                </div>
+            );
+        } else {
+            delBox  = null;
+            editBox = null;
+            buttons = (
+                <StateButton btnId={state.shopBtn} onClick={this.addCart}/>
+            );
+        }
+        if (this.props.cartOnly === true) {
+            return (
                 <div className="row">
-                    <div className="btn-group cart">
-                        <StateButton btnId={this.state.shopBtn} onClick={this._addCart}/>
+                    {delBox}
+                    {editBox}
+                    <div className="product-info smart-form text-center">
+                        {buttons}
                     </div>
                 </div>
-                <br/>
-                <div className="row">
-                    <div className="btn-group wishlist">
-                        <StateButton btnId={this.state.wishBtn} onClick={this._addWish}>
-                            <i className="fa fa-star"/>
+            );
+        }
+        return (
+            <div className="row">
+                <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                    <StateButton btnId={state.shopBtn} onClick={this.addCart}/>
+                </div>
+                <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                    <div className="btn-group">
+                        <StateButton btnId={state.wishBtn} onClick={this.addWish}>
+                            <i className="fa fa-star"> </i>
                         </StateButton>
-                        <StateButton btnId={this.state.mailBtn}
-                            onClick={this._mailSeller}>
-                            <i className="fa fa-envelope"/>
+                        <StateButton btnId={state.mailBtn} onClick={this.mailSeller}>
+                            <i className="fa fa-envelope"> </i>
                         </StateButton>
                     </div>
                 </div>
@@ -252,7 +370,7 @@ export class BoostProdDesc extends React.Component
 
     _renderProductInfo(prod) {
         return (
-            <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5">
+            <div className="col-xs-12 col-sm-12 col-md-5 col-lg-5">
                 <div className="product-title">
                     {prod.prodTitle}
                 </div>

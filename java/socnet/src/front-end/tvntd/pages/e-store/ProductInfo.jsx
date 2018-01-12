@@ -10,14 +10,11 @@ import StarRating       from 'react-star-rating';
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import TabPanel         from 'vntd-shared/layout/TabPanel.jsx';
 import ModalConfirm     from 'vntd-shared/forms/commons/ModalConfirm.jsx';
-import Mesg             from 'vntd-root/components/Mesg.jsx';
 import LikeStat         from 'vntd-root/components/LikeStat.jsx';
 import PostComment      from 'vntd-root/components/PostComment.jsx';
 import Actions          from 'vntd-root/actions/Actions.jsx';
-import Lang             from 'vntd-root/stores/LanguageStore.jsx';
-import EStorePost       from './EStorePost.jsx';
 import {
-    BoostProdImage, BoostProdTab
+    BoostProdImage, BoostProdTab, BoostProdShopBtn
 } from 'vntd-shared/component/BoostProduct.jsx';
 
 class ProductInfo extends React.Component
@@ -86,25 +83,7 @@ class ProductInfo extends React.Component
                         <BoostProdTab product={prod}/>
                     </div>
                 </div>
-                <div className="row">
-                    <div className="col-sm-12 col-md-6 col-lg-6"> 
-                        <button className="btn btn-success btn-lg">
-                            <Mesg text="Add to cart"/>  (${prod.prodPrice})
-                        </button>
-                    </div>
-                    <div className="col-sm-12 col-md-6 col-lg-6">
-                        <div className="btn-group pull-right">
-                            <button className="btn btn-white btn-default">
-                                <i className="fa fa-star"></i>
-                                <Mesg text=" Add to wishlist"/>
-                            </button>
-                            <button className="btn btn-white btn-default">
-                                <i className="fa fa-envelope"></i>
-                                <Mesg text=" Contact Seller"/>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <BoostProdShopBtn articleUuid={prod.articleUuid}/>
             </div>
         );
     }
@@ -139,39 +118,28 @@ class ProductBrief extends React.Component
     constructor(props) {
         super(props);
 
-        this._addCart     = this._addCart.bind(this);
         this._getDetail   = this._getDetail.bind(this);
         this._clickSelect = this._clickSelect.bind(this);
-        this._delProduct  = this._delProduct.bind(this);
-        this._editProduct = this._editProduct.bind(this);
-        this._confirmDel  = this._confirmDel.bind(this);
-        this._cancelDel   = this._cancelDel.bind(this);
-        this._delConfirmBox = this._delConfirmBox.bind(this);
-        this._editProductModal = this._editProductModal.bind(this);
+
+        this.addCart     = this.addCart.bind(this);
+        this.addWish     = this.addWish.bind(this);
+        this.mailSeller  = this.mailSeller.bind(this);
+        this.confirmDel  = this.confirmDel.bind(this);
     }
 
-    componentDidMount() {
+    addCart() {
+        console.log("override add to cart...");
     }
 
-    componentWillUnmount() {
+    addWish() {
     }
 
-    _addCart(event) {
-        event.stopPropagation();
+    mailSeller() {
     }
 
-    _delProduct(event) {
-        event.stopPropagation();
-        this.refs.confirmRm.openModal();
-    }
-
-    _editProduct(event) {
-        event.stopPropagation();
-        this.refs.editProd.openModal();
-    }
-
-    _confirmDel() {
-        this.refs.confirmRm.closeModal();
+    // @Override
+    //
+    confirmDel(product) {
         Actions.deleteProduct({
             authorUuid: UserStore.getSelfUuid(),
             uuidType  : "product",
@@ -179,74 +147,19 @@ class ProductBrief extends React.Component
         });
     }
 
-    _cancelDel() {
-        this.refs.confirmRm.closeModal();
-    }
-
     _getDetail() {
     }
 
-    _clickSelect(event) {
+    _clickSelect() {
         this.refs.modal.openModal();
     }
 
-    _delConfirmBox() {
-        return (
-            <ModalConfirm ref={"confirmRm"} height={"auto"}
-                modalTitle={Lang.translate("Delete this product listing?")}>
-                <div className="modal-footer">
-                    <button className="btn btn-primary pull-right"
-                        onClick={this._confirmDel}>
-                        <Mesg text="Delete"/>
-                    </button>
-                    <button className="btn btn-default pull-right"
-                        onClick={this._cancelDel}>
-                        <Mesg text="Cancel"/>
-                    </button>
-                </div>
-            </ModalConfirm>
-        );
-    }
-
-    _editProductModal() {
-        return (
-            <ModalConfirm ref={"editProd"}
-                modalTitle={Lang.translate("Edit Product Listing")}>
-                <div className="modal-content">
-                    <EStorePost product={this.props.product}/>
-                </div>
-            </ModalConfirm>
-        );
-    }
-
     render() {
-        let editBox, delBox, button, logoTag, onClickCb = this.props.onClickCb,
+        let logoTag, onClickCb = this.props.onClickCb,
             prodRank = this.props.product, prod = prodRank.getArticle();
 
         if (onClickCb == null) {
             onClickCb = this._clickSelect;
-        }
-        if (UserStore.isUserMe(this.props.userUuid)) {
-            editBox = this._editProductModal();
-            delBox = this._delConfirmBox();
-            button = (
-                <div className="btn-group" role="group">
-                    <button className="btn btn-info" onClick={this._editProduct}>
-                        <Mesg text="Edit Post"/>
-                    </button>
-                    <button className="btn btn-danger" onClick={this._delProduct}>
-                        <Mesg text="Remove Product"/>
-                    </button>
-                </div>
-            );
-        } else {
-            editBox = null;
-            delBox = null;
-            button = (
-                <button className="btn btn-success" onClick={this._addCart}>
-                    <Mesg text="Add to cart"/>
-                </button>
-            );
         }
         if (prod.logoTag != null) {
             logoTag = <span className='tag2 hot'>{prod.logoTag}</span>;
@@ -254,11 +167,8 @@ class ProductBrief extends React.Component
             logoTag = null;
         }
         return (
-            <div className="product-content product-wrap clearfix"
-                onClick={onClickCb}>
-                <div className="row">
-                    {delBox}
-                    {editBox}
+            <div className="product-content product-wrap clearfix">
+                <div className="row" onClick={onClickCb}>
                     <ProductInfo ref={"modal"} modal={true}
                         product={this.props.product}/>
                     <div className="col-md-5 col-sm-12 col-xs-12">
@@ -286,13 +196,11 @@ class ProductBrief extends React.Component
                             dangerouslySetInnerHTML={{__html: prod.prodDesc}}/>
                     </div>
                 </div>
-                <div className="row">
-                    <div className="col-md-12 col-sm-12 col-xs-12">
-                        <div className="product-info smart-form text-center">
-                            {button}
-                        </div>
-                    </div>
-                </div>
+                <BoostProdShopBtn articleUuid={prod.articleUuid} cartOnly={true}
+                    product={prod} userUuid={this.props.userUuid}
+                    addCart={this.addCart} addWish={this.addWish}
+                    mailSeller={this.mailSeller} confirmDel={this.confirmDel}
+                />
             </div>
         );
     }

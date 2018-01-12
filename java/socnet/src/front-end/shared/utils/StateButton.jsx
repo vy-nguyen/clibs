@@ -128,8 +128,12 @@ class StateButton extends React.Component
         };
     }
 
-    static toggleButton(on, off) {
-        return StateButton.toggleButtonFsmFull({ text: on }, { text: off });
+    static toggleButton(on, onFmt, off, offFmt) {
+        return StateButton.toggleButtonFsmFull({
+            text: on, format: onFmt
+        }, {
+            text: off, format: offFmt
+        });
     }
 
     static toggleButtonFsmFull(on, off) {
@@ -145,7 +149,8 @@ class StateButton extends React.Component
                 disabled : false,
                 nextState: 'on',
                 className: off.format || 'btn btn-danger'
-            }
+            },
+            startState: 'on'
         };
     }
 }
