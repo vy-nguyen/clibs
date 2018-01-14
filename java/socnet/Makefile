@@ -5,6 +5,10 @@ proj_dirs    := \
 
 include ./Makefile.incl
 
+web:
+	@$(set_alias_scpt)
+	npm run vntd --watch
+
 source_path  := $(web_jsdir)
 test_dir     := $(source_path)/tests
 test_sources := \
