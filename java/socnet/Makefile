@@ -1,5 +1,6 @@
 topdir       := ../..
 proj_scripts := js_test
+proj_pregen  := web
 proj_dirs    := \
 	src/main/css
 
