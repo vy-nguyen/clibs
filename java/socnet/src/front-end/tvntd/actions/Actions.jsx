@@ -115,8 +115,6 @@ function postRestCall(formData, url, json, cbObj, authReq, context) {
         data = JSON.stringify(formData);
         content = "application/json; charset=utf-8";
     }
-    console.log("Post rest call ");
-    console.log(formData);
     $.ajax({
         type: "POST",
         url : url,
@@ -131,7 +129,6 @@ function postRestCall(formData, url, json, cbObj, authReq, context) {
     }).done(function(resp, text, error) {
         resp.cbContext = context;
         cbObj.completed(resp, context);
-        console.log("Completed call...");
 
     }).fail(function(resp, text, error) {
         console.log("REST call failed " + url);
@@ -161,8 +158,6 @@ function getJSON(url, cbObj, authReq, id, context, syncServer) {
         }
 
     }).fail(function(resp, text, error) {
-        console.log("Get JSON failed " + url);
-        console.log(resp);
         resp.cbContext = context;
         cbObj.failed(ErrorStore.reportFailure(url, resp, text, error));
 
@@ -310,15 +305,11 @@ Actions.updateUserPost.listen(function(data, save) {
 });
 
 Actions.postQuestForm.listen(function(data, callback) {
-    console.log("Post question form");
-    console.log(data);
     postRestCall(data, "/user/post-question", true, this, true, callback);
 });
 
 Actions.getQuestions.listen(function(data, callback) {
     let url = !UserStore.isLogin() ? "/public/get-question" : "/user/get-question";
-    console.log("Get questions");
-    console.log(data);
     postRestCall(data, url, true, this, false, callback);
 });
 
@@ -351,13 +342,10 @@ Actions.getPublishAds.listen(function(data) {
 });
 
 Actions.postRealtorAds.listen(function(data) {
-    console.log(data);
     postRestCall(data, "/public/publish-room-ads", true, this, false);
 });
 
 Actions.getRealtorAds.listen(function(data) {
-    console.log("get realtor ads");
-    console.log(data);
     postRestCall(data, "/public/get-room-ads", true, this, false);
 });
 

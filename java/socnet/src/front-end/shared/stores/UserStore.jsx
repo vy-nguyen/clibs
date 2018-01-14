@@ -457,9 +457,6 @@ let UserStore = Reflux.createStore({
     _changedData: function(resp) {
         let startPage = null;
 
-        console.log("user store change data");
-        console.log(resp);
-
         if (resp != null) {
             this.data.authCode  = resp.type;
             this.data.authMesg  = resp.message;
