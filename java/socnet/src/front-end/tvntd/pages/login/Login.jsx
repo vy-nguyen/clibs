@@ -374,17 +374,20 @@ class LoginForm extends React.Component
     }
 
     componentWillMount() {
+        let start = this.props.startUrl || "/public/vietnam";
+
         if (UserStore.isLogin()) {
             this.data.clearData();
             this.email.clearData();
-            History.pushState(null, "/public/vietnam");
+            History.pushState(null, start);
         }
     }
 
     render() {
+        let clsName = this.props.className || "well no-padding";
         return (
             <div>
-                <div className="well no-padding">
+                <div className={clsName}>
                     <ProcessForm form={this.data}
                         defValue={this.defValue} store={UserStore}/>
                 </div>
@@ -392,7 +395,7 @@ class LoginForm extends React.Component
                     <Mesg text="Or Sign In By Email"/>
                 </h4>
                 <br/>
-                <div className="well no-padding">
+                <div className={clsName}>
                     <ProcessForm form={this.email} store={UserStore}/>
                 </div>
             </div>
@@ -427,4 +430,4 @@ class Login extends React.Component
     }
 }
 
-export { Login, LoginForm, LoginAbout, LoginHeader, LoginSocial }
+export { Login, LoginForm, LoginAbout, LoginHeader, LoginSocial, LoginLayout }

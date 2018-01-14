@@ -42,6 +42,10 @@ let BusinessStore = Reflux.createStore({
     mainStartup(json) {
     },
 
+    hasData() {
+        return this.busInfo != null ? true : false;
+    },
+
     getBranchInfo() {
         return this.data.branchInfo;
     },

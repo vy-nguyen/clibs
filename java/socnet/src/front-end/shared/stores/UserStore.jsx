@@ -355,6 +355,8 @@ let UserStore = Reflux.createStore({
 
     /* Register actions. */
     onRegisterCompleted: function(response, text) {
+        console.log("Register completed");
+        console.log(response);
         this._changedData(response);
     },
 
@@ -454,6 +456,9 @@ let UserStore = Reflux.createStore({
 
     _changedData: function(resp) {
         let startPage = null;
+
+        console.log("user store change data");
+        console.log(resp);
 
         if (resp != null) {
             this.data.authCode  = resp.type;

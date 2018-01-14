@@ -9,12 +9,13 @@ import React from 'react-mod';
 import {Route, Redirect, IndexRoute, DefaultRoute} from 'react-router';
 
 import BusLayout     from 'vntd-shared/layout/BusinessLayout.jsx';
+import BizNavLayout  from 'vntd-shared/layout/BizNavLayout.jsx';
 import LoginRequired from 'vntd-shared/utils/LoginRequired.jsx';
+import BoostLogin    from 'vntd-shared/component/BoostLogin.jsx';
+import BoostRegister from 'vntd-shared/component/BoostRegister.jsx';
 import {RouteMap}    from 'vntd-shared/utils/History.jsx';
 import Logout        from 'vntd-root/pages/login/Logout.jsx';
-import Register      from 'vntd-root/pages/login/Register.jsx';
 import RecoverAcct   from 'vntd-root/pages/login/Forgot.jsx';
-import CustLogin     from 'vntd-root/pages/personal/Login.jsx';
 import BusinessMain  from 'vntd-root/pages/business/MainPage.jsx';
 import AboutUs       from 'vntd-root/pages/business/AboutUs.jsx';
 import Blog          from 'vntd-root/pages/business/Blog.jsx';
@@ -74,8 +75,8 @@ let RouteSvc = new RouteMap(routeMap);
 
 const _registerRoutes = (
     <Route path="/register">
-        <IndexRoute component={Register}/>
-        <Route path="form" component={Register}/>
+        <IndexRoute component={BoostRegister}/>
+        <Route path="form" component={BoostRegister}/>
         <Route path="recover" component={RecoverAcct}/>
     </Route>
 ),
@@ -97,8 +98,8 @@ _loginRequired = (
 ),
 
 _custLoginRoutes = (
-    <Route path="/login">
-        <IndexRoute component={CustLogin}/>
+    <Route path="/login" component={BizNavLayout}>
+        <IndexRoute component={BoostLogin}/>
         <Route path="/logout" component={Logout}/>
     </Route>
 ),
@@ -110,10 +111,10 @@ Routes = (
 
             {_mainRoutes}
             {_loginRequired}
-        </Route>
 
+            {_registerRoutes}
+        </Route>
         {_custLoginRoutes}
-        {_registerRoutes}
     </Route>
 );
 
