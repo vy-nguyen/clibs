@@ -117,11 +117,11 @@ class User {
     }
 }
 
-let UserStore = Reflux.createStore({
-    data: null,
-    listenables: [Actions],
-
-    _reset: function() {
+class UserStore extends Reflux.Store
+{
+    constructor() {
+        super();
+        this.listenables = Actions;
         this.data = {
             userMap   : {},
             uuidFetch : {},
@@ -139,27 +139,23 @@ let UserStore = Reflux.createStore({
             artStoreUuids : {},
             authVerifToken: null
         };
-    },
-
-    init: function() {
-        this._reset();
-    },
+    }
 
     /*
      * Public Api to get UserStore data.
      */
-    getUserList: function() {
+    getUserList() {
         return _.forOwn(this.data.userMap);
-    },
+    }
 
-    getUserByUuid: function(uuid) {
+    getUserByUuid(uuid) {
         if (uuid == null) {
             return this.getSelf();
         }
         return this.data.userMap[uuid];
-    },
+    }
 
-    getFetchedUuidList: function(req) {
+    getFetchedUuidList(req) {
         let result, updated, userMap;
 
         if (this.data.loginReady === false) {
@@ -182,36 +178,36 @@ let UserStore = Reflux.createStore({
             }
         });
         return result;
-    },
+    }
 
-    getCsrfHeader: function() {
+    getCsrfHeader() {
         return this.data.csrfHeader;
-    },
+    }
 
-    getCsrfToken: function() {
+    getCsrfToken() {
         return this.data.csrfToken;
-    },
+    }
 
-    getAuthToken: function() {
+    getAuthToken() {
         return this.data.authToken;
-    },
+    }
 
-    getAuthCode: function() {
+    getAuthCode() {
         return this.data.authCode;
-    },
+    }
 
-    isLogin: function() {
+    isLogin() {
         return this.data.authToken != null;
-    },
+    }
 
-    isUserMe: function(uuid) {
+    isUserMe(uuid) {
         if (this.data.userSelf == null) {
             return false;
         }
         return this.data.userSelf.userUuid === uuid;
-    },
+    }
 
-    amIAdmin: function() {
+    amIAdmin() {
         let self = this.data.userSelf;
         if (self != null) {
             if (self.role && self.role.indexOf("Admin") >= 0) {
@@ -219,13 +215,13 @@ let UserStore = Reflux.createStore({
             }
         }
         return false;
-    },
+    }
 
-    getSelf: function() {
+    getSelf() {
         return this.data.userSelf;
-    },
+    }
 
-    getSelfUuid: function(uuid) {
+    getSelfUuid(uuid) {
         if (uuid != null) {
             return uuid;
         }
@@ -236,21 +232,21 @@ let UserStore = Reflux.createStore({
             return this.data.userSelf.userUuid;
         }
         return VntdGlob.publicUuid;
-    },
+    }
 
-    getDomainUuid: function() {
+    getDomainUuid() {
         return this.data.domainUuid;
-    },
+    }
 
-    getDomain: function() {
+    getDomain() {
         return this.data.domain;
-    },
+    }
 
-    getActiveUser: function() {
+    getActiveUser() {
         return this.data.userActive;
-    },
+    }
 
-    getAllUserDomains: function() {
+    getAllUserDomains() {
         let out = [];
         _.forOwn(this.data.userMap, function(user) {
             if (user.domain != null) {
@@ -261,30 +257,30 @@ let UserStore = Reflux.createStore({
             }
         });
         return out;
-    },
+    }
 
-    setActiveUser: function(user) {
+    setActiveUser(user) {
         this.data.userActive = user;
-    },
+    }
 
-    getData: function() {
+    getData() {
         return this.data;
-    },
+    }
 
-    dumpData: function(header) {
+    dumpData(header) {
         console.log("UserStore content: " + header);
         console.log(this.data);
-    },
+    }
 
-    setFetchUser: function(uuid) {
+    setFetchUser(uuid) {
         this.uuidFetch[uuid] = true;
-    },
+    }
 
     /**
      * Iterate through each user with uuid in the list.  If the list is null,
      * iterate through all users.
      */
-    iterUser: function(uuidList, func) {
+    iterUser(uuidList, func) {
         if (uuidList == null) {
             _.forOwn(this.data.userMap, func);
         } else {
@@ -295,9 +291,9 @@ let UserStore = Reflux.createStore({
                 }
             }.bind(this));
         }
-    },
+    }
 
-    iterUserRelationship: function(uuidList, dispatch, arg) {
+    iterUserRelationship(uuidList, dispatch, arg) {
         this.iterUser(uuidList, function(user, idx) {
             let key = user.userUuid;
             if (user.isInConnection()) {
@@ -317,10 +313,10 @@ let UserStore = Reflux.createStore({
             }
             dispatch.iterFn(user, key, arg);
         });
-    },
+    }
 
     /* Startup actions. */
-    mainStartup: function(json) {
+    mainStartup(json) {
         this.data.domain     = json.domain;
         this.data.domainUuid = json.domainUuid;
         this._addFromJson(json.linkedUsers);
@@ -331,109 +327,110 @@ let UserStore = Reflux.createStore({
         if (this.isLogin()) {
             this.data.loginReady = true;
         }
-    },
+    }
 
-    onRefreshNotifyCompleted: function(resp) {
+    onRefreshNotifyCompleted(resp) {
         this.trigger(this.data, resp, "refresh");
-    },
+    }
 
     /* Login actions. */
-    onLoginCompleted: function(response, status) {
+    onLoginCompleted(response, status) {
+        console.log("login completed");
         this._changedData(response);
         this.data.loginReady = true;
         Actions.startup("/api/user");
-    },
+    }
 
-    onLoginEmailCompleted: function(response) {
+    onLoginEmailCompleted(response) {
         this._changedData(response);
         Actions.startup("/api/user");
-    },
+    }
 
-    onLoginFailed: function(error) {
+    onLoginFailed(error) {
         this._changedDataFailure(error);
-    },
+    }
 
     /* Register actions. */
-    onRegisterCompleted: function(response, text) {
+    onRegisterCompleted(response, text) {
         console.log("Register completed");
         console.log(response);
         this._changedData(response);
-    },
+    }
 
-    onResendRegisterCompleted: function(response, text) {
+    onResendRegisterCompleted(response, text) {
         this._changedData(response);
-    },
+    }
 
-    onRegisterFailed: function(error) {
+    onRegisterFailed(error) {
         this._changedDataFailure(error);
-    },
+    }
 
-    onVerifyAccountCompleted: function(response, text) {
+    onVerifyAccountCompleted(response, text) {
         this._changedData(response);
-    },
+    }
 
-    onVerifyAccountFailed: function(error) {
+    onVerifyAccountFailed(error) {
         this._changedDataFailure(error);
-    },
+    }
 
-    onUpdateProfileCompleted: function(response) {
+    onUpdateProfileCompleted(response) {
         let self = this.data.userSelf;
         if (self.userUuid === response.userSelf.userUuid) {
             self.updateProfile(response.userSelf);
         }
         this.trigger(this.data, response, "update-profile", false);
-    },
+    }
 
-    onUpdateDomainCompleted: function(resp) {
+    onUpdateDomainCompleted(resp) {
         this.trigger(this.data, resp, "update-domain", false);
-    },
+    }
 
-    onGetDomainDataCompleted: function(resp, context) {
+    onGetDomainDataCompleted(resp, context) {
         context.user._reqDataResult(resp, context);
         this.trigger(this.data, resp, "get-domain", false);
-    },
+    }
 
     /* Logout actions. */
-    onLogoutCompleted: function() {
+    onLogoutCompleted() {
         this._reset();
         this.data.loginReady = false;
         localStorage.removeItem("authToken");
-    },
+    }
 
     /* Password reset actions. */
-    onResetPasswordCompleted: function(response) {
+    onResetPasswordCompleted(response) {
         this.trigger(this.data, response, "reset-password");
-    },
+    }
 
-    onResetPasswordFailed: function(error) {
+    onResetPasswordFailed(error) {
         this.trigger(this.data, error, "reset-password-failed");
-    },
+    }
 
     /* Init. action. */
-    onInitCompleted: function(json) {
+    onInitCompleted(json) {
         this._changedData(null);
-    },
+    }
 
     /* Preload for server-less test. */
-    onPreloadCompleted: function(raw) {
+    onPreloadCompleted(raw) {
         this._addFromJson(raw.users);
         this._changedData(null);
-    },
+    }
 
     /* Change user connection status. */
-    onChangeUsersCompleted: function(raw) {
+    onChangeUsersCompleted(raw) {
         this._setFriendStatus(raw.result.follow, "followed");
         this._setFriendStatus(raw.result.connect, "connected");
         this._setFriendStatus(raw.result.connecting, "connecting");
         this.trigger(this.data, raw, "change-users");
-    },
+    }
 
-    onUploadAvataDoneCompleted: function(data) {
+    onUploadAvataDoneCompleted(data) {
         let self = this.getSelf();
         self.userImgUrl = data.imgObjUrl;
-    },
+    }
 
-    _changedDataFailure: function(error) {
+    _changedDataFailure(error) {
         this._changedData({
             error  : error,
             type   : error.errorCodeText,
@@ -441,9 +438,9 @@ let UserStore = Reflux.createStore({
             authToken: null,
             authVerifToken: null
         });
-    },
+    }
 
-    _updateLogin: function(user) {
+    _updateLogin(user) {
         if (user != null) {
             if (user.csrfHeader != null) {
                 $("meta[name='_csrf']").attr("content", user.csrfToken);
@@ -452,9 +449,9 @@ let UserStore = Reflux.createStore({
             this.data.csrfHeader = user.csrfHeader;
             this.data.csrfToken = user.csrfToken;
         }
-    },
+    }
 
-    _changedData: function(resp) {
+    _changedData(resp) {
         let startPage = null;
 
         if (resp != null) {
@@ -478,9 +475,9 @@ let UserStore = Reflux.createStore({
             }
         }
         this.trigger(this.data, resp, startPage);
-    },
+    }
 
-    _addFromJson: function(items) {
+    _addFromJson(items) {
         _(items).forOwn(function(it) {
             if (it.connectState === "self" && this.data.userSelf === null) {
                 this.data.userSelf = new User(it);
@@ -497,9 +494,9 @@ let UserStore = Reflux.createStore({
             this.data.userSelf.setConnectState();
             this.data.userSelf.connectState = "connected";
         }
-    },
+    }
 
-    _setFriendStatus: function(uuids, status) {
+    _setFriendStatus(uuids, status) {
         if (uuids != null) {
             uuids.map(function(uuid) {
                 let user = this.data.userMap[uuid];
@@ -508,11 +505,8 @@ let UserStore = Reflux.createStore({
                 }
             }.bind(this));
         }
-    },
-
-    exports: {
     }
-});
+}
 
 User.prototype.setConnectState = function() {
     let filter = function(state) {
@@ -533,4 +527,6 @@ User.prototype.isUserMe = function() {
     return UserStore.isUserMe(this.userUuid);
 }
 
-export default UserStore
+var UserStoreSg = Reflux.initStore(UserStore);
+
+export default UserStoreSg;

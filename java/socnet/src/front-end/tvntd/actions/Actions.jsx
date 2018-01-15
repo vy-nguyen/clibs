@@ -129,6 +129,7 @@ function postRestCall(formData, url, json, cbObj, authReq, context) {
     }).done(function(resp, text, error) {
         resp.cbContext = context;
         cbObj.completed(resp, context);
+        console.log("Post form done " + url);
 
     }).fail(function(resp, text, error) {
         console.log("REST call failed " + url);

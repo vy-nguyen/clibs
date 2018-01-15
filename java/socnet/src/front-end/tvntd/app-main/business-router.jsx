@@ -8,6 +8,7 @@ import _     from 'lodash';
 import React from 'react-mod';
 import {Route, Redirect, IndexRoute, DefaultRoute} from 'react-router';
 
+import BusinessStore from 'vntd-root/stores/BusinessStore.jsx';
 import BusLayout     from 'vntd-shared/layout/BusinessLayout.jsx';
 import BizNavLayout  from 'vntd-shared/layout/BizNavLayout.jsx';
 import LoginRequired from 'vntd-shared/utils/LoginRequired.jsx';
