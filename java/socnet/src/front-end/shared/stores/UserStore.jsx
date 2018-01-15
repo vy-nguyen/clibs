@@ -117,7 +117,7 @@ class User {
     }
 }
 
-class UserStore extends Reflux.Store
+class UserStoreClz extends Reflux.Store
 {
     constructor() {
         super();
@@ -508,6 +508,8 @@ class UserStore extends Reflux.Store
     }
 }
 
+var UserStore = Reflux.initStore(UserStoreClz);
+
 User.prototype.setConnectState = function() {
     let filter = function(state) {
         return function(elm) {
@@ -527,6 +529,4 @@ User.prototype.isUserMe = function() {
     return UserStore.isUserMe(this.userUuid);
 }
 
-var UserStoreSg = Reflux.initStore(UserStore);
-
-export default UserStoreSg;
+export default UserStore;

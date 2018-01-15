@@ -5,6 +5,7 @@
 'use strict';
 
 import _        from 'lodash';
+import $        from 'jquery';
 import React    from 'react-mod';
 import ReactDOM from 'react-dom';
 
@@ -26,6 +27,8 @@ class DataTable extends React.Component
         }
         node      = ReactDOM.findDOMNode(this);
         element   = $(node);
+        console.log(node);
+        console.log(element);
         dataTable = element.DataTable(this.options);
 
         if (this.props.filter) {
