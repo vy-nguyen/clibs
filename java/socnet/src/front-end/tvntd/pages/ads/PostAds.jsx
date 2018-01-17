@@ -26,10 +26,10 @@ class BusAds extends FormData
     initData() {
         let adsOpt = ArticleTagStore.getPublicTagsSelOpt("ads"),
             adsOptDef = !_.isEmpty(adsOpt) ? adsOpt[0].label : null,
-            wLabelFmt = 'control-label col-sx-2 col-sm-2 col-md-2 col-lg-2',
-            wInputFmt = 'control-label col-sx-10 col-sm-10 col-md-10 col-lg-10',
-            cLabelFmt = 'control-label col-sx-3 col-sm-3 col-md-3 col-lg-3',
-            cInputFmt = 'control-label col-sx-9 col-sm-9 col-md-9 col-lg-9',
+            wLabelFmt = 'control-label col-xs-2 col-sm-2 col-md-2 col-lg-2',
+            wInputFmt = 'control-label col-xs-10 col-sm-10 col-md-10 col-lg-10',
+            cLabelFmt = 'control-label col-xs-3 col-sm-3 col-md-3 col-lg-3',
+            cInputFmt = 'control-label col-xs-9 col-sm-9 col-md-9 col-lg-9',
         aboutBus = [ {
             url      : '/public/upload-ad-img',
             field    : 'image',

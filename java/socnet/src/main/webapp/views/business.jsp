@@ -10,14 +10,16 @@
     <meta name="_domain" content="${domain}"/>
 
     <%-- #CSS Links --%>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/drugstore.css">
-
+    <link rel="stylesheet" type="text/css" media="screen" href="https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" media="screen" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/biz-custom.css">
+
     <%--
+    <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/drugstore.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/css/bootstrap.min.css">
 
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/font-awesome.min.css">
       --%>

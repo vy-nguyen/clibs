@@ -115,6 +115,8 @@ function postRestCall(formData, url, json, cbObj, authReq, context) {
         data = JSON.stringify(formData);
         content = "application/json; charset=utf-8";
     }
+    console.log("Post rest call ");
+    console.log(formData);
     $.ajax({
         type: "POST",
         url : url,
@@ -129,6 +131,7 @@ function postRestCall(formData, url, json, cbObj, authReq, context) {
     }).done(function(resp, text, error) {
         resp.cbContext = context;
         cbObj.completed(resp, context);
+        console.log("Completed call...");
 
     }).fail(function(resp, text, error) {
         console.log("REST call failed " + url);

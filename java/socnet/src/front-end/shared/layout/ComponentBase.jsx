@@ -38,6 +38,10 @@ class ComponentBase extends React.Component
     }
 
     _updateState(store, data, item, code) {
+        this.setState(this._getState(store));
+    }
+
+    _getState(store) {
     }
 }
 

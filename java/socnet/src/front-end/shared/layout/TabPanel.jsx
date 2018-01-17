@@ -57,7 +57,7 @@ class TabPanel extends React.Component
         tabHeader = tab.tabItems.map(function(item, idx) {
             return (
                 <li key={_.uniqueId('tab-panel-')}
-                    className={idx == activeIdx ? "active" : ""}>
+                    className={idx == activeIdx ? "active nav-button" : "nav-button"}>
                     <a data-toggle="tab" href={'#' + item.domId}
                         id={'tab-panel-' + item.domId}
                         onClick={this._selectTab.bind(this, idx)}>

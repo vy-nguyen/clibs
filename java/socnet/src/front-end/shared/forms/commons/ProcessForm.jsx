@@ -574,6 +574,10 @@ class ProcessForm extends React.Component
     _updateState(data, result, status, isArr, cb) {
         let errFlags = null, context = this.props.form;
 
+        console.log("result submiting " + context.isSubmitting());
+        console.log(status);
+        console.log(result);
+
         if (context.isSubmitting() !== true) {
             return;
         }
