@@ -1,9 +1,14 @@
 topdir       := ../..
 proj_scripts := js_test
+proj_pregen  := web
 proj_dirs    := \
 	src/main/css
 
 include ./Makefile.incl
+
+web:
+	@$(set_alias_scpt)
+	npm run vntd --watch
 
 source_path  := $(web_jsdir)
 test_dir     := $(source_path)/tests

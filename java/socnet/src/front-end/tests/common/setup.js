@@ -28,7 +28,7 @@ function copyProps(src, target) {
             ...result,
             [prop]: Object.getOwnPropertyDescriptor(src, prop),
         }), {});
-    Object.defineProperties(target, props);
+    // Object.defineProperties(target, props);
 }
 
 global.window    = window;
