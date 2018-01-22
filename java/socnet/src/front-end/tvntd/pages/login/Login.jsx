@@ -21,7 +21,7 @@ import StateButton   from 'vntd-shared/utils/StateButton.jsx';
 import ErrorView     from 'vntd-shared/layout/ErrorView.jsx';
 
 import { FormData, ProcessForm } from 'vntd-shared/forms/commons/ProcessForm.jsx';
-import { validateEmail } from 'vntd-root/pages/login/Register.jsx';
+import { validateEmail } from 'vntd-shared/component/BoostRegister.jsx';
 
 class LoginHeader extends React.Component
 {

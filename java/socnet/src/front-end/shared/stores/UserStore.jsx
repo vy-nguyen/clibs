@@ -335,7 +335,6 @@ class UserStoreClz extends Reflux.Store
 
     /* Login actions. */
     onLoginCompleted(response, status) {
-        console.log("login completed");
         this._changedData(response);
         this.data.loginReady = true;
         Actions.startup("/api/user");
@@ -352,7 +351,6 @@ class UserStoreClz extends Reflux.Store
 
     /* Register actions. */
     onRegisterCompleted(response, text) {
-        console.log("Register completed");
         console.log(response);
         this._changedData(response);
     }

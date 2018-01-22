@@ -21,7 +21,7 @@ import Mesg              from 'vntd-root/components/Mesg.jsx';
 import {LoginLayout}           from 'vntd-root/pages/login/Login.jsx';
 import {FormData, ProcessForm} from 'vntd-shared/forms/commons/ProcessForm.jsx';
 
-function validateEmail(email) {
+export function validateEmail(email) {
     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
 }
@@ -81,7 +81,7 @@ class RegisterLayout extends FormData
                 label: 'Female'
             } ],
             inpHolder: 'Male',
-            labelTxt : 'Your gender',
+            labelTxt : 'Gender',
             labelFmt : labelFmt,
             inputFmt : inputFmt
         }, {
