@@ -19,13 +19,17 @@ import {
     ArticleStore, EProductStore, GlobStore
 } from 'vntd-root/stores/ArticleStore.jsx';
 
-let MainStore = Reflux.createStore({
-    listenables: Actions,
+class MainStoreClass extends Reflux.Store
+{
+    constructor() {
+        super();
+        this.listenables = Actions;
+    }
 
     /**
      * Main entry at startup after getting data returned back from the server.
      */
-    onStartupCompleted: function(data) {
+    onStartupCompleted(data) {
         Language.mainStartup(data);
         UserStore.mainStartup(data);
         RenderStore.mainStartup(data);
@@ -38,6 +42,8 @@ let MainStore = Reflux.createStore({
 
         AuthorStore.mainTrigger(data);
     }
-});
+}
+
+let MainStore = Reflux.initStore(MainStoreClass);
 
 export default MainStore;

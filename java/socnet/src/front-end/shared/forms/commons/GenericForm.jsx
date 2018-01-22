@@ -268,7 +268,7 @@ class InputWrap extends React.Component
         }
         handlers = entry.inpHolder ? Lang.translate(entry.inpHolder) : null;
         return (
-            <input id={entry.inpName} type={type} className="form-control"
+            <input id={entry.inpName} type={type} className="form-control vntd-input"
                 onBlur={this._onBlur} ref={entry.inpName} onFocus={this._onFocus}
                 defaultValue={entry.inpDefVal} placeholder={handlers}/>
         );

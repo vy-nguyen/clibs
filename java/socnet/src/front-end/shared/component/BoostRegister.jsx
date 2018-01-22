@@ -10,6 +10,7 @@ import PropTypes         from 'prop-types';
 
 import Lang              from 'vntd-root/stores/LanguageStore.jsx';
 import UserStore         from 'vntd-shared/stores/UserStore.jsx';
+import ErrorStore        from 'vntd-shared/stores/ErrorStore.jsx';
 import StateButtonStore  from 'vntd-shared/stores/StateButtonStore.jsx';
 import StateButton       from 'vntd-shared/utils/StateButton.jsx';
 import Wizard            from 'vntd-shared/layout/Wizard.jsx';
@@ -20,7 +21,7 @@ import Mesg              from 'vntd-root/components/Mesg.jsx';
 import {LoginLayout}           from 'vntd-root/pages/login/Login.jsx';
 import {FormData, ProcessForm} from 'vntd-shared/forms/commons/ProcessForm.jsx';
 
-function validateEmail(email) {
+export function validateEmail(email) {
     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
 }
@@ -31,6 +32,7 @@ class RegisterLayout extends FormData
         super(props, suffix);
 
         this._onClickTos = this._onClickTos.bind(this);
+        this._registerCb = props.registerNotif;
         this.initData();
         return this;
     }
@@ -79,7 +81,7 @@ class RegisterLayout extends FormData
                 label: 'Female'
             } ],
             inpHolder: 'Male',
-            labelTxt : 'Your gender',
+            labelTxt : 'Gender',
             labelFmt : labelFmt,
             inputFmt : inputFmt
         }, {
@@ -172,6 +174,7 @@ class RegisterLayout extends FormData
         if (!_.isEmpty(errFlags)) {
             return null;
         }
+        this.email = data.email;
         return {
             email    : data.email,
             password0: data.password0,
@@ -185,8 +188,34 @@ class RegisterLayout extends FormData
     }
 
     submitNotif(store, result, status, cb) {
+        let mesg;
         console.log("submit notif");
         console.log(result);
+
+        switch (result.authCode) {
+            case 'reg-done':
+                ErrorStore.reportErrMesg('reg-ok', result.authMesg);
+                break;
+
+            case 'reg-failure':
+                mesg = 'Try different email address';
+                ErrorStore.reportErrMesg('reg-error', result.authMesg, mesg);
+                break;
+
+            case 'reg-email-sent':
+            case 'reg-no-user':
+                result.email = this.email;
+                this._registerCb(result);
+                break;
+
+            case 'reg-user-exists':
+                mesg = result.authHelp + ': enter your email to login';
+                ErrorStore.reportErrMesg('reg-error', result.authMesg, mesg);
+                break;
+
+            default:
+                ErrorStore.reportErrMesg('reg-error', result.authMesg);
+        }
         super.submitNotif(store, result, status, cb);
     }
 
@@ -198,6 +227,10 @@ class RegisterLayout extends FormData
 
     render(onBlur, onSubmit) {
         return LoginLayout.renderForm(this, onBlur, onSubmit);
+    }
+
+    getEmail() {
+        return this.email;
     }
 }
 
@@ -230,15 +263,26 @@ class BoostRegister extends React.Component
 {
     constructor(props) {
         super(props);
-
-        this.state = {
-            stepIdx: 0,
-            reSend : 0,
-            okTerm : false
-        };
         this._reStart         = this._reStart.bind(this);
         this._resendEmail     = this._resendEmail.bind(this);
+        this._registerNotif   = this._registerNotif.bind(this);
         this._getRegisterStep = this._getRegisterStep.bind(this);
+
+        this.state = this._reStart(false);
+    }
+
+    _registerNotif(result) {
+        if (result.authCode === 'reg-no-user') {
+            if (this.state.reSend <= 5) {
+                ErrorStore.reportErrMesg('reg-error', result.authMesg,
+                    result.authHelp + ': invalid email ');
+            }
+            return;
+        }
+        this.setState({
+            email  : result.email,
+            stepIdx: 1
+        });
     }
 
     _getRegisterStep() {
@@ -264,10 +308,41 @@ class BoostRegister extends React.Component
         };
     }
 
-    _reStart() {
+    _reStart(set) {
+        let state = {
+            email  : null,
+            reSend : 0,
+            stepIdx: 0
+        };
+        if (set === true) {
+            this.setState(state);
+        }
+        return state;
     }
 
     _resendEmail() {
+        let email = this.state.email;
+
+        if (email == null) {
+            return;
+        }
+        this.setState({
+            reSend: this.state.reSend + 1
+        });
+        ErrorStore.clearError('reg-error');
+
+        if (this.state.reSend >= 5) {
+            ErrorStore.clearError('reg-error');
+            ErrorStore.reportErrMesg('reg-ok',
+                'Warning: too many retries.  Please try with different email');
+        }
+        if (this.state.reSend >= 10) {
+            this._reStart(true);
+        } else {
+            Actions.resendRegister({
+                email: email
+            });
+        }
     }
 
     render() {
@@ -282,7 +357,7 @@ class BoostRegister extends React.Component
         );
         return (
             <Wizard context={this._getRegisterStep()} proText="Step">
-                <RegisterForm/>
+                <RegisterForm ref="register" registerNotif={this._registerNotif}/>
                 <div className="well">
                     <div className="row">
                         <div className="message">
@@ -291,7 +366,7 @@ class BoostRegister extends React.Component
                             <br/>
                         </div>
                     </div>
-                    <div className="row">
+                    <div className="row padding-10">
                         <p><Mesg text="Don't receive confirmation email?"/></p>
                         {status}
                         <button className="btn btn-primary" onClick={this._resendEmail}>

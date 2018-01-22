@@ -37,7 +37,14 @@ var config =  _.merge(baseConfig, {
         }),
         new webpack.optimize.CommonsChunkPlugin({
             name     : "common",
-            chunks   : [ "tvntd", "tvntd-ads", "business", "vendor", "vendor.lib" ],
+            chunks   : [
+                "tvntd",
+                "tvntd-ads",
+                "business",
+                "vendor",
+                "vendor.lib",
+                "vendor.datatables"
+            ],
             minChunks: function(module) {
                 return module.context && module.context.includes("node_modules");
             }

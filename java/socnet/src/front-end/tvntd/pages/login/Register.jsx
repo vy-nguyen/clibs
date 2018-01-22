@@ -4,24 +4,25 @@
  */
 'use strict';
 
-import $            from 'jquery';
-import _            from 'lodash';
-import React        from 'react-mod';
-import {Link}       from 'react-router';
+import $             from 'jquery';
+import _             from 'lodash';
+import React         from 'react-mod';
+import {Link}        from 'react-router';
 
-import UiValidate   from 'vntd-shared/forms/validation/UiValidate.jsx';
-import LoadHtml     from 'vntd-shared/utils/LoadHtml.jsx';
-import UserStore    from 'vntd-shared/stores/UserStore.jsx';
-import ErrorStore   from 'vntd-shared/stores/ErrorStore.jsx';
-import InputStore   from 'vntd-shared/stores/NestableStore.jsx';
-import ErrorView    from 'vntd-shared/layout/ErrorView.jsx';
-import StateButton  from 'vntd-shared/utils/StateButton.jsx';
-import Wizard       from 'vntd-shared/layout/Wizard.jsx';
-import Actions      from 'vntd-root/actions/Actions.jsx';
-import History      from 'vntd-shared/utils/History.jsx';
-import {htmlCodes}  from 'vntd-root/config/constants.js';
-import Mesg         from 'vntd-root/components/Mesg.jsx';
-import Lang         from 'vntd-root/stores/LanguageStore.jsx';
+import UiValidate    from 'vntd-shared/forms/validation/UiValidate.jsx';
+import LoadHtml      from 'vntd-shared/utils/LoadHtml.jsx';
+import UserStore     from 'vntd-shared/stores/UserStore.jsx';
+import ErrorStore    from 'vntd-shared/stores/ErrorStore.jsx';
+import InputStore    from 'vntd-shared/stores/NestableStore.jsx';
+import ErrorView     from 'vntd-shared/layout/ErrorView.jsx';
+import StateButton   from 'vntd-shared/utils/StateButton.jsx';
+import Wizard        from 'vntd-shared/layout/Wizard.jsx';
+import Actions       from 'vntd-root/actions/Actions.jsx';
+import History       from 'vntd-shared/utils/History.jsx';
+import {htmlCodes}   from 'vntd-root/config/constants.js';
+import Mesg          from 'vntd-root/components/Mesg.jsx';
+import Lang          from 'vntd-root/stores/LanguageStore.jsx';
+import BoostRegister from 'vntd-shared/component/BoostRegister.jsx';
 
 import StateButtonStore          from 'vntd-shared/stores/StateButtonStore.jsx';
 import {SelectWrap}              from 'vntd-shared/forms/commons/GenericForm.jsx';
@@ -50,11 +51,7 @@ class RegisterHeader extends React.Component
     }
 }
 
-function validateEmail(email) {
-    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(email);
-}
-
+    /*
 class RegisterForm extends React.Component
 {
     constructor(props) {
@@ -487,6 +484,7 @@ class RegisterForm extends React.Component
     }
 }
 
+*/
 class RegisterTos extends React.Component
 {
     render() {
@@ -528,7 +526,7 @@ class RegisterTos extends React.Component
 class Register extends React.Component
 {
     render() {
-        let aboutFmt = "col-md-5 col-lg-5 hidden-xs hidden-sm";
+        let aboutFmt = "col-md-4 col-lg-4 hidden-xs hidden-sm";
         return (
             <div id="extr-page" >
                 <RegisterHeader/>
@@ -538,8 +536,8 @@ class Register extends React.Component
                             <div className={aboutFmt}>
                                 <LoginAbout logoImg={false}/>
                             </div>
-                            <div className="col-xs-12 col-sm-12 col-md-7 col-lg-7">
-                                <RegisterForm/>
+                            <div className="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+                                <BoostRegister/>
                             </div>
                         </div>
                     </div>
@@ -551,4 +549,3 @@ class Register extends React.Component
 }
 
 export default Register
-export { RegisterForm, validateEmail }
