@@ -27,8 +27,6 @@ class DataTable extends React.Component
         }
         node      = ReactDOM.findDOMNode(this);
         element   = $(node);
-        console.log(node);
-        console.log(element);
         dataTable = element.DataTable(this.options);
 
         if (this.props.filter) {
