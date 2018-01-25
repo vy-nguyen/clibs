@@ -157,7 +157,7 @@ class ProductBrief extends React.Component
         return (
             <div className="product-content product-wrap clearfix">
                 <div className="row" onClick={onClickCb}>
-                    <ProductInfo ref={"modal"} modal={true}
+                    <ProductInfo ref="modal" modal={true}
                         product={this.props.product}/>
                     <div className="col-md-5 col-sm-12 col-xs-12">
                         <div className="product-image" style={{minHeight: "150"}}>

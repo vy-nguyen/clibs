@@ -14,11 +14,12 @@ import StateButtonStore  from 'vntd-shared/stores/StateButtonStore.jsx';
 import StateButton       from 'vntd-shared/utils/StateButton.jsx';
 import ModalConfirm      from 'vntd-shared/forms/commons/ModalConfirm.jsx';
 import TabPanel          from 'vntd-shared/layout/TabPanel.jsx';
+import GlobProps         from 'vntd-shared/actions/PropTypes.jsx';
 import Mesg              from 'vntd-root/components/Mesg.jsx';
 import PostComment       from 'vntd-root/components/PostComment.jsx';
 import Lang              from 'vntd-root/stores/LanguageStore.jsx';
-import {VntdGlob}        from 'vntd-root/config/constants.js';
 import EStorePost        from 'vntd-root/pages/e-store/EStorePost.jsx';
+import {VntdGlob}        from 'vntd-root/config/constants.js';
 
 const defaultProps = {
     product: {
@@ -360,7 +361,7 @@ export class BoostProdShopBtn extends React.Component
 }
 
 BoostProdShopBtn.propTypes = {
-    product   : PropTypes.object,
+    product   : GlobProps.product,
     cartOnly  : PropTypes.boolean,
     userUuid  : PropTypes.string.isRequired,
     addCart   : PropTypes.function,
@@ -380,6 +381,9 @@ export class BoostProdDesc extends React.Component
     }
 
     _renderProductInfo(prod) {
+        let buttons = this.props.disable === true ? null :
+            <BoostProdShopBtn articleUuid={prod.articleUuid}/>;
+
         return (
             <div className="col-xs-12 col-sm-12 col-md-5 col-lg-5">
                 <div className="product-title">
@@ -396,8 +400,8 @@ export class BoostProdDesc extends React.Component
                 <div className="product-price">$ {prod.prodPrice}</div>
                 <div><small>{prod.priceNotice}</small></div>
                 <div className="product-stock">In Stock</div>
+                {buttons}
                 <hr/>
-                <BoostProdShopBtn articleUuid={prod.articleUuid}/>
              </div>
         );
     }
@@ -446,7 +450,7 @@ class BoostProduct extends React.Component
         super(props);
     }
 
-    render() {
+    _renderProduct() {
         return (
             <div className="container-fluid">
                 <div className="content-wrapper">
@@ -458,19 +462,26 @@ class BoostProduct extends React.Component
             </div>
         );
     }
+
+    openModal() {
+        this.refs.modal.openModal();
+    }
+
+    render() {
+        if (this.props.modal === true) {
+            return (
+                <ModalConfirm ref="modal" modalTitle="Product">
+                    {this._renderProduct()}
+                </ModalConfirm>
+            );
+        }
+        return this._renderProduct();
+    }
 }
 
 BoostProduct.defaultProps = defaultProps;
 BoostProduct.propTypes = {
-    product: PropTypes.shape({
-        prodTitle  : PropTypes.string.isRequired,
-        prodDesc   : PropTypes.string.isRequired,
-        articleUuid: PropTypes.string.isRequired,
-        pictureUrl : PropTypes.arrayOf(PropTypes.string).isRequired,
-        prodCat    : PropTypes.string,
-        prodPrice  : PropTypes.string,
-        prodName   : PropTypes.string
-    })
+    product: GlobProps.product
 };
 
 export default BoostProduct;
