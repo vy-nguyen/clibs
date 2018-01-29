@@ -20,8 +20,6 @@ import {VntdGlob}      from 'vntd-root/config/constants.js';
 import {UserSection}   from 'vntd-root/components/UserIcon.jsx';
 import {Util}          from 'vntd-shared/utils/Enum.jsx';
 
-import AuthorLinks      from 'vntd-root/components/AuthorLinks.jsx';
-
 const _artDefStyle  = { maxHeight: "auto", minHeight: "100%" },
     _artBoxStyle    = { border: "1px", marginBottom: "10px", background: "#fff" },
     _artAuthorStyle = { color: "#800000", fontSize: "110%" },

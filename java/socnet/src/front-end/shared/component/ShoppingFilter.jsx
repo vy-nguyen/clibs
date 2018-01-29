@@ -71,7 +71,7 @@ let sampleData = [ {
 class ShoppingFilter extends BoostFilter
 {
     constructor(props) {
-        super(props);
+        super(props, null);
     }
 
     _getChildren(item) {

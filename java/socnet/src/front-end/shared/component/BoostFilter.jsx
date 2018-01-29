@@ -12,10 +12,17 @@ import AccordionView   from 'vntd-shared/layout/AccordionView.jsx';
 
 class BoostFilter extends ComponentBase
 {
-    constructor(props) {
-        super(props, null, [InputStore]);
+    constructor(props, store) {
+        super(props, null, [InputStore, store]);
 
-        this.evenRow        = true;
+        // Override these attributes.
+        this.evenRow    = true;
+        this.iconOpen   = 'fa fa-plus';
+        this.iconClose  = 'fa fa-minus';
+        this.evenRowFmt = 'label label-info';
+        this.oddRowFmt  = 'label label-primary';
+        this.itemCount  = false;
+
         this._renderItem    = this._renderItem.bind(this);
         this._renderLink    = this._renderLink.bind(this);
         this._renderElement = this._renderElement.bind(this);
@@ -63,7 +70,7 @@ class BoostFilter extends ComponentBase
     }
 
     _renderElement(parent, children, output) {
-        let style, sub = [];
+        let sub = [];
 
         _.forOwn(children, function(it) {
             if (this._filterOut(it) === true) {
@@ -76,23 +83,22 @@ class BoostFilter extends ComponentBase
             });
         }.bind(this));
 
-        style = this.evenRow ? "label label-info" : "label label-primary";
         this.evenRow = !this.evenRow;
         output.push({
             renderFn : this._renderItem,
             renderArg: parent,
-            textStyle: style,
+            textStyle: this.evenRow ? this.evenRowFmt : this.oddRowFmt,
             fontSize : '12',
             defLabel : true,
-            itemCount: false,
+            itemCount: this.itemCount,
             children : sub,
-            iconOpen : 'fa fa-plus',
-            iconClose: 'fa fa-minus'
+            iconOpen : this.iconOpen,
+            iconClose: this.iconClose
         });
     }
 
     _getTreeViewJson(output) {
-        let items = this.props.items;
+        let items = this.props.items || this.state.items;
 
         _.forEach(items, function(it) {
             this._renderElement(it, this._getChildren(it), output);

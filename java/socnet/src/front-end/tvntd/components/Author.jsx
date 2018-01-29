@@ -115,7 +115,8 @@ class Author extends React.Component
                             <strong><i className="fa fa-book"/>
                                 <Mesg text=" Favorite Posts"/>
                             </strong>
-                            <AuthorLinks authorUuid={self.userUuid}/>
+                            <AuthorLinks authorUuid={self.userUuid}
+                                selKey={this.props.selKey}/>
                         </div>
                     </div>
                 </div>
