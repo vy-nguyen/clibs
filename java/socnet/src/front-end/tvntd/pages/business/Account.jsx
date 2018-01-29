@@ -10,6 +10,7 @@ import PropTypes          from 'prop-types';
 
 import InputBase          from 'vntd-shared/layout/InputBase.jsx';
 import BusinessStore      from 'vntd-root/stores/BusinessStore.jsx';
+import ShoppingFilter     from 'vntd-shared/component/ShoppingFilter.jsx';
 
 class Account extends InputBase
 {
@@ -20,6 +21,8 @@ class Account extends InputBase
     }
 
     render() {
+        return <ShoppingFilter className="col-sx-3 col-sm-3 col-md-3 col-lg-3"/>;
+        /*
         return (
             <div id="content">
                 <div className="wrap">
@@ -190,6 +193,7 @@ class Account extends InputBase
             </div>
             </div>
         );
+                */
     }
 }
 

@@ -15,6 +15,13 @@ const GlobProps = {
         prodCat    : PropTypes.string,
         prodPrice  : PropTypes.string,
         prodName   : PropTypes.string
+    }),
+    treeItem: PropTypes.shape({
+        children : PropTypes.arrayOf(PropTypes.object),
+        defLabel : PropTypes.bool,
+        renderFn : PropTypes.func,
+        itemCount: PropTypes.bool,
+        expanded : PropTypes.bool
     })
 };
 
