@@ -68,10 +68,9 @@ class AuthorLinks extends BoostFilter
             article = ArticleStore.getArticleByUuid(item.articleUuid, item.authorUuid);
 
         if (article == null) {
-            console.log("skip uuid " + item.articleUuid);
             return null;
         }
-        text = item.artTitle.substring(0, 40);
+        text = item.getArtTitle().substring(0, 40);
         item.keyId   = parent.getId();
         item.viewId  = item.authorUuid;
         this.evenRow = !this.evenRow;
