@@ -12,9 +12,26 @@ const GlobProps = {
         prodDesc   : PropTypes.string.isRequired,
         articleUuid: PropTypes.string.isRequired,
         pictureUrl : PropTypes.arrayOf(PropTypes.string).isRequired,
+        priceNotice: PropTypes.string,
         prodCat    : PropTypes.string,
+        prodSpec   : PropTypes.string,
         prodPrice  : PropTypes.string,
-        prodName   : PropTypes.string
+        prodName   : PropTypes.string,
+        prodDetail : PropTypes.string,
+        prodTags   : PropTypes.arrayOf(PropTypes.string)
+    }),
+    prodBrief: PropTypes.shape({
+        logoImg    : PropTypes.string.isRequired,
+        logoWidth  : PropTypes.number,
+        logoHeight : PropTypes.number,
+        logoTag    : PropTypes.string,
+        likeStat   : PropTypes.object,
+        articleUuid: PropTypes.string,
+        prodPrice  : PropTypes.string.isRequired,
+        rating     : PropTypes.number,
+        prodName   : PropTypes.string.isRequired,
+        prodCat    : PropTypes.string,
+        prodDesc   : PropTypes.string.isRequired
     }),
     treeItem: PropTypes.shape({
         children : PropTypes.arrayOf(PropTypes.object),
