@@ -7,7 +7,7 @@ import React            from 'react-mod';
 import PropTypes        from 'prop-types';
 import StarRating       from 'react-star-rating';
 
-import GlobProps        from 'vntd-shared/actions/GlobProps.jsx';
+import GlobProps        from 'vntd-shared/actions/PropTypes.jsx';
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import TabPanel         from 'vntd-shared/layout/TabPanel.jsx';
 import ModalConfirm     from 'vntd-shared/forms/commons/ModalConfirm.jsx';
