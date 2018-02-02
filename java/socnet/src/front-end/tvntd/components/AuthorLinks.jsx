@@ -8,52 +8,57 @@ import _         from 'lodash';
 import $         from 'jquery';
 import React     from 'react-mod';
 
-import TreeView      from 'vntd-shared/layout/TreeView.jsx';
-import AuthorBase    from 'vntd-shared/layout/AuthorBase.jsx';
-import AccordionView from 'vntd-shared/layout/AccordionView.jsx';
+import BoostFilter   from 'vntd-shared/component/BoostFilter.jsx';
 import InputStore    from 'vntd-shared/stores/NestableStore.jsx';
 import AuthorStore   from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleStore  from 'vntd-root/stores/ArticleStore.jsx';
 
-class AuthorLinks extends AuthorBase
+class AuthorLinks extends BoostFilter
 {
     constructor(props) {
-        super(props);
-        this.evenRow        = true;
-        this._renderTag     = this._renderTag.bind(this);
-        this._renderLink    = this._renderLink.bind(this);
-        this._renderElement = this._renderElement.bind(this);
+        super(props, AuthorStore);
+        this.iconOpen  = 'fa fa-folder-open';
+        this.iconClose = 'fa fa-folder';
+        this.itemCount = true;
 
+        if (props != null) {
+            this.state = this._getState(AuthorStore, props);
+        }
+    }
+
+    _getState(store, props) {
         let tagMgr = AuthorStore.getAuthorTagMgr(props.authorUuid);
-        this.state = {
+
+        if (tagMgr == null) {
+            return {
+                tagMgr  : null,
+                items   : null,
+                tagItems: 0
+            };
+        }
+        return {
             tagMgr  : tagMgr,
-            tagItems: tagMgr != null ? tagMgr.getAuthorTagList().length : 0
+            items   : tagMgr.getUserTags(),
+            tagItems: tagMgr.getAuthorTagList().length
         };
     }
 
-    _updateAuthor(data, mgr) {
-        let tagItems = 0,
-            tagMgr   = this.state.tagMgr;
-
-        if (tagMgr == null) {
-            tagMgr   = AuthorStore.getAuthorTagMgr(this.props.authorUuid);
-            tagItems = tagMgr != null ? tagMgr.getAuthorTagList().length : 0;
-        }
-        if (tagItems !== this.state.tagItems) {
-            this.setState({
-                tagMgr  : tagMgr,
-                tagItems: tagItems
-            });
-        }
+    _getChildren(item) {
+        return item.getSortedArticleRank();
     }
 
-    _renderTag(tag) {
-        return (
-            <span>{tag.tagName}</span>
-        );
+    _filterOut(item) {
+        if (item.artTag !== this.props.selKey) {
+            return true;
+        }
+        return false;
     }
 
-    _showItem(item) {
+    _renderItem(item) {
+        return <span>{item.tagName}</span>;
+    }
+
+    _selectItem(item) {
         InputStore.storeItemTrigger(item.keyId, item, true);
         $('#tab-panel-all-' + item.authorUuid).trigger('click');
     }
@@ -65,58 +70,14 @@ class AuthorLinks extends AuthorBase
         if (article == null) {
             return null;
         }
-        text = item.artTitle.substring(0, 40);
+        text = item.getArtTitle().substring(0, 40);
         item.keyId   = parent.getId();
         item.viewId  = item.authorUuid;
         this.evenRow = !this.evenRow;
         return (
-            <p><a onClick={this._showItem.bind(this, item)}>{text}</a></p>
+            <p onClick={this._selectItem.bind(this, item)}>{text}</p>
         );
-    }
-
-    _renderElement(parent, children, output) {
-        if ((children != null) && !_.isEmpty(children)) {
-            let style, sub = [];
-            _.forOwn(children, function(item) {
-                if (item.artTag !== "blog") {
-                    return;
-                }
-                item.parent = parent;
-                sub.push({
-                    renderFn : this._renderLink,
-                    renderArg: item
-                });
-            }.bind(this));
-
-            style = this.evenRow ? "label label-info" : "label label-primary";
-            this.evenRow = !this.evenRow;
-            output.push({
-                renderFn : this._renderTag,
-                renderArg: parent,
-                textStyle: style,
-                fontSize : '12',
-                defLabel : true,
-                children : sub,
-                iconOpen : 'fa fa-folder-open',
-                iconClose: 'fa fa-folder'
-            });
-        }
-    }
-
-    render() {
-        let json = [], tagMgr = this.state.tagMgr;
-        if (tagMgr == null) {
-            return null;
-        }
-        tagMgr.getTreeViewJson(this._renderElement, json);
-        return <AccordionView items={json}/>;
     }
 }
 
 export default AuthorLinks;
-/*
-    <ModalButton className="btn btn-sm btn-primary"
-        buttonText={item.artTitle} closeCb={clickCb.bind(this, item.authorUuid)}>
-        <PostPane data={article}/>
-    </ModalButton>
-*/

@@ -24,7 +24,9 @@ class ComponentBase extends React.Component
             stores = [this._listStores];
         }
         _.forEach(stores, function(st) {
-            this.unsub.push(st.listen(this._updateState.bind(this, st))); 
+            if (st != null) {
+                this.unsub.push(st.listen(this._updateState.bind(this, st)));
+            }
         }.bind(this));
     }
 
@@ -38,10 +40,10 @@ class ComponentBase extends React.Component
     }
 
     _updateState(store, data, item, code) {
-        this.setState(this._getState(store));
+        this.setState(this._getState(store, this.props || {}));
     }
 
-    _getState(store) {
+    _getState(store, props) {
     }
 }
 

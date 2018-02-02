@@ -5,8 +5,10 @@
 
 import _             from 'lodash';
 import React         from 'react';
+import PropTypes     from 'prop-types';
 import classnames    from 'classnames';
 import HtmlRender    from 'vntd-shared/utils/HtmlRender.jsx';
+import GlobProps     from 'vntd-shared/actions/PropTypes.jsx'
 import ArticleRank   from 'vntd-root/components/ArticleRank.jsx';
 
 class TreeViewItem extends React.Component
@@ -67,17 +69,20 @@ class TreeViewItem extends React.Component
     }
 
     static formatLabel(item, label, itemCnt, expanded) {
-        let fontSize = item.fontSize || "14";
-        let textStyle = item.textStyle || "label label-primary";
+        let fontSize = item.fontSize || "14",
+            textStyle = item.textStyle || "label label-primary",
+            expandTxt = expanded ?
+                <i className={item.iconOpen}/> : <i className={item.iconClose}/>;
+                
         return (
-            <span className={textStyle} style={{fontSize: fontSize}}>
-                { expanded ?
-                    <i className={item.iconOpen}/> : <i className={item.iconClose}/> }
-                {label}
-                {itemCnt}
-            </span>
+            <span className={textStyle}
+                style={{fontSize: fontSize}}>{expandTxt} {label} {itemCnt}</span>
         );
     }
+}
+
+TreeViewItem.propTypes = {
+    item: GlobProps.treeItem
 }
 
 class TreeView extends React.Component
@@ -116,7 +121,8 @@ class TreeView extends React.Component
     }
 
     static renderTreeItem(item, expanded, itemCntClass) {
-        let itemCnt = null;
+        let itemCnt = null, output = null, fmtLabel = null;
+
         if (itemCntClass == null) {
             itemCntClass = "badge alert-danger";
         }
@@ -124,9 +130,6 @@ class TreeView extends React.Component
             (item.itemCount == null || item.itemCount === true)) {
             itemCnt = <span className={itemCntClass}>{item.children.length}</span>;
         }
-        let output = null;
-        let fmtLabel = null;
-
         if (item.renderFn == null) {
             if (item.defLabel == null) {
                 output = <HtmlRender html={item.content}/>;
@@ -147,6 +150,12 @@ class TreeView extends React.Component
         }
         return output;
     }
+}
+
+TreeView.propTypes = {
+    className: PropTypes.string,
+    role : PropTypes.string,
+    items: PropTypes.arrayOf(GlobProps.treeItem)
 }
 
 export default TreeView;

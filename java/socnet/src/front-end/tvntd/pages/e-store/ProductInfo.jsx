@@ -7,6 +7,7 @@ import React            from 'react-mod';
 import PropTypes        from 'prop-types';
 import StarRating       from 'react-star-rating';
 
+import GlobProps        from 'vntd-shared/actions/GlobProps.jsx';
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
 import TabPanel         from 'vntd-shared/layout/TabPanel.jsx';
 import ModalConfirm     from 'vntd-shared/forms/commons/ModalConfirm.jsx';
@@ -91,16 +92,7 @@ class ProductInfo extends React.Component
 }
 
 ProductInfo.propTypes = {
-    product: PropTypes.shape({
-        articleUuid: PropTypes.string.isRequired,
-        pictureUrl : PropTypes.arrayOf(PropTypes.string).isRequired,
-        prodPrice  : PropTypes.string.isRequired,
-        priceNotice: PropTypes.string,
-        prodTitle  : PropTypes.string.isRequired,
-        prodDetail : PropTypes.string.isRequired,
-        prodSpec   : PropTypes.string.isRequired,
-        prodTags   : PropTypes.arrayOf(PropTypes.string)
-    })
+    product: GlobProps.product
 };
 
 class ProductBrief extends React.Component
@@ -155,35 +147,23 @@ class ProductBrief extends React.Component
             logoTag = null;
         }
         return (
-            <div className="product-content product-wrap clearfix">
-                <div className="row" onClick={onClickCb}>
-                    <ProductInfo ref={"modal"} modal={true}
-                        product={this.props.product}/>
-                    <div className="col-md-5 col-sm-12 col-xs-12">
-                        <div className="product-image" style={{minHeight: "150"}}>
-                            <img src={prod.logoImg} className='img-responsive'/>
-                        </div>
-                        {logoTag}
-                        <LikeStat data={prod.likeStat} split={true}/>
-                        <StarRating size={15}
-                            totalStars={5} rating={4} disabled={true}/>
-                    </div>
-                    <div className="col-md-7 col-sm-12 col-xs-12">
-                        <div className="product-deatil">
-                            <h5 className="name">
-                                <a href="#">{prod.prodName}
-                                    <span>{prod.prodCat}</span>
-                                </a>
-                            </h5>
-                            <p className="price-container">
-                                <span>{prod.prodPrice}</span>
-                            </p>
-                            <span className="tag1"></span>
-                        </div>
-                        <div className="description"
+            <div className="items">
+                <ProductInfo ref="modal" modal={true} product={prodRank}/>
+                <div className="item" onClick={onClickCb}>
+                    <img src={prod.logoImg} className="img-responsive"/>
+                    {logoTag}
+                    <div className="info">
+                        <h3>{prod.prodName}
+                            <b className="pull-right">${prod.prodPrice}</b>
+                        </h3>
+                        <h5>{prod.prodCat}</h5>
+                        <p className="description"
                             dangerouslySetInnerHTML={{__html: prod.prodDesc}}/>
                     </div>
+                    <LikeStat data={prod.likeStat} split={true}/>
+                    <StarRating size={15} totalStars={5} rating={4} disabled={true}/>
                 </div>
+                <br/>
                 <BoostProdShopBtn articleUuid={prod.articleUuid} cartOnly={true}
                     product={prod} userUuid={this.props.userUuid}
                     addCart={this.addCart} addWish={this.addWish}
@@ -195,19 +175,7 @@ class ProductBrief extends React.Component
 }
 
 ProductBrief.propTypes = {
-    product: PropTypes.shape({
-        logoImg    : PropTypes.string.isRequired,
-        logoWidth  : PropTypes.number,
-        logoHeight : PropTypes.number,
-        logoTag    : PropTypes.string,
-        likeStat   : PropTypes.object,
-        articleUuid: PropTypes.string,
-        prodPrice  : PropTypes.string.isRequired,
-        rating     : PropTypes.number,
-        prodName   : PropTypes.string.isRequired,
-        prodCat    : PropTypes.string,
-        prodDesc   : PropTypes.string.isRequired
-    })
+    product: GlobProps.prodBrief
 };
 
 ProductBrief.defaultProps = {
