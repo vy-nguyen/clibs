@@ -5,6 +5,9 @@ buildscript {
     dependencies {
         classpath 'org.akhikhl.gretty:gretty:+'
     }
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.1'
+    }
 }
 
 plugins {
@@ -18,6 +21,7 @@ apply plugin: 'java'
 apply plugin: 'war'
 apply plugin: 'org.akhikhl.gretty'
 //apply plugin: 'jetty'
+apply plugin: 'com.google.protobuf'
 apply plugin: 'eclipse-wtp'
 
 ext {
@@ -41,8 +45,14 @@ targetCompatibility = "${javaTarget}"
 
 sourceSets {
     main {
+        proto {
+            srcDirs = [ 'src/main/proto' ]
+        }
         java {
-            srcDir file('src/main/java')
+            srcDirs = [
+                'src/main/java',
+                '${buildDir}/gen/main/java'
+            ]
         }
     }
     test {
@@ -58,6 +68,17 @@ ext {
         mainManifest = manifest {
             attributes 'Main-Class': mainClass
         }
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:$protobuf_version"
+    }
+    generateProtoTasks.generatedFilesBaseDir = "$buildDir/gen"
+    generateProtoTasks {
+        all().each { task -> }
+        ofSourceSet('main')
     }
 }
 
@@ -102,6 +123,7 @@ dependencies {
     compile "javax.servlet:servlet-api:2.5"
     compile "org.jsoup:jsoup:1.8.3"
     compile "com.google.maps:google-maps-services:${google_map_version}"
+    compile "com.google.protobuf:protobuf-java:$protobuf_version"
     compile "org.slf4j:slf4j-nop:1.7.25"
 
     compile project(":socialauth")
