@@ -12,7 +12,7 @@ unit           := unit-test.cpp
 
 proj_sys_libs  :=
 proj_foss_libs :=
-proj_dep_libs  :=
+proj_dep_libs  := util
 
 # Arguments to run unit test code
 #
