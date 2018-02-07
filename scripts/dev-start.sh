@@ -51,7 +51,7 @@ sudo apt-get install mysql-server
 
 #
 # mysql --user=root -p
-# GRANT ALL PRIVILEGES ON *.* TO 'socnet'@'localhost';
+# GRANT ALL PRIVILEGES ON *.* TO 'socnet'@'localhost' IDENTIFIED BY 'socnetsocnet';
 # FLUSH PRIVILEGES;
 
 # Sync front-end modules.
