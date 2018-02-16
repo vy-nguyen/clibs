@@ -194,7 +194,7 @@ task nodeJs(type: NodeTask) {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.10'
+    gradleVersion = '4.4'
 }
 
 // processResources.dependsOn(npmPackages)
