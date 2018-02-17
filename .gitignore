@@ -38,6 +38,9 @@
 
 *-def.h
 .gradle
+.classpath
+.project
+**/*/.settings/*
 
 cscope.*
 tags

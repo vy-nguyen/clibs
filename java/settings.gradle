@@ -1,1 +1,1 @@
-include 'socnet', 'socialauth', 'common', 'account', 'skel'
+include 'socnet', 'socialauth', 'common', 'account', 'skel', 'ethereumj/ethereumj-core'

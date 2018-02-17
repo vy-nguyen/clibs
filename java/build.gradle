@@ -2,4 +2,18 @@ allprojects {
 }
 
 subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven'
+
+    compileJava.options.encoding = 'UTF-8'
+    compileJava.options.compilerArgs << '-XDignore.symbol.file'
+
+    compileTestJava.options.encoding = 'UTF-8'
+
+    repositories {
+        jcenter()
+        maven {
+            url "https://dl.bintray.com/ethereum/maven/"
+        }
+    }
 }

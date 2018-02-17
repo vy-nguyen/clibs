@@ -34,3 +34,7 @@
 [submodule "webapp-static"]
 	path = webapp-static
 	url = https://github.com/vy-nguyen/webapp-static.git
+[submodule "java/ethereumj"]
+	path = java/ethereumj
+	url = https://github.com/vy-nguyen/ethereumj.git
+	branch = master
