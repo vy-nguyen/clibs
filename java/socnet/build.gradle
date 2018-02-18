@@ -15,6 +15,11 @@ plugins {
     id 'com.moowork.node' version '0.11'
 }
 
+ext {
+    implTitle = "Soc net"
+    version   = "1.0"
+}
+
 apply from: rootProject.file('common.gradle')
 
 apply plugin: 'java'
@@ -22,12 +27,6 @@ apply plugin: 'war'
 apply plugin: 'org.akhikhl.gretty'
 //apply plugin: 'jetty'
 apply plugin: 'com.google.protobuf'
-apply plugin: 'eclipse-wtp'
-
-ext {
-    implTitle = "Soc net"
-    version   = "1.0"
-}
 
 war {
     baseName = 'socnet'
@@ -148,14 +147,6 @@ gretty {
 
     if (System.properties['org.eclipse.jetty.annotations.maxWait'] != null) {
         jvmArgs.add('-Dorg.eclipse.jetty.annotations.maxWait=' + System.properties['org.eclipse.jetty.annotations.maxWait'])
-    }
-}
-
-eclipse {
-    wtp {
-        component {
-            contextPath = '/'
-        }
     }
 }
 

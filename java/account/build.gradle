@@ -10,7 +10,6 @@ buildscript {
 apply from: rootProject.file('common.gradle')
 apply plugin: 'java'
 apply plugin: 'war'
-apply plugin: 'eclipse-wtp'
 
 ext {
     implTitle  = "Crypto Account"
@@ -68,14 +67,6 @@ sourceSets {
 
 test {
     systemProperties 'TESTDATA': "${projectDir}/src/test/data"
-}
-
-eclipse {
-    wtp {
-        component {
-            contextPath = '/'
-        }
-    }
 }
 
 task getDeps(type: Copy) {
