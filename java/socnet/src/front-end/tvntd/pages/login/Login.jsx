@@ -21,7 +21,7 @@ import StateButton   from 'vntd-shared/utils/StateButton.jsx';
 import ErrorView     from 'vntd-shared/layout/ErrorView.jsx';
 
 import { FormData, ProcessForm } from 'vntd-shared/forms/commons/ProcessForm.jsx';
-import { validateEmail } from 'vntd-root/pages/login/Register.jsx';
+import { validateEmail } from 'vntd-shared/component/BoostRegister.jsx';
 
 class LoginHeader extends React.Component
 {
@@ -346,7 +346,8 @@ class EmailLayout extends FormData
             LoginLayout.authResult(this.getFormId(), this.emailSent, result, status);
 
         if (0 < this.emailSent && this.emailSent < 9) {
-            this.changeSubmitState("saved", false, "Sent Email " + this.emailSent, false);
+            this.changeSubmitState("saved", false,
+                "Sent Email " + this.emailSent, false);
         } else {
             if (this.emailSent < 0) {
                 this.emailSent = 0;
@@ -373,17 +374,20 @@ class LoginForm extends React.Component
     }
 
     componentWillMount() {
+        let start = this.props.startUrl || "/public/vietnam";
+
         if (UserStore.isLogin()) {
             this.data.clearData();
             this.email.clearData();
-            History.pushState(null, "/public/vietnam");
+            History.pushState(null, start);
         }
     }
 
     render() {
+        let clsName = this.props.className || "well no-padding";
         return (
             <div>
-                <div className="well no-padding">
+                <div className={clsName}>
                     <ProcessForm form={this.data}
                         defValue={this.defValue} store={UserStore}/>
                 </div>
@@ -391,7 +395,7 @@ class LoginForm extends React.Component
                     <Mesg text="Or Sign In By Email"/>
                 </h4>
                 <br/>
-                <div className="well no-padding">
+                <div className={clsName}>
                     <ProcessForm form={this.email} store={UserStore}/>
                 </div>
             </div>
@@ -426,4 +430,4 @@ class Login extends React.Component
     }
 }
 
-export { Login, LoginForm, LoginAbout, LoginHeader, LoginSocial }
+export { Login, LoginForm, LoginAbout, LoginHeader, LoginSocial, LoginLayout }

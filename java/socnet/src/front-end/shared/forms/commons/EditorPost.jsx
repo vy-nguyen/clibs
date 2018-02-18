@@ -69,11 +69,11 @@ class PostForm extends FormData
         }, {
             field    : 'video',
             inpName  : 'art-video-',
-            inpHolder: 'Copy published Google link',
+            inpHolder: 'Published Google link from doc or youtube',
             emptyOk  : true,
             inputFmt : inputFmt,
             labelFmt : labelFmt,
-            labelTxt : 'Youtube Link'
+            labelTxt : 'Google Link'
         } ];
         entries.push(this.editorEntry);
 

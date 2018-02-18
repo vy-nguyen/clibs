@@ -49,9 +49,13 @@ class AuthorFeed extends ArticleBase
         this.state = {
             author  : author,
             tabIdx  : tabIdx,
+            tabKey  : 'blog',
             articles: ArticleStore
                 .getSortedArticlesByAuthor(props.authorUuid).slice(0, 2)
         }
+        this.indexMap = [
+            'blog', 'favorite', 'all', 'time', 'estore'
+        ];
     }
 
     _updateArts(data, item, status, update, authorUuid) {
@@ -66,31 +70,31 @@ class AuthorFeed extends ArticleBase
     }
 
     _getAuthorTab(uuid) {
+        let tabItems = [ {
+            domId  : 'article-' + uuid,
+            tabText: 'Articles',
+            tabIdx : 0
+        }, {
+            domId  : 'favorite-' + uuid,
+            tabText: 'Favorites',
+            tabIdx : 1
+        }, {
+            domId  : 'all-' + uuid,
+            tabText: 'All',
+            tabIdx : 2
+        }, {
+            domId  : 'timeline-' + uuid,
+            tabText: 'Timeline',
+            tabIdx : 3
+        }, {
+            domId  : 'estore-' + uuid,
+            tabText: 'E-Store',
+            tabIdx : 4
+        } ];
         return {
             getActivePane: this._getActivePane,
             setActivePane: this._setActivePane,
-
-            tabItems: [ {
-                domId  : 'article-' + uuid,
-                tabText: 'Articles',
-                tabIdx : 0
-            }, {
-                domId  : 'favorite-' + uuid,
-                tabText: 'Favorites',
-                tabIdx : 1
-            }, {
-                domId  : 'all-' + uuid,
-                tabText: 'All',
-                tabIdx : 2
-            }, {
-                domId  : 'timeline-' + uuid,
-                tabText: 'Timeline',
-                tabIdx : 3
-            }, {
-                domId  : 'estore-' + uuid,
-                tabText: 'E-Store',
-                tabIdx : 4
-            } ]
+            tabItems     : tabItems
         };
     }
 
@@ -100,10 +104,12 @@ class AuthorFeed extends ArticleBase
 
     _setActivePane(index) {
         let author = this.state.author;
+
         if (author != null) {
             author.tabPanelIdx = index;
             this.setState({
-                tabIdx: index
+                tabIdx: index,
+                tabKey: this.indexMap[index]
             });
         }
     }
@@ -125,7 +131,7 @@ class AuthorFeed extends ArticleBase
         return (
             <div className="row">
                 <div className="col-sm-3 col-md-3 col-lg-3">
-                    <Author user={author}/>
+                    <Author user={author} selKey={this.state.tabKey}/>
                     {plugin.render.bind(this, plugin)(author.coverImg)}
                 </div>
                 <div className="col-sm-9 col-md-9 col-lg-9">

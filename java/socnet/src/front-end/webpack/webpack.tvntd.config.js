@@ -6,14 +6,16 @@ var baseConfig = require('./tvntd.base.config')
 
 var scripts    = require('./scripts');
 var app_main   = {
-    "tvntd-bundle": path.resolve(__dirname, '../tvntd/main.jsx')
+    "tvntd"     : path.resolve(scripts.rootSrc, 'tvntd/main.jsx'),
+    "tvntd-ads" : path.resolve(scripts.rootSrc, 'tvntd/app-main/ads-main.jsx'),
+    "business"  : path.resolve(scripts.rootSrc, 'tvntd/app-main/business-main.jsx')
 };
 
 var config =  _.merge(baseConfig, {
     entry: _.merge(app_main, scripts.chunks),
 
     output: {
-        path         : path.resolve(__dirname, '../../main/webapp/client'),
+        path         : path.resolve(scripts.webRoot, 'client'),
         filename     : '[name].js',
         publicPath   : 'client/',
         chunkFilename: 'chunk.[id].js',
@@ -21,7 +23,7 @@ var config =  _.merge(baseConfig, {
     },
     devtool: 'cheap-module-source-map ',
     plugins: [
-        new Clean('../../main/webapp/client'),
+        new Clean(path.resolve(scripts.webRoot, 'client')),
         new webpack.optimize.UglifyJsPlugin({
             compress: {
                 warnings: false
@@ -33,13 +35,25 @@ var config =  _.merge(baseConfig, {
                 /bower_components/
             ]
         }),
-        /*
+        new webpack.optimize.CommonsChunkPlugin({
+            name     : "common",
+            chunks   : [
+                "tvntd",
+                "tvntd-ads",
+                "business",
+                "vendor",
+                "vendor.lib",
+                "vendor.datatables"
+            ],
+            minChunks: function(module) {
+                return module.context && module.context.includes("node_modules");
+            }
+        }),
         new webpack.DefinePlugin({
             'process.env': {
                 'NODE_ENV': JSON.stringify('production')
             }
         })
-        */
     ].concat(baseConfig.plugins)
 });
 

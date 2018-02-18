@@ -8,7 +8,6 @@ import _     from 'lodash';
 import React from 'react-mod';
 
 import AuthorBase   from 'vntd-shared/layout/AuthorBase.jsx';
-import ErrorView    from 'vntd-shared/layout/ErrorView.jsx';
 import UserStore    from 'vntd-shared/stores/UserStore.jsx';
 import InputStore   from 'vntd-shared/stores/NestableStore.jsx';
 import AuthorStore  from 'vntd-root/stores/AuthorStore.jsx';

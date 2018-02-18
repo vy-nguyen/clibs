@@ -1,12 +1,19 @@
-import React    from 'react-mod'
-import ReactDOM from 'react-dom'
+'use strict';
 
-class UiSpinner extends React.Component
+import React         from 'react-mod'
+import ReactDOM      from 'react-dom'
+import Colorpicker   from 'vntd-shared/forms/inputs/Colorpicker.jsx';
+
+class UiSpinner extends Colorpicker
 {
-    componentDidMount() {
-        let options = {};
-        let props = this.props;
+    constructor(props) {
+        super(props);
+    }
 
+    componentDidMount() {
+        let options = {}, props = this.props;
+
+        this._getElement();
         if (props.spinnerType == 'decimal') {
             options = {
                 step: 0.01,
@@ -21,11 +28,7 @@ class UiSpinner extends React.Component
                 numberFormat: "C"
             };
         }
-        $(ReactDOM.findDOMNode(this)).spinner(options);
-    }
-
-    render() {
-        return <input type="text" {...this.props} />
+        this.element.spinner(options);
     }
 }
 

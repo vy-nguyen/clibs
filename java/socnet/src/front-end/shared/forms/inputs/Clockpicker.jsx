@@ -1,28 +1,24 @@
 'use strict';
 
 import React         from 'react-mod';
-import ScriptLoader  from 'vntd-shared/utils/mixins/ScriptLoader.jsx';
-import {findDOMNode} from 'react-dom';
+import ReactDOM      from 'react-dom';
 
-let Clockpicker = React.createClass({
-    mixins: [ScriptLoader],
+import asyncLoader   from 'vntd-shared/lib/AsyncLoader.jsx';
+import Colorpicker   from 'vntd-shared/forms/inputs/Colorpicker.jsx';
 
-    componentDidMount: function() {
-        this.loadScript('/rs/client/vendor.ui.js').then(function(){
-            let element = $(findDOMNode(this));
-            let options = {
-                placement: 'top',
-                donetext: 'Done'
-            };
-            element.clockpicker(options);
-        }.bind(this))
-    },
-
-    render: function() {
-        return (
-            <input type="text" {...this.props}/>
-        )
+class Clockpicker extends Colorpicker
+{
+    constructor(props) {
+        super(props);
     }
-});
 
-export default Clockpicker
+    componentDidMount() {
+        this._getElement();
+        this.element.clockpicker({
+            placement: 'top',
+            donetext : 'Done'
+        });
+    }
+}
+
+export default asyncLoader("tvntd-ui", "/rs/client/vendor.ui.js")(Clockpicker);

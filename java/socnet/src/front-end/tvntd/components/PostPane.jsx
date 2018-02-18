@@ -7,6 +7,7 @@
 import _            from 'lodash';
 import React        from 'react-mod';
 import TA           from 'react-typeahead';
+import { Link }     from 'react-router';
 
 import Actions      from 'vntd-root/actions/Actions.jsx';
 import Lang         from 'vntd-root/stores/LanguageStore.jsx';
@@ -22,6 +23,7 @@ import ModalConfirm from 'vntd-shared/forms/commons/ModalConfirm.jsx';
 import EditorPost   from 'vntd-shared/forms/commons/EditorPost.jsx';
 import InputStore   from 'vntd-shared/stores/NestableStore.jsx';
 
+import QuestionStore    from 'vntd-root/stores/QuestionStore.jsx';
 import ArticleStore     from 'vntd-root/stores/ArticleStore.jsx';
 import ArticleTagStore  from 'vntd-root/stores/ArticleTagStore.jsx';
 import UserStore        from 'vntd-shared/stores/UserStore.jsx';
@@ -171,7 +173,7 @@ class TagPost extends React.Component
         let article = this.props.article, refLink = null,
             artRank, value, tagEntry, titleEntry, rankEntry;
 
-        artRank = article.rank;
+        artRank = article.getArticleRank();
         value = this._getTitleValue(artRank);
 
         if (!UserStore.isUserMe(article.authorUuid)) {
@@ -275,7 +277,10 @@ class PublishArticle extends React.Component {
     render() {
         const fmt = "btn btn-primary pull-right";
         let selOpt = ArticleTagStore.getPublicTagsSelOpt("blog"),
-            selDef = !_.isEmpty(selOpt) ? selOpt[0].label : null,
+            eduOpt = ArticleTagStore.getPublicTagsSelOpt("edu"),
+            selDef = !_.isEmpty(selOpt) ? selOpt[0].label : null, pubCat;
+
+        Array.prototype.push.apply(selOpt, eduOpt);
         pubCat = {
             select   : true,
             inpName  : "pub-article",
@@ -289,7 +294,6 @@ class PublishArticle extends React.Component {
             labelFmt : 'control-label col-sx-2 col-sm-2 col-md-2 col-lg-2',
             inputFmt : 'control-label col-sx-10 col-sm-10 col-md-10 col-lg-10'
         };
-
         return (
             <div className="product-deatil">
                 <div className="row">
@@ -346,7 +350,7 @@ class PostPane extends React.Component
             publish : artRank.publishPost,
             editMode: artRank.editMode
         };
-        if (ArticleTagStore.hasPublishedArticle(articleUuid)) {
+        if (article.getArticleUrl() != null) {
             this.state.publish = true;
         }
         this._cancelDel      = this._cancelDel.bind(this);
@@ -384,7 +388,7 @@ class PostPane extends React.Component
     }
 
     _rawMarkup(article) {
-        return { __html: article.content };
+        return { __html: article.getContent() };
     }
 
     _deletePost(article) {
@@ -483,7 +487,7 @@ class PostPane extends React.Component
     render() {
         const fmt = "btn btn-primary pull-right";
         let content, imgs, adminItem = null, ownerItem = null, panelLabel = null,
-            modal, publishModal, ownerPostMenu, refLink = null,
+            modal, publishModal, ownerPostMenu, refLink = null, lessonLink = null,
             article = this.state.article, pictures = null, tagPost = null;
 
         if (article.noData === true) {
@@ -571,7 +575,7 @@ class PostPane extends React.Component
             <div style={VntdGlob.styleContent}
                 dangerouslySetInnerHTML={this._rawMarkup(article)}/>
         );
-        imgs = article.pictureUrl;
+        imgs = article.getPictureUrl();
         if (imgs != null) {
             if (imgs.length == 1) {
                 pictures = <PostItem style={VntdGlob.styleImg} data={imgs}/>
@@ -586,17 +590,24 @@ class PostPane extends React.Component
                 {content}
             </div>
         );
+        if (QuestionStore.getQuestions(article.articleUuid) != null) {
+            lessonLink = (
+                <Link to={"/public/lesson/" + article.articleUuid}>
+                    <h3>Take lesson</h3>
+                </Link>
+            );
+        }
         return (
             <Panel className="well no-padding" context={panelData}>
                 {tagPost}
                 <p className="hidden-xs hidden-sm" style={{fontSize: "140%"}}>
-                    {article.articleUrl}
+                    {article.getArticleUrl()}
                 </p>
                 {refLink}
                 {modal}
                 {publishModal}
                 {content}
-                {refLink}
+                {lessonLink}
                 <PostComment articleUuid={article.articleUuid}/>
             </Panel>
         )

@@ -10,12 +10,12 @@
     <meta name="_domain" content="${domain}"/>
 
     <%-- #CSS Links --%>
-    <%--
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" media="screen" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-      --%>
+    <%--
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/font-awesome.min.css">
+      --%>
 
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/tvntd-plugins.css">
     <link rel="stylesheet" type="text/css" media="screen" href="/rs/css/tvntd.css">
@@ -37,7 +37,7 @@
   <%--
   <script src="/rs/js/tinymce/tinymce.min.js"></script>
   --%>
-  <script src="/rs/client/tvntd-vendor-bundle.js"></script>
-  <script src="/rs/client/tvntd-bundle.js"></script>
+  <script src="/rs/client/common.js"></script>
+  <script src="/rs/client/tvntd.js"></script>
 </body>
 </html>

@@ -42,6 +42,16 @@ class AuthorBase extends React.Component
             authorList: authors
         };
     }
+
+    _hasAuthorUpdate(author, elm, what) {
+        if (what === "update" || what === "remove" || what === "domain") {
+            if (author.userUuid === elm.userUuid) {
+                return true;
+            }
+            return false;
+        }
+        return AuthorStore.hasDiffAuthor(this.state.authorCnt);
+    }
 }
 
 export default AuthorBase;

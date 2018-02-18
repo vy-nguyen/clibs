@@ -9,6 +9,7 @@ import Reflux         from 'reflux';
 import Actions        from 'vntd-root/actions/Actions.jsx';
 import Startup        from 'vntd-root/pages/login/Startup.jsx';
 import CommonStore    from 'vntd-root/stores/CommonStore.jsx';
+import { VConst }     from 'vntd-root/config/constants.js';
 
 let EProductStore = Reflux.createStore({
     store: {},
@@ -19,7 +20,7 @@ let EProductStore = Reflux.createStore({
     },
 
     getProductsByAuthor: function(uuid) {
-        return this.store.getItemsByAuthor(uuid, true);
+        return this.store.getItemsByAuthor(uuid, true, VConst.prods);
     },
 
     iterAuthorEStores: function(uuid, func, arg) {
@@ -105,6 +106,11 @@ let AdsStore = Reflux.createStore({
 
     onGetPublishAdsFailure: function(data) {
         this.store.onGetPublishItemFailure(data, this);
+    },
+
+    onDeleteUserPostCompleted: function(data) {
+        this.store._removeItemStore(data.uuids, data.authorUuid, true);
+        this.trigger(this.store, data, "delOk", true, data.authorUuid);
     },
 
     updateMissingUuid: function(uuids) {

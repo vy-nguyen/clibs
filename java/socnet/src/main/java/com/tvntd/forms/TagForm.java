@@ -71,18 +71,27 @@ public class TagForm
 
     public static class TagOrderResponse extends GenericResponse
     {
-        private TagRank[] tagRanks;
+        private String       userUuid;
+        private TagRank[]    tagRanks;
         private TagArtRank[] artList;
 
         public TagOrderResponse() {
             super(GenericResponse.USER_HOME, "ok", null);
         }
 
-        public TagOrderResponse(TagRank[] tagRanks, TagArtRank[] artList)
+        public TagOrderResponse(String userUuid, TagRank[] tagRanks, TagArtRank[] artList)
         {
             super(GenericResponse.USER_HOME, "ok", null);
             this.tagRanks = tagRanks;
-            this.artList = artList;
+            this.userUuid = userUuid;
+            this.artList  = artList;
+        }
+
+        /**
+         * @return the userUuid
+         */
+        public String getUserUuid() {
+            return userUuid;
         }
 
         /**
@@ -219,6 +228,7 @@ public class TagForm
     {
         private String tagName;
         private String[] artUuid;
+        private ArtRankInfo[] artRanks;
 
         /**
          * @return the tagName
@@ -232,6 +242,49 @@ public class TagForm
          */
         public String[] getArtUuid() {
             return artUuid;
+        }
+
+        /**
+         * @return the artRanks
+         */
+        public ArtRankInfo[] getArtRanks() {
+            return artRanks;
+        }
+    }
+
+    public static class ArtRankInfo
+    {
+        private String tagName;
+        private String artUuid;
+        private Long order;
+
+        public ArtRankInfo() {}
+        public ArtRankInfo(String tagName, String artUuid, Long order)
+        {
+            this.order   = order;
+            this.artUuid = artUuid;
+            this.tagName = tagName;
+        }
+
+        /**
+         * @return the tagName
+         */
+        public String getTagName() {
+            return tagName;
+        }
+
+        /**
+         * @return the artUuid
+         */
+        public String getArtUuid() {
+            return artUuid;
+        }
+
+        /**
+         * @return the order
+         */
+        public Long getOrder() {
+            return order;
         }
     }
 }

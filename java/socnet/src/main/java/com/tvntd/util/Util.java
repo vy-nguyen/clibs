@@ -276,5 +276,16 @@ public final class Util
         return out.toString();
     }
 
+    static public String
+    makeAddress(String street, String city, String state, String zip)
+    {
+        return (new StringBuilder())
+            .append(street != null ? street : "").append(" ")
+            .append(city != null ? city : "").append(", ")
+            .append(state != null ? state : "").append(" ")
+            .append(zip != null ? zip : "")
+            .toString();
+    }
+
     private Util() {}
 }

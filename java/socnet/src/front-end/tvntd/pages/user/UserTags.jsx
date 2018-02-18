@@ -1,204 +1,251 @@
 /**
  * Vy Nguyen (2016)
- * BSD License
  */
 'use strict';
 
-import _            from 'lodash';
-import React        from 'react';
+import _               from 'lodash';
+import React           from 'react-mod';
 
-import UserStore        from 'vntd-shared/stores/UserStore.jsx';
-import StateButtonStore from 'vntd-shared/stores/StateButtonStore.jsx';
-import StateButton      from 'vntd-shared/utils/StateButton.jsx';
-import TreeView         from 'vntd-shared/layout/TreeView.jsx';
-import {NestableSelect} from 'vntd-shared/widgets/Nestable.jsx';
-import AuthorStore      from 'vntd-root/stores/AuthorStore.jsx';
-import ArticleTagStore  from 'vntd-root/stores/ArticleTagStore.jsx';
-import ArticleRank      from 'vntd-root/components/ArticleRank.jsx';
-import Actions          from 'vntd-root/actions/Actions.jsx';
+import Actions         from 'vntd-root/actions/Actions.jsx';
+import ErrorView       from 'vntd-shared/layout/ErrorView.jsx';
+import ArticleBase     from 'vntd-shared/layout/ArticleBase.jsx';
+import UserStore       from 'vntd-shared/stores/UserStore.jsx';
+import ErrorStore      from 'vntd-shared/stores/ErrorStore.jsx';
+import AuthorStore     from 'vntd-root/stores/AuthorStore.jsx';
+import Lang            from 'vntd-root/stores/LanguageStore.jsx';
+import DynamicTable    from 'vntd-root/components/DynamicTable.jsx';
 
-class UserTags extends React.Component
+class ListUserTags extends React.Component
 {
     constructor(props) {
         super(props);
-        this._onSaveTags    = this._onSaveTags.bind(this);
-        this._updateState   = this._updateState.bind(this);
-        this._updateArtTags = this._updateArtTags.bind(this);
-        this._buildTagData  = this._buildTagData.bind(this);
-        this._makeNestableTag  = this._makeNestableTag.bind(this);
-        this._pubTags2Nestable = this._pubTags2Nestable.bind(this);
+        this._deleteRows    = this._deleteRows.bind(this);
+        this._submitDelete  = this._submitDelete.bind(this);
+        this._submitChanges = this._submitChanges.bind(this);
 
-        this.state = this._buildTagData(AuthorStore.getAuthorTagMgr(props.userUuid));
+        this.footer = [ {
+            format: "btn btn-primary pull-right",
+            title : "Save Changes",
+            onSubmit: this._submitChanges
+        }, {
+            format: "btn btn-danger pull-right",
+            title : "Delete Selected Rows",
+            onSubmit: this._deleteRows
+        }, {
+            format: "btn btn-danger pull-right",
+            title : "Delete Tag!",
+            onSubmit: this._submitDelete
+        } ];
+        this.tabHeader = [ {
+            key   : "artTag",
+            format: "",
+            header: Lang.translate("Kind")
+        }, {
+            key   : "tagSelect",
+            format: "",
+            header: Lang.translate("Change Tag")
+        }, {
+            key   : "artTitle",
+            format: "",
+            header: Lang.translate("Article Title")
+        }, {
+            key   : "contentBrief",
+            format: "fa fa-book",
+            header: Lang.translate("Summarized")
+        }, {
+            key   : "rank",
+            format: "",
+            header: Lang.translate("Rank Order")
+        } ];
     }
 
-    componentDidMount() {
-        this.unsub = AuthorStore.listen(this._updateState);
-        this.unsubArtTag = ArticleTagStore.listen(this._updateArtTags);
+    _getErrorId() {
+        return this.props.authorTag.tagName + "-error";
     }
 
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsubArtTag();
-            this.unsub = null;
-            this.unsubArtTag = null;
+    _submitChanges(changes) {
+        if (_.isEmpty(changes)) {
+            ErrorStore.reportErrMesg(this._getErrorId(),
+                "You don't have any changed data", null);
+            return false;
         }
-    }
-
-    _updateState(data) {
-        this.setState({
-            tagMgr: AuthorStore.getAuthorTagMgr(this.props.userUuid)
+        let artRanks = [], authorTag = this.props.authorTag,
+        cmd = {
+            tagRanks: null,
+            userUuid: UserStore.getSelfUuid(),
+            artList : [ {
+                tagName : authorTag.tagName,
+                artUuid : null,
+                artRanks: artRanks
+            } ]
+        };
+        _.forEach(changes, function(it) {
+            artRanks.push({
+                order  : it.rank,
+                tagName: it.tagSelect,
+                artUuid: it.articleUuid
+            });
         });
+        Actions.commitTagRanks(authorTag.getMyTagMgr(), cmd);
+        return true;
     }
 
-    _updateArtTags(data, tagMgr) {
-        if (tagMgr != null && tagMgr === this.state.tagMgr) {
-            let state = this._buildTagData(this.state.tagMgr);
-            this.setState(state);
-            NestableSelect.buildIndex(this.props.userUuid, true, state.tagTree);
+    _submitDelete(changes) {
+        let authorTag = this.props.authorTag,
+            sortedArts = authorTag.getSortedArticleRank();
+
+        if (!_.isEmpty(sortedArts)) {
+            ErrorStore.reportErrMesg(this._getErrorId(),
+                "You need to move or delete articles in this table", null);
+            return false;
+        }
+        Actions.deleteUserTag(authorTag.getMyTagMgr(), {
+            userUuid: UserStore.getSelfUuid(),
+            tagRanks: [ {
+                tagName: authorTag.tagName
+            } ]
+        });
+        return true;
+    }
+
+    _deleteRows(changes) {
+        let cmd, authorTag = this.props.authorTag;
+
+        if (_.isEmpty(changes)) {
+            ErrorStore.reportErrMesg(this._getErrorId(),
+                "You don't have any rows to delete", null);
+            return false;
+        }
+        cmd = {
+            uuids     : [],
+            uuidType  : "article",
+            authorUuid: UserStore.getSelfUuid()
+        };
+        _.forEach(changes, function(it) {
+            cmd.uuids.push(it.articleUuid);
+        });
+        Actions.deleteUserPost(cmd);
+        return true;
+    }
+
+    _getTableData(sortedArts, authorTag, tagSelect) {
+        let tagName, data = [];
+
+        _.forOwn(sortedArts, function(brief) {
+            tagName = authorTag.tagName;
+            data.push({
+                rowId    : _.uniqueId(tagName),
+                artTag   : brief.artTag,
+                artTitle : brief.artTitle,
+                tagSelect: {
+                    select   : true,
+                    inpHolder: tagName,
+                    inpDefVal: tagName,
+                    selectOpt: tagSelect,
+                    inpName  : _.uniqueId()
+                },
+                rank: {
+                    inpValue : brief.rank,
+                    inpDefVal: brief.rank,
+                    inpHolder: 0,
+                    inpName  : _.uniqueId()
+                },
+                contentBrief: brief.contentBrief,
+                articleUuid : brief.getArticleUuid()
+            });
+        }.bind(this));
+        return data;
+    }
+
+    render() {
+        let authorTag = this.props.authorTag, tagSel = this.props.tagSel,
+            sortedArts = authorTag.getSortedArticleRank();
+
+        return (
+            <DynamicTable tableFormat={this.tabHeader}
+                tableData={this._getTableData(sortedArts, authorTag, tagSel)}
+                tableTitle={"Tag: " + authorTag.tagName} edit={false}
+                tableFooter={this.footer} cloneRow={null}
+                select={true} tableId={'user-tag-' + authorTag.tagName}>
+                <ErrorView mesg={true} errorId={this._getErrorId()}/>
+            </DynamicTable>
+        );
+    }
+}
+
+class UserTags extends ArticleBase
+{
+    constructor(props) {
+        let self = UserStore.getSelf();
+
+        super(props);
+        this._updateArts   = this._updateArts.bind(this);
+        this._updateAuthor = this._updateAuthor.bind(this);
+
+        if (self != null) {
+            this.state.self   = self;
+            this.state.tagMgr = AuthorStore.getAuthorTagMgr(self.userUuid);
         }
     }
 
-    _pubTags2Nestable(tagArray, tagTree, tagIndex) {
-        let admin = UserStore.amIAdmin();
-        _.forEach(tagArray, function(pub) {
-            let tagItem = {
-                itemId     : pub._id,
-                itemSub    : admin,
-                canRemove  : false,
-                itemFmt    : 'dd3-item',
-                contentFmt : 'dd3-content',
-                itemContent: <b>{pub.tagName}</b>,
-                itemSave   : {
-                    pubTag : true,
-                    tagName: pub.tagName,
-                    article: false
-                }
-            };
-            if (!_.isEmpty(pub.subTags)) {
-                tagItem.children = [];
-                this._pubTags2Nestable(pub.subTags, tagItem.children, tagIndex);
-            } else {
-                tagItem.children = null;
-            }
-            tagTree.push(tagItem);
-            tagIndex[pub.tagName] = tagItem;
-            tagIndex[tagItem.itemId] = tagItem;
-        }.bind(this));
+    // @Override
+    //
+    componentDidMount() {
+        super.componentDidMount();
+        this.unsubAuthor = AuthorStore.listen(this._updateAuthor);
     }
 
-    _makeNestableTag(tag, children, out) {
-        if (_.isEmpty(tag.tagName)) {
+    // @Override
+    //
+    componentWillUnmount() {
+        super.componentWillUnmount();
+        if (this.unsubAuthor != null) {
+            this.unsubAuthor();
+            this.unsubAuthor = null;
+        }
+    }
+
+    // @Override
+    //
+    _updateArts(store, data, status, update, authorUuid) {
+        let self = this.state.self;
+
+        if (status === "delOk" && self.userUuid === authorUuid) {
+            this.setState({
+                tagMgr: AuthorStore.getAuthorTagMgr(self.userUuid)
+            });
+        }
+    }
+
+    _updateAuthor(data, elm, what) {
+        let self = this.state.self;
+
+        if (self == null) {
             return;
         }
-        let tagItem = {
-            itemId     : tag._id,
-            itemSub    : true,
-            canRemove  : true,
-            itemFmt    : 'dd3-item',
-            contentFmt : 'dd3-content',
-            itemContent: tag.tagName,
-            itemSave   : {
-                pubTag : false,
-                tagName: tag.tagName,
-                article: false
-            }
-        };
-        let sortedRank = tag.getSortedArticleRank();
-        if (!_.isEmpty(sortedRank)) {
-            tagItem.children = [];
-            _.forEach(sortedRank, function(art) {
-                tagItem.children.push({
-                    itemId     : art.articleUuid,
-                    itemSub    : false,
-                    canRemove  : true,
-                    itemFmt    : 'dd3-item',
-                    contentFmt : 'dd3-content',
-                    itemContent: <i>{art.artTitle}</i>,
-                    itemSave   : {
-                        pubTag : false,
-                        tagName: art.artTitle,
-                        article: true
-                    }
-                });
+        if (what === "delTag") {
+            this.setState({
+                tagMgr: AuthorStore.getAuthorTagMgr(self.userUuid)
             });
-        }
-        let parent = out.tagIndex[tag.tagName];
-        if (parent == null) {
-            out.tagTree.push(tagItem);
-            out.tagIndex[tag.tagName] = tagItem;
-        } else {
-            if (parent.children == null) {
-                parent.children = [];
-            }
-            parent.children.push(tagItem);
-        }
-        out.tagIndex[tagItem.itemId] = tagItem;
-    }
-
-    _buildTagData(tagMgr) {
-        let outTag = {
-            tagMgr  : tagMgr,
-            tagTree : [],
-            tagIndex: {}
-        };
-        this._pubTags2Nestable(ArticleTagStore.getAllPublicTags(), outTag.tagTree, outTag.tagIndex);
-        tagMgr.getTreeViewJson(this._makeNestableTag, outTag);
-
-        return outTag;
-    }
-
-    _onSaveTags(tags, btnId) {
-        let index = {};
-        let tagRank = {
-            userUuid: UserStore.getSelfUuid(),
-            tagRanks: [],
-            artList : []
-        };
-        _.forEach(tags, function(t) {
-            index[t.itemId] = t;
-        });
-        let artTag  = {};
-        let artList = tagRank.artList;
-        let ranks   = tagRank.tagRanks;
-
-        _.forEach(tags, function(t) {
-            let parent = index[t.parentId];
-            ranks.push({
-                tagName: t.tagName,
-                parent : parent != null ? parent.tagName : null,
-                pubTag : t.pubTag,
-                rank   : t.order,
-                article: t.article
-            });
-            if (t.article === true && parent != null) {
-                if (artTag[parent.tagName] == null) {
-                    artTag[parent.tagName] = {};
-                }
-                artTag[parent.tagName][t.itemId] = t.tagName;
-            }
-        });
-        _.forOwn(artTag, function(val, key) {
-            let artUuid = [];
-            _.forOwn(val, function(v, k) {
-                artUuid.push(k);
-            });
-            artList.push({
-                tagName: key,
-                artUuid: artUuid
-            });
-        });
-        let tagMgr = this.state.tagMgr;
-        if (tagMgr != null) {
-            tagMgr.btnId = btnId;
-            Actions.commitTagRanks(tagMgr, tagRank);
         }
     }
 
     render() {
+        let tagTab, tagSel, tagMgr = this.state.tagMgr;
+
+        if (tagMgr == null) {
+            return null;
+        }
+        tagSel = tagMgr.getAuthorTagSelect();
+        tagTab = _.map(tagMgr.getAuthorTagList(), function(tag) {
+            return <ListUserTags authorTag={tag} tagMgr={tagMgr} tagSel={tagSel}/>;
+        });
         return (
-            <NestableSelect items={this.state.tagTree}
-                id={this.props.userUuid} onSave={this._onSaveTags}/>
+            <div id="content">
+                <section id="widget-grid" className="">
+                    {tagTab}
+                </section>
+            </div>
         );
     }
 }

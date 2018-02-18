@@ -51,13 +51,15 @@ class AccordionView extends React.Component {
     }
 
     render() {
-        let activeKey = this.state.activeKey, elmView = [], header, content;
+        let activeKey = this.state.activeKey || "0", elmView = [],
+            order = 0, expand, header, content;
 
         _.forOwn(this.props.items, function(item) {
             if (!item.children || !item.children.length) {
                 return;
             }
-            header = TreeView.renderTreeItem(item, true, null);
+            expand = order.toString() === activeKey ? true : false;
+            header = TreeView.renderTreeItem(item, expand, null);
             content = item.children.map(function(it) {
                 return (
                     <div key={_.uniqueId('acc-content-')}>
@@ -65,6 +67,7 @@ class AccordionView extends React.Component {
                     </div>
                 );
             });
+            order++;
             elmView.push(
                 <Panel header={header} key={item.keyId}>
                     {content}

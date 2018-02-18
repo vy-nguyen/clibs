@@ -50,6 +50,7 @@ import com.tvntd.util.Util;
 @Entity
 public class Author
 {
+    public static Long hasEduPost = 0x00000001L;
     static private Logger s_log = LoggerFactory.getLogger(Author.class);
 
     @Id
@@ -58,6 +59,8 @@ public class Author
 
     @Column(length = 64)
     private String frontArtUuid;
+
+    private Long postMasks;
 
     @Column(length = 64)
     @ElementCollection(fetch = FetchType.EAGER)
@@ -238,6 +241,20 @@ public class Author
      */
     public void setFrontArtUuid(String frontArtUuid) {
         this.frontArtUuid = frontArtUuid;
+    }
+
+    /**
+     * @return the postMasks
+     */
+    public Long getPostMasks() {
+        return postMasks;
+    }
+
+    /**
+     * @param postMasks the postMasks to set
+     */
+    public void setPostMasks(Long postMasks) {
+        this.postMasks = postMasks;
     }
 
     /**

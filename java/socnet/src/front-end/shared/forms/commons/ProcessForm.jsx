@@ -4,7 +4,8 @@
 'use strict';
 
 import _                  from 'lodash';
-import React, {PropTypes} from 'react-mod';
+import React              from 'react-mod';
+import PropTypes          from 'prop-types';
 
 import StateButtonStore   from 'vntd-shared/stores/StateButtonStore.jsx';
 import InputStore         from 'vntd-shared/stores/NestableStore.jsx';
@@ -48,15 +49,27 @@ class FormData
         if (this.forms.formId != null) {
             ErrorStore.clearError(this.forms.formId);
         }
+        this.errFlags = null;
     }
 
     clearData() {
+        let entryInfo = [];
+
         this.iterFormFields(null, null, function(arg, entry) {
             InputStore.freeItemIndex(entry.inpName);
         });
         if (this.dzImage != null) {
             this.dzImage.removeAllFiles();
         }
+        this.iterFormFields(entryInfo, null, function(einfo, entry, section) {
+            entry.errorFlag = false;
+            if (entry.editor === true) {
+                entry.inpDefVal = "";
+            } else {
+                entry.inpDefVal = null;
+            }
+        });
+        this.clearError();
     }
 
     setImageId(imgId) {
@@ -152,7 +165,7 @@ class FormData
         this.initialized = true;
 
         this.iterFormFields(null, null, function(sub, entry, section) {
-            entry.inpName = this._getId(entry.inpName);
+            entry.inpName = this._getId(entry.inpName || entry.field);
             if (entry.dropzone === true) {
                 this.setImageId(entry.inpName);
                 entry.handlers = {
@@ -169,6 +182,15 @@ class FormData
             }
             this._setDefValue(value, entry);
         }.bind(this));
+    }
+
+    modifyField(field, key, value) {
+        this.iterFormFields(null, null, function(sub, entry, section) {
+            if (entry.field === field) {
+                entry[key] = value;
+            }
+            return sub;
+        });
     }
 
     _setDefValue(value, entry) {
@@ -210,9 +232,20 @@ class FormData
         return img;
     }
 
-    setValues(errFlags) {
+    setErrors(errFlags, save) {
         let val, hasValue = false;
 
+        if (_.isEmpty(errFlags)) {
+            return false;
+        }
+        if (save === true) {
+            this.errFlags = errFlags;
+        } else {
+            // Merge with current errors and clear internal errors.
+            //
+            _.merge(errFlags, this.errFlags);
+            this.errFlags = null;
+        }
         this.iterFormFields(errFlags, null, function(flags, entry, section) {
             if (flags[entry.field] != null) {
                 entry.errorFlag = true;
@@ -295,9 +328,16 @@ class FormData
     }
 
     renderTwoCols(section, onBlur) {
-        let blur, col1, col2, entry,
+        let blur, col1, col2, entry, leftFmt, rightFmt,
             out = [], entries = section.entries, length = entries.length;
 
+        if (section.leftFmt != null) {
+            leftFmt  = section.leftFmt;
+            rightFmt = section.rightFmt ? section.rightFmt : section.leftFmt;
+        } else {
+            leftFmt  = "col-xs-12 col-sm-12 col-md-6 col-lg-6";
+            rightFmt = leftFmt;
+        }
         for (let i = 0; i < length; i = i + 2) {
             col2  = null;
             entry = entries[i];
@@ -309,10 +349,10 @@ class FormData
             }
             out.push(
                 <div className="row" key={_.uniqueId('form-col-')}>
-                    <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                    <div className={leftFmt}>
                         {col1}             
                     </div>
-                    <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                    <div className={rightFmt}>
                         {col2}             
                     </div>
                 </div>
@@ -411,7 +451,7 @@ class FormData
         return data;
     }
 
-    submitNotif(store, result, status, resp) {
+    submitNotif(store, data, result, status, cb) {
         this.clearData();
         this.changeSubmitState("saved", false);
 
@@ -421,9 +461,19 @@ class FormData
         this._onClickBtn = null;
     }
 
-    submitFailure(result, status) {
+    submitError(store, result, status) {}
+    submitFailure(store, result, status) {}
+
+    submitFailureBase(store, result, status, context) {
+        this.submitFailure(store, result, status, context);
         this.changeSubmitState("failure", false);
         this._setAllDefValues();
+    }
+
+    submitErrorBase(store, result, status) {
+        this.changeSubmitState("failure", false);
+        ErrorStore.reportErrMesg(this.getFormId(), result.error, result.message);
+        return this.submitError(store, result, status);
     }
 
     submitAct(data) {
@@ -487,6 +537,12 @@ class ProcessForm extends React.Component
         this.unsub = this.props.store.listen(this._updateState);
     }
 
+    componentWillUpdate(nextProps, nextState) {
+        if (this.props.form != nextProps.form) {
+            this._setContext(nextProps);
+        }
+    }
+
     componentWillUnmount() {
         if (this.unsub != null) {
             this.unsub();
@@ -504,6 +560,9 @@ class ProcessForm extends React.Component
                 errFlags: {}
             });
         }
+        if (this.props.onBlur != null) {
+            this.props.onBlur(context);
+        }
     }
 
     _onFocusBrief(key) {
@@ -512,18 +571,34 @@ class ProcessForm extends React.Component
         });
     }
 
-    _updateState(data, result, status, resp) {
-        let context = this.props.form;
+    _updateState(data, result, status, isArr, cb) {
+        let errFlags = null, context = this.props.form;
 
-        if (context.isSubmitting() === true) {
-            context.submitNotif(this.props.store, data, result, status);
-
-            if (this._imgDz != null) {
-                this._imgDz.removeAllFiles();
-            }
-            this.setState(this._getInitState());
+        if (context.isSubmitting() !== true) {
             return;
         }
+        if (status === "failure" || result.error != null) {
+            let store = this.props.store;
+
+            if (status === "failure") {
+                errFlags = context.submitFailureBase(store, result, status, cb);
+            }
+            if (result.error != null) {
+                errFlags = context.submitErrorBase(store, result, status, cb);
+            }
+            if (errFlags != null && ! _.isEmpty(errFlags)) {
+                this.setState({
+                    errFlags: errFlags
+                });
+            }
+            return;
+        }
+        context.submitNotif(this.props.store, data, result, status, cb);
+
+        if (this._imgDz != null) {
+            this._imgDz.removeAllFiles();
+        }
+        this.setState(this._getInitState());
     }
 
     _submitClick() {
@@ -542,7 +617,7 @@ class ProcessForm extends React.Component
     render() {
         let hasVal, context = this.props.form, inpHolder = context.getBriefMesg();
 
-        hasVal = context.setValues(this.state.errFlags);
+        hasVal = context.setErrors(this.state.errFlags, false);
         if (this.state.inpBrief === true && hasVal === false) {
             return (
                 <input ref="briefBox" className="form-control"

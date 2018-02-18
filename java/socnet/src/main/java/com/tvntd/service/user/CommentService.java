@@ -27,7 +27,7 @@
 package com.tvntd.service.user;
 
 import java.nio.charset.Charset;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -37,11 +37,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.tvntd.dao.ArticleAttrRepo;
 import com.tvntd.dao.CommentRankRepo;
 import com.tvntd.dao.CommentRepo;
 import com.tvntd.forms.CommentChangeForm;
 import com.tvntd.forms.CommentForm;
-import com.tvntd.models.ArticleRank;
+import com.tvntd.models.ArticleAttr;
 import com.tvntd.models.Comment;
 import com.tvntd.models.CommentRank;
 import com.tvntd.service.api.ICommentService;
@@ -54,10 +55,13 @@ public class CommentService implements ICommentService
     static private Logger s_log = LoggerFactory.getLogger(CommentService.class);
 
     @Autowired
-    CommentRepo commentRepo;
+    protected CommentRepo commentRepo;
 
     @Autowired
-    CommentRankRepo rankRepo;
+    protected ArticleAttrRepo artAttrRepo;
+
+    @Autowired
+    protected CommentRankRepo rankRepo;
 
     @Override
     public CommentDTOResponse getCommentPost(String articleUuid)
@@ -68,25 +72,31 @@ public class CommentService implements ICommentService
     @Override
     public CommentDTOResponse getCommentPost(String[] uuidList)
     {
-        CommentDTOResponse out = new CommentDTOResponse();
+        List<String> uuids = new LinkedList<>();
 
-        for (String uuid : uuidList) {
-            getCommentForArticle(uuid, out);
+        for (String uid : uuidList) {
+            uuids.add(uid);
         }
-        return out;
+        return getCommentPost(uuids);
     }
 
     @Override
-    public CommentDTOResponse getCommentPost(ArrayList<String> uuidList)
+    public CommentDTOResponse getCommentPost(List<String> uuidList)
     {
         CommentDTOResponse out = new CommentDTOResponse();
-        for (String uuid : uuidList) {
-            getCommentForArticle(uuid, out);
+        List<Comment> cmts = commentRepo.findByArticleUuidIn(uuidList);
+
+        for (Comment c : cmts) {
+            CommentRank r = null;
+            if (c.isHashRank() == true) {
+                r = rankRepo.findByCommentId(c.getId());
+            }
+            out.addComment(c, r);
         }
         return out;
     }
 
-    private void getCommentForArticle(String uuid, CommentDTOResponse resp)
+    protected void getCommentForArticle(String uuid, CommentDTOResponse resp)
     {
         List<Comment> out = commentRepo.findAllByArticleUuid(uuid);
 
@@ -141,33 +151,35 @@ public class CommentService implements ICommentService
     }
 
     @Override
-    public void setFavorite(Long id, String articleUuid, boolean favorite)
+    public ArticleAttr updateComment(CommentChangeForm form, ProfileDTO me)
     {
-        Comment co = commentRepo.findById(id);
-        if (co != null) {
-            co.setFavorite(favorite);
-            commentRepo.save(co);
-        }
-    }
-
-    @Override
-    public ArticleRank updateComment(CommentChangeForm form, ProfileDTO me)
-    {
+        ArticleAttr result = new ArticleAttr(form);
         String artUuid = form.getArticleUuid();
-        String kind = form.getKind();
-        Long id = form.getCommentId();
+        String kind    = form.getKind();
+        Long id        = form.getCommentId();
+        Comment co     = commentRepo.findById(id);
+
+        if (co == null || !artUuid.equals(co.getArticleUuid())) {
+            System.out.println("Miss match id, uuid " + artUuid + ", id " + id);
+            return null;
+        }
+        result.setCommentId(id);
+        result.setArticleUuid(artUuid);
 
         if (kind.equals("fav")) {
-            setFavorite(id, artUuid, form.isFavorite());
+            co.setFavorite(form.isFavorite());
+            commentRepo.save(co);
+
+            result.setFavorite(co.isFavorite());
 
         } else if (kind.equals("like")) {
             CommentRank rank = rankRepo.findByCommentId(id);
+
+            if (co.isHashRank() == false) {
+                co.setHashRank(true);
+                commentRepo.save(co);
+            }
             if (rank == null) {
-                Comment co = commentRepo.findById(id);
-                if (co != null) {
-                    co.setHashRank(true);
-                    commentRepo.save(co);
-                }
                 rank = new CommentRank();
                 rank.setCommentId(id);
             }
@@ -176,13 +188,10 @@ public class CommentService implements ICommentService
             } else {
                 rank.removeUserLiked(me.getUserUuid());
             }
-            ArticleRank result = new ArticleRank(form, me.getUserUuid());
-            result.setUserLiked(rank.getUserLiked());
-
             rankRepo.save(rank);
-            return result;
+            result.setUserLiked(rank.getUserLiked());
         }
-        return new ArticleRank(form, me.getUserUuid());
+        return result;
     }
 
     public static void applyForm(CommentForm form, Comment comment)

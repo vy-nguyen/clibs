@@ -4,18 +4,18 @@
 'use strict';
 
 import React          from 'react';
+import PropTypes      from 'prop-types';
 import $              from 'jquery';
 import TinyMCE        from 'react-tinymce';
 import NestableStore  from 'vntd-shared/stores/NestableStore.jsx';
-import ErrorView      from 'vntd-shared/layout/ErrorView.jsx';
 import {Util}         from 'vntd-shared/utils/Enum.jsx';
 
 class Editor extends React.Component
 {
     static propTypes() {
         return {
-            content : React.PropTypes.string.isRequired,
-            onChange: React.PropTypes.func.isRequired
+            content : PropTypes.string.isRequired,
+            onChange: PropTypes.func.isRequired
         }
     }
 
@@ -155,9 +155,15 @@ class EditorEntry extends React.Component
                 });
             };
         }
+        if (global.testMode == null) {
+            return (
+                <TinyMCE id={entry.inpName} content={entry.inpDefVal}
+                    config={config} onChange={this._onChange}/>
+            );
+        }
         return (
-            <TinyMCE id={entry.inpName} content={entry.inpDefVal}
-                config={config} onChange={this._onChange}/>
+            <textarea id={entry.inpName} rows="2" className="form-control input-sm"
+                placeholder={entry.inpDefVal}/>
         );
     }
 }

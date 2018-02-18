@@ -51,7 +51,7 @@ import com.tvntd.config.TestPersistenceJPAConfig;
 import com.tvntd.config.TestSecurityConfig;
 import com.tvntd.config.TestTvntdRootConfig;
 import com.tvntd.config.TestTvntdWebConfig;
-import com.tvntd.service.api.IArticleService;
+import com.tvntd.service.api.IArticleSvc;
 import com.tvntd.service.api.IMenuItemService;
 import com.tvntd.service.api.IMenuItemService.MenuItemResp;
 import com.tvntd.service.api.IUserNotifService;
@@ -85,7 +85,7 @@ public class MenuItemTest
     IUserNotifService userNotifService;
 
     @Autowired
-    IArticleService articleSvc;
+    IArticleSvc       articleSvc;
 
     @Before
     public void setUpStreams()
@@ -138,22 +138,12 @@ public class MenuItemTest
     @Test
     public void testArticleService()
     {
-        String rsDir = System.getProperty("TestResource");
-        String jsonFile = rsDir + "/article-sample.json";
+        // String rsDir = System.getProperty("TestResource");
 
-        articleSvc.saveArticles(jsonFile, rsDir);
     }
 
     @Test
     public void testSaveArticle()
     {
-        /*
-        Article art = new Article();
-        art.setTopic("Example Topic".getBytes());
-        art.setContent("Example Content".getBytes());
-        articleSvc.saveArticle(art);
-
-        articleSvc.deleteArticle(UUID.fromString(art.getArticleUuid()));
-        */
     }
 }

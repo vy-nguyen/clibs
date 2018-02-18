@@ -4,7 +4,9 @@
  */
 'use strict';
 
+import $           from 'jquery';
 import React       from 'react-mod';
+import PropTypes   from 'prop-types';
 import Modal       from 'react-modal';
 import NavStore    from 'vntd-shared/stores/NavigationStore.jsx';
 import Mesg        from 'vntd-root/components/Mesg.jsx';
@@ -90,7 +92,7 @@ class ModalChoice extends React.Component
         const fmt = "btn btn-primary pull-right";
         let mesg = this.props.closeWarning != null ?
             this.props.closeWarning :
-            "You may loose unsaved data, ok to close?",
+            "You may lose unsaved data, ok to close?",
 
         cancelBtn = this.props.cancelFn == null ? null :
             <button className={fmt} onClick={this._cancelClick}>
@@ -122,10 +124,10 @@ class ModalConfirm extends React.Component
 {
     static propTypes() {
         return {
-            openCb    : React.PropTypes.func,
-            closeCb   : React.PropTypes.func,
-            modalTitle: React.PropTypes.string.isRequired,
-            any       : React.PropTypes.any
+            openCb    : PropTypes.func,
+            closeCb   : PropTypes.func,
+            modalTitle: PropTypes.string.isRequired,
+            any       : PropTypes.any
         }
     }
 
@@ -204,7 +206,7 @@ class ModalConfirm extends React.Component
             </Modal>
         );
     }
-};
+}
 
 export { ModalConfirm, ModalChoice, modalStyle, dialogStyle }
 export default ModalConfirm;

@@ -3,15 +3,15 @@
  */
 'use strict';
 
-import _                  from 'lodash';
-import React, {PropTypes} from 'react-mod';
+import _                   from 'lodash';
+import React               from 'react-mod';
+import PropTypes           from 'prop-types';
 
 import StateButton         from 'vntd-shared/utils/StateButton.jsx';
 import JarvisWidget        from 'vntd-shared/widgets/JarvisWidget.jsx';
 import ArticleTagStore     from 'vntd-root/stores/ArticleTagStore.jsx';
 import Actions             from 'vntd-root/actions/Actions.jsx';
 import Mesg                from 'vntd-root/components/Mesg.jsx';
-import AdsRoomRenting      from './AdsRoomRenting.jsx';
 import { AdsStore }        from 'vntd-root/stores/ArticleStore.jsx';
 import { FormData, ProcessForm } from 'vntd-shared/forms/commons/ProcessForm.jsx';
 
@@ -26,10 +26,10 @@ class BusAds extends FormData
     initData() {
         let adsOpt = ArticleTagStore.getPublicTagsSelOpt("ads"),
             adsOptDef = !_.isEmpty(adsOpt) ? adsOpt[0].label : null,
-            wLabelFmt = 'control-label col-sx-2 col-sm-2 col-md-2 col-lg-2',
-            wInputFmt = 'control-label col-sx-10 col-sm-10 col-md-10 col-lg-10',
-            cLabelFmt = 'control-label col-sx-3 col-sm-3 col-md-3 col-lg-3',
-            cInputFmt = 'control-label col-sx-9 col-sm-9 col-md-9 col-lg-9',
+            wLabelFmt = 'control-label col-xs-2 col-sm-2 col-md-2 col-lg-2',
+            wInputFmt = 'control-label col-xs-10 col-sm-10 col-md-10 col-lg-10',
+            cLabelFmt = 'control-label col-xs-3 col-sm-3 col-md-3 col-lg-3',
+            cInputFmt = 'control-label col-xs-9 col-sm-9 col-md-9 col-lg-9',
         aboutBus = [ {
             url      : '/public/upload-ad-img',
             field    : 'image',
@@ -75,7 +75,6 @@ class BusAds extends FormData
             select   : true,
             field    : 'busCat',
             inpName  : 'bus-ad-cat',
-            inpDefVal: adsOptDef,
             inpHolder: adsOptDef,
             selectOpt: adsOpt,
             labelTxt : 'Category',
@@ -158,28 +157,53 @@ class BusAds extends FormData
     }
 }
 
-class PostAds extends React.Component
+export class GenericAds extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this.state = {
+            ads: "none"
+        }
+        this._renderForm   = this._renderForm.bind(this);
+        this._renderWindow = this._renderWindow.bind(this);
+    }
+
+    _renderForm() {
+    }
+
+    _renderWindow() {
+        let id = this.props.id || "ads-post",
+            title = this.props.title || <Mesg text="Post Your Ads"/>;
+        return (
+            <JarvisWidget id={id} color="purple">
+                <header>
+                    <span className="widget-icon"><i className="fa fa-pencil"/></span>
+                    <h2>{title}</h2>
+                </header>
+                <div className="widget-body">
+                    {this._renderForm()}
+                </div>
+            </JarvisWidget>
+        );
+    }
+
+    render() {
+        return this._renderWindow();
+    }
+}
+
+export class PostAds extends GenericAds
 {
     constructor(props) {
         super(props);
         this.data = new BusAds(props, "");
     }
 
-    render() {
+    // @Override
+    //
+    _renderForm() {
         return (
-            <JarvisWidget id="ads-post" color="purple">
-                <header>
-                    <span className="widget-icon"><i className="fa fa-pencil"/></span>
-                    <h2><Mesg text="Post Your Ads"/></h2>
-                </header>
-                <div className="widget-body">
-                    <ProcessForm form={this.data}
-                            store={AdsStore} value={this.props.ads}/>
-                </div>
-                <div className="widget-body">
-                    <AdsRoomRenting/>
-                </div>
-            </JarvisWidget>
+            <ProcessForm form={this.data} store={AdsStore} value={this.props.ads}/>
         );
     }
 }

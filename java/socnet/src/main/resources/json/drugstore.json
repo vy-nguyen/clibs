@@ -1,0 +1,336 @@
+{
+    "navbarFormat": {
+        "backgroundColor": "#76a956"
+    },
+    "navbar": [ {
+        "icon" : null,
+        "title": "HOME",
+        "route": "/public/business",
+        "left" : true,
+        "brand": true
+    }, {
+        "icon" : null,
+        "title": "CATALOG",
+        "route": "/catalog",
+        "left" : true,
+        "items": [ {
+            "icon" : null,
+            "title": "Baby & Child Care",
+            "route": "/catalog/baby"
+        }, {
+            "icon" : null,
+            "title": "Cosmetics",
+            "route": "/catalog/cosmetics",
+            "items": null
+        }, {
+            "icon" : null,
+            "title": "Diet & Nutrition",
+            "route": "/catalog/diet"
+        }, {
+            "icon" : null,
+            "title": "Gits & Specialty",
+            "route": "/catalog/gifts"
+        }, {
+            "divider": true
+        }, {
+            "icon" : null,
+            "title": "Household Items",
+            "route": "/catalog/house"
+        }, {
+            "icon" : null,
+            "title": "Medicine Cabinet",
+            "route": "/catalog/medicine"
+        }, {
+            "icon" : null,
+            "title": "Natural Products",
+            "route": "/catalog/natural"
+        } ]
+    }, {
+        "icon" : null,
+        "title": "BLOG",
+        "route": "/blog",
+        "left" : true
+    }, {
+        "icon" : null,
+        "title": "ABOUT US",
+        "route": "/aboutus",
+        "left" : true
+    }, {
+        "icon" : null,
+        "title": "DOCUMENTATION",
+        "route": "/documentation",
+        "left" : true
+    }, {
+        "icon" : null,
+        "title": "Log in/Register",
+        "left" : false,
+        "items": [ {
+            "title": "Login",
+            "route": "/login"
+        }, {
+            "title": "Login with Facebook",
+            "route": "/login/facebook"
+        }, {
+            "title": "Login with Email",
+            "route": "/login/email"
+        }, {
+            "title": "Register Account",
+            "route": "/register"
+        } ]
+    }, {
+        "icon" : null,
+        "title": "Map",
+        "route": "/contact/map",
+        "left" : false
+    }, {
+        "icon" : null,
+        "title": "Check out",
+        "route": "/account/cart",
+        "left" : false
+    }, {
+        "icon" : null,
+        "title": "English",
+        "route": "/lang/en",
+        "left" : false,
+        "items": [ {
+            "icon" : null,
+            "title": "Spanish",
+            "route": "/lang/ep"
+        } ]
+    } ],
+    "topBanner": {
+        "format": {
+            "display": "block",
+            "float"  : "left"
+        },
+        "logo": {
+            "image": {
+                "url"   : "//cdn.shopify.com/s/files/1/0637/5285/t/2/assets/logo.png",
+                "format": {
+                    "verticalAlign": "top"
+                }
+            },
+            "format"  : {
+                "display"     : "inline-block",
+                "marginTop"   : "0px",
+                "marginRight" : "auto",
+                "marginBottom": "0px",
+                "marginLeft"  : "auto"
+            },
+            "slogan"  : {
+                "title" : "The biggest choice on the Web",
+                "format": {
+                    "color"   : "#000000",
+                    "display" : "block",
+                    "padding" : "2px 0px 0px 4px",
+                    "fontSize": "11px",
+                    "fontFamily"   : "Open Sans",
+                    "lineHeight"   : "20px",
+                    "textTransform": "uppercase"
+                }
+            },
+            "logoText": [ {
+                "title" : "South Marina",
+                "format": {
+                    "fontFamily" : "Patua One",
+                    "fontSize"   : "40px",
+                    "lineHeight" : "1em",
+                    "color"      : "#76a956"
+                }
+            }, {
+                "title" : "Pharmacy",
+                "format": {
+                    "fontFamily" : "Patua One",
+                    "fontSize"   : "40px",
+                    "lineHeight" : "1em",
+                    "color"      : "#f9a44f",
+                    "paddingLeft": "10px"
+                }
+            } ]
+        },
+        "items": [ {
+            "icon"  : "",
+            "left"  : false,
+            "title" : "My Cart: {} Item(s)",
+            "route" : "/account/cart",
+            "widget": "Cart"
+        }, {
+            "left"  : false,
+            "route" : "/route",
+            "widget": "Search"
+        } ]
+    },
+    "busInfo": {
+        "busName"  : "South Marina Pharmacy",
+        "busWeb"   : "https://southmarinarx.com",
+        "email"    : "wellness@southmarinarx.com",
+        "busPhone" : "(949) 643-5163",
+        "busStreet": "5 Journey, STE 140A",
+        "busCity"  : "Aliso Viejo",
+        "busState" : "CA",
+        "busZip"   : "92656",
+        "lat"      : "33.569528",
+        "lng"      : "-117.727903"
+    },
+    "sidebarFormat": {
+        "nav": {
+            "backgroundColor": "#76a956"
+        },
+        "inactive": {
+            "backgroundColor": "#f9a44f"
+        }
+    },
+    "sidebar": [ {
+        "icon" : null,
+        "title": "COLLECTIONS",
+        "items": [ {
+            "icon" : null,
+            "title": "Baby & Child Care",
+            "route": "/catalog/baby"
+        }, {
+            "icon" : null,
+            "title": "Cosmetics",
+            "route": "/catalog/cosmetics",
+            "items": null
+        }, {
+            "icon" : null,
+            "title": "Diet & Nutrition",
+            "route": "/catalog/diet"
+        }, {
+            "icon" : null,
+            "title": "Gits & Specialty",
+            "route": "/catalog/gifts"
+        }, {
+            "icon" : null,
+            "title": "Household Items",
+            "route": "/catalog/house"
+        }, {
+            "icon" : null,
+            "title": "Medicine Cabinet",
+            "route": "/catalog/medicine"
+        }, {
+            "icon" : null,
+            "title": "Natural Products",
+            "route": "/catalog/natural"
+        } ]
+    }, {
+        "icon" : null,
+        "title": "PRODUCT TYPES",
+        "items": [ {
+            "icon" : null,
+            "title": "Mixtures",
+            "route": "/product/mixture"
+        }, {
+            "icon" : null,
+            "title": "Pills",
+            "route": "/product/pills"
+        } ]
+    }, {
+        "icon"  : null,
+        "widget": ""
+    } ],
+    "bottomBanner": {
+    },
+    "footer": [ {
+        "title": "INFORMATION",
+        "route": "/",
+        "items": [ {
+            "title": "Home",
+            "route": "/"
+        }, {
+            "title": "Search",
+            "route": "/search"
+        }, {
+            "title": "About us",
+            "route": "/aboutus"
+        }, {
+            "title": "Documentation",
+            "route": "/documentation"
+        } ]
+    }, {
+        "title": "PRODUCTS",
+        "route": "/product",
+        "items": [ {
+            "title": "Baby & Child Care",
+            "route": "/product/baby"
+        }, {
+            "title": "Cosmetics",
+            "route": "/product/cosmetics"
+        }, {
+            "title": "Diet & Nutrition",
+            "route": "/product/diet"
+        }, {
+            "title": "Gifts & Specialty",
+            "route": "/product/gifts"
+        } ]
+    }, {
+        "title": "MY ACCOUNT",
+        "route": "/account",
+        "items": [ {
+            "title": "My Account",
+            "route": "/account"
+        }, {
+            "title": "My Order",
+            "route": "/account/order"
+        }, {
+            "title": "My Cart",
+            "route": "/account/cart"
+        } ]
+    }, {
+        "title": "CONTACT/FOLLOW",
+        "route": "/contact",
+        "items": [ {
+            "title": "1-800-123-1234",
+            "route": "/email"
+        }, {
+            "title": "Map",
+            "route": "/contact/map"
+        }, {
+            "title": "Twitter",
+            "route": "/contact/twitter"
+        }, {
+            "title": "Facebook",
+            "route": "/contact/facebook"
+        }, {
+            "title": "Youtube",
+            "route": "/contact/youtube"
+        } ]
+    } ],
+    "copyright": {
+        "format": {
+            "backgroundColor": "#76a956",
+            "minHeight": "30px",
+            "width"    : "100%"
+        },
+        "owner": {
+            "title" : "Copyright by South Marina Pharmacy",
+            "format": {
+                "color"     : "white",
+                "lineHeight": "30px",
+                "minHeight" : "30px",
+                "padding"   : "7px 0"
+            }
+        },
+        "design": {
+            "title" : "Design by Vy Nguyen",
+            "format": {
+                "color"     : "white",
+                "lineHeight": "30px",
+                "minHeight" : "30px",
+                "padding"   : "7px 0",
+                "textAlign" : "right"
+            }
+        }
+    },
+    "mainPage": {
+        "carosel": [
+            "//cdn.shopify.com/s/files/1/0637/5285/t/2/assets/slide1_image.jpg",
+            "//cdn.shopify.com/s/files/1/0637/5285/t/2/assets/slide2_image.jpg",
+            "//cdn.shopify.com/s/files/1/0637/5285/t/2/assets/slide2_image.jpg"
+        ]
+    },
+    "catalog": {
+    },
+    "product": {
+    }
+}

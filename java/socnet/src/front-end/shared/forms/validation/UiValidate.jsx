@@ -3,82 +3,93 @@
  */
 'use strict';
 
-import React from 'react-mod';
-import _     from 'lodash';
+import _            from 'lodash';
+import React        from 'react-mod';
+import ReactDOM     from 'react-dom';
 
-import {findDOMNode} from 'react-dom';
-import ScriptLoader  from 'vntd-shared/utils/mixins/ScriptLoader.jsx';
+import asyncLoader   from 'vntd-shared/lib/AsyncLoader.jsx';
 
-let UiValidate = React.createClass({
-    mixins: [ScriptLoader],
-
-    componentDidMount: function() {
-        this.loadScript('/rs/client/vendor.ui.js').then(function() {
-            let form = $(findDOMNode(this))
-            let validateCommonOptions =  {
-                rules: {},
-                messages: {},
-                errorElement: 'em',
-                errorClass: 'invalid',
-                highlight: function(element, errorClass, validClass) {
-                    $(element).addClass(errorClass).removeClass(validClass);
-                    $(element).parent().addClass('state-error').removeClass('state-success');
-                },
-                unhighlight: function(element, errorClass, validClass) {
-                    $(element).removeClass(errorClass).addClass(validClass);
-                    $(element).parent().removeClass('state-error').addClass('state-success');
-                },
-                errorPlacement: function(error, element) {
-                    if (element.parent('.input-group').length) {
-                        error.insertAfter(element.parent());
-                    } else {
-                        error.insertAfter(element);
-                    }
-                }
-            }
-            form.find('[data-smart-validate-input], [smart-validate-input]').each(function () {
-                var $input = $(this), fieldName = $input.attr('name');
-
-                validateCommonOptions.rules[fieldName] = {};
-
-                if ($input.data('required') != undefined) {
-                    validateCommonOptions.rules[fieldName].required = true;
-                }
-                if ($input.data('email') != undefined) {
-                    validateCommonOptions.rules[fieldName].email = true;
-                }
-
-                if ($input.data('maxlength') != undefined) {
-                    validateCommonOptions.rules[fieldName].maxlength = $input.data('maxlength');
-                }
-
-                if ($input.data('minlength') != undefined) {
-                    validateCommonOptions.rules[fieldName].minlength = $input.data('minlength');
-                }
-
-                if ($input.data('message')) {
-                    validateCommonOptions.messages[fieldName] = $input.data('message');
-                } else {
-                    _.forEach($input.data(), function(value, key) {
-                        if (key.search(/message/)== 0){
-                            if (!validateCommonOptions.messages[fieldName]) {
-                                validateCommonOptions.messages[fieldName] = {};
-                            }
-                            var messageKey = key.toLowerCase().replace(/^message/,'')
-                            validateCommonOptions.messages[fieldName][messageKey] = value;
-                        }
-                    });
-                }
-            });
-            form.validate(_.extend(validateCommonOptions, this.props.options))
-        }.bind(this))
+const validateCommonOptions = {
+    rules       : {},
+    messages    : {},
+    errorElement: 'em',
+    errorClass  : 'invalid',
+    highlight: function(element, errorClass, validClass) {
+        $(element).addClass(errorClass).removeClass(validClass);
+        $(element).parent().addClass('state-error').removeClass('state-success');
     },
+    unhighlight: function(element, errorClass, validClass) {
+        $(element).removeClass(errorClass).addClass(validClass);
+        $(element).parent().removeClass('state-error').addClass('state-success');
+    },
+    errorPlacement: function(error, element) {
+        if (element.parent('.input-group').length) {
+            error.insertAfter(element.parent());
+        } else {
+            error.insertAfter(element);
+        }
+    }
+};
 
-    render: function() {
+class UiValidate extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
+
+    componentDidMount() {
+        let form = $(findDOMNode(this)),
+        validate = {
+            rules       : {},
+            messages    : {},
+            errorElement: validateCommonOptions.errorElement,
+            errorClass  : validateCommonOptions.errorClass,
+            highlight   : validateCommonOptions.highlight,
+            unhighlight : validateCommonOptions.unhighlight,
+            errorPlacement: validateCommonOptions.errorPlacement
+        };
+        form.find('[data-smart-validate-input], [smart-validate-input]')
+            .each(function () {
+            let $input = $(this), fieldName = $input.attr('name');
+
+            validate.rules[fieldName] = {};
+            if ($input.data('required') != undefined) {
+                validate.rules[fieldName].required = true;
+            }
+            if ($input.data('email') != undefined) {
+                validate.rules[fieldName].email = true;
+            }
+
+            if ($input.data('maxlength') != undefined) {
+                validate.rules[fieldName].maxlength = $input.data('maxlength');
+            }
+
+            if ($input.data('minlength') != undefined) {
+                validate.rules[fieldName].minlength = $input.data('minlength');
+            }
+
+            if ($input.data('message')) {
+                validate.messages[fieldName] = $input.data('message');
+            } else {
+                _.forEach($input.data(), function(value, key) {
+                    if (key.search(/message/)== 0){
+                        if (!validate.messages[fieldName]) {
+                            validate.messages[fieldName] = {};
+                        }
+                        var messageKey = key.toLowerCase().replace(/^message/,'')
+                        validate.messages[fieldName][messageKey] = value;
+                    }
+                });
+            }
+        }.bind(this));
+        form.validate(_.extend(validate, this.props.options))
+    }
+
+    render() {
         return (
             this.props.children
         )
     }
-});
+}
 
-export default UiValidate
+export default asyncLoader("tvntd-ui", "/rs/client/vendor.ui.js")(UiValidate);

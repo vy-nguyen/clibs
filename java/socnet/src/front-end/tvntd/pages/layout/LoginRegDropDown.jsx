@@ -4,12 +4,13 @@
  */
 'use strict';
 
+import $                    from 'jquery';
 import React                from 'react-mod';
 import classnames           from 'classnames';
 import {Dropdown, MenuItem} from 'react-bootstrap';
 
 import {LoginForm}          from '../login/Login.jsx';
-import {RegisterForm}       from '../login/Register.jsx';
+import RegisterForm         from 'vntd-shared/component/BoostRegister.jsx';
 import Lang                 from 'vntd-root/stores/LanguageStore.jsx';
 
 const Components = {
@@ -32,7 +33,7 @@ class LoginRegDropDown extends React.Component
 {
     constructor(props) {
         super(props);
-        this._active = fale;
+        this._active = false;
         this.state = {
             current: MenuInfo[0]
         };

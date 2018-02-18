@@ -1,0 +1,17 @@
+{
+    "presets": [ "react", "es2015", "stage-0" ],
+    "env": {
+        "test": {
+            "plugins": [ [
+                "transform-react-jsx"
+            ], [
+                "babel-plugin-webpack-alias",
+                { "config": "webpack/site.test.config.js" }
+            ] ]
+        }
+    },
+    "plugins": [
+        "transform-es2015-shorthand-properties",
+        "transform-object-rest-spread"
+    ]
+}

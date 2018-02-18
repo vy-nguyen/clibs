@@ -38,14 +38,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 
 import com.tvntd.lib.ObjectId;
-import com.tvntd.models.AdsPost;
+import com.tvntd.models.ArtAds;
 import com.tvntd.models.Profile;
 import com.tvntd.models.Role;
 import com.tvntd.models.User;
 import com.tvntd.objstore.ObjStore;
-import com.tvntd.service.api.IAdsPostService.AdsPostDTO;
-import com.tvntd.service.api.IArticleService.ArticleDTO;
-import com.tvntd.service.api.IProductService.ProductDTO;
+import com.tvntd.service.api.ArtAdsDTO.BusAdsDTO;
+import com.tvntd.service.api.IArticleSvc.ArticlePostDTO;
 import com.tvntd.util.Constants;
 import com.tvntd.util.Util;
 
@@ -77,27 +76,28 @@ public interface IProfileService
     {
         private static Logger s_log = LoggerFactory.getLogger(ProfileDTO.class);
         private static String s_baseUri = "/rs/upload";
-        private Profile profile;
+
+        private Profile  profile;
         private ObjStore objStore;
 
-        private String role;
-        private String startPage;
-        private Long roleMask;
-        private String firstName;
-        private String lastName;
-        private String homeTown;
-        private String state;
-        private String country;
+        private String   role;
+        private String   startPage;
+        private Long     roleMask;
+        private String   firstName;
+        private String   lastName;
+        private String   homeTown;
+        private String   state;
+        private String   country;
 
-        private ArticleDTO             pendPost;
-        private LinkedList<ArticleDTO> publishedArts;
-        private LinkedList<ArticleDTO> savedArts;
+        private ArticlePostDTO             pendPost;
+        private LinkedList<ArticlePostDTO> publishedArts;
+        private LinkedList<ArticlePostDTO> savedArts;
 
-        private ProductDTO             pendProd;
-        private LinkedList<ProductDTO> publishedProds;
-        private LinkedList<ProductDTO> savedProds;
+        private ArtProductDTO              pendProd;
+        private LinkedList<ArtProductDTO>  publishedProds;
+        private LinkedList<ArtProductDTO>  savedProds;
 
-        private AdsPostDTO             pendAds;
+        private BusAdsDTO                  pendArtAds;
 
         // NewsFeed for this profile.
         //
@@ -331,18 +331,17 @@ public interface IProfileService
             return result;
         }
 
-        /**
-         * ------------------- Article Posting ------------------------
-         */
-        public LinkedList<ArticleDTO> fetchPublishedArts() {
+        // ------------------- Article Posting ------------------------
+        //
+        public LinkedList<ArticlePostDTO> fetchPublishedArts() {
             return publishedArts;
         }
 
-        public void assignPublishedArts(LinkedList<ArticleDTO> publishedArts) {
+        public void assignPublishedArts(LinkedList<ArticlePostDTO> publishedArts) {
             this.publishedArts = publishedArts;
         }
 
-        public void pushPublishArticle(ArticleDTO article)
+        public void pushPublishArticle(ArticlePostDTO article)
         {
             if (publishedArts == null) {
                 publishedArts = new LinkedList<>();
@@ -350,15 +349,15 @@ public interface IProfileService
             publishedArts.addFirst(article);
         }
 
-        public LinkedList<ArticleDTO> fetchSavedArts() {
+        public LinkedList<ArticlePostDTO> fetchSavedArts() {
             return savedArts;
         }
 
-        public void assignSavedArts(LinkedList<ArticleDTO> savedArts) {
+        public void assignSavedArts(LinkedList<ArticlePostDTO> savedArts) {
             this.savedArts = savedArts;
         }
 
-        public void pushSavedArticle(ArticleDTO article)
+        public void pushSavedArticle(ArticlePostDTO article)
         {
             if (savedArts == null) {
                 savedArts = new LinkedList<>();
@@ -366,26 +365,25 @@ public interface IProfileService
             savedArts.addFirst(article);
         }
 
-        public ArticleDTO fetchPendPost() {
+        public ArticlePostDTO fetchPendPost() {
             return this.pendPost;
         }
 
-        public void assignPendPost(ArticleDTO art) {
+        public void assignPendPost(ArticlePostDTO art) {
             this.pendPost = art;
         }
 
-        /**
-         * ------------------ Product Posting ----------------------
-         */
-        public LinkedList<ProductDTO> fetchPublishProds() {
+        // ------------------ Product Posting ----------------------
+        //
+        public LinkedList<ArtProductDTO> fetchPublishProds() {
             return publishedProds;
         }
 
-        public void assignPublishedProds(LinkedList<ProductDTO> products) {
+        public void assignPublishedProds(LinkedList<ArtProductDTO> products) {
             this.publishedProds = products;
         }
 
-        public void pushPublishProduct(ProductDTO product)
+        public void pushPublishProduct(ArtProductDTO product)
         {
             if (publishedProds == null) {
                 publishedProds = new LinkedList<>();
@@ -393,15 +391,15 @@ public interface IProfileService
             publishedProds.addFirst(product);
         }
 
-        public LinkedList<ProductDTO> fetchSavedProducts() {
+        public LinkedList<ArtProductDTO> fetchSavedProducts() {
             return savedProds;
         }
 
-        public void assignSavedProducts(LinkedList<ProductDTO> products) {
+        public void assignSavedProducts(LinkedList<ArtProductDTO> products) {
             this.savedProds = products;
         }
 
-        public void pushSavedProduct(ProductDTO product)
+        public void pushSavedProduct(ArtProductDTO product)
         {
             if (savedProds == null) {
                 savedProds = new LinkedList<>();
@@ -409,30 +407,27 @@ public interface IProfileService
             savedProds.addFirst(product);
         }
 
-        public ProductDTO fetchPendProduct() {
+        public ArtProductDTO fetchPendProduct() {
             return pendProd;
         }
 
-        public void assignPendProduct(ProductDTO product) {
+        public void assignPendProduct(ArtProductDTO product) {
             this.pendProd = product;
         }
 
-        /**
-         * ------------------ Ads Posting ----------------------
-         */
-        public AdsPostDTO genPendAds()
-        {
-            if (pendAds != null) {
-                return pendAds;
-            }
-            AdsPost ads = new AdsPost();
-            ads.setAuthorUuid(getUserUuid());
-            pendAds = new AdsPostDTO(ads, null);
-            return pendAds;
+        // ------------------ Ads Posting ----------------------
+        //
+        public void assignPendAds(BusAdsDTO ads) {
+            pendArtAds = ads;
         }
 
-        public void assignPendAds(AdsPostDTO ads) {
-            pendAds = ads;
+        public BusAdsDTO genPendArtAds()
+        {
+            if (pendArtAds == null) {
+                ArtAds ad = new ArtAds(getUserUuid(), fetchUserId());
+                pendArtAds = new BusAdsDTO(ad);
+            }
+            return pendArtAds;
         }
 
         /**
@@ -686,20 +681,6 @@ public interface IProfileService
          */
         public Long getRoleMask() {
             return roleMask;
-        }
-
-       /**
-         * @return the pendAds
-         */
-        public AdsPostDTO getPendAds() {
-            return pendAds;
-        }
-
-        /**
-         * @param pendAds the pendAds to set
-         */
-        public void setPendAds(AdsPostDTO pendAds) {
-            this.pendAds = pendAds;
         }
 
         /**

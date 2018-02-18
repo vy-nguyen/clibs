@@ -11,11 +11,11 @@ import ErrorStore    from 'vntd-shared/stores/ErrorStore.jsx';
 
 const completedFn = {
     children: ['completed']
-};
-const completedFailedFn = {
+},
+completedFailedFn = {
     children: ['completed', 'failed']
-};
-const completedFailedAlwaysFn = {
+},
+completedFailedAlwaysFn = {
     children: ['completed', 'failed', 'always']
 };
 
@@ -48,6 +48,8 @@ const Actions = Reflux.createActions({
     deleteUserPost:  completedFailedFn,
     publishUserPost: completedFailedFn,
     updateUserPost:  completedFailedFn,
+    postQuestForm:   completedFailedFn,
+    getQuestions:    completedFailedFn,
 
     getArticles:     completedFailedFn,
     getOneArticle:   completedFailedFn,
@@ -59,7 +61,7 @@ const Actions = Reflux.createActions({
     pendingProduct:  completedFn,
     getPublishProds: completedFailedFn,
     deleteProduct:   completedFailedFn,
-
+    getFeatureAds:   completedFailedFn,
     getDomainData:   completedFailedFn,
 
     // Comment actions
@@ -70,12 +72,15 @@ const Actions = Reflux.createActions({
     // Public ads posting
     publicPostAds:   completedFailedFn,
     getPublishAds:   completedFailedFn,
+    postRealtorAds:  completedFailedFn,
+    getRealtorAds:   completedFailedFn,
 
     // Rank article
     getArticleRank:  completedFailedFn,
     updateArtRank:   completedFailedFn,
     postArtSelect:   completedFailedFn,
     commitTagRanks:  completedFailedFn,
+    deleteUserTag:   completedFailedFn,
     reRankTag:       completedFn,
 
     // Get public JSON objs.
@@ -153,8 +158,6 @@ function getJSON(url, cbObj, authReq, id, context, syncServer) {
         }
 
     }).fail(function(resp, text, error) {
-        console.log("Get JSON failed " + url);
-        console.log(resp);
         resp.cbContext = context;
         cbObj.failed(ErrorStore.reportFailure(url, resp, text, error));
 
@@ -301,6 +304,15 @@ Actions.updateUserPost.listen(function(data, save) {
     postRestCall(data, url, true, this, true);
 });
 
+Actions.postQuestForm.listen(function(data, callback) {
+    postRestCall(data, "/user/post-question", true, this, true, callback);
+});
+
+Actions.getQuestions.listen(function(data, callback) {
+    let url = !UserStore.isLogin() ? "/public/get-question" : "/user/get-question";
+    postRestCall(data, url, true, this, false, callback);
+});
+
 Actions.publishProduct.listen(function(data) {
     postRestCall(data, "/user/publish-product", true, this, true);
     Actions.pendingProduct(data);
@@ -327,6 +339,18 @@ Actions.publicPostAds.listen(function(data) {
 
 Actions.getPublishAds.listen(function(data) {
     postRestCall(data, "/public/get-ads", true, this, false);
+});
+
+Actions.postRealtorAds.listen(function(data) {
+    postRestCall(data, "/public/publish-room-ads", true, this, false);
+});
+
+Actions.getRealtorAds.listen(function(data) {
+    postRestCall(data, "/public/get-room-ads", true, this, false);
+});
+
+Actions.getFeatureAds.listen(function(data) {
+    postRestCall(data, "/public/get-feature-ads", true, this, false);
 });
 
 /**
@@ -364,22 +388,14 @@ Actions.getDomainData.listen(function(data, context) {
 });
 
 /*
- * userTags: {
- *     userUuid:
- *     tagRanks: [ {
- *         tagName:
- *         parent :
- *         pubTag : true | false
- *         rank   :
- *     } ],
- *     artList: [ {
- *         tagName:
- *         artUuid: []
- *     } ]
- * }
+ * userTags: TagForm.java
  */
 Actions.commitTagRanks.listen(function(tagMgr, userTags) {
     postRestCall(userTags, "/user/update-tag-rank", true, this, true, tagMgr);
+});
+
+Actions.deleteUserTag.listen(function(tagMgr, userTags) {
+    postRestCall(userTags, "/user/delete-tag", true, this, true, tagMgr);
 });
 
 Actions.reRankTag.listen(function(tagMgr) {
@@ -430,7 +446,7 @@ Actions.syncServer.listen(function() {
     this.completed();
 });
 
-export { postRestCall, Actions };
+export { postRestCall, getJSON, Actions };
 export default Actions;
 
 /*

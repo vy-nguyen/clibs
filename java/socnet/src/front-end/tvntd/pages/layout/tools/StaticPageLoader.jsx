@@ -3,53 +3,49 @@
  */
 'use strict';
 
-import React from 'react-mod';
+import React     from 'react-mod';
+import ReactDOM  from 'react-dom';
 
-import ElementHolder         from 'vntd-root/components/utils/mixins/ElementHolder.jsx';
-import jarvisWidgetsDefaults from 'vntd-root/components/layout/widgets/WidgetDefaults' ;
-import BigBreadcrumbs        from 'vntd-root/components/layout/navigation/components/BigBreadcrumbs.jsx';
-import EasyPieChartContainer from 'vntd-root/components/graphs/inline/EasyPieChartContainer.jsx';
-import SubHeader             from '../SubHeader.jsx';
+import jarvisWidgetsDefaults from 'vntd-root/components/layout/widgets/WidgetDefaults';
 
-let StaticPageLoader = React.createClass({
-    mixins: [ElementHolder],
+class StaticPageLoader extends React.Component
+{
+    constructor(props) {
+        super(props);
+    }
 
-    componentWillMount: function () {
+    componentWillMount() {
         this._process(this.props.location.pathname)
-    },
-    componentWillReceiveProps: function (nextProps, nextState) {
+    }
+
+    componentWillReceiveProps(nextProps, nextState) {
         if (nextProps.location.pathname != this.props.location.pathname) {
             this._process(nextProps.location.pathname)
         }
-    },
-    render: function () {
+    }
+
+    render() {
         return (
             <div id="content">
-                {(this.props.route.subHeader == false ? null :
-                    <div className="row">
-                        <BigBreadcrumbs className="col-xs-12 col-sm-7 col-md-7 col-lg-4"/>
-                        <SubHeader />
-                    </div>)}
-
                 <div className="row">
                     <div>
-                        <EasyPieChartContainer>
                         <div className="col-sm-12" ref="viewport">
                         </div>
-                        </EasyPieChartContainer>
                     </div>
                 </div>
             </div>
-        )
-    },
-    _process: function (url) {
-        $.get('html/' + url).then(function (res) {
-            $(this.refs.viewport).html(res);
-            let $container = $(this.getHold());
-            $('#widget-grid', $container).jarvisWidgets(jarvisWidgetsDefaults);
-            $('.dropdown-toggle', $container).dropdown()
-        }.bind(this))
+        );
     }
-});
+
+    _process(url) {
+        $.get('html/' + url).then(function(res) {
+            $(this.refs.viewport).html(res);
+
+            let container = $(ReactDOM.findDOMNode(this));
+            $('#widget-grid', container).jarvisWidgets(jarvisWidgetsDefaults);
+            $('.dropdown-toggle', container).dropdown()
+        }.bind(this));
+    }
+}
 
 export default StaticPageLoader

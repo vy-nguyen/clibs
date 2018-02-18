@@ -5,6 +5,7 @@ proj_scripts := proj_css
 
 proj_less    := \
 	tvntd.less \
-	tvntd-plugins.less 
+	tvntd-plugins.less \
+	biz-custom.less
 
 include ../../../Makefile.incl

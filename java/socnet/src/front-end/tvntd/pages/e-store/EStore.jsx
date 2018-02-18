@@ -2,8 +2,9 @@
  * Copyright by Vy Nguyen (2016)
  * BSD License
  */
-import _ from 'lodash';
-import React, { PropTypes } from 'react-mod'
+import _                 from 'lodash';
+import React             from 'react-mod';
+import PropTypes         from 'prop-types';
 
 import StarRating        from 'vntd-shared/layout/StarRating.jsx';
 import ProductBase       from 'vntd-shared/layout/ProductBase.jsx';

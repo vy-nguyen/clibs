@@ -3,9 +3,10 @@
  */
 'use strict';
 
-import _                  from 'lodash';
-import $                  from 'jquery';
-import React, {PropTypes} from 'react-mod';
+import _                 from 'lodash';
+import $                 from 'jquery';
+import React             from 'react-mod';
+import PropTypes         from 'prop-types';
 
 import WidgetGrid        from 'vntd-shared/widgets/WidgetGrid.jsx';
 import JarvisWidget      from 'vntd-shared/widgets/JarvisWidget.jsx';
@@ -148,7 +149,7 @@ class RenderRow extends React.Component
     static bindCellEvent(cell, row, callbackFn, bind) {
         let elm, cbFn;
 
-        if (typeof cell === 'object') {
+        if (cell != null && typeof cell === 'object') {
             elm  = '#' + cell.inpName;
             cbFn = callbackFn.bind(bind, cell, row);
             if (cell.select === true || cell.checked != null) {
@@ -165,7 +166,7 @@ class RenderRow extends React.Component
         _.forOwn(newRows, function(inpRow) {
             row = {};
             _.forOwn(inpRow, function(cell, key) {
-                if (typeof cell === 'object') {
+                if (cell != null && typeof cell === 'object') {
                     row[key] = GenericForm.renderHtmlInput(cell);
                 } else {
                     row[key] = cell;
@@ -184,7 +185,7 @@ class RenderRow extends React.Component
                 };
             }
             _.forOwn(inpRow, function(cell, key) {
-                if (typeof cell === 'object') {
+                if (cell != null && typeof cell === 'object') {
                     entry = cell;
                     val = InputStore.getItemIndex(cell.inpName);
                     if (val != null) {
@@ -261,7 +262,7 @@ class RenderRow extends React.Component
                 if (rowEdit != null) {
                     edit[key] = cell;
                 }
-                if (typeof cell === 'object') {
+                if (cell != null && typeof cell === 'object') {
                     row[key] = InputStore.getItemIndex(cell.inpName);
                     if (row[key] == null) {
                         row[key] = cell.inpDefVal;
@@ -271,7 +272,7 @@ class RenderRow extends React.Component
                 } else {
                     row[key] = cell;
                 }
-                if (row[key] == null) {
+                if (row[key] == null && cell != null) {
                     row.invalid = true
                 }
             });
@@ -345,6 +346,9 @@ class DynamicTable extends React.Component
             }
             change[row.rowId] = row;
         }
+        if (this.props.selectCallback != null) {
+            this.props.selectCallback(entry, row);
+        }
     }
 
     _addNewRows(data, rowEdit) {
@@ -386,7 +390,9 @@ class DynamicTable extends React.Component
         if (this.state.newRows != null) {
             RenderRow.fetchTableData(this.state.newRows, changes, null);
         }
-        footer.onSubmit(changes);
+        if (footer.onSubmit(changes) === true) {
+            InputStore.freeItemIndex(this.props.tableId);
+        }
         this.setState({
             newRows: {}
         });
@@ -433,11 +439,12 @@ class DynamicTable extends React.Component
     }
 
     _getTableData() {
-        if (this.props.edit === true) {
+        if (this.props.select === true) {
             return RenderRow.toTableEdit(this.props.tableData,
-                                         this.state.newRows, this.props.select);
+                    this.state.newRows, this.props.select);
         }
-        return this.props.tableData;
+        return RenderRow.toTableEdit(this.props.tableData,
+                this.state.newRows, this.props.select);
     }
 
     render() {
@@ -446,13 +453,22 @@ class DynamicTable extends React.Component
             inpDefVal: 1,
             inpHolder: "Enter new rows"
         };
-        let table, tableData, columns, tableFmt = [],
+        let table, tableData, columns, tableFmt = [], addRow = null,
             tableFormat = this.props.tableFormat, select = this.props.select;
 
         tableData = this._getTableData();
         columns = RenderRow.renderHeader(tableFormat, tableFmt, select);
         table = RenderRow.renderTable(tableData, tableFmt, columns);
 
+        if (this.props.edit === true) {
+            addRow = (
+                <ModalButton ref="rowModal" divClass="widget-toolbar"
+                    buttonFmt="btn btn-sm btn-primary"
+                    closeWarning="Ok to discard unsaved data?" buttonText="Add Row">
+                    {this._renderInputModal()}
+                </ModalButton>
+            );
+        }
         return (
             <WidgetGrid>
                 <div className="row">
@@ -463,18 +479,13 @@ class DynamicTable extends React.Component
                                     <i className="fa fa-table"/>
                                 </span>
                                 <h2>{this.props.tableTitle}</h2>
-
-                                <ModalButton ref="rowModal" divClass="widget-toolbar"
-                                    buttonFmt="btn btn-sm btn-primary"
-                                    closeWarning="You will loose unsaved data"
-                                    buttonText="Add Row">
-                                    {this._renderInputModal()}
-                                </ModalButton>
+                                {addRow}
                             </header>
                             <div>
                                 <div className="widget-body no-padding">{table}</div>
                             </div>
                             {this._renderFooter()}
+                            {this.props.children}
                         </JarvisWidget>
                     </article>
                 </div>

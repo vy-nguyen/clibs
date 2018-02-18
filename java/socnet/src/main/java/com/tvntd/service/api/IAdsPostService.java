@@ -26,43 +26,21 @@
  */
 package com.tvntd.service.api;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.LinkedList;
 import java.util.List;
 
-import com.tvntd.models.AdsPost;
-import com.tvntd.models.ArticleRank;
-import com.tvntd.objstore.ObjStore;
-import com.tvntd.service.api.IArticleService.ArticleRankDTO;
 import com.tvntd.service.api.ICommentService.CommentDTO;
-import com.tvntd.util.Util;
 
 public interface IAdsPostService
 {
-    AdsPostDTO getAdsPostDTO(String uuid);
-    AdsPost getAdsPost(String uuid);
-
-    List<AdsPost> getAdsPostByAuthor(String authorUuid);
-    List<AdsPostDTO> getAdsPostByUuids(String[] adsUuids);
-
-    void deleteAnnonAds(String uuid);
-    void saveAds(AdsPostDTO ads);
-
-    void deleteAds(AdsPost ads);
-    AdsPost deleteAds(String uuid);
-
-    void auditAdsTable();
-
     /**
      * @return list of ads.
      */
     public static class AdsPostDTOResponse extends GenericResponse
     {
-        private List<AdsPostDTO> ads;
+        private List<ArtAdsDTO> ads;
         private List<CommentDTO> comments;
 
-        public AdsPostDTOResponse(List<AdsPostDTO> ads, List<CommentDTO> comments)
+        public AdsPostDTOResponse(List<ArtAdsDTO> ads, List<CommentDTO> comments)
         {
             super(GenericResponse.USER_HOME, null, null);
             this.ads = ads;
@@ -72,7 +50,7 @@ public interface IAdsPostService
         /**
          * @return the ads
          */
-        public List<AdsPostDTO> getAds() {
+        public List<ArtAdsDTO> getAds() {
             return ads;
         }
 
@@ -82,204 +60,5 @@ public interface IAdsPostService
         public List<CommentDTO> getComments() {
             return comments;
         }
-    }
-
-    /**
-     * @return one ad.
-     */
-    public static class AdsPostDTO extends GenericResponse
-    {
-        private AdsPost        adPost;
-        private ArticleRankDTO adRank;
-        private String         busName;
-        private String         busInfo;
-        private String         busCat;
-        private String         busWeb;
-        private String         busEmail;
-        private String         busPhone;
-        private String         busStreet;
-        private String         busCity;
-        private String         busState;
-        private String         busZip;
-        private String         busHour;
-        private String         busDesc;
-
-        public AdsPostDTO(AdsPost ad, ArticleRankDTO rank)
-        {
-            super(GenericResponse.USER_HOME, null, null);
-            adPost = ad;
-            adRank = rank;
-        }
-
-        public void convertUTF()
-        {
-            busName   = Util.fromRawByte(adPost.getBusName());
-            busInfo   = Util.fromRawByte(adPost.getBusInfo());
-            busCat    = Util.fromRawByte(adPost.getBusCat());
-            busWeb    = Util.fromRawByte(adPost.getBusWeb());
-            busEmail  = Util.fromRawByte(adPost.getBusEmail());
-            busPhone  = Util.fromRawByte(adPost.getBusPhone());
-            busStreet = Util.fromRawByte(adPost.getBusStreet());
-            busCity   = Util.fromRawByte(adPost.getBusCity());
-            busState  = Util.fromRawByte(adPost.getBusState());
-            busZip    = Util.fromRawByte(adPost.getBusZip());
-            busHour   = Util.fromRawByte(adPost.getBusHour());
-            busDesc   = Util.fromRawByte(adPost.getBusDesc());
-        }
-
-        /**
-         * Get internal data.
-         */
-        public AdsPost fetchAdPost() {
-            return adPost;
-        }
-
-        public ArticleRank fetchArtRank() {
-            return adRank.fetchArtRank();
-        }
-
-        /**
-         * Getters/setters.
-         */
-        public void setAdsRank(ArticleRankDTO rank) {
-            adRank = rank;
-        }
-
-        public ArticleRankDTO getAdsRank() {
-            return adRank;
-        }
-
-        public String getArticleUuid() {
-            return adPost.getArticleUuid();
-        }
-
-        public void setAuthorUuid(String uuid) {
-            adPost.setAuthorUuid(uuid);
-        }
-
-        public String getAuthorUuid() {
-            return adPost.getAuthorUuid();
-        }
-
-        /**
-         * Set ad images.
-         */
-        public void setAdImgOId0(String oid) {
-            adPost.setAdImgOId0(oid);
-        }
-
-        public List<String> getImageUrl()
-        {
-            List<String> img = new LinkedList<>();
-            ObjStore store = ObjStore.getInstance();
-            String url = store.imgObjPublicUri(adPost.getAdImgOId0());
-
-            if (url != null) {
-                img.add(url);
-            }
-            url = store.imgObjPublicUri(adPost.getAdImgOId1());
-            if (url != null) {
-                img.add(url);
-            }
-            url = store.imgObjPublicUri(adPost.getAdImgOId2());
-            if (url != null) {
-                img.add(url);
-            }
-            url = store.imgObjPublicUri(adPost.getAdImgOId3());
-            if (url != null) {
-                img.add(url);
-            }
-            return img;
-        }
-
-        public String getCreatedDate() {
-            DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm");
-            return df.format(adPost.getCreatedDate());
-        }
-
-        /**
-         * @return the busName
-         */
-        public String getBusName() {
-            return busName;
-        }
-
-        /**
-         * @return the busInfo
-         */
-        public String getBusInfo() {
-            return busInfo;
-        }
-
-        /**
-         * @return the busCat
-         */
-        public String getBusCat() {
-            return busCat;
-        }
-
-        /**
-         * @return the busWeb
-         */
-        public String getBusWeb() {
-            return busWeb;
-        }
-
-        /**
-         * @return the busEmail
-         */
-        public String getBusEmail() {
-            return busEmail;
-        }
-
-        /**
-         * @return the busPhone
-         */
-        public String getBusPhone() {
-            return busPhone;
-        }
-
-        /**
-         * @return the busStreet
-         */
-        public String getBusStreet() {
-            return busStreet;
-        }
-
-        /**
-         * @return the busCity
-         */
-        public String getBusCity() {
-            return busCity;
-        }
-
-        /**
-         * @return the busState
-         */
-        public String getBusState() {
-            return busState;
-        }
-
-        /**
-         * @return the busZip
-         */
-        public String getBusZip() {
-            return busZip;
-        }
-
-        /**
-         * @return the busHour
-         */
-        public String getBusHour() {
-            return busHour;
-        }
-
-        /**
-         * @return the busDesc
-         */
-        public String getBusDesc() {
-            return busDesc;
-        }
-
     }
 }

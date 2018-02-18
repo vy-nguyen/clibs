@@ -1,9 +1,10 @@
 /**
  * Created by griga on 12/1/15.
  */
-import _          from 'lodash'
-import React      from 'react-mod'
-import classnames from 'classnames'
+import _          from 'lodash';
+import $          from 'jquery';
+import React      from 'react-mod';
+import classnames from 'classnames';
 
 class JarvisWidget extends React.Component
 {
@@ -32,8 +33,8 @@ class JarvisWidget extends React.Component
             'jarviswidget-sortable': this.props.sortable == true
         });
         let widgetProps = {};
-        this.widgetId = _.uniqueId('jarviswidget-');
 
+        this.widgetId = _.uniqueId('jarviswidget-');
         [
             'colorbutton', 'editbutton', 'togglebutton',
             'deletebutton', 'fullscreenbutton', 'custombutton', 'sortable'
@@ -60,22 +61,23 @@ class JarvisWidget extends React.Component
         }.bind(this));
 
         return (
-            <div className={classes} id={this.widgetId} ref={this.widgetId} {...widgetProps} >
+            <div className={classes}
+                id={this.widgetId} ref={this.widgetId} {...widgetProps} >
                 {this.props.children}
             </div>
         )
     }
 
     componentDidMount() {
-        var $ = require('jquery');
         $(this.refs[this.widgetId])
             .find('.widget-body')
             .prepend('<div class="jarviswidget-editbox"><input class="form-control" type="text"></div>');
     }
 }
 
-JarvisWidget.Body = React.createClass({
-    render: function() {
+class JarvisWidget_Body extends React.Component
+{
+    render() {
         let {children, props} = {...this.props};
         return (
             <div {...props}>
@@ -85,6 +87,6 @@ JarvisWidget.Body = React.createClass({
             </div>
         )
     }
-});
+}
 
 export default JarvisWidget;

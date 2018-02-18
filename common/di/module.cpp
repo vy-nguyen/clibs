@@ -25,6 +25,7 @@
  * SUCH DAMAGE.
  */
 #include <stdio.h>
+#include <string.h>
 #include <di/program.h>
 #include <cpptype/hash-obj.h>
 #include <cpptype/list-obj.h>

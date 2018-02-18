@@ -1,5 +1,5 @@
 /**
- * Vy Nguyen (2016)
+ * Code lifted elsewhere from the Internet.
  */
 'use strict';
 
@@ -310,6 +310,32 @@ class Util
 
     static noOpRetNull() {
         return null;
+    }
+
+    static camelize(str) {
+        return str.split(' ').map(function(w) {
+            return w.charAt(0).toUpperCase() + w.slice(1);
+        }).join('');
+    }
+
+    // https://facebook.github.io/react/blog/2015/12/16/ismounted-antipattern.html
+    static makeCancelable(promise) {
+        let _hasCanceled = false;
+
+        const wrappedPromise = new Promise(function(resolve, reject) {
+            promise.then(function(val) {
+                _hasCanceled ? reject({isCanceled: true}) : resolve(val);
+            });
+            promise.catch(function(error) {
+                _hasCanceled ? reject({isCanceled: true}) : reject(error);
+            });
+        });
+        return {
+            promise: wrappedPromise,
+            cancel() {
+                _hasCanceled = true;
+            }
+        };
     }
 }
 

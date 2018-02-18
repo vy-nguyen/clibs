@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -55,39 +56,46 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.maps.model.GeocodingResult;
 import com.tvntd.forms.AdsForm;
+import com.tvntd.forms.AdsRequest;
+import com.tvntd.forms.AdsRoomForm;
 import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.Constants;
 import com.tvntd.lib.FileResources;
 import com.tvntd.lib.ObjectId;
-import com.tvntd.models.ArticleRank;
 import com.tvntd.models.Profile;
 import com.tvntd.objstore.ObjStore;
+import com.tvntd.service.api.ArtAdsDTO;
+import com.tvntd.service.api.ArtAdsDTO.BusAdsDTO;
+import com.tvntd.service.api.ArtProductDTO;
+import com.tvntd.service.api.ArtRoomAdsDTO;
 import com.tvntd.service.api.GenericResponse;
-import com.tvntd.service.api.IAdsPostService;
-import com.tvntd.service.api.IAdsPostService.AdsPostDTO;
 import com.tvntd.service.api.IAdsPostService.AdsPostDTOResponse;
 import com.tvntd.service.api.IAnnonService;
 import com.tvntd.service.api.IAnnonService.AnnonUserDTO;
 import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArtTagService.ArtTagDTO;
 import com.tvntd.service.api.IArtTagService.ArtTagList;
-import com.tvntd.service.api.IArticleService;
-import com.tvntd.service.api.IArticleService.ArticleDTO;
 import com.tvntd.service.api.IArticleService.ArticleDTOResponse;
-import com.tvntd.service.api.IArticleService.ArticleRankDTO;
+import com.tvntd.service.api.IArticleSvc;
+import com.tvntd.service.api.IArticleSvc.ArticleBriefDTO;
+import com.tvntd.service.api.IArticleSvc.ArticlePostDTO;
 import com.tvntd.service.api.IAuthorService;
 import com.tvntd.service.api.ICommentService;
 import com.tvntd.service.api.ICommentService.CommentDTOResponse;
 import com.tvntd.service.api.IDomainService;
-import com.tvntd.service.api.IProductService;
-import com.tvntd.service.api.IProductService.ProductDTO;
+import com.tvntd.service.api.IMapService;
 import com.tvntd.service.api.IProductService.ProductDTOResponse;
 import com.tvntd.service.api.IProfileService;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
+import com.tvntd.service.api.IQuestionSvc;
 import com.tvntd.service.api.ImageUploadResp;
+import com.tvntd.service.api.RoomAdsResponse;
 import com.tvntd.service.api.StartupResponse;
-import com.tvntd.service.user.AdsPostService;
+import com.tvntd.service.user.ArticleSvc;
 
 @Controller
 public class PublicPath
@@ -103,25 +111,25 @@ public class PublicPath
     private IAuthorService authorSvc;
 
     @Autowired
-    private IArticleService articleSvc;
-
-    @Autowired
     private IArtTagService artTagSvc;
 
     @Autowired
     private ICommentService commentSvc;
 
     @Autowired
-    private IProductService productSvc;
-
-    @Autowired
     private IAnnonService annonSvc;
 
     @Autowired
-    private IAdsPostService adsSvc;
+    private IDomainService domainSvc;
 
     @Autowired
-    private IDomainService domainSvc;
+    private IArticleSvc artSvc;
+
+    @Autowired
+    private IMapService mapSvc;
+
+    @Autowired
+    private IQuestionSvc questSvc;
 
     /**
      * Handle public pages.
@@ -134,6 +142,21 @@ public class PublicPath
         session.setAttribute("domain", name);
         model.put("domain", name);
         return "tvntd";
+    }
+
+    @RequestMapping(value = "/public/business", method = RequestMethod.GET)
+    public String business(Map<String, Object> model, HttpSession session)
+    {
+        return "business";
+    }
+
+    @RequestMapping(value = "/public/business/{name}", method = RequestMethod.GET)
+    public String business(Map<String, Object> model,
+            @PathVariable(value = "name") String name, HttpSession session)
+    {
+        System.out.println("Hit business page " + name);
+        model.put("business", name);
+        return "business";
     }
 
     @RequestMapping(value = "/public/start", method = RequestMethod.GET)
@@ -222,22 +245,21 @@ public class PublicPath
         if (uuids == null) {
             return UserPath.s_genOkResp;
         }
-        List<ProductDTO> list = null;
         String type = uuids.getUuidType();
+        List<ArtProductDTO> prodList = null;
+        List<String> uuidList = new LinkedList<>();
 
+        for (String uid : uuids.getUuids()) {
+            uuidList.add(uid);
+        }
         if (type.equals("user")) {
-            list = productSvc.getProductsByUser(uuids.getUuids());
+            prodList = artSvc.getArtProductDTOByOnwer(uuidList);
         } else {
-            list = productSvc.getProductsByUuids(uuids.getUuids());
+            prodList = artSvc.getArtProductDTO(uuidList);
         }
-        List<ArticleRankDTO> ranks = articleSvc.getArticleRank(uuids);
-        ArrayList<String> artUuids = new ArrayList<>(list.size());
-
-        for (ProductDTO prod : list) {
-            artUuids.add(prod.getArticleUuid());
-        }
-        CommentDTOResponse co = commentSvc.getCommentPost(artUuids);
-        return new ProductDTOResponse(list, null, ranks, co.getComments());
+        List<ArticleBriefDTO> ranks = artSvc.getArticleBriefDTO(uuids);
+        CommentDTOResponse co = commentSvc.getCommentPost(uuidList);
+        return new ProductDTOResponse(prodList, null, ranks, co.getComments());
     }
 
     /**
@@ -257,8 +279,7 @@ public class PublicPath
         for (String u : uuids.getUuids()) {
             input.add(u);
         }
-        List<ArticleDTO> arts = articleSvc.getArticles(input);
-        System.out.println("Result art lengh " + arts.size());
+        List<ArticlePostDTO> arts = artSvc.getArticleDTO(input);
         return new ArticleDTOResponse(arts, null);
     }
 
@@ -310,22 +331,22 @@ public class PublicPath
             MultipartHttpServletRequest reqt,
             HttpServletResponse resp, HttpSession session)
     {
-        AdsPostDTO ads;
+        ArtAdsDTO ads;
         ObjStore store = ObjStore.getInstance();
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
 
         if (profile == null) {
             AnnonUserDTO user = annonSvc.getAnnonUser(reqt, resp, session);
-            ads = user.genPendAds();
+            ads = user.genPendArtAds();
         } else {
-            ads = profile.genPendAds();
+            ads = profile.genPendArtAds();
         }
         try {
             InputStream is = file.getInputStream();
             ObjectId oid = store.putPublicImg(is, (int)file.getSize());
 
             if (oid != null) {
-                ads.setAdImgOId0(oid.name());
+                ads.assignAdImgOid(oid.name());
             }
             ImageUploadResp out =
                 new ImageUploadResp(ads.getArticleUuid(), ads.getAuthorUuid(), oid);
@@ -349,7 +370,7 @@ public class PublicPath
     publishAds(@RequestBody AdsForm form,
             HttpServletRequest reqt, HttpServletResponse resp, HttpSession session)
     {
-        AdsPostDTO ads = null;
+        BusAdsDTO ads = null;
         AnnonUserDTO user = null;
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
 
@@ -359,30 +380,128 @@ public class PublicPath
             if (profile == null) {
                 // Annon user can only have 1 ad/cookie.
                 //
-                adsSvc.deleteAnnonAds(user.getUserUuid());
+                artSvc.deleteAnnonAds(user.getUserUuid());
             }
-            ads = user.genPendAds();
+            ads = user.genPendArtAds();
         } else {
-            ads = profile.genPendAds();
+            ads = profile.genPendArtAds();
         }
         if (form.cleanInput() == false) {
             return UserPath.s_saveObjFailed;
         }
-        AdsPostService.applyPostAds(form, ads);
-        adsSvc.saveAds(ads);
-
-        ArticleRank rank = authorSvc.createAdsRank(ads.fetchAdPost(), form, user);
-        ads.setAdsRank(new ArticleRankDTO(rank));
-
+        ArticleSvc.applyPostAds(form, ads, mapSvc);
+        authorSvc.createAdsRank(ads.fetchAds(), user);
+        artSvc.saveArtAds(ads);
         artTagSvc.addPublicTagPost(form.getBusCat(), ads.getArticleUuid());
+
         if (profile != null) {
             profile.assignPendAds(null);
         }
         if (user != null) {
             user.assignPendAds(null);
         }
-        ads.convertUTF();
         return ads;
+    }
+
+    @RequestMapping(value = "/public/publish-room-ads",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    publishRoomAds(@RequestBody AdsRoomForm form,
+            HttpServletRequest reqt, HttpServletResponse resp, HttpSession session)
+    {
+        BusAdsDTO ads = null;
+        AnnonUserDTO user = null;
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+
+        if (profile == null) {
+            user = annonSvc.getAnnonUser(reqt, resp, session);
+            profile = profileSvc.getProfile(user.getUserUuid());
+            ads = user.genPendArtAds();
+        } else {
+            ads = profile.genPendArtAds();
+        }
+        if (form.cleanInput() == false) {
+            s_log.info("Failed to validate ads form");
+            return UserPath.s_saveObjFailed;
+        }
+        ArtRoomAdsDTO save = ArticleSvc.applyPostAds(form, ads, mapSvc);
+        if (save.getError() == null) {
+            artSvc.saveArtAds(save);
+        }
+        if (profile != null) {
+            profile.assignPendAds(null);
+        }
+        if (user != null) {
+            user.assignPendAds(null);
+        }
+        return save;
+    }
+
+    @RequestMapping(value = "/public/get-room-ads",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    publicGetRoomAds(@RequestBody AdsRequest form)
+    {
+        List<ArtRoomAdsDTO> ads = new LinkedList<>();
+        RoomAdsResponse out = new RoomAdsResponse(null);
+
+        form.cleanInput();
+        if (form.getState() != null) {
+            ads.addAll(artSvc.getRoomAds(form.getState(), IArticleSvc.STATE));
+        } else {
+            if (form.getCity() != null) {
+                ads.addAll(artSvc.getRoomAds(form.getCity(), IArticleSvc.CITY));
+            }
+            if (form.getZip() != null) {
+                ads.addAll(artSvc.getRoomAds(form.getZip(), IArticleSvc.ZIP));
+            }
+        }
+        if (ads.isEmpty()) {
+            ads.addAll(artSvc.getRoomAdsByPrice(
+                        form.getRentPriceLo(), form.getRentPriceHi()));
+        }
+        for (ArtRoomAdsDTO a : ads) {
+            out.addAds(a);
+        }
+        return out;
+    }
+
+    @RequestMapping(value = "/public/get-feature-ads",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    publicGetFeatureAds(@RequestBody AdsRequest form)
+    {
+        List<ArtRoomAdsDTO> ads;
+        RoomAdsResponse out = new RoomAdsResponse("ok");
+
+        ads = artSvc.getRoomAdsByPrice(null, null);
+        out.loadJson("adfeature.json");
+
+        for (ArtRoomAdsDTO a : ads) {
+            out.addAds(a);
+        }
+        return out;
+    }
+ 
+    @RequestMapping(value = "/public/ads/room", method = RequestMethod.GET)
+    @ResponseBody
+    public GenericResponse
+    publicGetRoomAds(HttpSession session, HttpServletResponse resp)
+    {
+        List<ArtRoomAdsDTO> ads;
+        RoomAdsResponse out = new RoomAdsResponse(null);
+
+        ads = artSvc.getRoomAdsByPrice(null, null);
+        for (ArtRoomAdsDTO a : ads) {
+            out.addAds(a);
+        }
+        return out;
     }
 
     /**
@@ -403,12 +522,11 @@ public class PublicPath
             return UserPath.s_invalidArticle;
         }
         */
-        List<AdsPostDTO> ads = adsSvc.getAdsPostByUuids(uuids.getUuids());
-        ArrayList<String> artUuids = new ArrayList<>(ads.size());
-
-        for (AdsPostDTO a : ads) {
-            artUuids.add(a.getArticleUuid());
+        List<String> artUuids = new LinkedList<>();
+        for (String uid : uuids.getUuids()) {
+            artUuids.add(uid);
         }
+        List<ArtAdsDTO> ads = artSvc.getArtAdsDTO(artUuids);
         CommentDTOResponse co = commentSvc.getCommentPost(artUuids);
         return new AdsPostDTOResponse(ads, co.getComments());
     }
@@ -423,8 +541,6 @@ public class PublicPath
         if (uuids == null) {
             return new StartupResponse(null);
         }
-        System.out.println("Request domain " + uuids.getAuthorUuid() +
-                ", type " + uuids.getUuidType());
         StartupResponse resp = new StartupResponse(uuids.getAuthorUuid());
         domainSvc.fillDomainData(resp, uuids);
         return resp;
@@ -439,7 +555,7 @@ public class PublicPath
             @PathVariable(value = "title") String title,
             HttpSession session, HttpServletRequest request, HttpServletResponse resp)
     {
-        ArticleRank rank = articleSvc.getRank(tag, title);
+        ArticleBriefDTO rank = artSvc.getArticleBriefDTO(tag, title);
         if (rank != null) {
             session.setAttribute("startPage", "load author=" +
                     rank.getAuthorUuid() + " articleUuid=" + rank.getArticleUuid());
@@ -447,6 +563,19 @@ public class PublicPath
             session.setAttribute("startPage", "load author=0 articleUuid=0");
         }
         return "tvntd";
+    }
+
+    @RequestMapping(value = "/public/get-question",
+        consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse
+    getPublicQuestion(@RequestBody UuidForm form, HttpSession session)
+    {
+        if (form.cleanInput() == false) {
+            return UserPath.s_badInput;
+        }
+        return questSvc.getQuestion(form);
     }
 
     /**
@@ -463,8 +592,22 @@ public class PublicPath
         String buf = "hello world x = " + x + ", y = " + y;
         System.out.println("Input x = " + x + ", y = " + y);
 
+        if (x.equals("gen")) {
+            System.out.println("Generate dbase for known locations...");
+            mapSvc.genKnownLocations();
+        } else {
+            GenericResponse out = new GenericResponse("");
+            GeocodingResult result = mapSvc.mapZipLocation("94566", out);
+            if (result != null) {
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                System.out.println(gson.toJson(result.addressComponents));
+            } else {
+                System.out.println("Invalid zip: " + out.getMessage());
+            }
+        }
         resp.setContentType("text/html;charset=UTF-8");
         resp.setCharacterEncoding("utf-8");
+
         try {
             resp.getOutputStream().write(buf.getBytes("utf-8"), 0, buf.length());
         } catch(IOException e) {

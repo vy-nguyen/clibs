@@ -9,6 +9,7 @@ import React             from 'react-mod'
 import SmallBreadcrumbs  from 'vntd-shared/layout/SmallBreadcrumbs.jsx';
 import TabPanel          from 'vntd-shared/layout/TabPanel.jsx';
 import ArtTagBase        from 'vntd-shared/layout/ArtTagBase.jsx';
+import AuthorStore       from 'vntd-root/stores/AuthorStore.jsx';
 import ArticleTagStore   from 'vntd-root/stores/ArticleTagStore.jsx';
 import ArticleTagBrief   from 'vntd-root/components/ArticleTagBrief.jsx';
 
@@ -51,6 +52,7 @@ class MainBlog extends ArtTagBase
         pubTags = this.state.pubTags,
         mode = this.props.params.blog;
 
+        AuthorStore.fetchExtraArticles(mode);
         if (mode !== this.state.pubMode) {
             pubTags = ArticleTagStore.getAllPublicTags(true, mode)
         }
@@ -84,7 +86,6 @@ class MainBlog extends ArtTagBase
             </div>
         )
     }
-
 }
 
 export default MainBlog;

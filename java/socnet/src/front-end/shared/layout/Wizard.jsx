@@ -5,7 +5,8 @@
 
 import _                  from 'lodash';
 import classnames         from 'classnames';
-import React, {PropTypes} from 'react-mod';
+import React              from 'react-mod';
+import PropTypes          from 'prop-types';
 
 import Mesg               from 'vntd-root/components/Mesg.jsx';
 
@@ -68,21 +69,30 @@ class Wizard extends React.Component
         style['width'] = (((proNow + 1) * 100) / proMax).toString() + "%";
 
         tabHeader = context.tabItems.map(function(item, idx) {
-            let fmt, hdr;
+            let hist, fmt, hdr, href = '#' + item.domId;
 
             if (idx == proNow) {
                 fmt = "active";
                 hdr = (
-                    <a data-toggle="tab" href={'#' + item.domId}
-                        id={'wizard-' + item.domId}
+                    <a data-toggle="tab" href={href} id={'wizard-' + item.domId}
                         onClick={this._selectTab.bind(this, idx)}>
                         <Mesg text={item.tabText}/>
                     </a>
                 );
             } else {
-                fmt = (idx < proNow) ? "disabled" : "hidden";
+                if (item.goback === true) {
+                    fmt = "hidden";
+                    if (idx <= proNow) {
+                        hist = proNow - idx;
+                        if (hist <= context.activePane) {
+                            fmt = "";
+                        }
+                    }
+                } else {
+                    fmt = (idx < proNow) ? "disabled" : "hidden";
+                }
                 hdr = (
-                    <a className="btn-default disabled" data-toggle="tab" href="#">
+                    <a className={"btn-default " + fmt} data-toggle="tab" href={href}>
                         <Mesg text={item.tabText}/>
                     </a>
                 );

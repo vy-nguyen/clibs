@@ -4,7 +4,8 @@
 'use strict';
 
 import _                  from 'lodash';
-import React, {PropTypes} from 'react-mod';
+import React              from 'react-mod';
+import PropTypes          from 'prop-types';
 
 import ErrorStore         from 'vntd-shared/stores/ErrorStore.jsx';
 import ModalConfirm       from 'vntd-shared/forms/commons/ModalConfirm.jsx';

@@ -20,9 +20,12 @@ class ArticleTagBrief extends React.Component
 {
     constructor(props) {
         super(props);
+        this._readArticle    = this._readArticle.bind(this);
         this._renderArtBrief = this._renderArtBrief.bind(this);
         this._renderArtFull  = this._renderArtFull.bind(this);
         this._renderArtBriefUuid = this._renderArtBriefUuid.bind(this);
+        this._renderArtListFull  = this._renderArtListFull.bind(this);
+        this._renderArtListBrief = this._renderArtListBrief.bind(this);
 
         this.state = {
             articleUuid: null
@@ -69,12 +72,42 @@ class ArticleTagBrief extends React.Component
         );
     }
 
+    /**
+     * Render full article from brief listing.
+     */
     _renderArtFull(art) {
         return this._renderArtFullUuid(null, art.getArticleUuid(), art.getAuthorUuid());
     }
 
+    /**
+     * Render full article from listing by author.
+     */
+    _renderArtListFull(author) {
+        let out, article, activeUuid = this.state.articleUuid;
+
+        if (activeUuid == null) {
+            return null;
+        }
+        article = author[activeUuid];
+        if (article == null) {
+            return null;
+        }
+        out = AuthorFeed.renderToggleView(
+            article.getAuthorUuid(), article.getArticle(), this._readArticle, null, true
+        );
+        return (
+            <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                {out}
+            </div>
+        );
+    }
+
+    _renderArtListBrief(author) {
+        return ArticleBox.artBlogList(author, this.state, this._readArticle, this);
+    }
+
     render() {
-        let tag = this.props.tag, articles = [], unique = {};
+        let out, tag = this.props.tag, articles = [], unique = {};
 
         if (tag.tagKind === "estore") {
             if (tag.sortedArts == null) {
@@ -84,12 +117,38 @@ class ArticleTagBrief extends React.Component
         }
         ArticleTagStore.getPublishedArticles(tag.tagName, articles, unique);
 
+        /*
+        out = ArticleTagBrief.renderArtBox(
+            articles, this._renderArtBrief, this._renderArtFull, true
+        );
+        */
+        out = ArticleTagBrief.renderArtList(
+            articles, this._renderArtListBrief, this._renderArtListFull
+        );
         return (
             <section id='widget-grid'>
-                {ArticleTagBrief.renderArtBox(articles,
-                    this._renderArtBrief, this._renderArtFull, true)}
+                {out}
             </section>
         );
+    }
+
+    static renderArtList(articles, renderBrief, renderFull) {
+        let authorArr = [], authors = {};
+
+        _.forEach(articles, function(art) {
+            let uuid = art.getAuthorUuid(), anchor = authors[uuid];
+            if (anchor == null) {
+                anchor = {
+                    artArray  : [],
+                    authorUuid: uuid
+                };
+                authors[uuid] = anchor;
+                authorArr.push(anchor);
+            }
+            anchor[art.getArticleUuid()] = art;
+            anchor.artArray.push(art);
+        });
+        return ArticleTagBrief.renderArtBox(authorArr, renderBrief, renderFull, false);
     }
 
     static renderArtBox(adsList, renderBrief, renderFull, maxCol) {

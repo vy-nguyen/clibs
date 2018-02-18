@@ -28,7 +28,7 @@ package com.tvntd.service.api;
 
 import java.util.List;
 
-import com.tvntd.service.api.IArticleService.ArticleRankDTO;
+import com.tvntd.service.api.IArticleSvc.ArticleBriefDTO;
 
 public class NewsFeedDTO
 {
@@ -60,7 +60,7 @@ public class NewsFeedDTO
     static class TagDTO
     {
         private String tagName;
-        private List<ArticleRankDTO> articleInfo;
+        private List<ArticleBriefDTO> articleInfo;
         private List<TagDTO> subTags;
 
         /**
@@ -73,7 +73,7 @@ public class NewsFeedDTO
         /**
          * @return the articleInfo
          */
-        public List<ArticleRankDTO> getArticleInfo() {
+        public List<ArticleBriefDTO> getArticleInfo() {
             return articleInfo;
         }
 

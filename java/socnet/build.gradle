@@ -5,11 +5,19 @@ buildscript {
     dependencies {
         classpath 'org.akhikhl.gretty:gretty:+'
     }
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.1'
+    }
 }
 
 plugins {
     id 'net.eikehirsch.react' version '0.3.1'
     id 'com.moowork.node' version '0.11'
+}
+
+ext {
+    implTitle = "Soc net"
+    version   = "1.0"
 }
 
 apply from: rootProject.file('common.gradle')
@@ -18,12 +26,7 @@ apply plugin: 'java'
 apply plugin: 'war'
 apply plugin: 'org.akhikhl.gretty'
 //apply plugin: 'jetty'
-apply plugin: 'eclipse-wtp'
-
-ext {
-    implTitle = "Soc net"
-    version   = "1.0"
-}
+apply plugin: 'com.google.protobuf'
 
 war {
     baseName = 'socnet'
@@ -41,8 +44,14 @@ targetCompatibility = "${javaTarget}"
 
 sourceSets {
     main {
+        proto {
+            srcDirs = [ 'src/main/proto' ]
+        }
         java {
-            srcDir file('src/main/java')
+            srcDirs = [
+                'src/main/java',
+                '${buildDir}/gen/main/java'
+            ]
         }
     }
     test {
@@ -58,6 +67,17 @@ ext {
         mainManifest = manifest {
             attributes 'Main-Class': mainClass
         }
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:$protobuf_version"
+    }
+    generateProtoTasks.generatedFilesBaseDir = "$buildDir/gen"
+    generateProtoTasks {
+        all().each { task -> }
+        ofSourceSet('main')
     }
 }
 
@@ -101,6 +121,9 @@ dependencies {
     compile "javax.mail:mail:${javax_mail_version}"
     compile "javax.servlet:servlet-api:2.5"
     compile "org.jsoup:jsoup:1.8.3"
+    compile "com.google.maps:google-maps-services:${google_map_version}"
+    compile "com.google.protobuf:protobuf-java:$protobuf_version"
+    compile "org.slf4j:slf4j-nop:1.7.25"
 
     compile project(":socialauth")
     compile project(":common")
@@ -118,18 +141,12 @@ gretty {
     //port  = 8080
     contextPath = '/'
     servletContainer = 'jetty9'
+    debugPort = 5005
+    debugSuspend = false
     jvmArgs = ['-Djava.net.preferIPv4Stack=true']
 
     if (System.properties['org.eclipse.jetty.annotations.maxWait'] != null) {
         jvmArgs.add('-Dorg.eclipse.jetty.annotations.maxWait=' + System.properties['org.eclipse.jetty.annotations.maxWait'])
-    }
-}
-
-eclipse {
-    wtp {
-        component {
-            contextPath = '/'
-        }
     }
 }
 
@@ -168,7 +185,7 @@ task nodeJs(type: NodeTask) {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.10'
+    gradleVersion = '4.4'
 }
 
 // processResources.dependsOn(npmPackages)

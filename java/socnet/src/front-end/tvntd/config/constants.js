@@ -68,6 +68,49 @@ export const VntdGlob = {
         width   : "100%",
         height  : "100%"
     },
+    styleModal: {
+        content: {
+            top        : '50%',
+            left       : '50%',
+            right      : 'auto',
+            bottom     : 'auto',
+            marginRight: '-50%',
+            transform  : 'translate(-50%, -50%)',
+            overflowX  : 'auto',
+            overflow   : 'scroll',
+            maxHeight  : '95vh'
+        }
+    },
+    styleMarker: {
+        content: {
+            top        : '50%',
+            left       : '50%',
+            right      : 'auto',
+            bottom     : 'auto',
+            marginRight: '-10%',
+            transform  : 'translate(-50%, -50%)',
+            overflowX  : 'auto',
+            overflow   : 'scroll',
+            maxHeight  : '95vh'
+        }
+    },
+    styleBusMarker: {
+        content: {
+            top        : '30%',
+            left       : '30%',
+            right      : 'auto',
+            bottom     : 'auto',
+            marginRight: '-10%',
+            transform  : 'translate(-30%, -30%)',
+            overflow   : 'scroll',
+            maxHeight  : '95vh'
+        }
+    },
+    styleMap: {
+        width   : '100vw',
+        height  : '100vh',
+        overflow: 'auto'
+    },
     smallBox: {
         width : "60px",
         height: "60px"
@@ -78,5 +121,44 @@ export const VntdGlob = {
         radius: 30,
         length: 20,
         color : "black"
+    },
+    footerBottom: {
+        backgroundColor: "#15224f",
+        minHeight: "30px",
+        width    : "100%"
+    },
+    copyrightStyle: {
+        color     : "#fff",
+        lineHeight: "30px",
+        minHeight : "30px",
+        padding   : "7px 0"
+    },
+    designStyle: {
+        color     : "#fff",
+        lineHeight: "30px",
+        minHeight : "30px",
+        padding   : "7px 0",
+        textAlign : "right"
     }
 };
+
+export const ColFmtMap = [
+    "col-xs-12 col-sm-12 col-md-12 col-lg-12", // 0
+    "col-xs-12 col-sm-12 col-md-12 col-lg-12", // 1
+    "col-xs-2 col-sm-2 col-md-2 col-lg-2",     // 2
+    "col-xs-4 col-sm-4 col-md-4 col-lg-4",     // 3
+    "col-xs-3 col-sm-3 col-md-3 col-lg-3",     // 4
+    "col-xs-6 col-sm-6 col-md-6 col-lg-6",     // 5
+    "col-xs-6 col-sm-6 col-md-6 col-lg-6"      // 6
+];
+
+export const ColWidthMap = [
+    "col-xs-12 col-sm-12 col-md-12 col-lg-12", //
+    "col-xs-12 col-sm-12 col-md-12 col-lg-12", // 1 column
+    "col-xs-6 col-sm-6 col-md-6 col-lg-6",     // 2 columns
+    "col-xs-4 col-sm-4 col-md-4 col-lg-4",     // 3 columns
+    "col-xs-6 col-sm-6 col-md-3 col-lg-3",     // 4 columns
+    "col-xs-6 col-sm-6 col-md-2 col-lg-2",     // 5 columns
+    "col-xs-6 col-sm-6 col-md-2 col-lg-2",     // 6 columns
+    "col-xs-6 col-sm-6 col-md-1 col-lg-1"      // 7 columns
+];

@@ -31,7 +31,7 @@ import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.ObjectId;
 import com.tvntd.models.Domain;
 import com.tvntd.objstore.ObjStore;
-import com.tvntd.service.api.IArticleService.ArticleDTO;
+import com.tvntd.service.api.IArticleSvc.ArticlePostDTO;
 import com.tvntd.service.api.IProfileService.ProfileDTO;
 import com.tvntd.util.Util;
 
@@ -39,7 +39,8 @@ public interface IDomainService
 {
     Domain getDomain(String domain);
     boolean saveDomain(String name, ProfileDTO profile);
-    boolean updateDomain(String name, DomainForm form, ArticleDTO pend, ProfileDTO prof);
+    boolean updateDomain(String name,
+            DomainForm form, ArticlePostDTO pend, ProfileDTO prof);
     void deleteDomain(Domain domain);
 
     void fillLoginResponse(LoginResponse resp, ProfileDTO profile);
@@ -93,7 +94,7 @@ public interface IDomainService
             if (authorId == null || imgOid == null) {
                 return null;
             }
-            String path = ArticleDTO.s_baseUri + Long.toString(authorId);
+            String path = ArticlePostDTO.s_baseUri + Long.toString(authorId);
             ObjectId oid = ObjectId.fromString(imgOid);
             return ObjStore.getInstance().imgObjUri(oid, path);
         }
@@ -110,7 +111,7 @@ public interface IDomainService
             if (authorId == null || imgOid == null) {
                 return null;
             }
-            String path = ArticleDTO.s_baseUri + Long.toString(authorId);
+            String path = ArticlePostDTO.s_baseUri + Long.toString(authorId);
             ObjectId oid = ObjectId.fromString(imgOid);
             return ObjStore.getInstance().imgObjUri(oid, path);
         }

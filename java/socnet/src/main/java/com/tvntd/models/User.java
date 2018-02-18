@@ -79,7 +79,7 @@ public class User
     public User()
     {
         super();
-        this.enabled = false;
+        this.enabled = true;
         this.tokenExpired = false;
     }
 

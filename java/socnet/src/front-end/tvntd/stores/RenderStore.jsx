@@ -45,6 +45,12 @@ const _menuProfile = {
         title: 'Edit Profile'
     }, {
         badge: null,
+        icon : 'fa fa-tag',
+        items: null,
+        route: 'user/tag-posts',
+        title: 'Manage Posts'
+    }, {
+        badge: null,
         icon : 'fa fa-money',
         items: null,
         route: '/user/account',
@@ -81,9 +87,15 @@ const _menuBlogs = [ {
 }, {
     badge: null,
     icon : 'fa fa-lg fa-fw fa-money',
-    items: null,
     route: '/public/ads',
-    title: 'Commercial Ads'
+    title: 'Commercial Ads',
+    items: [ {
+        badge: null,
+        icon : 'fa fa-money',
+        items: null,
+        route: '/public/business',
+        title: 'Business Pages'
+    } ]
 }, {
     badge: null,
     icon : 'fa fa-lg fa-fw fa-shopping-cart',
@@ -219,7 +231,7 @@ let RenderStore = Reflux.createStore({
         Actions.clickMenuItem(item);
     },
 
-    onStartupCompleted: function(json) {
+    mainStartup: function(json) {
         let menuItems = [_menuHome];
 
         if (UserStore.isLogin() == true) {
@@ -249,9 +261,9 @@ let RenderStore = Reflux.createStore({
     },
 
     onRefreshNotifyCompleted: function(json) {
-        this.data.notifyItems = [json.message, json.notify, json.task];
+        this.data.notifyItems  = [json.message, json.notify, json.task];
         this.data.activeNotify = json.message;
-        this.data.lastUpdated = new Date();
+        this.data.lastUpdated  = new Date();
         this.trigger(this.data);
     },
 

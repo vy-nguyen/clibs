@@ -1,51 +1,72 @@
-var scripts = {
-    "aliases" : {
-        "vntd-shared": "/src/front-end/shared",
-        "vntd-root"  : "/src/front-end/tvntd",
-        "node-module": "/node_modules",
+var path    = require('path');
+var rootDir = path.resolve(__dirname, '../../..');
 
-        "react-mod": "/node_modules/react/react.js",
-        "react-lib": "/node_modules/react/lib",
-        "react-dom": "/node_modules/react-dom/dist/react-dom.min.js",
+var scripts = {
+    rootDir: rootDir,
+    rootSrc: path.resolve(rootDir, 'src/front-end'),
+    webRoot: path.resolve(rootDir, 'src/main/webapp'),
+    node_modules: path.resolve(rootDir, 'node_modules'),
+
+    aliases: {
+        "vntd-shared"     : "/src/front-end/shared",
+        "vntd-root"       : "/src/front-end/tvntd",
+        "node-module"     : "/node_modules",
+        "react-mod"       : "/node_modules/react/react.js",
+        "react-lib"       : "/node_modules/react/lib",
+        "react-dom"       : "/node_modules/react-dom/dist/react-dom.min.js",
         "react-dom-server": "/node_modules/react-dom/server.js",
         "react-bootstrap" : "/node_modules/react-bootstrap/dist/react-bootstrap.min.js",
+        "bootstrap-lib"   : "/node_modules/react-bootstrap/lib",
         "react-router"    : "/node_modules/react-router/umd/ReactRouter.min.js",
-        "react-dropzone-component": "/node_modules/react-dropzone-component/dist/react-dropzone.js",
 
-        "history/lib": "/node_modules/history/umd/History.min.js",
-        "jquery": "/node_modules/jquery/dist/jquery.min.js",
+        "react-dropzone-component":
+            "/node_modules/react-dropzone-component/dist/react-dropzone.js",
 
-        "moment"   : "/node_modules/moment/min/moment-with-locales.min.js",
+        "history/lib"    : "/node_modules/history/umd/History.min.js",
+        "jquery"         : "/node_modules/jquery/dist/jquery.min.js",
+        "moment"         : "/node_modules/moment/min/moment-with-locales.min.js",
         "moment-timezone": "/node_modules/moment-timezone/builds/moment-timezone.min.js",
 
-        "morris": "/node_modules/morris.js/morris.min.js",
-        "datatables.net": "/node_modules/datatables/media/js/jquery.dataTables.min.js",
-        "datatables.net-buttons": "/node_modules/datatables-buttons/js/dataTables.buttons.js",
-        "datatables.net-buttons.bootstrap": "/node_modules/datatables-buttons/js/buttons.bootstrap.js",
-        "datatables.net-buttons.print": "/node_modules/datatables-buttons/js/buttons.print.js",
-        "datatables.net-buttons.flash": "/node_modules/datatables-buttons/js/buttons.flash.js",
-        "datatables.net-buttons.colVis": "/node_modules/datatables-buttons/js/buttons.colVis.js",
+        "morris"         : "/node_modules/morris.js/morris.min.js",
+        "datatables.net" : "/node_modules/datatables/media/js/jquery.dataTables.min.js",
+
+        "datatables.net-buttons":
+            "/node_modules/datatables-buttons/js/dataTables.buttons.js",
+        "datatables.net-buttons.bootstrap":
+            "/node_modules/datatables-buttons/js/buttons.bootstrap.js",
+        "datatables.net-buttons.print":
+            "/node_modules/datatables-buttons/js/buttons.print.js",
+        "datatables.net-buttons.flash":
+            "/node_modules/datatables-buttons/js/buttons.flash.js",
+        "datatables.net-buttons.colVis":
+            "/node_modules/datatables-buttons/js/buttons.colVis.js",
 
         "he"          : "/node_modules/he/he.js",
         "clockpicker" : "/node_modules/clockpicker/dist/bootstrap-clockpicker.min.js",
-        "smartwidgets": "/src/front-end/smartadmin-plugin/smartwidgets/jarvis.widget.js",
+        "smartwidgets": "/src/front-end/smartadmin-plugin/smartwidgets/jarvis.widget.js"
     },
-    "chunks": {
+    chunks: {
         "vendor": [
             "react-mod",
             "react-dom",
             "react-bootstrap",
             "react-router",
             "jquery",
-            "moment",
-            "he"
+        ],
+        "vendor.lib": [
+            "he",
+            "history/lib",
+            "jquery-nestable",
+            "lodash",
+            "moment"
         ],
         "vendor.ui": [
-            "clockpicker",
-            "jquery-nestable",
+            "clockpicker"
         ],
         "vendor.datatables": [
             "datatables.net",
+            "datatables.net-buttons",
+            "datatables.net-buttons.bootstrap",
             "datatables-responsive",
             "datatables.net-responsive-bs"
         ],
@@ -55,7 +76,8 @@ var scripts = {
     },
     noParse: [
         "jquery",
-        "moment"
+        "moment",
+        "react"
     ]
 };
 
