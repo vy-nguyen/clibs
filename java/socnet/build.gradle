@@ -128,7 +128,6 @@ dependencies {
 
     compile project(":socialauth")
     compile project(":common")
-    compile project(":ethereumj/ethereumj-core")
 
     // testCompile "org.springframework.boot:spring-boot-starter-test"
     testCompile "org.springframework:spring-test:${spring_version}"
