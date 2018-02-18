@@ -3,10 +3,19 @@ allprojects {
 
 subprojects {
     apply plugin: 'eclipse'
+    apply plugin: 'java'
     apply plugin: 'maven'
 
     repositories {
         mavenLocal()
         jcenter()
+        maven {
+            url "https://dl.bintray.com/ethereum/maven/"
+        }
     }
+
+    compileJava.options.encoding = 'UTF-8'
+    compileJava.options.compilerArgs << '-XDignore.symbol.file'
+
+    compileTestJava.options.encoding = 'UTF-8'
 }
