@@ -9,8 +9,9 @@ ext {
     artifactId = "common"
 }
 
-repositories {
-    mavenCentral()
+jar {
+    baseName   = "common"
+    version    = "snapshot"
 }
 
 dependencies {
