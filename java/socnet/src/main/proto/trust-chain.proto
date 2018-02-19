@@ -4,9 +4,18 @@ package tvntd;
 
 option java_multiple_files = true;
 option java_package = "com.tvntd.trust";
-option java_outer_classname = "Chain";
+option java_outer_classname = "Block";
 
 message ObjectId {
+    uint32                 w1 = 1;
+    uint32                 w2 = 2;
+    uint32                 w3 = 3;
+    uint32                 w4 = 4;
+    uint32                 w5 = 5;
+    uint32                 w6 = 6;
+}
+
+message ObjectId256 {
     uint32                 w1 = 1;
     uint32                 w2 = 2;
     uint32                 w3 = 3;
@@ -17,3 +26,20 @@ message ObjectId {
     uint32                 w8 = 8;
 }
 
+message Chain {
+    ObjectId256            prev_hash = 1;
+    string                 prev_uri  = 2;
+}
+
+message Data {
+    enum Encryption {
+        CLEAR_TEXT         = 0;
+        PUBLIC_KEY         = 1;
+        PRIVATE_KEY        = 3;
+    }
+    ObjectId256            sha2Content     = 1;
+    Encryption             encryption      = 2;
+    string                 mineType        = 3;
+    string                 embedContent    = 4;
+    repeated string        getContentUrl   = 5;
+}

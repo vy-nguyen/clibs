@@ -38,7 +38,7 @@ afterEvaluate {
             }
         }
     }
-
+        
     jar {
         from sourceSets.main.output
         archiveName = "${baseName}_${version}.${extension}"
