@@ -132,12 +132,10 @@ dependencies {
 
     compile project(":socialauth")
     compile project(":common")
-    compile project(":account")
 
     // For eclipse .classpath
     compile files(new File(project.rootDir, "socialauth/build/libs"))
     compile files(new File(project.rootDir, "common/build/libs/common_snapshot.jar"))
-    compile files(new File(project.rootDir, "account/build/libs/account_snapshot.jar"))
 
     // testCompile "org.springframework.boot:spring-boot-starter-test"
     testCompile "org.springframework:spring-test:${spring_version}"
