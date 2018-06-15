@@ -26,16 +26,11 @@
  */
 package com.tvntd.config;
 
-import org.brickred.socialauth.spring.bean.SocialAuthTemplate;
-import org.brickred.socialauth.spring.bean.SpringSocialAuthManager;
-import org.brickred.socialauth.spring.controller.SocialAuthWebController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -154,43 +149,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
     }
 
     @Bean
-    @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
-    public SpringSocialAuthManager socialAuthManager() {
-        return new SpringSocialAuthManager();
-    }
-
-    @Bean
-    @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
-    public SocialAuthTemplate socialAuthTemplate() {
-        return new SocialAuthTemplate();
-    }
-
-    @Bean
     public PropertiesFactoryBean socialAuthProperties()
     {
         PropertiesFactoryBean bean = new PropertiesFactoryBean();
         bean.setLocation(new ClassPathResource("oauth_consumer.properties"));
         return bean;
-    }
-
-    /*
-    @Bean
-    public SocialAuthConfig socialAuthConfig(Properties socialAuthProperties)
-    {
-        SocialAuthConfig cfg = SocialAuthConfig.getDefault();
-        try {
-            cfg.setApplicationProperties(socialAuthProperties);
-        } catch(Exception e) {
-        }
-        return cfg;
-    }
-    */
-
-    @Bean
-    public SocialAuthWebController socialAuthWebController() {
-        return new SocialAuthWebController(
-                "http://opensource.brickred.com/socialauthdemo",
-                "authSuccess.do",
-                "accessDeniedAction.do");
     }
 }

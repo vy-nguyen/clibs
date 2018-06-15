@@ -24,38 +24,36 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.servlet3;
+package com.tvntd.ether.models;
 
-import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
-import com.tvntd.config.TvntdRootConfig;
-import com.tvntd.config.TvntdWebConfig;
-import com.tvntd.config.AccountJPAConfig;
-import com.tvntd.config.CacheConfig;
-import com.tvntd.config.PersistenceJPAConfig;
-import com.tvntd.config.SecurityConfig;
+@Entity
+public class Person {
 
-public class WebSevletInit extends AbstractAnnotationConfigDispatcherServletInitializer
-{
-    @Override
-    protected Class<?>[] getRootConfigClasses() {
-        return new Class<?>[] {
-            TvntdRootConfig.class,
-            SecurityConfig.class,
-            PersistenceJPAConfig.class,
-            // com.tvntd.ether.config.PersistenceJPAConfig.class,
-            AccountJPAConfig.class,
-            CacheConfig.class
-        };
-    }
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private long id;
 
-    @Override
-    protected Class<?>[] getServletConfigClasses() {
-        return new Class<?>[] { TvntdWebConfig.class };
-    }
+	private String firstName;
+	private String lastName;
 
-    @Override
-    protected String[] getServletMappings() {
-        return new String[] { "/" };
-    }
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
 }

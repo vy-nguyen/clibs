@@ -24,38 +24,37 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.servlet3;
+package com.tvntd.ether.web;
 
-import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+import java.util.Locale;
 
-import com.tvntd.config.TvntdRootConfig;
-import com.tvntd.config.TvntdWebConfig;
-import com.tvntd.config.AccountJPAConfig;
-import com.tvntd.config.CacheConfig;
-import com.tvntd.config.PersistenceJPAConfig;
-import com.tvntd.config.SecurityConfig;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-public class WebSevletInit extends AbstractAnnotationConfigDispatcherServletInitializer
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.tvntd.ether.dto.GenericResponse;
+
+@Controller
+public class ApiPath
 {
-    @Override
-    protected Class<?>[] getRootConfigClasses() {
-        return new Class<?>[] {
-            TvntdRootConfig.class,
-            SecurityConfig.class,
-            PersistenceJPAConfig.class,
-            // com.tvntd.ether.config.PersistenceJPAConfig.class,
-            AccountJPAConfig.class,
-            CacheConfig.class
-        };
-    }
+    static protected Logger s_log = LoggerFactory.getLogger(ApiPath.class);
 
-    @Override
-    protected Class<?>[] getServletConfigClasses() {
-        return new Class<?>[] { TvntdWebConfig.class };
-    }
-
-    @Override
-    protected String[] getServletMappings() {
-        return new String[] { "/" };
+    /**
+     * Handle Api REST calls.
+     */
+    @RequestMapping(value = "/api/hello", method = RequestMethod.GET)
+    @ResponseBody
+    public GenericResponse
+    getUserNotification(Locale locale, HttpSession session,
+            HttpServletRequest reqt, HttpServletResponse resp)
+    {
+        return new GenericResponse("Echo Hello World");
     }
 }

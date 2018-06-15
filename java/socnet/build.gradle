@@ -130,8 +130,8 @@ dependencies {
     compile "com.google.protobuf:protobuf-java:$protobuf_version"
     compile "org.slf4j:slf4j-nop:1.7.25"
 
-    compile project(":socialauth")
     compile project(":common")
+    compile project(":ether")
 
     // For eclipse .classpath
     compile files(new File(project.rootDir, "socialauth/build/libs"))
