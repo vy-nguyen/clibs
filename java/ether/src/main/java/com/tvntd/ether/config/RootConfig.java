@@ -26,15 +26,40 @@
  */
 package com.tvntd.ether.config;
 
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+
+import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
+import com.googlecode.jsonrpc4j.ProxyUtil;
+import com.tvntd.ether.api.EtherRpcApi;
 
 @Configuration
 public class RootConfig
 {
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer propertyPlaceHolderConfigurer() {
-        return new PropertySourcesPlaceholderConfigurer();
+    private static final String endpoint = "http://localhost:8545";
+
+    @Bean(name = "etherJsonRpc")
+    public JsonRpcHttpClient etherJsonRpc()
+    {
+        URL url = null;
+        Map<String, String> map = new HashMap<>();
+        try {
+            url = new URL(RootConfig.endpoint);
+        } catch(Exception e) {
+            System.out.println("Bad url: " + e.getMessage());
+        }
+        map.put("Content-Type", "application/json");
+        return new JsonRpcHttpClient(url, map);
+    }
+
+    @Bean(name = "etherRpcApi")
+    public EtherRpcApi etherRpcApi(JsonRpcHttpClient rpcClient) {
+        return ProxyUtil.createClientProxy(
+                getClass().getClassLoader(),
+                EtherRpcApi.class, rpcClient);
     }
 }

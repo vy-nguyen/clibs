@@ -30,6 +30,8 @@ import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatche
 
 import com.tvntd.config.TvntdRootConfig;
 import com.tvntd.config.TvntdWebConfig;
+import com.tvntd.ether.config.EtherJPAConfig;
+import com.tvntd.ether.config.RootConfig;
 import com.tvntd.config.AccountJPAConfig;
 import com.tvntd.config.CacheConfig;
 import com.tvntd.config.PersistenceJPAConfig;
@@ -43,8 +45,9 @@ public class WebSevletInit extends AbstractAnnotationConfigDispatcherServletInit
             TvntdRootConfig.class,
             SecurityConfig.class,
             PersistenceJPAConfig.class,
-            // com.tvntd.ether.config.PersistenceJPAConfig.class,
+            EtherJPAConfig.class,
             AccountJPAConfig.class,
+            RootConfig.class,
             CacheConfig.class
         };
     }

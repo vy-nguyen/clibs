@@ -61,6 +61,7 @@ java/socnet/src/main/webapp/WEB-INF/*
 java/socnet/out
 java/common/out
 java/.idea
+java/ether/.idea
 java/account/out
 java/skel/out
 java/socialauth/out

@@ -26,6 +26,8 @@
  */
 package com.tvntd.ether.web;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,17 +36,28 @@ import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
+import com.tvntd.ether.api.EtherRpcApi;
+import com.tvntd.ether.api.EtherRpcApi.EtherAccount;
 import com.tvntd.ether.dto.GenericResponse;
 
 @Controller
-public class ApiPath
+public class EtherApi
 {
-    static protected Logger s_log = LoggerFactory.getLogger(ApiPath.class);
+    static protected Logger s_log = LoggerFactory.getLogger(EtherApi.class);
+
+    @Autowired
+    protected EtherRpcApi etherRpcApi;
+
+    @Autowired
+    protected JsonRpcHttpClient etherJsonRpc;
 
     /**
      * Handle Api REST calls.
@@ -55,6 +68,52 @@ public class ApiPath
     getUserNotification(Locale locale, HttpSession session,
             HttpServletRequest reqt, HttpServletResponse resp)
     {
+        try {
+            Object args = new JsonRpcReqt("foo",
+                    "0x3E869518AaBdbb1805Bd467847B402F9E567b27b");
+
+            EtherAccount res = etherJsonRpc
+                .invoke("tudo_getAccount", args, EtherAccount.class);
+
+            System.out.println("Output " + res);
+            res.printJson();
+
+        } catch(Throwable e) {
+            System.out.println("Exception " + e.getMessage());
+        }
         return new GenericResponse("Echo Hello World");
+    }
+
+    public static class JsonRpcReqt
+    {
+        @JsonProperty(value = "jsonrpc")
+        public String getJsonrpc() {
+            return jsonrpc;
+        }
+
+        @JsonProperty(value = "id")
+        public String getId() {
+            return id;
+        }
+
+        @JsonProperty(value = "params")
+        public List<String> getParams() {
+            return params;
+        }
+
+        protected String jsonrpc;
+        protected String id;
+        protected List<String> params;
+
+        public JsonRpcReqt(String id, String ...params)
+        {
+            this.jsonrpc = "2.0";
+            this.id = id;
+            this.params = new LinkedList<>();
+
+            for (String p : params) {
+                this.params.add(p);
+            }
+        }
     }
 }

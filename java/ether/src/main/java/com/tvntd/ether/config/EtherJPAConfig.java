@@ -34,12 +34,9 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -50,52 +47,54 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EnableTransactionManagement
-@PropertySource({ "classpath:persistence.properties" })
 @ComponentScan({ "com.tvntd.ether.models" })
-@EnableJpaRepositories(basePackages = "com.tvntd.ether.dao")
-public class PersistenceJPAConfig
-{
-    @Autowired
-    private Environment env;
-
-    public PersistenceJPAConfig() {
-        super();
+@EnableJpaRepositories(
+    entityManagerFactoryRef = "etherEntityMgrFactory",
+    transactionManagerRef = "etherTransManager",
+    basePackages = {
+        "com.tvntd.ether.dao"
     }
-
-    @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory()
+)
+public class EtherJPAConfig
+{
+    @Bean(name = "etherEntityMgrFactory")
+    public LocalContainerEntityManagerFactoryBean etherEntityMgrFactory()
     {
-        final LocalContainerEntityManagerFactoryBean em =
+        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        LocalContainerEntityManagerFactoryBean em =
             new LocalContainerEntityManagerFactoryBean();
 
-        em.setDataSource(dataSource());
-        em.setPackagesToScan(new String[] { "com.tvntd.ether.models" });
-
-        final HibernateJpaVendorAdapter vendorAdapter =
-            new HibernateJpaVendorAdapter();
+        em.setDataSource(etherDataSource());
+        em.setPackagesToScan(new String[] {
+            "com.tvntd.ether.models"
+        });
 
         em.setJpaVendorAdapter(vendorAdapter);
         em.setJpaProperties(additionalProperties());
         return em;
     }
 
-    @Bean
-    public DataSource dataSource()
+    @Bean(name = "etherDataSource")
+    public DataSource etherDataSource()
     {
-        final DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(env.getProperty("jdbc.driverClassName"));
-        dataSource.setUrl(env.getProperty("jdbc.url"));
-        dataSource.setUsername(env.getProperty("jdbc.user"));
-        dataSource.setPassword(env.getProperty("jdbc.pass"));
-        return dataSource;
+        DriverManagerDataSource ds = new DriverManagerDataSource();
+
+        // TODO: change this to env. variable
+        //
+        ds.setDriverClassName("com.mysql.jdbc.Driver");
+        ds.setUrl("jdbc:mysql://localhost:3306/keystore?createDatabaseIfNotExist=true");
+        ds.setUsername("socnet");
+        ds.setPassword("socnetsocnet");
+        return ds;
     }
 
-    @Bean
-    public JpaTransactionManager transactionManager()
+    @Bean(name = "etherTransManager")
+    public JpaTransactionManager etherTransManager()
     {
-        final JpaTransactionManager transactionManager = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
-        return transactionManager;
+        JpaTransactionManager tm = new JpaTransactionManager();
+
+        tm.setEntityManagerFactory(etherEntityMgrFactory().getObject());
+        return tm;
     }
 
     @Bean
@@ -105,13 +104,11 @@ public class PersistenceJPAConfig
 
     final Properties additionalProperties()
     {
-        final Properties hibernateProperties = new Properties();
-        hibernateProperties.
-            setProperty("hibernate.hbm2ddl.auto",
-                    env.getProperty("hibernate.hbm2ddl.auto"));
-        hibernateProperties.
-            setProperty("hibernate.dialect",
-                    env.getProperty("hibernate.dialect"));
-        return hibernateProperties;
+        Properties hbp = new Properties();
+
+        hbp.setProperty("hibernate.hbm2ddl.auto", "update");
+        hbp.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+        hbp.setProperty("hibernate.connection.useUnicode", "true");
+        return hbp;
     }
 }

@@ -45,7 +45,7 @@ import org.springframework.web.servlet.view.JstlView;
     "com.tvntd.security",
     "com.tvntd.events",
     "com.tvntd.service",
-    "com.tvntd.ether.service",
+    "com.tvntd.ether.web",
     "com.tvntd.account.service"
 })
 public class TvntdWebConfig extends WebMvcConfigurerAdapter
