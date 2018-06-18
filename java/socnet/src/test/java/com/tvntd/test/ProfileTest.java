@@ -61,6 +61,8 @@ import com.tvntd.config.TestTvntdRootConfig;
 import com.tvntd.config.TestTvntdWebConfig;
 import com.tvntd.dao.RoleRepository;
 import com.tvntd.dao.UserRepository;
+import com.tvntd.ether.config.EtherJPAConfig;
+import com.tvntd.ether.config.RootConfig;
 import com.tvntd.lib.RandUtil;
 import com.tvntd.models.Profile;
 import com.tvntd.models.Role;
@@ -80,7 +82,9 @@ import com.tvntd.util.Constants;
         TestPersistenceJPAConfig.class,
         TestAccountJPAConfig.class,
         TestTvntdRootConfig.class,
-        TestCacheConfig.class
+        TestCacheConfig.class,
+        EtherJPAConfig.class,
+        RootConfig.class
     }
 )
 public class ProfileTest

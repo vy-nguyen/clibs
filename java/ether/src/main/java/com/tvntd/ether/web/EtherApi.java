@@ -84,8 +84,17 @@ public class EtherApi
         return new GenericResponse("Echo Hello World");
     }
 
+    public void sendJsonRpc(String method, String id, String ...params)
+    {
+    }
+
     public static class JsonRpcReqt
     {
+        @JsonProperty(value = "method")
+        public String getMethod() {
+            return method;
+        }
+
         @JsonProperty(value = "jsonrpc")
         public String getJsonrpc() {
             return jsonrpc;
@@ -101,14 +110,16 @@ public class EtherApi
             return params;
         }
 
+        protected String method;
         protected String jsonrpc;
         protected String id;
         protected List<String> params;
 
-        public JsonRpcReqt(String id, String ...params)
+        public JsonRpcReqt(String method, String id, String ...params)
         {
             this.jsonrpc = "2.0";
             this.id = id;
+            this.method = method;
             this.params = new LinkedList<>();
 
             for (String p : params) {

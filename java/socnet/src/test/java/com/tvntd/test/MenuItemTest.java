@@ -51,6 +51,8 @@ import com.tvntd.config.TestPersistenceJPAConfig;
 import com.tvntd.config.TestSecurityConfig;
 import com.tvntd.config.TestTvntdRootConfig;
 import com.tvntd.config.TestTvntdWebConfig;
+import com.tvntd.ether.config.EtherJPAConfig;
+import com.tvntd.ether.config.RootConfig;
 import com.tvntd.service.api.IArticleSvc;
 import com.tvntd.service.api.IMenuItemService;
 import com.tvntd.service.api.IMenuItemService.MenuItemResp;
@@ -66,8 +68,10 @@ import com.tvntd.service.api.UserNotifResponse;
         TestPersistenceJPAConfig.class,
         TestAccountJPAConfig.class,
         TestTvntdRootConfig.class,
-        TestCacheConfig.class
-    }
+        TestCacheConfig.class,
+        EtherJPAConfig.class,
+        RootConfig.class
+   }
 )
 public class MenuItemTest
 {

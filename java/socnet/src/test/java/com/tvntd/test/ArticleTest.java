@@ -50,6 +50,8 @@ import com.tvntd.config.TestPersistenceJPAConfig;
 import com.tvntd.config.TestSecurityConfig;
 import com.tvntd.config.TestTvntdRootConfig;
 import com.tvntd.config.TestTvntdWebConfig;
+import com.tvntd.ether.config.EtherJPAConfig;
+import com.tvntd.ether.config.RootConfig;
 import com.tvntd.forms.PostForm;
 import com.tvntd.lib.RandUtil;
 import com.tvntd.models.ArticlePost;
@@ -72,7 +74,9 @@ import com.tvntd.service.api.ITimeLineService.TimeLineDTO;
         TestPersistenceJPAConfig.class,
         TestAccountJPAConfig.class,
         TestTvntdRootConfig.class,
-        TestCacheConfig.class
+        TestCacheConfig.class,
+        EtherJPAConfig.class,
+        RootConfig.class
     }
 )
 public class ArticleTest

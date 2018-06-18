@@ -22,6 +22,7 @@ ext {
 
 apply from: rootProject.file('common.gradle')
 
+apply plugin: 'idea'
 apply plugin: 'java'
 apply plugin: 'war'
 apply plugin: 'org.akhikhl.gretty'
@@ -99,7 +100,6 @@ dependencies {
     compile "org.springframework:spring-webmvc:${spring_version}"
     compile "org.springframework:spring-context-support:${spring_version}"
     compile "org.springframework:spring-beans:${spring_version}"
-    // compile "org.springframework:spring-aop:${spring_version}"
     compile "org.springframework:spring-tx:${spring_version}"
     compile "org.springframework:spring-expression:${spring_version}"
     compile "org.springframework.data:spring-data-jpa:${spring_data_jpa_version}"
@@ -142,6 +142,9 @@ dependencies {
     testCompile "org.hamcrest:hamcrest-core:${hamcrest_version}"
     testCompile "org.hamcrest:hamcrest-library:${hamcrest_version}"
     testCompile "junit:junit:${junit_version}"
+
+    testRuntime project(":common")
+    testRuntime project(":ether")
     testRuntime "org.mortbay.jetty:jetty-runner:7.5.4.v20111024"
     testRuntime "org.mortbay.jetty:jetty-runner:8.1.15.v20140411"
 }

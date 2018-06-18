@@ -73,14 +73,24 @@ public interface EtherRpcApi
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class EtherAccount extends RpcResponse
     {
-        protected List<Account> accounts;
+        protected Result result;
 
         /**
          * @return the accounts
          */
         @JsonProperty(value = "result")
-        public List<Account> getAccounts() {
-            return accounts;
+        public Result getResult() {
+            return result;
+        }
+
+        static class Result
+        {
+            protected List<Account> accounts;
+
+            @JsonProperty(value = "account")
+            public List<Account> getAccounts() {
+                return accounts;
+            }
         }
 
         public static class Account
