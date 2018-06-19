@@ -24,36 +24,56 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.account.models;
+package com.tvntd.ether.dto;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
-@Entity
-public class Person
+public class TransactionDTO
 {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+    protected String txHash;
+    protected String fromUuid;
+    protected String fromAcct;
+    protected String toUuid;
+    protected String toAcct;
+    protected Float amount;
 
-	private String firstName;
-	private String lastName;
+    /**
+     * @return the txHash
+     */
+    public String getTxHash() {
+        return txHash;
+    }
 
-	public String getFirstName() {
-		return firstName;
-	}
+    /**
+     * @return the fromUuid
+     */
+    public String getFromUuid() {
+        return fromUuid;
+    }
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+    /**
+     * @return the fromAcct
+     */
+    public String getFromAcct() {
+        return fromAcct;
+    }
 
-	public String getLastName() {
-		return lastName;
-	}
+    /**
+     * @return the toUuid
+     */
+    public String getToUuid() {
+        return toUuid;
+    }
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+    /**
+     * @return the toAcct
+     */
+    public String getToAcct() {
+        return toAcct;
+    }
+
+    /**
+     * @return the amount
+     */
+    public Float getAmount() {
+        return amount;
+    }
 }

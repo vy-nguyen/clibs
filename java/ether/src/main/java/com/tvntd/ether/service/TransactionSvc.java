@@ -24,36 +24,32 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.account.models;
+package com.tvntd.ether.service;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import java.util.List;
 
-@Entity
-public class Person
+import com.tvntd.ether.api.ITransactionSvc;
+import com.tvntd.ether.dto.TransactionDTO;
+
+public class TransactionSvc implements ITransactionSvc
 {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+    public TransactionDTO getTransaction(String txHash)
+    {
+        return null;
+    }
 
-	private String firstName;
-	private String lastName;
+    public List<TransactionDTO> getTransaction(String userUuid, boolean from)
+    {
+        return null;
+    }
 
-	public String getFirstName() {
-		return firstName;
-	}
+    public List<TransactionDTO> getTransactionAcct(String account, boolean from)
+    {
+        return null;
+    }
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+    public List<TransactionDTO> getAllTransaction()
+    {
+        return null;
+    }
 }

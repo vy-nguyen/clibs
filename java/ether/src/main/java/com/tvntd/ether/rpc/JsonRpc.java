@@ -30,6 +30,7 @@ import java.io.IOException;
 
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -41,22 +42,23 @@ import com.tvntd.ether.web.EtherApi.JsonRpcReqt;
 
 public class JsonRpc
 {
+    private static final String s_url = "http://localhost:8545/";
     protected HttpClient httpClient;
-    protected HttpPost postReq;
 
     public JsonRpc()
     {
         httpClient = HttpClientBuilder.create().build();
-        postReq = new HttpPost("http://localhost:8545/");
-        postReq.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
     }
 
     public <T> T callJsonRpc(Class<T> clazz, String method, String id, String ...params)
     {
+        HttpPost postReq = new HttpPost(s_url);
         JsonRpcReqt reqt = new JsonRpcReqt(method, id, params);
 
         try {
             ObjectMapper mapper = new ObjectMapper();
+
+            postReq.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
             postReq.setEntity(new StringEntity(mapper.writeValueAsString(reqt)));
 
         } catch(Exception e) {
@@ -68,9 +70,10 @@ public class JsonRpc
             int status = resp.getStatusLine().getStatusCode();
             ObjectMapper mapper = new ObjectMapper();
 
-            System.out.println("Status code " + status);
-            System.out.println("Resp " + content);
-            return (T) mapper.readValue(content, clazz);
+            if (status == HttpStatus.SC_OK) {
+                return (T) mapper.readValue(content, clazz);
+            }
+            return null;
 
         } catch(IOException e) {
             System.out.println("IO Exception " + e.getMessage());

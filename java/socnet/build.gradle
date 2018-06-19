@@ -150,9 +150,9 @@ dependencies {
 }
 
 gretty {
-    //port  = 8080
+    // port  = 8080
     contextPath = '/'
-    servletContainer = 'jetty9'
+    servletContainer = 'tomcat8'
     debugPort = 5005
     debugSuspend = false
     jvmArgs = ['-Djava.net.preferIPv4Stack=true']

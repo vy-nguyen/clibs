@@ -24,36 +24,73 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.account.models;
+package com.tvntd.ether.models;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Table;
 
 @Entity
-public class Person
+@Table(name = "transaction",
+    indexes = {
+        @Index(columnList = "from_uuid", unique = false),
+        @Index(columnList = "to_uuid", unique = false),
+        @Index(columnList = "from_acct", unique = false),
+        @Index(columnList = "to_acct", unique = false)
+    }
+)
+public class Transaction
 {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+    @Id
+    @Column(length = 128, name = "tx_hash")
+    protected String txHash;
 
-	private String firstName;
-	private String lastName;
+    @Column(length = 64, name = "from_uuid")
+    protected String fromUuid;
 
-	public String getFirstName() {
-		return firstName;
-	}
+    @Column(length = 64, name = "to_uuid")
+    protected String toUuid;
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+    @Column(length = 64, name = "from_acct")
+    protected String fromAcct;
 
-	public String getLastName() {
-		return lastName;
-	}
+    @Column(length = 64, name = "to_acct")
+    protected String toAcct;
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+    /**
+     * @return the txHash
+     */
+    public String getTxHash() {
+        return txHash;
+    }
+
+    /**
+     * @return the fromUuid
+     */
+    public String getFromUuid() {
+        return fromUuid;
+    }
+
+    /**
+     * @return the toUuid
+     */
+    public String getToUuid() {
+        return toUuid;
+    }
+
+    /**
+     * @return the fromAcct
+     */
+    public String getFromAcct() {
+        return fromAcct;
+    }
+
+    /**
+     * @return the toAcct
+     */
+    public String getToAcct() {
+        return toAcct;
+    }
 }

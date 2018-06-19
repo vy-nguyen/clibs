@@ -24,36 +24,28 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.account.models;
+package com.tvntd.ether.dao;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import java.util.List;
 
-@Entity
-public class Person
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.PagingAndSortingRepository;
+
+import com.tvntd.ether.models.Transaction;
+
+public interface TransactionRepo extends PagingAndSortingRepository<Transaction, String>
 {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+    Transaction findByTxHash(String txHash);
+    List<Transaction> findByFromUuid(String userUuid);
+    List<Transaction> findByFromAcct(String account);
+    List<Transaction> findByToUuid(String userUuid);
+    List<Transaction> findByToAcct(String account);
 
-	private String firstName;
-	private String lastName;
+    Page<Transaction> findAllByFromUuid(Pageable page, String userUuid);
+    Page<Transaction> findAllByFromAcct(Pageable page, String account);
+    Page<Transaction> findAllByToUuid(Pageable page, String userUuid);
+    Page<Transaction> findAllByToAcct(Pageable page, String account);
 
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+    List<Transaction> findAll();
 }
