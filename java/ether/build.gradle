@@ -1,0 +1,93 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.akhikhl.gretty:gretty:+'    
+    }
+}
+
+apply from: rootProject.file('common.gradle')
+apply plugin: 'idea'
+apply plugin: 'application'
+
+startScripts.enabled = false
+
+ext {
+    implTitle  = "Ether Client"
+    version    = "0.10"
+    groupId    = "com.tvntd.ether"
+    artifactId = "ether-client"
+}
+
+jar {
+    baseName   = 'ether'
+    version    = 'snapshot'
+}
+
+sourceCompatibility = "${javaSource}"
+targetCompatibility = "${javaTarget}"
+
+dependencies {
+    // compile "com.google.code.gson:gson:2.4"
+    compile "com.google.guava:guava:${guava_version}"
+    compile "com.google.code.findbugs:jsr305:3.0.2"
+
+    compile "ch.qos.logback:logback-classic:${logback_version}"
+    compile "com.madgag.spongycastle:core:${scastleVersion}"
+    compile "com.madgag.spongycastle:prov:${scastleVersion}"
+    compile "com.cedarsoftware:java-util:1.8.0" // for deep equals
+
+    compile "org.springframework:spring-core:${spring_version}"
+    compile "org.springframework:spring-web:${spring_version}"
+    compile "org.springframework:spring-webmvc:${spring_version}"
+    compile "org.springframework.data:spring-data-jpa:${spring_data_jpa_version}"
+    compile "com.github.briandilley.jsonrpc4j:jsonrpc4j:1.4.6"
+
+    compile "org.hibernate:hibernate-core:${hibernate_version}"
+    compile "org.hibernate:hibernate-entitymanager:${hibernate_version}"
+    compile "org.hibernate:hibernate-validator:${hibernate_validator_ver}"
+    compile "mysql:mysql-connector-java:${mysql_connector_java_ver}"
+    compile "org.apache.httpcomponents:httpclient:4.5.2"
+    compile "javax.servlet:servlet-api:2.5"
+
+    compile project(":common")
+
+    testCompile "junit:junit:${junit_version}"
+    testCompile "org.mockito:mockito-core:1.+"
+
+    testRuntime "org.mortbay.jetty:jetty-runner:8.1.15.v20140411"
+}
+
+sourceSets {
+    main {
+        java {
+           srcDirs = [ 'src/main/java' ]
+        }
+    }
+    test {
+        java {
+            srcDirs = [ 'src/test/java' ]
+        }
+    }
+}
+
+test {
+    systemProperties 'TESTDATA': "${projectDir}/src/test/data"
+}
+
+task getDeps(type: Copy) {
+    from configurations.testRuntime
+    into "${rootProject.projectDir}/ether/build/libs"
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.0'
+}
+
+task ethercli(type: CreateStartScripts) {
+    mainClassName = 'com.tvntd.ether.cli.Main'
+    applicationName = 'ethercli'
+    outputDir = new File(project.buildDir, 'scripts')
+    classpath = jar.outputs.files + project.configurations.runtime
+}
