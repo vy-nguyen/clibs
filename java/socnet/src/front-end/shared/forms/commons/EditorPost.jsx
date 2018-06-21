@@ -23,15 +23,7 @@ class PostForm extends FormData
 {
     constructor(props, suffix) {
         super(props, suffix);
-        this.editorEntry = {
-            field    : 'content',
-            inpName  : 'art-content-',
-            editor   : true,
-            emptyOk  : true,
-            menu     : 'full',
-            uploadUrl: '/user/upload-img',
-            inputFmt : 'inbox-message no-padding'
-        };
+        this.editorId = 'art-content-';
         this.initData();
         return this;
     }
@@ -74,8 +66,20 @@ class PostForm extends FormData
             inputFmt : inputFmt,
             labelFmt : labelFmt,
             labelTxt : 'Google Link'
-        } ];
-        entries.push(this.editorEntry);
+        }, {
+            field    : 'content',
+            inpName  : this.editorId,
+            editor   : true,
+            emptyOk  : true,
+            menu     : 'full',
+            uploadUrl: '/user/upload-img',
+            labelTxt : 'Post',
+            labelFmt : labelFmt,
+            inputFmt : inputFmt
+            // inputFmt : 'inbox-message no-padding'
+        }
+        ];
+        // entries.push(this.editorEntry);
 
         this.forms = {
             formId   : 'post-article',
@@ -156,7 +160,7 @@ class PostForm extends FormData
         }
         /* eslint-disable */
         if (tinymce != null) {
-            let mce = tinymce.EditorManager.get(this.editorEntry.inpName);
+            let mce = tinymce.EditorManager.get(this.editorId);
             if (mce != null) {
                 mce.setContent('');
             }
