@@ -76,11 +76,7 @@ class PostForm extends FormData
             labelTxt : 'Post',
             labelFmt : labelFmt,
             inputFmt : inputFmt
-            // inputFmt : 'inbox-message no-padding'
-        }
-        ];
-        // entries.push(this.editorEntry);
-
+        } ];
         this.forms = {
             formId   : 'post-article',
             formFmt  : 'product-content product-wrap clearfix',

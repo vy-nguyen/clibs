@@ -27,6 +27,8 @@
 package com.tvntd.ether.rpc;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -37,8 +39,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tvntd.ether.web.EtherApi.JsonRpcReqt;
 
 public class JsonRpc
 {
@@ -79,5 +81,45 @@ public class JsonRpc
             System.out.println("IO Exception " + e.getMessage());
         }
         return null;
+    }
+
+    public static class JsonRpcReqt
+    {
+        @JsonProperty(value = "method")
+        public String getMethod() {
+            return method;
+        }
+
+        @JsonProperty(value = "jsonrpc")
+        public String getJsonrpc() {
+            return jsonrpc;
+        }
+
+        @JsonProperty(value = "id")
+        public String getId() {
+            return id;
+        }
+
+        @JsonProperty(value = "params")
+        public List<String> getParams() {
+            return params;
+        }
+
+        protected String method;
+        protected String jsonrpc;
+        protected String id;
+        protected List<String> params;
+
+        public JsonRpcReqt(String method, String id, String ...params)
+        {
+            this.jsonrpc = "2.0";
+            this.id = id;
+            this.method = method;
+            this.params = new LinkedList<>();
+
+            for (String p : params) {
+                this.params.add(p);
+            }
+        }
     }
 }

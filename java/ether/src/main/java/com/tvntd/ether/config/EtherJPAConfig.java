@@ -47,7 +47,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EnableTransactionManagement
-@ComponentScan({ "com.tvntd.ether.models" })
+@ComponentScan(basePackages = {
+    "com.tvntd.ether.service"
+})
 @EnableJpaRepositories(
     entityManagerFactoryRef = "etherEntityMgrFactory",
     transactionManagerRef = "etherTransManager",

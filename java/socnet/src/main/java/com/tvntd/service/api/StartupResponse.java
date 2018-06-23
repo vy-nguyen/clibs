@@ -35,6 +35,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.tvntd.ether.dto.PublicAccountDTO;
 import com.tvntd.service.api.IArtTagService.ArtTagList;
 import com.tvntd.service.api.IArticleSvc.ArticleBriefDTO;
 import com.tvntd.service.api.IArticleSvc.ArticlePostDTO;
@@ -54,6 +55,7 @@ public class StartupResponse
     private List<Language>         languages;
     private ArtTagList             publicTags;
     private List<ArticleBriefDTO>  artRanks;
+    private PublicAccountDTO       publicAcct;
 
     public StartupResponse(String uuid) {
         domainUuid = uuid;
@@ -210,6 +212,20 @@ public class StartupResponse
         } else {
             artRanks.addAll(rankList);
         }
+    }
+
+    /**
+     * @return the publicAcct
+     */
+    public PublicAccountDTO getPublicAcct() {
+        return publicAcct;
+    }
+
+    /**
+     * @param publicAcct the publicAcct to set
+     */
+    public void setPublicAcct(PublicAccountDTO publicAcct) {
+        this.publicAcct = publicAcct;
     }
 
     /**

@@ -26,38 +26,10 @@
  */
 package com.tvntd.ether.dto;
 
-import java.math.BigInteger;
-
-public class AccountInfoDTO
+public class StartupResponseDTO
 {
-    protected String account;
-    protected Long xuBalance;
-    protected String acctName;
-
-    public AccountInfoDTO(String acct, BigInteger weiBalance, String name)
+    public static class PublicEtherDTO
     {
-        account = acct;
-        acctName = name;
-    }
-
-    /**
-     * @return the account
-     */
-    public String getAccount() {
-        return account;
-    }
-
-    /**
-     * @return the xuBalance
-     */
-    public Long getXuBalance() {
-        return xuBalance;
-    }
-
-    /**
-     * @return the acctName
-     */
-    public String getAcctName() {
-        return acctName;
+        protected String account;
     }
 }

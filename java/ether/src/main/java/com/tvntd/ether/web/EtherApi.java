@@ -26,8 +26,6 @@
  */
 package com.tvntd.ether.web;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,10 +40,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
 import com.tvntd.ether.api.EtherRpcApi;
-import com.tvntd.ether.api.EtherRpcApi.EtherAccount;
 import com.tvntd.ether.dto.GenericResponse;
 
 @Controller
@@ -68,63 +64,15 @@ public class EtherApi
     getUserNotification(Locale locale, HttpSession session,
             HttpServletRequest reqt, HttpServletResponse resp)
     {
-        try {
-            Object args = new JsonRpcReqt("foo",
-                    "0x3E869518AaBdbb1805Bd467847B402F9E567b27b");
-
-            EtherAccount res = etherJsonRpc
-                .invoke("tudo_getAccount", args, EtherAccount.class);
-
-            System.out.println("Output " + res);
-            res.printJson();
-
-        } catch(Throwable e) {
-            System.out.println("Exception " + e.getMessage());
-        }
         return new GenericResponse("Echo Hello World");
     }
 
-    public void sendJsonRpc(String method, String id, String ...params)
+    @RequestMapping(value = "/api/ether", method = RequestMethod.GET)
+    @ResponseBody
+    public GenericResponse
+    getEtherStartup(Locale locale, HttpSession session,
+            HttpServletRequest reqt, HttpServletResponse resp)
     {
-    }
-
-    public static class JsonRpcReqt
-    {
-        @JsonProperty(value = "method")
-        public String getMethod() {
-            return method;
-        }
-
-        @JsonProperty(value = "jsonrpc")
-        public String getJsonrpc() {
-            return jsonrpc;
-        }
-
-        @JsonProperty(value = "id")
-        public String getId() {
-            return id;
-        }
-
-        @JsonProperty(value = "params")
-        public List<String> getParams() {
-            return params;
-        }
-
-        protected String method;
-        protected String jsonrpc;
-        protected String id;
-        protected List<String> params;
-
-        public JsonRpcReqt(String method, String id, String ...params)
-        {
-            this.jsonrpc = "2.0";
-            this.id = id;
-            this.method = method;
-            this.params = new LinkedList<>();
-
-            for (String p : params) {
-                this.params.add(p);
-            }
-        }
+        return new GenericResponse("Ether access");
     }
 }

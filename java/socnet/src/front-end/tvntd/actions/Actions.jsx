@@ -29,7 +29,6 @@ const Actions = Reflux.createActions({
 
     // User actions
     logout:          completedFailedFn,
-    initialData:     completedFailedFn,
     startup:         completedFailedFn,
     getAuthors:      completedFailedFn,
     refreshArticles: completedFailedFn,
@@ -100,7 +99,10 @@ const Actions = Reflux.createActions({
     // Admin actions
     listUsers:       completedFailedFn,
     changeTagArt:    completedFailedFn,
-    setTags:         completedFailedFn
+    setTags:         completedFailedFn,
+
+    // Ethereum actions
+    etherStartup:    completedFailedFn
 });
 
 function postRestCall(formData, url, json, cbObj, authReq, context) {
@@ -190,6 +192,7 @@ Actions.toggleSideBar.listen(function(data) {
 Actions.startup.listen(function(url) {
     $('[data-toggle="tooltip"]').tooltip();
     getJSON(url, this, false, "startup", null, true);
+    Actions.etherStartup();
 });
 
 Actions.refreshNotify.listen(function() {
@@ -202,6 +205,13 @@ Actions.getAuthors.listen(function(data, url) {
     } else {
         this.completed(data);
     }
+});
+
+/**
+ * Ethereum actions.
+ */
+Actions.etherStartup.listen(function() {
+    getJSON("/api/ether", this, false, "etherStartup");
 });
 
 /**

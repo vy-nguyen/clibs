@@ -53,6 +53,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.mongodb.Mongo;
+import com.tvntd.ether.api.ITransactionSvc;
 import com.tvntd.forms.UserConnectionForm;
 import com.tvntd.lib.ObjectId;
 import com.tvntd.models.User;
@@ -104,6 +105,9 @@ public class ApiPath
 
     @Autowired
     protected IArticleSvc artSvc;
+
+    @Autowired
+    protected ITransactionSvc etherSvc;
 
     /**
      * Handle Api REST calls.
@@ -159,6 +163,7 @@ public class ApiPath
         String domain = (String) session.getAttribute("domain");
         StartupResponse result = new StartupResponse(profile, reqt, session, false);
         domainSvc.fillStartupAccount(result, domain, profile);
+        result.setPublicAcct(etherSvc.getPublicAccount());
         return result;
     }
 

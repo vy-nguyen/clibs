@@ -28,9 +28,15 @@ package com.tvntd.ether.service;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.tvntd.ether.api.ITransactionSvc;
+import com.tvntd.ether.dto.PublicAccountDTO;
 import com.tvntd.ether.dto.TransactionDTO;
 
+@Service
+@Transactional
 public class TransactionSvc implements ITransactionSvc
 {
     public TransactionDTO getTransaction(String txHash)
@@ -50,6 +56,12 @@ public class TransactionSvc implements ITransactionSvc
 
     public List<TransactionDTO> getAllTransaction()
     {
+        return null;
+    }
+
+    public PublicAccountDTO getPublicAccount()
+    {
+        System.out.println("Get public account");
         return null;
     }
 }
