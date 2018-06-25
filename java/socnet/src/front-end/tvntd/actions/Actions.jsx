@@ -158,6 +158,7 @@ function getJSON(url, cbObj, authReq, id, context, syncServer) {
         if (syncServer === true) {
             Actions.syncServer();
         }
+        console.log(data);
 
     }).fail(function(resp, text, error) {
         resp.cbContext = context;
@@ -192,7 +193,6 @@ Actions.toggleSideBar.listen(function(data) {
 Actions.startup.listen(function(url) {
     $('[data-toggle="tooltip"]').tooltip();
     getJSON(url, this, false, "startup", null, true);
-    Actions.etherStartup();
 });
 
 Actions.refreshNotify.listen(function() {

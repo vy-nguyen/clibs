@@ -99,8 +99,8 @@ public class Constants {
     }
 
     /**
-     * New DELEGATECALL opcode introduced in the Homestead release. Before Homestead this opcode should generate
-     * exception
+     * New DELEGATECALL opcode introduced in the Homestead release. Before Homestead
+     * this opcode should generate exception
      */
     public boolean hasDelegateCallOpcode() {return false; }
 

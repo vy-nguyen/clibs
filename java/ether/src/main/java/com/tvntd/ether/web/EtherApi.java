@@ -40,9 +40,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
-import com.tvntd.ether.api.EtherRpcApi;
+import com.tvntd.ether.api.ITransactionSvc;
 import com.tvntd.ether.dto.GenericResponse;
+import com.tvntd.ether.dto.PublicAccountDTO;
 
 @Controller
 public class EtherApi
@@ -50,10 +50,7 @@ public class EtherApi
     static protected Logger s_log = LoggerFactory.getLogger(EtherApi.class);
 
     @Autowired
-    protected EtherRpcApi etherRpcApi;
-
-    @Autowired
-    protected JsonRpcHttpClient etherJsonRpc;
+    protected ITransactionSvc etherTrans;
 
     /**
      * Handle Api REST calls.
@@ -73,6 +70,7 @@ public class EtherApi
     getEtherStartup(Locale locale, HttpSession session,
             HttpServletRequest reqt, HttpServletResponse resp)
     {
+        PublicAccountDTO acct = etherTrans.getPublicAccount();
         return new GenericResponse("Ether access");
     }
 }

@@ -26,11 +26,21 @@
  */
 package com.tvntd.ether.dto;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class PublicAccountDTO
 {
     protected List<AccountInfoDTO> publicAcct;
+
+    public PublicAccountDTO(List<AccountInfoDTO> acct) {
+        this.publicAcct = acct;
+    }
+
+    public PublicAccountDTO(Map<String, AccountInfoDTO> acct) {
+        this.publicAcct = new ArrayList<>(acct.values());
+    }
 
     /**
      * @return the publicAcct

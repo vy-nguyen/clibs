@@ -28,30 +28,49 @@ package com.tvntd.ether.dto;
 
 import java.math.BigInteger;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonIgnoreProperties(ignoreUnknown = true) 
 public class AccountInfoDTO
 {
     protected String account;
-    protected Long xuBalance;
+    protected Long haoBalance;
     protected String acctName;
+    protected String balance;
 
-    public AccountInfoDTO(String acct, BigInteger weiBalance, String name)
+    public AccountInfoDTO() {}
+    public AccountInfoDTO(String acct, String name)
     {
         account = acct;
         acctName = name;
+        haoBalance = 0L;
+    }
+
+    public AccountInfoDTO(String acct, BigInteger weiBalance, String name)
+    {
+        this(acct, name);
     }
 
     /**
      * @return the account
      */
+    @JsonProperty("Account")
     public String getAccount() {
         return account;
     }
 
     /**
-     * @return the xuBalance
+     * @return the haoBalance
      */
-    public Long getXuBalance() {
-        return xuBalance;
+    public Long getHaoBalance() {
+        return haoBalance;
+    }
+
+    /**
+     */
+    public void setHaoBalance(Long haoBalance) {
+        this.haoBalance = haoBalance;
     }
 
     /**
@@ -59,5 +78,20 @@ public class AccountInfoDTO
      */
     public String getAcctName() {
         return acctName;
+    }
+
+    /**
+     * @return the balance
+     */
+    @JsonProperty("Balance")
+    public String getBalance() {
+        return balance;
+    }
+
+    /**
+     * @param balance the balance to set
+     */
+    public void setBalance(String balance) {
+        this.balance = balance;
     }
 }

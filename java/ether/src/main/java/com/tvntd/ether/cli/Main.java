@@ -36,11 +36,9 @@ public class Main
         System.out.println("Hello world");
         JsonRpc rpc = new JsonRpc();
 
-
         EtherRpcApi.EtherAccount account = rpc.callJsonRpc(EtherRpcApi.EtherAccount.class,
                 "tudo_getAccount", "foo",
                 "0x3E869518AaBdbb1805Bd467847B402F9E567b27b");
         System.out.println("Obj ret " + account);
-
     }
 }

@@ -52,10 +52,21 @@ public class JsonRpc
         httpClient = HttpClientBuilder.create().build();
     }
 
-    public <T> T callJsonRpc(Class<T> clazz, String method, String id, String ...params)
+    public <T> T callJsonRpc(Class<T> clazz, String method, String id, String ...params) {
+        return callJsonRpc(clazz, new JsonRpcReqt(method, id, params));
+    }
+
+    public <T> T callJsonRpc(Class<T> clazz, String method, String id, List<String> p) {
+        return callJsonRpc(clazz, new JsonRpcReqt(method, id, p));
+    }
+
+    public <T> T callJsonRpcArr(Class<T> clazz, String m, String id, List<String> p) {
+        return callJsonRpc(clazz, new JsonRpcReqtArr(m, id, p));
+    }
+
+    protected <T> T callJsonRpc(Class<T> clazz, JsonRpcCommon reqt)
     {
         HttpPost postReq = new HttpPost(s_url);
-        JsonRpcReqt reqt = new JsonRpcReqt(method, id, params);
 
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -83,8 +94,12 @@ public class JsonRpc
         return null;
     }
 
-    public static class JsonRpcReqt
+    public static class JsonRpcCommon
     {
+        protected String method;
+        protected String jsonrpc;
+        protected String id;
+
         @JsonProperty(value = "method")
         public String getMethod() {
             return method;
@@ -100,26 +115,56 @@ public class JsonRpc
             return id;
         }
 
+        public JsonRpcCommon(String method, String id)
+        {
+            this.method = method;
+            this.id = id;
+        }
+    }
+
+    public static class JsonRpcReqt extends JsonRpcCommon
+    {
+        protected List<String> params;
+
         @JsonProperty(value = "params")
         public List<String> getParams() {
             return params;
         }
 
-        protected String method;
-        protected String jsonrpc;
-        protected String id;
-        protected List<String> params;
-
         public JsonRpcReqt(String method, String id, String ...params)
         {
-            this.jsonrpc = "2.0";
-            this.id = id;
-            this.method = method;
+            super(method, id);
             this.params = new LinkedList<>();
 
             for (String p : params) {
                 this.params.add(p);
             }
+        }
+
+        public JsonRpcReqt(String method, String id, List<String> params)
+        {
+            super(method, id);
+            this.params = params;
+        }
+    }
+
+    public static class JsonRpcReqtArr extends JsonRpcCommon
+    {
+        protected List<List<String>> params;
+
+        /**
+         * @return the params
+         */
+        @JsonProperty(value = "params")
+        public List<List<String>> getParams() {
+            return params;
+        }
+
+        public JsonRpcReqtArr(String method, String id, List<String> params)
+        {
+            super(method, id);
+            this.params = new LinkedList<>();
+            this.params.add(params);
         }
     }
 }

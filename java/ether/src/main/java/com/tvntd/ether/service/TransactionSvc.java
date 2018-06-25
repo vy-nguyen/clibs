@@ -28,6 +28,7 @@ package com.tvntd.ether.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +40,9 @@ import com.tvntd.ether.dto.TransactionDTO;
 @Transactional
 public class TransactionSvc implements ITransactionSvc
 {
+    @Autowired
+    protected PublicAccount pubAccounts;
+
     public TransactionDTO getTransaction(String txHash)
     {
         return null;
@@ -62,6 +66,6 @@ public class TransactionSvc implements ITransactionSvc
     public PublicAccountDTO getPublicAccount()
     {
         System.out.println("Get public account");
-        return null;
+        return pubAccounts.getPublicAccount();
     }
 }

@@ -59,6 +59,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.maps.model.GeocodingResult;
+import com.tvntd.ether.api.ITransactionSvc;
 import com.tvntd.forms.AdsForm;
 import com.tvntd.forms.AdsRequest;
 import com.tvntd.forms.AdsRoomForm;
@@ -131,6 +132,9 @@ public class PublicPath
     @Autowired
     private IQuestionSvc questSvc;
 
+    @Autowired
+    private ITransactionSvc etherSvc;
+
     /**
      * Handle public pages.
      */
@@ -180,6 +184,7 @@ public class PublicPath
             result = new StartupResponse(s_publicDto, reqt, session, true);
             domainSvc.fillStartupDomain(result, domain, s_publicDto);
         }
+        result.setPublicAcct(etherSvc.getPublicAccount());
         session.removeAttribute("startPage");
         return result;
     }

@@ -41,6 +41,10 @@ public final class Convert
         return BigInteger.valueOf(haoValue).multiply(Unit.HAO.getWeiFactor());
     }
 
+    public static Long toHaoValue(BigInteger wei) {
+        return wei.divide(Unit.HAO.getWeiFactor()).longValue();
+    }
+
     public static float elapseMilli(long start, String out)
     {
         long end = System.nanoTime();

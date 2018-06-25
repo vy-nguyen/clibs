@@ -32,6 +32,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tvntd.ether.dto.AccountInfoDTO;
 
 public interface EtherRpcApi
 {
@@ -67,6 +68,46 @@ public interface EtherRpcApi
         @JsonProperty(value = "id")
         public String getId() {
             return id;
+        }
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class EtherAcctInfo extends RpcResponse
+    {
+        protected Result result;
+
+        /**
+         * @return the result
+         */
+        @JsonProperty(value = "result")
+        public Result getResult() {
+            return result;
+        }
+
+        public List<AccountInfoDTO> accountResult() {
+            return result.getAccounts();
+        }
+
+        static class Result
+        {
+            protected List<AccountInfoDTO> accounts;
+            protected String error;
+
+            /**
+             * @return the accounts
+             */
+            @JsonProperty(value = "accounts")
+            public List<AccountInfoDTO> getAccounts() {
+                return accounts;
+            }
+
+            /**
+             * @return the error
+             */
+            @JsonProperty(value = "error")
+            public String getError() {
+                return error;
+            }
         }
     }
 
