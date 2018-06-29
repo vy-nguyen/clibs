@@ -158,7 +158,6 @@ function getJSON(url, cbObj, authReq, id, context, syncServer) {
         if (syncServer === true) {
             Actions.syncServer();
         }
-        console.log(data);
 
     }).fail(function(resp, text, error) {
         resp.cbContext = context;

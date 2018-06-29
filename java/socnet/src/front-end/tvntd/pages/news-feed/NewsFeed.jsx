@@ -10,7 +10,7 @@ import AuthorFeed         from 'vntd-root/components/AuthorFeed.jsx';
 
 import EditorPost         from 'vntd-shared/forms/commons/EditorPost.jsx';
 import AuthorBase         from 'vntd-shared/layout/AuthorBase.jsx';
-import SmallBreadcrumbs   from 'vntd-shared/layout/SmallBreadcrumbs.jsx';
+import EtherCrumbs        from 'vntd-root/pages/wall/EtherCrumbs.jsx';
 import ArticleStore       from 'vntd-root/stores/ArticleStore.jsx';
 
 class NewsFeed extends AuthorBase
@@ -34,7 +34,7 @@ class NewsFeed extends AuthorBase
         return (
             <div id="author-content">
                 <div className="row">
-                    <SmallBreadcrumbs id="route-map" crumb="NewsFeed" route="/newsfeed"/>
+                    <EtherCrumbs id="route-map" crumb="NewsFeed" route="/newsfeed"/>
                 </div>
                 <EditorPost id="feed-"/>
                 {this.renderAuthors()}

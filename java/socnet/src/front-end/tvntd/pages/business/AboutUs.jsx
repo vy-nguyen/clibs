@@ -8,7 +8,6 @@ import _                  from 'lodash';
 import React              from 'react-mod';
 import PropTypes          from 'prop-types';
 
-import SmallBreadcrumbs   from 'vntd-shared/layout/SmallBreadcrumbs.jsx';
 import InputBase          from 'vntd-shared/layout/InputBase.jsx';
 import BusinessStore      from 'vntd-root/stores/BusinessStore.jsx';
 import { VntdGlob }       from 'vntd-root/config/constants.js';

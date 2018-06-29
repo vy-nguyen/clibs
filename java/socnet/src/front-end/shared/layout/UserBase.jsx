@@ -79,7 +79,10 @@ class SectionWall extends React.Component
     }
 
     _renderSection() {
-        return this.props.render();
+        if (this.props.render != null) {
+            return this.props.render();
+        }
+        return null;
     }
 
     render() {
@@ -91,6 +94,7 @@ class SectionWall extends React.Component
                 <div className="panel-body">
                     <section id="widget-grid">
                         {this._renderSection()}
+                        {this.props.children}
                     </section>
                 </div>
             </div>

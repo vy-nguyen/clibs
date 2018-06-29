@@ -44,7 +44,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JsonRpc
 {
-    private static final String s_url = "http://localhost:8545/";
+    private static final String s_url = "http://10.1.10.12:8545/";
     protected HttpClient httpClient;
 
     public JsonRpc()

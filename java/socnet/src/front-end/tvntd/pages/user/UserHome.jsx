@@ -11,13 +11,13 @@ import History             from 'vntd-shared/utils/History.jsx';
 import UserStore           from 'vntd-shared/stores/UserStore.jsx';
 import TabPanel            from 'vntd-shared/layout/TabPanel.jsx';
 import ArticleBase         from 'vntd-shared/layout/ArticleBase.jsx';
-import SmallBreadcrumbs    from 'vntd-shared/layout/SmallBreadcrumbs.jsx';
 import UserPostView        from 'vntd-root/pages/user/UserPostView.jsx';
 import EStore              from 'vntd-root/pages/e-store/EStore.jsx';
 import ArticleStore        from 'vntd-root/stores/ArticleStore.jsx';
 import PostArticles        from 'vntd-root/components/PostArticles.jsx';
 import ProfileCover        from 'vntd-root/components/ProfileCover.jsx';
 import Actions             from 'vntd-root/actions/Actions.jsx';
+import EtherCrumbs         from 'vntd-root/pages/wall/EtherCrumbs.jsx';
 import SubmitPost          from './SubmitPost.jsx';
 import UserAvatar          from './UserAvatar.jsx';
 import Friends             from './Friends.jsx';
@@ -200,7 +200,7 @@ class UserHome extends ArticleBase
         }
         return (
             <div id="user-home">
-                <SmallBreadcrumbs id="route-map" crumb="User" route={route}/>
+                <EtherCrumbs id="route-map" crumb="User" route={route}/>
                 <ProfileCover userUuid={self.userUuid}/>
                 <UserAvatar data={{doFileDrop: false}} userUuid={self.userUuid}/>
                 {editTab}

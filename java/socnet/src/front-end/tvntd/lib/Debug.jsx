@@ -19,6 +19,7 @@ import ArtTagStore      from 'vntd-root/stores/ArticleTagStore.jsx';
 import AdPropertyStore  from 'vntd-root/stores/AdPropertyStore.jsx';
 import LanguageStore    from 'vntd-root/stores/LanguageStore.jsx';
 import QuestionStore    from 'vntd-root/stores/QuestionStore.jsx';
+import EtherStore       from 'vntd-root/stores/EtherStore.jsx';
 
 import {
     ArticleStore, EProductStore, AdsStore
@@ -59,6 +60,7 @@ class Debug extends React.Component {
 
     debugRenderStore() {
         RenderStore.dumpData("Render Store Content");
+        EtherStore.dumpData("Ether Store");
     }
 
     debugAdminStore() {

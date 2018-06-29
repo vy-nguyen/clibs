@@ -13,11 +13,13 @@ import { SectionWall }    from 'vntd-shared/layout/UserBase.jsx';
 import { Util }           from 'vntd-shared/utils/Enum.jsx';
 import UserStore          from 'vntd-shared/stores/UserStore.jsx';
 
-import EtherStore         from 'vntd-root/stores/EtherStore.jsx';
 import { VntdGlob }       from 'vntd-root/config/constants.js';
+import EtherStore         from 'vntd-root/stores/EtherStore.jsx';
 import ArticleTagBrief    from 'vntd-root/components/ArticleTagBrief.jsx';
 import Mesg               from 'vntd-root/components/Mesg.jsx';
 import DomainWall         from 'vntd-root/pages/personal/Domain.jsx';
+import EtherCrumbs        from 'vntd-root/pages/wall/EtherCrumbs.jsx';
+import EtherWall          from 'vntd-root/pages/wall/EtherWall.jsx';
 
 class ServiceWall extends ArtTagBase
 {
@@ -75,41 +77,6 @@ class ServiceWall extends ArtTagBase
         return (
             <SectionWall title={title} className={className}
                 render={this._renderAllSections}/>
-        );
-    }
-}
-
-class EtherWall extends ServiceWall
-{
-    constructor(props) {
-        super(props);
-        this.renderEther = this.renderEther.bind(this);
-        this._updateEther = this._updateEther.bind(this);
-    }
-
-    renderEther() {
-        return <h1>Ethereum balance</h1>
-    }
-
-    _updateEther() {
-        console.log("Receive ether update event");
-    }
-
-    componentDidMount() {
-        this.unsub = EtherStore.listen(this._updateEther);
-    }
-
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsub = null;
-        }
-    }
-
-    render() {
-        return (
-            <SectionWall title="Ethereum" className="panel-success"
-                render={this.renderEther}/>
         );
     }
 }
@@ -202,6 +169,7 @@ class MainWall extends React.Component
     render() {
         return (
             <div id="content">
+                <EtherCrumbs id="route-map" crumb="Home" route="/"/>
                 <EtherWall/>
                 <DomainWall/>
                 <BlogWall tagKind="blog"/>

@@ -27,6 +27,7 @@
 package com.tvntd.ether.service;
 
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,6 +46,11 @@ import com.tvntd.ether.util.Convert;
 @Service
 public class PublicAccount
 {
+    // Update time interval in 5 minutes.
+    //
+    static long s_updateTimeInterval = (5 * 60 * 1000L);
+
+    protected long lastPoll;
     protected boolean updateAccount;
     protected PublicAccountDTO cache;
 
@@ -56,9 +62,10 @@ public class PublicAccount
         cache = null;
         accounts = null;
         updateAccount = true;
+        lastPoll = 0L;
     }
 
-    protected void getAccountInfo()
+    protected boolean getAccountInfo()
     {
         if (accounts == null) {
             accounts = new HashMap<>();
@@ -68,8 +75,9 @@ public class PublicAccount
                 knownAccounts.add(acct.getAccount());
             }
         }
-        if (updateAccount == false) {
-            return;
+        long update = System.currentTimeMillis() - lastPoll;
+        if (update < s_updateTimeInterval) {
+            return false;
         }
         JsonRpc rpc = new JsonRpc();
         EtherAcctInfo result = rpc.callJsonRpcArr(EtherAcctInfo.class,
@@ -77,7 +85,12 @@ public class PublicAccount
 
         if (result != null) {
             processAccountInfo(result.accountResult());
+
+            updateAccount = false;
+            lastPoll = System.currentTimeMillis();
+            return true;
         }
+        return false;
     }
 
     protected void processAccountInfo(List<AccountInfoDTO> result)
@@ -92,7 +105,6 @@ public class PublicAccount
                     cache.setHaoBalance(Convert.toHaoValue(balance));
                     cache.setBalance(account.getBalance());
                 }
-                System.out.println("Balance " + balance.toString());
             } catch(Exception e) {
                 System.out.println("Invaid balance " + account.getAccount());
             }
@@ -101,8 +113,8 @@ public class PublicAccount
 
     public PublicAccountDTO getPublicAccount()
     {
-        getAccountInfo();
-        if (cache == null) {
+        boolean refresh = getAccountInfo();
+        if (cache == null || refresh == true) {
             cache = new PublicAccountDTO(accounts);
         }
         return cache;

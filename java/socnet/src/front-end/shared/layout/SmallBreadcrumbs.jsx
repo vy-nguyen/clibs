@@ -43,7 +43,7 @@ class SmallBreadcrumbs extends React.Component
         });
     }
 
-    render() {
+    mainRender() {
         let out = null, data = this.state.crumbs.getData();
 
         out = data.map(function(elm) {
@@ -61,7 +61,11 @@ class SmallBreadcrumbs extends React.Component
                 <li><Link to="/app"><i className="fa fa-home fa-2x"/></Link></li>
                 {out}
             </ol>
-        )
+        );
+    }
+
+    render() {
+        return this.mainRender();
     }
 }
 

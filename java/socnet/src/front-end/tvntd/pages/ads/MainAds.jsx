@@ -9,11 +9,11 @@ import React           from 'react-mod'
 
 import Actions          from 'vntd-root/actions/Actions.jsx';
 import TabPanel         from 'vntd-shared/layout/TabPanel.jsx';
-import SmallBreadcrumbs from 'vntd-shared/layout/SmallBreadcrumbs.jsx';
 import GoogleApi        from 'vntd-shared/lib/GoogleApi.js';
 import SelectComp       from 'vntd-shared/component/SelectComp.jsx';
 
 import Mesg             from 'vntd-root/components/Mesg.jsx';
+import EtherCrumbs      from 'vntd-root/pages/wall/EtherCrumbs.jsx';
 import YellowPage       from './YellowPage.jsx';
 import PostAds          from './PostAds.jsx';
 import FeatureAds       from './FeatureAds.jsx';
@@ -139,7 +139,7 @@ class MainAds extends React.Component
         let tabData = this._getAdsTab(this.props.mode);
         return (
             <div id="content">
-                <SmallBreadcrumbs id="route-map" crumb="Ads" route="/public/ads"/>
+                <EtherCrumbs id="route-map" crumb="Ads" route="/public/ads"/>
                 <div className="row">
                     <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                         <TabPanel className="padding-top-10" context={tabData}>
