@@ -28,6 +28,10 @@ class EthAccount {
         let ether = this.haoBalance / 1000;
         return 'T$ '  + ether.formatMoney(3, '.', ',');
     }
+
+    indexFn() {
+        return this.acctName;
+    }
 }
 
 class EtherStoreClz extends Reflux.Store
@@ -49,25 +53,30 @@ class EtherStoreClz extends Reflux.Store
 
     _updateStore(accounts) {
         _.forOwn(accounts, function(item) {
-            let acct = new EthAccount(item);
-
-            this.state.storeItem(acct.Account, acct, true);
-            this.state.storeItem(acct.acctName, acct, true);
+            this.state.storeItem(item.Account, new EthAccount(item), true);
         }.bind(this));
 
         this.trigger(this, this.state);
     }
 
+    iterEachAccount(fn) {
+        _.forOwn(this.state.getAllData(), fn);
+    }
+
+    iterEachIndex(fn) {
+        _.forOwn(this.state.getAllIndex(), fn);
+    }
+
     getCommunity() {
         if (this.state != null) {
-            return this.state.getItem("Community");
+            return this.state.getIndex("Micropay");
         }
         return null;
     }
 
     getReserved() {
         if (this.state != null) {
-            return this.state.getItem("Reserved");
+            return this.state.getIndex("Reserved");
         }
         return null;
     }

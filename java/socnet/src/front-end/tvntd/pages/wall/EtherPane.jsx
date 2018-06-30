@@ -5,7 +5,11 @@
 
 import React             from 'react-mod';
 import { QRCode }        from 'react-qr-svg';
+
+import NavigationStore   from 'vntd-shared/stores/NavigationStore.jsx';
 import { EtherBaseAcct } from 'vntd-root/pages/wall/EtherCrumbs.jsx';
+import EtherStore        from 'vntd-root/stores/EtherStore.jsx';
+import ArticleTagBrief   from 'vntd-root/components/ArticleTagBrief.jsx';
 
 class EtherAccount extends React.Component
 {
@@ -14,19 +18,27 @@ class EtherAccount extends React.Component
         this.style = {
             width: 64
         };
+        this._onClick = this._onClick.bind(this);
+    }
+
+    _onClick() {
+        if (this.props.onClick != null) {
+            this.props.onClick(this.props.account);
+        }
     }
 
     render() {
         let acct = this.props.account;
-        console.log(acct);
         return (
-            <li>
-            <span>
-                <QRCode value={acct.Account} style={this.style}/>
-                {acct.acctName}
-                {acct.getMoneyBalance()}
-            </span>
-            </li>
+            <div className="media" onClick={this._onClick}>
+                <div className="media-left">
+                    <QRCode value={acct.Account} style={this.style}/>
+                </div>
+                <div className="media-body">
+                    <h4>{acct.acctName}</h4>
+                    {acct.getMoneyBalance()}
+                </div>
+            </div>
         );
     }
 }
@@ -35,20 +47,40 @@ class EtherPane extends EtherBaseAcct
 {
     constructor(props) {
         super(props);
+        this._acctClick  = this._acctClick.bind(this);
+        this.renderFull  = this.renderFull.bind(this);
+        this.renderBrief = this.renderBrief.bind(this);
+    }
+
+    _acctClick(account) {
+        console.log("Click into account");
+        console.log(account);
+    }
+
+    renderBrief(account) {
+        return <EtherAccount account={account} onClick={this._acctClick}/>;
+    }
+
+    renderFull(account) {
+        return (
+            <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            </div>
+        );
     }
 
     render() {
-        let reserved = this.state.reserved, community = this.state.community;
+        let out, accounts = [];
 
-        if (reserved == null) {
+        if (this.state.reserved == null) {
             return null;
         }
-        return (
-            <ul className="list-inline">
-                <EtherAccount account={reserved}/>
-                <EtherAccount account={community}/>
-            </ul>
-        );
+        EtherStore.iterEachIndex(function(acct) {
+            accounts.push(acct);
+        });
+        out = ArticleTagBrief.renderArtBox(accounts,
+                    this.renderBrief, this.renderFull, 4);
+
+        return (<div>{out}</div>);
     }
 }
 

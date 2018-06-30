@@ -48,7 +48,7 @@ class EtherBaseAcct extends React.Component
 
         if (this.props.item === "community") {
             item = this.state.community;
-            text = "Community";
+            text = "Micropayment";
         } else {
             item = this.state.reserved;
             text = "Reserved";

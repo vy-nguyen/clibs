@@ -11,6 +11,7 @@ class BaseStore
 {
     constructor(store) {
         this.data  = {};
+        this.index = {};
         this.store = store;
     }
 
@@ -20,6 +21,9 @@ class BaseStore
         if (ret == null || force === true) {
             this.data[id] = item;
             ret = item;
+            if (item.indexFn != null) {
+                this.index[item.indexFn()] = item;
+            }
         }
         return ret;
     }
@@ -32,17 +36,37 @@ class BaseStore
 
     removeItem(id) {
         let item = this.data[id];
+
         this.data[id] = null;
+        if (item.indexFn != null) {
+            delete this.data[item.indexFn()];
+        }
         return item;
+    }
+
+    getAllData() {
+        return this.data;
+    }
+
+    getAllIndex() {
+        return this.index;
     }
 
     getItem(id) {
         return this.data[id];
     }
 
+    getIndex(id) {
+        return this.index[id];
+    }
+
     deleteItem(id) {
         let item = this.data[id];
+
         delete this.data[id];
+        if (item.itemFn != null) {
+            delete this.data[item.indexFn()];
+        }
         return item;
     }
 
@@ -51,6 +75,10 @@ class BaseStore
 
         if (ret == null) {
             ret = this.data[id] = {};
+        } else {
+            if (ret.indexFn != null) {
+                this.index[ret.indexFn()] = value;
+            }
         }
         ret[key] = value;
         return ret;

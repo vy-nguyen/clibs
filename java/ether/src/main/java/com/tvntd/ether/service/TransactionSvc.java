@@ -65,7 +65,6 @@ public class TransactionSvc implements ITransactionSvc
 
     public PublicAccountDTO getPublicAccount()
     {
-        System.out.println("Get public account");
         return pubAccounts.getPublicAccount();
     }
 }
