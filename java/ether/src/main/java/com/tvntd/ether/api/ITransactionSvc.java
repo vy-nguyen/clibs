@@ -28,6 +28,7 @@ package com.tvntd.ether.api;
 
 import java.util.List;
 
+import com.tvntd.ether.dto.EtherBlockDTO;
 import com.tvntd.ether.dto.PublicAccountDTO;
 import com.tvntd.ether.dto.TransactionDTO;
 
@@ -41,4 +42,5 @@ public interface ITransactionSvc
     List<TransactionDTO> getAllTransaction();
 
     PublicAccountDTO getPublicAccount();
+    void getEtherBlocks(EtherBlockDTO blocks);
 }

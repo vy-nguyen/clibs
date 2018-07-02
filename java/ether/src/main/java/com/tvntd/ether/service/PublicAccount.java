@@ -27,13 +27,15 @@
 package com.tvntd.ether.service;
 
 import java.math.BigInteger;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.ethereum.jsonrpc.JsonRpc.BlockResult;
 import org.ethereum.jsonrpc.TypeConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.tvntd.ether.api.EtherRpcApi.EtherAcctInfo;
@@ -49,11 +51,13 @@ public class PublicAccount
     // Update time interval in 5 minutes.
     //
     static long s_updateTimeInterval = (5 * 60 * 1000L);
+    static Logger s_log = LoggerFactory.getLogger(PublicAccount.class);
 
     protected long lastPoll;
     protected boolean updateAccount;
     protected PublicAccountDTO cache;
 
+    protected BlockResult latest;
     protected List<String> knownAccounts;
     protected Map<String, AccountInfoDTO> accounts;
 
@@ -81,15 +85,17 @@ public class PublicAccount
         }
         JsonRpc rpc = new JsonRpc();
         EtherAcctInfo result = rpc.callJsonRpcArr(EtherAcctInfo.class,
-                "tudo_listAccountInfo", "id", knownAccounts);
+                "tudo_listAccountInfoAndBlock", "id", knownAccounts);
 
-        if (result != null) {
+        if (result != null && result.getError() == null) {
             processAccountInfo(result.accountResult());
 
+            latest = result.getLatestBlock();
             updateAccount = false;
             lastPoll = System.currentTimeMillis();
             return true;
         }
+        s_log.info("Rpc error " + result.getError().toString());
         return false;
     }
 
@@ -115,7 +121,7 @@ public class PublicAccount
     {
         boolean refresh = getAccountInfo();
         if (cache == null || refresh == true) {
-            cache = new PublicAccountDTO(accounts);
+            cache = new PublicAccountDTO(accounts, latest);
         }
         return cache;
     }

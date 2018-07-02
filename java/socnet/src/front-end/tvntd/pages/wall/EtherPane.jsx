@@ -50,11 +50,15 @@ class EtherPane extends EtherBaseAcct
         this._acctClick  = this._acctClick.bind(this);
         this.renderFull  = this.renderFull.bind(this);
         this.renderBrief = this.renderBrief.bind(this);
+        this.state = _.merge(this.state, {
+            currAccount: null
+        });
     }
 
     _acctClick(account) {
-        console.log("Click into account");
-        console.log(account);
+        this.setState({
+            currAccount: account
+        });
     }
 
     renderBrief(account) {
@@ -62,6 +66,13 @@ class EtherPane extends EtherBaseAcct
     }
 
     renderFull(account) {
+        let curr = this.state.currAccount;
+
+        if ((curr == null) || (curr.Account !== account.Account)) {
+            return null;
+        }
+        console.log(this.state);
+        console.log("compare true....");
         return (
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             </div>

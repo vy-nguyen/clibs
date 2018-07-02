@@ -28,6 +28,8 @@ package com.tvntd.ether.api;
 
 import java.util.List;
 
+import org.ethereum.jsonrpc.JsonRpc.BlockResult;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -41,6 +43,7 @@ public interface EtherRpcApi
     {
         protected String jsonRpc;
         protected String id;
+        protected Object error;
 
         public void printJson()
         {
@@ -69,6 +72,14 @@ public interface EtherRpcApi
         public String getId() {
             return id;
         }
+
+        /**
+         * @return the error
+         */
+        @JsonProperty(value = "error")
+        public Object getError() {
+            return error;
+        }
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -84,13 +95,26 @@ public interface EtherRpcApi
             return result;
         }
 
-        public List<AccountInfoDTO> accountResult() {
-            return result.getAccounts();
+        public List<AccountInfoDTO> accountResult()
+        {
+            if (result != null) {
+                return result.getAccounts();
+            }
+            return null;
+        }
+
+        public BlockResult getLatestBlock()
+        {
+            if (result != null) {
+                return result.getLatest();
+            }
+            return null;
         }
 
         static class Result
         {
             protected List<AccountInfoDTO> accounts;
+            protected BlockResult latest;
             protected String error;
 
             /**
@@ -99,6 +123,14 @@ public interface EtherRpcApi
             @JsonProperty(value = "accounts")
             public List<AccountInfoDTO> getAccounts() {
                 return accounts;
+            }
+
+            /**
+             * @return the latest
+             */
+            @JsonProperty(value = "latest")
+            public BlockResult getLatest() {
+                return latest;
             }
 
             /**

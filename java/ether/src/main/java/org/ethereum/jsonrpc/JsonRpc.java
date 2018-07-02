@@ -24,7 +24,7 @@ import java.util.Arrays;
  */
 public interface JsonRpc
 {
-    class SyncingResult {
+    public class SyncingResult {
         public String startingBlock;
         public String currentBlock;
         public String highestBlock;
@@ -39,7 +39,7 @@ public interface JsonRpc
         }
     }
 
-    class CallArguments {
+    public class CallArguments {
         public String from;
         public String to;
         public String gas;
@@ -62,7 +62,8 @@ public interface JsonRpc
         }
     }
 
-    class BlockResult {
+    public class BlockResult {
+        public String mixHash;
         public String number;     // QUANTITY - the block number. null when pending
         public String hash;       // DATA, 32 Bytes - hash of the block. null pending
         public String parentHash; // DATA, 32 Bytes - hash of the parent block.

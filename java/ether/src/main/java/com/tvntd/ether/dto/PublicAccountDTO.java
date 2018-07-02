@@ -30,8 +30,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.ethereum.jsonrpc.JsonRpc.BlockResult;
+import org.ethereum.jsonrpc.TransactionResultDTO;
+
 public class PublicAccountDTO
 {
+    protected BlockResult latestBlock;
     protected List<AccountInfoDTO> publicAcct;
 
     public PublicAccountDTO(List<AccountInfoDTO> acct) {
@@ -40,6 +44,26 @@ public class PublicAccountDTO
 
     public PublicAccountDTO(Map<String, AccountInfoDTO> acct) {
         this.publicAcct = new ArrayList<>(acct.values());
+        latestBlock = new BlockTransDetail();
+    }
+
+    public PublicAccountDTO(Map<String, AccountInfoDTO> acct, BlockResult latest) {
+        this(acct);
+        this.latestBlock = latest;
+    }
+
+    /**
+     * @return the latestBlock
+     */
+    public BlockResult getLatestBlock() {
+        return latestBlock;
+    }
+
+    /**
+     * @param latestBlock the latestBlock to set
+     */
+    public void setLatestBlock(BlockResult latestBlock) {
+        this.latestBlock = latestBlock;
     }
 
     /**
@@ -47,5 +71,25 @@ public class PublicAccountDTO
      */
     public List<AccountInfoDTO> getPublicAcct() {
         return publicAcct;
+    }
+
+    /**
+     * Block having transactions detail.
+     */
+    public static class BlockTransDetail extends BlockResult
+    {
+        public TransactionResultDTO[] transactions;
+
+        public BlockTransDetail() {
+            transactions = new TransactionResultDTO[2];
+        }
+    }
+
+    /**
+     * Block having only transaction hashes.
+     */
+    public static class BlockTransaction extends BlockResult
+    {
+        public String[] transactions;
     }
 }

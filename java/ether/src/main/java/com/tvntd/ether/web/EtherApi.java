@@ -27,6 +27,7 @@
 package com.tvntd.ether.web;
 
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,11 +37,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.tvntd.ether.api.ITransactionSvc;
+import com.tvntd.ether.dto.EtherBlockDTO;
 import com.tvntd.ether.dto.GenericResponse;
 import com.tvntd.ether.dto.PublicAccountDTO;
 
@@ -66,11 +69,23 @@ public class EtherApi
 
     @RequestMapping(value = "/api/ether", method = RequestMethod.GET)
     @ResponseBody
-    public GenericResponse
+    public PublicAccountDTO
     getEtherStartup(Locale locale, HttpSession session,
             HttpServletRequest reqt, HttpServletResponse resp)
     {
         PublicAccountDTO acct = etherTrans.getPublicAccount();
-        return new GenericResponse("Ether access");
+        return acct;
+    }
+
+    @RequestMapping(value = "/api/ether/{start}/{count}", method = RequestMethod.GET)
+    @ResponseBody
+    public GenericResponse
+    getEhterBlocks(Map<String, Object> model, HttpSession session,
+            @PathVariable(value = "start") String start,
+            @PathVariable(value = "count") String count)
+    {
+        EtherBlockDTO result = new EtherBlockDTO(start, count);
+        etherTrans.getEtherBlocks(result);
+        return result;
     }
 }

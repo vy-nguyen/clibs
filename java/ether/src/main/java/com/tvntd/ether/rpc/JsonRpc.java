@@ -38,13 +38,19 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tvntd.ether.api.EtherRpcApi.RpcResponse;
 
 public class JsonRpc
 {
-    private static final String s_url = "http://10.1.10.12:8545/";
+    static Logger s_log = LoggerFactory.getLogger(JsonRpc.class);
+
+    // private static final String s_url = "http://10.1.10.12:8545/";
+    private static final String s_url = "http://localhost:8545/";
     protected HttpClient httpClient;
 
     public JsonRpc()
@@ -52,19 +58,22 @@ public class JsonRpc
         httpClient = HttpClientBuilder.create().build();
     }
 
-    public <T> T callJsonRpc(Class<T> clazz, String method, String id, String ...params) {
+    public <T extends RpcResponse>
+    T callJsonRpc(Class<T> clazz, String method, String id, String ...params) {
         return callJsonRpc(clazz, new JsonRpcReqt(method, id, params));
     }
 
-    public <T> T callJsonRpc(Class<T> clazz, String method, String id, List<String> p) {
+    public <T extends RpcResponse>
+    T callJsonRpc(Class<T> clazz, String method, String id, List<String> p) {
         return callJsonRpc(clazz, new JsonRpcReqt(method, id, p));
     }
 
-    public <T> T callJsonRpcArr(Class<T> clazz, String m, String id, List<String> p) {
+    public <T extends RpcResponse>
+    T callJsonRpcArr(Class<T> clazz, String m, String id, List<String> p) {
         return callJsonRpc(clazz, new JsonRpcReqtArr(m, id, p));
     }
 
-    protected <T> T callJsonRpc(Class<T> clazz, JsonRpcCommon reqt)
+    protected <T extends RpcResponse> T callJsonRpc(Class<T> clazz, JsonRpcCommon reqt)
     {
         HttpPost postReq = new HttpPost(s_url);
 
@@ -75,7 +84,7 @@ public class JsonRpc
             postReq.setEntity(new StringEntity(mapper.writeValueAsString(reqt)));
 
         } catch(Exception e) {
-            System.out.println("Exception " + e.getMessage());
+            s_log.info("Req exception " + e.getMessage());
         }
         try {
             HttpResponse resp = httpClient.execute(postReq);
@@ -89,7 +98,7 @@ public class JsonRpc
             return null;
 
         } catch(IOException e) {
-            System.out.println("IO Exception " + e.getMessage());
+            s_log.info("IO exception " + e.getMessage());
         }
         return null;
     }
