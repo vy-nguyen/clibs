@@ -34,15 +34,20 @@ class EthAccount
     indexFn() {
         return this.acctName;
     }
+
+    getName() {
+        return this.acctName;
+    }
 }
 
 class EtherBlock
 {
-    constructor(data) {
+    constructor(data, store) {
         _.forOwn(data, function(v, k) {
             this[k] = v;
         }.bind(this));
 
+        this.store = store;
         this.blkNum = parseInt(this.number, 16);
         this.timestamp = new Date(this.timestamp * 1000);
         this.moment = moment(this.timestamp).fromNow();
@@ -59,8 +64,15 @@ class EtherBlock
         return 0;
     }
 
-    getMiner() {
-        return this.miner.substring(0, 16) + "...";
+    getMiner(name) {
+        let acct = this.miner.substring(0, 16) + "...";
+
+        if (name === true) {
+            let name, account = this.store.getAccount(this.miner);
+            name = (account != null) ? account.getName() : "Annon";
+            acct = acct + " (" + name + ")";
+        }
+        return acct;
     }
 
     getMoment() {
@@ -87,12 +99,12 @@ class EtherStoreClz extends Reflux.Store
         super();
         this.state = new BaseStore(this);
         this.blocks = new BaseStore(this);
+        this.pendingGet  = {};
+        this.latestBlock = 0;
         this.listenToMany(Actions);
     }
 
     onStartupCompleted(data) {
-        console.log("Ether startup is called");
-        console.log(data);
         let pubAcct = data.publicAcct;
 
         this._updateStore(pubAcct.publicAcct);
@@ -104,15 +116,23 @@ class EtherStoreClz extends Reflux.Store
         onStartupCompleted(data);
     }
 
+    onGetEtherBlocksCompleted(data) {
+        delete this.pendingGet[data.cbContext];
+        this._updateBlock(data.blocks);
+        this.trigger(this, this.state, "fetch");
+    }
+
     _updateBlock(blocks) {
         if (blocks == null) {
             return;
         }
         _.forEach(blocks, function(block) {
-            let blk = new EtherBlock(block);
-            this.blocks.storeItem(blk.getBlkNum(), blk, true);
-            if (this.latestBlock == null) {
-                this.latestBlock = blk.getBlkNum();
+            let blkNo, blk = new EtherBlock(block, this);
+
+            blkNo = blk.getBlkNum();
+            this.blocks.storeItem(blkNo, blk, true);
+            if (blkNo > this.latestBlock) {
+                this.latestBlock = blkNo;
             }
         }.bind(this));
     }
@@ -134,20 +154,24 @@ class EtherStoreClz extends Reflux.Store
         return this.blocks.getItem(this.latestBlock);
     }
 
-    getNextBlock(block) {
-        if (block != null) {
-            return block.getNextBlock(this.latestBlock);
+    fetchBlock(blkNo) {
+        if (blkNo >= this.latestBlock) {
+            return this.blocks.getItem(this.latestBlock);
         }
-        return null;
+        let blk = this.blocks.getItem(blkNo);
+        if (blk == null) {
+            if (this.pendingGet[blkNo] == null) {
+                this.pendingGet[blkNo] = blkNo;
+                Actions.getEtherBlocks(blkNo, blkNo);
+            }
+        }
+        return blk;
     }
 
-    getPrevBlock(block) {
-        if (block != null) {
-            return block.getPrevBlock(this.latestBlock);
-        }
-        return null;
+    getAccount(acct) {
+        return this.state.getItem(acct);
     }
-
+    
     iterEachAccount(fn) {
         _.forOwn(this.state.getAllData(), fn);
     }

@@ -102,7 +102,8 @@ const Actions = Reflux.createActions({
     setTags:         completedFailedFn,
 
     // Ethereum actions
-    etherStartup:    completedFailedFn
+    etherStartup:    completedFailedFn,
+    getEtherBlocks:  completedFailedFn
 });
 
 function postRestCall(formData, url, json, cbObj, authReq, context) {
@@ -213,6 +214,11 @@ Actions.getAuthors.listen(function(data, url) {
  */
 Actions.etherStartup.listen(function() {
     getJSON("/api/ether", this, false, "etherStartup");
+});
+
+Actions.getEtherBlocks.listen(function(blkNo, cb) {
+    let url = "/api/ether/" + blkNo + "/100";
+    getJSON(url, this, false, "getEtherBlocks", cb);
 });
 
 /**
