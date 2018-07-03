@@ -151,13 +151,17 @@ class ArticleTagBrief extends React.Component
         return ArticleTagBrief.renderArtBox(authorArr, renderBrief, renderFull, false);
     }
 
-    static renderArtBox(adsList, renderBrief, renderFull, maxCol) {
+    static renderArtBox(adsList, renderBrief, renderFull, maxCol, briefColFmt) {
         let output = [], mode = NavigationStore.getViewMode(),
             length = adsList.length,
             oneBrief, oneFull, twoBrief, twoFull,
-            threeBrief, threeFull, fourBrief, fourFull,
-            briefFmt = "col-xs-12 col-sm-6 col-md-4 col-lg-3 padding-5";
+            threeBrief, threeFull, fourBrief, fourFull, briefFmt;
 
+        if (briefColFmt == null) {
+            briefFmt = "col-xs-12 col-sm-6 col-md-4 col-lg-3 padding-5";
+        } else {
+            briefFmt = briefColFmt;
+        }
         for (let i = 0; i < length; i++) {
             oneFull  = renderFull(adsList[i]);
             oneBrief = (

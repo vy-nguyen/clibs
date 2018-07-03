@@ -10,20 +10,21 @@ import React  from 'react-mod';
 class KeyValueTable extends React.Component
 {
     render() {
-        let oddRowFmt     = this.props.oddRowFmt || "success";
-        let oddRowKeyFmt  = this.props.oddRowKeyFmt || "label label-danger";
-        let oddRowValFmt  = this.props.oddRowValFmt || "";
+        let props         = this.props,
+            oddRowFmt     = props.oddRowFmt || "success",
+            oddRowKeyFmt  = props.oddRowKeyFmt || "label label-danger",
+            oddRowValFmt  = props.oddRowValFmt || "",
 
-        let evenRowFmt    = this.props.evenRowFmt || "info";
-        let evenRowKeyFmt = this.props.evenRowKeyFmt || "label label-success";
-        let evenRowValFmt = this.props.evenRowValFmt || "";
+            evenRowFmt    = props.evenRowFmt || "info",
+            evenRowKeyFmt = props.evenRowKeyFmt || "label label-success",
+            evenRowValFmt = props.evenRowValFmt || "",
 
-        let rowFmt = null;
-        let keyFmt = null;
-        let valFmt = null;
-        let row = [];
+            rowFmt = null,
+            keyFmt = null,
+            valFmt = null,
+            row = [];
 
-        _.forOwn(this.props.keyValueList, function(elm, idx) {
+        _.forOwn(props.keyValueList, function(elm, idx) {
             if (idx % 2) {
                 rowFmt = oddRowFmt;
                 keyFmt = elm.keyFmt || oddRowKeyFmt;
@@ -56,7 +57,7 @@ class KeyValueTable extends React.Component
             }
         });
         return (
-            <table className={"table " + this.props.className}>
+            <table className={"table " + props.className}>
                 <tbody>
                     {row}
                 </tbody>

@@ -10,6 +10,8 @@ import NavigationStore   from 'vntd-shared/stores/NavigationStore.jsx';
 import { EtherBaseAcct } from 'vntd-root/pages/wall/EtherCrumbs.jsx';
 import EtherStore        from 'vntd-root/stores/EtherStore.jsx';
 import ArticleTagBrief   from 'vntd-root/components/ArticleTagBrief.jsx';
+import BlockView         from 'vntd-root/pages/wall/BlockView.jsx';
+import TransactionView   from 'vntd-root/pages/wall/TransactionView.jsx';
 
 class EtherAccount extends React.Component
 {
@@ -71,16 +73,15 @@ class EtherPane extends EtherBaseAcct
         if ((curr == null) || (curr.Account !== account.Account)) {
             return null;
         }
-        console.log(this.state);
-        console.log("compare true....");
         return (
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1>Account {account.Account}</h1>
             </div>
         );
     }
 
     render() {
-        let out, accounts = [];
+        let out, latestBlk, accounts = [];
 
         if (this.state.reserved == null) {
             return null;
@@ -88,10 +89,23 @@ class EtherPane extends EtherBaseAcct
         EtherStore.iterEachIndex(function(acct) {
             accounts.push(acct);
         });
+        latestBlk = EtherStore.getBlock(null);
         out = ArticleTagBrief.renderArtBox(accounts,
-                    this.renderBrief, this.renderFull, 4);
+                    this.renderBrief, this.renderFull, true);
 
-        return (<div>{out}</div>);
+        return (
+            <div className="row">
+                <div className="col-sm-12 col-xs-12 col-md-12 col-lg-12">
+                    {out}
+                </div>
+                <div className="col-sm-12 col-xs-12 col-md-6 col-lg-6">
+                    <BlockView currBlk={latestBlk} latestNo={latestBlk.getBlkNum()}/>
+                </div>
+                <div className="col-sm-12 col-xs-12 col-md-6 col-lg-6">
+                    <TransactionView/>
+                </div>
+            </div>
+        )
     }
 }
 
