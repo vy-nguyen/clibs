@@ -154,8 +154,6 @@ function getJSON(url, cbObj, authReq, id, context, syncServer) {
         return;
     }
     $.getJSON(url).done(function(data, status, resp) {
-        console.log(data);
-
         data.cbContext = context;
         cbObj.completed(data);
         if (syncServer === true) {

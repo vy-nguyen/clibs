@@ -108,7 +108,7 @@ public class PublicAccount
 
                 AccountInfoDTO cache = accounts.get(account.getAccount());
                 if (cache != null) {
-                    cache.setHaoBalance(Convert.toHaoValue(balance));
+                    cache.setXuBalance(Convert.toXuValue(balance));
                     cache.setBalance(account.getBalance());
                 }
             } catch(Exception e) {

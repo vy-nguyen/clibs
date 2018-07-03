@@ -35,7 +35,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class AccountInfoDTO
 {
     protected String account;
-    protected Long haoBalance;
+    protected Long xuBalance;
     protected String acctName;
     protected String balance;
 
@@ -44,7 +44,7 @@ public class AccountInfoDTO
     {
         account = acct;
         acctName = name;
-        haoBalance = 0L;
+        xuBalance = 0L;
     }
 
     public AccountInfoDTO(String acct, BigInteger weiBalance, String name)
@@ -61,16 +61,16 @@ public class AccountInfoDTO
     }
 
     /**
-     * @return the haoBalance
+     * @return the xuBalance
      */
-    public Long getHaoBalance() {
-        return haoBalance;
+    public Long getXuBalance() {
+        return xuBalance;
     }
 
     /**
      */
-    public void setHaoBalance(Long haoBalance) {
-        this.haoBalance = haoBalance;
+    public void setXuBalance(Long xuBalance) {
+        this.xuBalance = xuBalance;
     }
 
     /**

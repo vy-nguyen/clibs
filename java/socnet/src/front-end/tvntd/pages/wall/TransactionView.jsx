@@ -6,16 +6,21 @@
 import _                  from 'lodash';
 import React              from 'react-mod';
 
+import BaseMedia          from 'vntd-shared/layout/BaseMedia.jsx';
 import BaseLinks          from 'vntd-shared/component/BaseLinks.jsx';
 
 import { EtherBaseAcct }  from 'vntd-root/pages/wall/EtherCrumbs.jsx';
 import EtherStore         from 'vntd-root/stores/EtherStore.jsx';
 import ArticleTagBrief    from 'vntd-root/components/ArticleTagBrief.jsx';
 
-class RenderTrans extends React.Component
+class RenderTrans extends BaseMedia
 {
     constructor(props) {
         super(props);
+    }
+
+    getDetailKV() {
+        return null;
     }
 
     render() {

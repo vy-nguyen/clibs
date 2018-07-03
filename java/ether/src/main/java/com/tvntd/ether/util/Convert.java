@@ -45,6 +45,10 @@ public final class Convert
         return wei.divide(Unit.HAO.getWeiFactor()).longValue();
     }
 
+    public static Long toXuValue(BigInteger wei) {
+        return wei.divide(Unit.XU.getWeiFactor()).longValue();
+    }
+
     public static float elapseMilli(long start, String out)
     {
         long end = System.nanoTime();
@@ -64,8 +68,8 @@ public final class Convert
         GWEI("gwei", 9),
         SZABO("szabo", 12),
         FINNEY("finney", 15),
-        HAO("hao", 15),             // 1xu = 10hao
-        XU("xu", 16),               // 1d  = 100xu
+        XU("xu", 14),               // 1xu = 100hao
+        HAO("hao", 16),             // 1d  = 100xu
         DONG("dong", 18),           // 1d  = 1eth
         ETHER("ether", 18),
         KETHER("kether", 21),

@@ -8,74 +8,66 @@ import React              from 'react-mod';
 import Spinner            from 'react-spinjs';
 
 import BaseLinks          from 'vntd-shared/component/BaseLinks.jsx';
-import KeyValueTable      from 'vntd-shared/layout/KeyValueTable.jsx';
+import BaseMedia          from 'vntd-shared/layout/BaseMedia.jsx';
 
 import { VntdGlob }       from 'vntd-root/config/constants.js';
 import { EtherBaseAcct }  from 'vntd-root/pages/wall/EtherCrumbs.jsx';
 import EtherStore         from 'vntd-root/stores/EtherStore.jsx';
 import ArticleTagBrief    from 'vntd-root/components/ArticleTagBrief.jsx';
 
-class RenderBlock extends React.Component
+class RenderBlock extends BaseMedia
 {
     constructor(props) {
         super(props);
     }
 
-    renderFull() {
-        let block = this.props.block,
-            blockKV = [ {
-                key: 'Block',
-                val: block.getBlkNum()
-            }, {
-                key: 'Timestamp',
-                val: block.getTimestamp()
-            }, {
-                key: 'Hash',
-                val: block.hash
-            }, {
-                key: 'Parent Hash',
-                val: block.parentHash
-            }, {
-                key: 'Sha3Uncles',
-                val: block.sha3Uncles
-            }, {
-                key: 'Miner',
-                val: block.getMiner(true)
-            }, {
-                key: 'Nonce',
-                val: block.nonce
-            }, {
-                key: 'Size',
-                val: block.size
-            }, {
-                key: 'Transactions',
-                val: block.getTransCount()
-            } ];
+    getArg() {
+        return this.props.block;
+    }
 
+    getDetailKV(block) {
+        return [ {
+            key: 'Block',
+            val: block.getBlkNum()
+        }, {
+            key: 'Timestamp',
+            val: block.getTimestamp()
+        }, {
+            key: 'Hash',
+            val: block.hash
+        }, {
+            key: 'Parent Hash',
+            val: block.parentHash
+        }, {
+            key: 'Sha3Uncles',
+            val: block.sha3Uncles
+        }, {
+            key: 'Miner',
+            val: block.getMiner(true)
+        }, {
+            key: 'Nonce',
+            val: block.nonce
+        }, {
+            key: 'Size',
+            val: block.size
+        }, {
+            key: 'Transactions',
+            val: block.getTransCount()
+        } ];
+    }
+
+    renderMediaBox(block) {
         return (
-            <KeyValueTable keyValueList={blockKV} oddRowKeyFmt=" " evenRowKeyFmt=" "/>
+            <h3>{block.getBlkNum()}</h3>
         );
     }
 
-    render() {
-        let block = this.props.block;
-
-        if (block == null) {
-            return null;
-        }
-        if (this.props.detail == true) {
-            return this.renderFull();
-        }
+    renderMediaBody(block) {
         return (
-            <div className="media">
-                <div className="media-left">
-                    <h3>{block.getBlkNum()}</h3>
-                </div>
-                <div className="media-body">
-                    <span>Mined by {block.getMiner()}</span>
-                    <div>Sealed {block.getMoment()}</div>
-                    <div>Transactions {block.getTransCount()}</div>
-                </div>
+            <div>
+                <span>Mined by {block.getMiner(true)}</span>
+                <div>Sealed {block.getMoment()}</div>
+                <div>Transactions {block.getTransCount()}</div>
             </div>
         );
     }
@@ -91,10 +83,11 @@ class BlockView extends EtherBaseAcct
             fetchBlk : null,
             blkDetail: false
         });
-        this.fetchTry = 0;
-        this.renderFull  = this.renderFull.bind(this);
-        this.renderBrief = this.renderBrief.bind(this);
-        this._clickBlock = this._clickBlock.bind(this);
+        this.fetchTry     = 0;
+        this.renderFull   = this.renderFull.bind(this);
+        this.renderBrief  = this.renderBrief.bind(this);
+        this._clickButton = this._clickButton.bind(this);
+        this._clickBlock  = this._clickBlock.bind(this);
     }
   
     _updateEthAcct(store, data, where) {
@@ -115,7 +108,7 @@ class BlockView extends EtherBaseAcct
         }
     }
 
-    _clickBlock(where) {
+    _clickButton(where) {
         if (where === "c") {
             this.setState({
                 blkDetail: !this.state.blkDetail
@@ -152,15 +145,19 @@ class BlockView extends EtherBaseAcct
         }
     }
 
+    _clickBlock() {
+        this._clickButton('c');
+    }
+
     renderBrief(block) {
-        return <RenderBlock block={block}/>;
+        return <RenderBlock block={block} onClick={this._clickBlock}/>;
     }
 
     renderFull(block) {
-        if (this.state.blkDetail === true) {
-            return <RenderBlock block={block} detail={true}/>;
+        if (this.state.blkDetail !== true) {
+            return null;
         }
-        return null;
+        return <RenderBlock block={block} detail={true} onClick={this._clickBlock}/>;
     }
 
     render() {
@@ -186,7 +183,7 @@ class BlockView extends EtherBaseAcct
         return (
             <div>
                 <BaseLinks leftTitle={left} centerTitle="Block Detail"
-                    rightTitle={right} onClick={this._clickBlock}/>
+                    rightTitle={right} onClick={this._clickButton}/>
                 {busy}
                 {out}
             </div>

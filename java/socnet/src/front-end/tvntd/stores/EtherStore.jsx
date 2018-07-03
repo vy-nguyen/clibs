@@ -9,6 +9,12 @@ import moment            from 'moment';
 import Actions           from 'vntd-root/actions/Actions.jsx';
 import BaseStore         from 'vntd-root/stores/BaseStore.jsx';
 
+const TDRates = {
+    HAO2TD: 100,
+    XU2HAO: 100,
+    XU2TD : 10000
+};
+
 class EthAccount
 {
     constructor(data) {
@@ -18,16 +24,16 @@ class EthAccount
     }
 
     getEther() {
-        let hao = this.haoBalance % 1000;
+        let xu = this.xuBalance % TDRates.XU2TD;
         return {
-            ether: this.haoBalance / 1000,
-            xu   : hao / 10,
-            hao  : hao % 10
+            ether: this.haoBalance / TDRates.XU2TD,
+            hao  : xu / TDRates.XU2HAO,
+            xu   : xu % TDRates.XU2TD
         }
     }
 
     getMoneyBalance() {
-        let ether = this.haoBalance / 1000;
+        let ether = this.xuBalance / TDRates.XU2TD;
         return 'T$ '  + ether.formatMoney(3, '.', ',');
     }
 
@@ -37,6 +43,10 @@ class EthAccount
 
     getName() {
         return this.acctName;
+    }
+
+    static getExchangeRate() {
+        return TDRates;
     }
 }
 
@@ -208,3 +218,4 @@ class EtherStoreClz extends Reflux.Store
 var EtherStore = Reflux.initStore(EtherStoreClz);
 
 export default EtherStore;
+export { EthAccount, EtherStore };

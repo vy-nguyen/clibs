@@ -6,39 +6,87 @@
 import React             from 'react-mod';
 import { QRCode }        from 'react-qr-svg';
 
-import NavigationStore   from 'vntd-shared/stores/NavigationStore.jsx';
-import { EtherBaseAcct } from 'vntd-root/pages/wall/EtherCrumbs.jsx';
-import EtherStore        from 'vntd-root/stores/EtherStore.jsx';
+import BaseMedia         from 'vntd-shared/layout/BaseMedia.jsx';
+
 import ArticleTagBrief   from 'vntd-root/components/ArticleTagBrief.jsx';
 import BlockView         from 'vntd-root/pages/wall/BlockView.jsx';
 import TransactionView   from 'vntd-root/pages/wall/TransactionView.jsx';
 
-class EtherAccount extends React.Component
+import { EtherBaseAcct }          from 'vntd-root/pages/wall/EtherCrumbs.jsx';
+import { EtherStore, EthAccount } from 'vntd-root/stores/EtherStore.jsx';
+
+class EtherAccount extends BaseMedia
 {
     constructor(props) {
         super(props);
         this.style = {
             width: 64
         };
-        this._onClick = this._onClick.bind(this);
     }
 
-    _onClick() {
-        if (this.props.onClick != null) {
-            this.props.onClick(this.props.account);
-        }
+    getArg() {
+        return this.props.account;
+    }
+
+    getDetailKV(acct) {
+        return [ {
+            key: 'Public Key',
+            val: acct.Account
+        }, {
+            key: 'Public Name',
+            val: acct.getName()
+        }, {
+            key: 'Balance',
+            val: acct.getMoneyBalance()
+        }, {
+            key: 'Transactions',
+            val: 'Work in progress...'
+        } ];
+    }
+
+    renderMediaBox(acct) {
+        return <QRCode value={acct.Account} style={this.style}/>;
+    }
+
+    renderMediaBody(acct) {
+        return (
+            <div>
+                <h4>{acct.acctName}</h4>
+                {acct.getMoneyBalance()}
+            </div>
+        );
+    }
+}
+
+class EtherExchange extends BaseMedia
+{
+    constructor(props) {
+        super(props);
+    }
+
+    getArg() {
+        return EthAccount.getExchangeRate();
+    }
+
+    getDetailKV(rate) {
+        return [ {
+            key: '1 T$',
+            val: rate.HAO2TD + " hao"
+        }, {
+            key: '1 hao',
+            val: rate.XU2HAO + " xu"
+        } ];
     }
 
     render() {
-        let acct = this.props.account;
         return (
-            <div className="media" onClick={this._onClick}>
-                <div className="media-left">
-                    <QRCode value={acct.Account} style={this.style}/>
+            <div className="row">
+                <div className="col-sm-6 col-xs-6 col-md-4 col-lg-4">
+                    {this.renderDetail(this.getArg())}
                 </div>
-                <div className="media-body">
-                    <h4>{acct.acctName}</h4>
-                    {acct.getMoneyBalance()}
+                <div className="col-sm-6 col-xs-6 col-md-4 col-lg-4">
+                </div>
+                <div className="col-sm-6 col-xs-6 col-md-4 col-lg-4">
                 </div>
             </div>
         );
@@ -58,9 +106,15 @@ class EtherPane extends EtherBaseAcct
     }
 
     _acctClick(account) {
+        if (this.state.currAccount != null) {
+            // Toggle detail display.
+            //
+            account = null;
+        }
         this.setState({
             currAccount: account
         });
+        console.log("Ether pane detail " + this.state.currAccount);
     }
 
     renderBrief(account) {
@@ -75,7 +129,7 @@ class EtherPane extends EtherBaseAcct
         }
         return (
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <h1>Account {account.Account}</h1>
+                <EtherAccount account={account} detail={true} onClick={this._acctClick}/>
             </div>
         );
     }
@@ -95,6 +149,9 @@ class EtherPane extends EtherBaseAcct
 
         return (
             <div className="row">
+                <div className="col-sm-12 col-xs-12 col-md-12 col-lg-12">
+                    <EtherExchange/>
+                </div>
                 <div className="col-sm-12 col-xs-12 col-md-12 col-lg-12">
                     {out}
                 </div>
