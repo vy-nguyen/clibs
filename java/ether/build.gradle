@@ -42,6 +42,7 @@ dependencies {
     compile "org.springframework:spring-web:${spring_version}"
     compile "org.springframework:spring-webmvc:${spring_version}"
     compile "org.springframework.data:spring-data-jpa:${spring_data_jpa_version}"
+    compile "org.springframework.security:spring-security-web:${spring_security_ver}"
     compile "com.github.briandilley.jsonrpc4j:jsonrpc4j:1.4.6"
 
     compile "org.hibernate:hibernate-core:${hibernate_version}"

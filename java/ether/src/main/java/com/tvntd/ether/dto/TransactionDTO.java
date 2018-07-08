@@ -33,7 +33,7 @@ public class TransactionDTO
     protected String fromAcct;
     protected String toUuid;
     protected String toAcct;
-    protected Float amount;
+    protected Long xuAmount;
 
     /**
      * @return the txHash
@@ -71,9 +71,9 @@ public class TransactionDTO
     }
 
     /**
-     * @return the amount
+     * @return the xuAmount
      */
-    public Float getAmount() {
-        return amount;
+    public Long getXuAmount() {
+        return xuAmount;
     }
 }

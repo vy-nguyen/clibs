@@ -24,25 +24,49 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.account.dao;
+package com.tvntd.ether.api;
 
 import java.util.List;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.tvntd.ether.dto.AccountInfoDTO;
 
-import com.tvntd.account.models.Account;
-
-public interface AccountRepo extends JpaRepository<Account, String>
+public interface IAccountSvc
 {
-    Account findByOwnerUuid(String ownerUuid);
-    Account findByAccountUuid(String accountUuid);
+    AccountDTO getAccount(String account);
+    List<AccountDTO> getAccountsIn(List<String> accounts);
 
-    List<Account> findByOwnerUuidIn(List<String> ownerUuids);
-    List<Account> findByAccountUuidIn(List<String> acctUuids);
+    public static class AccountDTO
+    {
+        protected String ownerUuid;
+        protected String walletUuid;
+        protected AccountInfoDTO account;
 
-    @Override
-    void delete(Account account);
+        public AccountDTO() {}
+        public AccountDTO(String ownerUuid, String walletUuid)
+        {
+            this.ownerUuid = ownerUuid;
+            this.walletUuid = walletUuid;
+        }
 
-    @Override
-    void delete(String uuid);
+        /**
+         * @return the ownerUuid
+         */
+        public String getOwnerUuid() {
+            return ownerUuid;
+        }
+
+        /**
+         * @return the walletUuid
+         */
+        public String getWalletUuid() {
+            return walletUuid;
+        }
+
+        /**
+         * @return the account
+         */
+        public AccountInfoDTO getAccount() {
+            return account;
+        }
+    }
 }

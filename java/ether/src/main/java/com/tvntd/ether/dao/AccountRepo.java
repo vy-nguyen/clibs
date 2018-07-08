@@ -24,31 +24,22 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.account.api;
+package com.tvntd.ether.dao;
 
-import com.tvntd.account.models.Account;
+import java.util.List;
 
-public interface IAccountService
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.tvntd.ether.models.Account;
+
+public interface AccountRepo extends JpaRepository<Account, String>
 {
-    Account getAccount(String accountUuid);
-    Account getAccountByOwner(String ownerUuid);
+    Account findByAccount(String account);
+    List<Account> findByAccountIn(List<String> accounts);
 
-    /**
-     *
-     */
-    public static class AccountDTO
-    {
-        private Account account;
+    List<Account> findByOwnerUuid(String ownerUuid);
+    List<Account> findByWalletUuidAndOwnerUuid(String walletUuid, String ownerUuid);
 
-        public AccountDTO(Account acct) {
-            this.account = acct;
-        }
-
-        /**
-         * @return the account
-         */
-        public Account fetchAccount() {
-            return account;
-        }
-    }
+    List<Account> findByWalletUuidIn(List<String> walletUuids);
+    List<Account> findByOwnerUuidIn(List<String> ownerUuids);
 }

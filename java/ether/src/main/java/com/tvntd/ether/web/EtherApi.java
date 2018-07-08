@@ -38,14 +38,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tvntd.ether.api.ITransactionSvc;
 import com.tvntd.ether.dto.EtherBlockDTO;
 import com.tvntd.ether.dto.GenericResponse;
 import com.tvntd.ether.dto.PublicAccountDTO;
+import com.tvntd.ether.forms.UserEmailForm;
 
 @Controller
 public class EtherApi
@@ -54,18 +57,6 @@ public class EtherApi
 
     @Autowired
     protected ITransactionSvc etherTrans;
-
-    /**
-     * Handle Api REST calls.
-     */
-    @RequestMapping(value = "/api/hello", method = RequestMethod.GET)
-    @ResponseBody
-    public GenericResponse
-    getUserNotification(Locale locale, HttpSession session,
-            HttpServletRequest reqt, HttpServletResponse resp)
-    {
-        return new GenericResponse("Echo Hello World");
-    }
 
     @RequestMapping(value = "/api/ether", method = RequestMethod.GET)
     @ResponseBody
@@ -88,4 +79,17 @@ public class EtherApi
         etherTrans.getEtherBlocks(result);
         return result;
     }
+
+    @RequestMapping(value = "/api/create-wallet",
+        consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse createWallet(@RequestBody UserEmailForm emails)
+    {
+        for (String s : emails.getEmails()) {
+            System.out.println("Email " + s);
+        }
+        return new GenericResponse("email list");
+    }
+
 }

@@ -24,36 +24,48 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.account.service;
+package com.tvntd.ether.web;
 
+import javax.servlet.http.HttpSession;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.tvntd.account.api.IAccountService;
-import com.tvntd.account.dao.AccountRepo;
-import com.tvntd.account.models.Account;
+import com.tvntd.ether.api.IAccountSvc;
+import com.tvntd.ether.api.ITransactionSvc;
+import com.tvntd.ether.dto.GenericResponse;
+import com.tvntd.ether.dto.WalletInfoDTO;
 
-@Service
-@Transactional(value = "accountTransMgr")
-@EnableCaching
-public class AccountService implements IAccountService
+@Controller
+public class UserApi
 {
-    @Autowired
-    protected AccountRepo accountRepo;
+    static protected Logger s_log = LoggerFactory.getLogger(UserApi.class);
 
-    @Override
-    public Account getAccount(String uuid)
+    @Autowired
+    IAccountSvc accountSvc;
+
+    @Autowired
+    ITransactionSvc transSvc;
+
+    @Secured({"ROLE_ADMIN", "ROLE_USER"}) 
+    @RequestMapping(value = "/user/ether-account", method = RequestMethod.GET)
+    @ResponseBody
+    public GenericResponse getUserEtherAccount(HttpSession session)
     {
-        Account acct = accountRepo.findByAccountUuid(uuid);
-        return acct;
+        return new GenericResponse("ok");
     }
 
-    @Override
-    public Account getAccountByOwner(String uuid)
+    @Secured({"ROLE_ADMIN", "ROLE_USER"}) 
+    @RequestMapping(value = "/user/ether-wallet", method = RequestMethod.GET)
+    @ResponseBody
+    public GenericResponse getUserEtherWallet(HttpSession session)
     {
-        Account acct = accountRepo.findByOwnerUuid(uuid);
-        return acct;
+        return new WalletInfoDTO("ok");
     }
 }

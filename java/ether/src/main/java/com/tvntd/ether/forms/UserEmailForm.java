@@ -24,36 +24,23 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.ether.models;
+package com.tvntd.ether.forms;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+public class UserEmailForm
+{
+    private String[] emails;
 
-@Entity
-public class Person {
+    /**
+     * @return the emails
+     */
+    public String[] getEmails() {
+        return emails;
+    }
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
-
-	private String firstName;
-	private String lastName;
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+    /**
+     * @param emails the emails to set
+     */
+    public void setEmails(String[] emails) {
+        this.emails = emails;
+    }
 }

@@ -24,47 +24,29 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.account.models;
+package com.tvntd.ether.service;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import java.util.List;
 
-@Entity
-public class Account
+import javax.transaction.Transactional;
+
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.stereotype.Service;
+
+import com.tvntd.ether.api.IAccountSvc;
+
+@Service
+@Transactional
+@EnableCaching
+public class AccountSvc implements IAccountSvc
 {
-    @Id
-    @Column(length = 64)
-    private String accountUuid;
-
-    @Column(length = 64)
-    private String ownerUuid;
-
-    /**
-     * @return the accountUuid
-     */
-    public String getAccountUuid() {
-        return accountUuid;
+    public AccountDTO getAccount(String account)
+    {
+        return null;
     }
 
-    /**
-     * @param accountUuid the accountUuid to set
-     */
-    public void setAccountUuid(String accountUuid) {
-        this.accountUuid = accountUuid;
-    }
-
-    /**
-     * @return the ownerUuid
-     */
-    public String getOwnerUuid() {
-        return ownerUuid;
-    }
-
-    /**
-     * @param ownerUuid the ownerUuid to set
-     */
-    public void setOwnerUuid(String ownerUuid) {
-        this.ownerUuid = ownerUuid;
+    public List<AccountDTO> getAccountsIn(List<String> accounts)
+    {
+        return null;
     }
 }
