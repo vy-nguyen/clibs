@@ -161,6 +161,9 @@ public class TransactionSvc implements ITransactionSvc
             List<BlockResult> res = result.blockResult();
 
             for (BlockResult block : res) {
+                if (block == null) {
+                    continue;
+                }
                 int radix = 10;
                 String number = block.number;
 
