@@ -24,27 +24,37 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.ether.api;
+package com.tvntd.service.api;
 
 import java.util.List;
 
-import com.tvntd.ether.dto.EtherBlockDTO;
-import com.tvntd.ether.dto.PublicAccountDTO;
-import com.tvntd.ether.dto.TransactionDTO;
+import com.tvntd.ether.dto.WalletInfoDTO;
 
-public interface ITransactionSvc
+public class WalletResponse extends GenericResponse
 {
-    TransactionDTO getTransaction(String txHash);
+    protected List<WalletInfoDTO> wallets;
 
-    List<TransactionDTO> getTransaction(String userUuid,
-            int start, int count, boolean from);
+    public WalletResponse() {
+        super("ok");
+    }
 
-    List<TransactionDTO> getTransactionAcct(String account,
-            int start, int count, boolean from);
+    public WalletResponse(List<WalletInfoDTO> res)
+    {
+        super("ok");
+        this.wallets = res;
+    }
 
-    List<TransactionDTO> getRecentTransaction(int start, int count);
-    List<TransactionDTO> getAllTransaction();
+    /**
+     * @return the wallets
+     */
+    public List<WalletInfoDTO> getWallets() {
+        return wallets;
+    }
 
-    PublicAccountDTO getPublicAccount();
-    void getEtherBlocks(EtherBlockDTO blocks);
+    /**
+     * @param wallets the wallets to set
+     */
+    public void setWallets(List<WalletInfoDTO> wallets) {
+        this.wallets = wallets;
+    }
 }

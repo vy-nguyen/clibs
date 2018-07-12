@@ -26,10 +26,13 @@
  */
 package com.tvntd.service.api;
 
+import java.util.List;
+
 import com.tvntd.error.EmailExistsException;
 import com.tvntd.forms.RegisterForm;
 import com.tvntd.models.User;
 import com.tvntd.models.PasswordResetToken;
+import com.tvntd.models.Profile;
 import com.tvntd.models.VerificationToken;
 
 public interface IUserService

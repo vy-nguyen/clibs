@@ -28,7 +28,6 @@ package com.tvntd.ether.dao;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
@@ -42,10 +41,11 @@ public interface TransactionRepo extends PagingAndSortingRepository<Transaction,
     List<Transaction> findByToUuid(String userUuid);
     List<Transaction> findByToAcct(String account);
 
-    Page<Transaction> findAllByFromUuid(Pageable page, String userUuid);
-    Page<Transaction> findAllByFromAcct(Pageable page, String account);
-    Page<Transaction> findAllByToUuid(Pageable page, String userUuid);
-    Page<Transaction> findAllByToAcct(Pageable page, String account);
+    List<Transaction> findAllByFromUuid(Pageable page, String userUuid);
+    List<Transaction> findAllByFromAcct(Pageable page, String account);
+    List<Transaction> findAllByToUuid(Pageable page, String userUuid);
+    List<Transaction> findAllByToAcct(Pageable page, String account);
 
+    List<Transaction> findAllByOrderByCreatedAsc(Pageable page);
     List<Transaction> findAll();
 }

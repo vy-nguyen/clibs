@@ -29,17 +29,28 @@ package com.tvntd.ether.api;
 import java.util.List;
 
 import com.tvntd.ether.dto.AccountInfoDTO;
+import com.tvntd.ether.dto.WalletInfoDTO;
+import com.tvntd.ether.models.Transaction;
 
 public interface IAccountSvc
 {
-    AccountDTO getAccount(String account);
+    AccountDTO getAccount(String ownerUuid, String account);
     List<AccountDTO> getAccountsIn(List<String> accounts);
+
+    WalletInfoDTO createWallet(byte[] walletName, byte[] acctname,
+            String walletUuid, String ownerUuid);
+
+    List<WalletInfoDTO> getWallet(String ownerUuid);
+    Transaction fundAccount(AccountInfoDTO account);
+    Transaction payAccount(String ownerUuid, String toUuid,
+            String fromAccount, String toAccount, Long xuAmount, String text);
 
     public static class AccountDTO
     {
         protected String ownerUuid;
         protected String walletUuid;
         protected AccountInfoDTO account;
+        protected List<Transaction> recentTrans;
 
         public AccountDTO() {}
         public AccountDTO(String ownerUuid, String walletUuid)

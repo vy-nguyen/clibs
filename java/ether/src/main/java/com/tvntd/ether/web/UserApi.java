@@ -54,14 +54,6 @@ public class UserApi
     ITransactionSvc transSvc;
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"}) 
-    @RequestMapping(value = "/user/ether-account", method = RequestMethod.GET)
-    @ResponseBody
-    public GenericResponse getUserEtherAccount(HttpSession session)
-    {
-        return new GenericResponse("ok");
-    }
-
-    @Secured({"ROLE_ADMIN", "ROLE_USER"}) 
     @RequestMapping(value = "/user/ether-wallet", method = RequestMethod.GET)
     @ResponseBody
     public GenericResponse getUserEtherWallet(HttpSession session)

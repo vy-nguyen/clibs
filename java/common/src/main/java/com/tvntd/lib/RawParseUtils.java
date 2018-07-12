@@ -168,4 +168,20 @@ public final class RawParseUtils
         }
         return r;
     }
+
+    public static int parseNumber(String n, int min, int max)
+    {
+        try {
+            int num = Integer.parseInt(n);
+            if (num < min) {
+                return min;
+            }
+            if (num > max) {
+                return max;
+            }
+            return num;
+        } catch(NumberFormatException e) {
+        }
+        return min;
+    }
 }

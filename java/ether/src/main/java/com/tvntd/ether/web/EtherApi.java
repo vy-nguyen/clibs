@@ -27,7 +27,6 @@
 package com.tvntd.ether.web;
 
 import java.util.Locale;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,17 +37,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tvntd.ether.api.ITransactionSvc;
 import com.tvntd.ether.dto.EtherBlockDTO;
 import com.tvntd.ether.dto.GenericResponse;
 import com.tvntd.ether.dto.PublicAccountDTO;
-import com.tvntd.ether.forms.UserEmailForm;
+import com.tvntd.ether.dto.TransactionDTO.TransListDTO;
+import com.tvntd.lib.RawParseUtils;
 
 @Controller
 public class EtherApi
@@ -71,7 +69,7 @@ public class EtherApi
     @RequestMapping(value = "/api/ether/{start}/{count}", method = RequestMethod.GET)
     @ResponseBody
     public GenericResponse
-    getEhterBlocks(Map<String, Object> model, HttpSession session,
+    getEhterBlocks(HttpSession session,
             @PathVariable(value = "start") String start,
             @PathVariable(value = "count") String count)
     {
@@ -80,16 +78,33 @@ public class EtherApi
         return result;
     }
 
-    @RequestMapping(value = "/api/create-wallet",
-        consumes = "application/json", method = RequestMethod.POST)
-    @JsonIgnoreProperties(ignoreUnknown = true)
+    @RequestMapping(value = "/api/tudo/trans-from/{account}/{count}",
+            method = RequestMethod.GET)
     @ResponseBody
-    public GenericResponse createWallet(@RequestBody UserEmailForm emails)
-    {
-        for (String s : emails.getEmails()) {
-            System.out.println("Email " + s);
-        }
-        return new GenericResponse("email list");
+    public GenericResponse
+    getEtherTransactionFrom(HttpSession session,
+            @PathVariable(value = "account") String account,
+            @PathVariable(value = "count") String count) {
+        return getEtherTransaction(account, count, true);
     }
 
+    @RequestMapping(value = "/api/tudo/trans-to/{account}/{count}",
+            method = RequestMethod.GET)
+    @ResponseBody
+    public GenericResponse
+    getEtherTransactionTo(HttpSession session,
+            @PathVariable(value = "account") String account,
+            @PathVariable(value = "count") String count) {
+        return getEtherTransaction(account, count, false);
+    }
+
+    protected GenericResponse
+    getEtherTransaction(String account, String count, boolean from)
+    {
+        if (account == null) {
+            return new GenericResponse("Missing account number");
+        }
+        int cnt = RawParseUtils.parseNumber(count, 1, 1000);
+        return new TransListDTO(etherTrans.getTransactionAcct(account, 0, cnt, from));
+    }
 }

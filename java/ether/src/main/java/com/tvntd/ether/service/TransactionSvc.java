@@ -35,14 +35,20 @@ import org.ethereum.jsonrpc.JsonRpc.BlockResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tvntd.ether.api.ITransactionSvc;
+import com.tvntd.ether.dao.TransactionRepo;
 import com.tvntd.ether.dto.EtherBlockDTO;
 import com.tvntd.ether.dto.EtherBlockDTO.EtherBlockResult;
 import com.tvntd.ether.dto.PublicAccountDTO;
 import com.tvntd.ether.dto.TransactionDTO;
+import com.tvntd.ether.models.Transaction;
 import com.tvntd.ether.rpc.JsonRpc;
 
 @Service
@@ -57,6 +63,9 @@ public class TransactionSvc implements ITransactionSvc
 
     @Autowired
     protected PublicAccount pubAccounts;
+
+    @Autowired
+    protected TransactionRepo transRepo;
 
     static class BlockRange
     {
@@ -76,28 +85,59 @@ public class TransactionSvc implements ITransactionSvc
         cacheRange = new LinkedList<>();
     }
 
-    public TransactionDTO getTransaction(String txHash)
-    {
-        return null;
+    public TransactionDTO getTransaction(String txHash) {
+        return new TransactionDTO(transRepo.findByTxHash(txHash));
     }
 
-    public List<TransactionDTO> getTransaction(String userUuid, boolean from)
+    public List<TransactionDTO>
+    getTransaction(String userUuid, int start, int count, boolean from)
     {
-        return null;
+        Sort sort = new Sort(new Sort.Order(Direction.ASC, "created"));
+        Pageable pageable = new PageRequest(start, start + count, sort);
+
+        if (from == true) {
+            return transToDTO(transRepo.findAllByFromUuid(pageable, userUuid));
+        }
+        return transToDTO(transRepo.findAllByToUuid(pageable, userUuid));
     }
 
-    public List<TransactionDTO> getTransactionAcct(String account, boolean from)
+    public List<TransactionDTO>
+    getTransactionAcct(String account, int start, int count, boolean from)
     {
-        return null;
+        Sort sort = new Sort(new Sort.Order(Direction.ASC, "created"));
+        Pageable pageable = new PageRequest(start, start + count, sort);
+
+        if (from == true) {
+            return transToDTO(transRepo.findAllByFromAcct(pageable, account));
+        }
+        return transToDTO(transRepo.findAllByToAcct(pageable, account));
     }
 
-    public List<TransactionDTO> getAllTransaction()
-    {
-        return null;
+    public List<TransactionDTO> getAllTransaction() {
+        return transToDTO(transRepo.findAll());
     }
 
-    public PublicAccountDTO getPublicAccount()
+    public List<TransactionDTO> getRecentTransaction(int start, int count)
     {
+        Sort sort = new Sort(new Sort.Order(Direction.ASC, "created"));
+        Pageable pageable = new PageRequest(start, start + count, sort);
+
+        return transToDTO(transRepo.findAllByOrderByCreatedAsc(pageable));
+    }
+
+    protected List<TransactionDTO> transToDTO(List<Transaction> trans)
+    {
+        List<TransactionDTO> out = new LinkedList<>();
+
+        if (trans != null) {
+            for (Transaction t : trans) {
+                out.add(new TransactionDTO(t));
+            }
+        }
+        return out;
+    }
+
+    public PublicAccountDTO getPublicAccount() {
         return pubAccounts.getPublicAccount();
     }
 

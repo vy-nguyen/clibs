@@ -24,23 +24,65 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.ether.forms;
+package com.tvntd.ether.models;
 
-public class UserEmailForm
+import java.io.UnsupportedEncodingException;
+import java.util.UUID;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "wallet")
+public class Wallet
 {
-    private String[] emails;
+    @Id
+    @Column(length = 64, name = "wallet_uuid")
+    protected String walletUuid;
 
-    /**
-     * @return the emails
-     */
-    public String[] getEmails() {
-        return emails;
+    @Column(length = 64, name = "owner_uuid")
+    protected String ownerUuid;
+
+    @Column(length = 64, name = "name")
+    protected byte[] name;
+
+    public Wallet() {}
+    public Wallet(String ownerUuid, String name)
+    {
+        try {
+            this.name = name.getBytes("UTF-8");
+        } catch(UnsupportedEncodingException e) {}
+
+        this.ownerUuid = ownerUuid;
+        this.walletUuid = UUID.randomUUID().toString();
     }
 
     /**
-     * @param emails the emails to set
+     * @return the walletUuid
      */
-    public void setEmails(String[] emails) {
-        this.emails = emails;
+    public String getWalletUuid() {
+        return walletUuid;
+    }
+
+    /**
+     * @return the ownerUuid
+     */
+    public String getOwnerUuid() {
+        return ownerUuid;
+    }
+
+    /**
+     * @return the name
+     */
+    public String getName()
+    {
+        if (name != null) {
+            try {
+                return new String(name, "UTF-8");
+            } catch(UnsupportedEncodingException e) {}
+        }
+        return "";
     }
 }

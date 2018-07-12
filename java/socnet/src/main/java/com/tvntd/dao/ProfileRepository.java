@@ -40,6 +40,7 @@ public interface ProfileRepository extends JpaRepository<Profile, Long>
 
     Profile findByUserUuid(String uuid);
     List<Profile> findByUserUuid(List<String> uuids);
+    List<Profile> findByEmailIn(List<String> emails);
 
     Page<Profile> findAll(Pageable pageble);
 

@@ -1,6 +1,16 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+    }
+}
+
 apply from: rootProject.file('common.gradle')
-apply plugin: 'java'
-apply plugin: 'eclipse-wtp'
+apply plugin: 'idea'
+apply plugin: 'application'
+
+startScripts.enabled = false
 
 ext {
     implTitle  = "Common Java Library"
@@ -39,10 +49,7 @@ test {
     systemProperties 'TESTDATA': "${projectDir}/src/test/data"
 }
 
-eclipse {
-    wtp {
-        component {
-            contextPath = '/'
-        }
-    }
+task getDeps(type: Copy) {
+    from configurations.testRuntime
+    into "${rootProject.projectDir}/ether/build/libs"
 }

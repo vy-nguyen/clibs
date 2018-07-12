@@ -26,20 +26,32 @@
  */
 package com.tvntd.util;
 
-public interface Constants
-{
-    String DefaultTag   = "My Post";
-    String DefaultTopic = "Post";
-    String PublicUuid   = "00000000-ffff-0000-ffff-00ff00ff00ff";
+import java.io.UnsupportedEncodingException;
 
-    Long PublicId      = 1L; 
-    Long Role_Public   = 0x0000L;
-    Long Role_Circle1  = 0x0001L;
-    Long Role_Circle2  = 0x0002L | Role_Circle1;
-    Long Role_Circle3  = 0x0004L | Role_Circle2;
-    Long Role_Circle4  = 0x0008L | Role_Circle3;
-    Long Role_User     = 0x1000L;
-    Long Role_Admin    = 0x2000L;
-    Long Role_Dba      = 0x4000L;
-    Long Role_Banker   = 0x8000L;
+public class Constants
+{
+    public static String DefaultTag   = "My Post";
+    public static String DefaultTopic = "Post";
+    public static String PublicUuid   = "00000000-ffff-0000-ffff-00ff00ff00ff";
+
+    public static Long PublicId      = 1L; 
+    public static Long Role_Public   = 0x0000L;
+    public static Long Role_Circle1  = 0x0001L;
+    public static Long Role_Circle2  = 0x0002L | Role_Circle1;
+    public static Long Role_Circle3  = 0x0004L | Role_Circle2;
+    public static Long Role_Circle4  = 0x0008L | Role_Circle3;
+    public static Long Role_User     = 0x1000L;
+    public static Long Role_Admin    = 0x2000L;
+    public static Long Role_Dba      = 0x4000L;
+    public static Long Role_Banker   = 0x8000L;
+
+    public static byte[] TudoAcct;
+    public static byte[] EquityAcct;
+
+    static {
+        try {
+            TudoAcct    = "Tự Do".getBytes("UTF-8");
+            EquityAcct  = "Equity".getBytes("UTF-8");
+        } catch(UnsupportedEncodingException e) {}
+    }
 }

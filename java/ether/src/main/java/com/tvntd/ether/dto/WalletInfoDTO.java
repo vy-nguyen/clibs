@@ -26,9 +26,16 @@
  */
 package com.tvntd.ether.dto;
 
+import java.util.List;
+
+import com.tvntd.ether.api.IAccountSvc.AccountDTO;
+
 public class WalletInfoDTO extends GenericResponse
 {
+    protected List<AccountDTO> accountInfo;
+
     public WalletInfoDTO(String text) {
         super(text);
     }
+
 }

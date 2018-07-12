@@ -69,6 +69,8 @@ public interface IProfileService
     public void deleteProfile(Long userId);
     public void deleteProfile(String userUuid);
 
+    public List<Profile> getUsersByEmail(List<String> email);
+
     /*
      * Transfer profile to front-end.
      */

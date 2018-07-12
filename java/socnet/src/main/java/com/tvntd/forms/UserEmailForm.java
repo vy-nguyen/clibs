@@ -24,27 +24,23 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.ether.api;
+package com.tvntd.forms;
 
-import java.util.List;
-
-import com.tvntd.ether.dto.EtherBlockDTO;
-import com.tvntd.ether.dto.PublicAccountDTO;
-import com.tvntd.ether.dto.TransactionDTO;
-
-public interface ITransactionSvc
+public class UserEmailForm
 {
-    TransactionDTO getTransaction(String txHash);
+    private String[] emails;
 
-    List<TransactionDTO> getTransaction(String userUuid,
-            int start, int count, boolean from);
+    /**
+     * @return the emails
+     */
+    public String[] getEmails() {
+        return emails;
+    }
 
-    List<TransactionDTO> getTransactionAcct(String account,
-            int start, int count, boolean from);
-
-    List<TransactionDTO> getRecentTransaction(int start, int count);
-    List<TransactionDTO> getAllTransaction();
-
-    PublicAccountDTO getPublicAccount();
-    void getEtherBlocks(EtherBlockDTO blocks);
+    /**
+     * @param emails the emails to set
+     */
+    public void setEmails(String[] emails) {
+        this.emails = emails;
+    }
 }

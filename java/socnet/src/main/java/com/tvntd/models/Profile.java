@@ -47,7 +47,10 @@ import com.tvntd.lib.ObjectId;
 import com.tvntd.util.Constants;
 
 @Entity
-@Table(indexes = {@Index(columnList = "userUuid", unique = true)})
+@Table(indexes = {
+    @Index(columnList = "userUuid", unique = true),
+    @Index(columnList = "email", unique = true)
+})
 public class Profile
 {
     @Id

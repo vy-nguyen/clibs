@@ -28,7 +28,9 @@ package com.tvntd.web;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -42,6 +44,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -52,10 +55,13 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.mongodb.Mongo;
+import com.tvntd.ether.api.IAccountSvc;
 import com.tvntd.ether.api.ITransactionSvc;
+import com.tvntd.ether.dto.WalletInfoDTO;
 import com.tvntd.forms.UserConnectionForm;
+import com.tvntd.forms.UserEmailForm;
 import com.tvntd.lib.ObjectId;
+import com.tvntd.models.Profile;
 import com.tvntd.models.User;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.GenericResponse;
@@ -72,6 +78,8 @@ import com.tvntd.service.api.IUserNotifService;
 import com.tvntd.service.api.StartupResponse;
 import com.tvntd.service.api.UserConnectionChange;
 import com.tvntd.service.api.UserNotifResponse;
+import com.tvntd.service.api.WalletResponse;
+import com.tvntd.util.Constants;
 
 @Controller
 public class ApiPath
@@ -95,9 +103,6 @@ public class ApiPath
     protected IDomainService domainSvc;
 
     @Autowired
-    protected Mongo mongo;
-
-    @Autowired
     protected CommonsMultipartResolver multipartResolver;
 
     @Autowired
@@ -108,6 +113,9 @@ public class ApiPath
 
     @Autowired
     protected ITransactionSvc etherSvc;
+
+    @Autowired
+    protected IAccountSvc acctSvc;
 
     /**
      * Handle Api REST calls.
@@ -257,5 +265,31 @@ public class ApiPath
             form.setConnect(null);
         }
         return new UserConnectionChange(form);
+    }
+
+    @RequestMapping(value = "/api/create-wallet",
+        consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public GenericResponse createWallet(@RequestBody UserEmailForm emails)
+    {
+        List<WalletInfoDTO> wallets = new LinkedList<>();
+        List<Profile> profile = profileSvc
+            .getUsersByEmail(Arrays.asList(emails.getEmails()));
+
+        for (Profile p : profile) {
+            WalletInfoDTO wallet = acctSvc.createWallet(p.getFirstName(),
+                        Constants.TudoAcct, null, p.getUserUuid());
+            wallets.add(wallet);
+        }
+        return new WalletResponse(wallets);
+    }
+
+    @RequestMapping(value = "/user/tudo/wallet/{useUuid}", method = RequestMethod.GET)
+    @ResponseBody
+    public GenericResponse getWallet(HttpSession session,
+            @PathVariable(value = "userUuid") String userUuid)
+    {
+        return new WalletResponse(acctSvc.getWallet(userUuid));
     }
 }

@@ -34,18 +34,50 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 
 import com.tvntd.ether.api.IAccountSvc;
+import com.tvntd.ether.dto.AccountInfoDTO;
+import com.tvntd.ether.dto.WalletInfoDTO;
+import com.tvntd.ether.models.Transaction;
 
 @Service
 @Transactional
 @EnableCaching
 public class AccountSvc implements IAccountSvc
 {
-    public AccountDTO getAccount(String account)
+    public AccountDTO getAccount(String ownerUuid, String account)
     {
         return null;
     }
 
     public List<AccountDTO> getAccountsIn(List<String> accounts)
+    {
+        return null;
+    }
+
+    public WalletInfoDTO
+    createWallet(byte[] walletName, byte[] acctName,
+            String walletUuid, String ownerUuid)
+    {
+        return null;
+    }
+
+    public WalletInfoDTO
+    createAccount(String walletUuid, String ownerUuid, byte[] acctName)
+    {
+        return null;
+    }
+
+    public List<WalletInfoDTO> getWallet(String ownerUuid)
+    {
+        return null;
+    }
+
+    public Transaction fundAccount(AccountInfoDTO account)
+    {
+        return null;
+    }
+
+    public Transaction payAccount(String ownerUuid, String toUuid,
+            String fromAccount, String toAccount, Long xuAmount, String text)
     {
         return null;
     }

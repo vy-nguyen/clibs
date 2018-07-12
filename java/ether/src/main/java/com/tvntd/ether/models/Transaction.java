@@ -26,11 +26,15 @@
  */
 package com.tvntd.ether.models;
 
+import java.sql.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "transaction",
@@ -58,6 +62,10 @@ public class Transaction
 
     @Column(length = 64, name = "to_acct")
     protected String toAcct;
+
+    @Column(name = "created")
+    @CreationTimestamp
+    protected Date created;
 
     /**
      * @return the txHash
