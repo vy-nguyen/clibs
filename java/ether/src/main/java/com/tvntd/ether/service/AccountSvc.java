@@ -35,8 +35,8 @@ import org.springframework.stereotype.Service;
 
 import com.tvntd.ether.api.IAccountSvc;
 import com.tvntd.ether.dto.AccountInfoDTO;
+import com.tvntd.ether.dto.TransactionDTO;
 import com.tvntd.ether.dto.WalletInfoDTO;
-import com.tvntd.ether.models.Transaction;
 
 @Service
 @Transactional
@@ -71,12 +71,12 @@ public class AccountSvc implements IAccountSvc
         return null;
     }
 
-    public Transaction fundAccount(AccountInfoDTO account)
+    public TransactionDTO fundAccount(AccountInfoDTO account)
     {
         return null;
     }
 
-    public Transaction payAccount(String ownerUuid, String toUuid,
+    public TransactionDTO payAccount(String ownerUuid, String toUuid,
             String fromAccount, String toAccount, Long xuAmount, String text)
     {
         return null;

@@ -44,7 +44,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -267,6 +266,9 @@ public class ApiPath
         return new UserConnectionChange(form);
     }
 
+    /**
+     * Note, disable this API in production
+     */
     @RequestMapping(value = "/api/create-wallet",
         consumes = "application/json", method = RequestMethod.POST)
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -283,13 +285,5 @@ public class ApiPath
             wallets.add(wallet);
         }
         return new WalletResponse(wallets);
-    }
-
-    @RequestMapping(value = "/user/tudo/wallet/{useUuid}", method = RequestMethod.GET)
-    @ResponseBody
-    public GenericResponse getWallet(HttpSession session,
-            @PathVariable(value = "userUuid") String userUuid)
-    {
-        return new WalletResponse(acctSvc.getWallet(userUuid));
     }
 }

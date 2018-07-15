@@ -28,6 +28,7 @@ package com.tvntd.ether.web;
 
 import javax.servlet.http.HttpSession;
 
+import org.ethereum.jsonrpc.JsonRpc.BlockResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,12 +61,18 @@ public class EtherApi
         return etherTrans.getPublicAccount();
     }
 
-    @RequestMapping(value = "/api/ether/num/{blkNo}", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/ether/blkhash/{blkHash}", method = RequestMethod.GET)
     @ResponseBody
-    public GenericResponse
-    getEtherBlockNo(@PathVariable(value = "blkNo") String hash)
-    {
-        return null;
+    public BlockResult
+    getEtherBlockHash(@PathVariable(value = "blkHash") String blkHash) {
+        return etherTrans.getBlockByHash(blkHash);
+    }
+
+    @RequestMapping(value = "/api/ether/blkno/{blkno}", method = RequestMethod.GET)
+    @ResponseBody
+    public BlockResult
+    getEtherBlockNo(@PathVariable(value = "blkno") String blkno) {
+        return etherTrans.getBlockByNumber(blkno);
     }
 
     @RequestMapping(value = "/api/ether/{start}/{count}", method = RequestMethod.GET)

@@ -26,13 +26,15 @@
  */
 package com.tvntd.lib;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class LRUCache<K, V> extends LinkedHashMap<K, V>
+public class LRUCache<K, I, V> extends LinkedHashMap<K, V>
 {
     static final long serialVersionUID = 123456789L;
-    private int cacheEntries;
+    protected int cacheEntries;
+    protected Map<I, V> cacheIndex;
 
     public LRUCache(int initSize, int maxSize)
     {
@@ -40,9 +42,61 @@ public class LRUCache<K, V> extends LinkedHashMap<K, V>
         this.cacheEntries = maxSize;
     }
 
+    public LRUCache<K, I, V> createIndex()
+    {
+        if (cacheIndex == null) {
+            cacheIndex = new HashMap<>();
+        }
+        return this;
+    }
+
     @Override
     protected boolean removeEldestEntry(Map.Entry<K, V> eldest)
     {
-        return size() >= cacheEntries;
+        boolean rm = (size() >= cacheEntries);
+
+        if (rm == true && cacheIndex != null) {
+            I idx = getIndexKey(eldest.getValue());
+            if (idx != null) {
+                cacheIndex.remove(idx);
+            }
+        }
+        return rm;
+    }
+
+    @Override
+    public V get(Object key)
+    {
+        synchronized(this) {
+            return super.get(key);
+        }
+    }
+
+    @Override
+    public V put(K key, V val)
+    {
+        synchronized(this) {
+            if (cacheIndex != null) {
+                I idx = getIndexKey(val);
+                if (idx != null) {
+                    cacheIndex.put(idx, val);
+                }
+            }
+            return super.put(key, val);
+        }
+    }
+
+    public V getIndex(Object index)
+    {
+        if (cacheIndex != null) {
+            synchronized(this) {
+                return cacheIndex.get(index);
+            }
+        }
+        return null;
+    }
+
+    public I getIndexKey(V val) {
+        return null;
     }
 }

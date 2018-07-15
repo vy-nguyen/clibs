@@ -58,8 +58,8 @@ import com.tvntd.dao.AuthorTagRepo.AuthorTagDTO;
 import com.tvntd.dao.AuthorTagRepo.AuthorTagRespDTO;
 import com.tvntd.ether.api.IAccountSvc;
 import com.tvntd.ether.api.ITransactionSvc;
-import com.tvntd.ether.dto.EtherTransDTO;
 import com.tvntd.ether.dto.TransactionDTO;
+import com.tvntd.ether.dto.TransactionDTO.TransListDTO;
 import com.tvntd.ether.dto.WalletInfoDTO;
 import com.tvntd.ether.models.Transaction;
 import com.tvntd.forms.ArticleForm;
@@ -985,6 +985,9 @@ public class UserPath
         return questSvc.getQuestion(form);
     }
 
+    /**
+     * User Wallet and Accounts
+     */
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @RequestMapping(value = "/user/tudo/create/{walletUuid}/{name}",
             method = RequestMethod.GET)
@@ -1037,31 +1040,53 @@ public class UserPath
         if (!ownerUuid.equals(pay.getOwnerUuid())) {
             return s_badInput;
         }
-        Transaction tx = acctSvc.payAccount(ownerUuid, pay.getToUuid(),
+        TransactionDTO tx = acctSvc.payAccount(ownerUuid, pay.getToUuid(),
                 pay.getFromAccount(), pay.getToAccount(),
                 pay.getXuAmount(), pay.getText());
 
         if (tx != null) {
-            return new TransactionDTO(tx, null);
+            return tx;
         }
         return new GenericResponse("Failed to submit transaction");
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
-    @RequestMapping(value = "/user/tudo/transaction/{from}/{count}",
+    @RequestMapping(value = "/user/tudo/trans-from/{start}/{count}",
             method = RequestMethod.GET)
     @ResponseBody
     public Object getEtherTransaction(HttpSession session,
-            @PathVariable(value = "pay") String from,
+            @PathVariable(value = "start") String start,
             @PathVariable(value = "count") String count)
     {
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
         if (profile == null) {
             return s_noProfile;
         }
-        int cnt = RawParseUtils.parseNumber(count, 0, 1000);
-        boolean payFrom = from.equals("from") ? true : false;
-        return new EtherTransDTO("trans", 
-                transSvc.getTransaction(profile.getUserUuid(), 0, cnt, payFrom));
+        return getEtherTransaction(profile, true, start, count);
+    }
+
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @RequestMapping(value = "/user/tudo/trans-to/{start}/{count}",
+            method = RequestMethod.GET)
+    @ResponseBody
+    public Object getEtherTransactionTo(HttpSession session,
+            @PathVariable(value = "start") String start,
+            @PathVariable(value = "count") String count)
+    {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
+        return getEtherTransaction(profile, false, start, count);
+    }
+
+    protected TransListDTO
+    getEtherTransaction(ProfileDTO profile, boolean from, String start, String count)
+    {
+        int beg = RawParseUtils.parseNumber(start, 0, Integer.MAX_VALUE);
+        int cnt = RawParseUtils.parseNumber(count, 1, 1000);
+
+        return new TransListDTO(transSvc
+                .getTransactionAcct(profile.getUserUuid(), beg, cnt, from));
     }
 }

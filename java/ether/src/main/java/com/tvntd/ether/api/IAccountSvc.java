@@ -29,8 +29,8 @@ package com.tvntd.ether.api;
 import java.util.List;
 
 import com.tvntd.ether.dto.AccountInfoDTO;
+import com.tvntd.ether.dto.TransactionDTO;
 import com.tvntd.ether.dto.WalletInfoDTO;
-import com.tvntd.ether.models.Transaction;
 
 public interface IAccountSvc
 {
@@ -41,8 +41,8 @@ public interface IAccountSvc
             String walletUuid, String ownerUuid);
 
     List<WalletInfoDTO> getWallet(String ownerUuid);
-    Transaction fundAccount(AccountInfoDTO account);
-    Transaction payAccount(String ownerUuid, String toUuid,
+    TransactionDTO fundAccount(AccountInfoDTO account);
+    TransactionDTO payAccount(String ownerUuid, String toUuid,
             String fromAccount, String toAccount, Long xuAmount, String text);
 
     public static class AccountDTO
@@ -50,7 +50,7 @@ public interface IAccountSvc
         protected String ownerUuid;
         protected String walletUuid;
         protected AccountInfoDTO account;
-        protected List<Transaction> recentTrans;
+        protected List<TransactionDTO> recentTrans;
 
         public AccountDTO() {}
         public AccountDTO(String ownerUuid, String walletUuid)
@@ -78,6 +78,20 @@ public interface IAccountSvc
          */
         public AccountInfoDTO getAccount() {
             return account;
+        }
+
+        /**
+         * @return the recentTrans
+         */
+        public List<TransactionDTO> getRecentTrans() {
+            return recentTrans;
+        }
+
+        /**
+         * @param recentTrans the recentTrans to set
+         */
+        public void setRecentTrans(List<TransactionDTO> recentTrans) {
+            this.recentTrans = recentTrans;
         }
     }
 }

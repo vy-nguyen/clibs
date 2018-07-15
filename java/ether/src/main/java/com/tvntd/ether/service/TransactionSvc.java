@@ -46,6 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tvntd.ether.api.ITransactionSvc;
 import com.tvntd.ether.dao.TransactionRepo;
 import com.tvntd.ether.dto.EtherBlockDTO;
+import com.tvntd.ether.dto.EtherBlockDTO.EtherBlock;
 import com.tvntd.ether.dto.EtherBlockDTO.EtherBlockResult;
 import com.tvntd.ether.dto.EtherTransDTO.EtherTransResult;
 import com.tvntd.ether.dto.PublicAccountDTO;
@@ -53,6 +54,7 @@ import com.tvntd.ether.dto.TransactionDTO;
 import com.tvntd.ether.models.Transaction;
 import com.tvntd.ether.rpc.JsonRpc;
 import com.tvntd.lib.LRUCache;
+import com.tvntd.lib.RawParseUtils;
 
 @Service
 @Transactional
@@ -62,9 +64,31 @@ public class TransactionSvc implements ITransactionSvc
     static int maxBlockCached = 10000;
     static int maxTransCached = 30000;
 
+    static class BlockLRU extends LRUCache<Long, String, BlockResult>
+    {
+        static final long serialVersionUID = 123456789L;
+
+        public BlockLRU(int initSize, int maxSize) {
+            super(initSize, maxSize);
+        }
+
+        @Override
+        public String getIndexKey(BlockResult blk) {
+            return blk.hash;
+        }
+    }
+
+    static BlockLRU s_cacheBlock;
+    static LRUCache<String, String, TransactionDTO> s_cacheTrans;
+
     protected LinkedList<BlockRange> cacheRange;
     protected Map<Long, BlockResult> cacheBlocks;
-    protected LRUCache<String, TransactionDTO> cacheTrans;
+
+    static {
+        s_cacheTrans = new LRUCache<>(1000, maxTransCached);
+        s_cacheBlock = new BlockLRU(1000, maxBlockCached);
+        s_cacheBlock.createIndex();
+    }
 
     @Autowired
     protected PublicAccount pubAccounts;
@@ -88,16 +112,13 @@ public class TransactionSvc implements ITransactionSvc
     {
         cacheBlocks = new HashMap<>();
         cacheRange = new LinkedList<>();
-        cacheTrans = new LRUCache<>(1000, maxTransCached);
     }
 
     public TransactionDTO getTransaction(String txHash)
     {
-        synchronized(cacheTrans) {
-            TransactionDTO tx = cacheTrans.get(txHash);
-            if (tx != null) {
-                return tx;
-            }
+        TransactionDTO tx = s_cacheTrans.get(txHash);
+        if (tx != null) {
+            return tx;
         }
         JsonRpc rpc = new JsonRpc();
         List<String> transHash = new LinkedList<>();
@@ -109,17 +130,64 @@ public class TransactionSvc implements ITransactionSvc
         List<TransactionResultDTO> out = resp.fetchTrans();
         if (out != null) {
             Transaction t = transRepo.findByTxHash(txHash);
-            for (TransactionResultDTO tx : out) {
-                TransactionDTO dto = new TransactionDTO(t, tx);
-                synchronized(cacheTrans) {
-                    cacheTrans.put(tx.hash, dto);
-                }
+            for (TransactionResultDTO curTx : out) {
+                TransactionDTO dto = new TransactionDTO(t, curTx);
+                s_cacheTrans.put(curTx.hash, dto);
                 return dto;
             }
         }
         return null;
     }
 
+    /**
+     * Return a block by hash number.
+     */
+    public BlockResult getBlockByHash(String hash)
+    {
+        BlockResult res = s_cacheBlock.getIndex(hash);
+        if (res != null) {
+            return res;
+        }
+        JsonRpc rpc = new JsonRpc();
+        EtherBlock resp = rpc.<EtherBlock> callJsonRpcArg(
+                EtherBlock.class, "eth_getBlockByHash", "id", hash, new Boolean(true));
+
+        if (resp != null) {
+            res = resp.getResult();
+            if (res != null) {
+                s_cacheBlock.put(RawParseUtils.parseLong(res.number), res);
+            }
+            return res;
+        }
+        return null;
+    }
+
+    /**
+     * Return a block by block number.
+     */
+    public BlockResult getBlockByNumber(String number)
+    {
+        BlockResult res = s_cacheBlock.get(RawParseUtils.parseLong(number));
+        if (res != null) {
+            return res;
+        }
+        JsonRpc rpc = new JsonRpc();
+        EtherBlock resp = rpc.<EtherBlock> callJsonRpcArg(EtherBlock.class,
+                "eth_getBlockByNumber", "id", number, new Boolean(true));
+
+        if (resp != null) {
+            res = resp.getResult();
+            if (res != null) {
+                s_cacheBlock.put(RawParseUtils.parseLong(res.number), res);
+            }
+            return res;
+        }
+        return null;
+    }
+
+    /**
+     * Get transactions for an user uuid.
+     */
     public List<TransactionDTO>
     getTransaction(String userUuid, int start, int count, boolean from)
     {
@@ -132,6 +200,9 @@ public class TransactionSvc implements ITransactionSvc
         return transToDTO(transRepo.findAllByToUuid(pageable, userUuid));
     }
 
+    /**
+     * Get transaction for an account key.
+     */
     public List<TransactionDTO>
     getTransactionAcct(String account, int start, int count, boolean from)
     {
@@ -144,10 +215,16 @@ public class TransactionSvc implements ITransactionSvc
         return transToDTO(transRepo.findAllByToAcct(pageable, account));
     }
 
+    /**
+     * Return all transactions recorded.
+     */
     public List<TransactionDTO> getAllTransaction() {
         return transToDTO(transRepo.findAll());
     }
 
+    /**
+     * Return the list of recent transaction.
+     */
     public List<TransactionDTO> getRecentTransaction(int start, int count)
     {
         Sort sort = new Sort(new Sort.Order(Direction.ASC, "created"));
@@ -162,20 +239,18 @@ public class TransactionSvc implements ITransactionSvc
         Map<String, Transaction> missing = new HashMap<>();
 
         if (trans != null) {
-            synchronized(cacheTrans) {
-                for (Transaction t : trans) {
-                    String h = t.getTxHash();
-                    TransactionDTO tx = cacheTrans.get(h);
-                    if (tx != null) {
-                        out.add(tx);
-                    } else {
-                        missing.put(h, t);
-                    }
+            for (Transaction t : trans) {
+                String h = t.getTxHash();
+                TransactionDTO tx = s_cacheTrans.get(h);
+                if (tx != null) {
+                    out.add(tx);
+                } else {
+                    missing.put(h, t);
                 }
             }
         }
         if (!missing.isEmpty()) {
-            cacheTransactionResult(missing, out);
+            s_cacheTransactionResult(missing, out);
         }
         missing.clear();
         return out;
@@ -185,7 +260,7 @@ public class TransactionSvc implements ITransactionSvc
      * Cache transaction result from blockchain.
      */
     protected void
-    cacheTransactionResult(Map<String, Transaction> miss, List<TransactionDTO> result)
+    s_cacheTransactionResult(Map<String, Transaction> miss, List<TransactionDTO> result)
     {
         JsonRpc rpc = new JsonRpc();
         List<String> transHash = new LinkedList<>();
@@ -197,17 +272,15 @@ public class TransactionSvc implements ITransactionSvc
             callJsonRpcArr(EtherTransResult.class, "tudo_listTrans", "id", transHash);
 
         List<TransactionResultDTO> out = resp.fetchTrans();
-        synchronized(cacheTrans) {
-            for (TransactionResultDTO tx : out) {
-                Transaction t = miss.get(tx.hash);
-                if (t == null) {
-                    s_log.warn("Receive invalid hash " + tx.hash);
-                    continue;
-                }
-                TransactionDTO txDto = new TransactionDTO(t, tx);
-                result.add(txDto);
-                cacheTrans.put(tx.hash, txDto);
+        for (TransactionResultDTO tx : out) {
+            Transaction t = miss.get(tx.hash);
+            if (t == null) {
+                s_log.warn("Receive invalid hash " + tx.hash);
+                continue;
             }
+            TransactionDTO txDto = new TransactionDTO(t, tx);
+            result.add(txDto);
+            s_cacheTrans.put(tx.hash, txDto);
         }
     }
 
@@ -256,13 +329,13 @@ public class TransactionSvc implements ITransactionSvc
                 "tudo_listBlocks", "id", params);
 
         if (out != null && out.getError() == null) {
-            cacheBlockResult(out, startBlk, num);
+            s_cacheBlockResult(out, startBlk, num);
             result = out.blockResult();
         }
         return result;
     }
 
-    void cacheBlockResult(EtherBlockResult result, Long startBlk, Integer num)
+    void s_cacheBlockResult(EtherBlockResult result, Long startBlk, Integer num)
     {
         BlockRange range = new BlockRange(startBlk, num);
 
