@@ -29,6 +29,10 @@ package com.tvntd.ether.dto;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.ethereum.jsonrpc.TransactionResultDTO;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.tvntd.ether.api.EtherRpcApi.RpcResponse;
 import com.tvntd.ether.models.Transaction;
 
 public class EtherTransDTO extends GenericResponse
@@ -45,12 +49,11 @@ public class EtherTransDTO extends GenericResponse
         this.transactions = trans;
     }
 
-
     public EtherTransDTO(Transaction tx)
     {
         super("trans");
         transactions = new LinkedList<>();
-        transactions.add(new TransactionDTO(tx));
+        transactions.add(new TransactionDTO(tx, null));
     }
 
     public void addTransaction(Transaction t)
@@ -58,7 +61,7 @@ public class EtherTransDTO extends GenericResponse
         if (transactions == null) {
             transactions = new LinkedList<>();
         }
-        transactions.add(new TransactionDTO(t));
+        transactions.add(new TransactionDTO(t, null));
     }
 
     /**
@@ -73,5 +76,34 @@ public class EtherTransDTO extends GenericResponse
      */
     public void setTransactions(List<TransactionDTO> transactions) {
         this.transactions = transactions;
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class EtherTransResult extends RpcResponse
+    {
+        protected Result result;
+
+        /**
+         * @return the result
+         */
+        public Result getResult() {
+            return result;
+        }
+
+        public List<TransactionResultDTO> fetchTrans() {
+            return result.getTrans();
+        }
+
+        static class Result
+        {
+            protected List<TransactionResultDTO> trans;
+
+            /**
+             * @return the trans
+             */
+            public List<TransactionResultDTO> getTrans() {
+                return trans;
+            }
+        }
     }
 }

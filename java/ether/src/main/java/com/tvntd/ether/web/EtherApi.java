@@ -26,10 +26,6 @@
  */
 package com.tvntd.ether.web;
 
-import java.util.Locale;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
@@ -45,6 +41,7 @@ import com.tvntd.ether.api.ITransactionSvc;
 import com.tvntd.ether.dto.EtherBlockDTO;
 import com.tvntd.ether.dto.GenericResponse;
 import com.tvntd.ether.dto.PublicAccountDTO;
+import com.tvntd.ether.dto.TransactionDTO;
 import com.tvntd.ether.dto.TransactionDTO.TransListDTO;
 import com.tvntd.lib.RawParseUtils;
 
@@ -59,11 +56,16 @@ public class EtherApi
     @RequestMapping(value = "/api/ether", method = RequestMethod.GET)
     @ResponseBody
     public PublicAccountDTO
-    getEtherStartup(Locale locale, HttpSession session,
-            HttpServletRequest reqt, HttpServletResponse resp)
+    getEtherStartup(HttpSession session) {
+        return etherTrans.getPublicAccount();
+    }
+
+    @RequestMapping(value = "/api/ether/num/{blkNo}", method = RequestMethod.GET)
+    @ResponseBody
+    public GenericResponse
+    getEtherBlockNo(@PathVariable(value = "blkNo") String hash)
     {
-        PublicAccountDTO acct = etherTrans.getPublicAccount();
-        return acct;
+        return null;
     }
 
     @RequestMapping(value = "/api/ether/{start}/{count}", method = RequestMethod.GET)
@@ -78,33 +80,57 @@ public class EtherApi
         return result;
     }
 
-    @RequestMapping(value = "/api/tudo/trans-from/{account}/{count}",
+    @RequestMapping(value = "/api/tudo/trans-from/{account}/{start}/{count}",
             method = RequestMethod.GET)
     @ResponseBody
     public GenericResponse
-    getEtherTransactionFrom(HttpSession session,
+    getEtherTransactionFrom(
             @PathVariable(value = "account") String account,
+            @PathVariable(value = "start") String start,
             @PathVariable(value = "count") String count) {
-        return getEtherTransaction(account, count, true);
+        return getEtherTransaction(account, start, count, true);
     }
 
-    @RequestMapping(value = "/api/tudo/trans-to/{account}/{count}",
+    @RequestMapping(value = "/api/tudo/trans-to/{account}/{start}/{count}",
             method = RequestMethod.GET)
     @ResponseBody
     public GenericResponse
     getEtherTransactionTo(HttpSession session,
             @PathVariable(value = "account") String account,
+            @PathVariable(value = "start") String start,
             @PathVariable(value = "count") String count) {
-        return getEtherTransaction(account, count, false);
+        return getEtherTransaction(account, start, count, false);
+    }
+
+    @RequestMapping(value = "/api/tudo/trans/{start}/{count}", method = RequestMethod.GET)
+    @ResponseBody
+    public GenericResponse
+    getEtherTransaction(HttpSession session,
+            @PathVariable(value = "start") String start,
+            @PathVariable(value = "count") String count)
+    {
+        int beg = RawParseUtils.parseNumber(start, 0, Integer.MAX_VALUE);
+        int cnt = RawParseUtils.parseNumber(count, 1, 1000);
+
+        return new TransListDTO(etherTrans.getRecentTransaction(beg, cnt));
+    }
+
+    @RequestMapping(value = "/api/tudo/tx-hash/{hash}", method = RequestMethod.GET)
+    @ResponseBody
+    public TransactionDTO
+    getEtherTransactionInfo(@PathVariable(value = "hash") String hash) {
+        return etherTrans.getTransaction(hash);
     }
 
     protected GenericResponse
-    getEtherTransaction(String account, String count, boolean from)
+    getEtherTransaction(String account, String start, String count, boolean from)
     {
         if (account == null) {
             return new GenericResponse("Missing account number");
         }
+        int beg = RawParseUtils.parseNumber(start, 0, Integer.MAX_VALUE);
         int cnt = RawParseUtils.parseNumber(count, 1, 1000);
-        return new TransListDTO(etherTrans.getTransactionAcct(account, 0, cnt, from));
+
+        return new TransListDTO(etherTrans.getTransactionAcct(account, beg, cnt, from));
     }
 }

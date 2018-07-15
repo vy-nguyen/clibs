@@ -180,8 +180,15 @@ public final class RawParseUtils
                 return max;
             }
             return num;
-        } catch(NumberFormatException e) {
-        }
+        } catch(NumberFormatException e) {}
         return min;
+    }
+
+    public static Long parseLong(String n)
+    {
+        try {
+            return Long.decode(n);
+        } catch(NumberFormatException e) {}
+        return 0L;
     }
 }

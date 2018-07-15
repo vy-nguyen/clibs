@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.ethereum.jsonrpc.JsonRpc.BlockResult;
+import org.ethereum.jsonrpc.TransactionResultDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,10 +47,12 @@ import com.tvntd.ether.api.ITransactionSvc;
 import com.tvntd.ether.dao.TransactionRepo;
 import com.tvntd.ether.dto.EtherBlockDTO;
 import com.tvntd.ether.dto.EtherBlockDTO.EtherBlockResult;
+import com.tvntd.ether.dto.EtherTransDTO.EtherTransResult;
 import com.tvntd.ether.dto.PublicAccountDTO;
 import com.tvntd.ether.dto.TransactionDTO;
 import com.tvntd.ether.models.Transaction;
 import com.tvntd.ether.rpc.JsonRpc;
+import com.tvntd.lib.LRUCache;
 
 @Service
 @Transactional
@@ -57,9 +60,11 @@ public class TransactionSvc implements ITransactionSvc
 {
     static Logger s_log = LoggerFactory.getLogger(TransactionSvc.class);
     static int maxBlockCached = 10000;
+    static int maxTransCached = 30000;
 
     protected LinkedList<BlockRange> cacheRange;
     protected Map<Long, BlockResult> cacheBlocks;
+    protected LRUCache<String, TransactionDTO> cacheTrans;
 
     @Autowired
     protected PublicAccount pubAccounts;
@@ -83,10 +88,36 @@ public class TransactionSvc implements ITransactionSvc
     {
         cacheBlocks = new HashMap<>();
         cacheRange = new LinkedList<>();
+        cacheTrans = new LRUCache<>(1000, maxTransCached);
     }
 
-    public TransactionDTO getTransaction(String txHash) {
-        return new TransactionDTO(transRepo.findByTxHash(txHash));
+    public TransactionDTO getTransaction(String txHash)
+    {
+        synchronized(cacheTrans) {
+            TransactionDTO tx = cacheTrans.get(txHash);
+            if (tx != null) {
+                return tx;
+            }
+        }
+        JsonRpc rpc = new JsonRpc();
+        List<String> transHash = new LinkedList<>();
+
+        transHash.add(txHash);
+        EtherTransResult resp = rpc.<EtherTransResult>
+            callJsonRpcArr(EtherTransResult.class, "tudo_listTrans", "id", transHash);
+
+        List<TransactionResultDTO> out = resp.fetchTrans();
+        if (out != null) {
+            Transaction t = transRepo.findByTxHash(txHash);
+            for (TransactionResultDTO tx : out) {
+                TransactionDTO dto = new TransactionDTO(t, tx);
+                synchronized(cacheTrans) {
+                    cacheTrans.put(tx.hash, dto);
+                }
+                return dto;
+            }
+        }
+        return null;
     }
 
     public List<TransactionDTO>
@@ -128,19 +159,68 @@ public class TransactionSvc implements ITransactionSvc
     protected List<TransactionDTO> transToDTO(List<Transaction> trans)
     {
         List<TransactionDTO> out = new LinkedList<>();
+        Map<String, Transaction> missing = new HashMap<>();
 
         if (trans != null) {
-            for (Transaction t : trans) {
-                out.add(new TransactionDTO(t));
+            synchronized(cacheTrans) {
+                for (Transaction t : trans) {
+                    String h = t.getTxHash();
+                    TransactionDTO tx = cacheTrans.get(h);
+                    if (tx != null) {
+                        out.add(tx);
+                    } else {
+                        missing.put(h, t);
+                    }
+                }
             }
         }
+        if (!missing.isEmpty()) {
+            cacheTransactionResult(missing, out);
+        }
+        missing.clear();
         return out;
     }
 
+    /**
+     * Cache transaction result from blockchain.
+     */
+    protected void
+    cacheTransactionResult(Map<String, Transaction> miss, List<TransactionDTO> result)
+    {
+        JsonRpc rpc = new JsonRpc();
+        List<String> transHash = new LinkedList<>();
+
+        for (Transaction t : miss.values()) {
+            transHash.add(t.getTxHash());
+        }
+        EtherTransResult resp = rpc.<EtherTransResult>
+            callJsonRpcArr(EtherTransResult.class, "tudo_listTrans", "id", transHash);
+
+        List<TransactionResultDTO> out = resp.fetchTrans();
+        synchronized(cacheTrans) {
+            for (TransactionResultDTO tx : out) {
+                Transaction t = miss.get(tx.hash);
+                if (t == null) {
+                    s_log.warn("Receive invalid hash " + tx.hash);
+                    continue;
+                }
+                TransactionDTO txDto = new TransactionDTO(t, tx);
+                result.add(txDto);
+                cacheTrans.put(tx.hash, txDto);
+            }
+        }
+    }
+
+    /**
+     * Retrieve info about public accounts.
+     */
     public PublicAccountDTO getPublicAccount() {
         return pubAccounts.getPublicAccount();
     }
 
+    /**
+     * Fill in Ethereum block data.
+     */
     public void getEtherBlocks(EtherBlockDTO blocks) {
         blocks.addBlockResult(
                 fetchBlocks(blocks.fetchStartBlock(), blocks.fetchCount()));

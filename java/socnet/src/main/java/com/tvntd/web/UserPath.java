@@ -1042,7 +1042,7 @@ public class UserPath
                 pay.getXuAmount(), pay.getText());
 
         if (tx != null) {
-            return new TransactionDTO(tx);
+            return new TransactionDTO(tx, null);
         }
         return new GenericResponse("Failed to submit transaction");
     }

@@ -63,6 +63,9 @@ public class Transaction
     @Column(length = 64, name = "to_acct")
     protected String toAcct;
 
+    @Column(name = "xu_amount")
+    protected Long xuAmount;
+
     @Column(name = "created")
     @CreationTimestamp
     protected Date created;
@@ -100,5 +103,12 @@ public class Transaction
      */
     public String getToAcct() {
         return toAcct;
+    }
+
+    /**
+     * @return the xuAmount
+     */
+    public Long getXuAmount() {
+        return xuAmount;
     }
 }
