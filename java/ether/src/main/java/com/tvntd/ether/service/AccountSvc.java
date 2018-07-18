@@ -26,8 +26,10 @@
  */
 package com.tvntd.ether.service;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
@@ -37,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 
+import com.tvntd.ether.api.EtherRpcApi.EtherAcctInfo;
 import com.tvntd.ether.api.IAccountSvc;
 import com.tvntd.ether.dao.AccountRepo;
 import com.tvntd.ether.dao.WalletRepo;
@@ -169,7 +172,39 @@ public class AccountSvc implements IAccountSvc
 
     public List<WalletInfoDTO> getWallet(String ownerUuid)
     {
-        return null;
+        List<String> accountNo = new LinkedList<>();
+        Map<String, WalletInfoDTO> wallets = new HashMap<>();
+        List<Wallet> raws = walletRepo.findByOwnerUuid(ownerUuid);
+
+        for (Wallet w : raws) {
+            String wid = w.getWalletUuid();
+            WalletInfoDTO dto = wallets.get(wid);
+
+            if (dto == null) {
+                dto = new WalletInfoDTO(w);
+                wallets.put(wid, dto);
+            }
+            accountNo.add(w.getAccount());
+            dto.addAccountInfo(new AccountDTO(wid, w.getAccount(), null));
+        }
+        if (!accountNo.isEmpty()) {
+            JsonRpc rpc = new JsonRpc();
+            EtherAcctInfo result = rpc.callJsonRpcArr(EtherAcctInfo.class,
+                    "tudo_listAccountInfo", "id", accountNo);
+
+            if (result.getError() == null) {
+                processAccountInfo(wallets, result.accountResult());
+            }
+        }
+        return new LinkedList<>(wallets.values());
+    }
+
+    protected void
+    processAccountInfo(Map<String, WalletInfoDTO> wallets, List<AccountInfoDTO> result)
+    {
+        for (AccountInfoDTO act : result) {
+            System.out.println("account " + act);
+        }
     }
 
     public TransactionDTO fundAccount(AccountInfoDTO account)

@@ -8,6 +8,7 @@ import moment            from 'moment';
 
 import Actions           from 'vntd-root/actions/Actions.jsx';
 import BaseStore         from 'vntd-root/stores/BaseStore.jsx';
+import UserStore         from 'vntd-shared/stores/UserStore.jsx';
 
 const TDRates = {
     HAO2TD: 100,
@@ -117,9 +118,16 @@ class EtherStoreClz extends Reflux.Store
     onStartupCompleted(data) {
         let pubAcct = data.publicAcct;
 
+        console.log("-------" + UserStore.isLogin());
+        console.log(data);
+
         this._updateStore(pubAcct.publicAcct);
         this._updateBlock([pubAcct.latestBlock]);
         this.trigger(this, this.state);
+
+        if (UserStore.isLogin()) {
+            Actions.getEtherWallet();
+        }
     }
 
     onEtherStartupCompleted(data) {

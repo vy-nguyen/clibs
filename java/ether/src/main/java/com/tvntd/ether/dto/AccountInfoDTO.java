@@ -55,6 +55,10 @@ public class AccountInfoDTO
         this(acct, name);
     }
 
+    public String toString() {
+        return "Account " + account + ", name " + acctName + " xuBalance " + xuBalance;
+    }
+
     /**
      * @return the account
      */
