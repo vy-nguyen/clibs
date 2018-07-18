@@ -35,6 +35,7 @@ import javax.persistence.Index;
 import javax.persistence.Table;
 
 import com.tvntd.ether.util.Constants;
+import com.tvntd.lib.Util;
 
 @Entity
 @Table(name = "account",
@@ -56,7 +57,7 @@ public class Account
     protected String walletUuid;
 
     @Column(length = 64, name = "public_name")
-    protected String publicName;
+    protected byte[] publicName;
 
     @Column(length = 64, name = "type")
     protected String type;
@@ -65,9 +66,18 @@ public class Account
     public Account(String ownerUuid, String name)
     {
         this.ownerUuid = ownerUuid;
-        this.publicName = name;
+        this.publicName = Util.toRawByte(name, 64);
         this.walletUuid = UUID.randomUUID().toString();
         this.type = Constants.ACCT_VNTD;
+    }
+
+    public Account(String act, String owner, String wallet, String name, String type)
+    {
+        this.account = act;
+        this.ownerUuid = owner;
+        this.walletUuid = wallet;
+        this.publicName = Util.toRawByte(name, 64);
+        this.type = type;
     }
 
     /**
@@ -116,14 +126,14 @@ public class Account
      * @return the publicName
      */
     public String getPublicName() {
-        return publicName;
+        return Util.fromRawByte(publicName);
     }
 
     /**
      * @param publicName the publicName to set
      */
     public void setPublicName(String publicName) {
-        this.publicName = publicName;
+        this.publicName = Util.toRawByte(publicName, 64);
     }
 
     /**

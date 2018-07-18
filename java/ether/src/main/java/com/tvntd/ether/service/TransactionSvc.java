@@ -81,9 +81,6 @@ public class TransactionSvc implements ITransactionSvc
     static BlockLRU s_cacheBlock;
     static LRUCache<String, String, TransactionDTO> s_cacheTrans;
 
-    protected LinkedList<BlockRange> cacheRange;
-    protected Map<Long, BlockResult> cacheBlocks;
-
     static {
         s_cacheTrans = new LRUCache<>(1000, maxTransCached);
         s_cacheBlock = new BlockLRU(1000, maxBlockCached);
@@ -95,24 +92,6 @@ public class TransactionSvc implements ITransactionSvc
 
     @Autowired
     protected TransactionRepo transRepo;
-
-    static class BlockRange
-    {
-        Long start;
-        int count;
-
-        BlockRange(Long start, int count)
-        {
-            this.start = start;
-            this.count = count;
-        }
-    }
-
-    public TransactionSvc()
-    {
-        cacheBlocks = new HashMap<>();
-        cacheRange = new LinkedList<>();
-    }
 
     public TransactionDTO getTransaction(String txHash)
     {
@@ -301,20 +280,18 @@ public class TransactionSvc implements ITransactionSvc
 
     List<BlockResult> fetchBlocks(String start, String count)
     {
-        Long startBlk = Long.parseLong(start);
-        Integer num = Integer.parseInt(count);
+        Long startBlk = RawParseUtils.parseLong(start);
+        Integer num = RawParseUtils.parseNumber(count, 1, 1000);
 
         List<BlockResult> result = new LinkedList<>();
-        synchronized(this) {
-            for (int i = 0; i < num; i++) {
-                BlockResult block = cacheBlocks.get(startBlk - i);
-                if (block == null) {
-                    startBlk = startBlk - i;
-                    num = num - i;
-                    break;
-                }
-                result.add(block);
+        for (int i = 0; i < num; i++) {
+            BlockResult block = s_cacheBlock.get(startBlk - i);
+            if (block == null) {
+                startBlk = startBlk - i;
+                num = num - i;
+                break;
             }
+            result.add(block);
         }
         if (result.size() == num) {
             return result;
@@ -329,49 +306,25 @@ public class TransactionSvc implements ITransactionSvc
                 "tudo_listBlocks", "id", params);
 
         if (out != null && out.getError() == null) {
-            s_cacheBlockResult(out, startBlk, num);
+            cacheBlockResult(out, startBlk, num);
             result = out.blockResult();
         }
         return result;
     }
 
-    void s_cacheBlockResult(EtherBlockResult result, Long startBlk, Integer num)
+    void cacheBlockResult(EtherBlockResult result, Long startBlk, Integer num)
     {
-        BlockRange range = new BlockRange(startBlk, num);
+        List<BlockResult> res = result.blockResult();
 
-        synchronized(this) {
-            if (cacheBlocks.size() > maxBlockCached) {
-                // Dumb cache algorithm.
-                //
-                BlockRange oldest = cacheRange.removeFirst();
-                for (int i = 0; i < oldest.count; i++) {
-                    cacheBlocks.remove(oldest.start - i);
-                }
-                System.out.println("Evicted oldest range from " +
-                        oldest.start + " count " + oldest.count);
+        if (res == null) {
+            return;
+        }
+        for (BlockResult block : res) {
+            if (block == null) {
+                continue;
             }
-            cacheRange.add(range);
-            List<BlockResult> res = result.blockResult();
-
-            for (BlockResult block : res) {
-                if (block == null) {
-                    continue;
-                }
-                int radix = 10;
-                String number = block.number;
-
-                if (block.number.startsWith("0x")) {
-                    radix = 16;
-                    number = number.substring(2);
-                }
-                try {
-                    Long val = Long.parseLong(number, radix);
-                    cacheBlocks.put(val, block);
-
-                } catch(NumberFormatException e) {
-                    s_log.info("Failed to parse " + block.number);
-                }
-            }
+            Long blkNo = RawParseUtils.parseLong(block.number);
+            s_cacheBlock.put(blkNo, block);
         }
     }
 }

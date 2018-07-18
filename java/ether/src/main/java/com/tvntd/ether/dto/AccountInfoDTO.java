@@ -30,6 +30,8 @@ import java.math.BigInteger;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.tvntd.ether.api.EtherRpcApi.RpcResponse;
+import com.tvntd.ether.models.Account;
 
 @JsonIgnoreProperties(ignoreUnknown = true) 
 public class AccountInfoDTO
@@ -45,6 +47,7 @@ public class AccountInfoDTO
         account = acct;
         acctName = name;
         xuBalance = 0L;
+        balance = "0";
     }
 
     public AccountInfoDTO(String acct, BigInteger weiBalance, String name)
@@ -63,6 +66,7 @@ public class AccountInfoDTO
     /**
      * @return the xuBalance
      */
+    @JsonProperty("XuBalance")
     public Long getXuBalance() {
         return xuBalance;
     }
@@ -76,6 +80,7 @@ public class AccountInfoDTO
     /**
      * @return the acctName
      */
+    @JsonProperty("AcctName")
     public String getAcctName() {
         return acctName;
     }
@@ -93,5 +98,31 @@ public class AccountInfoDTO
      */
     public void setBalance(String balance) {
         this.balance = balance;
+    }
+
+
+    /**
+     * RPC result from NewAccount call
+     */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class NewAccountResult extends RpcResponse
+    {
+        public Result result;
+
+        public String fetchAddress() {
+            return result.address;
+        }
+
+        public Account fetchAccount(String name, String type) {
+            return new Account(result.address,
+                    result.ownerUuid, result.walletUuid, name, type);
+        }
+
+        static class Result
+        {
+            public String ownerUuid;
+            public String walletUuid;
+            public String address;
+        }
     }
 }

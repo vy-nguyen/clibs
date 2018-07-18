@@ -61,7 +61,6 @@ import com.tvntd.ether.api.ITransactionSvc;
 import com.tvntd.ether.dto.TransactionDTO;
 import com.tvntd.ether.dto.TransactionDTO.TransListDTO;
 import com.tvntd.ether.dto.WalletInfoDTO;
-import com.tvntd.ether.models.Transaction;
 import com.tvntd.forms.ArticleForm;
 import com.tvntd.forms.CommentChangeForm;
 import com.tvntd.forms.CommentForm;
@@ -1002,8 +1001,8 @@ public class UserPath
             return s_noProfile;
         }
         Profile p = profile.fetchProfile();
-        WalletInfoDTO w = acctSvc.createWallet(p.getFirstName(),
-                Constants.TudoAcct, walletUuid, profile.getUserUuid());
+        WalletInfoDTO w = acctSvc.createWallet(Util.fromRawByte(p.getFirstName()),
+                Constants.TudoAcct, "password", walletUuid, profile.getUserUuid());
 
         List<WalletInfoDTO> wallets = new LinkedList<>();
         wallets.add(w);

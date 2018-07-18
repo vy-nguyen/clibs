@@ -26,16 +26,65 @@
  */
 package com.tvntd.ether.dto;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import com.tvntd.ether.api.IAccountSvc.AccountDTO;
+import com.tvntd.ether.models.Wallet;
 
 public class WalletInfoDTO extends GenericResponse
 {
+    protected String name;
+    protected String walletUuid;
     protected List<AccountDTO> accountInfo;
 
     public WalletInfoDTO(String text) {
         super(text);
     }
 
+    public WalletInfoDTO(Wallet w)
+    {
+        super("ok");
+        name = w.getName();
+        walletUuid = w.getWalletUuid();
+        accountInfo = new LinkedList<>();
+    }
+
+    public void addAccountInfo(AccountDTO acct) {
+        accountInfo.add(acct);
+    }
+
+    public void addWallet(Wallet w)
+    {
+        accountInfo.add(
+                new AccountDTO(w.getWalletUuid(), w.getAccount(), w.getName()));
+    }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @return the walletUuid
+     */
+    public String getWalletUuid() {
+        return walletUuid;
+    }
+
+    /**
+     * @return the accountInfo
+     */
+    public List<AccountDTO> getAccountInfo() {
+        return accountInfo;
+    }
+
+    /**
+     * @param accountInfo the accountInfo to set
+     */
+    public void setAccountInfo(List<AccountDTO> accountInfo) {
+        this.accountInfo = accountInfo;
+    }
 }

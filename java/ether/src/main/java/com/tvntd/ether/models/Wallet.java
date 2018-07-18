@@ -31,24 +31,47 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Table;
 
+import com.tvntd.lib.Util;
+
 @Entity
-@Table(name = "wallet")
+@Table(name = "wallet",
+    indexes = {
+        @Index(columnList = "wallet_uuid", unique = false),
+        @Index(columnList = "owner_uuid", unique = false)
+    }
+)
 public class Wallet
 {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    protected Long id;
+
     @Column(length = 64, name = "wallet_uuid")
     protected String walletUuid;
 
     @Column(length = 64, name = "owner_uuid")
     protected String ownerUuid;
 
+    @Column(length = 128, name = "account")
+    protected String account;
+
     @Column(length = 64, name = "name")
     protected byte[] name;
 
     public Wallet() {}
+    public Wallet(String ownerUuid, byte[] name)
+    {
+        this.name = name;
+        this.ownerUuid = ownerUuid;
+        this.walletUuid = UUID.randomUUID().toString();
+    }
+
     public Wallet(String ownerUuid, String name)
     {
         try {
@@ -57,6 +80,11 @@ public class Wallet
 
         this.ownerUuid = ownerUuid;
         this.walletUuid = UUID.randomUUID().toString();
+    }
+
+    public Wallet resetId() {
+        this.id = null;
+        return this;
     }
 
     /**
@@ -74,15 +102,30 @@ public class Wallet
     }
 
     /**
+     * @return the account
+     */
+    public String getAccount() {
+        return account;
+    }
+
+    /**
+     * @param account the account to set
+     */
+    public void setAccount(String account) {
+        this.account = account;
+    }
+
+    /**
      * @return the name
      */
-    public String getName()
-    {
-        if (name != null) {
-            try {
-                return new String(name, "UTF-8");
-            } catch(UnsupportedEncodingException e) {}
-        }
-        return "";
+    public String getName() {
+        return Util.fromRawByte(name);
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = Util.toRawByte(name, 64);
     }
 }

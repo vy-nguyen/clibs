@@ -24,28 +24,34 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.util;
+package com.tvntd.lib;
 
-public class Constants
+import java.io.UnsupportedEncodingException;
+
+public final class Util
 {
-    public static String DefaultTag   = "My Post";
-    public static String DefaultTopic = "Post";
-    public static String PublicUuid   = "00000000-ffff-0000-ffff-00ff00ff00ff";
+    static public String fromRawByte(byte[] input)
+    {
+        if (input != null) {
+            try {
+                return new String(input, "UTF-8");
+            } catch(UnsupportedEncodingException e) {
+            }
+        }
+        return "";
+    }
 
-    public static Long PublicId      = 1L; 
-    public static Long Role_Public   = 0x0000L;
-    public static Long Role_Circle1  = 0x0001L;
-    public static Long Role_Circle2  = 0x0002L | Role_Circle1;
-    public static Long Role_Circle3  = 0x0004L | Role_Circle2;
-    public static Long Role_Circle4  = 0x0008L | Role_Circle3;
-    public static Long Role_User     = 0x1000L;
-    public static Long Role_Admin    = 0x2000L;
-    public static Long Role_Dba      = 0x4000L;
-    public static Long Role_Banker   = 0x8000L;
-
-    public static String TudoAcct    = "Tự Do";
-    public static String EquityAcct  = "Equity";
-
-    static {
+    static public byte[] toRawByte(String str, int limit)
+    {
+        if (str != null) {
+            try {
+                if (str.length() > limit) {
+                    return str.substring(0, limit).getBytes("UTF-8");
+                }
+                return str.getBytes("UTF-8");
+            } catch(UnsupportedEncodingException e) {
+            }
+        }
+        return null;
     }
 }

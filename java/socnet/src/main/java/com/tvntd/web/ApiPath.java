@@ -79,6 +79,7 @@ import com.tvntd.service.api.UserConnectionChange;
 import com.tvntd.service.api.UserNotifResponse;
 import com.tvntd.service.api.WalletResponse;
 import com.tvntd.util.Constants;
+import com.tvntd.util.Util;
 
 @Controller
 public class ApiPath
@@ -280,8 +281,9 @@ public class ApiPath
             .getUsersByEmail(Arrays.asList(emails.getEmails()));
 
         for (Profile p : profile) {
-            WalletInfoDTO wallet = acctSvc.createWallet(p.getFirstName(),
-                        Constants.TudoAcct, null, p.getUserUuid());
+            WalletInfoDTO wallet = acctSvc.createWallet(
+                    Util.fromRawByte(p.getFirstName()),
+                    Constants.TudoAcct, "pasword", null, p.getUserUuid());
             wallets.add(wallet);
         }
         return new WalletResponse(wallets);

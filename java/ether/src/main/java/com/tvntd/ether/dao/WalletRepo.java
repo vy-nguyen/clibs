@@ -24,28 +24,17 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.util;
+package com.tvntd.ether.dao;
 
-public class Constants
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.tvntd.ether.models.Wallet;
+
+public interface WalletRepo extends JpaRepository<Wallet, String>
 {
-    public static String DefaultTag   = "My Post";
-    public static String DefaultTopic = "Post";
-    public static String PublicUuid   = "00000000-ffff-0000-ffff-00ff00ff00ff";
-
-    public static Long PublicId      = 1L; 
-    public static Long Role_Public   = 0x0000L;
-    public static Long Role_Circle1  = 0x0001L;
-    public static Long Role_Circle2  = 0x0002L | Role_Circle1;
-    public static Long Role_Circle3  = 0x0004L | Role_Circle2;
-    public static Long Role_Circle4  = 0x0008L | Role_Circle3;
-    public static Long Role_User     = 0x1000L;
-    public static Long Role_Admin    = 0x2000L;
-    public static Long Role_Dba      = 0x4000L;
-    public static Long Role_Banker   = 0x8000L;
-
-    public static String TudoAcct    = "Tự Do";
-    public static String EquityAcct  = "Equity";
-
-    static {
-    }
+    List<Wallet> findByWalletUuid(String walletUuid);
+    List<Wallet> findByOwnerUuid(String ownerUuid);
+    List<Wallet> findByWalletUuidAndOwnerUuid(String wallet, String owner);
 }

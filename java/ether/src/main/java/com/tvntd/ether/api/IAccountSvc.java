@@ -26,19 +26,24 @@
  */
 package com.tvntd.ether.api;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import com.tvntd.ether.dto.AccountInfoDTO;
 import com.tvntd.ether.dto.TransactionDTO;
 import com.tvntd.ether.dto.WalletInfoDTO;
+import com.tvntd.ether.models.Account;
 
 public interface IAccountSvc
 {
     AccountDTO getAccount(String ownerUuid, String account);
     List<AccountDTO> getAccountsIn(List<String> accounts);
 
-    WalletInfoDTO createWallet(byte[] walletName, byte[] acctname,
-            String walletUuid, String ownerUuid);
+    WalletInfoDTO createAccount(String walletUuid,
+            String ownerUuid, String passwd, String acctName);
+
+    WalletInfoDTO createWallet(String walletName, String acctname,
+            String passwd, String walletUuid, String ownerUuid);
 
     List<WalletInfoDTO> getWallet(String ownerUuid);
     TransactionDTO fundAccount(AccountInfoDTO account);
@@ -47,23 +52,25 @@ public interface IAccountSvc
 
     public static class AccountDTO
     {
-        protected String ownerUuid;
         protected String walletUuid;
         protected AccountInfoDTO account;
         protected List<TransactionDTO> recentTrans;
 
         public AccountDTO() {}
-        public AccountDTO(String ownerUuid, String walletUuid)
+        public AccountDTO(String walletUuid, AccountInfoDTO account)
         {
-            this.ownerUuid = ownerUuid;
             this.walletUuid = walletUuid;
+            this.account = account;
+            this.recentTrans = new LinkedList<>();
         }
 
-        /**
-         * @return the ownerUuid
-         */
-        public String getOwnerUuid() {
-            return ownerUuid;
+        public AccountDTO(String wuuid, String address, String acctName) {
+            this(wuuid, new AccountInfoDTO(address, acctName));
+        }
+
+        public AccountDTO(Account act) {
+            this(act.getWalletUuid(),
+                    new AccountInfoDTO(act.getAccount(), act.getPublicName()));
         }
 
         /**
