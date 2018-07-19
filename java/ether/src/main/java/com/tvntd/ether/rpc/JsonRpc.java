@@ -49,7 +49,7 @@ public class JsonRpc
 {
     static Logger s_log = LoggerFactory.getLogger(JsonRpc.class);
 
-    private static final String s_url = "http://10.1.10.12:8545/";
+    private static final String s_url = "http://10.8.0.1:8545/";
     // private static final String s_url = "http://localhost:8545/";
     protected HttpClient httpClient;
 
