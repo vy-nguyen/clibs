@@ -38,24 +38,7 @@ public class TransactionResultDTO {
     public String r;
     public String s;
 
-    public TransactionResultDTO() {
-    }
-
-    /*
-    public TransactionResultDTO (Block b, int index, Transaction tx) {
-        hash =  TypeConverter.toJsonHex(tx.getHash());
-        nonce = TypeConverter.toJsonHex(tx.getNonce());
-        blockHash = b == null ? null : TypeConverter.toJsonHex(b.getHash());
-        blockNumber = b == null ? null : TypeConverter.toJsonHex(b.getNumber());
-        transactionIndex = b == null ? null : TypeConverter.toJsonHex(index);
-        from= TypeConverter.toJsonHex(tx.getSender());
-        to = tx.getReceiveAddress() == null ? null : TypeConverter.toJsonHex(tx.getReceiveAddress());
-        gas = TypeConverter.toJsonHex(tx.getGasLimit());
-        gasPrice = TypeConverter.toJsonHex(tx.getGasPrice());
-        value = TypeConverter.toJsonHex(tx.getValue());
-        input  = tx.getData() != null ? TypeConverter.toJsonHex(tx.getData()) : null;
-    }
-    */
+    public TransactionResultDTO() {}
 
     @Override
     public String toString() {

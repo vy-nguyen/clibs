@@ -224,4 +224,9 @@ public class ProfileService implements IProfileService
     {
         profileRepo.deleteByUserUuid(uuid.toString());
     }
+
+    @Override
+    public List<Profile> getUsersByEmail(List<String> email) {
+        return profileRepo.findByEmailIn(email);
+    }
 }

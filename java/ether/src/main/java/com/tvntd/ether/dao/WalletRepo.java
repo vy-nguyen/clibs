@@ -24,25 +24,17 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.account.dao;
+package com.tvntd.ether.dao;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.tvntd.account.models.Account;
+import com.tvntd.ether.models.Wallet;
 
-public interface AccountRepo extends JpaRepository<Account, String>
+public interface WalletRepo extends JpaRepository<Wallet, String>
 {
-    Account findByOwnerUuid(String ownerUuid);
-    Account findByAccountUuid(String accountUuid);
-
-    List<Account> findByOwnerUuidIn(List<String> ownerUuids);
-    List<Account> findByAccountUuidIn(List<String> acctUuids);
-
-    @Override
-    void delete(Account account);
-
-    @Override
-    void delete(String uuid);
+    List<Wallet> findByWalletUuid(String walletUuid);
+    List<Wallet> findByOwnerUuid(String ownerUuid);
+    List<Wallet> findByWalletUuidAndOwnerUuid(String wallet, String owner);
 }

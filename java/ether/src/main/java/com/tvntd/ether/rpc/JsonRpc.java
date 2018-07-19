@@ -64,6 +64,11 @@ public class JsonRpc
     }
 
     public <T extends RpcResponse>
+    T callJsonRpcArg(Class<T> clazz, String method, String id, Object ...params) {
+        return callJsonRpc(clazz, new JsonRpcReqtObj(method, id, params));
+    }
+
+    public <T extends RpcResponse>
     T callJsonRpc(Class<T> clazz, String method, String id, List<String> p) {
         return callJsonRpc(clazz, new JsonRpcReqt(method, id, p));
     }
@@ -154,6 +159,32 @@ public class JsonRpc
         {
             super(method, id);
             this.params = params;
+        }
+    }
+
+    public static class JsonRpcReqtObj extends JsonRpcCommon
+    {
+        protected List<Object> params;
+
+        public JsonRpcReqtObj(String method, String id, Object ...params)
+        {
+            super(method, id);
+            this.params = new LinkedList<>();
+
+            for (Object p : params) {
+                this.params.add(p);
+            }
+        }
+
+        public JsonRpcReqtObj(String method, String id, List<Object> params)
+        {
+            super(method, id);
+            this.params = params;
+        }
+
+        @JsonProperty(value = "params")
+        public List<Object> getParams() {
+            return params;
         }
     }
 

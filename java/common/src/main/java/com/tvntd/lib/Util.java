@@ -24,31 +24,34 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.account.api;
+package com.tvntd.lib;
 
-import com.tvntd.account.models.Account;
+import java.io.UnsupportedEncodingException;
 
-public interface IAccountService
+public final class Util
 {
-    Account getAccount(String accountUuid);
-    Account getAccountByOwner(String ownerUuid);
-
-    /**
-     *
-     */
-    public static class AccountDTO
+    static public String fromRawByte(byte[] input)
     {
-        private Account account;
-
-        public AccountDTO(Account acct) {
-            this.account = acct;
+        if (input != null) {
+            try {
+                return new String(input, "UTF-8");
+            } catch(UnsupportedEncodingException e) {
+            }
         }
+        return "";
+    }
 
-        /**
-         * @return the account
-         */
-        public Account fetchAccount() {
-            return account;
+    static public byte[] toRawByte(String str, int limit)
+    {
+        if (str != null) {
+            try {
+                if (str.length() > limit) {
+                    return str.substring(0, limit).getBytes("UTF-8");
+                }
+                return str.getBytes("UTF-8");
+            } catch(UnsupportedEncodingException e) {
+            }
         }
+        return null;
     }
 }

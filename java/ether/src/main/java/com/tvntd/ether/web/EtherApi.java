@@ -26,13 +26,9 @@
  */
 package com.tvntd.ether.web;
 
-import java.util.Locale;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.ethereum.jsonrpc.JsonRpc.BlockResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +42,9 @@ import com.tvntd.ether.api.ITransactionSvc;
 import com.tvntd.ether.dto.EtherBlockDTO;
 import com.tvntd.ether.dto.GenericResponse;
 import com.tvntd.ether.dto.PublicAccountDTO;
+import com.tvntd.ether.dto.TransactionDTO;
+import com.tvntd.ether.dto.TransactionDTO.TransListDTO;
+import com.tvntd.lib.RawParseUtils;
 
 @Controller
 public class EtherApi
@@ -55,37 +54,90 @@ public class EtherApi
     @Autowired
     protected ITransactionSvc etherTrans;
 
-    /**
-     * Handle Api REST calls.
-     */
-    @RequestMapping(value = "/api/hello", method = RequestMethod.GET)
-    @ResponseBody
-    public GenericResponse
-    getUserNotification(Locale locale, HttpSession session,
-            HttpServletRequest reqt, HttpServletResponse resp)
-    {
-        return new GenericResponse("Echo Hello World");
-    }
-
     @RequestMapping(value = "/api/ether", method = RequestMethod.GET)
     @ResponseBody
     public PublicAccountDTO
-    getEtherStartup(Locale locale, HttpSession session,
-            HttpServletRequest reqt, HttpServletResponse resp)
-    {
-        PublicAccountDTO acct = etherTrans.getPublicAccount();
-        return acct;
+    getEtherStartup(HttpSession session) {
+        return etherTrans.getPublicAccount();
+    }
+
+    @RequestMapping(value = "/api/ether/blkhash/{blkHash}", method = RequestMethod.GET)
+    @ResponseBody
+    public BlockResult
+    getEtherBlockHash(@PathVariable(value = "blkHash") String blkHash) {
+        return etherTrans.getBlockByHash(blkHash);
+    }
+
+    @RequestMapping(value = "/api/ether/blkno/{blkno}", method = RequestMethod.GET)
+    @ResponseBody
+    public BlockResult
+    getEtherBlockNo(@PathVariable(value = "blkno") String blkno) {
+        return etherTrans.getBlockByNumber(blkno);
     }
 
     @RequestMapping(value = "/api/ether/{start}/{count}", method = RequestMethod.GET)
     @ResponseBody
     public GenericResponse
-    getEhterBlocks(Map<String, Object> model, HttpSession session,
+    getEhterBlocks(HttpSession session,
             @PathVariable(value = "start") String start,
             @PathVariable(value = "count") String count)
     {
         EtherBlockDTO result = new EtherBlockDTO(start, count);
         etherTrans.getEtherBlocks(result);
         return result;
+    }
+
+    @RequestMapping(value = "/api/tudo/trans-from/{account}/{start}/{count}",
+            method = RequestMethod.GET)
+    @ResponseBody
+    public GenericResponse
+    getEtherTransactionFrom(
+            @PathVariable(value = "account") String account,
+            @PathVariable(value = "start") String start,
+            @PathVariable(value = "count") String count) {
+        return getEtherTransaction(account, start, count, true);
+    }
+
+    @RequestMapping(value = "/api/tudo/trans-to/{account}/{start}/{count}",
+            method = RequestMethod.GET)
+    @ResponseBody
+    public GenericResponse
+    getEtherTransactionTo(HttpSession session,
+            @PathVariable(value = "account") String account,
+            @PathVariable(value = "start") String start,
+            @PathVariable(value = "count") String count) {
+        return getEtherTransaction(account, start, count, false);
+    }
+
+    @RequestMapping(value = "/api/tudo/trans/{start}/{count}", method = RequestMethod.GET)
+    @ResponseBody
+    public GenericResponse
+    getEtherTransaction(HttpSession session,
+            @PathVariable(value = "start") String start,
+            @PathVariable(value = "count") String count)
+    {
+        int beg = RawParseUtils.parseNumber(start, 0, Integer.MAX_VALUE);
+        int cnt = RawParseUtils.parseNumber(count, 1, 1000);
+
+        return new TransListDTO(etherTrans.getRecentTransaction(beg, cnt));
+    }
+
+    @RequestMapping(value = "/api/tudo/tx-hash/{hash}", method = RequestMethod.GET)
+    @ResponseBody
+    public TransactionDTO
+    getEtherTransactionInfo(@PathVariable(value = "hash") String hash) {
+        return etherTrans.getTransaction(hash);
+    }
+
+    protected GenericResponse
+    getEtherTransaction(String account, String start, String count, boolean from)
+    {
+        if (account == null) {
+            return new GenericResponse("Missing account number");
+        }
+        int beg = RawParseUtils.parseNumber(start, 0, Integer.MAX_VALUE);
+        int cnt = RawParseUtils.parseNumber(count, 1, 1000);
+
+        return new TransListDTO(etherTrans.getTransactionAcct(account, beg, cnt, from));
     }
 }

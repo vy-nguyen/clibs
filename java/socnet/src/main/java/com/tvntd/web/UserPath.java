@@ -56,10 +56,16 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tvntd.dao.AuthorTagRepo.AuthorTagDTO;
 import com.tvntd.dao.AuthorTagRepo.AuthorTagRespDTO;
+import com.tvntd.ether.api.IAccountSvc;
+import com.tvntd.ether.api.ITransactionSvc;
+import com.tvntd.ether.dto.TransactionDTO;
+import com.tvntd.ether.dto.TransactionDTO.TransListDTO;
+import com.tvntd.ether.dto.WalletInfoDTO;
 import com.tvntd.forms.ArticleForm;
 import com.tvntd.forms.CommentChangeForm;
 import com.tvntd.forms.CommentForm;
 import com.tvntd.forms.DomainForm;
+import com.tvntd.forms.EtherPay;
 import com.tvntd.forms.PostForm;
 import com.tvntd.forms.ProductForm;
 import com.tvntd.forms.QuestionForm;
@@ -71,9 +77,11 @@ import com.tvntd.forms.TagForm.TagRank;
 import com.tvntd.forms.UserProfile;
 import com.tvntd.forms.UuidForm;
 import com.tvntd.lib.ObjectId;
+import com.tvntd.lib.RawParseUtils;
 import com.tvntd.models.ArtProduct;
 import com.tvntd.models.ArticleAttr;
 import com.tvntd.models.Comment;
+import com.tvntd.models.Profile;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.ArtProductDTO;
 import com.tvntd.service.api.GenericResponse;
@@ -96,8 +104,10 @@ import com.tvntd.service.api.IUserService;
 import com.tvntd.service.api.ImageUploadResp;
 import com.tvntd.service.api.LoginResponse;
 import com.tvntd.service.api.UuidResponse;
+import com.tvntd.service.api.WalletResponse;
 import com.tvntd.service.user.ArtTagService;
 import com.tvntd.service.user.ArticleSvc;
+import com.tvntd.util.Constants;
 import com.tvntd.util.Util;
 
 @Controller
@@ -140,6 +150,12 @@ public class UserPath
 
     @Autowired
     protected IQuestionSvc questSvc;
+
+    @Autowired
+    protected IAccountSvc acctSvc;
+
+    @Autowired
+    protected ITransactionSvc transSvc;
 
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     @ResponseBody
@@ -966,5 +982,110 @@ public class UserPath
             return s_badInput;
         }
         return questSvc.getQuestion(form);
+    }
+
+    /**
+     * User Wallet and Accounts
+     */
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @RequestMapping(value = "/user/tudo/create/{walletUuid}/{name}",
+            method = RequestMethod.GET)
+    @ResponseBody
+    public GenericResponse
+    createEtherAccount(HttpSession session,
+            @PathVariable(value = "walletUuid") String walletUuid,
+            @PathVariable(value = "name") String name)
+    {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
+        Profile p = profile.fetchProfile();
+        WalletInfoDTO w = acctSvc.createWallet(Util.fromRawByte(p.getFirstName()),
+                Constants.TudoAcct, "password", walletUuid, profile.getUserUuid());
+
+        List<WalletInfoDTO> wallets = new LinkedList<>();
+        wallets.add(w);
+        return new WalletResponse(wallets);
+    }
+
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @RequestMapping(value = "/user/tudo/wallet", method = RequestMethod.GET)
+    @ResponseBody
+    public GenericResponse getWallet(HttpSession session)
+    {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
+        return new WalletResponse(acctSvc.getWallet(profile.getUserUuid()));
+    }
+
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @RequestMapping(value = "/user/tudo/pay",
+            consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    public Object payEther(@RequestBody EtherPay pay, HttpSession session)
+    {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
+        if (pay.cleanInput() == false) {
+            return s_badInput;
+        }
+        String ownerUuid = profile.getUserUuid();
+        if (!ownerUuid.equals(pay.getOwnerUuid())) {
+            return s_badInput;
+        }
+        TransactionDTO tx = acctSvc.payAccount(ownerUuid, pay.getToUuid(),
+                pay.getFromAccount(), pay.getToAccount(),
+                pay.getXuAmount(), pay.getText());
+
+        if (tx != null) {
+            return tx;
+        }
+        return new GenericResponse("Failed to submit transaction");
+    }
+
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @RequestMapping(value = "/user/tudo/trans-from/{start}/{count}",
+            method = RequestMethod.GET)
+    @ResponseBody
+    public Object getEtherTransaction(HttpSession session,
+            @PathVariable(value = "start") String start,
+            @PathVariable(value = "count") String count)
+    {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
+        return getEtherTransaction(profile, true, start, count);
+    }
+
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @RequestMapping(value = "/user/tudo/trans-to/{start}/{count}",
+            method = RequestMethod.GET)
+    @ResponseBody
+    public Object getEtherTransactionTo(HttpSession session,
+            @PathVariable(value = "start") String start,
+            @PathVariable(value = "count") String count)
+    {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
+        return getEtherTransaction(profile, false, start, count);
+    }
+
+    protected TransListDTO
+    getEtherTransaction(ProfileDTO profile, boolean from, String start, String count)
+    {
+        int beg = RawParseUtils.parseNumber(start, 0, Integer.MAX_VALUE);
+        int cnt = RawParseUtils.parseNumber(count, 1, 1000);
+
+        return new TransListDTO(transSvc
+                .getTransactionAcct(profile.getUserUuid(), beg, cnt, from));
     }
 }

@@ -24,28 +24,40 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.ether.dao;
+package com.tvntd.ether.web;
 
-import java.util.List;
+import javax.servlet.http.HttpSession;
 
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.tvntd.ether.models.Transaction;
+import com.tvntd.ether.api.IAccountSvc;
+import com.tvntd.ether.api.ITransactionSvc;
+import com.tvntd.ether.dto.GenericResponse;
+import com.tvntd.ether.dto.WalletInfoDTO;
 
-public interface TransactionRepo extends PagingAndSortingRepository<Transaction, String>
+@Controller
+public class UserApi
 {
-    Transaction findByTxHash(String txHash);
-    List<Transaction> findByFromUuid(String userUuid);
-    List<Transaction> findByFromAcct(String account);
-    List<Transaction> findByToUuid(String userUuid);
-    List<Transaction> findByToAcct(String account);
+    static protected Logger s_log = LoggerFactory.getLogger(UserApi.class);
 
-    List<Transaction> findAllByFromUuid(Pageable page, String userUuid);
-    List<Transaction> findAllByFromAcct(Pageable page, String account);
-    List<Transaction> findAllByToUuid(Pageable page, String userUuid);
-    List<Transaction> findAllByToAcct(Pageable page, String account);
+    @Autowired
+    IAccountSvc accountSvc;
 
-    List<Transaction> findAllByOrderByCreatedAsc(Pageable page);
-    List<Transaction> findAll();
+    @Autowired
+    ITransactionSvc transSvc;
+
+    @Secured({"ROLE_ADMIN", "ROLE_USER"}) 
+    @RequestMapping(value = "/user/ether-wallet", method = RequestMethod.GET)
+    @ResponseBody
+    public GenericResponse getUserEtherWallet(HttpSession session)
+    {
+        return new WalletInfoDTO("ok");
+    }
 }

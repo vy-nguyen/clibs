@@ -24,47 +24,37 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.account.models;
+package com.tvntd.service.api;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import java.util.List;
 
-@Entity
-public class Account
+import com.tvntd.ether.dto.WalletInfoDTO;
+
+public class WalletResponse extends GenericResponse
 {
-    @Id
-    @Column(length = 64)
-    private String accountUuid;
+    protected List<WalletInfoDTO> wallets;
 
-    @Column(length = 64)
-    private String ownerUuid;
+    public WalletResponse() {
+        super("ok");
+    }
 
-    /**
-     * @return the accountUuid
-     */
-    public String getAccountUuid() {
-        return accountUuid;
+    public WalletResponse(List<WalletInfoDTO> res)
+    {
+        super("ok");
+        this.wallets = res;
     }
 
     /**
-     * @param accountUuid the accountUuid to set
+     * @return the wallets
      */
-    public void setAccountUuid(String accountUuid) {
-        this.accountUuid = accountUuid;
+    public List<WalletInfoDTO> getWallets() {
+        return wallets;
     }
 
     /**
-     * @return the ownerUuid
+     * @param wallets the wallets to set
      */
-    public String getOwnerUuid() {
-        return ownerUuid;
-    }
-
-    /**
-     * @param ownerUuid the ownerUuid to set
-     */
-    public void setOwnerUuid(String ownerUuid) {
-        this.ownerUuid = ownerUuid;
+    public void setWallets(List<WalletInfoDTO> wallets) {
+        this.wallets = wallets;
     }
 }

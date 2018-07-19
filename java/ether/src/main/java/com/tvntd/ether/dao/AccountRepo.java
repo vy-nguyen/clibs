@@ -24,36 +24,22 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.account.service;
+package com.tvntd.ether.dao;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
-import com.tvntd.account.api.IAccountService;
-import com.tvntd.account.dao.AccountRepo;
-import com.tvntd.account.models.Account;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Service
-@Transactional(value = "accountTransMgr")
-@EnableCaching
-public class AccountService implements IAccountService
+import com.tvntd.ether.models.Account;
+
+public interface AccountRepo extends JpaRepository<Account, String>
 {
-    @Autowired
-    protected AccountRepo accountRepo;
+    Account findByAccount(String account);
+    List<Account> findByAccountIn(List<String> accounts);
 
-    @Override
-    public Account getAccount(String uuid)
-    {
-        Account acct = accountRepo.findByAccountUuid(uuid);
-        return acct;
-    }
+    List<Account> findByOwnerUuid(String ownerUuid);
+    List<Account> findByWalletUuidAndOwnerUuid(String walletUuid, String ownerUuid);
 
-    @Override
-    public Account getAccountByOwner(String uuid)
-    {
-        Account acct = accountRepo.findByOwnerUuid(uuid);
-        return acct;
-    }
+    List<Account> findByWalletUuidIn(List<String> walletUuids);
+    List<Account> findByOwnerUuidIn(List<String> ownerUuids);
 }

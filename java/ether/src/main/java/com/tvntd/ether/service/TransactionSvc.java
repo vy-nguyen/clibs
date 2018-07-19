@@ -32,18 +32,29 @@ import java.util.List;
 import java.util.Map;
 
 import org.ethereum.jsonrpc.JsonRpc.BlockResult;
+import org.ethereum.jsonrpc.TransactionResultDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tvntd.ether.api.ITransactionSvc;
+import com.tvntd.ether.dao.TransactionRepo;
 import com.tvntd.ether.dto.EtherBlockDTO;
+import com.tvntd.ether.dto.EtherBlockDTO.EtherBlock;
 import com.tvntd.ether.dto.EtherBlockDTO.EtherBlockResult;
+import com.tvntd.ether.dto.EtherTransDTO.EtherTransResult;
 import com.tvntd.ether.dto.PublicAccountDTO;
 import com.tvntd.ether.dto.TransactionDTO;
+import com.tvntd.ether.models.Transaction;
 import com.tvntd.ether.rpc.JsonRpc;
+import com.tvntd.lib.LRUCache;
+import com.tvntd.lib.RawParseUtils;
 
 @Service
 @Transactional
@@ -51,56 +62,217 @@ public class TransactionSvc implements ITransactionSvc
 {
     static Logger s_log = LoggerFactory.getLogger(TransactionSvc.class);
     static int maxBlockCached = 10000;
+    static int maxTransCached = 30000;
 
-    protected LinkedList<BlockRange> cacheRange;
-    protected Map<Long, BlockResult> cacheBlocks;
+    static class BlockLRU extends LRUCache<Long, String, BlockResult>
+    {
+        static final long serialVersionUID = 123456789L;
+
+        public BlockLRU(int initSize, int maxSize) {
+            super(initSize, maxSize);
+        }
+
+        @Override
+        public String getIndexKey(BlockResult blk) {
+            return blk.hash;
+        }
+    }
+
+    static BlockLRU s_cacheBlock;
+    static LRUCache<String, String, TransactionDTO> s_cacheTrans;
+
+    static {
+        s_cacheTrans = new LRUCache<>(1000, maxTransCached);
+        s_cacheBlock = new BlockLRU(1000, maxBlockCached);
+        s_cacheBlock.createIndex();
+    }
 
     @Autowired
     protected PublicAccount pubAccounts;
 
-    static class BlockRange
-    {
-        Long start;
-        int count;
-
-        BlockRange(Long start, int count)
-        {
-            this.start = start;
-            this.count = count;
-        }
-    }
-
-    public TransactionSvc()
-    {
-        cacheBlocks = new HashMap<>();
-        cacheRange = new LinkedList<>();
-    }
+    @Autowired
+    protected TransactionRepo transRepo;
 
     public TransactionDTO getTransaction(String txHash)
     {
+        TransactionDTO tx = s_cacheTrans.get(txHash);
+        if (tx != null) {
+            return tx;
+        }
+        JsonRpc rpc = new JsonRpc();
+        List<String> transHash = new LinkedList<>();
+
+        transHash.add(txHash);
+        EtherTransResult resp = rpc.<EtherTransResult>
+            callJsonRpcArr(EtherTransResult.class, "tudo_listTrans", "id", transHash);
+
+        List<TransactionResultDTO> out = resp.fetchTrans();
+        if (out != null) {
+            Transaction t = transRepo.findByTxHash(txHash);
+            for (TransactionResultDTO curTx : out) {
+                TransactionDTO dto = new TransactionDTO(t, curTx);
+                s_cacheTrans.put(curTx.hash, dto);
+                return dto;
+            }
+        }
         return null;
     }
 
-    public List<TransactionDTO> getTransaction(String userUuid, boolean from)
+    /**
+     * Return a block by hash number.
+     */
+    public BlockResult getBlockByHash(String hash)
     {
+        BlockResult res = s_cacheBlock.getIndex(hash);
+        if (res != null) {
+            return res;
+        }
+        JsonRpc rpc = new JsonRpc();
+        EtherBlock resp = rpc.<EtherBlock> callJsonRpcArg(
+                EtherBlock.class, "eth_getBlockByHash", "id", hash, new Boolean(true));
+
+        if (resp != null) {
+            res = resp.getResult();
+            if (res != null) {
+                s_cacheBlock.put(RawParseUtils.parseLong(res.number), res);
+            }
+            return res;
+        }
         return null;
     }
 
-    public List<TransactionDTO> getTransactionAcct(String account, boolean from)
+    /**
+     * Return a block by block number.
+     */
+    public BlockResult getBlockByNumber(String number)
     {
+        BlockResult res = s_cacheBlock.get(RawParseUtils.parseLong(number));
+        if (res != null) {
+            return res;
+        }
+        JsonRpc rpc = new JsonRpc();
+        EtherBlock resp = rpc.<EtherBlock> callJsonRpcArg(EtherBlock.class,
+                "eth_getBlockByNumber", "id", number, new Boolean(true));
+
+        if (resp != null) {
+            res = resp.getResult();
+            if (res != null) {
+                s_cacheBlock.put(RawParseUtils.parseLong(res.number), res);
+            }
+            return res;
+        }
         return null;
     }
 
-    public List<TransactionDTO> getAllTransaction()
+    /**
+     * Get transactions for an user uuid.
+     */
+    public List<TransactionDTO>
+    getTransaction(String userUuid, int start, int count, boolean from)
     {
-        return null;
+        Sort sort = new Sort(new Sort.Order(Direction.ASC, "created"));
+        Pageable pageable = new PageRequest(start, start + count, sort);
+
+        if (from == true) {
+            return transToDTO(transRepo.findAllByFromUuid(pageable, userUuid));
+        }
+        return transToDTO(transRepo.findAllByToUuid(pageable, userUuid));
     }
 
-    public PublicAccountDTO getPublicAccount()
+    /**
+     * Get transaction for an account key.
+     */
+    public List<TransactionDTO>
+    getTransactionAcct(String account, int start, int count, boolean from)
     {
+        Sort sort = new Sort(new Sort.Order(Direction.ASC, "created"));
+        Pageable pageable = new PageRequest(start, start + count, sort);
+
+        if (from == true) {
+            return transToDTO(transRepo.findAllByFromAcct(pageable, account));
+        }
+        return transToDTO(transRepo.findAllByToAcct(pageable, account));
+    }
+
+    /**
+     * Return all transactions recorded.
+     */
+    public List<TransactionDTO> getAllTransaction() {
+        return transToDTO(transRepo.findAll());
+    }
+
+    /**
+     * Return the list of recent transaction.
+     */
+    public List<TransactionDTO> getRecentTransaction(int start, int count)
+    {
+        Sort sort = new Sort(new Sort.Order(Direction.ASC, "created"));
+        Pageable pageable = new PageRequest(start, start + count, sort);
+
+        return transToDTO(transRepo.findAllByOrderByCreatedAsc(pageable));
+    }
+
+    protected List<TransactionDTO> transToDTO(List<Transaction> trans)
+    {
+        List<TransactionDTO> out = new LinkedList<>();
+        Map<String, Transaction> missing = new HashMap<>();
+
+        if (trans != null) {
+            for (Transaction t : trans) {
+                String h = t.getTxHash();
+                TransactionDTO tx = s_cacheTrans.get(h);
+                if (tx != null) {
+                    out.add(tx);
+                } else {
+                    missing.put(h, t);
+                }
+            }
+        }
+        if (!missing.isEmpty()) {
+            s_cacheTransactionResult(missing, out);
+        }
+        missing.clear();
+        return out;
+    }
+
+    /**
+     * Cache transaction result from blockchain.
+     */
+    protected void
+    s_cacheTransactionResult(Map<String, Transaction> miss, List<TransactionDTO> result)
+    {
+        JsonRpc rpc = new JsonRpc();
+        List<String> transHash = new LinkedList<>();
+
+        for (Transaction t : miss.values()) {
+            transHash.add(t.getTxHash());
+        }
+        EtherTransResult resp = rpc.<EtherTransResult>
+            callJsonRpcArr(EtherTransResult.class, "tudo_listTrans", "id", transHash);
+
+        List<TransactionResultDTO> out = resp.fetchTrans();
+        for (TransactionResultDTO tx : out) {
+            Transaction t = miss.get(tx.hash);
+            if (t == null) {
+                s_log.warn("Receive invalid hash " + tx.hash);
+                continue;
+            }
+            TransactionDTO txDto = new TransactionDTO(t, tx);
+            result.add(txDto);
+            s_cacheTrans.put(tx.hash, txDto);
+        }
+    }
+
+    /**
+     * Retrieve info about public accounts.
+     */
+    public PublicAccountDTO getPublicAccount() {
         return pubAccounts.getPublicAccount();
     }
 
+    /**
+     * Fill in Ethereum block data.
+     */
     public void getEtherBlocks(EtherBlockDTO blocks) {
         blocks.addBlockResult(
                 fetchBlocks(blocks.fetchStartBlock(), blocks.fetchCount()));
@@ -108,20 +280,18 @@ public class TransactionSvc implements ITransactionSvc
 
     List<BlockResult> fetchBlocks(String start, String count)
     {
-        Long startBlk = Long.parseLong(start);
-        Integer num = Integer.parseInt(count);
+        Long startBlk = RawParseUtils.parseLong(start);
+        Integer num = RawParseUtils.parseNumber(count, 1, 1000);
 
         List<BlockResult> result = new LinkedList<>();
-        synchronized(this) {
-            for (int i = 0; i < num; i++) {
-                BlockResult block = cacheBlocks.get(startBlk - i);
-                if (block == null) {
-                    startBlk = startBlk - i;
-                    num = num - i;
-                    break;
-                }
-                result.add(block);
+        for (int i = 0; i < num; i++) {
+            BlockResult block = s_cacheBlock.get(startBlk - i);
+            if (block == null) {
+                startBlk = startBlk - i;
+                num = num - i;
+                break;
             }
+            result.add(block);
         }
         if (result.size() == num) {
             return result;
@@ -144,38 +314,17 @@ public class TransactionSvc implements ITransactionSvc
 
     void cacheBlockResult(EtherBlockResult result, Long startBlk, Integer num)
     {
-        BlockRange range = new BlockRange(startBlk, num);
+        List<BlockResult> res = result.blockResult();
 
-        synchronized(this) {
-            if (cacheBlocks.size() > maxBlockCached) {
-                // Dumb cache algorithm.
-                //
-                BlockRange oldest = cacheRange.removeFirst();
-                for (int i = 0; i < oldest.count; i++) {
-                    cacheBlocks.remove(oldest.start - i);
-                }
-                System.out.println("Evicted oldest range from " +
-                        oldest.start + " count " + oldest.count);
+        if (res == null) {
+            return;
+        }
+        for (BlockResult block : res) {
+            if (block == null) {
+                continue;
             }
-            cacheRange.add(range);
-            List<BlockResult> res = result.blockResult();
-
-            for (BlockResult block : res) {
-                int radix = 10;
-                String number = block.number;
-
-                if (block.number.startsWith("0x")) {
-                    radix = 16;
-                    number = number.substring(2);
-                }
-                try {
-                    Long val = Long.parseLong(number, radix);
-                    cacheBlocks.put(val, block);
-
-                } catch(NumberFormatException e) {
-                    s_log.info("Failed to parse " + block.number);
-                }
-            }
+            Long blkNo = RawParseUtils.parseLong(block.number);
+            s_cacheBlock.put(blkNo, block);
         }
     }
 }

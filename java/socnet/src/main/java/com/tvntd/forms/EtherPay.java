@@ -24,64 +24,54 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.ether.models;
+package com.tvntd.forms;
 
-import java.sql.Date;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.Table;
+import com.tvntd.util.Util;
 
-import org.hibernate.annotations.CreationTimestamp;
-
-@Entity
-@Table(name = "transaction",
-    indexes = {
-        @Index(columnList = "from_uuid", unique = false),
-        @Index(columnList = "to_uuid", unique = false),
-        @Index(columnList = "from_acct", unique = false),
-        @Index(columnList = "to_acct", unique = false)
-    }
-)
-public class Transaction
+public class EtherPay
 {
-    @Id
-    @Column(length = 128, name = "tx_hash")
-    protected String txHash;
-
-    @Column(length = 64, name = "from_uuid")
-    protected String fromUuid;
-
-    @Column(length = 64, name = "to_uuid")
+    protected String ownerUuid;
     protected String toUuid;
-
-    @Column(length = 64, name = "from_acct")
-    protected String fromAcct;
-
-    @Column(length = 64, name = "to_acct")
-    protected String toAcct;
-
-    @Column(name = "xu_amount")
+    protected String fromAccount;
+    protected String toAccount;
+    protected String passCode;
+    protected String text;
     protected Long xuAmount;
 
-    @Column(name = "created")
-    @CreationTimestamp
-    protected Date created;
+    public boolean cleanInput()
+    {
+        if (ownerUuid == null || fromAccount == null ||
+            toAccount == null || xuAmount == null) {
+            return false;
+        }
+        Whitelist wlist = Util.allowedTags;
+        if (passCode != null) {
+            passCode = Jsoup.clean(passCode, wlist);
+        }
+        if (text != null) {
+            text = Jsoup.clean(text, wlist);
+        }
+        if (toUuid != null) {
+            toUuid = Jsoup.clean(toUuid, wlist);
+        }
+        ownerUuid = Jsoup.clean(ownerUuid, wlist);
+        fromAccount = Jsoup.clean(fromAccount, wlist);
+        toAccount = Jsoup.clean(toAccount, wlist);
 
-    /**
-     * @return the txHash
-     */
-    public String getTxHash() {
-        return txHash;
+        if (xuAmount <= 0) {
+            return false;
+        }
+        return true;
     }
 
     /**
-     * @return the fromUuid
+     * @return the ownerUuid
      */
-    public String getFromUuid() {
-        return fromUuid;
+    public String getOwnerUuid() {
+        return ownerUuid;
     }
 
     /**
@@ -92,17 +82,31 @@ public class Transaction
     }
 
     /**
-     * @return the fromAcct
+     * @return the fromAccount
      */
-    public String getFromAcct() {
-        return fromAcct;
+    public String getFromAccount() {
+        return fromAccount;
     }
 
     /**
-     * @return the toAcct
+     * @return the toAccount
      */
-    public String getToAcct() {
-        return toAcct;
+    public String getToAccount() {
+        return toAccount;
+    }
+
+    /**
+     * @return the passCode
+     */
+    public String getPassCode() {
+        return passCode;
+    }
+
+    /**
+     * @return the text
+     */
+    public String getText() {
+        return text;
     }
 
     /**

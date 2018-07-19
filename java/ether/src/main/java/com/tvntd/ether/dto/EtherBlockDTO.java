@@ -89,6 +89,20 @@ public class EtherBlockDTO extends GenericResponse
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class EtherBlock extends RpcResponse
+    {
+        protected BlockResult result;
+
+        /**
+         * @return the result
+         */
+        @JsonProperty(value = "result")
+        public BlockResult getResult() {
+            return result;
+        }
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class EtherBlockResult extends RpcResponse
     {
         protected Result result;

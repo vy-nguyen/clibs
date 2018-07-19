@@ -28,6 +28,8 @@ package com.tvntd.ether.api;
 
 import java.util.List;
 
+import org.ethereum.jsonrpc.JsonRpc.BlockResult;
+
 import com.tvntd.ether.dto.EtherBlockDTO;
 import com.tvntd.ether.dto.PublicAccountDTO;
 import com.tvntd.ether.dto.TransactionDTO;
@@ -36,11 +38,18 @@ public interface ITransactionSvc
 {
     TransactionDTO getTransaction(String txHash);
 
-    List<TransactionDTO> getTransaction(String userUuid, boolean from);
-    List<TransactionDTO> getTransactionAcct(String account, boolean from);
+    List<TransactionDTO> getTransaction(String userUuid,
+            int start, int count, boolean from);
 
+    List<TransactionDTO> getTransactionAcct(String account,
+            int start, int count, boolean from);
+
+    List<TransactionDTO> getRecentTransaction(int start, int count);
     List<TransactionDTO> getAllTransaction();
 
     PublicAccountDTO getPublicAccount();
     void getEtherBlocks(EtherBlockDTO blocks);
+
+    BlockResult getBlockByHash(String hash);
+    BlockResult getBlockByNumber(String number);
 }

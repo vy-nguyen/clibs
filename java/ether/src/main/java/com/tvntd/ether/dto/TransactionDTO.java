@@ -26,54 +26,149 @@
  */
 package com.tvntd.ether.dto;
 
+import java.math.BigInteger;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.ethereum.jsonrpc.TransactionResultDTO;
+import org.ethereum.jsonrpc.TypeConverter;
+
+import com.tvntd.ether.models.Transaction;
+import com.tvntd.ether.util.Convert;
+import com.tvntd.lib.RawParseUtils;
+
 public class TransactionDTO
 {
-    protected String txHash;
-    protected String fromUuid;
-    protected String fromAcct;
-    protected String toUuid;
-    protected String toAcct;
-    protected Float amount;
+    protected Transaction tx;
+    protected TransactionResultDTO bcTx;
+
+    public TransactionDTO(Transaction trans, TransactionResultDTO bc)
+    {
+        this.tx = trans;
+        this.bcTx = bc;
+
+        if (this.tx == null) {
+            this.tx = new Transaction();
+        }
+        if (this.bcTx == null) {
+            this.bcTx = new TransactionResultDTO();
+        }
+    }
 
     /**
      * @return the txHash
      */
     public String getTxHash() {
-        return txHash;
+        return bcTx.hash != null ? bcTx.hash : tx.getTxHash().toLowerCase();
     }
 
     /**
      * @return the fromUuid
      */
     public String getFromUuid() {
-        return fromUuid;
+        return tx.getFromUuid();
     }
 
     /**
      * @return the fromAcct
      */
     public String getFromAcct() {
-        return fromAcct;
+        return bcTx.from != null ? bcTx.from : tx.getFromAcct().toLowerCase();
     }
 
     /**
      * @return the toUuid
      */
     public String getToUuid() {
-        return toUuid;
+        return tx.getToUuid();
     }
 
     /**
      * @return the toAcct
      */
     public String getToAcct() {
-        return toAcct;
+        return bcTx.to != null ? bcTx.to : tx.getToAcct().toLowerCase();
     }
 
-    /**
-     * @return the amount
-     */
-    public Float getAmount() {
-        return amount;
+    public String getBlockHash() {
+        return bcTx.blockHash;
+    }
+
+    public Long getNonce() {
+        return bcTx.nonce != null ?  RawParseUtils.parseLong(bcTx.nonce) : 0L;
+    }
+
+    public String getR() {
+        return bcTx.r;
+    }
+
+    public String getS() {
+        return bcTx.s;
+    }
+
+    public String getV() {
+        return bcTx.v;
+    }
+
+    public String getInput() {
+        return bcTx.input;
+    }
+
+    public Long getTransactionIndex() {
+        return bcTx.transactionIndex != null ?
+            RawParseUtils.parseLong(bcTx.transactionIndex) : 0L;
+    }
+
+    public Long getXuAmount()
+    {
+        if (bcTx == null || bcTx.value == null) {
+            return tx.getXuAmount();
+        }
+        BigInteger val = TypeConverter.StringHexToBigInteger(bcTx.value);
+        return Convert.toXuValue(val);
+    }
+
+    public Long getGasPrice() {
+        return bcTx.gasPrice != null ? 
+            RawParseUtils.parseLong(bcTx.gasPrice) : 0L;
+    }
+
+    public Long getGas() {
+        return bcTx.gas != null ?
+            RawParseUtils.parseLong(bcTx.gasPrice) : 0L;
+    }
+
+    public static class TransListDTO extends GenericResponse
+    {
+        protected List<TransactionDTO> transactions;
+
+        public TransListDTO()
+        {
+            super("trans");
+            transactions = new LinkedList<>();
+        }
+
+        public TransListDTO(List<TransactionDTO> trans)
+        {
+            super("trans");
+            this.transactions = trans;
+        }
+
+        public TransListDTO(Transaction t, TransactionResultDTO tx)
+        {
+            this();
+            transactions.add(new TransactionDTO(t, tx));
+        }
+
+        public void addTransaction(Transaction t, TransactionResultDTO tx) {
+            transactions.add(new TransactionDTO(t, tx));
+        }
+
+        /**
+         * @return the transactions
+         */
+        public List<TransactionDTO> getTransactions() {
+            return transactions;
+        }
     }
 }
