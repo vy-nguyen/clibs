@@ -337,6 +337,10 @@ class Util
             }
         };
     }
+
+    static makeAnchorTag(str) {
+        return "<a>" + str + "</a>";
+    }
 }
 
 // https://stackoverflow.com/questions/149055/

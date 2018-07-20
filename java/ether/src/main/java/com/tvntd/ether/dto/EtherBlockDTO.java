@@ -26,6 +26,7 @@
  */
 package com.tvntd.ether.dto;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.ethereum.jsonrpc.JsonRpc.BlockResult;
@@ -51,6 +52,14 @@ public class EtherBlockDTO extends GenericResponse
         this.blocks = blocks;
     }
 
+    public void addBlock(BlockResult blk)
+    {
+        if (blocks == null) {
+            blocks = new LinkedList<>();
+        }
+        blocks.add(blk);
+    }
+
     public String fetchStartBlock() {
         return startBlock;
     }
@@ -63,11 +72,11 @@ public class EtherBlockDTO extends GenericResponse
      * JSON values
      */
     public Long getStartBlock() {
-        return Long.parseLong(startBlock);
+        return startBlock != null ? Long.parseLong(startBlock) : 0L;
     }
 
     public Integer getCount() {
-        return Integer.parseInt(count);
+        return count != null ? Integer.parseInt(count) : 0;
     }
 
     /**

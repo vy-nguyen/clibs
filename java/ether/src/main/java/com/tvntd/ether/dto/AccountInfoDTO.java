@@ -70,7 +70,6 @@ public class AccountInfoDTO
     /**
      * @return the xuBalance
      */
-    @JsonProperty("XuBalance")
     public Long getXuBalance() {
         return xuBalance;
     }
@@ -84,7 +83,6 @@ public class AccountInfoDTO
     /**
      * @return the acctName
      */
-    @JsonProperty("AcctName")
     public String getAcctName() {
         return acctName;
     }

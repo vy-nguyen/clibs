@@ -8,6 +8,7 @@ import $                 from 'jquery';
 import React             from 'react-mod';
 import PropTypes         from 'prop-types';
 
+import { Util }          from 'vntd-shared/utils/Enum.jsx';
 import WidgetGrid        from 'vntd-shared/widgets/WidgetGrid.jsx';
 import JarvisWidget      from 'vntd-shared/widgets/JarvisWidget.jsx';
 import Datatable         from 'vntd-shared/tables/Datatable.jsx';
@@ -128,11 +129,11 @@ class RenderRow extends React.Component
 
         tableData = this.state.tableData;
         if (tableData == null || this.props.cloneRow == null) {
-            return <p>Don't know how to clone row</p>
+            return <p>Do not know how to clone row</p>
         }
         renderData = RenderRow.toTableEdit(tableData, null, true);
         columns    = RenderRow.renderHeader(this.props.tableFormat, tableFmt, false);
-        table      = RenderRow.renderTable(renderData, tableFmt, columns);
+        table      = RenderRow.renderTable(renderData, tableFmt, columns, null);
 
         return (
             <div className="row">
@@ -160,8 +161,8 @@ class RenderRow extends React.Component
         }
     }
 
-    static toTableEdit(tabRows, newRows, select) {
-        let val, checkbox, entry, row, data = [];
+    static toTableEdit(tabRows, newRows, select, cellMap) {
+        let r, c, val, checkbox, entry, row, data = [];
 
         _.forOwn(newRows, function(inpRow) {
             row = {};
@@ -174,8 +175,13 @@ class RenderRow extends React.Component
             });
             data.push(row);
         });
+        r = 0
         _.forEach(tabRows, function(inpRow) {
+            c = 0;
             row = {};
+            if (cellMap != null) {
+                cellMap[r] = [];
+            }
             if (select === true) {
                 inpRow.checkbox = {
                     inpName  : _.uniqueId('check-'),
@@ -187,28 +193,38 @@ class RenderRow extends React.Component
             _.forOwn(inpRow, function(cell, key) {
                 if (cell != null && typeof cell === 'object') {
                     entry = cell;
-                    val = InputStore.getItemIndex(cell.inpName);
-                    if (val != null) {
-                        entry.inpHolder = val;
-                        entry.inpDefVal = val;
+                    if (cell.inpName != null) {
+                        val = InputStore.getItemIndex(cell.inpName);
+                        if (val != null) {
+                            entry.inpHolder = val;
+                            entry.inpDefVal = val;
+                        }
+                        row[key] = GenericForm.renderHtmlInput(entry);
+                    } else {
+                        row[key] = Util.makeAnchorTag(entry.cellData);
+                        if (cellMap != null) {
+                            cellMap[r][c] = entry.cellArg;
+                        }
                     }
-                    row[key] = GenericForm.renderHtmlInput(entry);
                 } else {
                     row[key] = cell;
                 }
+                c++;
             });
+            r++;
             data.push(row);
         });
         return data;
     }
 
-    static renderTable(tableData, tableFmt, columns) {
+    static renderTable(tableData, tableFmt, columns, cellClick) {
         return (
             <Datatable ref="dataTable" tableData={tableData}
                 options={{
                     data: tableData,
                     columns: columns
                 }}
+                cellClick={cellClick}
                 paginationLength={true}
                 className="table table-striped table-bordered table-hover" width="100%">
                 <thead>
@@ -306,6 +322,7 @@ class DynamicTable extends React.Component
         this._getTableData  = this._getTableData.bind(this);
         this._addNewRows    = this._addNewRows.bind(this);
         this._closeRowInput = this._closeRowInput.bind(this);
+        this._cellClick     = this._cellClick.bind(this);
 
         this.state = {
             newRows: {}
@@ -439,12 +456,20 @@ class DynamicTable extends React.Component
     }
 
     _getTableData() {
+        if (this.props.cellClick != null) {
+            this.cellMap = [];
+        }
         if (this.props.select === true) {
             return RenderRow.toTableEdit(this.props.tableData,
-                    this.state.newRows, this.props.select);
+                    this.state.newRows, this.props.select, this.cellMap);
         }
         return RenderRow.toTableEdit(this.props.tableData,
-                this.state.newRows, this.props.select);
+                this.state.newRows, this.props.select, this.cellMap);
+    }
+
+    _cellClick(index) {
+        console.log(this.cellMap);
+        this.props.cellClick(this.cellMap[index.row][index.column]);
     }
 
     render() {
@@ -454,11 +479,12 @@ class DynamicTable extends React.Component
             inpHolder: "Enter new rows"
         };
         let table, tableData, columns, tableFmt = [], addRow = null,
+            cellClick = this._cellClick,
             tableFormat = this.props.tableFormat, select = this.props.select;
 
         tableData = this._getTableData();
         columns = RenderRow.renderHeader(tableFormat, tableFmt, select);
-        table = RenderRow.renderTable(tableData, tableFmt, columns);
+        table = RenderRow.renderTable(tableData, tableFmt, columns, cellClick);
 
         if (this.props.edit === true) {
             addRow = (

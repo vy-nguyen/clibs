@@ -20,7 +20,7 @@ public class Constants
         new AccountInfoDTO("0xf39702756d8fb81a578fbd40ce71e534342936e9", "Micropay"),
         new AccountInfoDTO("0x4bf42dbba6a249267a869cd55bbb7bdf8baacd4f", "Equity Pool"),
         new AccountInfoDTO("0x18046279402d5cbe4ba95f62da3ceff309f83ea2", "Prefered"),
-        new AccountInfoDTO("0x154841d32ef6456ffe107f19c67b23e0cec784e8", "Annon"),
+        new AccountInfoDTO("0x154841d32ef6456ffe107f19c67b23e0cec784e8", "Test Fund"),
         new AccountInfoDTO("0x3e869518aabdbb1805bd467847b402f9e567b27b", "USD Backing")
     };
 }

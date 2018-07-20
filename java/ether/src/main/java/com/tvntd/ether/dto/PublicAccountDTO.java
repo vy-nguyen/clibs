@@ -26,7 +26,7 @@
  */
 package com.tvntd.ether.dto;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,13 +37,14 @@ public class PublicAccountDTO
 {
     protected BlockResult latestBlock;
     protected List<AccountInfoDTO> publicAcct;
+    protected List<TransactionDTO> recentTrans;
 
     public PublicAccountDTO(List<AccountInfoDTO> acct) {
         this.publicAcct = acct;
     }
 
     public PublicAccountDTO(Map<String, AccountInfoDTO> acct) {
-        this.publicAcct = new ArrayList<>(acct.values());
+        this.publicAcct = new LinkedList<>(acct.values());
         latestBlock = new BlockTransDetail();
     }
 
@@ -71,6 +72,20 @@ public class PublicAccountDTO
      */
     public List<AccountInfoDTO> getPublicAcct() {
         return publicAcct;
+    }
+
+    /**
+     * @return the recentTrans
+     */
+    public List<TransactionDTO> getRecentTrans() {
+        return recentTrans;
+    }
+
+    /**
+     * @param recentTrans the recentTrans to set
+     */
+    public void setRecentTrans(List<TransactionDTO> recentTrans) {
+        this.recentTrans = recentTrans;
     }
 
     /**

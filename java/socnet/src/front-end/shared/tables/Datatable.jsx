@@ -37,6 +37,13 @@ class DataTable extends React.Component
                     .draw();
             });
         }
+        if (this.props.cellClick) {
+            let cellClick = this.props.cellClick;
+            element.on('click', 'td', function() {
+                let cell = dataTable.cell(this);
+                cellClick(cell.index());
+            });
+        }
         if (!this.options.toolbar) {
             let div = '<div class="text-right">' + 
                 '<img src="styles/img/logo.png" alt="tvntd" ' +

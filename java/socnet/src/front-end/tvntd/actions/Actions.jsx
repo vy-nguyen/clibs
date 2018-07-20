@@ -102,9 +102,10 @@ const Actions = Reflux.createActions({
     setTags:         completedFailedFn,
 
     // Ethereum actions
-    etherStartup:    completedFailedFn,
-    getEtherWallet:  completedFailedFn,
-    getEtherBlocks:  completedFailedFn
+    etherStartup:     completedFailedFn,
+    getEtherWallet:   completedFailedFn,
+    getEtherBlocks:   completedFailedFn,
+    getEtherBlockSet: completedFailedFn
 });
 
 function postRestCall(formData, url, json, cbObj, authReq, context) {
@@ -160,7 +161,6 @@ function getJSON(url, cbObj, authReq, id, context, syncServer) {
         if (syncServer === true) {
             Actions.syncServer();
         }
-        console.log(data);
 
     }).fail(function(resp, text, error) {
         resp.cbContext = context;
@@ -223,6 +223,13 @@ Actions.getEtherBlocks.listen(function(blkNo, cb) {
 
 Actions.getEtherWallet.listen(function() {
     getJSON("/user/tudo/wallet", this, true, "getEtherWallet");
+});
+
+Actions.getEtherBlockSet.listen(function(blocks) {
+    postRestCall({
+        hashType: "block",
+        hashes  : blocks
+    }, "/api/ether/blkset", true, this, false);
 });
 
 /**

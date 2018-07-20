@@ -155,11 +155,11 @@ class EtherPane extends EtherBaseAcct
                 <div className="col-sm-12 col-xs-12 col-md-12 col-lg-12">
                     {out}
                 </div>
-                <div className="col-sm-12 col-xs-12 col-md-6 col-lg-6">
+                <div className="col-sm-12 col-xs-12 col-md-12 col-lg-12">
                     <BlockView currBlk={latestBlk} latestNo={latestBlk.getBlkNum()}/>
                 </div>
-                <div className="col-sm-12 col-xs-12 col-md-6 col-lg-6">
-                    <TransactionView/>
+                <div className="col-sm-12 col-xs-12 col-md-12 col-lg-12">
+                    <TransactionView currTx={0}/>
                 </div>
             </div>
         )

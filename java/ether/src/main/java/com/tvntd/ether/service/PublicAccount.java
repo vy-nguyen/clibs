@@ -87,15 +87,17 @@ public class PublicAccount
         EtherAcctInfo result = rpc.callJsonRpcArr(EtherAcctInfo.class,
                 "tudo_listAccountInfoAndBlock", "id", knownAccounts);
 
-        if (result != null && result.getError() == null) {
-            processAccountInfo(result.accountResult());
+        if (result != null) {
+            if (result.getError() == null) {
+                processAccountInfo(result.accountResult());
 
-            latest = result.getLatestBlock();
-            updateAccount = false;
-            lastPoll = System.currentTimeMillis();
-            return true;
+                latest = result.getLatestBlock();
+                updateAccount = false;
+                lastPoll = System.currentTimeMillis();
+                return true;
+            }
+            s_log.info("Rpc error " + result.getError().toString());
         }
-        s_log.info("Rpc error " + result.getError().toString());
         return false;
     }
 

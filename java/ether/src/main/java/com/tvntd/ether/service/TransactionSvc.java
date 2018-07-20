@@ -142,6 +142,40 @@ public class TransactionSvc implements ITransactionSvc
     }
 
     /**
+     * Return blocks based on hashes
+     */
+    public EtherBlockDTO getBlockByHashSet(String[] hashes)
+    {
+        EtherBlockDTO out = new EtherBlockDTO(null, null);
+        List<String> missing = new LinkedList<>();
+
+        for (String h : hashes) {
+            BlockResult blk = s_cacheBlock.getIndex(h);
+            if (blk != null) {
+                out.addBlock(blk);
+            } else {
+                missing.add(h);
+            }
+        }
+        if (missing.isEmpty()) {
+            return out;
+        }
+        JsonRpc rpc = new JsonRpc();
+        EtherBlockResult resp = rpc.<EtherBlockResult> callJsonRpcArr(
+                EtherBlockResult.class, "tudo_listBlockHash", "id", missing);
+
+        if (resp != null && resp.getError() == null) {
+            List<BlockResult> blocks = resp.blockResult();
+            if (blocks != null) {
+                for (BlockResult blk : blocks) {
+                    out.addBlock(blk);
+                }
+            }
+        }
+        return out;
+    }
+
+    /**
      * Return a block by block number.
      */
     public BlockResult getBlockByNumber(String number)
@@ -229,7 +263,7 @@ public class TransactionSvc implements ITransactionSvc
             }
         }
         if (!missing.isEmpty()) {
-            s_cacheTransactionResult(missing, out);
+            cacheTransactionResult(missing, out);
         }
         missing.clear();
         return out;
@@ -239,7 +273,7 @@ public class TransactionSvc implements ITransactionSvc
      * Cache transaction result from blockchain.
      */
     protected void
-    s_cacheTransactionResult(Map<String, Transaction> miss, List<TransactionDTO> result)
+    cacheTransactionResult(Map<String, Transaction> miss, List<TransactionDTO> result)
     {
         JsonRpc rpc = new JsonRpc();
         List<String> transHash = new LinkedList<>();
@@ -266,8 +300,11 @@ public class TransactionSvc implements ITransactionSvc
     /**
      * Retrieve info about public accounts.
      */
-    public PublicAccountDTO getPublicAccount() {
-        return pubAccounts.getPublicAccount();
+    public PublicAccountDTO getPublicAccount()
+    {
+        PublicAccountDTO out = pubAccounts.getPublicAccount();
+        out.setRecentTrans(getRecentTransaction(0, 100));
+        return out;
     }
 
     /**

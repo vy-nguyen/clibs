@@ -34,10 +34,11 @@ class EthAccount
     }
 
     getMoneyBalance() {
-        let ether = this.xuBalance / TDRates.XU2TD;
-        return 'T$ '  + ether.formatMoney(3, '.', ',');
+        return EthAccount.formatMoney(this.xuBalance);
     }
 
+    // @Override
+    //
     indexFn() {
         return this.acctName;
     }
@@ -48,6 +49,72 @@ class EthAccount
 
     static getExchangeRate() {
         return TDRates;
+    }
+
+    static formatMoney(xuBalance) {
+        let ether = xuBalance / TDRates.XU2TD;
+        return 'T$ '  + ether.formatMoney(3, '.', ',');
+    }
+}
+
+class Transaction
+{
+    constructor(data) {
+        _.forOwn(data, function(v, k) {
+            this[k] = v;
+        }.bind(this));
+    }
+
+    getBlockHash() {
+        return this.blockHash;
+    }
+
+    getTxHash() {
+        return this.txHash;
+    }
+
+    getTxHashBrief() {
+        return this.txHash.substring(0, 16) + "...";
+    }
+
+    getFromAcct() {
+        return this.fromAcct;
+    }
+
+    getToAcct() {
+        return this.toAcct;
+    }
+
+    getXuAmount() {
+        return this.xuAmount;
+    }
+
+    getAmountFmt() {
+        return EthAccount.formatMoney(this.xuAmount);
+    }
+
+    getNonce() {
+        return this.nonce;
+    }
+
+    getTimeStamp() {
+        if (this.block == null) {
+            return "...";
+        }
+        if (this.txTime == null) {
+            this.txTime = moment(this.block.timestamp);
+        }
+        return this.txTime.format("DD-MM-YYYY HH:mm");
+    }
+
+    linkBlock(ethStore) {
+        if (this.block == null) {
+            this.block = ethStore.getBlockHash(this.blockHash);
+            if (this.block == null) {
+                return false;
+            }
+        }
+        return true;
     }
 }
 
@@ -76,14 +143,7 @@ class EtherBlock
     }
 
     getMiner(name) {
-        let acct = this.miner.substring(0, 16) + "...";
-
-        if (name === true) {
-            let name, account = this.store.getAccount(this.miner);
-            name = (account != null) ? account.getName() : "Annon";
-            acct = acct + " (" + name + ")";
-        }
-        return acct;
+        return this.store.getAccountName(this.miner);
     }
 
     getMoment() {
@@ -93,14 +153,11 @@ class EtherBlock
     getTimestamp() {
         return this.moment + '-' + this.timestamp;
     }
-}
 
-class EtherTrans
-{
-    constructor(data) {
-        _.forOwn(data, function(v, k) {
-            this[k] = v;
-        }.bind(this));
+    // @Override
+    //
+    indexFn() {
+        return this.hash;
     }
 }
 
@@ -110,24 +167,33 @@ class EtherStoreClz extends Reflux.Store
         super();
         this.state = new BaseStore(this);
         this.blocks = new BaseStore(this);
-        this.pendingGet  = {};
-        this.latestBlock = 0;
+        this.transactions = new BaseStore(this);
+
+        this.transOrder   = [];
+        this.pendingBlock = [];
+        this.pendingGet   = {};
+        this.latestBlock  = 0;
+        this.cacheTrans   = 100;
         this.listenToMany(Actions);
     }
 
     onStartupCompleted(data) {
         let pubAcct = data.publicAcct;
 
-        console.log("-------" + UserStore.isLogin());
-        console.log(data);
-
         this._updateStore(pubAcct.publicAcct);
         this._updateBlock([pubAcct.latestBlock]);
+        this._updateTransaction(pubAcct.recentTrans);
         this.trigger(this, this.state);
 
         if (UserStore.isLogin()) {
             Actions.getEtherWallet();
         }
+    }
+
+    onGetEtherBlockSetCompleted(data) {
+        this.pendingBlock = [];
+        this._updateBlock(data.blocks);
+        this.trigger(this, this.state, "fetch");
     }
 
     onEtherStartupCompleted(data) {
@@ -149,10 +215,34 @@ class EtherStoreClz extends Reflux.Store
 
             blkNo = blk.getBlkNum();
             this.blocks.storeItem(blkNo, blk, true);
+
             if (blkNo > this.latestBlock) {
                 this.latestBlock = blkNo;
             }
+            if (blk.transactions != null) {
+                this._updateTransaction(blk.transactions);
+            }
         }.bind(this));
+    }
+
+    _updateTransaction(trans) {
+        if (trans == null) {
+            return;
+        }
+        _.forEach(trans, function(t) {
+            let tobj = this.transactions.getItem(t.hash);
+
+            if (tobj == null) {
+                tobj = new Transaction(t, this);
+
+                this.transOrder.push(tobj);
+                this.transactions.storeItem(tobj.getTxHash(), tobj);
+            }
+            if (tobj.linkBlock(this) == false) {
+                this.pendingBlock.push(tobj.getBlockHash());
+            }
+        }.bind(this));
+        this.fetchMissingBlock();
     }
 
     _updateStore(accounts) {
@@ -161,6 +251,9 @@ class EtherStoreClz extends Reflux.Store
         }.bind(this));
     }
 
+    /**
+     * Block methods.
+     */
     getBlock(number) {
         if (number == null || number > this.latestBlock) {
             number = this.latestBlock;
@@ -170,6 +263,10 @@ class EtherStoreClz extends Reflux.Store
             return block;
         }
         return this.blocks.getItem(this.latestBlock);
+    }
+
+    getBlockHash(hash) {
+        return this.blocks.getIndex(hash);
     }
 
     fetchBlock(blkNo) {
@@ -186,10 +283,38 @@ class EtherStoreClz extends Reflux.Store
         return blk;
     }
 
+    fetchMissingBlock() {
+        if (this.pendingBlock.length > 0) {
+            Actions.getEtherBlockSet(this.pendingBlock);
+        }
+    }
+
+    /**
+     * Transaction methods.
+     */
+    getTransaction(from, count) {
+        if (from >= this.cacheTrans) {
+            // Fetch more trans
+        }
+        if (from < 0 || from >= this.transOrder.length) {
+            from = 0;
+        }
+        return this.transOrder.slice(from, count);
+    }
+
+    /**
+     * Account methods.
+     */
     getAccount(acct) {
         return this.state.getItem(acct);
     }
-    
+   
+    getAccountName(acct) {
+        let account = this.state.getItem(acct),
+            name = (account != null) ? account.getName() : "Annon";
+        return acct.substring(0, 16) + "... (" + name + ")";
+    }
+
     iterEachAccount(fn) {
         _.forOwn(this.state.getAllData(), fn);
     }

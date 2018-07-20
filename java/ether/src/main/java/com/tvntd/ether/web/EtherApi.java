@@ -26,6 +26,8 @@
  */
 package com.tvntd.ether.web;
 
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
 import org.ethereum.jsonrpc.JsonRpc.BlockResult;
@@ -34,13 +36,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tvntd.ether.api.ITransactionSvc;
 import com.tvntd.ether.dto.EtherBlockDTO;
+import com.tvntd.ether.dto.EtherTransDTO;
 import com.tvntd.ether.dto.GenericResponse;
+import com.tvntd.ether.dto.HashForm;
 import com.tvntd.ether.dto.PublicAccountDTO;
 import com.tvntd.ether.dto.TransactionDTO;
 import com.tvntd.ether.dto.TransactionDTO.TransListDTO;
@@ -75,6 +81,30 @@ public class EtherApi
         return etherTrans.getBlockByNumber(blkno);
     }
 
+    /**
+     * @return BlockResult for the list of hashes given by the post form.
+     */
+    @RequestMapping(value = "/api/ether/blkset",
+        consumes = "application/json", method = RequestMethod.POST)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @ResponseBody
+    EtherBlockDTO getEtherBlockHashSet(@RequestBody HashForm hash) {
+        return etherTrans.getBlockByHashSet(hash.getHashes());
+    }
+
+    /**
+     * @return TransactionResult for the list of hahses given by the post form.
+     */
+    @RequestMapping(value = "/api/ether/blkhash", method = RequestMethod.POST)
+    @ResponseBody
+    public EtherTransDTO getEtherTransHash(@RequestBody HashForm hash)
+    {
+        return null;
+    }
+
+    /**
+     * @return range of blocks from start until start + count.
+     */
     @RequestMapping(value = "/api/ether/{start}/{count}", method = RequestMethod.GET)
     @ResponseBody
     public GenericResponse
@@ -87,6 +117,10 @@ public class EtherApi
         return result;
     }
 
+    /**
+     * @return the list of recent transactions from this user account starting
+     * from start to start + count.
+     */
     @RequestMapping(value = "/api/tudo/trans-from/{account}/{start}/{count}",
             method = RequestMethod.GET)
     @ResponseBody
@@ -98,6 +132,10 @@ public class EtherApi
         return getEtherTransaction(account, start, count, true);
     }
 
+    /**
+     * @return the list of recent transactions to this user account starting from
+     * start until start + count.
+     */
     @RequestMapping(value = "/api/tudo/trans-to/{account}/{start}/{count}",
             method = RequestMethod.GET)
     @ResponseBody

@@ -24,33 +24,27 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.tvntd.ether.api;
+package com.tvntd.ether.dto;
 
-import java.util.List;
-
-import org.ethereum.jsonrpc.JsonRpc.BlockResult;
-
-import com.tvntd.ether.dto.EtherBlockDTO;
-import com.tvntd.ether.dto.PublicAccountDTO;
-import com.tvntd.ether.dto.TransactionDTO;
-
-public interface ITransactionSvc
+public class HashForm
 {
-    TransactionDTO getTransaction(String txHash);
+    public static final String blockType = "block";
+    public static final String transType = "trans";
 
-    List<TransactionDTO> getTransaction(String userUuid,
-            int start, int count, boolean from);
+    protected String hashType;
+    protected String[] hashes;
 
-    List<TransactionDTO> getTransactionAcct(String account,
-            int start, int count, boolean from);
+    /**
+     * @return the hashType
+     */
+    public String getHashType() {
+        return hashType;
+    }
 
-    List<TransactionDTO> getRecentTransaction(int start, int count);
-    List<TransactionDTO> getAllTransaction();
-
-    PublicAccountDTO getPublicAccount();
-    void getEtherBlocks(EtherBlockDTO blocks);
-
-    BlockResult getBlockByHash(String hash);
-    BlockResult getBlockByNumber(String number);
-    EtherBlockDTO getBlockByHashSet(String[] hashes);
+    /**
+     * @return the hashes
+     */
+    public String[] getHashes() {
+        return hashes;
+    }
 }
