@@ -4,59 +4,16 @@
 'use strict';
 
 import React             from 'react-mod';
-import { QRCode }        from 'react-qr-svg';
 
 import BaseMedia         from 'vntd-shared/layout/BaseMedia.jsx';
 
 import ArticleTagBrief   from 'vntd-root/components/ArticleTagBrief.jsx';
 import BlockView         from 'vntd-root/pages/wall/BlockView.jsx';
 import TransactionView   from 'vntd-root/pages/wall/TransactionView.jsx';
+import EtherAccount      from 'vntd-root/pages/wall/EtherAccount.jsx';
 
 import { EtherBaseAcct }          from 'vntd-root/pages/wall/EtherCrumbs.jsx';
 import { EtherStore, EthAccount } from 'vntd-root/stores/EtherStore.jsx';
-
-class EtherAccount extends BaseMedia
-{
-    constructor(props) {
-        super(props);
-        this.style = {
-            width: 64
-        };
-    }
-
-    getArg() {
-        return this.props.account;
-    }
-
-    getDetailKV(acct) {
-        return [ {
-            key: 'Public Key',
-            val: acct.Account
-        }, {
-            key: 'Public Name',
-            val: acct.getName()
-        }, {
-            key: 'Balance',
-            val: acct.getMoneyBalance()
-        }, {
-            key: 'Transactions',
-            val: 'Work in progress...'
-        } ];
-    }
-
-    renderMediaBox(acct) {
-        return <QRCode value={acct.Account} style={this.style}/>;
-    }
-
-    renderMediaBody(acct) {
-        return (
-            <div>
-                <h4>{acct.acctName}</h4>
-                {acct.getMoneyBalance()}
-            </div>
-        );
-    }
-}
 
 class EtherExchange extends BaseMedia
 {

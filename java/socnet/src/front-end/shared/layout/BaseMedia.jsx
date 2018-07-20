@@ -65,7 +65,16 @@ class BaseMedia extends React.Component
         if (arg == null) {
             return null;
         }
-        out = this.props.detail === true ? this.renderDetail(arg) : this.renderBrief(arg);
+        if (this.props.full === true) {
+            return (
+                <div onClick={this._onClick}>
+                    {this.renderBrief(arg)}
+                    {this.renderDetail(arg)}
+                </div>
+            );
+        }
+        out = this.props.detail === true ?
+            this.renderDetail(arg) : this.renderBrief(arg);
         return (
             <div onClick={this._onClick}>
                 {out}

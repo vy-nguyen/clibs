@@ -1,0 +1,87 @@
+/*
+ * Written by Vy Nguyen (2018)
+ */
+'use strict';
+
+import _                  from 'lodash';
+import React              from 'react-mod';
+
+import Lang               from 'vntd-root/stores/LanguageStore.jsx';
+import EtherStore         from 'vntd-root/stores/EtherStore.jsx';
+import DynamicTable       from 'vntd-root/components/DynamicTable.jsx';
+import EtherModal         from 'vntd-root/pages/wall/EtherModal.jsx';
+
+class TransactionTable extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this._cellClick = this._cellClick.bind(this);
+
+        this.tabHeader = [ {
+            key   : "txHash",
+            format: "",
+            header: Lang.translate("Transaction Id")
+        }, {
+            key   : "fromAcct",
+            format: "",
+            header: Lang.translate("From")
+        }, {
+            key   : "toAcct",
+            format: "",
+            header: Lang.translate("To")
+        }, {
+            key   : "tstamp",
+            format: "",
+            header: Lang.translate("Date")
+        }, {
+            key   : "amount",
+            format: "",
+            header: Lang.translate("Amount")
+        } ];
+    }
+
+    _cellClick(cellArg) {
+        this.refs.modal.openModal(cellArg);
+    }
+
+    _getTableData() {
+        let tx, txLink, data = [], trans = this.props.trans;
+
+        _.forOwn(trans, function(t) {
+            let fr = t.getFromAcct(), to = t.getToAcct();
+
+            data.push({
+                txHash  : {
+                    cellArg : { type: 'trans', data: t },
+                    cellData: t.getTxHashBrief()
+                },
+                fromAcct: {
+                    cellArg : { type: 'acct', data: fr },
+                    cellData: EtherStore.getAccountName(fr)
+                },
+                toAcct  : {
+                    cellArg : { type: 'acct', data: to },
+                    cellData: EtherStore.getAccountName(to)
+                },
+                rowId : t.getTxHash(),
+                amount: t.getAmountFmt(),
+                tstamp: t.getTimeStamp()
+            });
+        }.bind(this));
+        return data;
+    }
+
+    render() {
+        return (
+            <DynamicTable tableFormat={this.tabHeader}
+                tableData={this._getTableData()}
+                tableTitle={Lang.translate("Recent Transactions")}
+                tableId={_.uniqueId("trans-")}
+                cellClick={this._cellClick}>
+                <EtherModal ref="modal" modal={true}/>
+            </DynamicTable>
+        );
+    }
+}
+
+export default TransactionTable;

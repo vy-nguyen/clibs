@@ -468,7 +468,6 @@ class DynamicTable extends React.Component
     }
 
     _cellClick(index) {
-        console.log(this.cellMap);
         this.props.cellClick(this.cellMap[index.row][index.column]);
     }
 

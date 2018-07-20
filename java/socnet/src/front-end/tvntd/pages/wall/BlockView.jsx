@@ -12,66 +12,9 @@ import BaseMedia          from 'vntd-shared/layout/BaseMedia.jsx';
 
 import { VntdGlob }       from 'vntd-root/config/constants.js';
 import { EtherBaseAcct }  from 'vntd-root/pages/wall/EtherCrumbs.jsx';
+import EtherBlock         from 'vntd-root/pages/wall/EtherBlock.jsx';
 import EtherStore         from 'vntd-root/stores/EtherStore.jsx';
 import ArticleTagBrief    from 'vntd-root/components/ArticleTagBrief.jsx';
-
-class RenderBlock extends BaseMedia
-{
-    constructor(props) {
-        super(props);
-    }
-
-    getArg() {
-        return this.props.block;
-    }
-
-    getDetailKV(block) {
-        return [ {
-            key: 'Block',
-            val: block.getBlkNum()
-        }, {
-            key: 'Timestamp',
-            val: block.getTimestamp()
-        }, {
-            key: 'Hash',
-            val: block.hash
-        }, {
-            key: 'Parent Hash',
-            val: block.parentHash
-        }, {
-            key: 'Sha3Uncles',
-            val: block.sha3Uncles
-        }, {
-            key: 'Miner',
-            val: block.getMiner(true)
-        }, {
-            key: 'Nonce',
-            val: block.nonce
-        }, {
-            key: 'Size',
-            val: block.size
-        }, {
-            key: 'Transactions',
-            val: block.getTransCount()
-        } ];
-    }
-
-    renderMediaBox(block) {
-        return (
-            <h3>{block.getBlkNum()}</h3>
-        );
-    }
-
-    renderMediaBody(block) {
-        return (
-            <div>
-                <span>Mined by {block.getMiner(true)}</span>
-                <div>Sealed {block.getMoment()}</div>
-                <div>Transactions {block.getTransCount()}</div>
-            </div>
-        );
-    }
-}
 
 class BlockView extends EtherBaseAcct
 {
@@ -150,14 +93,14 @@ class BlockView extends EtherBaseAcct
     }
 
     renderBrief(block) {
-        return <RenderBlock block={block} onClick={this._clickBlock}/>;
+        return <EtherBlock block={block} onClick={this._clickBlock}/>;
     }
 
     renderFull(block) {
         if (this.state.blkDetail !== true) {
             return null;
         }
-        return <RenderBlock block={block} detail={true} onClick={this._clickBlock}/>;
+        return <EtherBlock block={block} detail={true} onClick={this._clickBlock}/>;
     }
 
     render() {
