@@ -51,6 +51,8 @@ public class JsonRpc
 
     // private static final String s_url = "http://96.68.150.190:8545/";
     private static final String s_url = "http://10.1.10.13:8545/";
+    // private static final String s_url = "http://10.8.0.1:8545/";
+    // private static final String s_url = "http://localhost:8545/";
     protected HttpClient httpClient;
 
     public JsonRpc()
