@@ -423,7 +423,7 @@ class EtherStoreClz extends Reflux.Store
     }
 
     fetchMissingTrans() {
-        if (!_.isEmpty(pendingTrans)) {
+        if (!_.isEmpty(this.pendingTrans)) {
             console.log("fetch missing trans");
         }
     }

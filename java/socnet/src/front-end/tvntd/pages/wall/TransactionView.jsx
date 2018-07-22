@@ -21,10 +21,6 @@ class TransactionView extends EtherBaseAcct
         });
     }
 
-    _updateEthAcct(store, data, where) {
-        super._updateEthAcct(store, data);
-    }
-
     render() {
         let currTx = EtherStore.getTransaction(this.state.currTx);
 

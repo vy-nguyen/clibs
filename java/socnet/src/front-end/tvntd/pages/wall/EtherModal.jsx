@@ -144,11 +144,21 @@ class TransactionDetail extends BaseMedia
 {
     constructor(props) {
         super(props);
-        this._blockClick = this._blockClick.bind(this);
+        this._blockClick  = this._blockClick.bind(this);
+        this._toAccount   = this._toAccount.bind(this);
+        this._fromAccount = this._fromAccount.bind(this);
     }
 
-    _blockClick(e) {
+    _blockClick() {
         this.props.switchData('block', this.props.trans.getBlockHash());
+    }
+
+    _fromAccount() {
+        this.props.switchData('acct', this.props.trans.getFromAcct());
+    }
+
+    _toAccount() {
+        this.props.switchData('acct', this.props.trans.getToAcct());
     }
 
     getArg() {
@@ -161,10 +171,10 @@ class TransactionDetail extends BaseMedia
             val: <a onClick={this._blockClick}>{trans.getBlockHash()}</a>
         }, {
             key: 'From',
-            val: trans.getFromAcct()
+            val: <a onClick={this._fromAccount}>{trans.getFromAcct()}</a>
         }, {
             key: 'To',
-            val: trans.getToAcct()
+            val: <a onClick={this._toAccount}>{trans.getToAcct()}</a>
         }, {
             key: 'Value',
             val: trans.getAmountFmt()
