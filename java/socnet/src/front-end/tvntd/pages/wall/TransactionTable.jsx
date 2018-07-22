@@ -71,16 +71,50 @@ class TransactionTable extends React.Component
         return data;
     }
 
-    render() {
+    _renderWithLink() {
+        let title = this.props.title || "Recent Transactions";
         return (
             <DynamicTable tableFormat={this.tabHeader}
                 tableData={this._getTableData()}
-                tableTitle={Lang.translate("Recent Transactions")}
+                tableTitle={Lang.translate(title)}
                 tableId={_.uniqueId("trans-")}
                 cellClick={this._cellClick}>
                 <EtherModal ref="modal" modal={true}/>
             </DynamicTable>
         );
+    }
+
+    _getTableNoLink() {
+        let data = [], trans = this.props.trans;
+
+        _.forOwn(trans, function(t) {
+            data.push({
+                txHash  : t.getTxHashBrief(),
+                fromAcct: EtherStore.getAccountName(t.getFromAcct()),
+                toAcct  : EtherStore.getAccountName(t.getToAcct()),
+                rowId   : t.getTxHash(),
+                amount  : t.getAmountFmt(),
+                tstamp  : t.getTimeStamp()
+            });
+        });
+        return data;
+    }
+
+    _renderNoLink() {
+        return (
+            <DynamicTable tableFormat={this.tabHeader}
+                tableData={this._getTableNoLink()}
+                tableTitle={Lang.translate(this.props.title)}
+                tableId={_.uniqueId("trans-")}>
+            </DynamicTable>
+        );
+    }
+
+    render() {
+        if (this.props.nolink === true) {
+            return this._renderNoLink();
+        }
+        return this._renderWithLink();
     }
 }
 

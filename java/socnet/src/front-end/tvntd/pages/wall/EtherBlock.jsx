@@ -6,15 +6,24 @@
 import React              from 'react-mod';
 
 import BaseMedia          from 'vntd-shared/layout/BaseMedia.jsx';
+import EtherStore         from 'vntd-root/stores/EtherStore.jsx';
+import TransactionTable   from 'vntd-root/pages/wall/TransactionTable.jsx';
 
 class EtherBlock extends BaseMedia
 {
     constructor(props) {
         super(props);
+        this._blockClick = this._blockClick.bind(this);
     }
 
     getArg() {
         return this.props.block;
+    }
+
+    _blockClick() {
+        if (this.props.switchData != null) {
+            this.props.switchData('block', this.props.block.parentHash);
+        }
     }
 
     getDetailKV(block) {
@@ -29,10 +38,10 @@ class EtherBlock extends BaseMedia
             val: block.hash
         }, {
             key: 'Parent Hash',
-            val: block.parentHash
+            val: <a onClick={this._blockClick}>{block.parentHash}</a>
         }, {
             key: 'Sha3Uncles',
-            val: block.sha3Uncles
+            val: <a onClick={this._blockClick}>{block.sha3Uncles}</a>
         }, {
             key: 'Miner',
             val: block.getMiner(true)
@@ -46,6 +55,21 @@ class EtherBlock extends BaseMedia
             key: 'Transactions',
             val: block.getTransCount()
         } ];
+    }
+
+    renderDetail(block) {
+        let tab = null;
+
+        if (block.getTransCount() > 0) {
+            let trans = EtherStore.getTransObject(block.getTransactions());
+            tab = <TransactionTable title="Transactions" trans={trans}/>;
+        }
+        return (
+            <div>
+                {super.renderDetail(block)}
+                {tab}
+            </div>
+        );
     }
 
     renderMediaBox(block) {

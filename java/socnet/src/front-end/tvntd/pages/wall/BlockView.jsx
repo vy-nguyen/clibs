@@ -13,6 +13,7 @@ import BaseMedia          from 'vntd-shared/layout/BaseMedia.jsx';
 import { VntdGlob }       from 'vntd-root/config/constants.js';
 import { EtherBaseAcct }  from 'vntd-root/pages/wall/EtherCrumbs.jsx';
 import EtherBlock         from 'vntd-root/pages/wall/EtherBlock.jsx';
+import EtherModal         from 'vntd-root/pages/wall/EtherModal.jsx';
 import EtherStore         from 'vntd-root/stores/EtherStore.jsx';
 import ArticleTagBrief    from 'vntd-root/components/ArticleTagBrief.jsx';
 
@@ -41,7 +42,6 @@ class BlockView extends EtherBaseAcct
             block = EtherStore.fetchBlock(state.fetchBlk);
             if (block == null) {
                 this.fetchTry++;
-                console.log("Retry ?");
                 return;
             }
             this.setState({
@@ -89,6 +89,7 @@ class BlockView extends EtherBaseAcct
     }
 
     _clickBlock() {
+        console.log("Click on blic...");
         this._clickButton('c');
     }
 
@@ -100,6 +101,9 @@ class BlockView extends EtherBaseAcct
         if (this.state.blkDetail !== true) {
             return null;
         }
+        return (
+            <EtherModal modal={false} detail={true} type="block" data={block}/>
+        );
         return <EtherBlock block={block} detail={true} onClick={this._clickBlock}/>;
     }
 

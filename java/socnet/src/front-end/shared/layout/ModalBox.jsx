@@ -5,17 +5,17 @@
 
 import _              from 'lodash';
 import React          from 'react-mod';
+import ComponentBase  from 'vntd-shared/layout/ComponentBase.jsx';
 import ModalConfirm   from 'vntd-shared/forms/commons/ModalConfirm.jsx';
 
-class ModalBox extends React.Component
+class ModalBox extends ComponentBase
 {
-    constructor(props) {
-        super(props);
-        this.state = null;
+    constructor(props, id, stores) {
+        super(props, id, stores);
+        this.state    = null;
     }
 
     openModal(arg) {
-        this.setState(arg);
         this.refs.modal.openModal();
     }
 
@@ -27,15 +27,23 @@ class ModalBox extends React.Component
     }
 
     render() {
+        let out;
+
         if (this.props.modal === true) {
             let title = this.state == null ? "Modal" : this.state.title;
-            return (
+            out = (
                 <ModalConfirm ref="modal" height="auto" modalTitle={title}>
                     {this._renderMain()}
                 </ModalConfirm>
             );
+        } else {
+            out = this._renderMain();
         }
-        return this._renderMain();
+        return (
+            <div onClick={this._onClick()}>
+                {out}
+            </div>
+        );
     }
 }
 

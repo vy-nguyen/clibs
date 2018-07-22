@@ -142,6 +142,10 @@ class EtherBlock
         return 0;
     }
 
+    getTransactions() {
+        return this.transactions;
+    }
+
     getMiner(name) {
         return this.store.getAccountName(this.miner);
     }
@@ -171,6 +175,7 @@ class EtherStoreClz extends Reflux.Store
 
         this.transOrder   = [];
         this.pendingBlock = [];
+        this.pendingTrans = [];
         this.pendingGet   = {};
         this.latestBlock  = 0;
         this.cacheTrans   = 100;
@@ -266,7 +271,13 @@ class EtherStoreClz extends Reflux.Store
     }
 
     getBlockHash(hash) {
-        return this.blocks.getIndex(hash);
+        let blk = this.blocks.getIndex(hash);
+
+        if (blk == null) {
+            this.pendingBlock.push(hash);
+            this.fetchMissingBlock();
+        }
+        return blk;
     }
 
     fetchBlock(blkNo) {
@@ -300,6 +311,34 @@ class EtherStoreClz extends Reflux.Store
             from = 0;
         }
         return this.transOrder.slice(from, count);
+    }
+
+    getTransObj(t) {
+        if (t instanceof Transaction) {
+            return t;
+        }
+        let tobj, hash = (typeof t !== "string") ? t.hash : t;
+
+        tobj = this.transactions.getItem(hash);
+        if (tobj != null) {
+            return tobj;
+        }
+        return null;
+    }
+
+    getTransObject(txs) {
+        let tobj, out = [];
+
+        if (!Array.isArray(txs)) {
+            return [this.getTransObj(txs)];
+        }
+        _.forOwn(txs, function(t) {
+            tobj = this.getTransObj(t);
+            if (tobj != null) {
+                out.push(tobj);
+            }
+        }.bind(this));
+        return out;
     }
 
     /**

@@ -13,21 +13,25 @@ class ComponentBase extends React.Component
         super(props);
 
         this.id = id || props.id || _.uniqueId();
-        this._listStores = stores;
+        this._listStores  = stores;
+        this._onClick     = this._onClick.bind(this);
+        this._updateState = this._updateState.bind(this);
     }
 
     componentDidMount() {
         let stores = this._listStores;
 
-        this.unsub = [];
-        if (!Array.isArray(stores)) {
-            stores = [this._listStores];
-        }
-        _.forEach(stores, function(st) {
-            if (st != null) {
-                this.unsub.push(st.listen(this._updateState.bind(this, st)));
+        if (stores != null) {
+            this.unsub = [];
+            if (!Array.isArray(stores)) {
+                stores = [this._listStores];
             }
-        }.bind(this));
+            _.forEach(stores, function(st) {
+                if (st != null) {
+                    this.unsub.push(st.listen(this._updateState));
+                }
+            }.bind(this));
+        }
     }
 
     componentWillUnmount() {
@@ -36,6 +40,18 @@ class ComponentBase extends React.Component
                 unsub();
             });
             this.unsub = null;
+        }
+    }
+
+    getArg() {
+        return null;
+    }
+
+    // Base onClick handler, used by many sub classes.
+    //
+    _onClick() {
+        if (this.props.onClick != null) {
+            this.props.onClick(this.getArg() || this.props);
         }
     }
 

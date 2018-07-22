@@ -5,22 +5,12 @@
 
 import React             from 'react-mod';
 import KeyValueTable     from 'vntd-shared/layout/KeyValueTable.jsx';
+import ComponentBase     from 'vntd-shared/layout/ComponentBase.jsx';
 
-class BaseMedia extends React.Component
+class BaseMedia extends ComponentBase
 {
-    constructor(props) {
-        super(props);
-        this._onClick = this._onClick.bind(this);
-    }
-
-    _onClick() {
-        if (this.props.onClick != null) {
-            this.props.onClick(this.getArg());
-        }
-    }
-
-    getArg() {
-        return null;
+    constructor(props, id, stores) {
+        super(props, id, stores);
     }
 
     getDetailKV(arg) {
