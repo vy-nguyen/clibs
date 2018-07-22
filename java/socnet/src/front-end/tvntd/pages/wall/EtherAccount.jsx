@@ -31,9 +31,6 @@ class EtherAccount extends BaseMedia
         }, {
             key: 'Balance',
             val: acct.getMoneyBalance()
-        }, {
-            key: 'Transactions',
-            val: 'Work in progress...'
         } ];
     }
 

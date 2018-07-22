@@ -19,23 +19,18 @@ class TransactionTable extends React.Component
 
         this.tabHeader = [ {
             key   : "txHash",
-            format: "",
             header: Lang.translate("Transaction Id")
         }, {
             key   : "fromAcct",
-            format: "",
             header: Lang.translate("From")
         }, {
             key   : "toAcct",
-            format: "",
             header: Lang.translate("To")
         }, {
             key   : "tstamp",
-            format: "",
             header: Lang.translate("Date")
         }, {
             key   : "amount",
-            format: "",
             header: Lang.translate("Amount")
         } ];
     }

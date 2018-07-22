@@ -10,6 +10,7 @@ import Spinner   from 'react-spinjs';
 import ModalBox                   from 'vntd-shared/layout/ModalBox.jsx';
 import BaseMedia                  from 'vntd-shared/layout/BaseMedia.jsx';
 import EtherBlock                 from 'vntd-root/pages/wall/EtherBlock.jsx';
+import EtherAccount               from 'vntd-root/pages/wall/EtherAccount.jsx';
 import { VntdGlob }               from 'vntd-root/config/constants.js';
 import { EtherStore, EthAccount } from 'vntd-root/stores/EtherStore.jsx';
 
@@ -70,10 +71,10 @@ class EtherModal extends ModalBox
             let blk = EtherStore.getBlockHash(data);
 
             if (blk == null) {
-                title = "Getting block " + data.substring(0, 10) + "...";
                 this.setState({
                     busy   : true,
-                    blkHash: data
+                    blkHash: data,
+                    title  : "Getting block " + data.substring(0, 6) + "..."
                 });
                 return;
             }
@@ -81,6 +82,17 @@ class EtherModal extends ModalBox
             title = "Block Detail";
 
         } else if (type === 'acct') {
+            let acct = EtherStore.getAccount(data);
+
+            if (acct == null) {
+                this.setState({
+                    busy   : true,
+                    account: data,
+                    title  : "Getting account " + data.substring(0, 6) + "..."
+                });
+                return;
+            }
+            data = acct;
             title = "Account detail";
 
         } else {
@@ -105,7 +117,10 @@ class EtherModal extends ModalBox
                     switchData={this.switchData} detail={true}/>
             );
         } else if (arg.type === 'acct') {
-            out = <h1>Account</h1>;
+            out = (
+                <EtherAccount account={arg.data}
+                    switchData={this.switchData} full={true}/>
+            );
 
         } else if (arg.type === 'block') {
             out = (

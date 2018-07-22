@@ -169,7 +169,7 @@ class EtherStoreClz extends Reflux.Store
 {
     constructor() {
         super();
-        this.state = new BaseStore(this);
+        this.state  = new BaseStore(this);
         this.blocks = new BaseStore(this);
         this.transactions = new BaseStore(this);
 
