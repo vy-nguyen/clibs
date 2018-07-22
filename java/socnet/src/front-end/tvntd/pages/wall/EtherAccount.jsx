@@ -7,6 +7,7 @@ import React             from 'react-mod';
 import { QRCode }        from 'react-qr-svg';
 
 import BaseMedia         from 'vntd-shared/layout/BaseMedia.jsx';
+import TransactionTable  from 'vntd-root/pages/wall/TransactionTable.jsx';
 
 class EtherAccount extends BaseMedia
 {
@@ -43,6 +44,18 @@ class EtherAccount extends BaseMedia
             <div>
                 <h4>{acct.acctName}</h4>
                 {acct.getMoneyBalance()}
+            </div>
+        );
+    }
+
+    renderDetail(acct) {
+        return (
+            <div>
+                {super.renderDetail(acct)}
+                <TransactionTable title="From Transactions"
+                    nolink={true} trans={acct.getTxFromArr()}/>
+                <TransactionTable title="To Transactions"
+                    nolink={true} trans={acct.getTxToArr()}/>
             </div>
         );
     }

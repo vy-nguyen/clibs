@@ -22,6 +22,11 @@ class EthAccount
         _.forOwn(data, function(v, k) {
             this[k] = v;
         }.bind(this));
+
+        this.txTo      = {};
+        this.txToArr   = [];
+        this.txFrom    = {};
+        this.txFromArr = [];
     }
 
     getEther() {
@@ -47,6 +52,25 @@ class EthAccount
         return this.acctName;
     }
 
+    indexTransaction(trans) {
+        if (trans.getFromAcct() === this.Account) {
+            this.txFromArr.push(trans);
+            this.txFrom[trans.getTxHash()] = trans;
+        }
+        if (trans.getToAcct() === this.Account) {
+            this.txToArr.push(trans);
+            this.txTo[trans.getTxHash()] = trans;
+        }
+    }
+
+    getTxFromArr() {
+        return this.txFromArr;
+    }
+
+    getTxToArr() {
+        return this.txToArr;
+    }
+
     static getExchangeRate() {
         return TDRates;
     }
@@ -59,10 +83,19 @@ class EthAccount
 
 class Transaction
 {
-    constructor(data) {
+    constructor(data, store) {
         _.forOwn(data, function(v, k) {
             this[k] = v;
         }.bind(this));
+
+        let acct = store.getAccount(this.fromAcct);
+        if (acct != null) {
+            acct.indexTransaction(this);
+        }
+        acct = store.getAccount(this.toAcct);
+        if (acct != null) {
+            acct.indexTransaction(this);
+        }
     }
 
     getBlockHash() {
@@ -174,12 +207,17 @@ class EtherStoreClz extends Reflux.Store
         this.transactions = new BaseStore(this);
 
         this.transOrder   = [];
-        this.pendingBlock = [];
-        this.pendingTrans = [];
+        this.pendingBlock = {};
+        this.pendingTrans = {};
+        this.pendingAccts = {};
         this.pendingGet   = {};
         this.latestBlock  = 0;
         this.cacheTrans   = 100;
         this.listenToMany(Actions);
+    }
+
+    onEtherStartupCompleted(data) {
+        onStartupCompleted(data);
     }
 
     onStartupCompleted(data) {
@@ -188,29 +226,52 @@ class EtherStoreClz extends Reflux.Store
         this._updateStore(pubAcct.publicAcct);
         this._updateBlock([pubAcct.latestBlock]);
         this._updateTransaction(pubAcct.recentTrans);
-        this.trigger(this, this.state);
+        this.trigger(this, this.state, "start");
 
         if (UserStore.isLogin()) {
             Actions.getEtherWallet();
         }
     }
 
+    /**
+     * When getting a collection of blocks.
+     */
     onGetEtherBlockSetCompleted(data) {
-        this.pendingBlock = [];
+        this.pendingBlock = {};
         this._updateBlock(data.blocks);
         this.trigger(this, this.state, "fetch");
     }
 
-    onEtherStartupCompleted(data) {
-        onStartupCompleted(data);
-    }
-
+    /**
+     * When getting a block range.
+     */
     onGetEtherBlocksCompleted(data) {
         delete this.pendingGet[data.cbContext];
         this._updateBlock(data.blocks);
-        this.trigger(this, this.state, "fetch");
+        this.trigger(this, this.blocks, "fetch");
     }
 
+    /**
+     * When getting a collection of transactions.
+     */
+    onGetEtherTransCompleted(data) {
+        this.pendingTrans = {};
+        this._updateTransaction(data.trans);
+        this.trigger(this, this.transactions, "fetch-trans");
+    }
+
+    /**
+     * When getting a collection of accounts.
+     */
+    onGetAccountCompleted(data) {
+        this.pendingAccts = {};
+        this._updateStore(data.accounts);
+        this.trigger(this, this.state, "fetch-acct");
+    }
+
+    /**
+     * Update with the list of blocks received.
+     */
     _updateBlock(blocks) {
         if (blocks == null) {
             return;
@@ -225,17 +286,27 @@ class EtherStoreClz extends Reflux.Store
                 this.latestBlock = blkNo;
             }
             if (blk.transactions != null) {
-                this._updateTransaction(blk.transactions);
+                let trans = this._updateTransaction(blk.transactions);
+
+                if (trans != null && trans.length === blk.transactions.length) {
+                    // Switch to transaction objects.
+                    //
+                    blk.transactions = trans;
+                }
             }
         }.bind(this));
     }
 
+    /**
+     * Update with the list of transactions received.
+     */
     _updateTransaction(trans) {
         if (trans == null) {
-            return;
+            return null;
         }
+        let txObjs = [];
         _.forEach(trans, function(t) {
-            let tobj = this.transactions.getItem(t.hash);
+            let h, tobj = this.transactions.getItem(t.hash);
 
             if (tobj == null) {
                 tobj = new Transaction(t, this);
@@ -244,12 +315,19 @@ class EtherStoreClz extends Reflux.Store
                 this.transactions.storeItem(tobj.getTxHash(), tobj);
             }
             if (tobj.linkBlock(this) == false) {
-                this.pendingBlock.push(tobj.getBlockHash());
+                h = tobj.getBlockHash();
+                this.pendingBlock[h] = h;
             }
+            txObjs.push(tobj);
         }.bind(this));
         this.fetchMissingBlock();
+
+        return txObjs;
     }
 
+    /**
+     * Update with the list of accounts.
+     */
     _updateStore(accounts) {
         _.forOwn(accounts, function(item) {
             this.state.storeItem(item.Account, new EthAccount(item), true);
@@ -274,7 +352,7 @@ class EtherStoreClz extends Reflux.Store
         let blk = this.blocks.getIndex(hash);
 
         if (blk == null) {
-            this.pendingBlock.push(hash);
+            this.pendingBlock[hash] = hash;
             this.fetchMissingBlock();
         }
         return blk;
@@ -295,8 +373,8 @@ class EtherStoreClz extends Reflux.Store
     }
 
     fetchMissingBlock() {
-        if (this.pendingBlock.length > 0) {
-            Actions.getEtherBlockSet(this.pendingBlock);
+        if (!_.isEmpty(this.pendingBlock)) {
+            Actions.getEtherBlockSet(_.toArray(this.pendingBlock));
         }
     }
 
@@ -323,6 +401,7 @@ class EtherStoreClz extends Reflux.Store
         if (tobj != null) {
             return tobj;
         }
+        this.pendingTrans[hash] = hash;
         return null;
     }
 
@@ -338,16 +417,38 @@ class EtherStoreClz extends Reflux.Store
                 out.push(tobj);
             }
         }.bind(this));
+
+        this.fetchMissingTrans();
         return out;
+    }
+
+    fetchMissingTrans() {
+        if (!_.isEmpty(pendingTrans)) {
+            console.log("fetch missing trans");
+        }
     }
 
     /**
      * Account methods.
      */
     getAccount(acct) {
-        return this.state.getItem(acct);
+        let aObj = this.state.getItem(acct);
+
+        if (aObj != null) {
+            return aObj;
+        }
+        this.pendingAccts[acct] = acct;
+        this.fetchMissingAccts();
+        return null;
     }
-   
+  
+    fetchMissingAccts() {
+        if (!_.isEmpty(this.pendingAccts)) {
+            console.log("Fetch missing accounts..");
+            console.log(this.pendingAccts);
+        }
+    }
+
     getAccountName(acct) {
         let account = this.state.getItem(acct),
             name = (account != null) ? account.getName() : "Annon";
