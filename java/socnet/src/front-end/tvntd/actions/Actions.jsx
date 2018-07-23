@@ -105,7 +105,9 @@ const Actions = Reflux.createActions({
     etherStartup:     completedFailedFn,
     getEtherWallet:   completedFailedFn,
     getEtherBlocks:   completedFailedFn,
-    getEtherBlockSet: completedFailedFn
+    getEtherBlockSet: completedFailedFn,
+    getEtherTransSet: completedFailedFn,
+    getAccountInfo:   completedFailedFn
 });
 
 function postRestCall(formData, url, json, cbObj, authReq, context) {
@@ -230,6 +232,20 @@ Actions.getEtherBlockSet.listen(function(blocks) {
         hashType: "block",
         hashes  : blocks
     }, "/api/ether/blkset", true, this, false);
+});
+
+Actions.getEtherTransSet.listen(function(trans) {
+    postRestCall({
+        hashType: "trans",
+        hashes  : trans
+    }, "/api/ether/trans", true, this, false);
+});
+
+Actions.getAccountInfo.listen(function(acct) {
+    postRestCall({
+        hashType: "acct",
+        hashes  : acct
+    }, "/api/ether/account", true, this, false);
 });
 
 /**

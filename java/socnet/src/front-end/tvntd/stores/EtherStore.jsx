@@ -433,7 +433,7 @@ class EtherStoreClz extends Reflux.Store
 
     fetchMissingTrans() {
         if (!_.isEmpty(this.pendingTrans)) {
-            console.log("fetch missing trans");
+            Actions.getEtherTransSet(this.pendingTrans);
         }
     }
 
@@ -452,8 +452,7 @@ class EtherStoreClz extends Reflux.Store
   
     fetchMissingAccts() {
         if (!_.isEmpty(this.pendingAccts)) {
-            console.log("Fetch missing accounts..");
-            console.log(this.pendingAccts);
+            Actions.getAccountInfo(this.pendingAccts);
         }
     }
 
