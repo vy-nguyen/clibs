@@ -11,6 +11,7 @@ import AuthorFeed         from 'vntd-root/components/AuthorFeed.jsx';
 import EditorPost         from 'vntd-shared/forms/commons/EditorPost.jsx';
 import AuthorBase         from 'vntd-shared/layout/AuthorBase.jsx';
 import EtherCrumbs        from 'vntd-root/pages/wall/EtherCrumbs.jsx';
+import Wallet             from 'vntd-root/pages/personal/Wallet.jsx';
 import ArticleStore       from 'vntd-root/stores/ArticleStore.jsx';
 
 class NewsFeed extends AuthorBase
@@ -37,6 +38,7 @@ class NewsFeed extends AuthorBase
                     <EtherCrumbs id="route-map" crumb="NewsFeed" route="/newsfeed"/>
                 </div>
                 <EditorPost id="feed-"/>
+                <Wallet/>
                 {this.renderAuthors()}
             </div>
         )

@@ -192,7 +192,7 @@ public class AccountSvc implements IAccountSvc
             EtherAcctInfo result = rpc.callJsonRpcArr(EtherAcctInfo.class,
                     "tudo_listAccountInfo", "id", accountNo);
 
-            if (result.getError() == null) {
+            if (result != null && result.getError() == null) {
                 processAccountInfo(wallets, result.accountResult());
             }
         }

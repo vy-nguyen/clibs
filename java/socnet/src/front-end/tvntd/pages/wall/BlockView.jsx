@@ -89,7 +89,6 @@ class BlockView extends EtherBaseAcct
     }
 
     _clickBlock() {
-        console.log("Click on blic...");
         this._clickButton('c');
     }
 

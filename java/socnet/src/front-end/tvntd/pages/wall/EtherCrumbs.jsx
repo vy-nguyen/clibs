@@ -7,32 +7,26 @@ import _                from 'lodash';
 import React            from 'react-mod';
 import KeyValueTable    from 'vntd-shared/layout/KeyValueTable.jsx';
 import SmallBreadcrumbs from 'vntd-shared/layout/SmallBreadcrumbs.jsx';
+import ComponentBase    from 'vntd-shared/layout/ComponentBase.jsx';
 
 import { ColFmtMap }    from 'vntd-root/config/constants.js';
 import EtherStore       from 'vntd-root/stores/EtherStore.jsx';
 
-class EtherBaseAcct extends React.Component
+class EtherBaseAcct extends ComponentBase
 {
     constructor(props) {
-        super(props);
+        super(props, null, EtherStore);
         this._currentState  = this._currentState.bind(this);
         this._updateEthAcct = this._updateEthAcct.bind(this);
 
         this.state = _.merge(this.state, this._currentState());
     }
 
-    componentDidMount() {
-        this.unsub = EtherStore.listen(this._updateEthAcct);
+    _updateState(store, data, where, code) {
+        this._updateEthAcct(store, data, where, code);
     }
 
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsub = null;
-        }
-    }
-
-    _updateEthAcct(store, data) {
+    _updateEthAcct(store, data, where, code) {
         this.setState(this._currentState());
     }
 

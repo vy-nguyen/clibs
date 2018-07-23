@@ -27,6 +27,10 @@ class EthAccount
         this.txToArr   = [];
         this.txFrom    = {};
         this.txFromArr = [];
+
+        if (this.acctName == null) {
+            this.acctName = "Micropay";
+        }
     }
 
     getEther() {
@@ -223,9 +227,9 @@ class EtherStoreClz extends Reflux.Store
     onStartupCompleted(data) {
         let pubAcct = data.publicAcct;
 
-        this._updateStore(pubAcct.publicAcct);
-        this._updateBlock([pubAcct.latestBlock]);
-        this._updateTransaction(pubAcct.recentTrans);
+        this.updateAccounts(pubAcct.publicAcct);
+        this.updateBlocks([pubAcct.latestBlock]);
+        this.updateTransactions(pubAcct.recentTrans);
         this.trigger(this, this.state, "start");
 
         if (UserStore.isLogin()) {
@@ -238,7 +242,7 @@ class EtherStoreClz extends Reflux.Store
      */
     onGetEtherBlockSetCompleted(data) {
         this.pendingBlock = {};
-        this._updateBlock(data.blocks);
+        this.updateBlocks(data.blocks);
         this.trigger(this, this.state, "fetch");
     }
 
@@ -247,7 +251,7 @@ class EtherStoreClz extends Reflux.Store
      */
     onGetEtherBlocksCompleted(data) {
         delete this.pendingGet[data.cbContext];
-        this._updateBlock(data.blocks);
+        this.updateBlocks(data.blocks);
         this.trigger(this, this.blocks, "fetch");
     }
 
@@ -256,7 +260,7 @@ class EtherStoreClz extends Reflux.Store
      */
     onGetEtherTransCompleted(data) {
         this.pendingTrans = {};
-        this._updateTransaction(data.trans);
+        this.updateTransactions(data.trans);
         this.trigger(this, this.transactions, "fetch-trans");
     }
 
@@ -265,14 +269,14 @@ class EtherStoreClz extends Reflux.Store
      */
     onGetAccountCompleted(data) {
         this.pendingAccts = {};
-        this._updateStore(data.accounts);
+        this.updateAccounts(data.accounts);
         this.trigger(this, this.state, "fetch-acct");
     }
 
     /**
      * Update with the list of blocks received.
      */
-    _updateBlock(blocks) {
+    updateBlocks(blocks) {
         if (blocks == null) {
             return;
         }
@@ -286,7 +290,7 @@ class EtherStoreClz extends Reflux.Store
                 this.latestBlock = blkNo;
             }
             if (blk.transactions != null) {
-                let trans = this._updateTransaction(blk.transactions);
+                let trans = this.updateTransactions(blk.transactions);
 
                 if (trans != null && trans.length === blk.transactions.length) {
                     // Switch to transaction objects.
@@ -300,7 +304,7 @@ class EtherStoreClz extends Reflux.Store
     /**
      * Update with the list of transactions received.
      */
-    _updateTransaction(trans) {
+    updateTransactions(trans) {
         if (trans == null) {
             return null;
         }
@@ -328,9 +332,14 @@ class EtherStoreClz extends Reflux.Store
     /**
      * Update with the list of accounts.
      */
-    _updateStore(accounts) {
+    updateAccounts(accounts) {
+        let acct, aStore = this.state;
+
         _.forOwn(accounts, function(item) {
-            this.state.storeItem(item.Account, new EthAccount(item), true);
+            acct = aStore.getItem(item.Account);
+            if (acct == null) {
+                aStore.storeItem(item.Account, new EthAccount(item), true);
+            }
         }.bind(this));
     }
 
@@ -438,7 +447,6 @@ class EtherStoreClz extends Reflux.Store
             return aObj;
         }
         this.pendingAccts[acct] = acct;
-        this.fetchMissingAccts();
         return null;
     }
   
