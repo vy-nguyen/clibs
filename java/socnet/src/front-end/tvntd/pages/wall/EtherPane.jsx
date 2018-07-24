@@ -71,7 +71,6 @@ class EtherPane extends EtherBaseAcct
         this.setState({
             currAccount: account
         });
-        console.log("Ether pane detail " + this.state.currAccount);
     }
 
     renderBrief(account) {

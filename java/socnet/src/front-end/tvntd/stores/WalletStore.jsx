@@ -29,6 +29,10 @@ class Wallet
         this.tudoFund[account.getName()] = account;
     }
 
+    getName() {
+        return this.name;
+    }
+
     getEquityAcct() {
         return this.equity;
     }
@@ -37,8 +41,16 @@ class Wallet
         return this.microPay;
     }
 
+    getUsdFund() {
+        return this.usdFund;
+    }
+
     getUsdFundByName(name) {
         return this.usdFund[name];
+    }
+
+    getTudoFund() {
+        return this.tudoFund;
     }
 
     getTudoFundByName(name) {
@@ -64,11 +76,16 @@ class WalletStoreClz extends Reflux.Store
         console.log("----------");
         console.log(data);
         this._updateWallet(data.wallets);
+        this.trigger(this, this.state, "fetch");
     }
 
     onGetEtherWalletFailed(error) {
         console.log("get wallet failed...");
         console.log(error);
+    }
+
+    getMyWallets() {
+        return this.state.getAllData();
     }
 
     _updateWallet(wallets) {

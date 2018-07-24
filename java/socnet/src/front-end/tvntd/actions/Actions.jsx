@@ -313,14 +313,6 @@ Actions.updateDomain.listen(function(data) {
 });
 
 Actions.preload.listen(function() {
-    /*
-    let data = {
-        articles: require('json!../mock-json/article.json'),
-        authors : require('json!../mock-json/author.json'),
-        users   : require('json!../mock-json/user.json'),
-        comments: require('json!../mock-json/comment.json')
-    };
-    */
     this.completed(null);
 });
 

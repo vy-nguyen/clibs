@@ -9,6 +9,7 @@ import moment            from 'moment';
 import Actions           from 'vntd-root/actions/Actions.jsx';
 import BaseStore         from 'vntd-root/stores/BaseStore.jsx';
 import UserStore         from 'vntd-shared/stores/UserStore.jsx';
+import BaseFetch         from 'vntd-shared/stores/BaseFetch.jsx';
 
 const TDRates = {
     HAO2TD: 100,
@@ -211,9 +212,9 @@ class EtherStoreClz extends Reflux.Store
         this.transactions = new BaseStore(this);
 
         this.transOrder   = [];
-        this.pendingBlock = {};
-        this.pendingTrans = {};
-        this.pendingAccts = {};
+        this.pendingBlock = new BaseFetch(this.blocks);
+        this.pendingTrans = new BaseFetch(this.transactions);
+        this.pendingAccts = new BaseFetch(this.state);
         this.pendingGet   = {};
         this.latestBlock  = 0;
         this.cacheTrans   = 100;
@@ -241,9 +242,13 @@ class EtherStoreClz extends Reflux.Store
      * When getting a collection of blocks.
      */
     onGetEtherBlockSetCompleted(data) {
-        this.pendingBlock = {};
+        this.pendingBlock.requestDoneOk();
         this.updateBlocks(data.blocks);
         this.trigger(this, this.state, "fetch");
+    }
+
+    onGetEtherBlockSetFailed(data) {
+        this.pendingBlock.requestDoneFail();
     }
 
     /**
@@ -259,7 +264,7 @@ class EtherStoreClz extends Reflux.Store
      * When getting a collection of transactions.
      */
     onGetEtherTransCompleted(data) {
-        this.pendingTrans = {};
+        this.pendingTrans.requestDoneOk();
         this.updateTransactions(data.trans);
         this.trigger(this, this.transactions, "fetch-trans");
     }
@@ -268,9 +273,13 @@ class EtherStoreClz extends Reflux.Store
      * When getting a collection of accounts.
      */
     onGetAccountCompleted(data) {
-        this.pendingAccts = {};
+        this.pendingAccts.requestDoneOk();
         this.updateAccounts(data.accounts);
         this.trigger(this, this.state, "fetch-acct");
+    }
+
+    onGetAccountFailed(error) {
+        this.pendingAccts.requestDoneFail();
     }
 
     /**
@@ -320,7 +329,7 @@ class EtherStoreClz extends Reflux.Store
             }
             if (tobj.linkBlock(this) == false) {
                 h = tobj.getBlockHash();
-                this.pendingBlock[h] = h;
+                this.pendingBlock.addPending(h, h);
             }
             txObjs.push(tobj);
         }.bind(this));
@@ -361,7 +370,7 @@ class EtherStoreClz extends Reflux.Store
         let blk = this.blocks.getIndex(hash);
 
         if (blk == null) {
-            this.pendingBlock[hash] = hash;
+            this.pendingBlock.addPending(hash, hash);
             this.fetchMissingBlock();
         }
         return blk;
@@ -382,9 +391,9 @@ class EtherStoreClz extends Reflux.Store
     }
 
     fetchMissingBlock() {
-        if (!_.isEmpty(this.pendingBlock)) {
-            Actions.getEtherBlockSet(_.toArray(this.pendingBlock));
-        }
+        this.pendingBlock.submitPending(function(blocks) {
+            Actions.getEtherBlockSet(_.toArray(blocks));
+        });
     }
 
     /**
@@ -410,7 +419,7 @@ class EtherStoreClz extends Reflux.Store
         if (tobj != null) {
             return tobj;
         }
-        this.pendingTrans[hash] = hash;
+        this.pendingTrans.addPending(hash, hash);
         return null;
     }
 
@@ -432,9 +441,9 @@ class EtherStoreClz extends Reflux.Store
     }
 
     fetchMissingTrans() {
-        if (!_.isEmpty(this.pendingTrans)) {
-            Actions.getEtherTransSet(this.pendingTrans);
-        }
+        this.pendingTrans.submitPending(function(trans) {
+            Actions.getEtherTransSet(_.toArray(trans));
+        });
     }
 
     /**
@@ -446,14 +455,14 @@ class EtherStoreClz extends Reflux.Store
         if (aObj != null) {
             return aObj;
         }
-        this.pendingAccts[acct] = acct;
+        this.pendingAccts.addPending(acct, acct);
         return null;
     }
   
     fetchMissingAccts() {
-        if (!_.isEmpty(this.pendingAccts)) {
-            Actions.getAccountInfo(this.pendingAccts);
-        }
+        this.pendingAccts.submitPending(function(accts) {
+            Actions.getAccountInfo(_.toArray(accts));
+        });
     }
 
     getAccountName(acct) {
