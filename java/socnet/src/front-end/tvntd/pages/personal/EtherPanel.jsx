@@ -57,10 +57,11 @@ class ReqMicroCredit extends React.Component
     }
 }
 
-class EtherPanel extends ComponentBase
+class EtherPanel extends React.Component
 {
     constructor(props) {
-        super(props, null, WalletStore);
+        // super(props, null, WalletStore);
+        super(props);
         this.switchData  = this.switchData.bind(this);
         this._newWallet  = this._newWallet.bind(this);
         this._newAccount = this._newAccount.bind(this);
@@ -101,8 +102,6 @@ class EtherPanel extends ComponentBase
         this.state = {
             type : 'wallet',
             title: Lang.translate('My Wallet'),
-
-            wallets  : WalletStore.getMyWallets(),
             menuItems: this.myWalletMenu
         };
     }
@@ -147,6 +146,7 @@ class EtherPanel extends ComponentBase
         });
     }
 
+/*
     _updateState(store, data, where, code) {
         if (code != "error") {
             this.setState({
@@ -154,7 +154,7 @@ class EtherPanel extends ComponentBase
             });
         }
     }
-
+*/
     switchData(type, data) {
         switch(type) {
         case 'wallet':
@@ -176,20 +176,20 @@ class EtherPanel extends ComponentBase
     _renderContent(state) {
         switch(state.type) {
         case 'wallet':
-            return <Wallet wallets={state.wallets}/>;
+            return <Wallet/>;
 
         case 'new-wallet':
-            return <NewWallet wallets={state.wallets}/>;
+            return <NewWallet/>;
 
         case 'new-account':
-            return <NewAccount wallets={state.wallets}/>;
+            return <NewAccount/>;
 
         case 'edit-wallet':
-            return <EditWallet wallets={state.wallets}/>;
+            return <EditWallet/>;
 
         case 'get-micro':
         default:
-            return <ReqMicroCredit wallet={state.wallets[0]}/>
+            return <ReqMicroCredit/>
         }
         return null;
     }

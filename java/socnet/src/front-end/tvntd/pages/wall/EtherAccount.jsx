@@ -90,7 +90,7 @@ class EtherAccount extends BaseMedia
     }
 
     renderMediaBody(acct) {
-        let pay = null, spin = null;
+        let pay = null, spin = null, fmt;
 
         if (this.props.pay === true && 
             WalletStore.isMyAccount(acct.getAccountNo()) !== false) {
@@ -107,6 +107,9 @@ class EtherAccount extends BaseMedia
                     </button>
                 </div>
             );
+            fmt = "col-sx-4 col-sm-4 col-md-4 col-lg-4";
+        } else {
+            fmt = "col-sx-12 col-sm-12 col-md-12 col-lg-12";
         }
         if (this.state.refresh === true) {
             spin = <Spinner config={VntdGlob.spinner}/>;
@@ -114,7 +117,7 @@ class EtherAccount extends BaseMedia
         return (
             <div className="row">
                 {spin}
-                <div className="col-sx-4 col-sm-4 col-md-4 col-lg-4">
+                <div className={fmt}>
                     <h4>{acct.acctName}</h4>
                     {acct.getMoneyBalance()}
                 </div>
