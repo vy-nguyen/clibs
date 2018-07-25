@@ -57,6 +57,10 @@ class EthAccount
         return this.acctName;
     }
 
+    getAccountNo() {
+        return this.Account;
+    }
+
     indexTransaction(trans) {
         if (trans.getFromAcct() === this.Account) {
             this.txFromArr.push(trans);

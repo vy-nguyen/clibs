@@ -12,7 +12,7 @@ class ModalBox extends ComponentBase
 {
     constructor(props, id, stores) {
         super(props, id, stores);
-        this.state    = null;
+        this.state = null;
     }
 
     openModal(arg) {

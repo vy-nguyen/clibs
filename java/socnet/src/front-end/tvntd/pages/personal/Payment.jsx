@@ -16,7 +16,12 @@ class Payment extends ComponentBase
     }
 
     render() {
-        return null;
+        console.log(this.props);
+        return (
+            <div className="row">
+                <h2>Payment box</h2>
+            </div>
+        );
     }
 }
 

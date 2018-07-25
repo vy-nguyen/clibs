@@ -20,17 +20,30 @@ class Wallet
 
         this.equity   = null;
         this.microPay = null;
-        this.usdFund  = {};
-        this.tudoFund = {};
+        this.usdFund  = new BaseStore(this);
+        this.tudoFund = new BaseStore(this);
     }
 
     addAccount(account) {
         this.microPay = account;
-        this.tudoFund[account.getName()] = account;
+        this.tudoFund.storeItem(account.getAccountNo(), account, false);
     }
 
     getName() {
         return this.name;
+    }
+
+    isMyAccount(acctNo) {
+        if (this.equity != null && this.equity.getAccountNo() === acctNo) {
+            return 'equity';
+        }
+        if (this.usdFund.getItem(acctNo) != null) {
+            return 'usd';
+        }
+        if (this.tudoFund.getItem(acctNo) != null) {
+            return 'tudo';
+        }
+        return false;
     }
 
     getEquityAcct() {
@@ -42,19 +55,19 @@ class Wallet
     }
 
     getUsdFund() {
-        return this.usdFund;
+        return this.usdFund.getAllData();
     }
 
     getUsdFundByName(name) {
-        return this.usdFund[name];
+        return this.usdFund.getIndex(name);
     }
 
     getTudoFund() {
-        return this.tudoFund;
+        return this.tudoFund.getAllData();
     }
 
     getTudoFundByName(name) {
-        return this.tudoFund[name];
+        return this.tudoFund.getIndex(name);
     }
 
     // @Override
@@ -73,19 +86,40 @@ class WalletStoreClz extends Reflux.Store
     }
 
     onGetEtherWalletCompleted(data) {
-        console.log("----------");
-        console.log(data);
         this._updateWallet(data.wallets);
         this.trigger(this, this.state, "fetch");
     }
 
     onGetEtherWalletFailed(error) {
         console.log("get wallet failed...");
-        console.log(error);
+        this.trigger(this, error, "error");
+    }
+
+    onGetAccountInfoCompleted(data) {
+    }
+
+    onGetAccountInfoFailed(error) {
+        console.log("get account info failed...");
+        this.trigger(this, error, "error");
     }
 
     getMyWallets() {
         return this.state.getAllData();
+    }
+
+    isMyAccount(acctNo) {
+        let result = false, wallets = this.state.getAllData();
+
+        _.forOwn(wallets, function(w) {
+            if (result === false) {
+                let out = w.isMyAccount(acctNo);
+                if (out !== false) {
+                    result = out;
+                    return false; // bailout early.
+                }
+            }
+        });
+        return result;
     }
 
     _updateWallet(wallets) {

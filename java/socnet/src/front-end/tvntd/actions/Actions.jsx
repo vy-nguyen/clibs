@@ -241,9 +241,10 @@ Actions.getEtherTransSet.listen(function(trans) {
     }, "/api/ether/trans", true, this, false);
 });
 
-Actions.getAccountInfo.listen(function(acct) {
+Actions.getAccountInfo.listen(function(acct, inclTrans) {
     postRestCall({
         hashType: "acct",
+        trans   : inclTrans,
         hashes  : acct
     }, "/api/ether/account", true, this, false);
 });

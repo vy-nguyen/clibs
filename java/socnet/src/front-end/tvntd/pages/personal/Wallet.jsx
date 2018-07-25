@@ -6,7 +6,6 @@
 import _                  from 'lodash';
 import React              from 'react-mod';
 
-import Panel              from 'vntd-shared/widgets/Panel.jsx';
 import ComponentBase      from 'vntd-shared/layout/ComponentBase.jsx';
 import Mesg               from 'vntd-root/components/Mesg.jsx';
 import Lang               from 'vntd-root/stores/LanguageStore.jsx';
@@ -17,54 +16,14 @@ class Wallet extends ComponentBase
 {
     constructor(props) {
         super(props, null, WalletStore);
-        this._newWallet  = this._newWallet.bind(this);
-        this._editWallet = this._editWallet.bind(this);
-        this._moreMicroCredit = this._moreMicroCredit.bind(this);
-
-        this.state = {
-            wallets: WalletStore.getMyWallets()
-        };
-        this.menu = {
-            iconFmt  : 'btn-xs btn-success',
-            titleText: Lang.translate('Menu'),
-            itemFmt  : 'pull-right js-status-update',
-            menuItems: [ {
-                itemFmt : 'fa fa-circle txt-color-green',
-                itemText: Lang.translate('Edit Wallets'),
-                itemHandler: this._editWallet
-            }, {
-                itemFmt : 'fa fa-circle txt-color-yellow',
-                itemText: Lang.translate('New Wallet'),
-                itemHandler: this._newWallet
-            }, {
-                itemFmt : 'fa fa-circle txt-color-blue',
-                itemText: Lang.translate('Request Micropay Credits'),
-                itemHandler: this._moreMicroCredit
-            } ]
-        };
-        this.panelDef = {
-            init  : false,
-            icon  : 'fa fa-money',
-            header: Lang.translate('My Wallets'),
-            headerMenus: [this.menu]
-        };
-    }
-
-    _newWallet() {
-    }
-
-    _editWallet() {
-        console.log("Edit wallet...");
-        console.log(this);
-    }
-
-    _moreMicroCredit() {
-        console.log("Request micro credits...");
+        this.state = _.merge(this.state, {
+            wallets: props.wallets
+        });
     }
 
     _updateState(store, data, where, code) {
         this.setState({
-            wallets: WalletStore.getMyWallets()
+            wallets: store.getMyWallets()
         });
     }
 
@@ -80,14 +39,16 @@ class Wallet extends ComponentBase
         micro = wallet.getMicroPay();
         if (micro != null) {
             acctOut.push(
-                <EtherAccount key={_.uniqueId()} account={micro} full={true}/>
+                <EtherAccount key={_.uniqueId()}
+                    account={micro} full={true} pay={true}/>
             );
         }
         td = wallet.getTudoFund();
         _.forOwn(td, function(acct) {
             if (acct != micro) {
                 acctOut.push(
-                    <EtherAccount key={_.uniqueId()} account={acct} full={true}/>
+                    <EtherAccount key={_.uniqueId()}
+                        account={acct} full={true} pay={true}/>
                 );
             }
         });
@@ -95,7 +56,8 @@ class Wallet extends ComponentBase
         _.forOwn(usd, function(acct) {
             if (acct != equity) {
                 acctOut.push(
-                    <EtherAccount key={_.uniqueId()} account={acct} full={true}/>
+                    <EtherAccount key={_.uniqueId()}
+                        account={acct} full={true} pay={true}/>
                 );
             }
         });
@@ -112,7 +74,7 @@ class Wallet extends ComponentBase
         );
     }
 
-    _renderWallets() {
+    render() {
         let out = [], wallets = this.state.wallets;
 
         _.forOwn(wallets, function(w) {
@@ -123,15 +85,6 @@ class Wallet extends ComponentBase
             <div className="row">
                 {out}
             </div>
-        );
-    }
-
-    render() {
-        return (
-            <Panel context={this.panelDef}>
-                {this._renderWallets()}
-                {this.props.children}
-            </Panel>
         );
     }
 }
