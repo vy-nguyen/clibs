@@ -122,6 +122,20 @@ class WalletStoreClz extends Reflux.Store
         return result;
     }
 
+    getAddressBook() {
+        return [ {
+            value: "abc", label: "Vy Nguyen"
+        }, {
+            value: "def", label: "Manh Nguyen"
+        }, {
+            value: "def", label: "Dung Nguyen"
+        }, {
+            value: "def", label: "Hai Hoang"
+        }, {
+            value: "def", label: "Minh Hieu"
+        } ];
+    }
+
     _updateWallet(wallets) {
         let wstore = this.state;
         _.forOwn(wallets, function(w) {

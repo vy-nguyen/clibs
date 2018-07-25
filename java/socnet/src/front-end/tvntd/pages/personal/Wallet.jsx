@@ -17,7 +17,7 @@ class Wallet extends ComponentBase
     constructor(props) {
         super(props, null, WalletStore);
         this.state = _.merge(this.state, {
-            wallets: props.wallets
+                wallets: props.wallets || WalletStore.getMyWallets()
         });
     }
 
