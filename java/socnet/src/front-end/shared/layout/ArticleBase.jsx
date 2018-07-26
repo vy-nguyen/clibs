@@ -6,12 +6,13 @@
 
 import React               from 'react-mod';
 import Mesg                from 'vntd-root/components/Mesg.jsx';
+import ComponentBase       from 'vntd-shared/layout/ComponentBase.jsx';
 import { ArticleStore }    from 'vntd-root/stores/ArticleStore.jsx';
 
-class ArticleBase extends React.Component
+class ArticleBase extends ComponentBase
 {
     constructor(props) {
-        super(props);
+        super(props, null, ArticleStore);
         this._updateArts = this._updateArts.bind(this);
         this.state = {
             articleUuid: null,
@@ -19,15 +20,8 @@ class ArticleBase extends React.Component
         }
     }
 
-    componentDidMount() {
-        this.unsub = ArticleStore.listen(this._updateArts);
-    }
-
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsub = null;
-        }
+    _updateState(store, data, status, update, authorUuid) {
+        return this._updateArts(store, data, status, update, authorUuid);
     }
 
     _updateArts(store, data, status, update, authorUuid) {

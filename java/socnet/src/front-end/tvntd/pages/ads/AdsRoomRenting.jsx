@@ -7,7 +7,6 @@
 import React               from 'react-mod';
 import _                   from 'lodash';
 
-import History             from 'vntd-shared/utils/History.jsx';
 import Lang                from 'vntd-root/stores/LanguageStore.jsx';
 import StateButton         from 'vntd-shared/utils/StateButton.jsx';
 import Actions             from 'vntd-root/actions/Actions.jsx';
@@ -130,15 +129,6 @@ class RoomRenting extends FormData
         }
         data.rentPrice = price;
         return data;
-    }
-
-    onClick(btn, btnState) {
-        if (btn.btnCancel === true) {
-            this.clearData();
-            History.goBack();
-        } else {
-            super.onClick(btn, btnState);
-        }
     }
 }
 

@@ -5,28 +5,23 @@
 'use strict';
 
 import React         from 'react-mod';
+
+import ComponentBase from 'vntd-shared/layout/ComponentBase.jsx';
 import Mesg          from 'vntd-root/components/Mesg.jsx';
 import AuthorStore   from 'vntd-root/stores/AuthorStore.jsx';
 
-class AuthorBase extends React.Component
+class AuthorBase extends ComponentBase
 {
     constructor(props) {
-        super(props);
+        super(props, null, AuthorStore);
         this._updateAuthor     = this._updateAuthor.bind(this);
         this._updateAllAuthors = this._updateAllAuthors.bind(this);
 
         this.state = this._updateAllAuthors();
     }
 
-    componentDidMount() {
-        this.unsub = AuthorStore.listen(this._updateAuthor);
-    }
-
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsub = null;
-        }
+    _updateState(data, elm, what) {
+        this._updateAuthor(data, elm, what);
     }
 
     _updateAuthor(data, elm, what) {

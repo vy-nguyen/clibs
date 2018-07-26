@@ -8,31 +8,20 @@ import React           from 'react-mod';
 import { Link }        from 'react-router';
 
 import UserStore       from 'vntd-shared/stores/UserStore.jsx';
+import ComponentBase   from 'vntd-shared/layout/ComponentBase.jsx';
 import Mesg            from 'vntd-root/components/Mesg.jsx';
 import { VntdGlob }    from 'vntd-root/config/constants.js';
 
-class UserBase extends React.Component
+class UserBase extends ComponentBase
 {
     constructor(props) {
-        super(props);
-        this._updateUser = this._updateUser.bind(this);
+        super(props, null, UserStore);
         this.state = {
             self: UserStore.getUserByUuid(UserStore.getSelfUuid(props.userUuid))
         };
     }
 
-    componentDidMount() {
-        this.unsub = UserStore.listen(this._updateUser);
-    }
-
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsub = null;
-        }
-    }
-
-    _updateUser(data) {
+    _updateState(store, data, item, code) {
         this.setState({
             self: UserStore.getUserByUuid(UserStore.getSelfUuid(this.props.userUuid))
         });

@@ -14,9 +14,8 @@ class UserAccount extends UserBase
 {
     constructor(props) {
         super(props);
-        this._updateState = this._updateState.bind(this);
 
-        this.state = _.merge({
+        this.state = _.merge(this.state, {
             myUuid: props.params.userUuid
         });
     }

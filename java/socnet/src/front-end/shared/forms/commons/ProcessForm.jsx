@@ -7,6 +7,7 @@ import _                  from 'lodash';
 import React              from 'react-mod';
 import PropTypes          from 'prop-types';
 
+import History            from 'vntd-shared/utils/History.jsx';
 import StateButtonStore   from 'vntd-shared/stores/StateButtonStore.jsx';
 import InputStore         from 'vntd-shared/stores/NestableStore.jsx';
 import ErrorStore         from 'vntd-shared/stores/ErrorStore.jsx';
@@ -443,6 +444,11 @@ class FormData
     }
 
     onClick(btn, btnState) {
+        if (btn.btnCancel === true) {
+            this.clearData();
+            History.goBack();
+            return;
+        }
         this._onClickBtn = this.buttons[btn.btnName];
         StateButtonStore.setButtonStateObj(this._onClickBtn, "saving");
     }

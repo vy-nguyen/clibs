@@ -78,6 +78,7 @@ class PaymentForm extends FormData
             buttons: [ {
                 btnName  : 'td-cancel',
                 btnFmt   : 'btn btn-lg btn-warning',
+                btnCancel: true,
                 btnCreate: function() {
                     return StateButton.basicButton("Cancel")
                 }
