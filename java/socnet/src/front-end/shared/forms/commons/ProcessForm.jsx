@@ -496,6 +496,21 @@ class FormData
             </div>
         );
     }
+
+    // Utility functions
+    //
+    checkInputNum(data, errFlags, key) {
+        if (data[key] !== "") {
+            let val = parseInt(data[key]);
+            if (val === NaN) {
+                errFlags[key] = true;
+                errFlags.helpText = Lang.translate('Invalid value');
+                errFlags.errText  = Lang.translate('Please correct highlighted values');
+            }
+            return val;
+        }
+        return 0;
+    }
 }
 
 class ProcessForm extends React.Component

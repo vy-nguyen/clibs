@@ -30,6 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.tvntd.ether.dto.AccountInfoDTO;
+import com.tvntd.ether.dto.AddressBook;
 import com.tvntd.ether.dto.TransactionDTO;
 import com.tvntd.ether.dto.WalletInfoDTO;
 import com.tvntd.ether.models.Account;
@@ -49,6 +50,8 @@ public interface IAccountSvc
     TransactionDTO fundAccount(AccountInfoDTO account);
     TransactionDTO payAccount(String ownerUuid, String toUuid,
             String fromAccount, String toAccount, Long xuAmount, String text);
+
+    AddressBook getAddressBook(String ownerUuid, int start, int count);
 
     public static class AccountDTO
     {

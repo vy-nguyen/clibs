@@ -103,10 +103,12 @@ const Actions = Reflux.createActions({
 
     // Ethereum actions
     etherStartup:     completedFailedFn,
+    etherPay:         completedFailedFn,
     getEtherWallet:   completedFailedFn,
     getEtherBlocks:   completedFailedFn,
     getEtherBlockSet: completedFailedFn,
     getEtherTransSet: completedFailedFn,
+    getEtherAddrBook: completedFailedFn,
     getAccountInfo:   completedFailedFn
 });
 
@@ -227,6 +229,11 @@ Actions.getEtherWallet.listen(function() {
     getJSON("/user/tudo/wallet", this, true, "getEtherWallet");
 });
 
+Actions.getEtherAddrBook.listen(function() {
+    console.log("Get address book");
+    getJSON("/user/tudo/addr-book/0/10000", this, true, "getAddrBook");
+});
+
 Actions.getEtherBlockSet.listen(function(blocks) {
     postRestCall({
         hashType: "block",
@@ -247,6 +254,11 @@ Actions.getAccountInfo.listen(function(acct, inclTrans) {
         trans   : inclTrans,
         hashes  : acct
     }, "/api/ether/account", true, this, false);
+});
+
+Actions.etherPay.listen(function(data) {
+    console.log("------ ether pay --------");
+    console.log(data);
 });
 
 /**

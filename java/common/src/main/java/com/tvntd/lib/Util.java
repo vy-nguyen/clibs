@@ -28,8 +28,17 @@ package com.tvntd.lib;
 
 import java.io.UnsupportedEncodingException;
 
+import org.jsoup.safety.Whitelist;
+
 public final class Util
 {
+    static public final Whitelist allowedTags;
+
+    static {
+        allowedTags = Whitelist.basic()
+            .addTags("h1", "h2", "h3", "h4", "h5", "h6", "img");
+    }
+
     static public String fromRawByte(byte[] input)
     {
         if (input != null) {

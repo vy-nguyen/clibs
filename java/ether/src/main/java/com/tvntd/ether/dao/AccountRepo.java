@@ -28,6 +28,7 @@ package com.tvntd.ether.dao;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tvntd.ether.models.Account;
@@ -42,4 +43,5 @@ public interface AccountRepo extends JpaRepository<Account, String>
 
     List<Account> findByWalletUuidIn(List<String> walletUuids);
     List<Account> findByOwnerUuidIn(List<String> ownerUuids);
+    List<Account> findByType(Pageable page, String type);
 }

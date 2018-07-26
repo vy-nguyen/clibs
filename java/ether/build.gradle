@@ -47,6 +47,7 @@ dependencies {
     compile "mysql:mysql-connector-java:${mysql_connector_java_ver}"
     compile "org.apache.httpcomponents:httpclient:4.5.2"
     compile "javax.servlet:servlet-api:2.5"
+    compile "org.jsoup:jsoup:1.8.3"
 
     compile project(":common")
     compile files(new File(project.rootDir, "common/build/libs/common_snapshot.jar"))

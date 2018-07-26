@@ -3,13 +3,15 @@
  */
 'use strict';
 
-import _              from 'lodash';
-import Reflux         from 'reflux';
-import moment         from 'moment';
+import _                 from 'lodash';
+import React             from 'react-mod';
+import Reflux            from 'reflux';
+import moment            from 'moment';
 
-import Actions        from 'vntd-root/actions/Actions.jsx';
-import BaseStore      from 'vntd-root/stores/BaseStore.jsx';
-import EtherStore     from 'vntd-root/stores/EtherStore.jsx';
+import UserStore         from 'vntd-shared/stores/UserStore.jsx';
+import Actions           from 'vntd-root/actions/Actions.jsx';
+import BaseStore         from 'vntd-root/stores/BaseStore.jsx';
+import EtherStore        from 'vntd-root/stores/EtherStore.jsx';
 
 class Wallet
 {
@@ -20,8 +22,8 @@ class Wallet
 
         this.equity   = null;
         this.microPay = null;
-        this.usdFund  = new BaseStore(this);
-        this.tudoFund = new BaseStore(this);
+        this.usdFund  = new BaseStore(store);
+        this.tudoFund = new BaseStore(store);
     }
 
     addAccount(account) {
@@ -77,21 +79,63 @@ class Wallet
     }
 }
 
+class AddrBookEntry
+{
+    constructor(data) {
+        _.forOwn(data, function(v, k) {
+            this[k] = v;
+        }.bind(this));
+
+        this.user = UserStore.getUserByUuid(data.ownerUuid);
+    }
+
+    getUser(siz) {
+        let user;
+
+        if (this.user != null) {
+            let name = this.user.getUserName() + " (" + this.account + ")";
+
+            if (siz == null) {
+                siz = 20;
+            }
+            user = (
+                <span>
+                    <img width={siz} height={siz} src={this.user.userImgUrl}/> {name}
+                </span>
+            );
+        } else {
+            user = <span>{this.account}</span>;
+        }
+        return user;
+    }
+
+    getSelectEntry() {
+        return {
+            value: this.account,
+            label: this.getUser()
+        };
+    }
+}
+
 class WalletStoreClz extends Reflux.Store
 {
     constructor() {
         super();
         this.state = new BaseStore(this);
+        this.addrBook = new BaseStore(this);
+        this.globBook = new BaseStore(this);
+        this.addrBookSelect = [];
+
         this.listenToMany(Actions);
     }
 
     onGetEtherWalletCompleted(data) {
         this._updateWallet(data.wallets);
         this.trigger(this, this.state, "fetch");
+        Actions.getEtherAddrBook();
     }
 
     onGetEtherWalletFailed(error) {
-        console.log("get wallet failed...");
         this.trigger(this, error, "error");
     }
 
@@ -99,8 +143,11 @@ class WalletStoreClz extends Reflux.Store
     }
 
     onGetAccountInfoFailed(error) {
-        console.log("get account info failed...");
         this.trigger(this, error, "error");
+    }
+
+    onGetEtherAddrBookCompleted(data) {
+        this._updateAddressBook(data);
     }
 
     getMyWallets() {
@@ -123,17 +170,42 @@ class WalletStoreClz extends Reflux.Store
     }
 
     getAddressBook() {
-        return [ {
-            value: "abc", label: "Vy Nguyen"
-        }, {
-            value: "def", label: "Manh Nguyen"
-        }, {
-            value: "def", label: "Dung Nguyen"
-        }, {
-            value: "def", label: "Hai Hoang"
-        }, {
-            value: "def", label: "Minh Hieu"
-        } ];
+        return this.addrBookSelect;
+    }
+
+    getAddressBookEntry(acctNo) {
+        let account = this.addrBook.getItem(acctNo);
+
+        if (account != null) {
+            return account;
+        }
+        account = this.globBook.getItem(acctNo);
+        if (account != null) {
+            return account;
+        }
+        return new AddrBookEntry({
+            account: acctNo
+        });
+    }
+
+    _updateAddressBook(data) {
+        if (data.personal != null) {
+            this._addAddressBook(this.addrBook, this.addrBookSelect, data.personal);
+        }
+        if (data.publicBook != null) {
+            this._addAddressBook(this.globBook, this.addrBookSelect, data.publicBook);
+        }
+    }
+
+    _addAddressBook(store, select, list) {
+        _.forEach(list, function(e) {
+            let entry = store.getItem(e.account);
+            if (entry == null) {
+                entry = new AddrBookEntry(e);
+                store.storeItem(e.account, entry, true);
+                select.push(entry.getSelectEntry());
+            }
+        }.bind(this));
     }
 
     _updateWallet(wallets) {

@@ -26,8 +26,6 @@
  */
 package com.tvntd.ether.web;
 
-import java.util.List;
-
 import javax.servlet.http.HttpSession;
 
 import org.ethereum.jsonrpc.JsonRpc.BlockResult;
@@ -95,10 +93,25 @@ public class EtherApi
     /**
      * @return TransactionResult for the list of hahses given by the post form.
      */
-    @RequestMapping(value = "/api/ether/blkhash", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/ether/blkhash",
+        consumes = "application/json", method = RequestMethod.POST)
     @ResponseBody
     public EtherTransDTO getEtherTransHash(@RequestBody HashForm hash)
     {
+        return null;
+    }
+
+    /**
+     * @return account info with optional list of transactions.
+     */
+    @RequestMapping(value = "/api/ether/account",
+        consumes = "application/json", method = RequestMethod.POST)
+    @ResponseBody
+    public Object getAccountInfo(@RequestBody HashForm hash)
+    {
+        if (hash.cleanInput() == false) {
+            return null;
+        }
         return null;
     }
 
@@ -147,6 +160,9 @@ public class EtherApi
         return getEtherTransaction(account, start, count, false);
     }
 
+    /**
+     * @return list of recent transaction in db from start to start + count.
+     */
     @RequestMapping(value = "/api/tudo/trans/{start}/{count}", method = RequestMethod.GET)
     @ResponseBody
     public GenericResponse

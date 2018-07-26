@@ -37,6 +37,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.tvntd.ether.api.EtherRpcApi.EtherAcctInfo;
@@ -45,6 +47,7 @@ import com.tvntd.ether.dao.AccountRepo;
 import com.tvntd.ether.dao.WalletRepo;
 import com.tvntd.ether.dto.AccountInfoDTO;
 import com.tvntd.ether.dto.AccountInfoDTO.NewAccountResult;
+import com.tvntd.ether.dto.AddressBook;
 import com.tvntd.ether.dto.TransactionDTO;
 import com.tvntd.ether.dto.WalletInfoDTO;
 import com.tvntd.ether.models.Account;
@@ -75,6 +78,7 @@ public class AccountSvc implements IAccountSvc
     /**
      * Return the account and recent transactions matching with ownerUuid and account.
      */
+    @Override
     public AccountDTO getAccount(String ownerUuid, String account)
     {
         Account act = acctRepo.findByAccount(account);
@@ -88,6 +92,7 @@ public class AccountSvc implements IAccountSvc
         return getAccountInfo(act);
     }
 
+    @Override
     public List<AccountDTO> getAccountsIn(List<String> accounts)
     {
         List<AccountDTO> out = new LinkedList<>();
@@ -109,6 +114,7 @@ public class AccountSvc implements IAccountSvc
     /**
      * Create a new wallet or create a new account to existing wallet.
      */
+    @Override
     public WalletInfoDTO
     createWallet(String walletName, String acctName, String passwd,
             String walletUuid, String ownerUuid)
@@ -123,6 +129,7 @@ public class AccountSvc implements IAccountSvc
     /**
      * Create a new account to existing wallet.
      */
+    @Override
     public WalletInfoDTO
     createAccount(String walletUuid, String ownerUuid, String passwd, String acctName)
     {
@@ -170,6 +177,7 @@ public class AccountSvc implements IAccountSvc
         return out;
     }
 
+    @Override
     public List<WalletInfoDTO> getWallet(String ownerUuid)
     {
         List<String> accountNo = new LinkedList<>();
@@ -207,14 +215,24 @@ public class AccountSvc implements IAccountSvc
         }
     }
 
+    @Override
     public TransactionDTO fundAccount(AccountInfoDTO account)
     {
         return null;
     }
 
+    @Override
     public TransactionDTO payAccount(String ownerUuid, String toUuid,
             String fromAccount, String toAccount, Long xuAmount, String text)
     {
         return null;
+    }
+
+    @Override
+    public AddressBook getAddressBook(String ownerUuid, int start, int count)
+    {
+        Pageable page = new PageRequest(start, start + count, null);
+        List<Account> accounts = acctRepo.findByType(page, Constants.ACCT_VNTD);
+        return new AddressBook(accounts);
     }
 }

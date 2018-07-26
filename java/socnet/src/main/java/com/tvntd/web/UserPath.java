@@ -1088,4 +1088,20 @@ public class UserPath
         return new TransListDTO(transSvc
                 .getTransactionAcct(profile.getUserUuid(), beg, cnt, from));
     }
+
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @RequestMapping(value = "/user/tudo/addr-book/{start}/{count}",
+        method = RequestMethod.GET)
+    @ResponseBody
+    public Object getEtherAddrBook(HttpSession session,
+            @RequestParam(value = "start", required = false) String start,
+            @RequestParam(value = "count", required = false) String count)
+    {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+        if (profile == null) {
+            return s_noProfile;
+        }
+        int startNo = 0, countNo = 10000;
+        return acctSvc.getAddressBook(profile.getUserUuid(), startNo, countNo);
+    }
 }

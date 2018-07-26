@@ -60,26 +60,26 @@ var UserSelect = function() {
 
     let userInput = function(key) {
         return "<input type='checkbox' id='" + key + "' name='" + key + "'/>";
-    };
-    let connectInput = function(key) {
+    },
+    connectInput = function(key) {
         return userInput('connect-' + key);
-    };
-    let followInput = function(key) {
+    },
+    followInput = function(key) {
         return userInput('follow-' + key);
-    };
-    let blockInput = function(key) {
+    },
+    blockInput = function(key) {
         return userInput('block-' + key);
-    };
-    let unConnectInput = function(key) {
+    },
+    unConnectInput = function(key) {
         return userInput('unConnect-' + key);
-    };
-    let unFollowInput = function(key) {
+    },
+    unFollowInput = function(key) {
         return userInput('unFollow-' + key);
-    };
-    let unBlockInput = function(key) {
+    },
+    unBlockInput = function(key) {
         return userInput('unBlock-' + key);
-    };
-    let deleteInput = function(key) {
+    },
+    deleteInput = function(key) {
         return userInput('delete-' + key);
     };
 

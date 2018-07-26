@@ -26,56 +26,44 @@
  */
 package com.tvntd.ether.dto;
 
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
+import java.util.List;
 
-import com.tvntd.lib.Util;
+import com.tvntd.ether.models.Account;
 
-public class HashForm
+public class AddressBook
 {
-    public static final String acctType  = "acct";
-    public static final String blockType = "block";
-    public static final String transType = "trans";
+    protected List<Account> publicBook;
+    protected List<Account> personal;
 
-    protected String hashType;
-    protected Boolean trans;
-    protected String[] hashes;
-
-    public boolean cleanInput()
-    {
-        if (hashes == null) {
-            return false;
-        }
-        Whitelist wlist = Util.allowedTags;
-        if (hashType != null) {
-            hashType = Jsoup.clean(hashType, wlist);
-        }
-        String[] cleanHash = new String[hashes.length];
-        for (int i = 0; i < hashes.length; i++) {
-            cleanHash[i] = Jsoup.clean(hashes[i], wlist);
-        }
-        hashes = cleanHash;
-        return true;
+    public AddressBook(List<Account> pub) {
+        this.publicBook = pub;
     }
 
     /**
-     * @return the hashType
+     * @return the publicBook
      */
-    public String getHashType() {
-        return hashType;
+    public List<Account> getPublicBook() {
+        return publicBook;
     }
 
     /**
-     * @return the trans
+     * @param publicBook the publicBook to set
      */
-    public Boolean getTrans() {
-        return trans;
+    public void setPublicBook(List<Account> publicBook) {
+        this.publicBook = publicBook;
     }
 
     /**
-     * @return the hashes
+     * @return the personal
      */
-    public String[] getHashes() {
-        return hashes;
+    public List<Account> getPersonal() {
+        return personal;
+    }
+
+    /**
+     * @param personal the personal to set
+     */
+    public void setPersonal(List<Account> personal) {
+        this.personal = personal;
     }
 }

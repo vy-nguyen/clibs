@@ -146,15 +146,6 @@ class EtherPanel extends React.Component
         });
     }
 
-/*
-    _updateState(store, data, where, code) {
-        if (code != "error") {
-            this.setState({
-                wallets: store.getMyWallets()
-            });
-        }
-    }
-*/
     switchData(type, data) {
         switch(type) {
         case 'wallet':

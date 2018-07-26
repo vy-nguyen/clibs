@@ -80,6 +80,10 @@ class EthAccount
         return this.txToArr;
     }
 
+    static toXu(dong, hao, xu) {
+        return (dong * TDRates.XU2TD) + (hao * TDRates.XU2HAO) + xu;
+    }
+
     static getExchangeRate() {
         return TDRates;
     }

@@ -109,6 +109,9 @@ class ButtonState {
         if (state === this.currState) {
             return;
         }
+        if (this[state] == null) {
+            return;
+        }
         this.trigger   = false;
         this.prevState = this.currState;
         this.currState = state;
