@@ -158,9 +158,9 @@ class TagInfo extends React.Component
                     inputFmt: inputFmt,
                     inpHolder: artTag.rankScore
                 }, {
-                    labelFmt: labelFmt,
-                    labelTxt: Lang.translate("Name"),
-                    inputFmt: "col-sm-8 col-md-8 col-lg-8 control-label",
+                    labelFmt : labelFmt,
+                    labelTxt : Lang.translate("Name"),
+                    inputFmt : "col-sm-8 col-md-8 col-lg-8 control-label",
                     inpHolder: artTag.tagName,
                     typeAhead: true,
                     inpName  : "tag-typeahead-" + tagName,

@@ -70,7 +70,7 @@ class PaymentForm extends FormData
             formFmt  : 'client-form',
             submitFn : Actions.etherPay,
             formEntries: [ {
-                legend : 'Make payment',
+                legend : Lang.translate('Make payment'),
                 inline : true,
                 sectFmt: 'product-deatil',
                 entries: entries
@@ -88,7 +88,8 @@ class PaymentForm extends FormData
                 btnSubmit: true,
                 btnCreate: function() {
                     return StateButton.saveButtonFsm(
-                        "Payment", "Submit", "Paid", "Failed", "Submitting...");
+                        "Payment", "Submit", "Paid", "Failed", "Submitting..."
+                    );
                 }
             } ]
         };
@@ -148,9 +149,6 @@ class Payment extends ComponentBase
         this.setState({
             redraw: true
         });
-    }
-
-    _updateState(store, data, code, item) {
     }
 
     render() {

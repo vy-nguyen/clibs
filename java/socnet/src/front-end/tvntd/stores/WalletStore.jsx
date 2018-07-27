@@ -122,6 +122,7 @@ class WalletStoreClz extends Reflux.Store
     constructor() {
         super();
         this.state = new BaseStore(this);
+        this.defWallet = null;
         this.addrBook = new BaseStore(this);
         this.globBook = new BaseStore(this);
         this.addrBookSelect = [];
@@ -148,6 +149,25 @@ class WalletStoreClz extends Reflux.Store
 
     onGetEtherAddrBookCompleted(data) {
         this._updateAddressBook(data);
+    }
+
+    getDefWallet() {
+        if (this.defWallet == null) {
+            _.forOwn(this.state.getAllData(), function(w) {
+                this.defWallet = w;
+                return false;
+            }.bind(this));
+        }
+        return this.defWallet;
+    }
+
+    getTAOptions() {
+        let opts = [];
+
+        _.forOwn(this.state.getAllData(), function(w) {
+            opts.push(w.getName());
+        });
+        return opts;
     }
 
     getMyWallets() {

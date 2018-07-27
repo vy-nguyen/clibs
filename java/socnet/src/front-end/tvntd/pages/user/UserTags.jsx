@@ -23,6 +23,15 @@ class ListUserTags extends React.Component
         this._submitDelete  = this._submitDelete.bind(this);
         this._submitChanges = this._submitChanges.bind(this);
 
+        this.footerHasTag = [ {
+            format: "btn btn-primary pull-right",
+            title : "Save Changes",
+            onSubmit: this._submitChanges
+        }, {
+            format: "btn btn-danger pull-right",
+            title : "Delete Selected Rows",
+            onSubmit: this._deleteRows
+        } ];
         this.footer = [ {
             format: "btn btn-primary pull-right",
             title : "Save Changes",
@@ -159,13 +168,14 @@ class ListUserTags extends React.Component
 
     render() {
         let authorTag = this.props.authorTag, tagSel = this.props.tagSel,
-            sortedArts = authorTag.getSortedArticleRank();
+            sortedArts = authorTag.getSortedArticleRank(),
+            tabData = this._getTableData(sortedArts, authorTag, tagSel),
+            footer = tabData.length > 0 ? this.footerHasTag : this.footer;
 
         return (
-            <DynamicTable tableFormat={this.tabHeader}
-                tableData={this._getTableData(sortedArts, authorTag, tagSel)}
+            <DynamicTable tableFormat={this.tabHeader} tableData={tabData}
                 tableTitle={"Tag: " + authorTag.tagName} edit={false}
-                tableFooter={this.footer} cloneRow={null}
+                tableFooter={footer} cloneRow={null}
                 select={true} tableId={'user-tag-' + authorTag.tagName}>
                 <ErrorView mesg={true} errorId={this._getErrorId()}/>
             </DynamicTable>
