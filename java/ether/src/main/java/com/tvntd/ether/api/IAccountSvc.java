@@ -32,6 +32,7 @@ import java.util.List;
 import com.tvntd.ether.dto.AccountInfoDTO;
 import com.tvntd.ether.dto.AddressBook;
 import com.tvntd.ether.dto.TransactionDTO;
+import com.tvntd.ether.dto.WalletForm;
 import com.tvntd.ether.dto.WalletInfoDTO;
 import com.tvntd.ether.models.Account;
 
@@ -41,10 +42,9 @@ public interface IAccountSvc
     List<AccountDTO> getAccountsIn(List<String> accounts);
 
     WalletInfoDTO createAccount(String walletUuid,
-            String ownerUuid, String passwd, String acctName);
+            String ownerUuid, String passwd, String acctName, Boolean priv);
 
-    WalletInfoDTO createWallet(String walletName, String acctname,
-            String passwd, String walletUuid, String ownerUuid);
+    WalletInfoDTO createWallet(WalletForm form, String ownerUuid);
 
     List<WalletInfoDTO> getWallet(String ownerUuid);
     TransactionDTO fundAccount(AccountInfoDTO account);
@@ -67,13 +67,14 @@ public interface IAccountSvc
             this.recentTrans = new LinkedList<>();
         }
 
-        public AccountDTO(String wuuid, String address, String acctName) {
-            this(wuuid, new AccountInfoDTO(address, acctName));
+        public AccountDTO(String wuuid, String address, String acctName, String typ) {
+            this(wuuid, new AccountInfoDTO(address, acctName, typ));
         }
 
         public AccountDTO(Account act) {
             this(act.getWalletUuid(),
-                    new AccountInfoDTO(act.getAccount(), act.getPublicName()));
+                    new AccountInfoDTO(act.getAccount(),
+                        act.getPublicName(), act.getType()));
         }
 
         /**

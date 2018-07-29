@@ -28,7 +28,6 @@ package com.tvntd.web;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,7 +59,6 @@ import com.tvntd.ether.dto.WalletInfoDTO;
 import com.tvntd.forms.UserConnectionForm;
 import com.tvntd.forms.UserEmailForm;
 import com.tvntd.lib.ObjectId;
-import com.tvntd.models.Profile;
 import com.tvntd.models.User;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.GenericResponse;
@@ -78,8 +76,6 @@ import com.tvntd.service.api.StartupResponse;
 import com.tvntd.service.api.UserConnectionChange;
 import com.tvntd.service.api.UserNotifResponse;
 import com.tvntd.service.api.WalletResponse;
-import com.tvntd.util.Constants;
-import com.tvntd.util.Util;
 
 @Controller
 public class ApiPath
@@ -277,15 +273,10 @@ public class ApiPath
     public GenericResponse createWallet(@RequestBody UserEmailForm emails)
     {
         List<WalletInfoDTO> wallets = new LinkedList<>();
+        /*
         List<Profile> profile = profileSvc
             .getUsersByEmail(Arrays.asList(emails.getEmails()));
-
-        for (Profile p : profile) {
-            WalletInfoDTO wallet = acctSvc.createWallet(
-                    Util.fromRawByte(p.getFirstName()),
-                    Constants.TudoAcct, "pasword", null, p.getUserUuid());
-            wallets.add(wallet);
-        }
+        */
         return new WalletResponse(wallets);
     }
 }

@@ -86,8 +86,25 @@ class NewWalletForm extends FormData
     }
 
     validateInput(data, errFlags) {
-        console.log("validate data");
-        console.log(data);
+        let wallet, walletName = data['new-wallet-name'],
+            acctName = data['new-acct-name'], priv = data['new-acct-priv'];
+
+        if (walletName != null && acctName != null) {
+            wallet = WalletStore.getWalletByName(walletName);
+            errFlags.errText = null;
+
+            if (wallet != null) {
+                wallet = wallet.walletUuid;
+            } else {
+                wallet = null;
+            }
+            return {
+                walletUuid: wallet,
+                walletName: walletName,
+                acctName  : acctName,
+                acctPriv  : priv != null ? (priv !== "" ? true : false) : false
+            };
+        }
         return null;
     }
 }

@@ -60,6 +60,7 @@ import com.tvntd.ether.api.IAccountSvc;
 import com.tvntd.ether.api.ITransactionSvc;
 import com.tvntd.ether.dto.TransactionDTO;
 import com.tvntd.ether.dto.TransactionDTO.TransListDTO;
+import com.tvntd.ether.dto.WalletForm;
 import com.tvntd.ether.dto.WalletInfoDTO;
 import com.tvntd.forms.ArticleForm;
 import com.tvntd.forms.CommentChangeForm;
@@ -988,24 +989,22 @@ public class UserPath
      * User Wallet and Accounts
      */
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
-    @RequestMapping(value = "/user/tudo/create/{walletUuid}/{name}",
-            method = RequestMethod.GET)
+    @RequestMapping(value = "/user/tudo/create-wallet",
+            consumes = "application/json", method = RequestMethod.POST)
     @ResponseBody
     public GenericResponse
-    createEtherAccount(HttpSession session,
-            @PathVariable(value = "walletUuid") String walletUuid,
-            @PathVariable(value = "name") String name)
+    createEtherAccount(@RequestBody WalletForm form, HttpSession session)
     {
+        List<WalletInfoDTO> wallets = new LinkedList<>();
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+
         if (profile == null) {
             return s_noProfile;
         }
-        Profile p = profile.fetchProfile();
-        WalletInfoDTO w = acctSvc.createWallet(Util.fromRawByte(p.getFirstName()),
-                Constants.TudoAcct, "password", walletUuid, profile.getUserUuid());
-
-        List<WalletInfoDTO> wallets = new LinkedList<>();
-        wallets.add(w);
+        if (form.cleanInput() == false) {
+            return s_badInput;
+        }
+        wallets.add(acctSvc.createWallet(form, profile.getUserUuid()));
         return new WalletResponse(wallets);
     }
 

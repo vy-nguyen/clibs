@@ -49,6 +49,7 @@ import com.tvntd.ether.dto.AccountInfoDTO;
 import com.tvntd.ether.dto.AccountInfoDTO.NewAccountResult;
 import com.tvntd.ether.dto.AddressBook;
 import com.tvntd.ether.dto.TransactionDTO;
+import com.tvntd.ether.dto.WalletForm;
 import com.tvntd.ether.dto.WalletInfoDTO;
 import com.tvntd.ether.models.Account;
 import com.tvntd.ether.models.Wallet;
@@ -116,14 +117,16 @@ public class AccountSvc implements IAccountSvc
      */
     @Override
     public WalletInfoDTO
-    createWallet(String walletName, String acctName, String passwd,
-            String walletUuid, String ownerUuid)
+    createWallet(WalletForm form, String ownerUuid)
     {
-        List<Wallet> wallets = walletRepo.findByOwnerUuid(ownerUuid);
-        if (wallets != null && wallets.size() > 5) {
-            return createAccount(wallets.get(0), passwd, acctName);
+        String walletUuid = form.getWalletUuid();
+
+        if (walletUuid != null) {
+            return createAccount(walletUuid, ownerUuid,
+                    form.getPassword(), form.getAcctName(), form.getAcctPriv());
         }
-        return createAccount(new Wallet(ownerUuid, walletName), passwd, acctName);
+        return createAccount(new Wallet(ownerUuid, form.getWalletName()),
+                form.getPassword(), form.getAcctName(), form.getAcctPriv());
     }
 
     /**
@@ -131,7 +134,8 @@ public class AccountSvc implements IAccountSvc
      */
     @Override
     public WalletInfoDTO
-    createAccount(String walletUuid, String ownerUuid, String passwd, String acctName)
+    createAccount(String walletUuid, String ownerUuid,
+            String passwd, String acctName, Boolean priv)
     {
         List<Wallet> wallets =
             walletRepo.findByWalletUuidAndOwnerUuid(walletUuid, ownerUuid);
@@ -139,23 +143,19 @@ public class AccountSvc implements IAccountSvc
         if (wallets.isEmpty()) {
             return new WalletInfoDTO("Invalid Wallet Uuid " + walletUuid);
         }
-        return createAccount(wallets.get(0), passwd, acctName);
+        return createAccount(wallets.get(0), passwd, acctName, priv);
     }
 
     protected WalletInfoDTO
-    createAccount(Wallet w, String passwd, String acctName)
+    createAccount(Wallet w, String passwd, String acctName, Boolean priv)
     {
-        List<Account> accounts = acctRepo.findByOwnerUuid(w.getOwnerUuid());
-        if (accounts != null && accounts.size() > 5) {
-            // Limit 5 account per wallet for now.
-            //
-            return new WalletInfoDTO(w);
-        }
         JsonRpc rpc = new JsonRpc();
+        String type = priv == true ? Constants.ACCT_VNTD_PRIV : Constants.ACCT_VNTD;
+
         NewAccountResult result = rpc.<NewAccountResult>
             callJsonRpc(NewAccountResult.class, "tudo_newAccount", "id",
                     w.getOwnerUuid(), w.getWalletUuid(),
-                    acctName, passwd, Constants.ACCT_VNTD);
+                    acctName, passwd, type);
 
         if (result == null || result.getError() != null) {
             String err = result.getError().toString();
@@ -163,17 +163,16 @@ public class AccountSvc implements IAccountSvc
             s_log.warn("Error in creating account " + err);
             return new WalletInfoDTO(err);
         }
-        WalletInfoDTO out = new WalletInfoDTO(w);
-        Account account = result.fetchAccount(acctName, Constants.ACCT_VNTD);
-        out.addAccountInfo(new AccountDTO(account));
-
         // Save the new wallet entry.
         //
+        Account account = result.fetchAccount(acctName, type);
         w.resetId();
         w.setAccount(result.fetchAddress());
         walletRepo.save(w);
         acctRepo.save(account);
 
+        WalletInfoDTO out = new WalletInfoDTO(w);
+        out.addAccountInfo(new AccountDTO(account));
         return out;
     }
 
@@ -193,7 +192,6 @@ public class AccountSvc implements IAccountSvc
                 wallets.put(wid, dto);
             }
             accountNo.add(w.getAccount());
-            dto.addAccountInfo(new AccountDTO(wid, w.getAccount(), null));
         }
         if (!accountNo.isEmpty()) {
             JsonRpc rpc = new JsonRpc();
@@ -201,17 +199,33 @@ public class AccountSvc implements IAccountSvc
                     "tudo_listAccountInfo", "id", accountNo);
 
             if (result != null && result.getError() == null) {
-                processAccountInfo(wallets, result.accountResult());
+                processAccountInfo(wallets, accountNo, result.accountResult());
             }
         }
         return new LinkedList<>(wallets.values());
     }
 
     protected void
-    processAccountInfo(Map<String, WalletInfoDTO> wallets, List<AccountInfoDTO> result)
+    processAccountInfo(Map<String, WalletInfoDTO> wallets,
+            List<String> accounts, List<AccountInfoDTO> balance)
     {
-        for (AccountInfoDTO act : result) {
-            System.out.println("account " + act);
+        List<Account> result = acctRepo.findByAccountIn(accounts);
+        Map<String, Account> map = new HashMap<>();
+
+        for (Account a : result) {
+            map.put(a.getAccount(), a);
+        }
+        for (AccountInfoDTO act : balance) {
+            Account actDb = map.get(act.getAccount());
+            if (actDb != null) {
+                act.processInfo(actDb.getPublicName(), actDb.getType());
+
+                String wid = actDb.getWalletUuid();
+                WalletInfoDTO w = wallets.get(wid);
+                if (w != null) {
+                    w.addAccountInfo(new AccountDTO(wid, act)); 
+                }
+            }
         }
     }
 

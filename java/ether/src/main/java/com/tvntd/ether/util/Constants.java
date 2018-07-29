@@ -11,8 +11,9 @@ import com.tvntd.ether.dto.AccountInfoDTO;
 
 public class Constants
 {
-    static public final String ACCT_RESERVED = "reserved";
-    static public final String ACCT_VNTD = "vntd";
+    static public final String ACCT_RESERVED  = "reserved";
+    static public final String ACCT_VNTD      = "vntd";
+    static public final String ACCT_VNTD_PRIV = "vntd-priv";
 
     public static final AccountInfoDTO[] KnownAccounts = {
         new AccountInfoDTO("0x4702058fe8468ab5a6985ff366a6bd64d165566b", "Reserved"),

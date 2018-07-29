@@ -32,6 +32,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tvntd.ether.api.EtherRpcApi.RpcResponse;
 import com.tvntd.ether.models.Account;
+import com.tvntd.ether.util.Convert;
 
 @JsonIgnoreProperties(ignoreUnknown = true) 
 public class AccountInfoDTO
@@ -40,23 +41,38 @@ public class AccountInfoDTO
     protected Long xuBalance;
     protected String acctName;
     protected String balance;
+    protected String type;
 
     public AccountInfoDTO() {}
-    public AccountInfoDTO(String acct, String name)
+    public AccountInfoDTO(String acct, String name, String typ)
     {
         account = acct;
         acctName = name;
         xuBalance = 0L;
-        balance = "0";
+        type = typ;
     }
 
-    public AccountInfoDTO(String acct, BigInteger weiBalance, String name)
+    public AccountInfoDTO(String acct, BigInteger weiBalance, String name, String typ)
     {
-        this(acct, name);
+        this(acct, name, typ);
+        if (weiBalance != null) {
+            xuBalance = Convert.toXuValue(weiBalance);
+        }
     }
 
     public String toString() {
         return "Account " + account + ", name " + acctName + " xuBalance " + xuBalance;
+    }
+
+    public void processInfo(String name, String type)
+    {
+        this.acctName = name;
+        this.type = type;
+
+        if (balance != null) {
+            BigInteger bal = new BigInteger(balance);
+            xuBalance = Convert.toXuValue(bal);
+        }
     }
 
     /**
@@ -102,6 +118,19 @@ public class AccountInfoDTO
         this.balance = balance;
     }
 
+    /**
+     * @return the type
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(String type) {
+        this.type = type;
+    }
 
     /**
      * RPC result from NewAccount call

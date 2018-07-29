@@ -159,6 +159,13 @@ class WalletStoreClz extends Reflux.Store
         this._updateAddressBook(data);
     }
 
+    onNewWalletAcctCompleted(data) {
+        console.log("created done");
+        console.log(data);
+        this._updateWallet(data.wallets);
+        this.trigger(this.state, data, "ok", false);
+    }
+
     getDefWallet() {
         if (this.defWallet == null) {
             _.forOwn(this.state.getAllData(), function(w) {
