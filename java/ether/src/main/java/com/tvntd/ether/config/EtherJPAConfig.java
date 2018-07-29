@@ -34,9 +34,11 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -79,14 +81,15 @@ public class EtherJPAConfig
     @Bean(name = "etherDataSource")
     public DataSource etherDataSource()
     {
+        EtherRpcCfg cfg = new EtherRpcCfg();
         DriverManagerDataSource ds = new DriverManagerDataSource();
 
-        // TODO: change this to env. variable
-        //
         ds.setDriverClassName("com.mysql.jdbc.Driver");
-        ds.setUrl("jdbc:mysql://localhost:3306/keystore?createDatabaseIfNotExist=true");
-        ds.setUsername("socnet");
-        ds.setPassword("socnetsocnet");
+        ds.setUrl("jdbc:mysql://" + cfg.getDbHost() +
+                  ":3306/keystore?createDatabaseIfNotExist=true");
+
+        ds.setUsername(cfg.getDbUser());
+        ds.setPassword(cfg.getDbPassword());
         return ds;
     }
 
@@ -112,5 +115,92 @@ public class EtherJPAConfig
         hbp.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         hbp.setProperty("hibernate.connection.useUnicode", "true");
         return hbp;
+    }
+
+    public static class EtherRpcCfg
+    {
+        protected static final String s_prodDb      = "10.8.0.1";
+        protected static final String s_prodKey     = "http://10.8.0.1:8545";
+        protected static final String s_prodAccount = "http://10.8.0.1:8545";
+
+        protected static final String s_devDb       = "10.1.10.13";
+        protected static final String s_devKey      = "http://10.1.10.13:8545";
+        protected static final String s_devAccount  = "http://10.1.10.13:8545";
+
+        protected static final String s_extDb       = "localhost";
+        protected static final String s_extKey      = "http://96.68.150.190:8545";
+        protected static final String s_extAccount  = "http://96.68.150.190:8545";
+
+        protected String accountUrl;
+        protected String keyUrl;
+        protected String dbHost;
+        protected String dbUser;
+        protected String dbPassword;
+
+        public EtherRpcCfg()
+        {
+            String val = System.getenv("DEV_ENVIRONMENT");
+            if (val == null) {
+                dbHost     = s_prodDb;
+                keyUrl     = s_prodKey;
+                accountUrl = s_prodAccount;
+            } else if (val.equals("external")) {
+                dbHost     = s_extDb;
+                keyUrl     = s_extKey;
+                accountUrl = s_extAccount;
+            } else {
+                dbHost     = s_devDb;
+                keyUrl     = s_devKey;
+                accountUrl = s_devAccount;
+            }
+            val = System.getenv("KEY_DB_HOST");
+            if (val != null) {
+                dbHost = val;
+            }
+            val = System.getenv("KEY_DB_USER");
+            if (val != null) {
+                dbUser = val;
+            } else {
+                dbUser = "socnet";
+            }
+            val = System.getenv("KEY_DB_PASSWORD");
+            if (val != null) {
+                dbPassword = val;
+            } else {
+                dbPassword = "socnetsocnet";
+            }
+        }
+
+        public String getAccountUrl() {
+            return accountUrl;
+        }
+
+        /**
+         * @return the keysUrl
+         */
+        public String getKeyUrl() {
+            return keyUrl;
+        }
+
+        /**
+         * @return the dbHost
+         */
+        public String getDbHost() {
+            return dbHost;
+        }
+
+        /**
+         * @return the dbUser
+         */
+        public String getDbUser() {
+            return dbUser;
+        }
+
+        /**
+         * @return the dbPassword
+         */
+        public String getDbPassword() {
+            return dbPassword;
+        }
     }
 }

@@ -44,15 +44,13 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tvntd.ether.api.EtherRpcApi.RpcResponse;
+import com.tvntd.ether.config.EtherJPAConfig.EtherRpcCfg;
 
 public class JsonRpc
 {
     static Logger s_log = LoggerFactory.getLogger(JsonRpc.class);
+    static EtherRpcCfg s_etherConfig = new EtherRpcCfg();
 
-    // private static final String s_url = "http://96.68.150.190:8545/";
-    // private static final String s_url = "http://10.1.10.13:8545/";
-    private static final String s_url = "http://10.8.0.1:8545/";
-    // private static final String s_url = "http://localhost:8545/";
     protected HttpClient httpClient;
 
     public JsonRpc()
@@ -82,7 +80,7 @@ public class JsonRpc
 
     protected <T extends RpcResponse> T callJsonRpc(Class<T> clazz, JsonRpcCommon reqt)
     {
-        HttpPost postReq = new HttpPost(s_url);
+        HttpPost postReq = new HttpPost(s_etherConfig.getAccountUrl());
 
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -102,6 +100,7 @@ public class JsonRpc
             if (status == HttpStatus.SC_OK) {
                 return (T) mapper.readValue(content, clazz);
             }
+            s_log.info("Bad status " + status + ": " + content);
             return null;
 
         } catch(IOException e) {

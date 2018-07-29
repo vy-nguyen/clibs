@@ -115,7 +115,7 @@ class NewWallet extends ComponentBase
     }
 }
 
-class EditWallet extends React.Component
+class EditOneWallet extends React.Component
 {
     constructor(props) {
         super(props);
@@ -136,45 +136,110 @@ class EditWallet extends React.Component
             title : 'Delete Wallet',
             onSubmit: this._deleteWallet
         } ];
+    }
+
+    _submitChanges(changes) {
+        if (_.isEmpty(changes)) {
+            return false;
+        }
+        let data = [];
+        _.forEach(changes, function(entry) {
+            let w = WalletStore.getWalletByName(entry.wallet);
+            console.log(w);
+            if (w != null) {
+                data.push({
+                    account   : entry.account,
+                    acctName  : entry.acctName,
+                    walletUuid: w.walletUuid,
+                    walletName: w.getName()
+                });
+            }
+        });
+    }
+
+    _deleteWallet(changes) {
+
+    }
+
+    _getTableData(wallet) {
+        let data = [];
+
+        wallet.iterAccount(function(act) {
+            let actName = act.getName();
+            data.push({
+                rowId   : actName,
+                account : act.getAccountNo(),
+                acctBal : act.getMoneyBalance(),
+                acctName: {
+                    inpValue : actName,
+                    inpDefVal: actName,
+                    inpName  : actName + '-account'
+                },
+                wallet  : {
+                    inpHolder: wallet.getName(),
+                    inpDefVal: wallet.getName(),
+                    select   : true,
+                    selectOpt: WalletStore.getSelOptions(),
+                    inpName  : actName + '-wallet'
+                }
+            });
+        });
+        return data;
+    }
+
+    render() {
+        let { wallet, header } = this.props,
+            tabData = this._getTableData(wallet), name = "Wallet " + wallet.getName(),
+            footer = tabData.length > 0 ? this.footerHasWallet : this.footer;
+
+        return (
+            <DynamicTable key={_.uniqueId("edit-wallet-")}
+                tableFormat={header} tableData={tabData} tableTitle={name}
+                tableFooter={footer} cloneRow={null} tableId={name}>
+                <ErrorView mesg={true} errorId={name}/>
+            </DynamicTable>
+        );
+    }
+}
+
+class EditWallet extends ComponentBase
+{
+    constructor(props) {
+        super(props, null, WalletStore);
         this.tabHeader = [ {
             key   : 'account',
             header: Lang.translate('Account')
         }, {
-            key   : 'acct-name',
+            key   : 'acctName',
             header: Lang.translate('Name')
         }, {
-            key   : 'acct-type',
-            header: Lang.translate('Private')
+            key   : 'acctBal',
+            header: Lang.translate('Balance')
+        }, {
+            key   : 'wallet',
+            header: Lang.translate('Wallet')
         } ];
+        this.state = _.merge(this.state, {
+            wallets: WalletStore.getMyWallets()
+        });
     }
 
-    _getErrorId() {
-        return 'edit-wallet';
-    }
-
-    _submitChanges(changes) {
-    }
-
-    _deleteWallet(changes) {
-    }
-
-    _getTableData() {
-        return null;
+    _updateState(store, data, item, code) {
+        this.setState({
+            wallets: store.getMyWallets()
+        });
     }
 
     render() {
-        let tabData = this._getTableData();
+        let out = [], wallets = this.state.wallets;
 
-        return (
-            <div className="well">
-                <DynamicTable tableFormat={this.tableHeader} tabData={tabData}
-                    tableTitle="Wallet"
-                    tableFooter={this.footer} cloneRow={null}
-                    select={true} tableId="edit-wallet-table">
-                    <ErrorView mesg={true} errorId={this._getErrorId()}/>
-                </DynamicTable>
-            </div>
-        );
+        _.forOwn(wallets, function(w) {
+            out.push(
+                <EditOneWallet wallet={w} header={this.tabHeader}/>
+            );
+        }.bind(this));
+
+        return (<div className="well">{out}</div>);
     }
 }
 
@@ -196,8 +261,7 @@ class ReqMicroCredit extends React.Component
 class EtherPanel extends React.Component
 {
     constructor(props) {
-        // super(props, null, WalletStore);
-        super(props);
+        super(props, null, WalletStore);
         this.switchData  = this.switchData.bind(this);
         this._newWallet  = this._newWallet.bind(this);
         this._editWallet = this._editWallet.bind(this);

@@ -48,6 +48,14 @@ class Wallet
         return false;
     }
 
+    iterAccount(func) {
+        if (this.equity != null) {
+            func(this.equity);
+        }
+        _.forOwn(this.getTudoFund(), func);
+        _.forOwn(this.getUsdFund(), func);
+    }
+
     getEquityAcct() {
         return this.equity;
     }
@@ -161,6 +169,18 @@ class WalletStoreClz extends Reflux.Store
         return this.defWallet;
     }
 
+    getSelOptions() {
+        let opts = [];
+
+        _.forOwn(this.state.getAllData(), function(w) {
+            opts.push({
+                value: w.walletUuid,
+                label: w.getName()
+            });
+        });
+        return opts;
+    }
+
     getTAOptions() {
         let opts = [];
 
@@ -172,6 +192,10 @@ class WalletStoreClz extends Reflux.Store
 
     getMyWallets() {
         return this.state.getAllData();
+    }
+
+    getWalletByName(name) {
+        return this.state.getIndex(name);
     }
 
     isMyAccount(acctNo) {

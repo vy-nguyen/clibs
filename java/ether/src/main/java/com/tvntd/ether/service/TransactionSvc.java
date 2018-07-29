@@ -106,13 +106,15 @@ public class TransactionSvc implements ITransactionSvc
         EtherTransResult resp = rpc.<EtherTransResult>
             callJsonRpcArr(EtherTransResult.class, "tudo_listTrans", "id", transHash);
 
-        List<TransactionResultDTO> out = resp.fetchTrans();
-        if (out != null) {
-            Transaction t = transRepo.findByTxHash(txHash);
-            for (TransactionResultDTO curTx : out) {
-                TransactionDTO dto = new TransactionDTO(t, curTx);
-                s_cacheTrans.put(curTx.hash, dto);
-                return dto;
+        if (resp != null) {
+            List<TransactionResultDTO> out = resp.fetchTrans();
+            if (out != null) {
+                Transaction t = transRepo.findByTxHash(txHash);
+                for (TransactionResultDTO curTx : out) {
+                    TransactionDTO dto = new TransactionDTO(t, curTx);
+                    s_cacheTrans.put(curTx.hash, dto);
+                    return dto;
+                }
             }
         }
         return null;
