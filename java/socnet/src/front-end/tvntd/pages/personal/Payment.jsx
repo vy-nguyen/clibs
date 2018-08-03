@@ -135,6 +135,17 @@ class PaymentForm extends FormData
         console.log(errFlags);
         return null;
     }
+
+    submitNotif(store, data, result, status) {
+        console.log("onNotif result " + result);
+        console.log("status " + status);
+        super.submitNotif(store, data, result, status);
+    }
+
+    submitError(store, result, status) {
+        console.log("Error result " + result);
+        console.log("status " + status);
+    }
 }
 
 class Payment extends ComponentBase

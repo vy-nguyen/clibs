@@ -10,6 +10,7 @@ import Actions           from 'vntd-root/actions/Actions.jsx';
 import BaseStore         from 'vntd-root/stores/BaseStore.jsx';
 import UserStore         from 'vntd-shared/stores/UserStore.jsx';
 import BaseFetch         from 'vntd-shared/stores/BaseFetch.jsx';
+import BaseElement       from 'vntd-shared/stores/BaseElement.jsx';
 
 const TDRates = {
     HAO2TD: 100,
@@ -17,12 +18,10 @@ const TDRates = {
     XU2TD : 10000
 };
 
-class EthAccount
+class EthAccount extends BaseElement
 {
     constructor(data) {
-        _.forOwn(data, function(v, k) {
-            this[k] = v;
-        }.bind(this));
+        super(data);
 
         this.txTo      = {};
         this.txToArr   = [];
@@ -32,6 +31,14 @@ class EthAccount
         if (this.acctName == null) {
             this.acctName = "Micropay";
         }
+    }
+
+    baseUpdate(data) {
+        if (data.Balance == null || data.Balance === "NA") {
+            data.Balance = this.Balance;
+            data.xuBalance = this.xuBalance;
+        }
+        super.baseUpdate(data);
     }
 
     getEther() {
@@ -164,13 +171,10 @@ class Transaction
     }
 }
 
-class EtherBlock
+class EtherBlock extends BaseElement
 {
     constructor(data, store) {
-        _.forOwn(data, function(v, k) {
-            this[k] = v;
-        }.bind(this));
-
+        super(data, store);
         this.store = store;
         this.blkNum = parseInt(this.number, 16);
         this.timestamp = new Date(this.timestamp * 1000);
@@ -239,7 +243,11 @@ class EtherStoreClz extends Reflux.Store
         this.updateAccounts(pubAcct.publicAcct);
         this.updateBlocks([pubAcct.latestBlock]);
         this.updateTransactions(pubAcct.recentTrans);
-        this.trigger(this, this.state, "start");
+        this.trigger(new BaseElement({
+            store: this,
+            data : this.state,
+            where: 'start'
+        }), this.state, "start");
 
         if (UserStore.isLogin()) {
             Actions.getEtherWallet();
@@ -252,7 +260,11 @@ class EtherStoreClz extends Reflux.Store
     onGetEtherBlockSetCompleted(data) {
         this.pendingBlock.requestDoneOk();
         this.updateBlocks(data.blocks);
-        this.trigger(this, this.state, "fetch");
+        this.trigger(new BaseElement({
+            store: this,
+            data : this.state,
+            where: 'fetch'
+        }), this.state, "fetch");
     }
 
     onGetEtherBlockSetFailed(data) {
@@ -265,7 +277,11 @@ class EtherStoreClz extends Reflux.Store
     onGetEtherBlocksCompleted(data) {
         delete this.pendingGet[data.cbContext];
         this.updateBlocks(data.blocks);
-        this.trigger(this, this.blocks, "fetch");
+        this.trigger(new BaseElement({
+            store: this,
+            data : this.blocks,
+            where: "fetch"
+        }), this.blocks, "fetch");
     }
 
     /**
@@ -274,7 +290,11 @@ class EtherStoreClz extends Reflux.Store
     onGetEtherTransCompleted(data) {
         this.pendingTrans.requestDoneOk();
         this.updateTransactions(data.trans);
-        this.trigger(this, this.transactions, "fetch-trans");
+        this.trigger(new BaseElement({
+            store: this,
+            data : this.transactions,
+            where: "fetch-trans"
+        }), this.transactions, "fetch-trans");
     }
 
     /**
@@ -283,7 +303,11 @@ class EtherStoreClz extends Reflux.Store
     onGetAccountCompleted(data) {
         this.pendingAccts.requestDoneOk();
         this.updateAccounts(data.accounts);
-        this.trigger(this, this.state, "fetch-acct");
+        this.trigger(new BaseElement({
+            store: this,
+            data : this.state,
+            where: "fetch-acct"
+        }), this.state, "fetch-acct");
     }
 
     onGetAccountFailed(error) {
@@ -356,6 +380,8 @@ class EtherStoreClz extends Reflux.Store
             acct = aStore.getItem(item.Account);
             if (acct == null) {
                 aStore.storeItem(item.Account, new EthAccount(item), true);
+            } else {
+                acct.baseUpdate(item);
             }
         }.bind(this));
     }

@@ -116,8 +116,7 @@ public class AccountSvc implements IAccountSvc
      * Create a new wallet or create a new account to existing wallet.
      */
     @Override
-    public WalletInfoDTO
-    createWallet(WalletForm form, String ownerUuid)
+    public WalletInfoDTO createWallet(WalletForm form, String ownerUuid)
     {
         String walletUuid = form.getWalletUuid();
 
@@ -127,6 +126,39 @@ public class AccountSvc implements IAccountSvc
         }
         return createAccount(new Wallet(ownerUuid, form.getWalletName()),
                 form.getPassword(), form.getAcctName(), form.getAcctPriv());
+    }
+
+    @Override
+    public WalletInfoDTO editEtherAccount(WalletForm form, String ownerUuid)
+    {
+        String account = form.getAccount(), walletName = form.getWalletName();
+        if (account == null) {
+            return null;
+        }
+        Wallet wallet = walletRepo.findByAccount(account);
+        if (wallet == null) {
+            return null;
+        }
+        if (walletName != null && !wallet.getName().equals(walletName)) {
+            wallet.setName(walletName);
+            wallet.resetId();
+            walletRepo.save(wallet);
+        }
+        WalletInfoDTO result = new WalletInfoDTO(wallet);
+        String accountName = form.getAcctName();
+
+        if (accountName != null) {
+            Account acct = acctRepo.findByAccount(account);
+            if (acct != null && !acct.getPublicName().equals(accountName)) {
+                acct.setPublicName(accountName);
+                if (form.getAcctPriv()) {
+                    acct.setType(Constants.ACCT_VNTD_PRIV);
+                }
+                acctRepo.save(acct);
+            }
+            result.addAccountInfo(acct);
+        }
+        return result;
     }
 
     /**
@@ -209,10 +241,10 @@ public class AccountSvc implements IAccountSvc
     processAccountInfo(Map<String, WalletInfoDTO> wallets,
             List<String> accounts, List<AccountInfoDTO> balance)
     {
-        List<Account> result = acctRepo.findByAccountIn(accounts);
+        List<Account> dbList = acctRepo.findByAccountIn(accounts);
         Map<String, Account> map = new HashMap<>();
 
-        for (Account a : result) {
+        for (Account a : dbList) {
             map.put(a.getAccount(), a);
         }
         for (AccountInfoDTO act : balance) {

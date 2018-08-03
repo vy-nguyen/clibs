@@ -7,6 +7,7 @@ import _      from 'lodash';
 import $      from 'jquery';
 import Reflux from 'reflux';
 
+import BaseElement       from 'vntd-shared/stores/BaseElement.jsx';
 import NavigationActions from 'vntd-shared/actions/NavigationActions.jsx';
 import History           from 'vntd-shared/utils/History.jsx';
 import Actions           from 'vntd-root/actions/Actions.jsx';
@@ -75,16 +76,26 @@ let NavigationStore = Reflux.createStore({
         return this.data.items;
     },
 
+    triggerPoint(where, code) {
+        this.trigger(new BaseElement({
+            store: this,
+            item : this.data.item,
+            items: this.data.item,
+            data : this.data,
+            where: where
+        }), code);
+    },
+
     replaceMenuItems: function(json) {
         this.data.items = null;
         this.data.item  = null;
         this.addRawItems(json);
-        this.trigger(this.data, 'update');
+        this.triggerPoint('replace-menu', 'update');
     },
 
     onGetItemsCompleted: function(rawItems) {
         this.addRawItems(rawItems.items);
-        this.trigger(this.data, 'update')
+        this.triggerPoint('get-item', 'update');
     },
 
     onTranslateCompleted: function() {
@@ -93,7 +104,7 @@ let NavigationStore = Reflux.createStore({
 
     onToggleSideBarCompleted: function() {
         this.data.sideBar = !this.data.sideBar;
-        this.trigger(this.data, 'sidebar');
+        this.triggerPoint('get-sidebar', 'sidebar');
     },
 
     onActivate: function(item) {
@@ -101,7 +112,7 @@ let NavigationStore = Reflux.createStore({
         if (item.route) {
             History.pushState(null, item.route)
         }
-        this.trigger(this.data, 'active');
+        this.triggerPoint('on-active', 'active');
     },
 
     addRawItems: function(rawItems) {

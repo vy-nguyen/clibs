@@ -61,6 +61,7 @@ import com.tvntd.ether.api.ITransactionSvc;
 import com.tvntd.ether.dto.TransactionDTO;
 import com.tvntd.ether.dto.TransactionDTO.TransListDTO;
 import com.tvntd.ether.dto.WalletForm;
+import com.tvntd.ether.dto.WalletForm.WalletListForm;
 import com.tvntd.ether.dto.WalletInfoDTO;
 import com.tvntd.forms.ArticleForm;
 import com.tvntd.forms.CommentChangeForm;
@@ -82,7 +83,7 @@ import com.tvntd.lib.RawParseUtils;
 import com.tvntd.models.ArtProduct;
 import com.tvntd.models.ArticleAttr;
 import com.tvntd.models.Comment;
-import com.tvntd.models.Profile;
+import com.tvntd.models.User;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.ArtProductDTO;
 import com.tvntd.service.api.GenericResponse;
@@ -108,7 +109,6 @@ import com.tvntd.service.api.UuidResponse;
 import com.tvntd.service.api.WalletResponse;
 import com.tvntd.service.user.ArtTagService;
 import com.tvntd.service.user.ArticleSvc;
-import com.tvntd.util.Constants;
 import com.tvntd.util.Util;
 
 @Controller
@@ -1009,6 +1009,29 @@ public class UserPath
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @RequestMapping(value = "/user/tudo/edit-wallet",
+            consumes = "application/json", method = RequestMethod.POST)
+    @ResponseBody
+    public Object
+    editEtherAccount(@RequestBody WalletListForm form, HttpSession session)
+    {
+        ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
+
+        if (profile == null) {
+            return s_noProfile;
+        }
+        String userUuid = profile.getUserUuid();
+        WalletResponse result = new WalletResponse();
+        for (WalletForm f : form.getWallets()) {
+            if (f.cleanInput() == false) {
+                return s_badInput;
+            }
+            result.addWalletInfo(acctSvc.editEtherAccount(f, userUuid));
+        }
+        return result;
+    }
+ 
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @RequestMapping(value = "/user/tudo/wallet", method = RequestMethod.GET)
     @ResponseBody
     public GenericResponse getWallet(HttpSession session)
@@ -1027,16 +1050,21 @@ public class UserPath
     @ResponseBody
     public Object payEther(@RequestBody EtherPay pay, HttpSession session)
     {
+        if (pay.cleanInput() == false) {
+            return s_badInput;
+        }
         ProfileDTO profile = (ProfileDTO) session.getAttribute("profile");
         if (profile == null) {
             return s_noProfile;
         }
-        if (pay.cleanInput() == false) {
-            return s_badInput;
-        }
         String ownerUuid = profile.getUserUuid();
         if (!ownerUuid.equals(pay.getOwnerUuid())) {
             return s_badInput;
+        }
+        User owner = userService.getUserByID(profile.fetchUserId());
+        if (owner == null ||
+            userService.checkIfValidOldPassword(owner, pay.getPassCode()) == false) {
+            return new GenericResponse("Failed", "Miss-match password");
         }
         TransactionDTO tx = acctSvc.payAccount(ownerUuid, pay.getToUuid(),
                 pay.getFromAccount(), pay.getToAccount(),
@@ -1045,7 +1073,7 @@ public class UserPath
         if (tx != null) {
             return tx;
         }
-        return new GenericResponse("Failed to submit transaction");
+        return new GenericResponse("Failed", "Failed to submit transaction");
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})

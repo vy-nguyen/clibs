@@ -43,12 +43,17 @@ public class AccountInfoDTO
     protected String balance;
     protected String type;
 
-    public AccountInfoDTO() {}
+    public AccountInfoDTO()
+    {
+        xuBalance = 0L;
+        balance = "NA";
+    }
+
     public AccountInfoDTO(String acct, String name, String typ)
     {
+        this();
         account = acct;
         acctName = name;
-        xuBalance = 0L;
         type = typ;
     }
 

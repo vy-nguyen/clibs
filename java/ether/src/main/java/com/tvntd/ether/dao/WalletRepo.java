@@ -34,6 +34,7 @@ import com.tvntd.ether.models.Wallet;
 
 public interface WalletRepo extends JpaRepository<Wallet, String>
 {
+    Wallet findByAccount(String account);
     List<Wallet> findByWalletUuid(String walletUuid);
     List<Wallet> findByOwnerUuid(String ownerUuid);
     List<Wallet> findByWalletUuidAndOwnerUuid(String wallet, String owner);

@@ -45,6 +45,7 @@ public interface IAccountSvc
             String ownerUuid, String passwd, String acctName, Boolean priv);
 
     WalletInfoDTO createWallet(WalletForm form, String ownerUuid);
+    WalletInfoDTO editEtherAccount(WalletForm form, String ownerUuid);
 
     List<WalletInfoDTO> getWallet(String ownerUuid);
     TransactionDTO fundAccount(AccountInfoDTO account);

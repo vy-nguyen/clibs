@@ -5,7 +5,10 @@
 'use strict';
 
 import _                   from 'lodash';
+import Reflux              from 'reflux';
 import React               from 'react-mod';
+
+import BaseElement         from 'vntd-shared/stores/BaseElement.jsx';
 
 class ComponentBase extends React.Component
 {
@@ -16,6 +19,7 @@ class ComponentBase extends React.Component
         this._listStores  = stores;
         this._onClick     = this._onClick.bind(this);
         this._updateState = this._updateState.bind(this);
+        this._updateStateBase = this._updateStateBase.bind(this);
     }
 
     componentDidMount() {
@@ -28,7 +32,7 @@ class ComponentBase extends React.Component
             }
             _.forEach(stores, function(st) {
                 if (st != null) {
-                    this.unsub.push(st.listen(this._updateState));
+                    this.unsub.push(st.listen(this._updateStateBase));
                 }
             }.bind(this));
         }
@@ -53,6 +57,30 @@ class ComponentBase extends React.Component
         if (this.props.onClick != null) {
             this.props.onClick(this.getArg() || this.props);
         }
+    }
+
+    _updateStateBase(store, data, item, code) {
+        let arg;
+
+        if (store instanceof BaseElement) {
+            arg = store;
+
+        } else if (store instanceof Reflux.Store) {
+            arg = new BaseElement({
+                store : store,
+                data  : data,
+                item  : item,
+                where : code
+            });
+        } else {
+            arg = new BaseElement({
+                store : null,
+                data  : store,
+                item  : data,
+                where : item
+            });
+        }
+        this._updateState(arg, data, item, code);
     }
 
     _updateState(store, data, item, code) {

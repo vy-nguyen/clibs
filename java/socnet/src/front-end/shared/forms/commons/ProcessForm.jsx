@@ -7,6 +7,7 @@ import _                  from 'lodash';
 import React              from 'react-mod';
 import PropTypes          from 'prop-types';
 
+import ComponentBase      from 'vntd-shared/layout/ComponentBase.jsx';
 import History            from 'vntd-shared/utils/History.jsx';
 import StateButtonStore   from 'vntd-shared/stores/StateButtonStore.jsx';
 import InputStore         from 'vntd-shared/stores/NestableStore.jsx';
@@ -126,6 +127,7 @@ class FormData
         _.forEach(entryInfo, function(info) {
             field = info.field;
             value = data[field];
+
             if (info.emptyOk == null && ((value == null) ||
                 (typeof value === 'string' && value === ''))) {
                 errFlags[field]   = true;
@@ -425,6 +427,7 @@ class FormData
             return false;
         }
         if (this._onClickBtn == null) {
+            console.log("Checking " + this.submitBtn.btnName);
             return StateButtonStore.isButtonInState(this.submitBtn.btnName, "saving");
         }
         return true;
@@ -458,6 +461,7 @@ class FormData
     }
 
     submitNotif(store, data, result, status, cb) {
+        console.log("Base submit notif " + status);
         this.clearData();
         this.changeSubmitState("saved", false);
 
@@ -477,6 +481,7 @@ class FormData
     }
 
     submitErrorBase(store, result, status) {
+        console.log("Base submit error " + status);
         this.changeSubmitState("failure", false);
         ErrorStore.reportErrMesg(this.getFormId(), result.error, result.message);
         return this.submitError(store, result, status);
@@ -519,10 +524,10 @@ class FormData
     }
 }
 
-class ProcessForm extends React.Component
+class ProcessForm extends ComponentBase
 {
     constructor(props) {
-        super(props);
+        super(props, null, props.store);
 
         this._onFocusBrief = this._onFocusBrief.bind(this);
         this._onBlurInput  = this._onBlurInput.bind(this);
@@ -554,20 +559,9 @@ class ProcessForm extends React.Component
         this._setContext(this.props);
     }
 
-    componentDidMount() {
-        this.unsub = this.props.store.listen(this._updateState);
-    }
-
     componentWillUpdate(nextProps, nextState) {
         if (this.props.form != nextProps.form) {
             this._setContext(nextProps);
-        }
-    }
-
-    componentWillUnmount() {
-        if (this.unsub != null) {
-            this.unsub();
-            this.unsub = null;
         }
     }
 
@@ -593,19 +587,20 @@ class ProcessForm extends React.Component
     }
 
     _updateState(data, result, status, isArr, cb) {
-        let errFlags = null, context = this.props.form;
+        let errFlags = null, context = this.props.form, error = data.getError();
 
+        console.log("update " + status + ", error " + error);
         if (context.isSubmitting() !== true) {
             return;
         }
-        if (status === "failure" || result.error != null) {
+        if (error != null || status === "failure" || result.error != null) {
             let store = this.props.store;
 
             if (status === "failure") {
-                errFlags = context.submitFailureBase(store, result, status, cb);
+                errFlags = context.submitFailureBase(data, result, status, cb);
             }
-            if (result.error != null) {
-                errFlags = context.submitErrorBase(store, result, status, cb);
+            if (result.error != null || error != null) {
+                errFlags = context.submitErrorBase(data, result, status, cb);
             }
             if (errFlags != null && ! _.isEmpty(errFlags)) {
                 this.setState({
@@ -614,7 +609,7 @@ class ProcessForm extends React.Component
             }
             return;
         }
-        context.submitNotif(this.props.store, data, result, status, cb);
+        context.submitNotif(data, data, result, status, cb);
 
         if (this._imgDz != null) {
             this._imgDz.removeAllFiles();

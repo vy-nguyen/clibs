@@ -124,8 +124,8 @@ public class EtherJPAConfig
         protected static final String s_prodAccount = "http://10.8.0.1:8545";
 
         protected static final String s_devDb       = "10.1.10.13";
-        protected static final String s_devKey      = "http://10.1.10.13:8545";
-        protected static final String s_devAccount  = "http://10.1.10.13:8545";
+        protected static final String s_devKey      = "http://10.1.10.11:8545";
+        protected static final String s_devAccount  = "http://10.1.10.11:8545";
 
         protected static final String s_extDb       = "localhost";
         protected static final String s_extKey      = "http://96.68.150.190:8545";

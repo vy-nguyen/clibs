@@ -43,27 +43,22 @@ public class EtherPay
 
     public boolean cleanInput()
     {
-        if (ownerUuid == null || fromAccount == null ||
-            toAccount == null || xuAmount == null) {
+        if (ownerUuid == null || fromAccount == null || passCode == null ||
+            toAccount == null || xuAmount == null || xuAmount <= 0L) {
             return false;
         }
         Whitelist wlist = Util.allowedTags;
-        if (passCode != null) {
-            passCode = Jsoup.clean(passCode, wlist);
-        }
         if (text != null) {
             text = Jsoup.clean(text, wlist);
         }
         if (toUuid != null) {
             toUuid = Jsoup.clean(toUuid, wlist);
         }
+        passCode = Jsoup.clean(passCode, wlist);
         ownerUuid = Jsoup.clean(ownerUuid, wlist);
         fromAccount = Jsoup.clean(fromAccount, wlist);
         toAccount = Jsoup.clean(toAccount, wlist);
 
-        if (xuAmount <= 0) {
-            return false;
-        }
         return true;
     }
 

@@ -162,7 +162,6 @@ class EditOneWallet extends React.Component
         let data = [];
         _.forEach(changes, function(entry) {
             let w = WalletStore.getWalletByName(entry.wallet);
-            console.log(w);
             if (w != null) {
                 data.push({
                     account   : entry.account,
@@ -172,6 +171,10 @@ class EditOneWallet extends React.Component
                 });
             }
         });
+        Actions.editWalletAcct({
+            wallets: data
+        });
+        return true;
     }
 
     _deleteWallet(changes) {
@@ -179,7 +182,7 @@ class EditOneWallet extends React.Component
     }
 
     _getTableData(wallet) {
-        let data = [];
+        let i = 0, data = [];
 
         wallet.iterAccount(function(act) {
             let actName = act.getName();
@@ -190,14 +193,14 @@ class EditOneWallet extends React.Component
                 acctName: {
                     inpValue : actName,
                     inpDefVal: actName,
-                    inpName  : actName + '-account'
+                    inpName  : 'acctName-' + i
                 },
                 wallet  : {
                     inpHolder: wallet.getName(),
                     inpDefVal: wallet.getName(),
                     select   : true,
                     selectOpt: WalletStore.getSelOptions(),
-                    inpName  : actName + '-wallet'
+                    inpName  : 'walletName-' + i
                 }
             });
         });
@@ -241,9 +244,9 @@ class EditWallet extends ComponentBase
         });
     }
 
-    _updateState(store, data, item, code) {
+    _updateState(data, item, code) {
         this.setState({
-            wallets: store.getMyWallets()
+            wallets: WalletStore.getMyWallets()
         });
     }
 

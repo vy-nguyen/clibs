@@ -5,8 +5,10 @@
 'use strict';
 
 import Reflux        from 'reflux';
+
 import Actions       from 'vntd-root/actions/Actions.jsx';
 import Lang          from 'vntd-root/stores/LanguageStore.jsx';
+import BaseElement   from 'vntd-shared/stores/BaseElement.jsx';
 
 class ErrorResp {
     constructor(id, resp, text, error) {
@@ -164,7 +166,12 @@ let ErrorStore = Reflux.createStore({
         }
         err.errorId   = id;
         this.data[id] = err;
-        this.trigger(this.data, err);
+        this.trigger(new BaseElement({
+            store: this,
+            data : this.data,
+            item : err,
+            where: 'trigger-err'
+        }), err);
         return err;
     },
 
@@ -186,7 +193,12 @@ let ErrorStore = Reflux.createStore({
             err = this.data[id];
         }
         err.updateUserText(text, helpText);
-        this.trigger(this.data, err);
+        this.trigger(new BaseElement({
+            store: this,
+            data : this.data,
+            item : err,
+            where: 'report-err'
+        }), err);
         return err;
     },
 
@@ -203,7 +215,12 @@ let ErrorStore = Reflux.createStore({
             err = this.data[id];
         }
         err.updateMessage(header, style, mesg);
-        this.trigger(this.data, err);
+        this.trigger(new BaseElement({
+            store: this,
+            data : this.data,
+            item : err,
+            where: 'report-msg'
+        }), err);
         return err;
     },
 
@@ -222,7 +239,12 @@ let ErrorStore = Reflux.createStore({
                 this.data.error = err;
             }
         }
-        this.trigger(this.data, err);
+        this.trigger(new BaseElement({
+            store: this,
+            data : this.data,
+            item : err,
+            where: 'report-failure'
+        }), err);
         return err;
     },
 
@@ -239,7 +261,12 @@ let ErrorStore = Reflux.createStore({
         }
         if (err != null) {
             err.clearError();
-            this.trigger(this.data, err);
+            this.trigger(new BaseElement({
+                store: this,
+                data : this.data,
+                item : err,
+                where: 'clear-err'
+            }), err);
         }
     },
 
@@ -263,7 +290,11 @@ let ErrorStore = Reflux.createStore({
     onAuthRequiredCompleted: function(id, context) {
         this.reportInfo(id, Lang.translate("You need to login first"),
                         Lang.translate("Please login to post or comment"));
-        this.trigger(this.data, null);
+        this.trigger(new BaseElement({
+            store: this,
+            data : this.data,
+            where: 'auth-req-complete'
+        }), null);
     },
 
     onPermissionFailed: function(error) {

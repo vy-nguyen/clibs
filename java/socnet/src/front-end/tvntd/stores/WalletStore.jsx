@@ -8,18 +8,16 @@ import React             from 'react-mod';
 import Reflux            from 'reflux';
 import moment            from 'moment';
 
+import BaseElement       from 'vntd-shared/stores/BaseElement.jsx';
 import UserStore         from 'vntd-shared/stores/UserStore.jsx';
 import Actions           from 'vntd-root/actions/Actions.jsx';
 import BaseStore         from 'vntd-root/stores/BaseStore.jsx';
 import EtherStore        from 'vntd-root/stores/EtherStore.jsx';
 
-class Wallet
+class Wallet extends BaseElement
 {
     constructor(data, store) {
-        _.forOwn(data, function(v, k) {
-            this[k] = v;
-        }.bind(this));
-
+        super(data, store);
         this.equity   = null;
         this.microPay = null;
         this.usdFund  = new BaseStore(store);
@@ -87,13 +85,10 @@ class Wallet
     }
 }
 
-class AddrBookEntry
+class AddrBookEntry extends BaseElement
 {
     constructor(data) {
-        _.forOwn(data, function(v, k) {
-            this[k] = v;
-        }.bind(this));
-
+        super(data);
         this.user = UserStore.getUserByUuid(data.ownerUuid);
     }
 
@@ -140,19 +135,30 @@ class WalletStoreClz extends Reflux.Store
 
     onGetEtherWalletCompleted(data) {
         this._updateWallet(data.wallets);
-        this.trigger(this, this.state, "fetch");
+        this.trigger(new BaseElement({
+            store : this,
+            data  : this.state,
+            where : 'get-wallet',
+            status: "fetch"
+        }), this.state, data);
         Actions.getEtherAddrBook();
     }
 
     onGetEtherWalletFailed(error) {
-        this.trigger(this, error, "error");
+        this.trigger(new BaseElement({
+            store : this,
+            data  : this.state,
+            error : error,
+            where : 'get-wallet-error',
+            status: 'error'
+        }), this.state, error);
     }
 
     onGetAccountInfoCompleted(data) {
     }
 
     onGetAccountInfoFailed(error) {
-        this.trigger(this, error, "error");
+        this.onGetEtherWalletFailed(error);
     }
 
     onGetEtherAddrBookCompleted(data) {
@@ -163,9 +169,31 @@ class WalletStoreClz extends Reflux.Store
         console.log("created done");
         console.log(data);
         this._updateWallet(data.wallets);
-        this.trigger(this.state, data, "ok", false);
+        this.trigger(this.state, data, new BaseElement({
+            store: this,
+            data : this.state,
+            where: 'new-wallet'
+        }));
     }
 
+    onEditWalletAcctCompleted(data) {
+        this.onNewWalletAcctCompleted(data);
+    }
+    
+    /**
+     * Pay a transaction.
+     */
+    onEtherPayCompleted(data) {
+        this.trigger(new BaseElement({
+            store: this,
+            data : data,
+            where: 'pay-complete'
+        }), this.state, data);
+    }
+
+    /**
+     * Return the default wallet.
+     */
     getDefWallet() {
         if (this.defWallet == null) {
             _.forOwn(this.state.getAllData(), function(w) {
@@ -267,6 +295,8 @@ class WalletStoreClz extends Reflux.Store
             if (wobj == null) {
                 wobj = new Wallet(w, this);
                 wstore.storeItem(w.walletUuid, wobj, true);
+            } else {
+                wobj.baseUpdate(w);
             }
             this._updateAccount(wobj, w.accountInfo);
 

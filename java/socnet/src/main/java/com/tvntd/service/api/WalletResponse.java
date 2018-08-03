@@ -26,6 +26,7 @@
  */
 package com.tvntd.service.api;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import com.tvntd.ether.dto.WalletInfoDTO;
@@ -42,6 +43,14 @@ public class WalletResponse extends GenericResponse
     {
         super("ok");
         this.wallets = res;
+    }
+
+    public void addWalletInfo(WalletInfoDTO w)
+    {
+        if (wallets == null) {
+            wallets = new LinkedList<>();
+        }
+        wallets.add(w);
     }
 
     /**

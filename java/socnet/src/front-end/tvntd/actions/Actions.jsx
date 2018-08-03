@@ -104,6 +104,7 @@ const Actions = Reflux.createActions({
     // Ethereum actions
     etherStartup:     completedFailedFn,
     etherPay:         completedFailedFn,
+    editWalletAcct:   completedFailedFn,
     newWalletAcct:    completedFailedFn,
     getEtherWallet:   completedFailedFn,
     getEtherBlocks:   completedFailedFn,
@@ -260,12 +261,19 @@ Actions.getAccountInfo.listen(function(acct, inclTrans) {
 Actions.etherPay.listen(function(data) {
     console.log("------ ether pay --------");
     console.log(data);
+    postRestCall(data, "/user/tudo/pay", true, this, false);
 });
 
 Actions.newWalletAcct.listen(function(data) {
     console.log("New wallet acct");
     console.log(data);
     postRestCall(data, "/user/tudo/create-wallet", true, this, false);
+});
+
+Actions.editWalletAcct.listen(function(data) {
+    console.log("Edit wallet");
+    console.log(data);
+    postRestCall(data, "/user/tudo/edit-wallet", true, this, false);
 });
 
 /**

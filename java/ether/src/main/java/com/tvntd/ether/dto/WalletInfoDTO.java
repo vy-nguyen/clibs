@@ -30,6 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.tvntd.ether.api.IAccountSvc.AccountDTO;
+import com.tvntd.ether.models.Account;
 import com.tvntd.ether.models.Wallet;
 
 public class WalletInfoDTO extends GenericResponse
@@ -54,10 +55,8 @@ public class WalletInfoDTO extends GenericResponse
         accountInfo.add(acct);
     }
 
-    public void addWallet(Wallet w)
-    {
-        accountInfo.add(
-                new AccountDTO(w.getWalletUuid(), w.getAccount(), w.getName()));
+    public void addAccountInfo(Account acct) {
+        accountInfo.add(new AccountDTO(acct));
     }
 
     /**

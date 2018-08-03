@@ -26,6 +26,8 @@
  */
 package com.tvntd.ether.dto;
 
+import java.util.List;
+
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
@@ -34,6 +36,7 @@ import com.tvntd.lib.Util;
 public class WalletForm
 {
     protected String acctName;
+    protected String account;
     protected String walletName;
     protected String walletUuid;
     protected String password;
@@ -55,7 +58,22 @@ public class WalletForm
         } else {
             password = "password";
         }
+        if (account != null) {
+            account = Jsoup.clean(account, wlist);
+        }
         return true;
+    }
+
+    public static class WalletListForm
+    {
+        protected List<WalletForm> wallets;
+
+        /**
+         * @return the wallets
+         */
+        public List<WalletForm> getWallets() {
+            return wallets;
+        }
     }
 
     /**
@@ -63,6 +81,13 @@ public class WalletForm
      */
     public String getAcctName() {
         return acctName;
+    }
+
+    /**
+     * @return the account
+     */
+    public String getAccount() {
+        return account;
     }
 
     /**

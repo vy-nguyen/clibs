@@ -21,9 +21,13 @@ class Wallet extends ComponentBase
         });
     }
 
-    _updateState(store, data, where, code) {
+    _updateState(arg, data, item, code) {
+        if (arg.getCaller() === 'pay-complete') {
+            console.log("pay complete");
+            return;
+        }
         this.setState({
-            wallets: store.getMyWallets()
+            wallets: WalletStore.getMyWallets()
         });
     }
 
