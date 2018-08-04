@@ -17,23 +17,31 @@ class Wallet extends ComponentBase
     constructor(props) {
         super(props, null, WalletStore);
         this.state = _.merge(this.state, {
-                wallets: props.wallets || WalletStore.getMyWallets()
+            detail : false,
+            wallets: props.wallets || WalletStore.getMyWallets()
         });
     }
 
-    _updateState(arg, data, item, code) {
+    _updateState(arg) {
         if (arg.getCaller() === 'pay-complete') {
             console.log("pay complete");
             return;
         }
+        let detail = false;
+
+        if (arg.getCaller() === 'account-info') {
+            detail = true;
+        }
         this.setState({
+            detail : detail,
             wallets: WalletStore.getMyWallets()
         });
     }
 
     _renderOneWallet(wallet, out) {
-        let td, usd, equity, micro, acctOut = [];
+        let td, usd, equity, micro, acctOut = [], detail = this.state.detail;
 
+        console.log("detail " + detail);
         equity = wallet.getEquityAcct();
         if (equity != null) {
             acctOut.push(
@@ -44,7 +52,7 @@ class Wallet extends ComponentBase
         if (micro != null) {
             acctOut.push(
                 <EtherAccount key={_.uniqueId()}
-                    account={micro} full={true} pay={true}/>
+                    account={micro} full={true} pay={true} showTrans={detail}/>
             );
         }
         td = wallet.getTudoFund();
@@ -52,7 +60,7 @@ class Wallet extends ComponentBase
             if (acct != micro) {
                 acctOut.push(
                     <EtherAccount key={_.uniqueId()}
-                        account={acct} full={true} pay={true}/>
+                        account={acct} full={true} pay={true} showTrans={detail}/>
                 );
             }
         });
@@ -61,7 +69,7 @@ class Wallet extends ComponentBase
             if (acct != equity) {
                 acctOut.push(
                     <EtherAccount key={_.uniqueId()}
-                        account={acct} full={true} pay={true}/>
+                        account={acct} full={true} pay={true} showTrans={detail}/>
                 );
             }
         });

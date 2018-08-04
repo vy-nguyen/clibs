@@ -38,7 +38,7 @@ public class HashForm
     public static final String transType = "trans";
 
     protected String hashType;
-    protected Boolean trans;
+    protected boolean trans;
     protected String[] hashes;
 
     public boolean cleanInput()
@@ -63,6 +63,13 @@ public class HashForm
      */
     public String getHashType() {
         return hashType;
+    }
+
+    /**
+     * @return the trans
+     */
+    public boolean isTrans() {
+        return trans;
     }
 
     /**

@@ -55,6 +55,8 @@ import com.tvntd.lib.RawParseUtils;
 public class EtherApi
 {
     static protected Logger s_log = LoggerFactory.getLogger(EtherApi.class);
+    static public GenericResponse s_badInput =
+        new GenericResponse("Bad input value", "Missing or invalid input values");
 
     @Autowired
     protected ITransactionSvc etherTrans;
@@ -114,7 +116,7 @@ public class EtherApi
     public Object getAccountInfo(@RequestBody HashForm hash)
     {
         if (hash.cleanInput() == false) {
-            return null;
+            return s_badInput;
         }
         String type = hash.getHashType();
         String[] hashes = hash.getHashes();
@@ -129,7 +131,7 @@ public class EtherApi
 
             default:
         }
-        return null;
+        return s_badInput;
     }
 
     /**

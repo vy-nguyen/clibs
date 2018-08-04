@@ -38,7 +38,7 @@ class DataTable extends React.Component
                     .draw();
             });
         } else {
-            dataTable.order([sortCol, sortMode]).draw();
+            dataTable.order([ [sortCol, sortMode] ]).draw();
         }
         if (this.props.cellClick) {
             let cellClick = this.props.cellClick;

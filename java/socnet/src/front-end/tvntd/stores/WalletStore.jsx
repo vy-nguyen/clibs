@@ -155,6 +155,12 @@ class WalletStoreClz extends Reflux.Store
     }
 
     onGetAccountInfoCompleted(data) {
+        console.log(data);
+        this.trigger(new BaseElement({
+            store: this,
+            data : this.state,
+            where: 'account-info'
+        }));
     }
 
     onGetAccountInfoFailed(error) {
@@ -169,7 +175,7 @@ class WalletStoreClz extends Reflux.Store
         console.log("created done");
         console.log(data);
         this._updateWallet(data.wallets);
-        this.trigger(this.state, data, new BaseElement({
+        this.trigger(new BaseElement({
             store: this,
             data : this.state,
             where: 'new-wallet'

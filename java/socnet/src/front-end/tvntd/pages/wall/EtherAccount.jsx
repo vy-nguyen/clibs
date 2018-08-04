@@ -29,18 +29,16 @@ class EtherAccount extends BaseMedia
 
         this.state = _.merge(this.state, {
             activePay: false,
-            showTrans: !this.props.pay
+            showTrans: !this.props.pay || this.props.showTrans
         });
     }
 
-    _updateState(store, data, code, item) {
-        console.log("Done refresh, code " + code);
-        if (code === "error") {
-            console.log(data);
+    _updateState(arg) {
+        if (arg.getCaller() === 'account-info') {
+            this.setState({
+                refresh: false
+            });
         }
-        this.setState({
-            refresh: false
-        });
     }
 
     getArg() {
