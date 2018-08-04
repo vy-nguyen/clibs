@@ -43,6 +43,10 @@ class BaseElement
         }
         return this.error;
     }
+
+    getMessage() {
+        return this.message;
+    }
 }
 
 export default BaseElement;

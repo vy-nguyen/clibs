@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.tvntd.ether.api.IAccountSvc;
 import com.tvntd.ether.api.ITransactionSvc;
 import com.tvntd.ether.dto.EtherBlockDTO;
 import com.tvntd.ether.dto.EtherTransDTO;
@@ -57,6 +58,9 @@ public class EtherApi
 
     @Autowired
     protected ITransactionSvc etherTrans;
+
+    @Autowired
+    protected IAccountSvc accountSvc;
 
     @RequestMapping(value = "/api/ether", method = RequestMethod.GET)
     @ResponseBody
@@ -111,6 +115,19 @@ public class EtherApi
     {
         if (hash.cleanInput() == false) {
             return null;
+        }
+        String type = hash.getHashType();
+        String[] hashes = hash.getHashes();
+
+        switch (type) {
+            case HashForm.acctType:
+                return accountSvc.getAccounts(hashes, hash.getTrans());
+
+            case HashForm.transType:
+
+            case HashForm.blockType:
+
+            default:
         }
         return null;
     }

@@ -80,6 +80,8 @@ class ComponentBase extends React.Component
                 where : item
             });
         }
+        arg.mesg  = data.mesg;
+        arg.error = data.error;
         this._updateState(arg, data, item, code);
     }
 

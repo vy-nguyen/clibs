@@ -28,17 +28,22 @@ package com.tvntd.ether.dto;
 
 public class GenericResponse
 {
-    protected String text;
+    protected String message;
+    protected String error;
 
-    public GenericResponse(String text)
-    {
-        this.text = text;
+    public GenericResponse(String text, String error) {
+        this.message = text;
+        this.error = error;
+    }
+
+    public GenericResponse(String text) {
+        this.message = text;
     }
 
     /**
      * @return the text
      */
-    public String getText() {
-        return text;
+    public String getMessage() {
+        return message;
     }
 }

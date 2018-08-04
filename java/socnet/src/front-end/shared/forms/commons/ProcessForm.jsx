@@ -427,7 +427,6 @@ class FormData
             return false;
         }
         if (this._onClickBtn == null) {
-            console.log("Checking " + this.submitBtn.btnName);
             return StateButtonStore.isButtonInState(this.submitBtn.btnName, "saving");
         }
         return true;
@@ -461,7 +460,6 @@ class FormData
     }
 
     submitNotif(store, data, result, status, cb) {
-        console.log("Base submit notif " + status);
         this.clearData();
         this.changeSubmitState("saved", false);
 
@@ -471,20 +469,19 @@ class FormData
         this._onClickBtn = null;
     }
 
-    submitError(store, result, status) {}
+    submitError(arg, result, status) {}
     submitFailure(store, result, status) {}
 
-    submitFailureBase(store, result, status, context) {
+    submitFailureBase(arg, result, status, context) {
         this.submitFailure(store, result, status, context);
         this.changeSubmitState("failure", false);
         this._setAllDefValues();
     }
 
-    submitErrorBase(store, result, status) {
-        console.log("Base submit error " + status);
+    submitErrorBase(arg, result, status) {
         this.changeSubmitState("failure", false);
-        ErrorStore.reportErrMesg(this.getFormId(), result.error, result.message);
-        return this.submitError(store, result, status);
+        ErrorStore.reportErrMesg(this.getFormId(), arg.getError(), arg.getMessage());
+        return this.submitError(arg, result, status);
     }
 
     submitAct(data) {
@@ -513,7 +510,7 @@ class FormData
     checkInputNum(data, errFlags, key) {
         if (data[key] !== "") {
             let val = parseInt(data[key]);
-            if (val === NaN) {
+            if (isNaN(val)) {
                 errFlags[key] = true;
                 errFlags.helpText = Lang.translate('Invalid value');
                 errFlags.errText  = Lang.translate('Please correct highlighted values');
@@ -589,7 +586,6 @@ class ProcessForm extends ComponentBase
     _updateState(data, result, status, isArr, cb) {
         let errFlags = null, context = this.props.form, error = data.getError();
 
-        console.log("update " + status + ", error " + error);
         if (context.isSubmitting() !== true) {
             return;
         }

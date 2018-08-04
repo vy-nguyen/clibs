@@ -20,7 +20,8 @@ class DataTable extends React.Component
     }
 
     componentDidMount() {
-        let node, dataTable, element;
+        let node, dataTable, element, sortCol = this.props.sortCol || 1,
+            sortMode = this.props.sortMode || 'asc';
 
         if (this.dataTable != null) {
             return;
@@ -36,6 +37,8 @@ class DataTable extends React.Component
                     .search(this.value)
                     .draw();
             });
+        } else {
+            dataTable.order([sortCol, sortMode]).draw();
         }
         if (this.props.cellClick) {
             let cellClick = this.props.cellClick;

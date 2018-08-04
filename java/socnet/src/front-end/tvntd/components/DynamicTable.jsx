@@ -125,7 +125,8 @@ class RenderRow extends React.Component
                 </button>
             )
         };
-        let table, columns, renderData, tableData, tableFmt = [];
+        let table, columns, renderData, tableData,
+            tableFmt = [], sortCol = this.props.sortCol, sortMode = this.props.sortMode;
 
         tableData = this.state.tableData;
         if (tableData == null || this.props.cloneRow == null) {
@@ -133,7 +134,8 @@ class RenderRow extends React.Component
         }
         renderData = RenderRow.toTableEdit(tableData, null, true);
         columns    = RenderRow.renderHeader(this.props.tableFormat, tableFmt, false);
-        table      = RenderRow.renderTable(renderData, tableFmt, columns, null);
+        table      = RenderRow.renderTable(renderData,
+                        tableFmt, columns, null, sortCol, sortMode);
 
         return (
             <div className="row">
@@ -217,13 +219,14 @@ class RenderRow extends React.Component
         return data;
     }
 
-    static renderTable(tableData, tableFmt, columns, cellClick) {
+    static renderTable(tableData, tableFmt, columns, cellClick, sortCol, sortMode) {
         return (
             <Datatable ref="dataTable" tableData={tableData}
                 options={{
                     data: tableData,
                     columns: columns
                 }}
+                sortCol={sortCol} sortMode={sortMode}
                 cellClick={cellClick}
                 paginationLength={true}
                 className="table table-striped table-bordered table-hover" width="100%">
@@ -480,12 +483,14 @@ class DynamicTable extends React.Component
             inpHolder: "Enter new rows"
         };
         let table, tableData, columns, tableFmt = [], addRow = null,
+            sortCol = this.props.sortCol, sortMode = this.props.sortMode,
             cellClick = this._cellClick,
             tableFormat = this.props.tableFormat, select = this.props.select;
 
         tableData = this._getTableData();
         columns = RenderRow.renderHeader(tableFormat, tableFmt, select);
-        table = RenderRow.renderTable(tableData, tableFmt, columns, cellClick);
+        table = RenderRow.renderTable(tableData,
+                    tableFmt, columns, cellClick, sortCol, sortMode);
 
         if (this.props.edit === true) {
             addRow = (

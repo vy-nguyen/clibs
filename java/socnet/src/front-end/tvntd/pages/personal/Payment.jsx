@@ -131,8 +131,12 @@ class PaymentForm extends FormData
                 xuAmount   : EthAccount.toXu(dong, hao, xu)
             };
         }
-        console.log("Error");
-        console.log(errFlags);
+        if (hao === 0) {
+            delete errFlags['pay-hao'];
+        }
+        if (xu === 0) {
+            delete errFlags['pay-xu'];
+        }
         return null;
     }
 
@@ -142,8 +146,9 @@ class PaymentForm extends FormData
         super.submitNotif(store, data, result, status);
     }
 
-    submitError(store, result, status) {
-        console.log("Error result " + result);
+    submitError(result) {
+        let err = result.getError();
+        console.log("Error result " + err);
         console.log("status " + status);
     }
 }

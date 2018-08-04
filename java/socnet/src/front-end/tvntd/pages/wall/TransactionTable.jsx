@@ -69,7 +69,7 @@ class TransactionTable extends React.Component
     _renderWithLink() {
         let title = this.props.title || "Recent Transactions";
         return (
-            <DynamicTable tableFormat={this.tabHeader}
+            <DynamicTable tableFormat={this.tabHeader} sortCol={4}
                 tableData={this._getTableData()}
                 tableTitle={Lang.translate(title)}
                 tableId={_.uniqueId("trans-")}
@@ -97,7 +97,7 @@ class TransactionTable extends React.Component
 
     _renderNoLink() {
         return (
-            <DynamicTable tableFormat={this.tabHeader}
+            <DynamicTable tableFormat={this.tabHeader} sortCol={4} sortMode="dsc"
                 tableData={this._getTableNoLink()}
                 tableTitle={Lang.translate(this.props.title)}
                 tableId={_.uniqueId("trans-")}>

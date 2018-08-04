@@ -31,6 +31,7 @@ import java.util.List;
 
 import com.tvntd.ether.dto.AccountInfoDTO;
 import com.tvntd.ether.dto.AddressBook;
+import com.tvntd.ether.dto.GenericResponse;
 import com.tvntd.ether.dto.TransactionDTO;
 import com.tvntd.ether.dto.WalletForm;
 import com.tvntd.ether.dto.WalletInfoDTO;
@@ -38,22 +39,78 @@ import com.tvntd.ether.models.Account;
 
 public interface IAccountSvc
 {
-    AccountDTO getAccount(String ownerUuid, String account);
-    List<AccountDTO> getAccountsIn(List<String> accounts);
+    /**
+     * Get account info for the given account.
+     */
+    AccountDTO getAccount(String account);
+    AccountResultDTO getAccounts(String[] accounts, Boolean trans);
 
+    /**
+     * Create a new account in the given wallet.
+     *
+     * @param walletUuid uuid of the wallet.
+     * @param ownerUuid uuid of the wallet owner.
+     * @param password password to lock the account.
+     * @param acctName public name of the account.
+     * @param priv true if the account is in private, don't publish it.
+     * @return WalletInfoDTO.
+     */
     WalletInfoDTO createAccount(String walletUuid,
             String ownerUuid, String passwd, String acctName, Boolean priv);
 
     WalletInfoDTO createWallet(WalletForm form, String ownerUuid);
     WalletInfoDTO editEtherAccount(WalletForm form, String ownerUuid);
 
+    /**
+     * Get the list of wallets matching ownerUuid.
+     */
     List<WalletInfoDTO> getWallet(String ownerUuid);
     TransactionDTO fundAccount(AccountInfoDTO account);
+
+    /**
+     * Pay from one account to another one.
+     */
     TransactionDTO payAccount(String ownerUuid, String toUuid,
             String fromAccount, String toAccount, Long xuAmount, String text);
 
+    /**
+     * Get address book for the ownerUuid.
+     * @param start the starting record count (e.g. 0).
+     * @param count number of records returned from the query.
+     * @return address book for the ownerUuid.
+     */
     AddressBook getAddressBook(String ownerUuid, int start, int count);
 
+    /**
+     * List of account results.
+     */
+    public static class AccountResultDTO extends GenericResponse
+    {
+        protected List<AccountDTO> accounts;
+
+        public AccountResultDTO(String mesg) {
+            super(mesg);
+        }
+
+        public void addAccount(AccountDTO account)
+        {
+            if (accounts == null) {
+                accounts = new LinkedList<>();
+            }
+            accounts.add(account);
+        }
+
+        /**
+         * @return the accounts
+         */
+        public List<AccountDTO> getAccounts() {
+            return accounts;
+        }
+    }
+
+    /**
+     * Single account result, including transactions.
+     */
     public static class AccountDTO
     {
         protected String walletUuid;

@@ -11,6 +11,7 @@ import BaseStore         from 'vntd-root/stores/BaseStore.jsx';
 import UserStore         from 'vntd-shared/stores/UserStore.jsx';
 import BaseFetch         from 'vntd-shared/stores/BaseFetch.jsx';
 import BaseElement       from 'vntd-shared/stores/BaseElement.jsx';
+import { Util }          from 'vntd-shared/utils/Enum.jsx';
 
 const TDRates = {
     HAO2TD: 100,
@@ -70,20 +71,26 @@ class EthAccount extends BaseElement
 
     indexTransaction(trans) {
         if (trans.getFromAcct() === this.Account) {
-            this.txFromArr.push(trans);
+            this.txFromArr = null;
             this.txFrom[trans.getTxHash()] = trans;
         }
         if (trans.getToAcct() === this.Account) {
-            this.txToArr.push(trans);
+            this.txToArr = null;
             this.txTo[trans.getTxHash()] = trans;
         }
     }
 
     getTxFromArr() {
+        if (this.txFromArr == null) {
+            this.txFromArr = EtherStore.sortTransactions(this.txFrom);
+        }
         return this.txFromArr;
     }
 
     getTxToArr() {
+        if (this.txToArr == null) {
+            this.txToArr = EtherStore.sortTransactions(this.txTo);
+        }
         return this.txToArr;
     }
 
@@ -101,12 +108,10 @@ class EthAccount extends BaseElement
     }
 }
 
-class Transaction
+class Transaction extends BaseElement
 {
     constructor(data, store) {
-        _.forOwn(data, function(v, k) {
-            this[k] = v;
-        }.bind(this));
+        super(data, store);
 
         let acct = store.getAccount(this.fromAcct);
         if (acct != null) {
@@ -157,7 +162,14 @@ class Transaction
         if (this.txTime == null) {
             this.txTime = moment(this.block.timestamp);
         }
-        return this.txTime.format("DD-MM-YYYY HH:mm");
+        return this.txTime.format("YYYY-MM-DD HH:mm");
+    }
+
+    getUnixTimeStamp() {
+        if (this.block == null) {
+            return 0;
+        }
+        return this.block.timestamp;
     }
 
     linkBlock(ethStore) {
@@ -168,6 +180,17 @@ class Transaction
             }
         }
         return true;
+    }
+
+    linkAccount(ethStore) {
+        let acct = ethStore.getAccount(this.fromAcct);
+        if (acct != null) {
+            acct.indexTransaction(this);
+        }
+        acct = ethStore.getAccount(this.toAcct);
+        if (acct != null) {
+            acct.indexTransaction(this);
+        }
     }
 }
 
@@ -223,7 +246,7 @@ class EtherStoreClz extends Reflux.Store
         this.blocks = new BaseStore(this);
         this.transactions = new BaseStore(this);
 
-        this.transOrder   = [];
+        this.transOrder   = null;
         this.pendingBlock = new BaseFetch(this.blocks);
         this.pendingTrans = new BaseFetch(this.transactions);
         this.pendingAccts = new BaseFetch(this.state);
@@ -242,7 +265,7 @@ class EtherStoreClz extends Reflux.Store
 
         this.updateAccounts(pubAcct.publicAcct);
         this.updateBlocks([pubAcct.latestBlock]);
-        this.updateTransactions(pubAcct.recentTrans);
+        this.updateTransactions(pubAcct.recentTrans, true);
         this.trigger(new BaseElement({
             store: this,
             data : this.state,
@@ -289,7 +312,7 @@ class EtherStoreClz extends Reflux.Store
      */
     onGetEtherTransCompleted(data) {
         this.pendingTrans.requestDoneOk();
-        this.updateTransactions(data.trans);
+        this.updateTransactions(data.trans, true);
         this.trigger(new BaseElement({
             store: this,
             data : this.transactions,
@@ -331,7 +354,7 @@ class EtherStoreClz extends Reflux.Store
                 this.latestBlock = blkNo;
             }
             if (blk.transactions != null) {
-                let trans = this.updateTransactions(blk.transactions);
+                let trans = this.updateTransactions(blk.transactions, false);
 
                 if (trans != null && trans.length === blk.transactions.length) {
                     // Switch to transaction objects.
@@ -340,12 +363,13 @@ class EtherStoreClz extends Reflux.Store
                 }
             }
         }.bind(this));
+        this.transOrder = this.sortTransactions();
     }
 
     /**
      * Update with the list of transactions received.
      */
-    updateTransactions(trans) {
+    updateTransactions(trans, sort) {
         if (trans == null) {
             return null;
         }
@@ -355,18 +379,22 @@ class EtherStoreClz extends Reflux.Store
 
             if (tobj == null) {
                 tobj = new Transaction(t, this);
-
-                this.transOrder.push(tobj);
                 this.transactions.storeItem(tobj.getTxHash(), tobj);
+            } else {
+                tobj.baseUpdate(t);
             }
+            tobj.linkAccount(this);
             if (tobj.linkBlock(this) == false) {
                 h = tobj.getBlockHash();
                 this.pendingBlock.addPending(h, h);
             }
             txObjs.push(tobj);
         }.bind(this));
-        this.fetchMissingBlock();
 
+        this.fetchMissingBlock();
+        if (sort === true) {
+            this.transOrder = this.sortTransactions();
+        }
         return txObjs;
     }
 
@@ -379,7 +407,12 @@ class EtherStoreClz extends Reflux.Store
         _.forOwn(accounts, function(item) {
             acct = aStore.getItem(item.Account);
             if (acct == null) {
-                aStore.storeItem(item.Account, new EthAccount(item), true);
+                let trans = this.transactions.getAllData(), aobj = new EthAccount(item);
+                 
+                aStore.storeItem(item.Account, aobj, true);
+                _.forOwn(trans, function(t) {
+                    aobj.indexTransaction(t);
+                });
             } else {
                 acct.baseUpdate(item);
             }
@@ -437,10 +470,33 @@ class EtherStoreClz extends Reflux.Store
         if (from >= this.cacheTrans) {
             // Fetch more trans
         }
+        if (this.transOrder == null) {
+            this.transOrder = this.sortTransaction();
+        }
         if (from < 0 || from >= this.transOrder.length) {
             from = 0;
         }
+        if (count == null) {
+            count = 100;
+        }
         return this.transOrder.slice(from, count);
+    }
+
+    /**
+     * Table will do the sorting, don't have to do it here.
+     */
+    sortTransactions(txs) {
+        let trans = txs || this.transactions.getAllData(), order = [];
+
+        _.forOwn(trans, function(t) {
+            order.push(t);
+            /*
+            Util.insertSorted(t, order, function(t1, t2) {
+                return t1.getUnixTimeStamp() - t2.getUnixTimeStamp();
+            });
+            */
+        });
+        return order;
     }
 
     getTransObj(t) {

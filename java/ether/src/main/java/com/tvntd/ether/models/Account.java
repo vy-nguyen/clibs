@@ -62,6 +62,8 @@ public class Account
     @Column(length = 64, name = "type")
     protected String type;
 
+    protected transient boolean converted;
+
     public Account() {}
     public Account(String ownerUuid, String name)
     {
@@ -69,6 +71,7 @@ public class Account
         this.publicName = Util.toRawByte(name, 64);
         this.walletUuid = UUID.randomUUID().toString();
         this.type = Constants.ACCT_VNTD;
+        this.converted = false;
     }
 
     public Account(String act, String owner, String wallet, String name, String type)
@@ -78,12 +81,18 @@ public class Account
         this.walletUuid = wallet;
         this.publicName = Util.toRawByte(name, 64);
         this.type = type;
+        this.converted = false;
     }
 
     /**
      * @return the account
      */
-    public String getAccount() {
+    public String getAccount()
+    {
+        if (converted == false) {
+            account = account.toLowerCase();
+            converted = true;
+        }
         return account;
     }
 

@@ -26,7 +26,6 @@
  */
 package com.tvntd.ether.models;
 
-import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -64,20 +63,21 @@ public class Wallet
     @Column(length = 64, name = "name")
     protected byte[] name;
 
+    protected transient boolean converted;
+
     public Wallet() {}
     public Wallet(String ownerUuid, byte[] name)
     {
         this.name = name;
+        this.converted = false;
         this.ownerUuid = ownerUuid;
         this.walletUuid = UUID.randomUUID().toString();
     }
 
     public Wallet(String ownerUuid, String name)
     {
-        try {
-            this.name = name.getBytes("UTF-8");
-        } catch(UnsupportedEncodingException e) {}
-
+        this.name = Util.toRawByte(name, 64);
+        this.converted = false;
         this.ownerUuid = ownerUuid;
         this.walletUuid = UUID.randomUUID().toString();
     }
@@ -104,7 +104,12 @@ public class Wallet
     /**
      * @return the account
      */
-    public String getAccount() {
+    public String getAccount()
+    {
+        if (converted == false) {
+            account = account.toLowerCase();
+            converted = true;
+        }
         return account;
     }
 

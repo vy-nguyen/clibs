@@ -80,30 +80,20 @@ public class AccountSvc implements IAccountSvc
      * Return the account and recent transactions matching with ownerUuid and account.
      */
     @Override
-    public AccountDTO getAccount(String ownerUuid, String account)
+    public AccountDTO getAccount(String account)
     {
         Account act = acctRepo.findByAccount(account);
         if (act == null) {
-            return null;
-        }
-        if (!ownerUuid.equals(act.getOwnerUuid())) {
-            s_log.warn("Not matching owner " + ownerUuid + " db " + act.getOwnerUuid());
             return null;
         }
         return getAccountInfo(act);
     }
 
     @Override
-    public List<AccountDTO> getAccountsIn(List<String> accounts)
+    public AccountResultDTO getAccounts(String[] accounts, Boolean trans)
     {
-        List<AccountDTO> out = new LinkedList<>();
-        List<Account> result = acctRepo.findByAccountIn(accounts);
+        AccountResultDTO out = new AccountResultDTO("accounts");
 
-        if (result != null && !result.isEmpty()) {
-            for (Account act : result) {
-                out.add(getAccountInfo(act));
-            }
-        }
         return out;
     }
 
