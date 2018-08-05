@@ -254,7 +254,7 @@ Actions.getAccountInfo.listen(function(acct, inclTrans) {
     postRestCall({
         hashType: "acct",
         trans   : inclTrans,
-        hashes  : [acct]
+        hashes  : acct
     }, "/api/ether/account", true, this, false);
 });
 

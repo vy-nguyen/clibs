@@ -337,6 +337,18 @@ class EtherStoreClz extends Reflux.Store
         this.pendingAccts.requestDoneFail();
     }
 
+    onGetAccountInfoCompleted(data) {
+        this.pendingAccts.requestDoneOk();
+        this.updateBlocks(data.transBlock);
+        this.updateAccounts(data.accounts);
+        this.updateTransactions(data.recentTrans, true);
+        this.trigger(new BaseElement({
+            store: this,
+            data : this.state,
+            where: "fetch-acct"
+        }));
+    }
+
     /**
      * Update with the list of blocks received.
      */
@@ -404,6 +416,9 @@ class EtherStoreClz extends Reflux.Store
     updateAccounts(accounts) {
         let acct, aStore = this.state;
 
+        if (accounts == null) {
+            return;
+        }
         _.forOwn(accounts, function(item) {
             acct = aStore.getItem(item.Account);
             if (acct == null) {

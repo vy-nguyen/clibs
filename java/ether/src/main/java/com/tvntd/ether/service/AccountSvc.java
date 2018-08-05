@@ -46,6 +46,7 @@ import com.tvntd.ether.api.IAccountSvc;
 import com.tvntd.ether.dao.AccountRepo;
 import com.tvntd.ether.dao.WalletRepo;
 import com.tvntd.ether.dto.AccountInfoDTO;
+import com.tvntd.ether.dto.AccountInfoDTO.AccountInfoResult;
 import com.tvntd.ether.dto.AccountInfoDTO.NewAccountResult;
 import com.tvntd.ether.dto.AddressBook;
 import com.tvntd.ether.dto.TransactionDTO;
@@ -80,26 +81,29 @@ public class AccountSvc implements IAccountSvc
      * Return the account and recent transactions matching with ownerUuid and account.
      */
     @Override
-    public AccountDTO getAccount(String account)
+    public AccountInfoDTO getAccount(String account)
     {
         Account act = acctRepo.findByAccount(account);
         if (act == null) {
             return null;
         }
-        return getAccountInfo(act);
+        return null;
     }
 
     @Override
-    public AccountResultDTO getAccounts(String[] accounts, Boolean trans)
+    public AccountResultDTO getAccounts(List<String> accounts, Boolean trans)
     {
         AccountResultDTO out = new AccountResultDTO("accounts");
 
-        return out;
-    }
+        JsonRpc rpc = new JsonRpc();
+        AccountInfoResult result = rpc.<AccountInfoResult>
+            callJsonRpcArr(AccountInfoResult.class,
+                    "tudo_listAccountInfoAndTx", "id", accounts);
 
-    protected AccountDTO getAccountInfo(Account account)
-    {
-        return null;
+        if (result != null && result.getError() == null) {
+            out.importRpcResult(result);
+        }
+        return out;
     }
 
     /**
@@ -194,7 +198,7 @@ public class AccountSvc implements IAccountSvc
         acctRepo.save(account);
 
         WalletInfoDTO out = new WalletInfoDTO(w);
-        out.addAccountInfo(new AccountDTO(account));
+        out.addAccountInfo(new AccountInfoDTO(account));
         return out;
     }
 
@@ -245,7 +249,7 @@ public class AccountSvc implements IAccountSvc
                 String wid = actDb.getWalletUuid();
                 WalletInfoDTO w = wallets.get(wid);
                 if (w != null) {
-                    w.addAccountInfo(new AccountDTO(wid, act)); 
+                    w.addAccountInfo(act);
                 }
             }
         }

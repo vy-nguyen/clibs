@@ -25,35 +25,55 @@ class EtherModal extends ModalBox
         }
     }
 
-    _updateState(store, data, code) {
-        let state = this.state;
+    _updateState(arg) {
+        let state = this.state, where = arg.getCaller();
 
-        if (code === 'fetch' && state != null && state.busy === true) {
+        switch(where) {
+        case 'start':
+        case 'fetch':
             this._newBlockFetched(state);
+            this._newAccountFetched(state);
+            break;
+
+        case 'fetch-block':
+            this._newBlockFetched(state);
+            break;
+
+        case 'fetch-acct':
+            this._newAccountFetched(state);
+            break;
         }
+    }
+
+    _newAccountFetched(state) {
+        if (state.account == null || state.type != "acct") {
+            return;
+        }
+        this.switchData(state.type, state.account);
     }
 
     _newBlockFetched(state) {
         let blk, hash, busy = state.busy;
 
-        if (state.blkHash != null) {
-            hash = state.blkHash;
-            blk = EtherStore.getBlockHash(hash);
-            if (blk != null) {
-                busy = false;
-                hash = null;
-            } else {
-                blk  = state.data;
-            }
-            this.setState({
-                busy   : busy,
-                blkHash: hash,
-
-                title: "Block Detail",
-                type : 'block',
-                data : blk
-            });
+        if (state.blkHash == null) {
+            return;
         }
+        hash = state.blkHash;
+        blk = EtherStore.getBlockHash(hash);
+        if (blk != null) {
+            busy = false;
+            hash = null;
+        } else {
+            blk  = state.data;
+        }
+        this.setState({
+            busy   : busy,
+            blkHash: hash,
+
+            title: "Block Detail",
+            type : 'block',
+            data : blk
+        });
     }
 
     openModal(arg) {
@@ -87,9 +107,11 @@ class EtherModal extends ModalBox
             if (acct == null) {
                 this.setState({
                     busy   : true,
+                    type   : type,
                     account: data,
                     title  : "Getting account " + data.substring(0, 6) + "..."
                 });
+                EtherStore.fetchMissingAccts();
                 return;
             }
             data = acct;
@@ -99,6 +121,7 @@ class EtherModal extends ModalBox
             return;
         }
         this.setState({
+            busy : false,
             title: title,
             type : type,
             data : data

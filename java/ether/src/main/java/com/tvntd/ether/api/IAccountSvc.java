@@ -29,21 +29,24 @@ package com.tvntd.ether.api;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.ethereum.jsonrpc.JsonRpc.BlockResult;
+import org.ethereum.jsonrpc.TransactionResultDTO;
+
 import com.tvntd.ether.dto.AccountInfoDTO;
+import com.tvntd.ether.dto.AccountInfoDTO.AccountInfoResult;
 import com.tvntd.ether.dto.AddressBook;
 import com.tvntd.ether.dto.GenericResponse;
 import com.tvntd.ether.dto.TransactionDTO;
 import com.tvntd.ether.dto.WalletForm;
 import com.tvntd.ether.dto.WalletInfoDTO;
-import com.tvntd.ether.models.Account;
 
 public interface IAccountSvc
 {
     /**
      * Get account info for the given account.
      */
-    AccountDTO getAccount(String account);
-    AccountResultDTO getAccounts(String[] accounts, Boolean trans);
+    AccountInfoDTO getAccount(String account);
+    AccountResultDTO getAccounts(List<String> accounts, Boolean trans);
 
     /**
      * Create a new account in the given wallet.
@@ -86,13 +89,15 @@ public interface IAccountSvc
      */
     public static class AccountResultDTO extends GenericResponse
     {
-        protected List<AccountDTO> accounts;
+        protected List<AccountInfoDTO> accounts;
+        protected List<TransactionDTO> recentTrans;
+        protected List<BlockResult> transBlocks;
 
         public AccountResultDTO(String mesg) {
             super(mesg);
         }
 
-        public void addAccount(AccountDTO account)
+        public void addAccount(AccountInfoDTO account)
         {
             if (accounts == null) {
                 accounts = new LinkedList<>();
@@ -100,53 +105,26 @@ public interface IAccountSvc
             accounts.add(account);
         }
 
+        public void importRpcResult(AccountInfoResult result)
+        {
+            accounts = result.fetchAccounts();
+            for (AccountInfoDTO a : accounts) {
+                a.processInfo(null, null);
+            }
+            recentTrans = new LinkedList<>();
+            transBlocks = result.fetchBlocks();
+
+            List<TransactionResultDTO> trans = result.fetchTrans();
+            for (TransactionResultDTO tx : trans) {
+                recentTrans.add(new TransactionDTO(null, tx));
+            }
+        }
+
         /**
          * @return the accounts
          */
-        public List<AccountDTO> getAccounts() {
+        public List<AccountInfoDTO> getAccounts() {
             return accounts;
-        }
-    }
-
-    /**
-     * Single account result, including transactions.
-     */
-    public static class AccountDTO
-    {
-        protected String walletUuid;
-        protected AccountInfoDTO account;
-        protected List<TransactionDTO> recentTrans;
-
-        public AccountDTO() {}
-        public AccountDTO(String walletUuid, AccountInfoDTO account)
-        {
-            this.walletUuid = walletUuid;
-            this.account = account;
-            this.recentTrans = new LinkedList<>();
-        }
-
-        public AccountDTO(String wuuid, String address, String acctName, String typ) {
-            this(wuuid, new AccountInfoDTO(address, acctName, typ));
-        }
-
-        public AccountDTO(Account act) {
-            this(act.getWalletUuid(),
-                    new AccountInfoDTO(act.getAccount(),
-                        act.getPublicName(), act.getType()));
-        }
-
-        /**
-         * @return the walletUuid
-         */
-        public String getWalletUuid() {
-            return walletUuid;
-        }
-
-        /**
-         * @return the account
-         */
-        public AccountInfoDTO getAccount() {
-            return account;
         }
 
         /**
@@ -157,10 +135,10 @@ public interface IAccountSvc
         }
 
         /**
-         * @param recentTrans the recentTrans to set
+         * @return the transBlocks
          */
-        public void setRecentTrans(List<TransactionDTO> recentTrans) {
-            this.recentTrans = recentTrans;
+        public List<BlockResult> getTransBlocks() {
+            return transBlocks;
         }
     }
 }

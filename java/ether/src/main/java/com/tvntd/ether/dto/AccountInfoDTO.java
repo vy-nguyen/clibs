@@ -27,6 +27,10 @@
 package com.tvntd.ether.dto;
 
 import java.math.BigInteger;
+import java.util.List;
+
+import org.ethereum.jsonrpc.JsonRpc.BlockResult;
+import org.ethereum.jsonrpc.TransactionResultDTO;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -63,6 +67,14 @@ public class AccountInfoDTO
         if (weiBalance != null) {
             xuBalance = Convert.toXuValue(weiBalance);
         }
+    }
+
+    public AccountInfoDTO(Account acct)
+    {
+        this();
+        this.account = acct.getAccount();
+        this.acctName = acct.getPublicName();
+        this.type = acct.getType();
     }
 
     public String toString() {
@@ -159,6 +171,37 @@ public class AccountInfoDTO
             public String ownerUuid;
             public String walletUuid;
             public String address;
+        }
+    }
+
+    /**
+     * RPC result from AccountInfo call
+     */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class AccountInfoResult extends RpcResponse
+    {
+        public Result result;
+
+        public List<AccountInfoDTO> fetchAccounts() {
+            return result.accounts;
+        }
+
+        public List<TransactionResultDTO> fetchTrans() {
+            return result.transBChain;
+        }
+
+        public List<BlockResult> fetchBlocks() {
+            return result.transBlocks;
+        }
+
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        static class Result
+        {
+            public List<AccountInfoDTO>accounts;
+            public List<TransactionResultDTO> transBChain;
+            public List<BlockResult> transBlocks;
+            public TransactionResultDTO latest;
+            public String error;
         }
     }
 }

@@ -312,16 +312,8 @@ class WalletStoreClz extends Reflux.Store
     _updateAccount(wobj, accountInfo) {
         let aobj, accounts = [], trans = [], wstore = this.state;
 
+        EtherStore.updateAccounts(accountInfo);
         _.forEach(accountInfo, function(a) {
-            accounts.push(a.account);
-            if (a.recentTrans != null) {
-                trans = _.merge(trans, a.recentTrans);
-            }
-        });
-        EtherStore.updateAccounts(accounts);
-        EtherStore.updateTransactions(trans);
-
-        _.forEach(accounts, function(a) {
             aobj = EtherStore.getAccount(a.Account);
             if (aobj != null) {
                 wobj.addAccount(aobj);

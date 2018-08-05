@@ -26,6 +26,9 @@
  */
 package com.tvntd.ether.dto;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
@@ -84,5 +87,9 @@ public class HashForm
      */
     public String[] getHashes() {
         return hashes;
+    }
+
+    public List<String> fetchHashList() {
+        return Arrays.asList(hashes);
     }
 }

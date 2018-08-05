@@ -77,7 +77,7 @@ class EtherAccount extends BaseMedia
     }
 
     _refreshAcct() {
-        Actions.getAccountInfo(this.props.account.getAccountNo(), true);
+        Actions.getAccountInfo([this.props.account.getAccountNo()], true);
         this.setState({
             refresh: true
         });

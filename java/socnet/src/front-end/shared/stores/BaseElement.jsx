@@ -16,7 +16,9 @@ class BaseElement
 
     baseUpdate(data) {
         _.forOwn(data, function(v, k) {
-            this[k] = v;
+            if ((this[k] == null) || (v != null)) {
+                this[k] = v;
+            }
         }.bind(this));
     }
 

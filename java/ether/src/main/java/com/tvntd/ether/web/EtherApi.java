@@ -26,6 +26,8 @@
  */
 package com.tvntd.ether.web;
 
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
 import org.ethereum.jsonrpc.JsonRpc.BlockResult;
@@ -119,7 +121,7 @@ public class EtherApi
             return s_badInput;
         }
         String type = hash.getHashType();
-        String[] hashes = hash.getHashes();
+        List<String> hashes = hash.fetchHashList();
 
         switch (type) {
             case HashForm.acctType:
