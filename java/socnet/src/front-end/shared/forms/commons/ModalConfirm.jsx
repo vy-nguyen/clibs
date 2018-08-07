@@ -21,7 +21,7 @@ let modalStyle = {
         marginRight: '-50%',
         transform  : 'translate(-50%, -50%)',
         overflowX  : 'auto',
-        overflowY  : 'scroll',
+        overflowY  : 'auto',
         overflow   : 'scroll',
         zIndex     : 9999
     }

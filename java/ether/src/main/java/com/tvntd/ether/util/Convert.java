@@ -33,6 +33,10 @@ public final class Convert
         return number.multiply(unit.getWeiFactorDec());
     }
 
+    public static BigInteger toWei(Long xuValue) {
+        return BigInteger.valueOf(xuValue).multiply(Unit.XU.getWeiFactor());
+    }
+
     public static BigInteger toWei(BigInteger number, Unit unit) {
         return number.multiply(unit.getWeiFactor());
     }

@@ -42,6 +42,30 @@ public class TransactionDTO
     protected Transaction tx;
     protected TransactionResultDTO bcTx;
 
+    public static class TransactionDTOResp extends GenericResponse
+    {
+        public List<TransactionDTO> transactions;
+
+        public TransactionDTOResp(String mesg, String error) {
+            super(mesg, error);
+        }
+
+        public TransactionDTOResp(String mesg, TransactionDTO tx)
+        {
+            super(mesg, null);
+            transactions = new LinkedList<>();
+            transactions.add(tx);
+        }
+
+        public void addTransaction(TransactionDTO tx)
+        {
+            if (transactions == null) {
+                transactions = new LinkedList<>();
+            }
+            transactions.add(tx);
+        }
+    }
+
     public TransactionDTO(Transaction trans, TransactionResultDTO bc)
     {
         this.tx = trans;
@@ -108,6 +132,14 @@ public class TransactionDTO
 
     public String getV() {
         return bcTx.v;
+    }
+
+    public String getFromBalance() {
+        return bcTx.fromBalance;
+    }
+
+    public String getToBalance() {
+        return bcTx.toBalance;
     }
 
     public String getInput() {

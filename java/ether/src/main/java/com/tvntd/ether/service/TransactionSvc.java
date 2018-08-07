@@ -93,6 +93,10 @@ public class TransactionSvc implements ITransactionSvc
     @Autowired
     protected TransactionRepo transRepo;
 
+    /**
+     * Get transaction by hash number.
+     */
+    @Override
     public TransactionDTO getTransaction(String txHash)
     {
         TransactionDTO tx = s_cacheTrans.get(txHash);
@@ -112,7 +116,7 @@ public class TransactionSvc implements ITransactionSvc
                 Transaction t = transRepo.findByTxHash(txHash);
                 for (TransactionResultDTO curTx : out) {
                     TransactionDTO dto = new TransactionDTO(t, curTx);
-                    s_cacheTrans.put(curTx.hash, dto);
+                    cacheTransaction(curTx, dto);
                     return dto;
                 }
             }
@@ -123,6 +127,7 @@ public class TransactionSvc implements ITransactionSvc
     /**
      * Return a block by hash number.
      */
+    @Override
     public BlockResult getBlockByHash(String hash)
     {
         BlockResult res = s_cacheBlock.getIndex(hash);
@@ -146,6 +151,7 @@ public class TransactionSvc implements ITransactionSvc
     /**
      * Return blocks based on hashes
      */
+    @Override
     public EtherBlockDTO getBlockByHashSet(String[] hashes)
     {
         EtherBlockDTO out = new EtherBlockDTO(null, null);
@@ -180,6 +186,7 @@ public class TransactionSvc implements ITransactionSvc
     /**
      * Return a block by block number.
      */
+    @Override
     public BlockResult getBlockByNumber(String number)
     {
         BlockResult res = s_cacheBlock.get(RawParseUtils.parseLong(number));
@@ -203,6 +210,7 @@ public class TransactionSvc implements ITransactionSvc
     /**
      * Get transactions for an user uuid.
      */
+    @Override
     public List<TransactionDTO>
     getTransaction(String userUuid, int start, int count, boolean from)
     {
@@ -218,6 +226,7 @@ public class TransactionSvc implements ITransactionSvc
     /**
      * Get transaction for an account key.
      */
+    @Override
     public List<TransactionDTO>
     getTransactionAcct(String account, int start, int count, boolean from)
     {
@@ -233,6 +242,7 @@ public class TransactionSvc implements ITransactionSvc
     /**
      * Return all transactions recorded.
      */
+    @Override
     public List<TransactionDTO> getAllTransaction() {
         return transToDTO(transRepo.findAll());
     }
@@ -240,6 +250,7 @@ public class TransactionSvc implements ITransactionSvc
     /**
      * Return the list of recent transaction.
      */
+    @Override
     public List<TransactionDTO> getRecentTransaction(int start, int count)
     {
         Sort sort = new Sort(new Sort.Order(Direction.ASC, "created"));
@@ -288,22 +299,34 @@ public class TransactionSvc implements ITransactionSvc
 
         if (resp != null) {
             List<TransactionResultDTO> out = resp.fetchTrans();
-            for (TransactionResultDTO tx : out) {
-                Transaction t = miss.get(tx.hash);
-                if (t == null) {
-                    s_log.warn("Receive invalid hash " + tx.hash);
-                    continue;
+            if (out != null) {
+                for (TransactionResultDTO tx : out) {
+                    Transaction t = miss.get(tx.hash);
+                    if (t == null) {
+                        s_log.warn("Receive invalid hash " + tx.hash);
+                        continue;
+                    }
+                    TransactionDTO txDto = new TransactionDTO(t, tx);
+                    result.add(txDto);
+                    cacheTransaction(tx, txDto);
                 }
-                TransactionDTO txDto = new TransactionDTO(t, tx);
-                result.add(txDto);
-                s_cacheTrans.put(tx.hash, txDto);
             }
         }
+    }
+
+    protected void cacheTransaction(TransactionResultDTO tx, TransactionDTO txDto)
+    {
+        if (tx.blockHash.startsWith("0x000000000000000")) {
+            // Don't cache pending transaction
+            return;
+        }
+        s_cacheTrans.put(tx.hash, txDto);
     }
 
     /**
      * Retrieve info about public accounts.
      */
+    @Override
     public PublicAccountDTO getPublicAccount()
     {
         PublicAccountDTO out = pubAccounts.getPublicAccount();
@@ -314,12 +337,13 @@ public class TransactionSvc implements ITransactionSvc
     /**
      * Fill in Ethereum block data.
      */
+    @Override
     public void getEtherBlocks(EtherBlockDTO blocks) {
         blocks.addBlockResult(
                 fetchBlocks(blocks.fetchStartBlock(), blocks.fetchCount()));
     }
 
-    List<BlockResult> fetchBlocks(String start, String count)
+    protected List<BlockResult> fetchBlocks(String start, String count)
     {
         Long startBlk = RawParseUtils.parseLong(start);
         Integer num = RawParseUtils.parseNumber(count, 1, 1000);
@@ -353,7 +377,7 @@ public class TransactionSvc implements ITransactionSvc
         return result;
     }
 
-    void cacheBlockResult(EtherBlockResult result, Long startBlk, Integer num)
+    protected void cacheBlockResult(EtherBlockResult result, Long startBlk, Integer num)
     {
         List<BlockResult> res = result.blockResult();
 

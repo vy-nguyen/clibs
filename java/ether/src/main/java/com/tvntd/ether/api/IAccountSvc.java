@@ -37,6 +37,7 @@ import com.tvntd.ether.dto.AccountInfoDTO.AccountInfoResult;
 import com.tvntd.ether.dto.AddressBook;
 import com.tvntd.ether.dto.GenericResponse;
 import com.tvntd.ether.dto.TransactionDTO;
+import com.tvntd.ether.dto.TransactionDTO.TransactionDTOResp;
 import com.tvntd.ether.dto.WalletForm;
 import com.tvntd.ether.dto.WalletInfoDTO;
 
@@ -45,7 +46,6 @@ public interface IAccountSvc
     /**
      * Get account info for the given account.
      */
-    AccountInfoDTO getAccount(String account);
     AccountResultDTO getAccounts(List<String> accounts, Boolean trans);
 
     /**
@@ -73,7 +73,7 @@ public interface IAccountSvc
     /**
      * Pay from one account to another one.
      */
-    TransactionDTO payAccount(String ownerUuid, String toUuid,
+    TransactionDTOResp payAccount(String ownerUuid, String toUuid,
             String fromAccount, String toAccount, Long xuAmount, String text);
 
     /**
@@ -85,7 +85,7 @@ public interface IAccountSvc
     AddressBook getAddressBook(String ownerUuid, int start, int count);
 
     /**
-     * List of account results.
+     * List of account balances, transactions, and tx blocks.
      */
     public static class AccountResultDTO extends GenericResponse
     {

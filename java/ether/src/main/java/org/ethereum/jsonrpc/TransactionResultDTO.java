@@ -37,6 +37,8 @@ public class TransactionResultDTO {
     public String v;
     public String r;
     public String s;
+    public String fromBalance;
+    public String toBalance;
 
     public TransactionResultDTO() {}
 

@@ -91,19 +91,32 @@ public class EtherTransDTO extends GenericResponse
         }
 
         public List<TransactionResultDTO> fetchTrans() {
-            return result.getTrans();
+            return result.trans;
         }
 
-        static class Result
-        {
-            protected List<TransactionResultDTO> trans;
+        static class Result {
+            public List<TransactionResultDTO> trans;
+        }
+    }
 
-            /**
-             * @return the trans
-             */
-            public List<TransactionResultDTO> getTrans() {
-                return trans;
-            }
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class EtherPayTrans extends RpcResponse
+    {
+        protected Result result;
+
+        /**
+         * @return the result
+         */
+        public Result getResult() {
+            return result;
+        }
+
+        public String fetchTxHash() {
+            return result.txHash;
+        }
+
+        static class Result {
+            public String txHash;
         }
     }
 }

@@ -34,11 +34,9 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -127,6 +125,8 @@ public class EtherJPAConfig
         protected static final String s_devKey      = "http://10.1.10.11:8545";
         protected static final String s_devAccount  = "http://10.1.10.11:8545";
 
+        protected static final String s_localGeth   = "http://localhost:8545";
+
         protected static final String s_extDb       = "localhost";
         protected static final String s_extKey      = "http://96.68.150.190:8545";
         protected static final String s_extAccount  = "http://96.68.150.190:8545";
@@ -169,6 +169,12 @@ public class EtherJPAConfig
             } else {
                 dbPassword = "socnetsocnet";
             }
+            val = System.getenv("GETH_RPC");
+            if (val != null && val.equals("local")) {
+                keyUrl = s_localGeth;
+                accountUrl = s_localGeth;
+            }
+            System.out.println("Using DB " + dbHost + ", Geth " + accountUrl);
         }
 
         public String getAccountUrl() {

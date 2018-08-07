@@ -189,9 +189,19 @@ class TransactionDetail extends BaseMedia
     }
 
     getDetailKV(trans) {
+        let blkVal, blkHash = trans.getBlockHash();
+
+        if (EthAccount.isNullBlkHash(blkHash)) {
+            blkVal = <h4><b>Pending Transaction</b></h4>;
+        } else {
+            blkVal = <a onClick={this._blockClick}>{trans.getBlockHash()}</a>;
+        }
         return [ {
             key: 'Block',
-            val: <a onClick={this._blockClick}>{trans.getBlockHash()}</a>
+            val: blkVal
+        }, {
+            key: 'Tx Hash',
+            val: trans.getTxHash()
         }, {
             key: 'From',
             val: <a onClick={this._fromAccount}>{trans.getFromAcct()}</a>

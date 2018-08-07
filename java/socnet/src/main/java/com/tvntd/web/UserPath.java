@@ -58,8 +58,8 @@ import com.tvntd.dao.AuthorTagRepo.AuthorTagDTO;
 import com.tvntd.dao.AuthorTagRepo.AuthorTagRespDTO;
 import com.tvntd.ether.api.IAccountSvc;
 import com.tvntd.ether.api.ITransactionSvc;
-import com.tvntd.ether.dto.TransactionDTO;
 import com.tvntd.ether.dto.TransactionDTO.TransListDTO;
+import com.tvntd.ether.dto.TransactionDTO.TransactionDTOResp;
 import com.tvntd.ether.dto.WalletForm;
 import com.tvntd.ether.dto.WalletForm.WalletListForm;
 import com.tvntd.ether.dto.WalletInfoDTO;
@@ -1066,7 +1066,7 @@ public class UserPath
             userService.checkIfValidOldPassword(owner, pay.getPassCode()) == false) {
             return new GenericResponse("Failed", "Miss-match password");
         }
-        TransactionDTO tx = acctSvc.payAccount(ownerUuid, pay.getToUuid(),
+        TransactionDTOResp tx = acctSvc.payAccount(ownerUuid, pay.getToUuid(),
                 pay.getFromAccount(), pay.getToAccount(),
                 pay.getXuAmount(), pay.getText());
 

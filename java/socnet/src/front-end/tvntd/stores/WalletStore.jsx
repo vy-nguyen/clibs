@@ -190,6 +190,11 @@ class WalletStoreClz extends Reflux.Store
      * Pay a transaction.
      */
     onEtherPayCompleted(data) {
+        console.log("pay done");
+        console.log(data);
+        if (data.message === "ok" && data.error == null) {
+            EtherStore.updateTransactions(data.transactions);
+        }
         this.trigger(new BaseElement({
             store: this,
             data : data,

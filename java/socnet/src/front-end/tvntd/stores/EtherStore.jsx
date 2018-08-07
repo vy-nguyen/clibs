@@ -106,6 +106,13 @@ class EthAccount extends BaseElement
         let ether = xuBalance / TDRates.XU2TD;
         return 'T$ '  + ether.formatMoney(3, '.', ',');
     }
+
+    static isNullBlkHash(h) {
+        if (h === "0x0000000000000000000000000000000000000000000000000000000000000000") {
+            return true;
+        }
+        return false;
+    }
 }
 
 class Transaction extends BaseElement
@@ -387,6 +394,9 @@ class EtherStoreClz extends Reflux.Store
         }
         let txObjs = [];
         _.forEach(trans, function(t) {
+            if (t == null) {
+                return;
+            }
             let h, tobj = this.transactions.getItem(t.hash);
 
             if (tobj == null) {

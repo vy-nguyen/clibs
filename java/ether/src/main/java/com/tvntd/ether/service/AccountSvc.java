@@ -26,6 +26,7 @@
  */
 package com.tvntd.ether.service;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,19 +44,23 @@ import org.springframework.stereotype.Service;
 
 import com.tvntd.ether.api.EtherRpcApi.EtherAcctInfo;
 import com.tvntd.ether.api.IAccountSvc;
+import com.tvntd.ether.api.ITransactionSvc;
 import com.tvntd.ether.dao.AccountRepo;
 import com.tvntd.ether.dao.WalletRepo;
 import com.tvntd.ether.dto.AccountInfoDTO;
 import com.tvntd.ether.dto.AccountInfoDTO.AccountInfoResult;
 import com.tvntd.ether.dto.AccountInfoDTO.NewAccountResult;
 import com.tvntd.ether.dto.AddressBook;
+import com.tvntd.ether.dto.EtherTransDTO.EtherPayTrans;
 import com.tvntd.ether.dto.TransactionDTO;
+import com.tvntd.ether.dto.TransactionDTO.TransactionDTOResp;
 import com.tvntd.ether.dto.WalletForm;
 import com.tvntd.ether.dto.WalletInfoDTO;
 import com.tvntd.ether.models.Account;
 import com.tvntd.ether.models.Wallet;
 import com.tvntd.ether.rpc.JsonRpc;
 import com.tvntd.ether.util.Constants;
+import com.tvntd.ether.util.Convert;
 import com.tvntd.lib.LRUCache;
 
 @Service
@@ -77,19 +82,12 @@ public class AccountSvc implements IAccountSvc
     @Autowired
     protected WalletRepo walletRepo;
 
+    @Autowired
+    protected ITransactionSvc transSvc;
+
     /**
      * Return the account and recent transactions matching with ownerUuid and account.
      */
-    @Override
-    public AccountInfoDTO getAccount(String account)
-    {
-        Account act = acctRepo.findByAccount(account);
-        if (act == null) {
-            return null;
-        }
-        return null;
-    }
-
     @Override
     public AccountResultDTO getAccounts(List<String> accounts, Boolean trans)
     {
@@ -202,6 +200,9 @@ public class AccountSvc implements IAccountSvc
         return out;
     }
 
+    /**
+     * Get wallets matching ownerUuid.
+     */
     @Override
     public List<WalletInfoDTO> getWallet(String ownerUuid)
     {
@@ -255,19 +256,65 @@ public class AccountSvc implements IAccountSvc
         }
     }
 
+    /**
+     * Prefund accounts.
+     */
     @Override
     public TransactionDTO fundAccount(AccountInfoDTO account)
     {
         return null;
     }
 
+    /**
+     * Pay from one account to aother one. The web layer has to verify the password
+     * before calling this method.
+     */
     @Override
-    public TransactionDTO payAccount(String ownerUuid, String toUuid,
+    public TransactionDTOResp payAccount(String ownerUuid, String toUuid,
             String fromAccount, String toAccount, Long xuAmount, String text)
     {
-        return null;
+        List<String> params = new LinkedList<>();
+        BigInteger weiVal = Convert.toWei(xuAmount);
+
+        params.add(fromAccount);
+        params.add(ownerUuid);
+        params.add(toAccount);
+        params.add(toUuid);
+        params.add(weiVal.toString());
+        params.add(text);
+
+        String error = null;
+        JsonRpc rpc = new JsonRpc();
+        EtherPayTrans tx = rpc.callJsonRpc(EtherPayTrans.class,
+                "tudo_payUserAccount", "id", params);
+
+        if (tx != null) {
+            String txHash = tx.fetchTxHash();
+            
+            if (txHash != null) {
+                TransactionDTO result = null;
+
+                for (int i = 0; i < 10; i++) {
+                    result = transSvc.getTransaction(txHash);
+                    if (result != null) {
+                        break;
+                    }
+                    try {
+                        Thread.sleep(100);
+                    } catch(InterruptedException e) {}
+                }
+                return new TransactionDTOResp("ok", result);
+            }
+            error = tx.getError().toString();
+        } else {
+            error = "Failed to send transaction";
+        }
+        return new TransactionDTOResp("Failed transaction", error);
     }
 
+    /**
+     * Return the addressbook for the ownerUuid.
+     */
     @Override
     public AddressBook getAddressBook(String ownerUuid, int start, int count)
     {
