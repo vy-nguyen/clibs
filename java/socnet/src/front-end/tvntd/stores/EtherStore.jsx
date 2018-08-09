@@ -281,6 +281,8 @@ class EtherStoreClz extends Reflux.Store
 
         if (UserStore.isLogin()) {
             Actions.getEtherWallet();
+        } else {
+            Actions.getEtherAddrBook();
         }
     }
 

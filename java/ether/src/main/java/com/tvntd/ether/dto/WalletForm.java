@@ -31,8 +31,10 @@ import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tvntd.lib.Util;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class WalletForm
 {
     protected String acctName;
@@ -41,6 +43,15 @@ public class WalletForm
     protected String walletUuid;
     protected String password;
     protected Boolean acctPriv;
+
+    public WalletForm() {}
+    public WalletForm(String acctName, String walletName)
+    {
+        this.acctName = acctName;
+        this.walletName = walletName;
+        this.password = "default";
+        this.acctPriv = false;
+    }
 
     public boolean cleanInput()
     {

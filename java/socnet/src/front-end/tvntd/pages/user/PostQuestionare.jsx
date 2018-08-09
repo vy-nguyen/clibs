@@ -98,8 +98,6 @@ class ChoiceForm extends FormData
             }
             errFlags.errText = this.needMark;
         }
-        console.log("validate mult choice input");
-        console.log(data);
         return data;
     }
 
@@ -389,7 +387,6 @@ export class PostQuestionare extends InputBase
 
     _updateState(store, data, item, code, arr, context) {
         if (code !== "post" && context !== _QuestSuffix) {
-            console.log("bail out, context " + context);
             return;
         }
         let items = QuestionStore.getItem(this.id);

@@ -24,12 +24,11 @@ class Wallet extends ComponentBase
 
     _updateState(arg) {
         if (arg.getCaller() === 'pay-complete') {
-            console.log("pay complete");
             return;
         }
         let detail = false;
 
-        if (arg.getCaller() === 'account-info') {
+        if (arg.getCaller() === 'fetch-acct') {
             detail = true;
         }
         this.setState({
@@ -41,7 +40,6 @@ class Wallet extends ComponentBase
     _renderOneWallet(wallet, out) {
         let td, usd, equity, micro, acctOut = [], detail = this.state.detail;
 
-        console.log("detail " + detail);
         equity = wallet.getEquityAcct();
         if (equity != null) {
             acctOut.push(

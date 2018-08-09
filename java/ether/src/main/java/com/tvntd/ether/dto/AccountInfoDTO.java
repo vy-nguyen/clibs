@@ -161,7 +161,11 @@ public class AccountInfoDTO
             return result.address;
         }
 
-        public Account fetchAccount(String name, String type) {
+        public Account fetchAccount(String name, String type)
+        {
+            if (result == null) {
+                return null;
+            }
             return new Account(result.address,
                     result.ownerUuid, result.walletUuid, name, type);
         }

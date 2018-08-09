@@ -54,8 +54,10 @@ public class HashForm
             hashType = Jsoup.clean(hashType, wlist);
         }
         String[] cleanHash = new String[hashes.length];
-        for (int i = 0; i < hashes.length; i++) {
-            cleanHash[i] = Jsoup.clean(hashes[i], wlist);
+        for (int i = 0, clean = 0; i < hashes.length; i++) {
+            if (hashes[i] != null) {
+                cleanHash[clean++] = Jsoup.clean(hashes[i], wlist);
+            }
         }
         hashes = cleanHash;
         return true;

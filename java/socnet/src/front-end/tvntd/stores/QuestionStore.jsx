@@ -102,15 +102,11 @@ let QuestionStore = Reflux.createStore({
     },
 
     onPostQuestFormCompleted: function(data, ctxId) {
-        console.log("post question completed");
-        console.log(data);
         let quest = this._addQuestions(data.questions);
         this.trigger(this, quest, "post", false, ctxId);
     },
 
     onGetQuestionsCompleted: function(data, cb) {
-        console.log("get question completed");
-        console.log(data);
         this._addQuestions(data.questions);
         this.authors.receivedKeys(data.uuids);
 

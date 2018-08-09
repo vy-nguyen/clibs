@@ -84,7 +84,7 @@ class AuthorFeed extends ArticleBase
             tabIdx : 2
         }, {
             domId  : 'timeline-' + uuid,
-            tabText: 'Timeline',
+            tabText: 'Account ',
             tabIdx : 3
         }, {
             domId  : 'estore-' + uuid,
@@ -121,7 +121,7 @@ class AuthorFeed extends ArticleBase
                 <PostArticles data={articles} user={user}/>
                 <Blog authorUuid={user.userUuid} user={user}/>
                 <UserPostView userUuid={author.userUuid}/>
-                <Timeline/>
+                <Timeline user={user}/>
                 <EStore userUuid={author.userUuid}/>
             </TabPanel>
         );

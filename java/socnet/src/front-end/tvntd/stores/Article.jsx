@@ -212,7 +212,6 @@ export class AuthorTagMgr {
     }
 
     updatePrivateTags(tagRanks, artRanks) {
-        console.log("Update private tags");
     }
 
     removeAuthorTag(tag) {
@@ -370,19 +369,6 @@ export class AuthorTagMgr {
                     tagRank.artUuid.push(rank.getArticleUuid());
                 });
             }
-            console.log(category);
-                /*
-            _.forEach(category, function(it, idx) {
-                tagRank.artUuid.push(it.id);
-                artRank = authorTag.getArticleRank(it.id);
-                if (artRank != null) {
-                    artRank.rank = idx + 1;
-                }
-            });
-            if (sortedArts != null) {
-                sortedArts.sort(ArticleSort.compareRank);
-            }
-                 */
         }.bind(this));
 
         Actions.commitTagRanks(this, {

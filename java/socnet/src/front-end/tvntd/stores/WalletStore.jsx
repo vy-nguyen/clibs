@@ -96,7 +96,8 @@ class AddrBookEntry extends BaseElement
         let user;
 
         if (this.user != null) {
-            let name = this.user.getUserName() + " (" + this.account + ")";
+            let name = this.user.getUserName() + " [" +
+                this.publicName + "] (" + this.account + ")";
 
             if (siz == null) {
                 siz = 20;
@@ -107,7 +108,7 @@ class AddrBookEntry extends BaseElement
                 </span>
             );
         } else {
-            user = <span>{this.account}</span>;
+            user = <span>"[" + this.publicName + "] (" + {this.account} + ")"</span>;
         }
         return user;
     }
@@ -117,6 +118,10 @@ class AddrBookEntry extends BaseElement
             value: this.account,
             label: this.getUser()
         };
+    }
+
+    indexFn() {
+        return this.ownerUuid;
     }
 }
 
@@ -159,7 +164,7 @@ class WalletStoreClz extends Reflux.Store
         this.trigger(new BaseElement({
             store: this,
             data : this.state,
-            where: 'account-info'
+            where: 'fetch-acct'
         }));
     }
 
@@ -259,6 +264,9 @@ class WalletStoreClz extends Reflux.Store
         return result;
     }
 
+    /**
+     * Addressbook
+     */
     getAddressBook() {
         return this.addrBookSelect;
     }
@@ -276,6 +284,10 @@ class WalletStoreClz extends Reflux.Store
         return new AddrBookEntry({
             account: acctNo
         });
+    }
+
+    getAccountFromAddrBook(userUuid) {
+        return this.globBook.getIndex(userUuid);
     }
 
     _updateAddressBook(data) {

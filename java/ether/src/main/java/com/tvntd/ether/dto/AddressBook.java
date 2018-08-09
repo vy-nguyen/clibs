@@ -26,6 +26,7 @@
  */
 package com.tvntd.ether.dto;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import com.tvntd.ether.models.Account;
@@ -37,6 +38,14 @@ public class AddressBook
 
     public AddressBook(List<Account> pub) {
         this.publicBook = pub;
+    }
+
+    public void addPersonalAcct(Account acct)
+    {
+        if (personal == null) {
+            personal = new LinkedList<>();
+        }
+        personal.add(acct);
     }
 
     /**

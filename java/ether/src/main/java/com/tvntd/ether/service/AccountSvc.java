@@ -71,8 +71,10 @@ public class AccountSvc implements IAccountSvc
     static Logger s_log = LoggerFactory.getLogger(AccountSvc.class);
     static int maxAccountCached = 10000;
 
+    static List<Account> s_globAccount;
     static LRUCache<String, String, Account> s_acctCache;
     static {
+        s_globAccount = null;
         s_acctCache = new LRUCache<>(1000, maxAccountCached);
     }
 
@@ -84,6 +86,14 @@ public class AccountSvc implements IAccountSvc
 
     @Autowired
     protected ITransactionSvc transSvc;
+
+    /**
+     * Return all wallets.
+     */
+    @Override
+    public List<Wallet> getAllWallets() {
+        return walletRepo.findAll();
+    }
 
     /**
      * Return the account and recent transactions matching with ownerUuid and account.
@@ -190,14 +200,17 @@ public class AccountSvc implements IAccountSvc
         // Save the new wallet entry.
         //
         Account account = result.fetchAccount(acctName, type);
-        w.resetId();
-        w.setAccount(result.fetchAddress());
-        walletRepo.save(w);
-        acctRepo.save(account);
+        if (account != null) {
+            w.resetId();
+            w.setAccount(result.fetchAddress());
+            walletRepo.save(w);
+            acctRepo.save(account);
 
-        WalletInfoDTO out = new WalletInfoDTO(w);
-        out.addAccountInfo(new AccountInfoDTO(account));
-        return out;
+            WalletInfoDTO out = new WalletInfoDTO(w);
+            out.addAccountInfo(new AccountInfoDTO(account));
+            return out;
+        }
+        return null;
     }
 
     /**
@@ -318,8 +331,26 @@ public class AccountSvc implements IAccountSvc
     @Override
     public AddressBook getAddressBook(String ownerUuid, int start, int count)
     {
-        Pageable page = new PageRequest(start, start + count, null);
-        List<Account> accounts = acctRepo.findByType(page, Constants.ACCT_VNTD);
-        return new AddressBook(accounts);
+        AddressBook book = new AddressBook(s_globAccount);
+
+        if (s_globAccount == null) {
+            Pageable page = new PageRequest(start, start + count, null);
+            List<Account> accounts = acctRepo.findByType(page, Constants.ACCT_VNTD);
+
+            // Race condition here is ok.
+            //
+            s_globAccount = accounts;
+            book.setPublicBook(accounts);
+        }
+        if (ownerUuid != null) {
+            List<Wallet> wallets = walletRepo.findByOwnerUuid(ownerUuid);
+            for (Wallet w : wallets) {
+                Account a = acctRepo.findByAccount(w.getAccount());
+                if (a != null) {
+                    book.addPersonalAcct(a);
+                }
+            }
+        }
+        return book;
     }
 }

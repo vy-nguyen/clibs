@@ -158,9 +158,6 @@ class CommentBox extends React.Component
         if (cmt == null || cmt.articleUuid !== artUuid) {
             return;
         }
-        console.log("comment update...");
-        console.log(cmt);
-
         if (this.refs.comment != null) {
             this.refs.comment.value = "";
         }

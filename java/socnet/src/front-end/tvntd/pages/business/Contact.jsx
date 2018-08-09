@@ -36,8 +36,6 @@ class Contact extends InputBase
 
         if (select === "map") {
             busInfo = this._getBusinessInfo();
-            console.log("bus info");
-            console.log(busInfo);
             if (busInfo == null) {
                 return null;
             }

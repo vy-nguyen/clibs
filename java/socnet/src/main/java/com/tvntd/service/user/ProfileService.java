@@ -229,4 +229,9 @@ public class ProfileService implements IProfileService
     public List<Profile> getUsersByEmail(List<String> email) {
         return profileRepo.findByEmailIn(email);
     }
+
+    @Override
+    public List<Profile> getAllUsers() {
+        return profileRepo.findAll();
+    }
 }

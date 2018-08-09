@@ -9,9 +9,8 @@ import React              from 'react-mod';
 import Actions            from 'vntd-root/actions/Actions.jsx';
 import Lang               from 'vntd-root/stores/LanguageStore.jsx';
 import WalletStore        from 'vntd-root/stores/WalletStore.jsx';
-import EtherStore         from 'vntd-root/stores/EtherStore.jsx';
-import { EthAccount }     from 'vntd-root/stores/EtherStore.jsx';
 import EtherModal         from 'vntd-root/pages/wall/EtherModal.jsx';
+import { EtherStore, EthAccount }  from 'vntd-root/stores/EtherStore.jsx';
 
 import StateButton               from 'vntd-shared/utils/StateButton.jsx';
 import UserStore                 from 'vntd-shared/stores/UserStore.jsx';
@@ -143,15 +142,11 @@ class PaymentForm extends FormData
     }
 
     submitNotif(store, data, result, status) {
-        console.log("onNotif result " + result);
-        console.log("status " + status);
         super.submitNotif(store, data, result, status);
     }
 
     submitError(result) {
         let err = result.getError();
-        console.log("Error result " + err);
-        console.log("status " + status);
     }
 }
 
@@ -168,13 +163,10 @@ class Payment extends ComponentBase
             return;
         }
         if (arg.getError() != null) {
-            console.log("Error ");
-            console.log(arg.getError());
             return;
         }
         let txHash = arg.getData().transactions, txObj = [];
         if (txHash == null) {
-            console.log("Error , no tx result");
             return;
         }
         _.forEach(txHash, function(t) {
@@ -182,7 +174,6 @@ class Payment extends ComponentBase
             if (obj != null) {
                 txObj.push(obj);
             }
-            console.log("lookup result hash " + t.txHash + ", obj " + obj);
         });
         this.setState({
             trans: txObj
@@ -199,8 +190,6 @@ class Payment extends ComponentBase
         let txView = null, txs = this.state ? this.state.trans : null;
 
         if (txs != null) {
-        console.log("render txs");
-        console.log(txs);
             txView = [];
             _.forEach(txs, function(t) {
                 txView.push(

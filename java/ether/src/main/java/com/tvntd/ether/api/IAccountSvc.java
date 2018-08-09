@@ -40,9 +40,15 @@ import com.tvntd.ether.dto.TransactionDTO;
 import com.tvntd.ether.dto.TransactionDTO.TransactionDTOResp;
 import com.tvntd.ether.dto.WalletForm;
 import com.tvntd.ether.dto.WalletInfoDTO;
+import com.tvntd.ether.models.Wallet;
 
 public interface IAccountSvc
 {
+    /**
+     * Get all walles from the database.
+     */
+    List<Wallet> getAllWallets();
+
     /**
      * Get account info for the given account.
      */

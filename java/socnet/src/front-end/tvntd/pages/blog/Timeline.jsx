@@ -2,12 +2,60 @@
  * Copyright by Vy Nguyen (2016)
  * BSD License
  */
-import React from 'react-mod'
+'use strict';
 
-class Timeline extends React.Component
+import _                 from 'lodash';
+import React             from 'react-mod';
+import Spinner           from 'react-spinjs';
+
+import { VntdGlob }      from 'vntd-root/config/constants.js';
+import EtherStore        from 'vntd-root/stores/EtherStore.jsx';
+import WalletStore       from 'vntd-root/stores/WalletStore.jsx';
+import EtherAccount      from 'vntd-root/pages/wall/EtherAccount.jsx';
+
+import ComponentBase     from 'vntd-shared/layout/ComponentBase.jsx';
+
+class Timeline extends ComponentBase
 {
+    constructor(props) {
+        super(props, null, EtherStore);
+        let user = props.user;
+
+        if (user != null) {
+            this.state = _.merge(this.state, {
+                acctEntry: WalletStore.getAccountFromAddrBook(user.userUuid)
+            });
+        }
+    }
+
+    _updateState(arg) {
+        let account, acctEntry = this.state.acctEntry;
+
+        if (arg.getCaller() === 'fetch-acct' && acctEntry != null) {
+            account = EtherStore.getAccount(acctEntry.account);
+            if (account != this.state.account) {
+                this.setState({
+                    account: account
+                });
+            }
+        }
+    }
+
     render() {
-        return null;
+        let account, acctEntry = this.state.acctEntry;
+
+        if (acctEntry == null) {
+            return null;
+        }
+        account = EtherStore.getAccount(acctEntry.account);
+        if (account != null) {
+            return (
+                <EtherAccount account={account}
+                    pay={false} showTrans={true} detail={true}/>
+            )
+        }
+        EtherStore.fetchMissingAccts();
+        return <Spinner config={VntdGlob.spinner}/>;
     }
 }
 

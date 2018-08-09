@@ -232,8 +232,11 @@ Actions.getEtherWallet.listen(function() {
 });
 
 Actions.getEtherAddrBook.listen(function() {
-    console.log("Get address book");
-    getJSON("/user/tudo/addr-book/0/10000", this, true, "getAddrBook");
+    if (UserStore.isLogin()) {
+        getJSON("/user/tudo/addr-book/0/10000", this, true, "getAddrBook");
+    } else {
+        getJSON("/api/tudo/addr-book/0/10000", this, false, "getAddrBook");
+    }
 });
 
 Actions.getEtherBlockSet.listen(function(blocks) {
@@ -259,8 +262,6 @@ Actions.getAccountInfo.listen(function(acct, inclTrans) {
 });
 
 Actions.etherPay.listen(function(data) {
-    console.log("------ ether pay --------");
-    console.log(data);
     postRestCall(data, "/user/tudo/pay", true, this, false);
 });
 

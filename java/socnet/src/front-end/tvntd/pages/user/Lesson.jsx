@@ -56,7 +56,6 @@ class Lesson extends InputBase
     //
     _deletePost() {
         super.deletePost();
-        console.log("Delete lesson...");
     }
 
     _rawMarkup(article) {

@@ -34,7 +34,7 @@ class EtherAccount extends BaseMedia
     }
 
     _updateState(arg) {
-        if (arg.getCaller() === 'account-info') {
+        if (arg.getCaller() === 'fetch-acct') {
             this.setState({
                 refresh: false
             });

@@ -50,26 +50,27 @@ import com.tvntd.util.Util;
 
 public interface IProfileService
 {
-    public ProfileDTO getProfile(User user);
-    public ProfileDTO getProfile(String uuid);
+    ProfileDTO getProfile(User user);
+    ProfileDTO getProfile(String uuid);
 
-    public List<ProfileDTO> getProfileList(List<String> userIds);
-    public List<ProfileDTO> getProfileFromRaw(List<Profile> raw);
-    public Page<ProfileDTO> getProfileList();
+    List<ProfileDTO> getProfileList(List<String> userIds);
+    List<ProfileDTO> getProfileFromRaw(List<Profile> raw);
+    Page<ProfileDTO> getProfileList();
 
-    public void followProfiles(ProfileDTO me,
+    void followProfiles(ProfileDTO me,
             String[] uuids, HashMap<String, ProfileDTO> changes);
-    public void connectProfiles(ProfileDTO me,
+    void connectProfiles(ProfileDTO me,
             String[] uuids, HashMap<String, ProfileDTO> changes);
 
-    public void saveProfile(ProfileDTO profile);
-    public void saveProfiles(List<ProfileDTO> profiles);
-    public void saveUserImgUrl(ProfileDTO profile, ObjectId oid);
-    public void createProfile(User user, String uuid);
-    public void deleteProfile(Long userId);
-    public void deleteProfile(String userUuid);
+    void saveProfile(ProfileDTO profile);
+    void saveProfiles(List<ProfileDTO> profiles);
+    void saveUserImgUrl(ProfileDTO profile, ObjectId oid);
+    void createProfile(User user, String uuid);
+    void deleteProfile(Long userId);
+    void deleteProfile(String userUuid);
 
-    public List<Profile> getUsersByEmail(List<String> email);
+    List<Profile> getUsersByEmail(List<String> email);
+    List<Profile> getAllUsers();
 
     /*
      * Transfer profile to front-end.

@@ -7,7 +7,6 @@
 import _                  from 'lodash';
 import React              from 'react-mod';
 import PropTypes          from 'prop-types';
-import Spinner            from 'react-spinjs';
 
 import ImageCarousel      from 'vntd-shared/layout/ImageCarousel.jsx';
 import InputBase          from 'vntd-shared/layout/InputBase.jsx';

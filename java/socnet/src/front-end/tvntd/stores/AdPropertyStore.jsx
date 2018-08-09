@@ -31,8 +31,6 @@ let AdPropertyStore = Reflux.createStore({
     },
 
     onPostRealtorAdsCompleted: function(res) {
-        console.log("result from store ads");
-        console.log(res);
         this.store.onPublishItemCompleted(res, this);
     },
 

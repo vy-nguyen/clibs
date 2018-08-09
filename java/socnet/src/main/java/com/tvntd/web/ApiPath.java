@@ -55,10 +55,13 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tvntd.ether.api.IAccountSvc;
 import com.tvntd.ether.api.ITransactionSvc;
+import com.tvntd.ether.dto.WalletForm;
 import com.tvntd.ether.dto.WalletInfoDTO;
+import com.tvntd.ether.models.Wallet;
 import com.tvntd.forms.UserConnectionForm;
 import com.tvntd.forms.UserEmailForm;
 import com.tvntd.lib.ObjectId;
+import com.tvntd.models.Profile;
 import com.tvntd.models.User;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.GenericResponse;
@@ -76,6 +79,7 @@ import com.tvntd.service.api.StartupResponse;
 import com.tvntd.service.api.UserConnectionChange;
 import com.tvntd.service.api.UserNotifResponse;
 import com.tvntd.service.api.WalletResponse;
+import com.tvntd.util.Util;
 
 @Controller
 public class ApiPath
@@ -264,6 +268,20 @@ public class ApiPath
     }
 
     /**
+     * Get public address book.
+     */
+    @RequestMapping(value = "/api/tudo/addr-book/{start}/{count}",
+        method = RequestMethod.GET)
+    @ResponseBody
+    public Object getEtherAddrBook(HttpSession session,
+            @RequestParam(value = "start", required = false) String start,
+            @RequestParam(value = "count", required = false) String count)
+    {
+        int startNo = 0, countNo = 1000;
+        return acctSvc.getAddressBook(null, startNo, countNo);
+    }
+
+    /**
      * Note, disable this API in production
      */
     @RequestMapping(value = "/api/create-wallet",
@@ -272,11 +290,30 @@ public class ApiPath
     @ResponseBody
     public GenericResponse createWallet(@RequestBody UserEmailForm emails)
     {
-        List<WalletInfoDTO> wallets = new LinkedList<>();
-        /*
-        List<Profile> profile = profileSvc
-            .getUsersByEmail(Arrays.asList(emails.getEmails()));
-        */
-        return new WalletResponse(wallets);
+        List<Profile> profile = profileSvc.getAllUsers();
+        Map<String, Profile> profileMap = new HashMap<>();
+
+        for (Profile p : profile) {
+            profileMap.put(p.getUserUuid(), p);
+        }
+        List<Wallet> wallets = acctSvc.getAllWallets();
+        for (Wallet w : wallets) {
+            if (profileMap.get(w.getOwnerUuid()) != null) {
+                // User already has a wallet, don't need one.
+                //
+                profileMap.remove(w.getOwnerUuid());
+            }
+        }
+        // Remaining are users without wallet
+        //
+        List<WalletInfoDTO> newWallets = new LinkedList<>();
+        for (Map.Entry<String, Profile> entry : profileMap.entrySet()) {
+            Profile p = entry.getValue();
+            String name = Util.fromRawByte(p.getFirstName());
+            WalletForm form = new WalletForm(name, name);
+            newWallets.add(acctSvc.createWallet(form, p.getUserUuid()));
+            System.out.println("Created wallet for " + name);
+        }
+        return new WalletResponse(newWallets);
     }
 }

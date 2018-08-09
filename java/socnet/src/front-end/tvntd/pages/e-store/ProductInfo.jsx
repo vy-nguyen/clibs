@@ -110,7 +110,6 @@ class ProductBrief extends React.Component
     }
 
     addCart() {
-        console.log("override add to cart...");
     }
 
     addWish() {

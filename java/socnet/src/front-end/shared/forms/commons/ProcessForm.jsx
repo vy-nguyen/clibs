@@ -156,8 +156,6 @@ class FormData
     }
 
     _dzError(a) {
-        console.log("dzError...");
-        console.log(a);
     }
 
     setData(value) {
@@ -589,13 +587,14 @@ class ProcessForm extends ComponentBase
         if (context.isSubmitting() !== true) {
             return;
         }
-        if (error != null || status === "failure" || result.error != null) {
+        if ((error != null) || (status === "failure") ||
+            (result != null && result.error != null)) {
             let store = this.props.store;
 
             if (status === "failure") {
                 errFlags = context.submitFailureBase(data, result, status, cb);
             }
-            if (result.error != null || error != null) {
+            if ((result != null && result.error != null) || (error != null)) {
                 errFlags = context.submitErrorBase(data, result, status, cb);
             }
             if (errFlags != null && ! _.isEmpty(errFlags)) {
