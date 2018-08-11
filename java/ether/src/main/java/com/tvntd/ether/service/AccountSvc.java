@@ -114,6 +114,46 @@ public class AccountSvc implements IAccountSvc
         return out;
     }
 
+    @Override
+    public AccountResultDTO
+    getAccounts(List<String> accounts, Map<String, Account> db)
+    {
+        AccountResultDTO out = new AccountResultDTO("accounts");
+        JsonRpc rpc = new JsonRpc();
+        EtherAcctInfo result = rpc.callJsonRpcArr(EtherAcctInfo.class,
+                "tudo_listAccountInfo", "id", accounts);
+
+        if (result != null && result.getError() == null) {
+            List<AccountInfoDTO> accts = result.accountResult();
+
+            out.setAccounts(accts);
+            for (AccountInfoDTO a : accts) {
+                Account adb = db.get(a.getAccount());
+                if (adb != null) {
+                    a.setOwnerUuid(adb.getOwnerUuid());
+                    a.processInfo(adb.getPublicName(), adb.getType());
+                } else {
+                    a.processInfo(null, Constants.ACCT_VNTD_PRIV);
+                }
+            }
+        }
+        return out;
+    }
+
+    @Override
+    public AccountResultDTO getUserAccounts(List<String> userUuids)
+    {
+        Map<String, Account> map = new HashMap<>();
+        List<String> accounts = new LinkedList<>();
+        List<Account> accts = acctRepo.findByOwnerUuidIn(userUuids);
+
+        for (Account a : accts) {
+            map.put(a.getAccount(), a);
+            accounts.add(a.getAccount());
+        }
+        return getAccounts(accounts, map);
+    }
+
     /**
      * Create a new wallet or create a new account to existing wallet.
      */

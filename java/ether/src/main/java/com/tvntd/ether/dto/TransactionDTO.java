@@ -50,6 +50,12 @@ public class TransactionDTO
             super(mesg, error);
         }
 
+        public TransactionDTOResp(String mesg, List<TransactionDTO> trans)
+        {
+            super(mesg, null);
+            transactions = trans;
+        }
+
         public TransactionDTOResp(String mesg, TransactionDTO tx)
         {
             super(mesg, null);
@@ -63,6 +69,13 @@ public class TransactionDTO
                 transactions = new LinkedList<>();
             }
             transactions.add(tx);
+        }
+
+        /**
+         * @return the transactions
+         */
+        public List<TransactionDTO> getTransactions() {
+            return transactions;
         }
     }
 

@@ -28,6 +28,7 @@ package com.tvntd.ether.api;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.ethereum.jsonrpc.JsonRpc.BlockResult;
 import org.ethereum.jsonrpc.TransactionResultDTO;
@@ -40,6 +41,7 @@ import com.tvntd.ether.dto.TransactionDTO;
 import com.tvntd.ether.dto.TransactionDTO.TransactionDTOResp;
 import com.tvntd.ether.dto.WalletForm;
 import com.tvntd.ether.dto.WalletInfoDTO;
+import com.tvntd.ether.models.Account;
 import com.tvntd.ether.models.Wallet;
 
 public interface IAccountSvc
@@ -52,6 +54,8 @@ public interface IAccountSvc
     /**
      * Get account info for the given account.
      */
+    AccountResultDTO getUserAccounts(List<String> userUuids);
+    AccountResultDTO getAccounts(List<String> accounts, Map<String, Account> db);
     AccountResultDTO getAccounts(List<String> accounts, Boolean trans);
 
     /**
@@ -121,8 +125,10 @@ public interface IAccountSvc
             transBlocks = result.fetchBlocks();
 
             List<TransactionResultDTO> trans = result.fetchTrans();
-            for (TransactionResultDTO tx : trans) {
-                recentTrans.add(new TransactionDTO(null, tx));
+            if (trans != null) {
+                for (TransactionResultDTO tx : trans) {
+                    recentTrans.add(new TransactionDTO(null, tx));
+                }
             }
         }
 
@@ -131,6 +137,13 @@ public interface IAccountSvc
          */
         public List<AccountInfoDTO> getAccounts() {
             return accounts;
+        }
+
+        /**
+         * @param accounts the accounts to set
+         */
+        public void setAccounts(List<AccountInfoDTO> accounts) {
+            this.accounts = accounts;
         }
 
         /**

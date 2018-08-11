@@ -51,11 +51,11 @@ public class ArtAds
     @Column(length = 64)
     protected String authorUuid;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @OneToOne(cascade = CascadeType.ALL, optional = true)
     @PrimaryKeyJoinColumn
     protected ArticleBase artBase;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @OneToOne(cascade = CascadeType.ALL, optional = true)
     @PrimaryKeyJoinColumn
     protected ArticleAttr artAttr;
 

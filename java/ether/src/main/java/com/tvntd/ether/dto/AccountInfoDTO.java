@@ -42,6 +42,7 @@ import com.tvntd.ether.util.Convert;
 public class AccountInfoDTO
 {
     protected String account;
+    protected String ownerUuid;
     protected Long xuBalance;
     protected String acctName;
     protected String balance;
@@ -98,6 +99,20 @@ public class AccountInfoDTO
     @JsonProperty("Account")
     public String getAccount() {
         return account;
+    }
+
+    /**
+     * @return the ownerUuid
+     */
+    public String getOwnerUuid() {
+        return ownerUuid;
+    }
+
+    /**
+     * @param ownerUuid the ownerUuid to set
+     */
+    public void setOwnerUuid(String ownerUuid) {
+        this.ownerUuid = ownerUuid;
     }
 
     /**

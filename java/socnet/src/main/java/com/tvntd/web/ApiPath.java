@@ -54,6 +54,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tvntd.ether.api.IAccountSvc;
+import com.tvntd.ether.api.IAccountSvc.AccountResultDTO;
 import com.tvntd.ether.api.ITransactionSvc;
 import com.tvntd.ether.dto.WalletForm;
 import com.tvntd.ether.dto.WalletInfoDTO;
@@ -65,6 +66,7 @@ import com.tvntd.models.Profile;
 import com.tvntd.models.User;
 import com.tvntd.objstore.ObjStore;
 import com.tvntd.service.api.GenericResponse;
+import com.tvntd.service.api.IAdminTaskSvc;
 import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArticleSvc;
 import com.tvntd.service.api.IArticleSvc.ArticleDTOResponse;
@@ -116,6 +118,9 @@ public class ApiPath
 
     @Autowired
     protected IAccountSvc acctSvc;
+
+    @Autowired
+    protected IAdminTaskSvc adminTaskSvc;
 
     /**
      * Handle Api REST calls.
@@ -283,17 +288,18 @@ public class ApiPath
 
     /**
      * Note, disable this API in production
-     */
     @RequestMapping(value = "/api/create-wallet",
         consumes = "application/json", method = RequestMethod.POST)
     @JsonIgnoreProperties(ignoreUnknown = true)
     @ResponseBody
     public GenericResponse createWallet(@RequestBody UserEmailForm emails)
     {
+        List<String> uuids = new LinkedList<>();
         List<Profile> profile = profileSvc.getAllUsers();
         Map<String, Profile> profileMap = new HashMap<>();
 
         for (Profile p : profile) {
+            uuids.add(p.getUserUuid());
             profileMap.put(p.getUserUuid(), p);
         }
         List<Wallet> wallets = acctSvc.getAllWallets();
@@ -314,6 +320,18 @@ public class ApiPath
             newWallets.add(acctSvc.createWallet(form, p.getUserUuid()));
             System.out.println("Created wallet for " + name);
         }
+        // Get account balances
+        //
+        AccountResultDTO accts = acctSvc.getUserAccounts(uuids);
+        adminTaskSvc.addMicroPayTask(accts.getAccounts());
+
         return new WalletResponse(newWallets);
     }
+
+    @RequestMapping(value = "/api/tudo/fund-micropay", method = RequestMethod.GET)
+    @ResponseBody
+    public Object runFundMicroPayTask(HttpSession session) {
+        return adminTaskSvc.processMicroPay(500000L);
+    }
+     */
 }

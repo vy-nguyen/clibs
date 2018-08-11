@@ -46,6 +46,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tvntd.forms.ArtTagForm;
 import com.tvntd.service.api.GenericResponse;
+import com.tvntd.service.api.IAdminTaskSvc;
 import com.tvntd.service.api.IArtTagService;
 import com.tvntd.service.api.IArtTagService.ArtTagDTO;
 import com.tvntd.service.api.IArtTagService.ArtTagList;
@@ -83,6 +84,12 @@ public class AdminPath
     @Autowired
     protected IArticleSvc artSvc;
 
+    @Autowired
+    protected IAdminTaskSvc adminTaskSvc;
+
+    /**
+     * Process login for admin user.
+     */
     @Secured({"ROLE_Admin"})
     @RequestMapping(value = "/admin", params = {"user"}, method = RequestMethod.GET)
     @ResponseBody

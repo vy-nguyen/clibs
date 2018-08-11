@@ -94,11 +94,11 @@ public class ArticleBrief
     protected boolean favorite;
     protected boolean hasArticle;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @OneToOne(cascade = CascadeType.ALL, optional = true)
     @PrimaryKeyJoinColumn
     protected ArticleBase artBase;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @OneToOne(cascade = CascadeType.ALL, optional = true)
     @PrimaryKeyJoinColumn
     protected ArticleAttr artAttr;
 
