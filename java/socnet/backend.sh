@@ -5,8 +5,8 @@ export DEV_ENVIRONMENT=true
 export KEY_DB_HOST=localhost
 
 # gradle jettyRun -Dorg.eclipse.jetty.annotations.maxWait=180 $@
-# gradle tomcatRun $@
+./gradlew tomcatRun $@
 
-gradle jettyRunDebug -Dorg.eclipse.jetty.annotations.maxWait=180 $@
+# gradle jettyRunDebug -Dorg.eclipse.jetty.annotations.maxWait=180 $@
 # ./gradlew jettyRun -Dorg.eclipse.jetty.annotations.maxWait=120 $@
 
