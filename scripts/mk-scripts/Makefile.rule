@@ -30,8 +30,10 @@ include $(mk_scripts)/Makefile.scpt
 # -----------------------------------------------------------------------------
 # Main make rule.
 #
+# all: $(proj_predep) base_predepend $(foss_pkg_target) $(proj_postdep)
+#
 .PHONY: all
-all: $(proj_predep) base_predepend $(foss_pkg_target) $(proj_postdep)      \
+all: $(proj_predep) base_predepend $(proj_postdep)      \
 	 $(proj_pregen) base_gen $(proj_postgen)              \
 	 $(proj_predepend) base_depend $(proj_postdepend)     \
 	 $(proj_precompile) base_objs $(proj_postcompile)     \

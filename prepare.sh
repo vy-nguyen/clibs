@@ -1,9 +1,11 @@
 #!/bin/bash
 
-git submodule update --init --recursive  
+# git submodule update --init --recursive  
 pushd .
 cd java/socnet
 ln -s ../../foss foss
 
-popd
+make prepare
+(cd src/main/css && make)
 
+popd

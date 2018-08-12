@@ -6,6 +6,8 @@
 #
 # Error checkings
 #
+SHELL=/bin/bash
+
 ifeq ($(proj_env), kernel)
 ifneq ($(proj_target), module)
 ifneq ($(proj_target), lib)

@@ -6,6 +6,9 @@ proj_dirs    := \
 
 include ./Makefile.incl
 
+prepare:
+	@$(set_alias_scpt)
+
 web:
 	@$(set_alias_scpt)
 	npm run vntd --watch
