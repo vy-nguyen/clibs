@@ -117,19 +117,19 @@ public class EtherJPAConfig
 
     public static class EtherRpcCfg
     {
-        protected static final String s_prodDb      = "10.8.0.1";
-        protected static final String s_prodKey     = "http://10.8.0.1:8545";
-        protected static final String s_prodAccount = "http://10.8.0.1:8545";
+        protected static final String s_prodDb      = "localhost";
+        protected static final String s_prodKey     = "http://192.168.1.10:8545";
+        protected static final String s_prodAccount = "http://192.168.1.10:8545";
 
-        protected static final String s_devDb       = "10.1.10.13";
-        protected static final String s_devKey      = "http://10.1.10.11:8545";
-        protected static final String s_devAccount  = "http://10.1.10.11:8545";
+        protected static final String s_devDb       = "localhost";
+        protected static final String s_devKey      = "http://192.168.1.10:8545";
+        protected static final String s_devAccount  = "http://192.168.1.10:8545";
 
         protected static final String s_localGeth   = "http://localhost:8545";
 
         protected static final String s_extDb       = "localhost";
-        protected static final String s_extKey      = "http://96.68.150.190:8545";
-        protected static final String s_extAccount  = "http://96.68.150.190:8545";
+        protected static final String s_extKey      = "http://45.27.25.39:8545";
+        protected static final String s_extAccount  = "http://45.27.25.39:8545";
 
         protected String accountUrl;
         protected String keyUrl;
@@ -172,8 +172,8 @@ public class EtherJPAConfig
             val = System.getenv("GETH_RPC");
             if (val != null && val.equals("local")) {
                 keyUrl = s_localGeth;
-                accountUrl = s_localGeth;
             }
+            accountUrl = s_localGeth;
             System.out.println("Using DB " + dbHost + ", Geth " + accountUrl);
         }
 

@@ -430,8 +430,13 @@ public class ArticleSvc implements IArticleSvc
     }
 
     @Override
-    public void saveArticleBrief(ArticleBriefDTO rank) {
-        artBriefRepo.save(rank.fetchArtRank());
+    public void saveArticleBrief(ArticleBriefDTO rank)
+    {
+        ArticleBrief brief = rank.fetchArtRank();
+	ArticleBase base = brief.getArtBase();
+
+        artBaseRepo.save(base);
+        artBriefRepo.save(brief);
     }
   
     @Override
@@ -641,9 +646,14 @@ public class ArticleSvc implements IArticleSvc
     {
         String artUuid = brief.getArticleUuid();
 
+        ArticleBase base = brief.getArtBase();
         artTagSvc.deletePublicTagPost(tag, artUuid);
+
+        brief.setArtBase(null);
         artBriefRepo.delete(brief);
         commentSvc.deleteComment(artUuid);
+
+	artBaseRepo.delete(base);
         s_log.info("Delete article uuid " + artUuid);
     }
 
